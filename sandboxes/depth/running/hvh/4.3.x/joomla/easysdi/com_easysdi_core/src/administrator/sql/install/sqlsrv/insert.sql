@@ -1,6 +1,4 @@
-
 SET IDENTITY_INSERT [#__sdi_language] ON 
-
 INSERT [#__sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (2, 0, 1, N'العربية', N'ar-DZ', N'ar', N'ara', N'ar', N'DZ', N'ara');
 INSERT [#__sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (3, 0, 1, N'български език', N'bg-BG', N'bg', N'bul', N'bg', N'BG', N'bul');
 INSERT [#__sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (4, 0, 1, N'català', N'ca-ES', N'ca', N'cat', N'ca', N'ES', N'cat');
@@ -36,7 +34,6 @@ INSERT [#__sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [
 SET IDENTITY_INSERT [#__sdi_language] OFF
 
 SET IDENTITY_INSERT [#__sdi_sys_role] ON;
-
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'member');
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'resourcemanager');
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'metadataresponsible');
@@ -49,13 +46,12 @@ INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (10, 10, 1,
 SET IDENTITY_INSERT [#__sdi_sys_role] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_criteriatype] ON;
-
 INSERT [#__sdi_sys_criteriatype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'system');
 INSERT [#__sdi_sys_criteriatype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'relation');
 INSERT [#__sdi_sys_criteriatype] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'csw');
 SET IDENTITY_INSERT [#__sdi_sys_criteriatype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_rendertype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_rendertype] ON;
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'textarea');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'checkbox');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'radiobutton');
@@ -65,18 +61,18 @@ INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (6, 6
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'datetime');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'gemet');
 SET IDENTITY_INSERT [#__sdi_sys_rendertype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (1, 3, 5);
 INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (2, 3, 6);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_entity] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_entity] ON;
 INSERT [#__sdi_sys_entity] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'attribute');
 INSERT [#__sdi_sys_entity] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'class');
 SET IDENTITY_INSERT [#__sdi_sys_entity] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_stereotype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_stereotype] ON;
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (1, 1, 1, N'guid', N'([A-Z0-9]{8}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{12})', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (2, 2, 1, N'text', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (3, 3, 1, N'locale', N'', NULL, NULL, 1);
@@ -93,6 +89,7 @@ INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpatt
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (14, 14, 1, N'file', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (15, 15, 1, N'geographicextent', NULL, NULL, NULL, 2);
 SET IDENTITY_INSERT [#__sdi_sys_stereotype] OFF;
+
 INSERT [roles] ([ID_ROLE], [NAME], [RANK]) VALUES (1, N'ROLE_ADMIN', 1);
 INSERT [roles] ([ID_ROLE], [NAME], [RANK]) VALUES (2, N'ROLE_USER', 3);
 INSERT [users] ([LOGIN], [PASSWORD], [ID_ROLE], [EXPIRATION], [ENABLED], [LOCKED]) VALUES (N'Admin', N'adm', 1, NULL, 1, 0);
@@ -141,8 +138,8 @@ INSERT [service_types_methods] ([ID_SERVICE_TYPE], [ID_SERVICE_METHOD]) VALUES (
 INSERT [service_types_methods] ([ID_SERVICE_TYPE], [ID_SERVICE_METHOD]) VALUES (8, 10);
 INSERT [service_types_methods] ([ID_SERVICE_TYPE], [ID_SERVICE_METHOD]) VALUES (8, 11);
 INSERT [service_types_methods] ([ID_SERVICE_TYPE], [ID_SERVICE_METHOD]) VALUES (8, 12);
-SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] ON;
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (1, 1, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (2, 2, 1);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (3, 2, 5);
@@ -164,13 +161,14 @@ INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (20, 14, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 8);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_accessscope] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_accessscope] ON;
 INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'public');
 INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (3, 2, 1, N'organism');
 INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (4, 3, 1, N'user');
 INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (2, 4, 1, N'category');
 SET IDENTITY_INSERT [#__sdi_sys_accessscope] OFF;
+
 INSERT [action_types] ([ID_ACTION_TYPE], [NAME]) VALUES (1, N'E-MAIL');
 INSERT [action_types] ([ID_ACTION_TYPE], [NAME]) VALUES (2, N'RSS');
 INSERT [http_methods] ([ID_HTTP_METHOD], [NAME]) VALUES (1, N'GET');
@@ -187,24 +185,24 @@ INSERT [job_defaults] ([ID_PARAM], [COLUMN_NAME], [STRING_VALUE], [VALUE_TYPE]) 
 INSERT [job_defaults] ([ID_PARAM], [COLUMN_NAME], [STRING_VALUE], [VALUE_TYPE]) VALUES (10, N'SLA_END_TIME', N'18:00:00', N'time');
 INSERT [job_defaults] ([ID_PARAM], [COLUMN_NAME], [STRING_VALUE], [VALUE_TYPE]) VALUES (11, N'RUN_SIMULATANEOUS', N'false', N'bool');
 INSERT [job_defaults] ([ID_PARAM], [COLUMN_NAME], [STRING_VALUE], [VALUE_TYPE]) VALUES (12, N'SAVE_RESPONSE', N'false', N'bool');
-SET IDENTITY_INSERT [#__sdi_sys_addresstype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_addresstype] ON;
 INSERT [#__sdi_sys_addresstype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'contact');
 INSERT [#__sdi_sys_addresstype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'billing');
 INSERT [#__sdi_sys_addresstype] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'delivry');
 SET IDENTITY_INSERT [#__sdi_sys_addresstype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_authenticationconnector] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_authenticationconnector] ON;
 INSERT [#__sdi_sys_authenticationconnector] ([id], [ordering], [state], [authenticationlevel_id], [value]) VALUES (1, 1, 1, 1, N'HTTPBasic');
 INSERT [#__sdi_sys_authenticationconnector] ([id], [ordering], [state], [authenticationlevel_id], [value]) VALUES (2, 2, 1, 2, N'Geonetwork');
 SET IDENTITY_INSERT [#__sdi_sys_authenticationconnector] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_authenticationlevel] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_authenticationlevel] ON;
 INSERT [#__sdi_sys_authenticationlevel] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'resource');
 INSERT [#__sdi_sys_authenticationlevel] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'service');
 SET IDENTITY_INSERT [#__sdi_sys_authenticationlevel] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_country] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_country] ON;
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (1, 1, 1, N'Afghanistan', N'AF', N'AFG');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (2, 2, 1, N'Åland Islands', N'AX', N'ALA');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (3, 3, 1, N'Albania', N'AL', N'ALB');
@@ -304,7 +302,6 @@ INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) 
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (97, 97, 1, N'Hong Kong (Special Administrative Region of China)', N'HK', N'HKG');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (98, 98, 1, N'Hungary', N'HU', N'HUN');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (99, 99, 1, N'Iceland', N'IS', N'ISL');
-
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (100, 100, 1, N'India', N'IN', N'IND');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (101, 101, 1, N'Indonesia', N'ID', N'IDN');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (102, 102, 1, N'Iran (Islamic Republic of Iran)', N'IR', N'IRN');
@@ -405,7 +402,6 @@ INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) 
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (197, 197, 1, N'Somalia', N'SO', N'SOM');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (198, 198, 1, N'South Africa (zuid Afrika)', N'ZA', N'ZAF');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (199, 199, 1, N'South Georgia and the South Sandwich Islands', N'GS', N'SGS');
-
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (200, 200, 1, N'Spain (españa)', N'ES', N'ESP');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (201, 201, 1, N'Sri Lanka', N'LK', N'LKA');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (202, 202, 1, N'Sudan', N'SD', N'SDN');
@@ -449,24 +445,24 @@ INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) 
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (240, 240, 1, N'Zambia', N'ZM', N'ZMB');
 INSERT [#__sdi_sys_country] ([id], [ordering], [state], [name], [iso2], [iso3]) VALUES (241, 241, 1, N'Zimbabwe', N'ZW', N'ZWE');
 SET IDENTITY_INSERT [#__sdi_sys_country] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_exceptionlevel] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_exceptionlevel] ON;
 INSERT [#__sdi_sys_exceptionlevel] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'permissive');
 INSERT [#__sdi_sys_exceptionlevel] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'restrictive');
 SET IDENTITY_INSERT [#__sdi_sys_exceptionlevel] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_importtype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_importtype] ON;
 INSERT [#__sdi_sys_importtype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'replace');
 INSERT [#__sdi_sys_importtype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'merge');
 SET IDENTITY_INSERT [#__sdi_sys_importtype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_isolanguage] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_isolanguage] ON;
 INSERT [#__sdi_sys_isolanguage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'iso639-1');
 INSERT [#__sdi_sys_isolanguage] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'iso639-2B');
 INSERT [#__sdi_sys_isolanguage] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'iso639-2T');
 SET IDENTITY_INSERT [#__sdi_sys_isolanguage] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_loglevel] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_loglevel] ON;
 INSERT [#__sdi_sys_loglevel] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'off');
 INSERT [#__sdi_sys_loglevel] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'fatal');
 INSERT [#__sdi_sys_loglevel] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'error');
@@ -476,15 +472,15 @@ INSERT [#__sdi_sys_loglevel] ([id], [ordering], [state], [value]) VALUES (6, 6, 
 INSERT [#__sdi_sys_loglevel] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'trace');
 INSERT [#__sdi_sys_loglevel] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'All');
 SET IDENTITY_INSERT [#__sdi_sys_loglevel] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_logroll] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_logroll] ON;
 INSERT [#__sdi_sys_logroll] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'daily');
 INSERT [#__sdi_sys_logroll] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'weekly');
 INSERT [#__sdi_sys_logroll] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'monthly');
 INSERT [#__sdi_sys_logroll] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'annually');
 SET IDENTITY_INSERT [#__sdi_sys_logroll] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_maptool] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_maptool] ON;
 INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (1, N'googleearth', 1, 1, N'Google Earth');
 INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (2, N'navigation', 2, 1, N'Navigation');
 INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (3, N'zoom', 3, 1, N'Zoom');
@@ -506,21 +502,21 @@ INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES 
 INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (19, N'layerdownload', 19, 1, N'Layer download');
 INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (20, N'layerorder', 20, 1, N'Layer order');
 SET IDENTITY_INSERT [#__sdi_sys_maptool] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_metadatastate] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_metadatastate] ON;
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'inprogress');
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'validated');
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'published');
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'archived');
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'trashed');
 SET IDENTITY_INSERT [#__sdi_sys_metadatastate] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_metadataversion] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_metadataversion] ON;
 INSERT [#__sdi_sys_metadataversion] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'all');
 INSERT [#__sdi_sys_metadataversion] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'last');
 SET IDENTITY_INSERT [#__sdi_sys_metadataversion] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_operationcompliance] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_operationcompliance] ON;
 INSERT [#__sdi_sys_operationcompliance] ([id], [ordering], [state], [servicecompliance_id], [serviceoperation_id], [implemented]) VALUES (1, 1, 1, 1, 1, 1);
 INSERT [#__sdi_sys_operationcompliance] ([id], [ordering], [state], [servicecompliance_id], [serviceoperation_id], [implemented]) VALUES (2, 2, 1, 1, 2, 1);
 INSERT [#__sdi_sys_operationcompliance] ([id], [ordering], [state], [servicecompliance_id], [serviceoperation_id], [implemented]) VALUES (3, 3, 1, 1, 3, 1);
@@ -571,8 +567,8 @@ INSERT [#__sdi_sys_operationcompliance] ([id], [ordering], [state], [servicecomp
 INSERT [#__sdi_sys_operationcompliance] ([id], [ordering], [state], [servicecompliance_id], [serviceoperation_id], [implemented]) VALUES (48, 48, 1, 4, 12, 1);
 INSERT [#__sdi_sys_operationcompliance] ([id], [ordering], [state], [servicecompliance_id], [serviceoperation_id], [implemented]) VALUES (49, 49, 1, 5, 12, 1);
 SET IDENTITY_INSERT [#__sdi_sys_operationcompliance] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_orderstate] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_orderstate] ON;
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'archived');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'historized');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'finish');
@@ -584,14 +580,14 @@ INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('8',
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('9', '9', '1', N'rejected by thirdparty');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('10', '10', '1', N'rejected by supplier');
 SET IDENTITY_INSERT [#__sdi_sys_orderstate] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_ordertype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_ordertype] ON;
 INSERT [#__sdi_sys_ordertype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'order');
 INSERT [#__sdi_sys_ordertype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'estimate');
 INSERT [#__sdi_sys_ordertype] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'draft');
 SET IDENTITY_INSERT [#__sdi_sys_ordertype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_productstate] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_productstate] ON;
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'available');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'await');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'sent');
@@ -601,7 +597,6 @@ INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (6,
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_productstorage] ON;
-
 INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'upload');
 INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'url');
 INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'zoning');
@@ -613,10 +608,10 @@ INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (2
 SET IDENTITY_INSERT [#__sdi_sys_productmining] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_extractstorage] ON;
-
 INSERT [#__sdi_sys_extractstorage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'local');
 INSERT [#__sdi_sys_extractstorage] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'remote');
 SET IDENTITY_INSERT [#__sdi_sys_extractstorage] OFF;
+
 SET IDENTITY_INSERT [#__sdi_sys_propertytype] ON;
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'list');
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'multiplelist');
@@ -625,34 +620,34 @@ INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (4,
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'textarea');
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'message');
 SET IDENTITY_INSERT [#__sdi_sys_propertytype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_proxytype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_proxytype] ON;
 INSERT [#__sdi_sys_proxytype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'harvest');
 INSERT [#__sdi_sys_proxytype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'relay');
 INSERT [#__sdi_sys_proxytype] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'aggregate');
 SET IDENTITY_INSERT [#__sdi_sys_proxytype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_relationscope] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_relationscope] ON;
 INSERT [#__sdi_sys_relationscope] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'editable');
 INSERT [#__sdi_sys_relationscope] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'visible');
 INSERT [#__sdi_sys_relationscope] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'hidden');
 SET IDENTITY_INSERT [#__sdi_sys_relationscope] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_relationtype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_relationtype] ON;
 INSERT [#__sdi_sys_relationtype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'association');
 INSERT [#__sdi_sys_relationtype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'aggregation');
 INSERT [#__sdi_sys_relationtype] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'composition');
 INSERT [#__sdi_sys_relationtype] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'generalization');
 SET IDENTITY_INSERT [#__sdi_sys_relationtype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_searchtab] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_searchtab] ON;
 INSERT [#__sdi_sys_searchtab] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'simple');
 INSERT [#__sdi_sys_searchtab] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'advanced');
 INSERT [#__sdi_sys_searchtab] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'hidden');
 INSERT [#__sdi_sys_searchtab] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'none');
 SET IDENTITY_INSERT [#__sdi_sys_searchtab] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_servicecompliance] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_servicecompliance] ON;
 INSERT [#__sdi_sys_servicecompliance] ([id], [ordering], [state], [serviceconnector_id], [serviceversion_id], [implemented], [relayable], [aggregatable], [harvestable]) VALUES (1, 1, 1, 1, 7, 1, 1, 0, 1);
 INSERT [#__sdi_sys_servicecompliance] ([id], [ordering], [state], [serviceconnector_id], [serviceversion_id], [implemented], [relayable], [aggregatable], [harvestable]) VALUES (2, 2, 1, 1, 8, 1, 1, 0, 1);
 INSERT [#__sdi_sys_servicecompliance] ([id], [ordering], [state], [serviceconnector_id], [serviceversion_id], [implemented], [relayable], [aggregatable], [harvestable]) VALUES (3, 3, 1, 2, 2, 1, 1, 1, 0);
@@ -664,8 +659,8 @@ INSERT [#__sdi_sys_servicecompliance] ([id], [ordering], [state], [serviceconnec
 INSERT [#__sdi_sys_servicecompliance] ([id], [ordering], [state], [serviceconnector_id], [serviceversion_id], [implemented], [relayable], [aggregatable], [harvestable]) VALUES (9, 9, 1, 11, 3, 1, 1, 1, 0);
 INSERT [#__sdi_sys_servicecompliance] ([id], [ordering], [state], [serviceconnector_id], [serviceversion_id], [implemented], [relayable], [aggregatable], [harvestable]) VALUES (10, 10, 1, 11, 4, 1, 1, 1, 0);
 SET IDENTITY_INSERT [#__sdi_sys_servicecompliance] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_servicecon_authenticationcon] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_servicecon_authenticationcon] ON;
 INSERT [#__sdi_sys_servicecon_authenticationcon] ([id], [serviceconnector_id], [authenticationconnector_id]) VALUES (1, 1, 1);
 INSERT [#__sdi_sys_servicecon_authenticationcon] ([id], [serviceconnector_id], [authenticationconnector_id]) VALUES (2, 1, 2);
 INSERT [#__sdi_sys_servicecon_authenticationcon] ([id], [serviceconnector_id], [authenticationconnector_id]) VALUES (3, 2, 1);
@@ -678,8 +673,8 @@ INSERT [#__sdi_sys_servicecon_authenticationcon] ([id], [serviceconnector_id], [
 INSERT [#__sdi_sys_servicecon_authenticationcon] ([id], [serviceconnector_id], [authenticationconnector_id]) VALUES (10, 9, 1);
 INSERT [#__sdi_sys_servicecon_authenticationcon] ([id], [serviceconnector_id], [authenticationconnector_id]) VALUES (11, 10, 1);
 SET IDENTITY_INSERT [#__sdi_sys_servicecon_authenticationcon] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_serviceconnector] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_serviceconnector] ON;
 INSERT [#__sdi_sys_serviceconnector] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'CSW');
 INSERT [#__sdi_sys_serviceconnector] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'WMS');
 INSERT [#__sdi_sys_serviceconnector] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'WMTS');
@@ -695,8 +690,8 @@ INSERT [#__sdi_sys_serviceconnector] ([id], [ordering], [state], [value]) VALUES
 INSERT [#__sdi_sys_serviceconnector] ([id], [ordering], [state], [value]) VALUES (13, 13, 0, N'Google');
 INSERT [#__sdi_sys_serviceconnector] ([id], [ordering], [state], [value]) VALUES (14, 14, 0, N'OSM');
 SET IDENTITY_INSERT [#__sdi_sys_serviceconnector] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_serviceoperation] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_serviceoperation] ON;
 INSERT [#__sdi_sys_serviceoperation] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'GetCapabilities');
 INSERT [#__sdi_sys_serviceoperation] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'GetRecords');
 INSERT [#__sdi_sys_serviceoperation] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'GetRecordById');
@@ -719,19 +714,19 @@ INSERT [#__sdi_sys_serviceoperation] ([id], [ordering], [state], [value]) VALUES
 INSERT [#__sdi_sys_serviceoperation] ([id], [ordering], [state], [value]) VALUES (20, 20, 1, N'GetStyles');
 INSERT [#__sdi_sys_serviceoperation] ([id], [ordering], [state], [value]) VALUES (21, 21, 1, N'PutStyles');
 SET IDENTITY_INSERT [#__sdi_sys_serviceoperation] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_servicescope] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_servicescope] ON;
 INSERT [#__sdi_sys_servicescope] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'all');
 INSERT [#__sdi_sys_servicescope] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'organism');
 INSERT [#__sdi_sys_servicescope] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'none');
 SET IDENTITY_INSERT [#__sdi_sys_servicescope] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_servicetype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_servicetype] ON;
 INSERT [#__sdi_sys_servicetype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'physical');
 INSERT [#__sdi_sys_servicetype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'virtual');
 SET IDENTITY_INSERT [#__sdi_sys_servicetype] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_serviceversion] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_serviceversion] ON;
 INSERT [#__sdi_sys_serviceversion] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'1.0.0');
 INSERT [#__sdi_sys_serviceversion] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'1.1.0');
 INSERT [#__sdi_sys_serviceversion] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'1.1.1');
@@ -741,13 +736,13 @@ INSERT [#__sdi_sys_serviceversion] ([id], [ordering], [state], [value]) VALUES (
 INSERT [#__sdi_sys_serviceversion] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'2.0.1');
 INSERT [#__sdi_sys_serviceversion] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'2.0.2');
 SET IDENTITY_INSERT [#__sdi_sys_serviceversion] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_spatialoperator] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_spatialoperator] ON;
 INSERT [#__sdi_sys_spatialoperator] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'within');
 INSERT [#__sdi_sys_spatialoperator] ([id], [ordering], [state], [value]) VALUES (2, 3, 1, N'touch');
 SET IDENTITY_INSERT [#__sdi_sys_spatialoperator] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_topiccategory] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_topiccategory] ON;
 INSERT [#__sdi_sys_topiccategory] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'farming');
 INSERT [#__sdi_sys_topiccategory] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'biota');
 INSERT [#__sdi_sys_topiccategory] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'bounderies');
@@ -768,13 +763,13 @@ INSERT [#__sdi_sys_topiccategory] ([id], [ordering], [state], [value]) VALUES (1
 INSERT [#__sdi_sys_topiccategory] ([id], [ordering], [state], [value]) VALUES (18, 18, 1, N'transportation');
 INSERT [#__sdi_sys_topiccategory] ([id], [ordering], [state], [value]) VALUES (19, 19, 1, N'utilitiesCommunication');
 SET IDENTITY_INSERT [#__sdi_sys_topiccategory] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_unit] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_unit] ON;
 INSERT [#__sdi_sys_unit] ([id], [ordering], [state], [alias], [name]) VALUES (1, 1, 1, N'm', N'meter');
 INSERT [#__sdi_sys_unit] ([id], [ordering], [state], [alias], [name]) VALUES (2, 2, 1, N'dd', N'degree');
 SET IDENTITY_INSERT [#__sdi_sys_unit] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_versiontype] ON;
 
+SET IDENTITY_INSERT [#__sdi_sys_versiontype] ON;
 INSERT [#__sdi_sys_versiontype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'all');
 INSERT [#__sdi_sys_versiontype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'lastPublishedVersion');
 SET IDENTITY_INSERT [#__sdi_sys_versiontype] OFF;
@@ -802,15 +797,14 @@ INSERT [statuses] ([ID_STATUS], [NAME]) VALUES (4, N'NOT_TESTED');
 
 
 SET IDENTITY_INSERT [#__sdi_namespace] ON;
-
 INSERT [#__sdi_namespace] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [prefix], [uri], [system], [access], [asset_id]) VALUES (1, N'6df1fcd1-0a57-8b74-cd21-354dc5ef0b3d', N'gmd', 356, CAST(0x00BFAB003F370B0000 AS DateTime2), NULL, NULL, 1, 1, 0, CAST(0x00BFAB003F370B0000 AS DateTime2), N'gmd', N'gmd', N'http://www.isotc211.org/2005/gmd', 1, 1, 0);
 INSERT [#__sdi_namespace] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [prefix], [uri], [system], [access], [asset_id]) VALUES (2, N'016318b2-29ec-3a74-c161-14aa1b1d3b97', N'gco', 356, CAST(0x00BFAB003F370B0000 AS DateTime2), NULL, NULL, 2, 1, 0, CAST(0x00BFAB003F370B0000 AS DateTime2), N'gco', N'gco', N'http://www.isotc211.org/2005/gco', 1, 1, 0);
 INSERT [#__sdi_namespace] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [prefix], [uri], [system], [access], [asset_id]) VALUES (3, N'3e31cc00-8fa3-97a4-8510-dac7e4bac992', N'gml', 356, CAST(0x00BFAB003F370B0000 AS DateTime2), NULL, NULL, 3, 1, 0, CAST(0x00BFAB003F370B0000 AS DateTime2), N'gml', N'gml', N'http://www.opengis.net/gml', 1, 1, 0);
 INSERT [#__sdi_namespace] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [prefix], [uri], [system], [access], [asset_id]) VALUES (4, N'd4b19594-af15-0b44-516b-22284be8dc66', N'sdi', 356, CAST(0x00BFAB003F370B0000 AS DateTime2), NULL, NULL, 4, 1, 0, CAST(0x00BFAB003F370B0000 AS DateTime2), N'sdi', N'sdi', N'http://www.easysdi.org/2011/sdi', 1, 1, 0);
 INSERT [#__sdi_namespace] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [prefix], [uri], [system], [access], [asset_id]) VALUES (5, N'd84c3757-6471-49ed-a109-c8cef52840a8', N'catalog', 356, CAST(0x00BFAB003F370B0000 AS DateTime2), NULL, NULL, 5, 1, 0, CAST(0x00BFAB003F370B0000 AS DateTime2), N'catalog', N'catalog', N'http://www.easysdi.org/2011/sdi/catalog', 1, 1, 0);
 SET IDENTITY_INSERT [#__sdi_namespace] OFF;
-SET IDENTITY_INSERT [#__sdi_searchcriteria] ON;
 
+SET IDENTITY_INSERT [#__sdi_searchcriteria] ON;
 INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (1, N'58dfe161-60c3-4b72-b768-e4a09bae8cdb', N'fulltext', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'fulltext', 1, 1, 5, NULL, 0, 0);
 INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (2, N'05b0fb40-459c-4ed2-a985-ce1611593969', N'resourcetype', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'resourcetype', 1, 1, 2, NULL, 0, 0);
 INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (3, N'f839e3ae-d983-4366-b24f-2678f4cbe188', N'versions', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'versions', 1, 1, 2, NULL, 0, 0);
@@ -835,6 +829,9 @@ SET IDENTITY_INSERT [#__sdi_perimeter] ON;
 INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (1, N'1a9f342c-bb1e-9bc4-dd19-38910dff0f59', N'freeperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'Free perimeter', '',1,1);
 INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (2, N'9adc6d4e-262a-d6e4-e152-6de437ba80ed', N'myperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'My perimeter', '',1,1);
 SET IDENTITY_INSERT [#__sdi_perimeter] OFF;
+
+SET IDENTITY_INSERT [#__sdi_sys_pricing] ON;
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('1', '1', '1', 'free');
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('2', '2', '1', 'fee without a pricing profile');
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('3', '3', '1', 'fee with a pricing profile');
+SET IDENTITY_INSERT [#__sdi_sys_pricing] OFF;
