@@ -80,7 +80,7 @@ class Easysdi_shopModelPricingOrganisms extends JModelList {
                 )
         );
 
-        $query->from('`#__sdi_organism` AS a');
+        $query->from('#__sdi_organism AS a');
         
         // Join over user_role_organism
         $query->join('LEFT', '#__sdi_user_role_organism AS uro ON uro.organism_id=a.id');
