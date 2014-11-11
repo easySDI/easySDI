@@ -50,6 +50,8 @@
                     <language tag="en-GB">language/en-GB/en-GB.${getordersaresptime.plugin.language.file}.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.${getordersaresptime.plugin.language.file}.sys.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.${getordersaresptime.plugin.language.file}.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.${getordersaresptime.plugin.language.file}.sys.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.${getordersaresptime.plugin.language.file}.ini</language>
                 </languages>
 
             </extension>
