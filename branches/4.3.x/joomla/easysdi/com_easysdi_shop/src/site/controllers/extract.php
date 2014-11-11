@@ -249,7 +249,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $query = $this->db->getQuery(true);
 
             $query
-                    ->select('o.id, o.guid, o.`name`, o.user_id, o.surface, u.guid as user_guid, us.name as user_name, o.thirdparty_id, o.sent, ot.`value` ordertype')
+                    ->select('o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, u.guid as user_guid, us.name as user_name, o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') . ' as ordertype')
                     ->select('po.id as pricing_order, po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee, po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee')
                     ->from('#__sdi_order o')
                     ->innerJoin('#__sdi_pricing_order po ON po.order_id=o.id')
@@ -416,7 +416,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $query = $this->db->getQuery(true);
 
         $query->select('a.firstname, a.lastname, a.address, a.addresscomplement, a.postalcode, a.postalbox, a.locality, a.email, a.phone, a.mobile, a.fax');
-        $query->select('o.acronym, o.`name`');
+        $query->select('o.acronym, ' . $this->db->quoteName('o.name') );
         $query->select('c.iso2 country_iso');
         $query->leftJoin('#__sdi_organism o on a.organism_id = o.id');
         $query->leftJoin('#__sdi_sys_country c on c.id = a.country_id');
@@ -708,7 +708,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $properties = $this->response->createElementNS($this->nsSdi, 'sdi:properties');
         
         $query = $this->db->getQuery(true)
-                ->select('p.id, p.guid, p.`alias` as palias, pv.`alias` as pvalias')
+                ->select('p.id, p.guid, ' . $this->db->quoteName('p.alias') . ' as palias, ' . $this->db->quoteName('pv.alias') . ' as pvalias')
                 ->from('#__sdi_pricing_order_supplier_product posp')
                 ->join('LEFT', '#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
                 ->join('LEFT', '#__sdi_pricing_order po ON po.id=pos.pricing_order_id')
@@ -745,7 +745,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         
         $query = $this->db->getQuery(true);
 
-        $query->select('p.id, p.guid, p.`name` perimeter_name, p.alias, op.`value` perimeter_value');
+        $query->select('p.id, p.guid, ' . $this->db->quoteName('p.name') . ' as perimeter_name, p.alias, ' . $this->db->quoteName('op.value') . ' as perimeter_value');
         $query->from('#__sdi_order_perimeter op');
         $query->innerJoin('#__sdi_perimeter p on p.id = op.perimeter_id');
         $query->where('op.order_id = ' . (int)$order->id);

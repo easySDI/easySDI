@@ -78,7 +78,7 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
             
             $query = $db->getQuery(true)
                         ->insert($db->quoteName('#__sdi_pricing_profile_category_pricing_rebate'))
-                        ->columns('`pricing_profile_id`, `category_id`');
+                        ->columns($db->quoteName('pricing_profile_id'). ', ' .$db->quoteName('category_id'));
             $doInsert = false;
             foreach($dataCategories as $category_id => $isFree){
                 if((bool)$isFree){
