@@ -51,6 +51,8 @@
                     <language tag="en-GB">language/en-GB/en-GB.${getorganisms.plugin.language.file}.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.${getorganisms.plugin.language.file}.sys.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.${getorganisms.plugin.language.file}.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.${getorganisms.plugin.language.file}.sys.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.${getorganisms.plugin.language.file}.ini</language>
                 </languages>
 
             </extension>
