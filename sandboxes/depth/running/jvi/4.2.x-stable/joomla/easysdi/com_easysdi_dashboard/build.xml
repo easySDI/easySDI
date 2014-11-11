@@ -103,6 +103,8 @@
                         <language tag="en-GB">language/en-GB/en-GB.com_easysdi_dashboard.sys.ini</language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_dashboard.ini</language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_dashboard.sys.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_dashboard.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_dashboard.sys.ini</language>
                     </languages>
                 </administration>
             </extension>

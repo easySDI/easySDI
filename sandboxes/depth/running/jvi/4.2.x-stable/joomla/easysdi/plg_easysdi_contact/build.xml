@@ -48,6 +48,8 @@
                     <language tag="en-GB">language/en-GB/en-GB.plg_user_easysdicontact.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.plg_user_easysdicontact.sys.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.plg_user_easysdicontact.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.plg_user_easysdicontact.sys.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.plg_user_easysdicontact.ini</language>
                 </languages>
             </extension>
         </echoxml>
