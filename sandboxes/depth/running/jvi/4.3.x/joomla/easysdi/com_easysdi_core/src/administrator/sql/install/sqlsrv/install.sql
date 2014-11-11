@@ -614,7 +614,7 @@ CREATE TABLE [#__sdi_diffusion](
 	[description] [nvarchar](500) NULL,
 	[accessscope_id] [bigint] NOT NULL,
 	[pricing_id] [bigint] NOT NULL,
-        [pricing_profile_id] [integer](11),
+        [pricing_profile_id] [bigint],
 	[deposit] [nvarchar](255) NULL,
 	[productmining_id] [bigint] NULL,
 	[surfacemin] [nvarchar](50) NULL,
@@ -2245,7 +2245,7 @@ CREATE TABLE [#__sdi_pricing_profile](
     [state] [int] NOT NULL,
     [checked_out] [int] NOT NULL,
     [checked_out_time] [datetime2](0) NOT NULL,
-    [organism_id] [integer](11) NOT NULL,
+    [organism_id] [bigint] NOT NULL,
     [name] [nvarchar](75) NOT NULL,
     [fixed_fee] [decimal](6,2),
     [surface_rate] [decimal](6,2),
@@ -2273,7 +2273,7 @@ CREATE TABLE [#__sdi_pricing_order](
     [state] [int] NOT NULL,
     [checked_out] [int] NOT NULL,
     [checked_out_time] [datetime2](0) NOT NULL,
-    [order_id] [integer](11) NOT NULL,
+    [order_id] [bigint] NOT NULL,
     [cfg_vat] [decimal](6,2) NOT NULL DEFAULT 0,
     [cfg_currency] [char](3) NOT NULL DEFAULT 'CHF',
     [cfg_rounding] [decimal](3,2) NOT NULL DEFAULT '0.05',
@@ -2294,8 +2294,8 @@ SET QUOTED_IDENTIFIER ON;
 
 CREATE TABLE [#__sdi_pricing_profile_category_pricing_rebate](
     [id] [bigint] IDENTITY(1,1) NOT NULL,
-    [pricing_profile_id] [integer](11) NOT NULL,
-    [category_id] [integer](11) NOT NULL,
+    [pricing_profile_id] [bigint] NOT NULL,
+    [category_id] [bigint] NOT NULL,
     [rebate] [decimal](6,2) default 100,
 CONSTRAINT [PK_#__sdi_pricing_profile_category_pricing_rebate] PRIMARY KEY CLUSTERED
 (
@@ -3144,8 +3144,8 @@ SET QUOTED_IDENTIFIER ON;
 
 CREATE TABLE [#__sdi_organism_category_pricing_rebate](
     [id] [bigint] IDENTITY(1,1) NOT NULL,
-    [organism_id] [integer](11),
-    [category_id] [integer](11),
+    [organism_id] [bigint],
+    [category_id] [bigint],
     [rebate] [decimal](6,2),
 CONSTRAINT [PK_#__sdi_organism_category_pricing_rebate] PRIMARY KEY CLUSTERED
 (
