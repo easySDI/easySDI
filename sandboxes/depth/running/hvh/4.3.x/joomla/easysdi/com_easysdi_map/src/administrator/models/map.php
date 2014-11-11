@@ -193,6 +193,23 @@ class Easysdi_mapModelmap extends JModelAdmin {
                     }                    
                 }
                 
+                //indoor navigation
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=21');
+                $query->where('map_id = ' . $item->id);
+                
+                $db->setQuery($query);
+                $indoornavigation = $db->loadResult();
+                if(!empty($indoornavigation)){
+                    $params = json_decode(stripslashes($indoornavigation));
+                    foreach ($params as $param) {
+                        foreach($param as $key => $value)
+                            $item->level[$key] = $value;
+                    }                    
+                }
+                
                 $item->services = array();
                 
                 $query = $db->getQuery(true);
@@ -330,14 +347,12 @@ class Easysdi_mapModelmap extends JModelAdmin {
 
             //Scale line params
             $scaleparamsparams = '{\"bottomInUnits\" :\"'.$data["bottomInUnits"].'\",\"bottomOutUnits\" :\"'.$data["bottomOutUnits"].'\",\"topInUnits\" :\"'.$data["topInUnits"].'\",\"topOutUnits\" :\"'.$data["topOutUnits"].'\"}';
-            
             $columns = array('map_id', 'tool_id', 'params');
             $values = array($this->getItem()->get('id'), 14, $query->quote($scaleparamsparams));
             $query = $db->getQuery(true);
             $query->insert('#__sdi_map_tool');
             $query->columns($query->quoteName($columns));
             $query->values(implode(',', $values));
-            
             $db->setQuery($query);
                         if (!$db->query()) {
                             $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
@@ -346,21 +361,39 @@ class Easysdi_mapModelmap extends JModelAdmin {
                         
             //Wfs locator
             $locatorparamsparams = '{\"urlwfslocator\" :\"'.$data["urlwfslocator"].'\",\"fieldname\" :\"'.$data["fieldname"].'\",\"featuretype\" :\"'.$data["featuretype"].'\",\"featureprefix\" :\"'.$data["featureprefix"].'\",\"geometryname\" :\"'.$data["geometryname"].'\"}';
-            
             $columns = array('map_id', 'tool_id', 'params');
             $values = array($this->getItem()->get('id'), 16, $query->quote($locatorparamsparams));
             $query = $db->getQuery(true);
             $query->insert('#__sdi_map_tool');
             $query->columns($query->quoteName($columns));
             $query->values(implode(',', $values));
-            
-            
             $db->setQuery($query);
                         if (!$db->query()) {
                             $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
                             return false;
                         }
                         
+            //Indoor navigation
+            $i = 1;
+            $indoornavigation = '';
+            while (isset($_POST['jform']["code{$i}"])){
+                 $indoornavigation = (strlen($indoornavigation) > 0 )? $indoornavigation . ',': $indoornavigation;  
+                $indoornavigation .= '{\"'.$_POST['jform']["code{$i}"].'\":\"'.$_POST['jform']["label{$i}"].'\"}';      
+                $i++;
+            }
+            $indoornavigation = (strlen($indoornavigation) > 0 )? '[' . $indoornavigation . ']': '';  
+            $columns = array('map_id', 'tool_id', 'params');
+            $values = array($this->getItem()->get('id'), 21, $query->quote($indoornavigation));
+            $query = $db->getQuery(true);
+            $query->insert('#__sdi_map_tool');
+            $query->columns($query->quoteName($columns));
+            $query->values(implode(',', $values));
+            $db->setQuery($query);
+                        if (!$db->query()) {
+                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                            return false;
+                        }
+            
             //Service
             $services = $data['services'];
             foreach ($services as $service) {
