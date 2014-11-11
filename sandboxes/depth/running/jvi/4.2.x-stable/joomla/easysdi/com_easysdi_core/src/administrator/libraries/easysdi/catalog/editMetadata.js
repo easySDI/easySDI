@@ -715,7 +715,8 @@ function chosenRefresh() {
 }
 
 function filterBoundary(parentPath, value) {
-
+    if(value == '') return;
+    
     js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
 
         var response = js.parseJSON(data);
@@ -745,6 +746,8 @@ function filterBoundary(parentPath, value) {
 }
 
 function setBoundary(parentPath, value) {
+    if(value == '') return;
+    
     js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');

@@ -953,7 +953,7 @@ class FormGenerator {
                         $field->setAttribute('default', $attribute->firstChild->nodeValue);
                     }
                     break;
-                case EnumStereotype::$BOUNDARYCATEGORY:
+                /*case EnumStereotype::$BOUNDARYCATEGORY:
                     $field->setAttribute('type', 'list');
                     if ($guid != '') {
                         $field->setAttribute('label', EText::_($guid));
@@ -971,7 +971,7 @@ class FormGenerator {
 
                     $field->appendChild($option);
                     $field->setAttribute('onchange', 'filterBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
-                    break;
+                    break;*/
                 case EnumStereotype::$TEXTCHOICE:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
