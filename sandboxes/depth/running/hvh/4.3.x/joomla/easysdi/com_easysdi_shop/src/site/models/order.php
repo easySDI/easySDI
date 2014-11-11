@@ -248,7 +248,7 @@ class Easysdi_shopModelOrder extends JModelForm {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->update('#__sdi_order_diffusion')
-                    ->set('`productstate_id`='.self::PRODUCT_SENT)
+                    ->set('productstate_id='.self::PRODUCT_SENT)
                     ->where('order_id = ' . (int)$id);
             $db->setQuery($query);
             $db->execute();
@@ -281,7 +281,7 @@ class Easysdi_shopModelOrder extends JModelForm {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->update('#__sdi_order_diffusion')
-                    ->set('`productstate_id`='.self::PRODUCT_REJECTED)
+                    ->set('productstate_id='.self::PRODUCT_REJECTED)
                     ->where('order_id = ' . (int)$id);
             $db->setQuery($query);
             $db->execute();
