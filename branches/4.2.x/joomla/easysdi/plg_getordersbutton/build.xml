@@ -51,6 +51,8 @@
                     <language tag="en-GB">language/en-GB/en-GB.${getordersbutton.plugin.language.file}.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.${getordersbutton.plugin.language.file}.sys.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.${getordersbutton.plugin.language.file}.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.${getordersbutton.plugin.language.file}.sys.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.${getordersbutton.plugin.language.file}.ini</language>
                 </languages>
 
             </extension>
