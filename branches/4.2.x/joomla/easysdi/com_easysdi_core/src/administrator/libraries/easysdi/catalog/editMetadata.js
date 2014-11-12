@@ -561,7 +561,7 @@ function searchResource(task) {
     js('input[name="task"]').val(task);
 
     js.ajax({
-        url: baseUrl + task,
+        url: baseUrl + 'option=com_easysdi_catalog&task=' + task,
         type: js('#form_search_resource').attr('method'),
         data: js('#form_search_resource').serialize(),
         success: function(data) {
@@ -583,7 +583,7 @@ function searchResource(task) {
 function importSwitch(task) {
     var actions = task.split('.');
 
-    js.get(baseUrl + 'task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
         var response = js.parseJSON(data);
 
         if (response.success) {
@@ -715,7 +715,8 @@ function chosenRefresh() {
 }
 
 function filterBoundary(parentPath, value) {
-
+    if(value == '') return;
+    
     js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
 
         var response = js.parseJSON(data);
@@ -745,6 +746,8 @@ function filterBoundary(parentPath, value) {
 }
 
 function setBoundary(parentPath, value) {
+    if(value == '') return;
+    
     js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
