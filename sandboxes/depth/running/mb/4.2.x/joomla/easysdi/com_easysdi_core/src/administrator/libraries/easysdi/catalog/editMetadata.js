@@ -42,7 +42,7 @@ js('document').ready(function() {
                     });
             });
             
-            console.log('addTooltips');
+            //console.log('addTooltips');
             
             addTooltips();
 
@@ -261,7 +261,7 @@ js('document').ready(function() {
         else {
             var required = false;
             js.each(brothers, function(i, brother) {
-                console.log(i + ' / ' + brothers.length);
+                //console.log(i + ' / ' + brothers.length);
                 if (brother.value !== '')
                     required = true;
 
@@ -511,28 +511,30 @@ function setRelationAction(element) {
     var uuid = getUuid('add-btn', js(element).attr('id'));
 
     var occurance = js('.fds' + uuid).length;
-
-    console.log(js(element));
+    js(element).attr('alt',occurance);
+    
+    /*console.log(uuid);
     console.log(lowerbound);
     console.log(upperbound);
-    console.log(occurance);
+    console.log(occurance);*/
 
     if (occurance == upperbound) {
-        /*console.log('hide add #add-btn'+uuid);*/
         js('#add-btn' + uuid).hide();
     }
 
     if (occurance == lowerbound) {
-        /*console.log('hide remove');*/
         js('.fds' + uuid + ' a.remove-btn').hide();
     }
 
     if (occurance < upperbound) {
         js('#add-btn' + uuid).show();
     }
+    
+    if(occurance > lowerbound){
+        js('.fds' + uuid + ' a.remove-btn').show();
+    }
 
     if (occurance < upperbound && occurance > lowerbound) {
-        /*console.log('show all');*/
         js('#add-btn' + uuid).show();
         js('.fds' + uuid + ' a.remove-btn').show();
     }
