@@ -102,12 +102,12 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
         $name = addslashes($_GET['value']);
         $query = $this->db->getQuery(true);
-        $query->select('t.text1 as option_value, b.alias, b.`name`, b.northbound, b.southbound, b.westbound, b.eastbound ');
+        $query->select('t.text1 as option_value, b.alias, ' . $this->db->quoteName('b.name') . ', b.northbound, b.southbound, b.westbound, b.eastbound ');
         $query->from('#__sdi_boundary AS b');
         $query->innerJoin('#__sdi_boundarycategory as bc ON b.category_id = bc.id');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid');
         $query->innerJoin('#__sdi_language as l ON l.id = t.language_id');
-        $query->where('bc.`name` = ' . $this->db->quote($name) );
+        $query->where($this->db->quoteName('bc.name') . ' = ' . $this->db->quote($name) );
         $query->where('l.code = ' . $this->db->quote($default_lang) );
         
 

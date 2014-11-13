@@ -42,8 +42,6 @@ js('document').ready(function() {
                     });
             });
             
-            console.log('addTooltips');
-            
             addTooltips();
 
             setRelationAction(button);
@@ -55,7 +53,6 @@ js('document').ready(function() {
 
             // Set attribute bouton state in data block
             js(data).find('.attribute-add-btn').each(function() {
-                //console.log(js(this));
                 setAttributeAction(js(this).parent());
             });
 
@@ -261,7 +258,6 @@ js('document').ready(function() {
         else {
             var required = false;
             js.each(brothers, function(i, brother) {
-                console.log(i + ' / ' + brothers.length);
                 if (brother.value !== '')
                     required = true;
 
@@ -518,18 +514,11 @@ function setRelationAction(element) {
 
     var occurance = js('.fds' + uuid).length;
 
-    console.log(js(element));
-    console.log(lowerbound);
-    console.log(upperbound);
-    console.log(occurance);
-
     if (occurance == upperbound) {
-        /*console.log('hide add #add-btn'+uuid);*/
         js('#add-btn' + uuid).hide();
     }
 
     if (occurance == lowerbound) {
-        /*console.log('hide remove');*/
         js('.fds' + uuid + ' a.remove-btn').hide();
     }
 
@@ -538,7 +527,6 @@ function setRelationAction(element) {
     }
 
     if (occurance < upperbound && occurance > lowerbound) {
-        /*console.log('show all');*/
         js('#add-btn' + uuid).show();
         js('.fds' + uuid + ' a.remove-btn').show();
     }
@@ -549,10 +537,6 @@ function setAttributeAction(element) {
     var lowerbound = js(element).attr('data-lowerbound');
     var buttonclass = js(element).attr('data-button-class');
     var occurance = js('.attribute-action' + buttonclass).length;
-
-    /*console.log(js(element));
-     console.log(upperbound);
-     console.log(lowerbound);*/
 
     if (occurance == 1) {
         js('.attribute-action' + buttonclass + '>a.attribute-add-btn').show();
@@ -619,12 +603,10 @@ function importSwitch(task) {
 function toogleAll(button) {
     if (tabIsOpen) {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
-        //console.log('ferme tout');
         js('.inner-fds').hide();
         js('.collapse-btn>i').removeClass('icon-arrow-down').addClass('icon-arrow-right');        
         tabIsOpen = false;
     } else {
-        //console.log('ouvre tout');
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
         js('.collapse-btn>i').removeClass('icon-arrow-right').addClass('icon-arrow-down');        

@@ -161,6 +161,7 @@ class Easysdi_serviceHelper {
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
             curl_setopt($ch, CURLOPT_COOKIEJAR, "cookie.txt");
             curl_setopt($ch, CURLOPT_POSTFIELDS, "username=" . $s_user . "&password=" . $s_password);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
             ob_start();
             curl_exec($ch);
             ob_end_clean();
@@ -195,12 +196,11 @@ class Easysdi_serviceHelper {
             $service = $service == 'WMSC' ? 'WMS' : $service;
             $completeurl = $url . $separator . "REQUEST=GetCapabilities&SERVICE=" . $service . "&VERSION=" . $version->value;
             $session = curl_init($completeurl);
+            $httpHeader[]='Expect:';
             if (!empty($user) && !empty($password)) {
                 $httpHeader[] = 'Authorization: Basic ' . base64_encode($user . ':' . $password);
             }
-            if (count($httpHeader) > 0) {
-                curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
-            }
+            curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
             curl_setopt($session, CURLOPT_HEADER, false);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
@@ -306,15 +306,15 @@ class Easysdi_serviceHelper {
 
         $session = curl_init($completeurl);
         $httpHeader = array();
+        $httpHeader[]='Expect:';
         if (!empty($user) && !empty($password)) {
             $httpHeader[] = 'Authorization: Basic ' . base64_encode($user . ':' . $password);
         }
-        if (count($httpHeader) > 0) {
-            curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
-        }
+        curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
         curl_setopt($session, CURLOPT_HEADER, false);
         curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
+        
         $response = curl_exec($session);
         $http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
         curl_close($session);

@@ -57,7 +57,7 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
             $query = $db->getQuery(true)
                         ->update($db->quoteName('#__sdi_organism').' as o');
             foreach($dataOrganism as $prop => $val)
-                $query->set("`{$prop}`='{$val}'");
+                $query->set($db->quoteName($prop) . "='{$val}'");
 
             $query->where('o.id='.(int)$id);
             $db->setQuery($query);
@@ -72,7 +72,7 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
 
             $query = $db->getQuery(true)
                         ->insert($db->quoteName('#__sdi_organism_category_pricing_rebate'))
-                        ->columns('`organism_id`, `category_id`, `rebate`');
+                        ->columns($db->quoteName('organism_id'). ', ' .$db->quoteName('category_id') . ', ' .$db->quoteName('rebate'));
             foreach($dataCategories as $category_id => $rebate){
                 if("" === $rebate) continue;
                 $query->values("{$id}, {$category_id}, {$rebate}");

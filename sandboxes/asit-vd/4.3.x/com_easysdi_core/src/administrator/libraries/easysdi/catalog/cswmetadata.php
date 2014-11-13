@@ -994,7 +994,12 @@ class cswmetadata {
         // Configuration
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"'));
+        // cURL obeys the RFCs as it should. Meaning that for a HTTP/1.1 backend if the POST size is above 1024 bytes
+        // cURL sends a 'Expect: 100-continue' header. The server acknowledges and sends back the '100' status code.
+        // cuRL then sends the request body. This is proper behaviour. Nginx supports this header.
+        // This allows to work around servers that do not support that header.
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"','Expect:'));
+        // We're emptying the 'Expect' header, saying to the server: please accept the body right now.        
         curl_setopt($ch, CURLOPT_COOKIE, $cookies);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_ENCODING, "");
@@ -1017,7 +1022,7 @@ class cswmetadata {
 
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
-
+ 
         $output = curl_exec($ch);
         curl_close($ch);
 

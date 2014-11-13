@@ -136,9 +136,12 @@ if ($this->item) :
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>GUID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_RESOURCENAME'); ?></th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_VERSIONNAME'); ?></th>
+                                        <th>RESOURCETYPE_ID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_RESOURCETYPE'); ?></th>
+                                        <th>STATE_ID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_METADATASTATE'); ?></th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_REMOVE'); ?></th>
                                     </tr>
@@ -176,7 +179,6 @@ if ($this->item) :
             </div>
 
 <?php if($this->item->resourcetypechild): ?>
-        <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <div>
                 <?php echo $this->getToolbar(); ?>
             </div>

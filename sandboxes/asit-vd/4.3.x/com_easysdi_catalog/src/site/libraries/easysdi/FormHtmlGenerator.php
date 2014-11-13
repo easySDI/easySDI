@@ -854,7 +854,7 @@ class FormHtmlGenerator {
                     appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
                     lang: '" . $default . "',
                     outputLangs: [" . implode(',', $languages) . "],
-                    title: 'GEMET Thesaurus',
+                    title: '".JText::_('COM_EASYSDI_CATALOG_GEMET_THESAURUS_TITLE')."',
                     separator: ' > ',
                     returnPath: true,
                     returnInspire: true,
