@@ -132,6 +132,7 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
         </div>
 
         <input type="hidden" name="task" value="" />
+        
         <?php echo JHtml::_('form.token'); ?>
 
         <!-- Begin Sidebar -->

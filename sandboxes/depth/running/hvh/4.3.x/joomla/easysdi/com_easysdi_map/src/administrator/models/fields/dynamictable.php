@@ -49,6 +49,9 @@ class JFormFieldDynamicTable extends JFormField
                 $html[] = '<th class="text-center">';
                 $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_LEVELCODE');
                 $html[] = '</th>';
+                $html[] = '<th class="text-center" class="hasTip" title="">';
+                $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_DEFAULTLEVEL');
+                $html[] = '</th>';
                 $html[] = '</tr>';
                 $html[] = '</thead>';
                 $html[] = '<tbody>';

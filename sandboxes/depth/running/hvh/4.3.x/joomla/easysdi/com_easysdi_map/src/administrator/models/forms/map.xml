@@ -118,23 +118,23 @@
                 required="false"
                 filter="safehtml" />
         
-         <field 	name="centercoordinates" 
-                type="text" 
-                size="255" 
-                class="input-xxlarge"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_CENTERCOORDINATES"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_CENTERCOORDINATES" 
-                required="false"
-                filter="safehtml" />
+        <field 	name="centercoordinates" 
+                        type="text" 
+                        size="255" 
+                        class="input-xxlarge"
+                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_CENTERCOORDINATES"
+                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_CENTERCOORDINATES" 
+                        required="false"
+                        filter="safehtml" />
         
-         <field 	name="zoom" 
-                type="text" 
-                size="255" 
-                class="input-xxlarge"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_ZOOM"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_ZOOM" 
-                required="false"
-                filter="safehtml" />
+        <field 	name="zoom" 
+                        type="text" 
+                        size="255" 
+                        class="input-xxlarge"
+                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_ZOOM"
+                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_ZOOM" 
+                        required="false"
+                        filter="safehtml" />
                  
         <field 	name="rootnodetext" 
                 type="text" 
@@ -173,6 +173,7 @@
         <field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out_time" type="hidden" filter="unset" />
         <field name="asset_id" type="hidden" filter="SAFEHTML" />        
+        <field name="level" type="hidden" filter="SAFEHTML" />        
     </fieldset>
 
     <fieldset name="toolsstate">
@@ -269,39 +270,39 @@
             <option value="0">JNO</option>
         </field>
         <field name="tool15" type="radio" class="btn-group" default="0"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_MOUSEPOSITION"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_MOUSEPOSITION" 
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_MOUSEPOSITION"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_MOUSEPOSITION" 
         > 
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
         <field name="tool17" type="radio" class="btn-group" default="0"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_SEARCHCATALOG"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_SEARCHCATALOG" 
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_SEARCHCATALOG"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_SEARCHCATALOG" 
         > 
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
         
         <field name="tool18" type="radio" class="btn-group" default="0"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERDETAILSHEET"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERDETAILSHEET" 
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERDETAILSHEET"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERDETAILSHEET" 
         > 
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
         
         <field name="tool19" type="radio" class="btn-group" default="0"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERDOWNLOAD"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERDOWNLOAD" 
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERDOWNLOAD"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERDOWNLOAD" 
         > 
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
         
         <field name="tool20" type="radio" class="btn-group" default="0"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERORDER"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERORDER" 
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERORDER"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERORDER" 
         > 
             <option value="1">JYES</option>
             <option value="0">JNO</option>
@@ -318,7 +319,7 @@
                 translate="true" 
                 required="false"
                 query="SELECT null AS id, 'COM_EASYSDI_MAP_SELECT' AS name UNION SELECT id, name FROM #__sdi_catalog WHERE state=1" key_field="id" value_field="name"
-        /> 
+    /> 
     
     <fieldset name="scaleline">
         <field 	name="topOutUnits" 
@@ -390,14 +391,6 @@
     </fieldset>
 	
     <fieldset name="indoornavigation">
-        <field 	name="defaultlevel" 
-                type="text" 
-                size="255" 
-                class="inputbox"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_DEFAULTLEVEL"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_DEFAULTLEVEL" 
-                filter="safehtml" />
-        
         <field 	name="levellabel" 
                 type="DynamicTable"                 
                 label=""

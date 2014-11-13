@@ -203,11 +203,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $db->setQuery($query);
                 $indoornavigation = $db->loadResult();
                 if(!empty($indoornavigation)){
-                    $params = json_decode(stripslashes($indoornavigation));
-                    foreach ($params as $param) {
-                        foreach($param as $key => $value)
-                            $item->level[$key] = $value;
-                    }                    
+                    $item->level = stripslashes($indoornavigation);                   
                 }
                 
                 $item->services = array();
@@ -307,8 +303,6 @@ class Easysdi_mapModelmap extends JModelAdmin {
                         $tool = substr($key, 4);
                         $columns = array('map_id', 'tool_id', 'params');
                         
-//                        ($tool == '17')? $params = $data['catalog_id']: $params = 'NULL';   
-//                        $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
                         if($tool == '17'){
                             $params = $data['catalog_id'];
                             $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
@@ -377,8 +371,9 @@ class Easysdi_mapModelmap extends JModelAdmin {
             $i = 1;
             $indoornavigation = '';
             while (isset($_POST['jform']["code{$i}"])){
-                 $indoornavigation = (strlen($indoornavigation) > 0 )? $indoornavigation . ',': $indoornavigation;  
-                $indoornavigation .= '{\"'.$_POST['jform']["code{$i}"].'\":\"'.$_POST['jform']["label{$i}"].'\"}';      
+                $indoornavigation = (strlen($indoornavigation) > 0 )? $indoornavigation . ',': $indoornavigation;  
+                $indoornavigation .= '{\"code\": \"'.$_POST['jform']["code{$i}"].'\", \"label\":\"'.$_POST['jform']["label{$i}"].'\",\"defaultlevel\":\"'.$_POST['jform']["defaultlevel{$i}"].'\"}'; 
+                //$indoornavigation .= '{\"'.$_POST['jform']["code{$i}"].'\":\"'.$_POST['jform']["label{$i}"].'\"}';      
                 $i++;
             }
             $indoornavigation = (strlen($indoornavigation) > 0 )? '[' . $indoornavigation . ']': '';  
@@ -389,10 +384,10 @@ class Easysdi_mapModelmap extends JModelAdmin {
             $query->columns($query->quoteName($columns));
             $query->values(implode(',', $values));
             $db->setQuery($query);
-                        if (!$db->query()) {
-                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
-                            return false;
-                        }
+            if (!$db->query()) {
+                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                return false;
+            }
             
             //Service
             $services = $data['services'];
