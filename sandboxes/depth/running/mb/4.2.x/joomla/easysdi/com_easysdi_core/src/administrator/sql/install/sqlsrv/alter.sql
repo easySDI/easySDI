@@ -690,7 +690,9 @@ REFERENCES [#__sdi_namespace] ([id]);
 ALTER TABLE [#__sdi_sys_stereotype] CHECK CONSTRAINT [#__sdi_sys_stereotype$#__sdi_sys_stereotype_fk2];
 
 ALTER TABLE [#__sdi_translation]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1] FOREIGN KEY([language_id])
-REFERENCES [#__sdi_language] ([id]);
+REFERENCES [#__sdi_language] ([id])
+ON UPDATE CASCADE
+ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_translation] CHECK CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1];
 
