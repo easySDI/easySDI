@@ -649,6 +649,8 @@ CREATE TABLE #__sdi_maplayer (
     "asOLstyle" text,
     "asOLmatrixset" text,
     "asOLoptions" text,
+    isindoor integer,
+    levelfield character varying(255),
     metadatalink text,
     attribution character varying(255),
     accessscope_id bigint DEFAULT 1::bigint NOT NULL,

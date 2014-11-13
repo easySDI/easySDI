@@ -1011,6 +1011,8 @@ CREATE TABLE [#__sdi_maplayer](
 	[asOLstyle] [nvarchar](max) NULL,
 	[asOLmatrixset] [nvarchar](max) NULL,
 	[asOLoptions] [nvarchar](max) NULL,
+        [isindoor] [smallint] NULL,
+        [levelfield] [nvarchar](255) NULL,
 	[metadatalink] [nvarchar](max) NULL,
 	[attribution] [nvarchar](255) NULL,
 	[accessscope_id] [bigint] NOT NULL,

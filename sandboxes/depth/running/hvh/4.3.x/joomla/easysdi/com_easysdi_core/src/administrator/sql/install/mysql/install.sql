@@ -1925,6 +1925,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `asOLstyle` TEXT,
 `asOLmatrixset` TEXT,
 `asOLoptions` TEXT,
+`isindoor` TINYINT(1) NULL,
+`levelfield` VARCHAR(255) NULL ,
 `metadatalink` TEXT  ,
 `attribution` VARCHAR(255)   ,
 `accessscope_id` INT(11) UNSIGNED NOT NULL DEFAULT '1',
