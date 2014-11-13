@@ -1529,8 +1529,8 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_translation_fk1`
     FOREIGN KEY (`language_id` )
     REFERENCES `#__sdi_language` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
