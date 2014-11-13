@@ -373,6 +373,7 @@
                 <languages>
                     <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.pkg_easysdi.sys.ini</language>
                 </languages>
                 <updateservers>
                     <server type="collection">http://update.easysdi.org/packages/easysdi/manifest.xml</server>
