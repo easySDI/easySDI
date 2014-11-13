@@ -66,9 +66,17 @@ abstract class PhysicalService {
             }
 
             $session = curl_init($completeUrl);
+            $httpHeader = array();
+            // cURL obeys the RFCs as it should. Meaning that for a HTTP/1.1 backend if the POST size is above 1024 bytes
+            // cURL sends a 'Expect: 100-continue' header. The server acknowledges and sends back the '100' status code.
+            // cuRL then sends the request body. This is proper behaviour. Nginx supports this header.
+            // This allows to work around servers that do not support that header.
+            // We're emptying the 'Expect' header, saying to the server: please accept the body right now. 
+            $httpHeader [] = 'Expect:';
             if (!empty($this->user) && !empty($this->password)) {
-                curl_setopt($session, CURLOPT_HTTPHEADER, Array('Authorization: Basic ' . base64_encode($this->user . ':' . $this->password)));
+                $httpHeader[] = 'Authorization: Basic ' . base64_encode($this->user . ':' . $this->password);                
             }
+            curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
             curl_setopt($session, CURLOPT_HEADER, false);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
