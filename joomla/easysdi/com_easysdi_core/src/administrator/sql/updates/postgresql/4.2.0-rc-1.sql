@@ -1,16 +1,29 @@
-ALTER TABLE #__sdi_translation ADD UNIQUE unique_lang_element(element_guid, language_id);
+ALTER TABLE ONLY #__sdi_translation 
+    ADD COLUMN text3  character varying(255);
 
-ALTER TABLE #__sdi_translation ADD COLUMN text3  varchar(255) NULL AFTER text2;
+ALTER TABLE ONLY #__sdi_resourcetypelink 
+    DROP CONSTRAINT #__sdi_resourcetypelink_fk3;
 
-ALTER TABLE #__sdi_resourcetypelink DROP FOREIGN KEY #__sdi_resourcetypelink_fk3;
-ALTER TABLE #__sdi_resourcetypelink DROP COLUMN class_id;
+ALTER TABLE ONLY #__sdi_resourcetypelink 
+    DROP COLUMN class_id;
 
-ALTER TABLE #__sdi_resourcetypelink DROP FOREIGN KEY #__sdi_resourcetypelink_fk4;
-ALTER TABLE #__sdi_resourcetypelink DROP COLUMN attribute_id;
+ALTER TABLE ONLY #__sdi_resourcetypelink 
+    DROP CONSTRAINT #__sdi_resourcetypelink_fk4;
 
-ALTER TABLE #__sdi_resourcetype MODIFY modified_by int(11) NULL;
+ALTER TABLE ONLY #__sdi_resourcetypelink 
+    DROP COLUMN attribute_id;
 
-ALTER TABLE #__sdi_resourcetype MODIFY modified datetime NULL;
+ALTER TABLE ONLY #__sdi_assignment 
+    DROP FOREIGN KEY #__sdi_assignment_fk3;
+
+TRUNCATE TABLE #__sdi_assignment;
+
+ALTER TABLE ONLY #__sdi_assignment
+    ADD CONSTRAINT #__sdi_assignment_fk3 FOREIGN KEY (metadata_id) REFERENCES #__sdi_metadata(id) MATCH FULL ON DELETE CASCADE;
+
+INSERT INTO #__sdi_sys_rendertype VALUES 
+(7, 7, 1, 'datetime'),
+(8, 8, 1, 'gemet');
 
 ALTER TABLE #__sdi_resourcetypelink MODIFY modified_by int(11) NULL;
 
