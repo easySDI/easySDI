@@ -758,11 +758,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $metadata_ids = array($data['id']);
 
         if ($cascade) {
-            $query = $this->db->getQuery(true);
-            $query->select('m.id')
-                    ->from('#__sdi_versionlink vl')
-                    ->innerJoin('#__sdi_metadata m ON m.version_id=vl.child_id')
-                    ->where('parent_id=' . $data['id']);
+            $query = $this->db->getQuery(true)
+                    ->select('m.id')
+                    ->from('#__sdi_metadata a')
+                    ->innerJoin('#__sdi_versionlink vl ON vl.child_id=m.version_id')
+                    ->innerJoin('#__sdi_metadata md ON md.version_id=vl.parent_id')
+                    ->where('md.id='.(int)$data['id']);
             $this->db->setQuery($query);
             $metadata_ids = array_merge($metadata_ids, $this->db->loadColumn());
         }
@@ -858,9 +859,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         if (empty($versions[$version->id]->children)) {
-            $roles['hasChildren'] = 'false';
+            $roles['hasViralChildren'] = 'false';
         } else {
-            $roles['hasChildren'] = 'true';
+            $roles['hasViralChildren'] = 'true';
         }
 
         echo json_encode($roles);
