@@ -95,10 +95,6 @@ UPDATE [#__sdi_sys_accessscope] SET [ordering] = 2 WHERE [value] = 'category';
 UPDATE [#__sdi_sys_accessscope] SET [ordering] = 3 WHERE [value] = 'organism';
 UPDATE [#__sdi_sys_accessscope] SET [ordering] = 4 WHERE [value] = 'user';
 
-SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] ON;
-INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 4);
-SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
-
 SET IDENTITY_INSERT [#__sdi_sys_rendertype] ON;
 INSERT INTO [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES 
 (7, 7, 1, 'datetime'),
@@ -106,5 +102,5 @@ INSERT INTO [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES
 SET IDENTITY_INSERT [#__sdi_sys_rendertype] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] ON;
-INSERT INTO [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (22, 11, 8);
+INSERT INTO [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 8);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
