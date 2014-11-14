@@ -44,6 +44,7 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
 
         //Loadind js files
+       
         if (JDEBUG) {
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
@@ -93,6 +94,9 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
         }
 
+        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
+        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js');
+         
         foreach (glob(JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
             $doc->addScript(str_replace(JPATH_BASE, '', $file));
         }

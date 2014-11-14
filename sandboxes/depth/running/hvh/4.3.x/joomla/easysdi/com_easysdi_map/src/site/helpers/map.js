@@ -492,6 +492,13 @@ function getMapConfig() {
         }
     }
 
+var tip = new Ext.slider.Tip({
+    getThumbText: this.getThumbText,
+        getText: function(thumb){
+            return String.format('<b>Level {0}</b>', thumb.value);
+        }
+    });
+
     //TODO //If not cleared
     if (cleared == "false") {
         config.mapItems = [
@@ -503,7 +510,20 @@ function getMapConfig() {
             ,
             {
                 xtype: "sdi_gxp_scaleoverlay"
-            }
+            },
+            {
+               xtype: "sdi_indoorlevelslider",
+               value : 2,
+               minValue: 0,
+               maxValue: 10,
+               increment: 1,
+               plugins : new sdi.widgets.IndoorLevelSliderTip({template: '<div>Level: {level}</div>'}),
+               aggressive: true,
+               vertical: true,
+               height: 100,
+               x: 450,
+               y: 20
+           }
         ];
     }
 
