@@ -1140,7 +1140,7 @@ ALTER TABLE ONLY #__sdi_tilematrix_policy
 ALTER TABLE ONLY #__sdi_tilematrixset_policy
     ADD CONSTRAINT #__sdi_tilematrixset_policy_fk1 FOREIGN KEY (wmtslayerpolicy_id) REFERENCES #__sdi_wmtslayer_policy(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_translation
-    ADD CONSTRAINT #__sdi_translation_fk1 FOREIGN KEY (language_id) REFERENCES #__sdi_language(id) MATCH FULL;
+    ADD CONSTRAINT #__sdi_translation_fk1 FOREIGN KEY (language_id) REFERENCES #__sdi_language(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_user
     ADD CONSTRAINT #__sdi_user_fk1 FOREIGN KEY (user_id) REFERENCES #__users(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_user_role_resource

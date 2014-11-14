@@ -309,7 +309,7 @@ class FormHtmlGenerator {
         $aCollapse->setAttribute('class', 'btn btn-mini collapse-btn');
 
         $iCollapse = $this->formHtml->createElement('i');
-        $iCollapse->setAttribute('class', 'icon-white icon-arrow-down');
+        $iCollapse->setAttribute('class', 'icon-white icon-arrow-right');
 
         $aRemove = $this->formHtml->createElement('a');
         $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
@@ -854,7 +854,7 @@ class FormHtmlGenerator {
                     appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
                     lang: '" . $default . "',
                     outputLangs: [" . implode(',', $languages) . "],
-                    title: 'GEMET Thesaurus',
+                    title: '".JText::_('COM_EASYSDI_CATALOG_GEMET_THESAURUS_TITLE')."',
                     separator: ' > ',
                     returnPath: true,
                     returnInspire: true,
