@@ -42,8 +42,6 @@ js('document').ready(function() {
                     });
             });
             
-            console.log('addTooltips');
-            
             addTooltips();
 
             setRelationAction(button);
@@ -55,7 +53,6 @@ js('document').ready(function() {
 
             // Set attribute bouton state in data block
             js(data).find('.attribute-add-btn').each(function() {
-                //console.log(js(this));
                 setAttributeAction(js(this).parent());
             });
 
@@ -261,7 +258,6 @@ js('document').ready(function() {
         else {
             var required = false;
             js.each(brothers, function(i, brother) {
-                console.log(i + ' / ' + brothers.length);
                 if (brother.value !== '')
                     required = true;
 
@@ -301,13 +297,7 @@ js('document').ready(function() {
                     break;
                 case 'save':
                 case 'saveAndContinue':
-                    js('.required').removeClass('required').addClass('remove-required').removeAttr('required').removeAttr('aria-required');
-                    if (document.formvalidator.isValid(form)) {
-                        Joomla.submitform(task, form);
-                    } else {
-                        js('.remove-required').removeClass('remove-required').addClass('required').attr('aria-required', 'true').attr('required', 'required');
-                        js('html, body').animate({scrollTop: 0}, 'slow');
-                    }
+                    Joomla.submitform(task, form);
                     return true;
                     break;
                 case 'control':
@@ -518,27 +508,23 @@ function setRelationAction(element) {
 
     var occurance = js('.fds' + uuid).length;
 
-    console.log(js(element));
-    console.log(lowerbound);
-    console.log(upperbound);
-    console.log(occurance);
-
     if (occurance == upperbound) {
-        /*console.log('hide add #add-btn'+uuid);*/
         js('#add-btn' + uuid).hide();
     }
 
     if (occurance == lowerbound) {
-        /*console.log('hide remove');*/
         js('.fds' + uuid + ' a.remove-btn').hide();
     }
 
     if (occurance < upperbound) {
         js('#add-btn' + uuid).show();
     }
+    
+    if(occurance > lowerbound){
+        js('.fds' + uuid + ' a.remove-btn').show();
+    }
 
     if (occurance < upperbound && occurance > lowerbound) {
-        /*console.log('show all');*/
         js('#add-btn' + uuid).show();
         js('.fds' + uuid + ' a.remove-btn').show();
     }
@@ -549,10 +535,6 @@ function setAttributeAction(element) {
     var lowerbound = js(element).attr('data-lowerbound');
     var buttonclass = js(element).attr('data-button-class');
     var occurance = js('.attribute-action' + buttonclass).length;
-
-    /*console.log(js(element));
-     console.log(upperbound);
-     console.log(lowerbound);*/
 
     if (occurance == 1) {
         js('.attribute-action' + buttonclass + '>a.attribute-add-btn').show();
@@ -577,7 +559,7 @@ function searchResource(task) {
     js('input[name="task"]').val(task);
 
     js.ajax({
-        url: baseUrl + task,
+        url: baseUrl + 'option=com_easysdi_catalog&task=' + task,
         type: js('#form_search_resource').attr('method'),
         data: js('#form_search_resource').serialize(),
         success: function(data) {
@@ -599,7 +581,7 @@ function searchResource(task) {
 function importSwitch(task) {
     var actions = task.split('.');
 
-    js.get(baseUrl + 'task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
         var response = js.parseJSON(data);
 
         if (response.success) {
@@ -619,13 +601,11 @@ function importSwitch(task) {
 function toogleAll(button) {
     if (tabIsOpen) {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
-        //console.log('ferme tout');
         js('.inner-fds').hide();
         js('.collapse-btn>i').removeClass('icon-arrow-down');
         js('.collapse-btn>i').addClass('icon-arrow-right');
         tabIsOpen = false;
     } else {
-        //console.log('ouvre tout');
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
         js('.collapse-btn>i').removeClass('icon-arrow-right');
@@ -733,7 +713,8 @@ function chosenRefresh() {
 }
 
 function filterBoundary(parentPath, value) {
-
+    if(value == '') return;
+    
     js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
 
         var response = js.parseJSON(data);
@@ -763,6 +744,8 @@ function filterBoundary(parentPath, value) {
 }
 
 function setBoundary(parentPath, value) {
+    if(value == '') return;
+    
     js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');

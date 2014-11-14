@@ -540,7 +540,11 @@ var getChildNumber = function(element){
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     try{
-        js.get(Links.ajax.child_number.replace('#0#', version.id), function(data){
+        js.ajax({
+            cache: false,
+            type: 'GET',
+            url: Links.ajax.child_number.replace('#0#', version.id)
+        }).done(function(data){
             var response = js.parseJSON(data);
             if(response.success == "true"){
                 js(element).find('span').html(response.num);
@@ -561,7 +565,11 @@ var getChildNumber = function(element){
 var getNewVersionRight = function(element){
     if(element.length === 0) return;
     
-    js.get(Links.ajax.new_version.replace('#0#', getMetadataId(element)), function(data){
+    js.ajax({
+        cache: false,
+        type: 'GET',
+        url: Links.ajax.new_version.replace('#0#', getMetadataId(element))
+    }).done(function(data){
         var response = js.parseJSON(data);
         if(response.canCreate === false){
             var message = '';
@@ -600,7 +608,11 @@ var getSynchronizationInfo = function(element, children){
     var metadata = version.metadata();
     
     if(readyForSync && version.child_number > 0){
-        js.get(Links.ajax.synchronization.replace('#0#', metadata.id), function(data){
+        js.ajax({
+            cache: false,
+            type: 'GET',
+            url: Links.ajax.synchronization.replace('#0#', metadata.id)
+        }).done(function(data){
             var response = js.parseJSON(data);
             
             if(response.synchronized === true){
@@ -626,7 +638,11 @@ var getPublishRight = function(element){
     if(element.length === 0) return;
     
     var metadata_id = getMetadataId(element);
-    js.get(Links.ajax.publish_right.replace('#0#', metadata_id), function(data){
+    js.ajax({
+        cache: false,
+        type: 'GET',
+        url: Links.ajax.publish_right.replace('#0#', metadata_id)
+    }).done(function(data){
         var response = js.parseJSON(data);
         if(response !== null && response.canPublish>0)
             js(element)
@@ -646,7 +662,11 @@ var getPublishRight = function(element){
 var getSetInProgressRight = function(element){
     if(element.length === 0) return;
     
-    js.get(Links.ajax.inprogress_right.replace('#0#', getVersionId(element)).replace('#1#', metadataState.PUBLISHED), function(data){
+    js.ajax({
+        cache: false,
+        type: 'GET',
+        url: Links.ajax.inprogress_right.replace('#0#', getVersionId(element)).replace('#1#', metadataState.PUBLISHED)
+    }).done(function(data){
         var response = js.parseJSON(data);
         if(response.num>0){
             js(element)
@@ -676,7 +696,11 @@ var showDeleteModal = function(element){
     if(element.length === 0) return;
     
     var version_id = getVersionId(element);
-    js.get(Links.ajax.delete_child.replace('#0#', version_id), function(data){
+    js.ajax({
+        cache: false,
+        type: 'GET',
+        url: Links.ajax.delete_child.replace('#0#', version_id)
+    }).done(function(data){
         var response = js.parseJSON(data);
         var ul = buildVersionsTree(response.versions);
         js('#deleteModalChildrenList').html(ul);
@@ -689,7 +713,11 @@ var showAssignmentModal = function(element){
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     
-    js.get(Links.ajax.get_roles.replace('#0#', version.id), function(data){
+    js.ajax({
+        cache: false,
+        type: 'GET',
+        url: Links.ajax.get_roles.replace('#0#', version.id)
+    }).done(function(data){
         var roles = js.parseJSON(data);
         js('#assigned_to').empty();
         for(var user_id in roles[4].users)
@@ -710,7 +738,11 @@ var showPublishModal = function(element){
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
-    js.get(Links.ajax.publicable_child.replace('#0#', version.id), function(data) {
+    js.ajax({
+        cache: false,
+        type: 'GET',
+        url: Links.ajax.publicable_child.replace('#0#', version.id)
+    }).done(function(data) {
         var response = js.parseJSON(data);
         js('#publishModalChildrenList').html(buildVersionsTree(response.versions));
         
