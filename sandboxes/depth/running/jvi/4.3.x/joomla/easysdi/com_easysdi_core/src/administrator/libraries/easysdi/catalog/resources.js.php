@@ -179,12 +179,14 @@ var Version = (function(){
 
 var Resource = (function(){
     
-    function Resource(id, name, type){
+    function Resource(id, name, type, typeAlias, accessscope){
         var versions = [];
         
         this.id = id;
         this.name = name;
         this.type = type;
+        this.typeAlias = typeAlias;
+        this.accessscope = accessscope;
         this.rights = {
             metadataEditor:         false,
             metadataResponsible:    false,
@@ -239,7 +241,7 @@ var Resource = (function(){
 }());
 
 <?php foreach ($this->items as $item) : ?>
-    var resource = new Resource(<?php echo $item->id;?>, '<?php echo $item->name; ?>', '<?php echo $item->resourcetype_name; ?>');
+    var resource = new Resource(<?php echo $item->id;?>, '<?php echo $item->name; ?>', '<?php echo $item->resourcetype_name; ?>', '<?php echo $item->resourcetype_alias; ?>', '<?php echo $item->accessscope; ?>');
     <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>resource.rights.metadataEditor = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>resource.rights.metadataResponsible = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>resource.rights.resourceManager = 1;<?php endif; ?>
@@ -395,7 +397,8 @@ var buildManagementDropDown = function(resource){
         if(resource.support.application)
             section.push(buildDropDownItem(resource, 'management.application'));
         
-        dropdown.push(section);
+        if(section.length)
+            dropdown.push(section);
     }
     
     /* SECOND SECTION */
@@ -771,27 +774,15 @@ var showPublishModal = function(element){
     });
 };*/
 
-var buildActionsCell = function(resource, reload){
-    reload = reload || false;
-    
+var buildActionsCell = function(resource){
     buildMetadataDropDown(resource);
     buildManagementDropDown(resource);
     
-    // Performs some action on dropdowns links initialisation
-    /*if(!reload){ // for all lines
-        js('a[id$=_child_list]').each(function(){getChildNumber(this);});
-        js('a[id$=_new_version]').each(function(){getNewVersionRight(this);});
-        js('a[id$=_publish]').each(function(){getPublishRight(this);});
-        js('a[id$=_inprogress]').each(function(){getSetInProgressRight(this);});
-        SqueezeBox.assign(js('a[id$=_preview]'));
-    }
-    else{*/ // for the re-generated line only
-        getChildNumber(js('a#'+resource.id+'_child_list'));
-        getNewVersionRight(js('a#'+resource.id+'_new_version'));
-        getPublishRight(js('a#'+resource.id+'_publish'));
-        getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
-        SqueezeBox.assign(js('a#'+resource.id+'_preview'));
-    //}
+    getChildNumber(js('a#'+resource.id+'_child_list'));
+    getNewVersionRight(js('a#'+resource.id+'_new_version'));
+    getPublishRight(js('a#'+resource.id+'_publish'));
+    getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
+    SqueezeBox.assign(js('a#'+resource.id+'_preview'));
 };
 
 js(document).ready(function(){
@@ -804,6 +795,8 @@ js(document).ready(function(){
             buildStatusCell(resource);
             
             buildActionsCell(resource);
+            
+            js('#'+resource.id+'_resource').addClass('resourcetype_'+resource.typeAlias).addClass('accessscope_'+resource.accessscope).show();
         }
     });
     
@@ -815,6 +808,15 @@ js(document).ready(function(){
     js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
     
     js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
+    
+    var ordering = js('#resources_ordering').html();
+    
+    js(document).on('click', 'th#resources_name', function(){
+        js('#filter_ordering').val( ordering === 'ASC' ? 'DESC' : 'ASC');
+        js('form#criterias').submit();
+    }).on('mouseover', 'th#resources_name', function(){js(this).css('cursor', 'pointer')});
+    
+    js('#resources_ordering').html('&nbsp;').css('background', js('#resources_ordering').css('background').replace(/_\w{3,4}\.png/, '_'+ordering.toLowerCase()+'.png'));
     
     // Fix action's link style
     js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});

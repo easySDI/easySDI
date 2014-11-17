@@ -66,6 +66,11 @@ class Easysdi_coreModelResources extends JModelList {
 
         $search = $app->getUserStateFromRequest($this->context . '.filter.resourcetype', 'filter_resourcetype');
         $this->setState('filter.resourcetype', $search);
+
+        $search = $app->getUserStateFromRequest($this->context . '.filter.ordering', 'filter_ordering');
+        if($search === null)
+            $search = 'ASC';
+        $this->setState('filter.ordering', $search);
         
         if (empty($ordering)) {
             $ordering = 'a.ordering';
@@ -92,9 +97,13 @@ class Easysdi_coreModelResources extends JModelList {
         // Select the required fields from the table.
         $query->select('a.id, a.guid, a.alias, a.name');
         $query->from('#__sdi_resource AS a');
+        
+        // Join over the foreign key 'accessscope_id'
+        $query->select('ac.value as accessscope')
+                ->join('LEFT', '#__sdi_sys_accessscope AS ac ON ac.id=a.accessscope_id');
 
         // Join over the foreign key 'resourcetype_id'
-        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning,'. $query->quoteName('rt.view') .' as supportview, rt.diffusion as supportdiffusion, rt.application as supportapplication');
+        $query->select('trans.text1 AS resourcetype_name, rt.alias as resourcetype_alias, rt.versioning as versioning,'. $query->quoteName('rt.view') .' as supportview, rt.diffusion as supportdiffusion, rt.application as supportapplication');
         $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
@@ -178,8 +187,8 @@ class Easysdi_coreModelResources extends JModelList {
                 $query->where('md.metadatastate_id = ' . $status);
             }
         }
-             
-        $query->order('a.name');
+        
+        $query->order('a.name '.$this->getState('filter.ordering'));
 
         return $query;
     }
