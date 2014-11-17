@@ -835,3 +835,19 @@ INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('1', '1
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('2', '2', '1', 'fee without a pricing profile');
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('3', '3', '1', 'fee with a pricing profile');
 SET IDENTITY_INSERT [#__sdi_sys_pricing] OFF;
+
+SET IDENTITY_INSERT [#__sdi_sys_server] ON
+INSERT [#__sdi_sys_server] ([id], [ordering], [state], [value]) VALUES ('1', '1', '1', N'geoserver');
+INSERT [#__sdi_sys_server] ([id], [ordering], [state], [value]) VALUES ('2', '2', '1', N'arcgisserver');
+SET IDENTITY_INSERT [#__sdi_sys_server] OFF
+
+SET IDENTITY_INSERT [#__sdi_sys_server_serviceconnector] ON
+INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('1', '1', '2');
+INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('2', '1', '3');
+INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('3', '1', '4');
+INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('4', '1', '5');
+INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('5', '1', '11');
+INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('6', '2', '2');
+INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('7', '2', '4');
+INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('8', '2', '5');
+SET IDENTITY_INSERT [#__sdi_sys_server_serviceconnector] OFF

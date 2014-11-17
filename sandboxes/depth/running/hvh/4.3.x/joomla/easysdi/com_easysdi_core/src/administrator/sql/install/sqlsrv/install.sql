@@ -4329,4 +4329,29 @@ ALTER TABLE [users] ADD  DEFAULT '1' FOR [ENABLED];
 
 ALTER TABLE [users] ADD  DEFAULT '0' FOR [LOCKED];
 
+SET QUOTED_IDENTIFIER ON;
+CREATE TABLE [#__sdi_sys_server](
+	[id] [bigint] IDENTITY(4,1) NOT NULL,
+	[ordering] [int] NOT NULL,
+	[state] [int] NOT NULL,
+	[value] [nvarchar](150) NOT NULL,
+ CONSTRAINT [PK_#__sdi_sys_server] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+CREATE TABLE [#__sdi_sys_server_serviceconnector](
+	[id] [bigint] IDENTITY(12,1) NOT NULL,
+	[server_id] [bigint] NOT NULL,
+	[serviceconnector_id] [bigint] NOT NULL,
+ CONSTRAINT [PK_#__sdi_sys_server_serviceconnector] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
+SET ANSI_NULLS ON;
+
 

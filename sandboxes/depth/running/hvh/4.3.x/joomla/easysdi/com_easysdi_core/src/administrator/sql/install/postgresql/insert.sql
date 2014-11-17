@@ -749,3 +749,15 @@ INSERT INTO statuses ("ID_STATUS", "NAME") VALUES (4, 'NOT_TESTED');
 
 INSERT INTO users ("LOGIN", "PASSWORD", "ID_ROLE", "EXPIRATION", "ENABLED", "LOCKED") VALUES ('Admin', 'adm', 1, NULL, 1, 0);
 INSERT INTO users ("LOGIN", "PASSWORD", "ID_ROLE", "EXPIRATION", "ENABLED", "LOCKED") VALUES ('user', 'usr', 2, NULL, 1, 0);
+
+INSERT INTO #__sdi_sys_server (ordering, state, value) VALUES (1, 1, 'geoserver');
+INSERT INTO #__sdi_sys_server (ordering, state, value) VALUES (2, 1, 'arcgisserver');
+
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('1', '1', '2');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('2', '1', '3');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('3', '1', '4');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('4', '1', '5');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('5', '1', '11');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('6', '2', '2');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('7', '2', '4');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('8', '2', '5');

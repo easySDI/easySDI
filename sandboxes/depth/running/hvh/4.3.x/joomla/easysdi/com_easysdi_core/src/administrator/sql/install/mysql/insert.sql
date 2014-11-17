@@ -740,3 +740,14 @@ VALUES
 ('2', '9adc6d4e-262a-d6e4-e152-6de437ba80ed', 'myperimeter', '356', '2013-07-23 09:16:11','2', '1', 'My perimeter', '',1,1)
 ;
 
+INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','geoserver' );
+INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','arcgisserver' );
+
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('1', '1', '2');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('2', '1', '3');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('3', '1', '4');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('4', '1', '5');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('5', '1', '11');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('6', '2', '2');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('7', '2', '4');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('8', '2', '5');

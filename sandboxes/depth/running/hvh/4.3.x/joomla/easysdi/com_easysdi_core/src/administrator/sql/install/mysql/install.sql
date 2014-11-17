@@ -3140,3 +3140,17 @@ CREATE TABLE IF NOT EXISTS `#__sdi_monitor_exports` (
                   PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_server` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` int(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_server_serviceconnector` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`server_id` INT(11)  NOT NULL ,
+`serviceconnector_id` int(11)  NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

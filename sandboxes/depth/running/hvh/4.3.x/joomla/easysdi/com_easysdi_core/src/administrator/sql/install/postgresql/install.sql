@@ -2325,6 +2325,25 @@ CREATE TABLE users (
     "LOCKED" integer DEFAULT 0 NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS #__sdi_sys_server (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    ordering integer DEFAULT 1 NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
+    value character varying(150) NOT NULL
+    PRIMARY KEY (id)  
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_sys_server_serviceconnector (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    server_id INT(11) UNSIGNED,
+    serviceconnector_id INT(11) UNSIGNED,
+    PRIMARY KEY (id),
+  KEY #__sdi_sys_server_serviceconnector_fk1 (server_id),
+  KEY #__sdi_sys_server_serviceconnector_fk2 (serviceconnector_id),
+  CONSTRAINT #__sdi_sys_server_serviceconnector_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT #__sdi_sys_server_serviceconnector_fk2 FOREIGN KEY (serviceconnector_id) REFERENCES #__sdi_sys_serviceconnector (id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
 
 
 
