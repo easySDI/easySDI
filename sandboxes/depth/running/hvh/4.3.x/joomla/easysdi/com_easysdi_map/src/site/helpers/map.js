@@ -11,14 +11,14 @@ Ext.onReady(function() {
     window.appname = new gxp.Viewer(getMapConfig());
     //Add the mouseposition control if activated in the map configuration
     //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
-    if (mouseposition == 1) {
+    if (mouseposition === 'true') {
         window.appname.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());
     }
     var locator = null;
     window.appname.on("ready", function() {
         window.appname.portalConfig.renderTo = "sdiNewContainer";
-        if (data.urlwfslocator != "") {
-            if (locator == null) {
+        if (data.urlwfslocator !== "") {
+            if (locator === null) {
                 locator = {xtype: "gxp_autocompletecombo",
                     listeners: {
                         select: function(list, record) {
@@ -42,7 +42,7 @@ Ext.onReady(function() {
         loadingMask.hide();
     });
 
-    if (cleared == "false") {
+    if (cleared === "false") {
         SdiScaleLineParams = {
             bottomInUnits: data.bottomInUnits,
             bottomOutUnits: data.bottomOutUnits,
@@ -100,7 +100,7 @@ function getMapConfig() {
     var layertreeactivated = false;
     if (data.tools !== null && data.tools.length > 0) {
         for (index = 0; index < data.tools.length; ++index) {
-            if (data.tools[index].alias == 'layertree') {
+            if (data.tools[index].alias === 'layertree') {
                 config.portalConfig.items.push({
                     id: "westpanel",
                     xtype: "panel",
@@ -116,7 +116,7 @@ function getMapConfig() {
                 });
                 layertreeactivated = true;
             }
-            if (data.tools[index].alias == 'getfeatureinfo') {
+            if (data.tools[index].alias === 'getfeatureinfo') {
                 config.portalConfig.items.push(
                         {
                             id: "hiddentbar",
@@ -126,11 +126,11 @@ function getMapConfig() {
                             height: 0,
                             region: "south",
                             items: []
-                        })
+                        });
             }
         }
     }
-    if (layertreeactivated == false) {
+    if (layertreeactivated === false) {
         config.portalConfig.items.push(
                 {
                     id: "westpanel",
@@ -195,7 +195,7 @@ function getMapConfig() {
                 config.tools.push(tool);
                 break;
             case 'zoomtoextent':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {
                         ptype: "gxp_zoomtoextent",
                         actionTarget: "map.tbar"
@@ -218,7 +218,7 @@ function getMapConfig() {
                 config.tools.push(tool);
                 break;
             case 'addlayer':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {
                         ptype: "gxp_addlayers",
                         actionTarget: "tree.tbar"
@@ -227,7 +227,7 @@ function getMapConfig() {
                 }
                 break;
             case 'searchcatalog':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {
                         ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar",
@@ -239,7 +239,7 @@ function getMapConfig() {
                 }
                 break;
             case 'layerdetailsheet':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {
                         ptype: "sdi_layerdetailsheet",
                         actionTarget: ["tree.contextMenu"],
@@ -250,7 +250,7 @@ function getMapConfig() {
                 }
                 break;
             case 'layerdownload':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {ptype: "sdi_layerdownload",
                         actionTarget: ["tree.contextMenu"],
                         iwidth: mwidth,
@@ -259,7 +259,7 @@ function getMapConfig() {
                 }
                 break;
             case 'layerorder':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {ptype: "sdi_layerorder",
                         actionTarget: ["tree.contextMenu"],
                         iwidth: mwidth,
@@ -268,14 +268,14 @@ function getMapConfig() {
                 }
                 break;
             case 'removelayer':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {ptype: "gxp_removelayer",
                         actionTarget: ["tree.contextMenu"]};
                     config.tools.push(tool);
                 }
                 break;
             case 'layerproperties':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {ptype: "gxp_layerproperties",
                         id: "layerproperties",
                         actionTarget: ["tree.contextMenu"]};
@@ -290,7 +290,7 @@ function getMapConfig() {
                     format: "' . $tool->params . '",
                     actionTarget: "hiddentbar",
                     defaultAction: 0
-                }
+                };
                 config.tools.push(tool);
                 break;
             case 'googlegeocoder':
@@ -298,11 +298,11 @@ function getMapConfig() {
                 var tool = {
                     ptype: "gxp_googlegeocoder",
                     outputTarget: "map.tbar"
-                }
+                };
                 config.tools.push(tool);
                 break;
             case 'print':
-                if (params.printserviceurl != null) {
+                if (params.printserviceurl !== null) {
                     config.tools.push({actions: ["-"], actionTarget: "map.tbar"});
                     var tool = {
                         ptype: "sdi_gxp_print",
@@ -312,17 +312,17 @@ function getMapConfig() {
                         actionTarget: "map.tbar",
                         showButtonText: false
                     };
-                    if (params.printserviceprinturl == '') {
+                    if (params.printserviceprinturl === '') {
                         tool.printURL = params.printserviceurl + 'print.pdf';
                     }
                     ;
-                    if (params.printserviceprinturl == '') {
+                    if (params.printserviceprinturl === '') {
                         tool.printURL = params.printserviceurl + 'print.pdf';
                     } else {
                         tool.printURL = params.printserviceprinturl;
                     }
                     ;
-                    if (params.printservicecreateurl == '') {
+                    if (params.printservicecreateurl === '') {
                         tool.printURL = params.printserviceurl + 'create.json';
                     } else {
                         tool.printURL = params.printservicecreateurl;
@@ -342,7 +342,7 @@ function getMapConfig() {
     config.sources = {"ol": {ptype: "sdi_gxp_olsource"}};
 
     for (index = 0; index < services.length; ++index) {
-        if (services[index].url != null) {
+        if (services[index].url !== null) {
             config.sources[services[index].alias] = {ptype: services[index].ptype, url: services[index].url};
         }
         else {
@@ -365,7 +365,7 @@ function getMapConfig() {
         config.map["restrictedExtent"] = JSON.parse("[" + data.restrictedextent + "]");
     if (data.zoom)
         config.map["zoom"] = data.zoom;
-    if (cleared == "true") {
+    if (cleared === "true") {
         config.map.controls = [];
     }
 
@@ -471,22 +471,22 @@ function getMapConfig() {
                 };
                 if (layer.attribution) {
                     overlay.attribution = layer.attribution;
-                }
+                };
                 if (layer.fixed) {
                     overlay.fixed = layer.fixed;
-                }
+                };
                 if (layer.href) {
                     overlay.href = layer.href;
-                }
-                ;
+                };                
                 if (layer.download) {
                     overlay.download = layer.download;
-                }
-                ;
+                };
                 if (layer.order) {
                     overlay.order = layer.order;
-                }
-                ;
+                };
+                if(layer.levelfield){
+                    overlay.levelfield = layer.levelfield;
+                };
                 config.map.layers.push(overlay);
                 break;
         }
@@ -500,25 +500,38 @@ var tip = new Ext.slider.Tip({
     });
 
     //TODO //If not cleared
-    if (cleared == "false") {
+    if (cleared === "false") {
         config.mapItems = [
             {
                 xtype: "gx_zoomslider",
+                aggressive: true,
                 vertical: true,
                 height: 100
             }
             ,
             {
                 xtype: "sdi_gxp_scaleoverlay"
-            },
+            }
+            ,
+//            {
+//                xtype: "gx_opacityslider",
+//                layer: "brgmwms_SCAN_D_GEOL50",
+//                changeVisibility: true,
+//                aggressive: true,
+//                vertical: true,
+//                height: 120,
+//                x: 10,
+//                y: 10
+//            },
             {
                xtype: "sdi_indoorlevelslider",
                value : 2,
                minValue: 0,
-               maxValue: 10,
+               maxValue: 100,
                increment: 1,
+               isFormField: true,
                plugins : new sdi.widgets.IndoorLevelSliderTip({template: '<div>Level: {level}</div>'}),
-               aggressive: true,
+               aggressive: false,
                vertical: true,
                height: 100,
                x: 450,

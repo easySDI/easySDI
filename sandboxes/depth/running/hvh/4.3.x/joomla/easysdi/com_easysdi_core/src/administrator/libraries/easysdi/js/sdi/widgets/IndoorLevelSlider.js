@@ -43,29 +43,13 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     value: null,
 
-    /** api: config[inverse]
-     *  ``Boolean``
-     *  If true, we will work with transparency instead of with opacity.
-     *  Defaults to false.
-     */
-    /** private: property[inverse]
-     *  ``Boolean``
-     */
-    inverse: false,
 
     /** private: method[constructor]
      *  Construct the component.
      */
     constructor: function(config) {
-        if(config.map){
-            this.map = config.map;
-            // before we call getOpacityValue inverse should be set
-            if (config.inverse !== undefined) {
-                this.inverse = config.inverse;
-            }
-            config.value = (config.value !== undefined) ? 
-                config.value : config.minValue;            
-        }
+        config.value = (config.value !== undefined) ? config.value : config.minValue;            
+
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
 
@@ -75,13 +59,18 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
     initComponent: function() {
         sdi.widgets.IndoorLevelSlider.superclass.initComponent.call(this);
 
+        if(this.map) {
+            if(this.map instanceof GeoExt.MapPanel) {
+                this.map = this.map.map;
+            }
+            this.bind(this.map);
+        }
         if (this.aggressive === true) {
-            this.on('change', this.changeIndoorLevel, this, {
-                buffer: this.delay
-            });
+            this.on('change', this.changeIndoorLevel, this);
         } else {
             this.on('changecomplete', this.changeIndoorLevel, this);
         }
+        this.on("beforedestroy", this.unbind, this);   
     },
 
     /** private: method[changeLayerOpacity]
@@ -90,9 +79,16 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *
      *  Updates the ``OpenLayers.Layer`` opacity value.
      */
-    changeIndoorLevel: function(slider, value) {        
-
-            this.setValue(value);
+    changeIndoorLevel: function(slider, value) {
+            var layers = this.map.layers;
+            for (var a = 0; a < layers.length; a++) 
+            {         
+                if(layers[a].levelfield) {
+                    var result = layers[a].redraw(true);
+                }       
+            };
+            
+            
     },
 
     /** private: method[addToMapPanel]
@@ -112,6 +108,9 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                     mousedown: this.stopMouseEvents,
                     click: this.stopMouseEvents
                 });
+            },
+            afterrender: function() {
+                this.bind(panel.map);
             },
             scope: this
         });
@@ -137,6 +136,28 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     stopMouseEvents: function(e) {
         e.stopEvent();
+    },
+    
+    /** private: method[bind]
+     *  :param map: ``OpenLayers.Map``
+     */
+    bind: function(map) {
+        this.map = map;
+        this.map.events.on({
+            
+            scope: this
+        });
+        
+    },
+    /** private: method[unbind]
+     */
+    unbind: function() {
+        if(this.map && this.map.events) {
+            this.map.events.un({
+                
+                scope: this
+            });
+        }
     }
 });
 

@@ -21,7 +21,7 @@ abstract class Easysdi_mapHelper {
         //The goal is to have a clean map to use as a simple and quick data preview
         if ($cleared) {
             $item->tools = array();
-            $item->urlwfslocator = null;
+            $item->urlwfslocator = "";
         }
 
 
@@ -183,9 +183,10 @@ abstract class Easysdi_mapHelper {
         }
 
         //Mouseposition
+        $mouseposition = 'false';
         foreach ($item->tools as $tool) {
             if ($tool->alias == 'mouseposition') {
-                $mouseposition = true;                
+                $mouseposition = 'true';                
                 break;
             }
         }
@@ -203,7 +204,7 @@ abstract class Easysdi_mapHelper {
         $data->srs = $item->srs;
         $data->maxextent = $item->maxextent;
         $data->maxresolution = $item->maxresolution;
-        $data->units = $item->units;
+        $data->units = $item->unit;
         $data->centercoordinates = $item->centercoordinates;
         $data->restrictedextent = $item->restrictedextent;
         $data->zoom = $item->zoom;
@@ -350,6 +351,10 @@ abstract class Easysdi_mapHelper {
 
     public static function getLayerDescriptionObject($layer, $group) {
         $obj = new stdClass();
+        if ($layer->isindoor == 1):
+                $obj->isindoor = 1;
+                $obj->levelfield = $layer->levelfield;
+            endif;
         if ($layer->asOL) {
             $obj->source = "ol";
 
