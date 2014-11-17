@@ -297,13 +297,7 @@ js('document').ready(function() {
                     break;
                 case 'save':
                 case 'saveAndContinue':
-                    js('.required').removeClass('required').addClass('remove-required').removeAttr('required').removeAttr('aria-required');
-                    if (document.formvalidator.isValid(form)) {
-                        Joomla.submitform(task, form);
-                    } else {
-                        js('.remove-required').removeClass('remove-required').addClass('required').attr('aria-required', 'true').attr('required', 'required');
-                        js('html, body').animate({scrollTop: 0}, 'slow');
-                    }
+                    Joomla.submitform(task, form);
                     return true;
                     break;
                 case 'control':
@@ -525,6 +519,10 @@ function setRelationAction(element) {
     if (occurance < upperbound) {
         js('#add-btn' + uuid).show();
     }
+    
+    if(occurance > lowerbound){
+        js('.fds' + uuid + ' a.remove-btn').show();
+    }
 
     if (occurance < upperbound && occurance > lowerbound) {
         js('#add-btn' + uuid).show();
@@ -561,7 +559,7 @@ function searchResource(task) {
     js('input[name="task"]').val(task);
 
     js.ajax({
-        url: baseUrl + task,
+        url: baseUrl + 'option=com_easysdi_catalog&task=' + task,
         type: js('#form_search_resource').attr('method'),
         data: js('#form_search_resource').serialize(),
         success: function(data) {
@@ -583,7 +581,7 @@ function searchResource(task) {
 function importSwitch(task) {
     var actions = task.split('.');
 
-    js.get(baseUrl + 'task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
         var response = js.parseJSON(data);
 
         if (response.success) {
@@ -604,14 +602,12 @@ function toogleAll(button) {
     if (tabIsOpen) {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
         js('.inner-fds').hide();
-        js('.collapse-btn>i').removeClass('icon-arrow-down');
-        js('.collapse-btn>i').addClass('icon-arrow-right');
+        js('.collapse-btn>i').removeClass('icon-arrow-down').addClass('icon-arrow-right');        
         tabIsOpen = false;
     } else {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
-        js('.collapse-btn>i').removeClass('icon-arrow-right');
-        js('.collapse-btn>i').addClass('icon-arrow-down');
+        js('.collapse-btn>i').removeClass('icon-arrow-right').addClass('icon-arrow-down');        
         tabIsOpen = true;
     }
 }
@@ -715,7 +711,8 @@ function chosenRefresh() {
 }
 
 function filterBoundary(parentPath, value) {
-
+    if(value == '') return;
+    
     js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
 
         var response = js.parseJSON(data);
@@ -745,6 +742,8 @@ function filterBoundary(parentPath, value) {
 }
 
 function setBoundary(parentPath, value) {
+    if(value == '') return;
+    
     js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
