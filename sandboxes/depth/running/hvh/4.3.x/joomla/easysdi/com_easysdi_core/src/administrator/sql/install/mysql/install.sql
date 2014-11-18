@@ -568,6 +568,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
 `serviceusername` VARCHAR(150)  ,
 `servicepassword` VARCHAR(150)  ,
 `catid` INT(11)  NOT NULL ,
+`server_id` INT(11)  NULL ,
 `params` VARCHAR(1024)   ,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10)   ,

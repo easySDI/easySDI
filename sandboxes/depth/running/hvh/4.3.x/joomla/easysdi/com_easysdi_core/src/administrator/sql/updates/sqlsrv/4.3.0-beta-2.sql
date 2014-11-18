@@ -51,3 +51,9 @@ INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnecto
 INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('7', '2', '4');
 INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('8', '2', '5');
 SET IDENTITY_INSERT [#__sdi_sys_server_serviceconnector] OFF
+
+ALTER TABLE [#__sdi_physicalservice] ADD [server_id] [bigint] NULL;
+ALTER TABLE [#__sdi_physicalservice] WITH CHECK ADD CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1] FOREIGN KEY ([server_id])
+REFERENCES [#__sdi_sys_server] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_physicalservice] CHECK CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1];

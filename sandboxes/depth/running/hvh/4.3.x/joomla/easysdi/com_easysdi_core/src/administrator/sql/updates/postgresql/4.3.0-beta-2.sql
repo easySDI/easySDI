@@ -31,3 +31,8 @@ INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector
 INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('6', '2', '2');
 INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('7', '2', '4');
 INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('8', '2', '5');
+
+ALTER TABLE #__sdi_physicalservice ADD COLUMN server_id INT(11) UNSIGNED;
+
+ALTER TABLE ONLY #__sdi_physicalservice
+    ADD CONSTRAINT #__sdi_physicalservice_server_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server(id) MATCH FULL;

@@ -291,7 +291,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		}
 		return false;
 	}
-	
+        
 	/**
 	 * Method to save the service compliance deducted from the negotiation process
 	 *

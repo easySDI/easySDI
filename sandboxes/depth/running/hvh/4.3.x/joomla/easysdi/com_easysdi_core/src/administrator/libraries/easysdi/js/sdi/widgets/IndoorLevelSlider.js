@@ -84,11 +84,10 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             for (var a = 0; a < layers.length; a++) 
             {         
                 if(layers[a].levelfield) {
+                    var servertype = layers[a].servertype;
                     var result = layers[a].redraw(true);
                 }       
             };
-            
-            
     },
 
     /** private: method[addToMapPanel]

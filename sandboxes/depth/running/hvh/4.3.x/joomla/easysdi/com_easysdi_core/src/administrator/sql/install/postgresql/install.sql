@@ -889,6 +889,7 @@ CREATE TABLE #__sdi_physicalservice (
     serviceusername character varying(150),
     servicepassword character varying(150),
     catid integer NOT NULL,
+    server_id integer NULL,
     params character varying(1024),
     access integer DEFAULT 1 NOT NULL,
     asset_id integer

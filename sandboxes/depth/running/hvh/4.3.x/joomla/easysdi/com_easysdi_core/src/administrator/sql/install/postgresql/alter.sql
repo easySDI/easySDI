@@ -1210,3 +1210,5 @@ ALTER TABLE ONLY #__sdi_attribute
 ALTER TABLE ONLY #__sdi_attribute
     ADD CONSTRAINT sdi_attribute_fk3 FOREIGN KEY (stereotype_id) REFERENCES #__sdi_sys_stereotype(id) MATCH FULL;
 
+ALTER TABLE ONLY #__sdi_physicalservice
+    ADD CONSTRAINT #__sdi_physicalservice_server_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server(id) MATCH FULL;

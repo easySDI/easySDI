@@ -943,3 +943,8 @@ ALTER TABLE [#__sdi_sys_server_serviceconnector] WITH CHECK ADD CONSTRAINT [#__s
 REFERENCES [#__sdi_sys_serviceconnector] ([id])
 ON DELETE NO ACTION;
 ALTER TABLE [#__sdi_sys_server_serviceconnector] CHECK CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_serviceconnector_fk2];
+
+ALTER TABLE [#__sdi_physicalservice] WITH CHECK ADD CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1] FOREIGN KEY ([server_id])
+REFERENCES [#__sdi_sys_server] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_physicalservice] CHECK CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1];

@@ -64,7 +64,7 @@ sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.OLSource, {
      */
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.OLSource.superclass.createLayerRecord.apply(this, arguments);
-        
+
         record.json = config;
         return record;
     }

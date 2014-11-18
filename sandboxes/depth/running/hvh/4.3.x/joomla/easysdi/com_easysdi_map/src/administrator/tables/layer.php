@@ -144,9 +144,12 @@ class Easysdi_mapTablelayer extends sdiTable {
 					$query->select('v.url as virtualserviceurl,
 									cv.value as virtualconnector,
 									v.alias as virtualservicealias,
-									v.id as virtualserviceid');
+									v.id as virtualserviceid,
+                                                                        p.server_id as servertype');
 					$query->from($this->_db->quoteName($this->_tbl).' AS l');
 					$query->join('LEFT', '#__sdi_virtualservice AS v ON l.service_id=v.id');
+                                        $query->join('LEFT', '#__sdi_virtual_physical AS vp ON vp.virtualservice_id=v.id');
+                                        $query->join('LEFT', '#__sdi_physicalservice AS p ON vp.physicalservice_id=p.id');
 					$query->join('LEFT', '#__sdi_sys_serviceconnector AS cv ON v.serviceconnector_id=cv.id');
 					$query->where('l.id = ' . (int) $row->id);
 					$this->_db->setQuery($query);
@@ -155,6 +158,7 @@ class Easysdi_mapTablelayer extends sdiTable {
 					$row->serviceurl 			= $service->virtualserviceurl;
 					$row->serviceconnector 		= $service->virtualconnector;
 					$row->servicealias 			= $service->virtualservicealias;
+                                        $row->servertype = $service->servertype;
 				}
 				else
 				{
@@ -162,7 +166,8 @@ class Easysdi_mapTablelayer extends sdiTable {
 					$query->select('p.resourceurl as physicalserviceurl,
 									cp.value as physicalconnector,
 									p.alias as physicalservicealias,
-									p.id as physicalserviceid');
+									p.id as physicalserviceid,
+                                                                        p.server_id as servertype');
 					$query->from($this->_db->quoteName($this->_tbl).' AS l');
 					$query->join('LEFT', '#__sdi_physicalservice AS p ON l.service_id=p.id');
 					$query->join('LEFT', '#__sdi_sys_serviceconnector AS cp ON p.serviceconnector_id=cp.id');
@@ -173,6 +178,7 @@ class Easysdi_mapTablelayer extends sdiTable {
 					$row->serviceurl 			= $service->physicalserviceurl;
 					$row->serviceconnector 		= $service->physicalconnector;
 					$row->servicealias 			= $service->physicalservicealias;
+                                        $row->servertype = $service->servertype;
 				}
 				
 				//Get the max supported version of the service

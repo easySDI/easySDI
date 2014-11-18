@@ -44,7 +44,7 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
 
         //Loadind js files
-       
+
         if (JDEBUG) {
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
@@ -96,13 +96,13 @@ abstract class Easysdi_mapHelper {
 
         $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
         $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js');
-         
+
         foreach (glob(JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
             $doc->addScript(str_replace(JPATH_BASE, '', $file));
         }
 
         $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/helpers/map.js');
-        
+
         $app = JFactory::getApplication();
         $params = $app->getParams('com_easysdi_map');
         $proxyhost = $params->get('proxyhost');
@@ -186,7 +186,7 @@ abstract class Easysdi_mapHelper {
         $mouseposition = 'false';
         foreach ($item->tools as $tool) {
             if ($tool->alias == 'mouseposition') {
-                $mouseposition = 'true';                
+                $mouseposition = 'true';
                 break;
             }
         }
@@ -214,9 +214,9 @@ abstract class Easysdi_mapHelper {
         $data->featureprefix = $item->featureprefix;
         $data->fieldname = $item->fieldname;
         $data->geometryname = $item->geometryname;
-        
-        $c = ($cleared)? 'true' : 'false';
-        
+
+        $c = ($cleared) ? 'true' : 'false';
+
         $output = '<script>
             var msg = "' . JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE') . '";
             var layermsg = "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '";
@@ -241,7 +241,7 @@ abstract class Easysdi_mapHelper {
             var mouseposition = ' . $mouseposition . ';
         </script>
         <div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
-        
+
         return $output;
     }
 
@@ -259,6 +259,9 @@ abstract class Easysdi_mapHelper {
             $url = $service->url;
         }
         $obj = new stdClass();
+        if ($service->server_id) {
+            $obj->server = $service->server_id;
+        }
         switch ($service->serviceconnector_id) :
             case 2 :
                 $obj->alias = $service->alias;
@@ -352,9 +355,13 @@ abstract class Easysdi_mapHelper {
     public static function getLayerDescriptionObject($layer, $group) {
         $obj = new stdClass();
         if ($layer->isindoor == 1):
-                $obj->isindoor = 1;
-                $obj->levelfield = $layer->levelfield;
-            endif;
+            $obj->isindoor = 1;
+            $obj->levelfield = $layer->levelfield;
+        endif;
+
+        if ($layer->servertype) {
+            $obj->servertype = $layer->servertype;
+        }
         if ($layer->asOL) {
             $obj->source = "ol";
 

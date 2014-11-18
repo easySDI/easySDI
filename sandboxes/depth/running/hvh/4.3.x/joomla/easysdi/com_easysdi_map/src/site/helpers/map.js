@@ -395,8 +395,11 @@ function getMapConfig() {
                                 }
                             ]
                         };
-                        for (prop = 0; prop < layer.asOLoptions.lentgh; ++prop) {
-                            //layer[]
+                        if(layer.asOLoptions){
+                            var options = JSON.parse(layer.asOLoptions);
+                            for(var key in options){
+                                wmts.args[key] = options[key];
+                            }
                         }
                         if (layer.href) {
                             wmts.href = layer.href;
@@ -450,7 +453,16 @@ function getMapConfig() {
                             wms.order = layer.order;
                         }
                         ;
-                        //TODO : asoloptions
+                        if(layer.servertype){
+                            wms.servertype = layer.servertype;
+                        };
+                        
+                        if(layer.asOLoptions){
+                            var options = JSON.parse(layer.asOLoptions);
+                            for(var key in options){
+                                wms.args[key] = options[key];
+                            }
+                        }
                         config.map.layers.push(wms);
                         break;
                     default:
@@ -486,6 +498,9 @@ function getMapConfig() {
                 };
                 if(layer.levelfield){
                     overlay.levelfield = layer.levelfield;
+                };
+                if(layer.servertype){
+                    overlay.servertype = layer.servertype;
                 };
                 config.map.layers.push(overlay);
                 break;

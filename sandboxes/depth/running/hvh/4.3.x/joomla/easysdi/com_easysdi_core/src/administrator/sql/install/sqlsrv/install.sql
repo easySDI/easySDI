@@ -1354,6 +1354,7 @@ CREATE TABLE [#__sdi_physicalservice](
 	[serviceusername] [nvarchar](150) NULL,
 	[servicepassword] [nvarchar](150) NULL,
 	[catid] [int] NOT NULL,
+        [server_id] [int] NULL,
 	[params] [nvarchar](1024) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
