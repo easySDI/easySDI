@@ -10,7 +10,6 @@ Ext.namespace("sdi.widgets");
  *  Create a slider for controlling level in indoor navigation context.
  */
 sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
-
     /** api: config[map]
      *  ``OpenLayers.Map`` 
      *  The map this slider changes the indoor level of. (required)
@@ -19,21 +18,18 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  ``OpenLayers.Map``
      */
     map: null,
-
     /** api: config[delay]
      *  ``Number`` Time in milliseconds before setting the level value to the
      *  map. If the value change again within that time, the original value
      *  is not set. Only applicable if aggressive is true.
      */
     delay: 5,
-
     /** api: config[aggressive]
      *  ``Boolean``
      *  If set to true, the opacity is changed as soon as the thumb is moved.
      *  Otherwise when the thumb is released (default).
      */
     aggressive: false,
-
     /** api: config[value]
      *  ``Number``
      *  The value to initialize the slider with. 
@@ -42,25 +38,22 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  it to the min value.
      */
     value: null,
-
-
     /** private: method[constructor]
      *  Construct the component.
      */
     constructor: function(config) {
-        config.value = (config.value !== undefined) ? config.value : config.minValue;            
+        config.value = (config.value !== undefined) ? config.value : config.minValue;
 
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
-
     /** private: method[initComponent]
      *  Initialize the component.
      */
     initComponent: function() {
         sdi.widgets.IndoorLevelSlider.superclass.initComponent.call(this);
 
-        if(this.map) {
-            if(this.map instanceof GeoExt.MapPanel) {
+        if (this.map) {
+            if (this.map instanceof GeoExt.MapPanel) {
                 this.map = this.map.map;
             }
             this.bind(this.map);
@@ -70,9 +63,8 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         } else {
             this.on('changecomplete', this.changeIndoorLevel, this);
         }
-        this.on("beforedestroy", this.unbind, this);   
+        this.on("beforedestroy", this.unbind, this);
     },
-
     /** private: method[changeLayerOpacity]
      *  :param slider: :class:`GeoExt.LayerOpacitySlider`
      *  :param value: ``Number`` The slider value
@@ -80,16 +72,21 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  Updates the ``OpenLayers.Layer`` opacity value.
      */
     changeIndoorLevel: function(slider, value) {
-            var layers = this.map.layers;
-            for (var a = 0; a < layers.length; a++) 
-            {         
-                if(layers[a].levelfield) {
-                    var servertype = layers[a].servertype;
-                    var result = layers[a].redraw(true);
-                }       
-            };
+        var layers = this.map.layers;
+        for (var a = 0; a < layers.length; a++)
+        {
+            if (layers[a].levelfield) {
+                var servertype = layers[a].servertype;
+                if (servertype == 1) {
+                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + value + "\""});
+                } else if (servertype == 2) {
+                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "=" + value + "\"}"});
+                }
+                var result = layers[a].redraw(true);
+            }
+        }
+        ;
     },
-
     /** private: method[addToMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
      *
@@ -114,7 +111,6 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             scope: this
         });
     },
-
     /** private: method[removeFromMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
      *
@@ -129,31 +125,27 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         });
         this.unbind();
     },
-
     /** private: method[stopMouseEvents]
      *  :param e: ``Object``
      */
     stopMouseEvents: function(e) {
         e.stopEvent();
     },
-    
     /** private: method[bind]
      *  :param map: ``OpenLayers.Map``
      */
     bind: function(map) {
         this.map = map;
         this.map.events.on({
-            
             scope: this
         });
-        
+
     },
     /** private: method[unbind]
      */
     unbind: function() {
-        if(this.map && this.map.events) {
+        if (this.map && this.map.events) {
             this.map.events.un({
-                
                 scope: this
             });
         }
