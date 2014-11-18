@@ -35,7 +35,6 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
     /** @var DOMDocument */
     public $structure;
-    public $validators;
 
     public function __construct($config = array()) {
         $this->db = JFactory::getDbo();
@@ -116,7 +115,6 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
     protected function buildForm() {
         $structure = $this->structure = $this->get('Structure');
-        $this->validators = $this->get('Validators');
 
         $fhg = new FormHtmlGenerator($this->form, $structure);
         $this->formHtml = $fhg->buildForm();

@@ -43,6 +43,9 @@ js('document').ready(function() {
             });
             
             addTooltips();
+            
+            // refresh validator
+            document.formvalidator.attachToForm(js('#form-metadata'));
 
             setRelationAction(button);
 
@@ -151,6 +154,8 @@ js('document').ready(function() {
                 });
             });
 
+            // refresh validator
+            document.formvalidator.attachToForm(js('#form-metadata'));
             setAttributeAction(parent);
 
         });

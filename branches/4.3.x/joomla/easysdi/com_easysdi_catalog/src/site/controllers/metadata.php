@@ -18,8 +18,8 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
@@ -519,7 +519,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
 
         foreach ($dataWithoutArray as $xpath => $value) {
+            
+            
             $xpatharray = explode('#', $xpath);
+            
             if (count($xpatharray) > 1) {
                 $query = FormUtils::unSerializeXpath($xpatharray[0]) . '[@locale="#' . $xpatharray[1] . '"]';
             } else {
@@ -542,6 +545,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 } elseif ($element->hasAttributeNS('http://www.w3.org/1999/xlink', 'href')) {
                     $element->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', $this->getHref($value));
                     // Text case
+                }elseif($element->parentNode->getAttributeNS($this->catalog_uri,'stereotypeId') == EnumStereotype::$LOCALECHOICE){
+                    $translations = $this->getI18nValue($value);
+                    $element->nodeValue = $translations['default']->text2;
+                    foreach ($translations['supported'] as $key => $translation) {
+                        $query = $element->parentNode->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $key . '"]';
+                        $element = $this->domXpathStr->query($query)->item(0);
+                        
+                        $element->nodeValue = $translation->text2;
+                    }
                 } else {
                     $element->nodeValue = $value;
                 }
@@ -1267,6 +1279,43 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $li .= "</ul>";
 
         return $li;
+    }
+    
+    /**
+     * 
+     * @param string $guid
+     * @return array Liste of translation for element guid
+     */
+    private function getI18nValue($guid){
+        $defaultId = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
+        $supportedIds = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
+        $languageIds = implode(',', $supportedIds);
+        
+        $results = array();
+        
+        $query = $this->db->getQuery(true);
+        $query->select('t.text2, '. $query->quoteName('iso3166-1-alpha2'));
+        $query->from('#__sdi_translation t');
+        $query->innerJoin('#__sdi_language l ON l.id=t.language_id');
+        $query->where('t.element_guid = '. $query->quote($guid));
+        $query->where('t.language_id IN (' . $languageIds . ')');
+        
+        $this->db->setQuery($query);
+        
+        $results['supported'] = $this->db->loadObjectList('iso3166-1-alpha2');
+        
+        $query = $this->db->getQuery(true);
+        $query->select('t.text2, '. $query->quoteName('iso3166-1-alpha2'));
+        $query->from('#__sdi_translation t');
+        $query->innerJoin('#__sdi_language l ON l.id=t.language_id');
+        $query->where('t.element_guid = '. $query->quote($guid));
+        $query->where('t.language_id IN (' . $defaultId . ')');
+        
+        $this->db->setQuery($query);
+        
+        $results['default'] = $this->db->loadObject();
+        
+        return $results;
     }
 
 }
