@@ -156,10 +156,11 @@ function getMapConfig() {
     };
 
     //Groups
-    layermanager.groups = {background: {title: backgroundname, exclusive: true, expanded: backgroundexpanded}};
-    for (index = 0; index < groups.length; ++index) {
+    layermanager.groups = {};
+    for (index = 0; index < groups.length; ++index){
         layermanager.groups[groups[index].alias] = {title: groups[index].title, expanded: groups[index].expanded};
     }
+    layermanager.groups['background'] = {title: backgroundname, exclusive: true, expanded: backgroundexpanded};
     config.tools.push(layermanager);
 
     for (index = 0; index < data.tools.length; ++index) {

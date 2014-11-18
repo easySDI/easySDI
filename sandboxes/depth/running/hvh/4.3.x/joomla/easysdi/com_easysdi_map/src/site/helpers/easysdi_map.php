@@ -24,7 +24,6 @@ abstract class Easysdi_mapHelper {
             $item->urlwfslocator = "";
         }
 
-
         //Load admin language file
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
@@ -44,7 +43,6 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
 
         //Loadind js files
-
         if (JDEBUG) {
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
@@ -166,8 +164,8 @@ abstract class Easysdi_mapHelper {
         $layers = array();
         //Layers have to be added the lowest before the highest
         //To do that, the groups have to be looped in reverse order
-        $groups_reverse = array_reverse($item->groups);
-        foreach ($groups_reverse as $group) {
+//        $groups_reverse = array_reverse($item->groups);
+        foreach ($item->groups as $group) {
             //Acces not allowed
             if (!in_array($group->access, $user->getAuthorisedViewLevels()))
                 continue;
