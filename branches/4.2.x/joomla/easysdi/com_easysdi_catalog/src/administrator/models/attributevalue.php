@@ -96,6 +96,7 @@ class Easysdi_catalogModelattributevalue extends sdiModel {
        $attributetable = JTable::getInstance('attribute', 'Easysdi_catalogTable');
        $attributetable->load($item->attribute_id);
        $item->attributename = $attributetable->name ;  
+       $item->stereotype_id = $attributetable->stereotype_id;
        return $item;
     }
 
