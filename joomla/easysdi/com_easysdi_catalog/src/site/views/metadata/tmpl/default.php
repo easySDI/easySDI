@@ -76,6 +76,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/syntax
 
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js');
 
+
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shCore.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shThemeDefault.css');
 $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
@@ -95,13 +96,13 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             tabIsOpen = false;
 <?php
 }
-foreach ($this->validators as $validator) {
-
-    echo $validator;
-}
 ?>
     });
 </script>
+
+<?php
+    require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/validators.js.php';
+?>
 
 <div class="metadata-edit front-end-edit">
 
