@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="easySDI_SHOP" verbose="5">
+  <test name="BasketPricingTest">
+    <classes>
+      <class name="org.easysdi.selenium.basket.BasketPricingTest"/>
+    </classes>
+  </test>  
+</suite>
