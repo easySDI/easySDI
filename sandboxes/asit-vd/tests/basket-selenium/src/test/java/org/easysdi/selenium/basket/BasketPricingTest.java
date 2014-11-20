@@ -35,10 +35,30 @@ public class BasketPricingTest extends TestNgTestBase {
     //TODO: change string with config
     private final String noTotalMessage = "TO-BE-DEFINED(no total)";
 
-    /* ******* Metadatas (products) and clients */
-    private final SdiMetadata mdAsit = new SdiMetadata("MD ASITVD", "3");
+    /* ***** platform config: */
+    /**
+     * Is the pricing activated ? YES<br/>
+     * VAT : 8<br/>
+     * Currency : CHF <br/>
+     * Decimal separator : .<br/>
+     * Number of digits after decimal : 2<br/>
+     * Thousants separator : '<br/>
+     * Rounding rule : 0.05<br/>
+     * Overall fee : 50<br/>
+     * Is the overall fee perceived if the data are free? No<br/>
+     */
+    /**
+     * Categories with special fees: - Membre ASIT VD : fee 5.00
+     *
+     */
+    /* ***** Remarks */
+    /**
+     * - GDB means "geodonnées de base", all GDB profiles have free categories
+     * for communes and canton<br/>
+     */
 
-    /* *** Commune
+    /* ******* Metadatas (products), organisms and clients */
+    /* *** Commune ***
      * Pricing:         Free for internal          Fixed costs             Apply fixed costs if data free
      *                  YES                        0.00                    NO
      *    Rebates :
@@ -50,14 +70,15 @@ public class BasketPricingTest extends TestNgTestBase {
      * */
     private final SdiOrganism orgCommune = new SdiOrganism("uneCommune", 4);
     private final SdiUser cliCommune = new SdiUser("commune", "cliCommune", "987654321");
+
+    /* Fee */
     private final SdiMetadata mdProdCommuneFee = new SdiMetadata("prodCommuneFee", "9");
-    /**
-     * Has profile GDB-com-15
-     */
+    /* Has profile GDB-com-15 */
     private final SdiMetadata mdrodCommuneProfileGDB = new SdiMetadata("prodCommuneProfileGDB", "11");
+    /* Free */
     private final SdiMetadata mdProdCommuneFree = new SdiMetadata("prodCommuneFree", "10");
 
-    /* *** Canton
+    /* *** Canton ***
      * Pricing:         Free for internal          Fixed costs             Apply fixed costs if data free
      *                  YES                        25.00                   NO
      *    Rebates :
@@ -71,15 +92,13 @@ public class BasketPricingTest extends TestNgTestBase {
      */
     private final SdiOrganism orgCanton = new SdiOrganism("lEtatDeVaud", 3);
     private final SdiUser cliCanton = new SdiUser("canton", "cliCanton", "987654321");
+    /* Free */
     private final SdiMetadata mdProdCantonFree = new SdiMetadata("prodCantonFree", "6");
-    /**
-     * Has profile GDB-can-10
-     */
+    /* Has profile GDB-can-10 */
     private final SdiMetadata mdProdCantonProfileGDB = new SdiMetadata("prodCantonProfileGDB", "5");
-    /**
-     * Has profile can-10
-     */
+    /* Has profile can-10 */
     private final SdiMetadata mdProdCantonProfile = new SdiMetadata("prodCantonProfile", "8");
+    /* Fee */
     private final SdiMetadata mdProdCantonFee = new SdiMetadata("prodCantonFee", "7");
 
     private final SdiUser cliEcole = new SdiUser("commune", "cliEcole", "987654321");
@@ -98,18 +117,6 @@ public class BasketPricingTest extends TestNgTestBase {
     }
 
     /**
-     * Not a real test...
-     */
-    @Test
-    public void testAsitvdProduct() {
-        login(cliCommune);
-        SdiBasket basket = new SdiBasket("asitvd basket", "1000000");
-        basket.metadatas.add(mdAsit);
-        // a free product + 50.- for 
-        Assert.assertEquals(getBasketTotalPrice(basket), "50.00 CHF");
-    }
-
-    /**
      * Test a client without category, a product with with a profile.
      */
     @Test
@@ -117,21 +124,21 @@ public class BasketPricingTest extends TestNgTestBase {
         login(cliSansCategorie);
         SdiBasket basket = new SdiBasket("clientWithoutCateg1ProdWithProfile", "1000000");
         basket.metadatas.add(mdProdCantonProfile);
-        // 10.- for 1sqkm + 0.8.- VAT + 25.- Fixed processing fee +  50.- platform = 85.-
+        // 10.- for 1sqkm + 0.8.- VAT + 25.- Fixed processing fee +  50.- platform = 85.50.-
         Assert.assertEquals(getBasketTotalPrice(basket), "85.80 CHF");
     }
-    
+
     /**
      * Test a client without category, a product with with a profile.
      */
     @Test
     public void clientWithoutCateg1ProdWithProfileRounding() {
         login(cliSansCategorie);
-        SdiBasket basket = new SdiBasket("clientWithoutCateg1ProdWithProfileRounding", "10000");
+        SdiBasket basket = new SdiBasket("clientWithoutCateg1ProdWithProfileRounding", "100000");
         basket.metadatas.add(mdProdCantonProfile);
-        // 10.- for 1sqkm + 0.8.- VAT + 25.- Fixed processing fee +  50.- platform = 85.-
-        Assert.assertEquals(getBasketTotalPrice(basket), "85.80 CHF");
-    }    
+        // 1.- for 1sqkm + 0.08.- VAT + 25.- Fixed processing fee +  50.- platform = 85.-
+        Assert.assertEquals(getBasketTotalPrice(basket), "76.08 CHF");
+    }
 
     /**
      * Test a client without category, a product with with a fee product.
@@ -154,8 +161,70 @@ public class BasketPricingTest extends TestNgTestBase {
         login(cliSansCategorie);
         SdiBasket basket = new SdiBasket("clientWithoutCateg1ProdWithFree", "1000000");
         basket.metadatas.add(mdProdCantonFree);
+        // All prods free -> 0.00
+        Assert.assertEquals(getBasketTotalPrice(basket), "0.00 CHF");
+    }
+
+    /**
+     * Test a member client, a product with with a profile.
+     */
+    @Test
+    public void member1ProdWithProfile() {
+        login(cliMembre);
+        SdiBasket basket = new SdiBasket("member1ProdWithProfile", "2000000");
+        basket.metadatas.add(mdProdCantonProfile);
+        // (20.- for 2sqkm * 0.85)=> 17.- + 1.6.- VAT + 25.- Fixed processing fee +  5.- platform (special category) = 48.36.- rounded at 48.35.-
+        Assert.assertEquals(getBasketTotalPrice(basket), "48.35 CHF");
+    }
+
+    /**
+     * Test a member client, a product with with a fee product.
+     */
+    @Test
+    public void member1ProdWithFee() {
+        login(cliMembre);
+        SdiBasket basket = new SdiBasket("member1ProdWithFee", "2000000");
+        basket.metadatas.add(mdProdCantonFee);
         // Should not see a total
         //TODO : check for "undefined price" string
+        Assert.assertEquals(getBasketTotalPrice(basket), noTotalMessage);
+    }
+
+    /**
+     * Test a member client, a product with with a free product.
+     */
+    @Test
+    public void member1ProdWithFree() {
+        login(cliMembre);
+        SdiBasket basket = new SdiBasket("member1ProdWithFree", "2000000");
+        basket.metadatas.add(mdProdCantonFree);
+        // All prods free -> 0.00
+        Assert.assertEquals(getBasketTotalPrice(basket), "0.00 CHF");
+    }
+
+    /**
+     * Test a member client, a product with with a profile + a free product.
+     */
+    @Test
+    public void member1ProdWithProfile1ProdFree() {
+        login(cliMembre);
+        SdiBasket basket = new SdiBasket("member1ProdWithProfile1ProdFree", "2000000");
+        basket.metadatas.add(mdProdCantonProfile);
+        // 1 free + (20.- for 2sqkm * 0.85)=> 17.- + 1.6.- VAT + 25.- Fixed processing fee +  5.- platform (special category) = 48.36.- rounded at 48.35.-
+        Assert.assertEquals(getBasketTotalPrice(basket), "48.35 CHF");
+    }
+
+    /**
+     * Test a member client, a product with with a profile from Canton<br/>
+     * and Canton as a third party -> same behavior as internal order.
+     */
+    @Test
+    public void member1ProdWithProfileThirdPartyCanton() {
+        login(cliMembre);
+        SdiBasket basket = new SdiBasket("member1ProdWithProfile1ProdFree", "2000000");
+        basket.metadatas.add(mdProdCantonProfile);
+        basket.setThridparty(orgCanton);
+        // With a third party "Canton", this product is internal, and shoul be free
         Assert.assertEquals(getBasketTotalPrice(basket), "0.00 CHF");
     }
 
@@ -286,8 +355,20 @@ public class BasketPricingTest extends TestNgTestBase {
      *
      * @param org
      */
-    public void setThirdParty(SdiOrganism org) {
+    public void selectThirdParty(SdiOrganism org) {
+        getBasketPage();
         new Select(driver.findElement(By.id("thirdparty"))).selectByValue(org.getId().toString());
+        
+
+        //TODO Change this for a functionnal webdriverwait
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(BasketPricingTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //Does not work
+        new WebDriverWait(driver, 2).until(ExpectedConditions.presenceOfElementLocated(By.id("ordername")));
+
     }
 
     /**
@@ -375,11 +456,18 @@ public class BasketPricingTest extends TestNgTestBase {
      */
     public String getBasketTotalPrice(SdiBasket basket) {
         buildBasket(basket);
-        driver.get(baseUrl + "component/" + Consts.SHOP_COMPONENT + "/?view=basket");
+        getBasketPage();
         definePerimeter(basket.getSurface());
+        if (basket.getThridparty() != null) {
+            selectThirdParty(basket.getThridparty());
+        }
         WebElement we = driver.findElement(By.xpath("//table[last()]/tfoot[last()]/tr[2]/td[2]"));
         //return we.getText().split(" ")[0];
         return we.getText();
+    }
+
+    public void getBasketPage() {
+        driver.get(baseUrl + "component/" + Consts.SHOP_COMPONENT + "/?view=basket");
     }
 
 }
