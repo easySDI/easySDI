@@ -925,7 +925,7 @@ class FormGenerator {
                     $field->appendChild($group);
                     break;
                 case EnumStereotype::$BOUNDARY:
-                    $field->setAttribute('type', 'list');
+                    
                     if ($guid != '') {
                         $field->setAttribute('label', EText::_($guid));
                     } else {
@@ -946,11 +946,15 @@ class FormGenerator {
                             }
                         }
 
+                        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()),12,15);
+                        $field->setAttribute('name', $name);
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
+                        $field->setAttribute('type', 'MultipleDefaultList');
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                         $field->setAttribute('default', $attribute->firstChild->nodeValue);
+                        $field->setAttribute('type', 'list');
                     }
                     break;
                 /* case EnumStereotype::$BOUNDARYCATEGORY:
