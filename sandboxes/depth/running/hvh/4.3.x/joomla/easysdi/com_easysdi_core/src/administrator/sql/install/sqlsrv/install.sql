@@ -1110,9 +1110,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-ALTER TABLE ONLY [#__sdi_order] ADD [validate] [smallint] DEFAULT NULL;
-ALTER TABLE ONLY [#__sdi_order] ADD [validated_date] [datetime2](0) DEFAULT NULL;
-ALTER TABLE ONLY [#__sdi_order] ADD [validated_reason] [nvarchar](500) DEFAULT NULL;
+
 CREATE TABLE [#__sdi_order](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
@@ -1148,6 +1146,7 @@ CREATE TABLE [#__sdi_order](
 
 
 SET ANSI_NULLS ON;
+
 
 SET QUOTED_IDENTIFIER ON;
 
@@ -1261,7 +1260,7 @@ CREATE TABLE [#__sdi_category](
 	[name] [nvarchar](255) NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
-        [overall_fee] decimal(6,2) UNSIGNED DEFAULT 0,
+        [overall_fee] decimal(6,2) DEFAULT 0,
  CONSTRAINT [PK_#__sdi_category_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

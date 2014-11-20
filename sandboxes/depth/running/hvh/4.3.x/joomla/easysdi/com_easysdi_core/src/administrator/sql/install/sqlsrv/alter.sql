@@ -485,7 +485,7 @@ ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_property
 
 ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3] FOREIGN KEY([propertyvalue_id])
 REFERENCES [#__sdi_propertyvalue] ([id])
-ON DELETE CASCADE
+ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3];
