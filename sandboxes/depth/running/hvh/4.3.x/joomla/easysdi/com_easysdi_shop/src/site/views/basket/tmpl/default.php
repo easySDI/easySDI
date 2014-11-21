@@ -577,6 +577,8 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
         <script>
             Ext.onReady(function() {
+                if('undefined' == typeof app)
+                    app = window.appname;
                 app.on("ready", function() {
                     initMiniMap();
                     initDraw();

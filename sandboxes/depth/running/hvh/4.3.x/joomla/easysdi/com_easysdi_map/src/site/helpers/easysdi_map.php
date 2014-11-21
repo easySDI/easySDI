@@ -150,12 +150,16 @@ abstract class Easysdi_mapHelper {
                 //Acces not allowed
                 if (!in_array($service->access, $user->getAuthorisedViewLevels()))
                     continue;
+                if($service->serviceconnector_id == 3) //WMTS
+                    continue;
                 array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
             endforeach;
         endif;
 
         if (isset($item->virtualservices)) :
             foreach ($item->virtualservices as $service) {
+                if($service->serviceconnector_id == 3) //WMTS
+                    continue;
                 array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
             }
         endif;
@@ -212,6 +216,9 @@ abstract class Easysdi_mapHelper {
         $data->featureprefix = $item->featureprefix;
         $data->fieldname = $item->fieldname;
         $data->geometryname = $item->geometryname;
+        if(isset($item->level)){
+            $data->level = $item->level;
+        }
 
         $c = ($cleared) ? 'true' : 'false';
 
@@ -383,8 +390,14 @@ abstract class Easysdi_mapHelper {
                     $obj->transitionEffect = "resize";
                     $obj->opacity = $layer->opacity;
                     $obj->style = $layer->asOLstyle;
-                    $obj->matrixSet = $layer->asOLmatrixset;
+                    $obj->matrixSet = $layer->asOLmatrixset;                    
                     $obj->asOLoptions = $layer->asOLoptions;
+//                    $options = preg_replace("/\s\s+/", " ", $layer->asOLoptions);
+//                    $params = explode(',', $options);
+//                    foreach($params as $param){
+//                        $KVP = explode(':',$param);
+//                        $obj->asOLoptions[$KVP[0]] = $KVP[1];
+//                    }
                     break;
                 case 'WMS' :
                 case 'WMSC' :

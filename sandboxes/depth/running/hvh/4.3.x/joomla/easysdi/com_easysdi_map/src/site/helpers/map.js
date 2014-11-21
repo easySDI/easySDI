@@ -377,10 +377,10 @@ function getMapConfig() {
         switch (layer.source) {
             case 'ol':
                 switch (layer.type) {
-                    case 'WMTS':
+                    case 'OpenLayers.Layer.WMTS':
                         var wmts = {
                             source: "ol",
-                            type: "OpenLayers.Layer.WMTS",
+                            type: layer.type,
                             group: layer.group,
                             args: [
                                 {
@@ -393,13 +393,14 @@ function getMapConfig() {
                                     opacity: layer.opacity,
                                     style: layer.asOLstyle,
                                     matrixSet: layer.matrixSet
+                                    
                                 }
                             ]
                         };
                         if(layer.asOLoptions){
                             var options = JSON.parse(layer.asOLoptions);
                             for(var key in options){
-                                wmts.args[key] = options[key];
+                                wmts.args[0][key]= options[key];
                             }
                         }
                         if (layer.href) {
@@ -416,11 +417,10 @@ function getMapConfig() {
                         ;
                         config.map.layers.push(wmts);
                         break
-                    case 'WMSC':
-                    case 'WMS' :
+                    case 'OpenLayers.Layer.WMS' :
                         var wms = {
                             source: "ol",
-                            type: "OpenLayers.Layer.WMS",
+                            type: layer.type,
                             group: layer.group,
                             args: [
                                 layer.name,
@@ -528,32 +528,36 @@ var tip = new Ext.slider.Tip({
             {
                 xtype: "sdi_gxp_scaleoverlay"
             }
-            ,
-//            {
-//                xtype: "gx_opacityslider",
-//                layer: "brgmwms_SCAN_D_GEOL50",
-//                changeVisibility: true,
-//                aggressive: true,
-//                vertical: true,
-//                height: 120,
-//                x: 10,
-//                y: 10
-//            },
-            {
+        ];
+        
+        if(data.level){
+            var defaultvalue;
+            for(var key in data.level){
+                if(data.level[key].defaultlevel == "1"){
+                    defaultvalue = parseInt(key);
+                }
+            }
+            var length = data.level.length;
+            var minvalue = 0;
+            var maxvalue = data.level.length - 1;
+            config.mapItems.push(
+                    {
                xtype: "sdi_indoorlevelslider",
-               value : 2,
-               minValue: 0,
-               maxValue: 100,
+               value : defaultvalue,
+               minValue: minvalue,
+               maxValue: maxvalue,
+               levels: data.level,
                increment: 1,
                isFormField: true,
-               plugins : new sdi.widgets.IndoorLevelSliderTip({template: '<div>Level: {level}</div>'}),
+               plugins : new sdi.widgets.IndoorLevelSliderTip({template: '<div>{level}</div>', levels:data.level}),
                aggressive: false,
                vertical: true,
                height: 100,
                x: 450,
                y: 20
            }
-        ];
+                    )
+        }
     }
 
     config.mapPlugins =

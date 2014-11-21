@@ -38,12 +38,19 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  it to the min value.
      */
     value: null,
+    
+    /**
+     * 
+     */
+    levels : [],
+    
     /** private: method[constructor]
      *  Construct the component.
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
-
+        levels = config.levels;
+        
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
     /** private: method[initComponent]
@@ -73,14 +80,16 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     changeIndoorLevel: function(slider, value) {
         var layers = this.map.layers;
+        var level = levels[value];
+        
         for (var a = 0; a < layers.length; a++)
         {
             if (layers[a].levelfield) {
                 var servertype = layers[a].servertype;
                 if (servertype == 1) {
-                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + value + "\""});
+                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
                 } else if (servertype == 2) {
-                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "=" + value + "\"}"});
+                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
                 }
                 var result = layers[a].redraw(true);
             }

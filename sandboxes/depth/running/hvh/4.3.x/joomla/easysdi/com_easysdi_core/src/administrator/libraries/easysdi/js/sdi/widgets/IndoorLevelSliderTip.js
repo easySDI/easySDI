@@ -34,7 +34,12 @@ sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
      *
      *  * ``opacity`` - the opacity value in percent.
      */
-    template: '<div>{level}level</div>',
+    template: '<div>{level}</div>',
+    
+    /**
+     * 
+     */
+    levels:[],
 
     /** private: property[compiledTemplate]
      *  ``Ext.Template``
@@ -42,11 +47,19 @@ sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
      */
     compiledTemplate: null,
 
+    /** private: method[constructor]
+     *  Construct the component.
+     */
+    constructor: function(config) {
+        levels = config.levels;        
+        sdi.widgets.IndoorLevelSliderTip.superclass.constructor.call(this, config);
+    },
     /** private: method[init]
      *  Called to initialize the plugin.
      */
     init: function(slider) {
         this.compiledTemplate = new Ext.Template(this.template);
+        
         sdi.widgets.IndoorLevelSliderTip.superclass.init.call(this, slider);
     },
 
@@ -54,8 +67,9 @@ sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
      *  :param slider: ``Ext.slider.SingleSlider`` The slider this tip is attached to.
      */
     getText: function(thumb) {
+        var level = levels[thumb.value].label
         var data = {
-            level: thumb.value
+            level: level
         };
         return this.compiledTemplate.apply(data);
     }
