@@ -272,9 +272,9 @@ class FormGenerator {
             if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                if ($occurance == 0) {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                }
+                
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+                
             }
         }
 
@@ -919,13 +919,29 @@ class FormGenerator {
 
                     $field->setAttribute('type', 'groupedlist');
                     $field->setAttribute('label', EText::_($guid));
-                    $field->setAttribute('default', $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $attribute->firstChild->nodeValue), true));
-
-                    $group->appendChild($option);
-                    $field->appendChild($group);
+                    
+                    if ($upperbound > 1) {
+                        $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode);
+                        $default = array();
+                        foreach ($allValues as $node) {
+                            if (!empty($node->firstChild->nodeValue)) {
+                                $default[] = $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $node->firstChild->nodeValue), true);
+                            }
+                        }
+                        
+                        $field->setAttribute('default', implode(',', $default));
+                        $field->setAttribute('type', 'MultipleDefaultList');
+                        $field->appendChild($option);
+                    }else{
+                        $field->setAttribute('default', $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $attribute->firstChild->nodeValue), true));
+                        $group->appendChild($option);
+                        $field->appendChild($group);
+                    }
+                    
+                    
                     break;
                 case EnumStereotype::$BOUNDARY:
-                    $field->setAttribute('type', 'list');
+                    
                     if ($guid != '') {
                         $field->setAttribute('label', EText::_($guid));
                     } else {
@@ -946,11 +962,15 @@ class FormGenerator {
                             }
                         }
 
+                        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()),12,15);
+                        $field->setAttribute('name', $name);
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
+                        $field->setAttribute('type', 'MultipleDefaultList');
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                         $field->setAttribute('default', $attribute->firstChild->nodeValue);
+                        $field->setAttribute('type', 'list');
                     }
                     break;
                 /* case EnumStereotype::$BOUNDARYCATEGORY:
