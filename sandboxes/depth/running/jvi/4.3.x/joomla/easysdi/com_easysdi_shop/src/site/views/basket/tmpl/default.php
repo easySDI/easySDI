@@ -120,9 +120,6 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
 
         jQuery(document).ready(function() {
-            var form = jQuery('#adminForm');
-            jQuery(form).on('submit', function(){return false});
-            
             jQuery('#btn-login').on('click', function(){
                 document.location.href = 'index.php?option=com_users&view=login&return='+btoa(document.location.href);
                 return false;
@@ -577,6 +574,8 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
         <script>
             Ext.onReady(function() {
+                if('undefined' == typeof app)
+                    app = window.appname;
                 app.on("ready", function() {
                     initMiniMap();
                     initDraw();
