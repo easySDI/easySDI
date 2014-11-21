@@ -70,7 +70,7 @@ JHtml::_('formbehavior.chosen', 'select');
                         <tr class="order-line order-line-new">
                             <td><i><?php echo $item->name; ?></i></td>
                             <td class="ordercreated"><?php echo $item->created; ?></td>
-                            <td class="ordercreatedby"><?php echo $item->created_by; ?></td>
+                            <td class="ordercreatedby"><?php echo $item->created_by_name; ?></td>
                             <td class="orderstate">
                                 <?php if ($item->ordertype_id != 3): ?>
                                     <?php
