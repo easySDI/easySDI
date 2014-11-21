@@ -919,10 +919,26 @@ class FormGenerator {
 
                     $field->setAttribute('type', 'groupedlist');
                     $field->setAttribute('label', EText::_($guid));
-                    $field->setAttribute('default', $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $attribute->firstChild->nodeValue), true));
-
-                    $group->appendChild($option);
-                    $field->appendChild($group);
+                    
+                    if ($upperbound > 1) {
+                        $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode);
+                        $default = array();
+                        foreach ($allValues as $node) {
+                            if (!empty($node->firstChild->nodeValue)) {
+                                $default[] = $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $node->firstChild->nodeValue), true);
+                            }
+                        }
+                        
+                        $field->setAttribute('default', implode(',', $default));
+                        $field->setAttribute('type', 'MultipleDefaultList');
+                        $field->appendChild($option);
+                    }else{
+                        $field->setAttribute('default', $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $attribute->firstChild->nodeValue), true));
+                        $group->appendChild($option);
+                        $field->appendChild($group);
+                    }
+                    
+                    
                     break;
                 case EnumStereotype::$BOUNDARY:
                     

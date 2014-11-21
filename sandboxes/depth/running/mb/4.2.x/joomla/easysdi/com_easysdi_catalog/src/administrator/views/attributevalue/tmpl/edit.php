@@ -69,7 +69,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
                     </div>
-                    <?php if(!$this->item->stereotype_id == 10):?>
+                    <?php if($this->item->stereotype_id != 10):?>
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('value'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('value'); ?></div>
@@ -88,7 +88,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                             <div class="controls"><?php echo $this->form->getInput('text2'); ?></div>
                         </div>
                     </div>
-                    <?php endif; ?>
+                    <?php endif ?>
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
