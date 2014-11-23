@@ -175,7 +175,8 @@ class FormGenerator {
                 case EnumChildtype::$ATTRIBUT:
                     $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
                     $cloned = $attribute->cloneNode(true);
-                    $parent->appendChild($cloned);
+                    $clearNode = $this->clearNodeValue($cloned);
+                    $parent->appendChild($clearNode);
                     $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
 
 
@@ -1509,6 +1510,23 @@ class FormGenerator {
         $result = $this->db->loadObject();
 
         return $result->guid;
+    }
+    
+    /**
+     * 
+     * @param DOMElement $element
+     * @return \DOMElement
+     */
+    private function clearNodeValue(DOMElement $element){
+        $nodes = $element->getElementsByTagNameNS('*', '*');
+        
+        foreach ($nodes as $node) {
+            if(!$this->hasChildElement($node)){
+                $node->nodeValue = NULL;
+            }
+        }
+        
+        return $element;
     }
 
 }
