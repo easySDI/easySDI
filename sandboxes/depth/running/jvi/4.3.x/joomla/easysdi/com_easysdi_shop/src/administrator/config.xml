@@ -200,6 +200,16 @@
                     label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_ROUNDING"
                     description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_ROUNDING"
                     default="0.05"             /> 
+             
+             <field name="tp_explanation_display"
+                    type="radio" 
+                    class="radio btn-group btn-group-yesno"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_TP_EXPLANATION_DISPLAY"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_TP_EXPLANATION_DISPLAY"
+                    default="1" >
+                 <option value="0">JNO</option>
+                 <option value="1">JYES</option>
+             </field> 
 
              <field name="overall_fee" type="note" label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_OVERALL_FEE" />
 

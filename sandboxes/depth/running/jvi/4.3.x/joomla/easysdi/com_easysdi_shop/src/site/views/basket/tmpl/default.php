@@ -246,12 +246,18 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     <div class="row-fluid shop-third-party" >
                         <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
                         <hr>
-                       <select id="thirdparty" name="thirdparty" class="inputbox input-xlarge">
+                        <?php 
+                        $tp_explanation = JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_EXPLANATION');
+                        if((bool)$this->paramsarray['tp_explanation_display'] && !empty($tp_explanation) && $tp_explanation !== 'COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_EXPLANATION'):
+                        ?>
+                        <p><?php echo $tp_explanation; ?></p>
+                        <?php endif;?>
+                        <select id="thirdparty" name="thirdparty" class="inputbox input-xlarge">
                             <option value="-1"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_NO_THIRD_PARTY'); ?></option>
                             <?php foreach ($this->thirdParties as $thirdparty) : ?>
                                 <option value="<?php echo $thirdparty->id; ?>" <?php if ($this->item->thirdparty == $thirdparty->id) echo 'selected' ?>><?php echo $thirdparty->name; ?></option>
                             <?php endforeach; ?>
-                       </select></div>
+                        </select></div>
                     </div>
                 <?php endif; ?>
                 <!-- ENDOF THIRD PARTY -->
