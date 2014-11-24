@@ -568,20 +568,21 @@ abstract class Easysdi_shopHelper {
         $price->cfg_pct_category_profile_discount = 0;
         $price->ind_lbl_category_profile_discount = '';
         
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-                ->select('ppcpr.category_id, c.name')
-                ->from('#__sdi_pricing_profile_category_pricing_rebate ppcpr')
-                ->join('LEFT', '#__sdi_category c ON c.id=ppcpr.category_id')
-                ->where('ppcpr.pricing_profile_id='.(int)$pricingProfile->id);
-        if(count($prices->debtor->categories))
-            $query->where('ppcpr.category_id IN ('.  implode(',', $prices->debtor->categories).')');
-        $db->setQuery($query);
-        $category_free = $db->loadAssoc();
-        
-        if($category_free !== null){
-            $price->cfg_pct_category_profile_discount = 100;
-            $price->ind_lbl_category_profile_discount = $category_free['name'];
+        if(count($prices->debtor->categories)){
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('ppcpr.category_id, c.name')
+                    ->from('#__sdi_pricing_profile_category_pricing_rebate ppcpr')
+                    ->join('LEFT', '#__sdi_category c ON c.id=ppcpr.category_id')
+                    ->where('ppcpr.pricing_profile_id='.(int)$pricingProfile->id)
+                    ->where('ppcpr.category_id IN ('.  implode(',', $prices->debtor->categories).')');
+            $db->setQuery($query);
+            $category_free = $db->loadAssoc();
+            
+            if($category_free !== null){
+                $price->cfg_pct_category_profile_discount = 100;
+                $price->ind_lbl_category_profile_discount = $category_free['name'];
+            }
         }
         
         // rebate based on category and supplier
