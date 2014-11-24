@@ -148,7 +148,7 @@ function cancel() {
 
 function savePerimeter() {
     if (jQuery('#t-perimeter').val() == '')
-    {
+    {   
         jQuery('#perimeter-recap').empty();
     }else{
         jQuery("#progress").css('visibility', 'visible');

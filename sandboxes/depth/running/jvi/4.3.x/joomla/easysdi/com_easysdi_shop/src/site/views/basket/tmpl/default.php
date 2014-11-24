@@ -414,7 +414,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             </div>
         </div>
 
-        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal show fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></h3>
@@ -577,7 +577,6 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                 if('undefined' == typeof app)
                     app = window.appname;
                 app.on("ready", function() {
-                    jQuery('#modal-perimeter').show()
                     initMiniMap();
                     initDraw();
 //                    jQuery('#perimeter-buffer').hide();
@@ -594,14 +593,14 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                         jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
                         <?php endif; ?>
                     <?php endif; ?>
-                    <?php if (!empty ($this->item->extent) && isset($this->item->extent->features)):
-                        if(is_string($this->item->extent->features)): ?>
-                            reprojectWKT("<?php echo $this->item->extent->features; ?>");
-                        <?php endif;?>
+                    <?php if (!empty ($this->item->extent) && isset($this->item->extent->features) && is_string($this->item->extent->features)):        ?>
+                        reprojectWKT("<?php echo $this->item->extent->features; ?>");
+                    <?php endif;?>
+                    <?php if (!empty($this->item->extent) && isset($this->item->extent->features)) : ?>
                         selectPerimeter<?php echo $this->item->extent->id; ?>();
                         reloadFeatures<?php echo $this->item->extent->id; ?>();
-                    <?php endif;?>
-                    jQuery('#modal-perimeter').hide();
+                        jQuery('#modal-perimeter').removeClass('show').addClass('hide');
+                    <?php endif; ?>
                 });
             });
         </script>
