@@ -73,19 +73,19 @@ INSERT [#__sdi_sys_entity] ([id], [ordering], [state], [value]) VALUES (2, 2, 1,
 SET IDENTITY_INSERT [#__sdi_sys_entity] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_stereotype] ON;
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (1, 1, 1, N'guid', N'^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$', N'CharacterString', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (1, 1, 1, N'guid', N'([A-Z0-9]{8}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{12})', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (2, 2, 1, N'text', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (3, 3, 1, N'locale', N'', NULL, NULL, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (4, 4, 1, N'number', N'^[\-+]?[0-9.]+$', N'Decimal', 2, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (5, 5, 1, N'date', N'^([0-9]{4}-[0-9]{2}-[0-9]{2})$', N'Date', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (4, 4, 1, N'number', N'[0-9.-]', N'Decimal', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (5, 5, 1, N'date', N'([0-9]{4}-[0-9]{2}-[0-9]{2})', N'Date', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (6, 6, 1, N'list', N'', NULL, NULL, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (7, 7, 1, N'link', N'^((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)$', N'URL', 1, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (8, 8, 1, N'datetime', N'^([0-9]{4}-[0-9]{2}-[0-9]{2})$', N'DateTime', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (7, 7, 1, N'link', N'((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)', N'URL', 1, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (8, 8, 1, N'datetime', N'([0-9]{4}-[0-9]{2}-[0-9]{2})', N'DateTime', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (9, 9, 1, N'textchoice', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (10, 10, 1, N'localechoice', N'', NULL, NULL, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (11, 11, 1, N'gemet', NULL, NULL, NULL, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (12, 12, 1, N'distance', N'^[\-+]?[0-9.]*[0-9]([Ee]\-?[0-9.]*[0-9])?$', N'Distance', 2, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (13, 13, 1, N'integer', N'^[\-+]?[0-9]+$', N'Integer', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (12, 12, 1, N'distance', N'[0-9.-]', N'Distance', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (13, 13, 1, N'integer', N'[0-9.-]', N'Integer', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (14, 14, 1, N'file', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (15, 15, 1, N'geographicextent', NULL, NULL, NULL, 2);
 SET IDENTITY_INSERT [#__sdi_sys_stereotype] OFF;

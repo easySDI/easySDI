@@ -312,8 +312,7 @@ CREATE TABLE #__sdi_catalog (
     oninitrunsearch integer DEFAULT 0,
     cswfilter text,
     access integer DEFAULT 1 NOT NULL,
-    asset_id bigint DEFAULT 0::bigint NOT NULL,
-    scrolltoresults SMALLINT DEFAULT 1 NOT NULL 
+    asset_id bigint DEFAULT 0::bigint NOT NULL
 );
 
 
