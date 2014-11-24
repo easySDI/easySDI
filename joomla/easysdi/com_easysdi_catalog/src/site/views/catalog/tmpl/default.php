@@ -40,7 +40,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
             showAdvanced();
         <?php endif; ?>
         <?php if ($this->item->oninitrunsearch && JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'false' ): ?>
+            //autosubmit search form
             submitForm();
+        <?php endif; ?>
+        <?php if ($this->item->scrolltoresults && JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true' ): ?>
+            //autoscroll to results
+            jQuery(window).scrollTop(jQuery('#sdi-search-results').offset().top);
         <?php endif; ?>
     });
 
@@ -48,7 +53,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
 
 
 
-<form class="form-horizontal form-validate sdi-catalog-fe-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog' ); ?>#results" method="get" id="searchform" name="searchform" enctype="multipart/form-data">
+<form class="form-horizontal form-validate sdi-catalog-fe-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog' ); ?>" method="get" id="searchform" name="searchform" enctype="multipart/form-data">
     <?php 
     $tmpl = JFactory::getApplication()->input->get('tmpl', null, 'string');
     if(isset($tmpl)):?>
@@ -78,8 +83,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
 $results = $this->getResults();
 if ($results):
     ?>
-    <a name="results"></a>
-    <div class="catalog-searchresults">
+    <div class="catalog-searchresults" id="sdi-search-results">
         <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') . ' ' . JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
         <?php
         // Build of extendend XML for each result entry
