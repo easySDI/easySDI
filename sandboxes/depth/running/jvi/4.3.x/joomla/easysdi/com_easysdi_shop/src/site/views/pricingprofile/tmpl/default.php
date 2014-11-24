@@ -30,7 +30,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 </script>
 
 <div class="shop front-end-edit">
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGORGANISM_TITLE'); ?> :</h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGORGANISM_TITLE'); ?> : <?php echo $this->item->organism->name;?></h1>
     
     <div class="well">
     

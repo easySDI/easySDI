@@ -183,7 +183,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 endforeach;
             endforeach;
             
-            $session = JFactory::getSession();
+            $session =& JFactory::getSession();
             $session->set('basketData', $basketData);
 
             //Save perimeters
@@ -250,7 +250,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
      * @since 4.3.0
      */
     private function saveSuppliers($basket, $pricing, $pricingOrder){
-        $session = JFactory::getSession();
+        $session =& JFactory::getSession();
         $basketProcess = array(
             'treated'   => 0,
             'total'     => $basket->extractionsNb,
@@ -290,7 +290,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         );
 
         if($pricingOrderSupplier->save($pricingOrderSupplierData) === true){
-            $session = JFactory::getSession();
+            $session =& JFactory::getSession();
             $basketProducts = $session->get('basketProducts');
             // sdi_pricing_order_supplier_product
             foreach($supplier->products as $productId => $product){

@@ -98,8 +98,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 //Parse fileurl to retrieve user/pwd
                 $url = parse_url($this->_item->fileurl);
                             
-                $this->_item->userurl = isset($url['user']) ? $url['user'] : '';
-                $this->_item->passurl = isset($url['pass']) ? $url['pass'] : '';
+                $this->_item->userurl = $url['user'];
+                $this->_item->passurl = $url['pass'];
                 unset($url['user'], $url['pass']);
 
                 $this->_item->fileurl = Easysdi_shopHelper::unparse_url($url);
