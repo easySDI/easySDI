@@ -19,6 +19,11 @@ require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
 jimport('joomla.application.component.helper');
 
 abstract class Easysdi_shopHelper {
+    
+    // PRICING
+    const PRICING_FREE                  = 1;
+    const PRICING_FEE_WITHOUT_PROFILE   = 2;
+    const PRICING_FEE_WITH_PROFILE      = 3;
 
     /**
      * 
@@ -406,8 +411,11 @@ abstract class Easysdi_shopHelper {
             // calculate prices by supplier
             $prices->suppliers = array();
             $prices->cal_total_amount_ti = 0;
+            $prices->hasFreeWithoutPricingProfileProduct = false;
             foreach($basket->extractions as $supplier_id => $supplier){
                 $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
+                if($prices->suppliers[$supplier_id]->hasFreeWithoutPricingProfileProduct)
+                    $prices->hasFreeWithoutPricingProfileProduct = true;
                 $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
             }
             
@@ -432,7 +440,10 @@ abstract class Easysdi_shopHelper {
             $prices->cal_fee_ti = self::rounding($prices->cal_fee_ti, $prices->cfg_rounding);
             
             // total amount for the platform
-            $prices->cal_total_amount_ti += $prices->cal_fee_ti;
+            if($prices->hasFreeWithoutPricingProfileProduct)
+                unset($prices->cal_total_amount_ti);
+            else
+                $prices->cal_total_amount_ti += $prices->cal_fee_ti;
             
             $basket->pricing = $prices;
         }
@@ -491,8 +502,11 @@ abstract class Easysdi_shopHelper {
         $provider->products = array();
         $provider->cal_total_amount_ti = 0;
         $provider->cal_total_rebate_ti = 0;
+        $provider->hasFreeWithoutPricingProfileProduct = false;
         foreach($supplier->items as $product){
             $provider->products[$product->id] = self::basketPriceCalculationByProduct($product, $prices);
+            if($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE)
+                $provider->hasFreeWithoutPricingProfileProduct = true;
             $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
             $provider->cal_total_rebate_ti += $provider->products[$product->id]->cal_total_rebate_ti;
         }
@@ -501,7 +515,12 @@ abstract class Easysdi_shopHelper {
         $provider->cal_fee_ti = ($provider->cal_total_amount_ti>0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
         
         // total amount for this provider
-        $provider->cal_total_amount_ti += $provider->cal_fee_ti;
+        if($provider->hasFreeWithoutPricingProfileProduct){
+            unset($provider->cal_total_amount_ti);
+            unset($provider->cal_total_rebate_ti);
+        }
+        else
+            $provider->cal_total_amount_ti += $provider->cal_fee_ti;
         
         return $provider;
     }
@@ -521,7 +540,7 @@ abstract class Easysdi_shopHelper {
         
         $price->cfg_pricing_type = $product->pricing;
         
-        if($price->cfg_pricing_type != 3)
+        if($price->cfg_pricing_type != self::PRICING_FEE_WITH_PROFILE)
             return $price;
         
         // get base parameters to calculate product price
