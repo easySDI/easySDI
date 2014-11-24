@@ -99,7 +99,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         // Get the user data.
         $data = $model->getData();
         
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $session->set('basketProcess', array('total' => 0));
         
         // Attempt to save the data.
@@ -231,7 +231,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         /*********************************************************/
         /** HACK TO PASS MESSAGE ACCROSS JAVASCRIPT REDIRECTION **/
         /*********************************************************/
-        $app =& JFactory::getApplication();
+        $app = JFactory::getApplication();
         $messageQueue = $app->getMessageQueue();
         
         if(count($messageQueue)>0){

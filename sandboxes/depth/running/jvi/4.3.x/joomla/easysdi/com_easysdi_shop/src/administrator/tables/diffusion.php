@@ -74,7 +74,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['deposit'] = null;
             $array['deposit_hidden'] = null;
             $array['notifieduser_id'] = null;
-        } else {
+        } elseif(isset($form['perimeter'])) {
             $array['perimeter'] = $form['perimeter'];
             $array['property'] = $form['property'];
         }
