@@ -599,6 +599,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     <?php if (!empty($this->item->extent) && isset($this->item->extent->features)) : ?>
                         selectPerimeter<?php echo $this->item->extent->id; ?>();
                         reloadFeatures<?php echo $this->item->extent->id; ?>();
+                        jQuery('#modal-perimeter').removeClass('show').addClass('hide');
                     <?php endif; ?>
                 });
             });
