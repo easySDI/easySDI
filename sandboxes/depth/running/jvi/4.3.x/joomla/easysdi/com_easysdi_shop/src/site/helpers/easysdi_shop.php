@@ -420,20 +420,25 @@ abstract class Easysdi_shopHelper {
             }
             
             // set the platform tax
-            $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
-
-            if( ($prices->cfg_free_data_fee==true || $prices->cal_total_amount_ti>0) && count($prices->debtor->categories)){
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true)
-                        ->select('c.overall_fee, c.name')
-                        ->from('#__sdi_category c')
-                        ->where('c.id IN ('.implode(',', $prices->debtor->categories).') AND c.overall_fee IS NOT NULL');
-                $db->setQuery($query, 0, 1);
-                $category = $db->loadObject();
+            if($prices->cal_total_amount_ti==0 && !$prices->cfg_free_data_fee)
+                $prices->cal_fee_ti = 0;
+            else{
+                $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
                 
-                if($category !== null){
-                    $prices->cal_fee_ti = $category->overall_fee;
-                    $prices->ind_lbl_category_order_fee = $category->name;
+                if(count($prices->debtor->categories)){
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true)
+                            ->select('c.overall_fee, c.name')
+                            ->from('#__sdi_category c')
+                            ->where('c.overall_fee IS NOT NULL')
+                            ->where('c.id IN ('.implode(',', $prices->debtor->categories).')');
+                    $db->setQuery($query, 0, 1);
+                    $category = $db->loadObject();
+
+                    if($category !== null){
+                        $prices->cal_fee_ti = $category->overall_fee;
+                        $prices->ind_lbl_category_order_fee = $category->name;
+                    }
                 }
             }
             
