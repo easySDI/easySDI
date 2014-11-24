@@ -602,19 +602,19 @@ INSERT INTO #__sdi_sys_serviceversion (ordering, state, value) VALUES (8, 1, '2.
 INSERT INTO #__sdi_sys_spatialoperator (ordering, state, value) VALUES (1, 1, 'within');
 INSERT INTO #__sdi_sys_spatialoperator (ordering, state, value) VALUES (3, 1, 'touch');
 
-INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (1, 1, 'guid', '([A-Z0-9]{8}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{12})', 'CharacterString', 2, 1);
+INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (1, 1, 'guid', '^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$', 'CharacterString', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (2, 1, 'text', '', 'CharacterString', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (3, 1, 'locale', '', NULL, NULL, 1);
-INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (4, 1, 'number', '[0-9.-]', 'Decimal', 2, 1);
-INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (5, 1, 'date', '([0-9]{4}-[0-9]{2}-[0-9]{2})', 'Date', 2, 1);
+INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (4, 1, 'number', '^[\-+]?[0-9.]+$', 'Decimal', 2, 1);
+INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (5, 1, 'date', '^([0-9]{4}-[0-9]{2}-[0-9]{2})$', 'Date', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (6, 1, 'list', '', NULL, NULL, 1);
-INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (7, 1, 'link', '((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)', 'URL', 1, 1);
-INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (8, 1, 'datetime', '([0-9]{4}-[0-9]{2}-[0-9]{2})', 'DateTime', 2, 1);
+INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (7, 1, 'link', '^((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)$', 'URL', 1, 1);
+INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (8, 1, 'datetime', '^([0-9]{4}-[0-9]{2}-[0-9]{2})$', 'DateTime', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (9, 1, 'textchoice', '', 'CharacterString', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (10, 1, 'localechoice', '', NULL, NULL, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (11, 1, 'gemet', NULL, NULL, NULL, 1);
-INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (12, 1, 'distance', '[0-9.-]', 'Distance', 2, 1);
-INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (13, 1, 'integer', '[0-9.-]', 'Integer', 2, 1);
+INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (12, 1, 'distance', '^[\-+]?[0-9.]*[0-9]([Ee]\-?[0-9.]*[0-9])?$', 'Distance', 2, 1);
+INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (13, 1, 'integer', '^[\-+]?[0-9]+$', 'Integer', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (14, 1, 'file', '', 'CharacterString', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (15, 1, 'geographicextent', NULL, NULL, NULL, 2);
 
