@@ -764,7 +764,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         if ($cascade) {
             $query = $this->db->getQuery(true)
-                    ->select('m.id')
+                    ->select('a.id')
                     ->from('#__sdi_metadata a')
                     ->innerJoin('#__sdi_versionlink vl ON vl.child_id=m.version_id')
                     ->innerJoin('#__sdi_metadata md ON md.version_id=vl.parent_id')
