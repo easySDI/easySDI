@@ -321,7 +321,7 @@ var buildMetadataDropDown = function(resource){
     var section = [];
     section.push(buildDropDownItem(resource, 'metadata.preview'));
     
-    if(resource.rights.metadataEditor)
+    if(resource.rights.metadataEditor && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED])>-1)
         section.push(buildDropDownItem(resource, 'metadata.edit'));
     
     if(resource.rights.metadataResponsible)
