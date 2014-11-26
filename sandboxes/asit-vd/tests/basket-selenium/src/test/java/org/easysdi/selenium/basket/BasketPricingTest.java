@@ -74,7 +74,7 @@ public class BasketPricingTest extends TestNgTestBase {
     /* Fee */
     private final SdiMetadata mdProdCommuneFee = new SdiMetadata("prodCommuneFee", "9");
     /* Has profile GDB-com-15 */
-    private final SdiMetadata mdrodCommuneProfileGDB = new SdiMetadata("prodCommuneProfileGDB", "11");
+    private final SdiMetadata mdProdCommuneProfileGDB = new SdiMetadata("prodCommuneProfileGDB", "11");
     /* Free */
     private final SdiMetadata mdProdCommuneFree = new SdiMetadata("prodCommuneFree", "10");
 
@@ -98,6 +98,7 @@ public class BasketPricingTest extends TestNgTestBase {
     private final SdiMetadata mdProdCantonProfileGDB = new SdiMetadata("prodCantonProfileGDB", "5");
     /* Has profile can-10 */
     private final SdiMetadata mdProdCantonProfile = new SdiMetadata("prodCantonProfile", "8");
+    private final SdiMetadata mdProdCantonProfile2 = new SdiMetadata("ProdCantonProfile2", "12");
     /* Fee */
     private final SdiMetadata mdProdCantonFee = new SdiMetadata("prodCantonFee", "7");
 
@@ -107,6 +108,7 @@ public class BasketPricingTest extends TestNgTestBase {
     private final SdiUser cliMembre = new SdiUser("commune", "cliMembre", "987654321");
     private final SdiUser cliReseaux = new SdiUser("reseaux", "cliReseaux", "987654321");
     private final SdiUser cliSansCategorie = new SdiUser("sansCategorie", "cliSansCategorie", "987654321");
+    private final SdiUser cliDoubleCat = new SdiUser("deuxCatégories", "cliDoubleCat", "987654321");
 
     /**
      * Run before tests in this class
@@ -136,8 +138,8 @@ public class BasketPricingTest extends TestNgTestBase {
         login(cliSansCategorie);
         SdiBasket basket = new SdiBasket("clientWithoutCateg1ProdWithProfileRounding", "100000");
         basket.metadatas.add(mdProdCantonProfile);
-        // 1.- for 1sqkm + 0.08.- VAT + 25.- Fixed processing fee +  50.- platform = 85.-
-        Assert.assertEquals(getBasketTotalPrice(basket), "76.08 CHF");
+        // 1.- for 1sqkm + 0.08.- VAT + 25.- Fixed processing fee +  50.- platform = 76.08.- rounded at 76.10
+        Assert.assertEquals(getBasketTotalPrice(basket), "76.10 CHF");
     }
 
     /**
@@ -164,6 +166,23 @@ public class BasketPricingTest extends TestNgTestBase {
         // All prods free -> 0.00
         Assert.assertEquals(getBasketTotalPrice(basket), "0.00 CHF");
     }
+    
+    
+    /**
+     * Test a client with 2 categories, a product with with a profile.
+     */
+    @Test
+    public void client2Categ1ProdWithProfile() {
+        login(cliDoubleCat);
+        SdiBasket basket = new SdiBasket("client2Categ1ProdWithProfile", "1000000");
+        basket.metadatas.add(mdProdCantonProfile);
+        // This user is in an organism with 2 categories, the provider gives 10% & 20% rebates
+        // The higher rebates should be used
+        // 10.- for 1sqkm *0.8 (rebate) => 8.- *1.08 (VAT) = 8.64, rounded to 8.65
+        // + 25.- Fixed processing fee +  50.- platform = 83.65.-
+        Assert.assertEquals(getBasketTotalPrice(basket), "83.65 CHF");
+    }    
+  
 
     /**
      * Test a member client, a product with with a profile.
@@ -176,6 +195,37 @@ public class BasketPricingTest extends TestNgTestBase {
         // (20.- for 2sqkm * 0.85)=> 17.- + 1.6.- VAT + 25.- Fixed processing fee +  5.- platform (special category) = 48.36.- rounded at 48.35.-
         Assert.assertEquals(getBasketTotalPrice(basket), "48.35 CHF");
     }
+
+    /**
+     * Test a member client, a product with with a profile.
+     */
+    @Test
+    public void member2ProdWithProfileCan() {
+        login(cliMembre);
+        SdiBasket basket = new SdiBasket("member2ProdWithProfileCan", "2000000");
+        basket.metadatas.add(mdProdCantonProfile);
+        basket.metadatas.add(mdProdCantonProfile2);
+        //  (20.- for 2sqkm * 0.85)=> 17.- *1.08 VAT  // prod 1 // 18.36
+        //+ (20.- for 2sqkm * 0.85)=> 17.- *1.08 VAT  // prod 2 // 18.36      
+        //+ 25.- Fixed processing fee +  5.- platform (special category) = 66.72.- rounded at 66.70.-
+        Assert.assertEquals(getBasketTotalPrice(basket), "66.70 CHF");
+    }
+    
+    /**
+     * Test a member client, a product with with a profile.
+     */
+    @Test
+    public void member1ProdWithProfileCan1ProdWithProfileCom() {
+        login(cliMembre);
+        SdiBasket basket = new SdiBasket("member2ProdWithProfileCan", "2000000");
+        basket.metadatas.add(mdProdCantonProfile);
+        basket.metadatas.add(mdProdCommuneProfileGDB);
+        //  (20.- for 2sqkm * 0.85)=> 17.- *1.08 VAT  // prod 1 // 18.36 rounded at 18.35
+        //  + 25.- Fixed processing fee 
+        //+ (30.- for 2sqkm * 0.85)=> 25.5.- *1.08 VAT  // prod 2 // 27.54 rounded at 27.55  
+        //+  5.- platform (special category) = 75.90
+        Assert.assertEquals(getBasketTotalPrice(basket), "75.90 CHF");
+    }    
 
     /**
      * Test a member client, a product with with a fee product.
@@ -274,7 +324,8 @@ public class BasketPricingTest extends TestNgTestBase {
      * Test an internal order from thirdparty with 1 product with tarification
      * profile. <br/>
      * provider: canton<br/>
-     * client: canton<br/>
+     * client: cliSansCategorie<br/>
+     * thirdparty: canton<br/>
      * total should be 0.00 because all products are internal (because of
      * thirdparty)
      */
@@ -290,7 +341,8 @@ public class BasketPricingTest extends TestNgTestBase {
     /**
      * Test an internal order from thirdparty with 1 product with fee. <br/>
      * provider: Canton<br/>
-     * client: Canton<br/>
+     * client: cliSansCategorie<br/>
+     * thirdparty: Canton<br/>
      * total should be 0.00 because all products are internal (because of
      * thirdparty)
      */
@@ -306,13 +358,14 @@ public class BasketPricingTest extends TestNgTestBase {
     /**
      * Test an internal order from thirdparty with 1 product with free. <br/>
      * provider: Canton<br/>
-     * client: Canton<br/>
+     * client: cliMembre<br/>
+     * thirdparty: Canton<br/>
      * total should be 0.00 because all products are internal (because of
      * thirdparty)
      */
     @Test
-    public void thirdPartyMakesInternalOrder1ProdWithFfeeCanton() {
-        login(cliSansCategorie);
+    public void thirdPartyMemberMakesInternalOrder1ProdWithFeeCanton() {
+        login(cliMembre);
         SdiBasket basket = new SdiBasket("thirdPartyMakesInternalOrder1ProdWithFfeeCanton", "1000000");
         basket.metadatas.add(mdProdCantonFee);
         basket.setThridparty(orgCanton);
@@ -358,7 +411,6 @@ public class BasketPricingTest extends TestNgTestBase {
     public void selectThirdParty(SdiOrganism org) {
         getBasketPage();
         new Select(driver.findElement(By.id("thirdparty"))).selectByValue(org.getId().toString());
-        
 
         //TODO Change this for a functionnal webdriverwait
         try {
@@ -440,7 +492,7 @@ public class BasketPricingTest extends TestNgTestBase {
                     + "    }"
                     + ");");
         }
-        new WebDriverWait(driver, 2).until(ExpectedConditions.textToBePresentInElementLocated(By.id("perimeter-recap"), "Surface"));
+        new WebDriverWait(driver, 5).until(ExpectedConditions.textToBePresentInElementLocated(By.id("perimeter-recap"), "Surface"));
 
     }
 
