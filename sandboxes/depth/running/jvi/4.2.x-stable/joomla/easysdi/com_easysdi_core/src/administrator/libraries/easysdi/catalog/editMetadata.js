@@ -443,11 +443,7 @@ js('document').ready(function() {
     js('#search_table').dataTable({
         "bFilter": false,
         "oLanguage": {
-            "sLengthMenu": "Afficher _MENU_ resultats par page",
-            "sZeroRecords": "Aucune réponse",
-            "sInfo": "Afficher _START_ à _END_ de _TOTAL_ resultats",
-            "sInfoEmpty": "Afficher 0 à 0 de 0 resultats",
-            "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
+            sUrl: 'http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json'
         },
         aaData: null,
         aoColumnDefs: [

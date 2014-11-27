@@ -21,23 +21,19 @@ $document->addScript('components/com_easysdi_core/views/version/tmpl/version.js'
 ?>
 <?php
 require_once JPATH_BASE.'/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
-/* bootbox language */
+/* datatable language */
 $ldao = new SdiLanguageDao();
 $user = new sdiUser();
 $userParams = json_decode($user->juser->params);
-$dtLanguage = $ldao->getDefaultLanguage()->gemet;
+$dtLanguage = $ldao->getDefaultLanguage()->title;
 foreach($ldao->getAll() as $dtLang){
     if($dtLang->code === $userParams->language){
-        $dtLanguage = $dtLang->gemet;
+        $dtLanguage = $dtLang->title;
     }
 }
 ?>
 <script type="text/javascript">
-    var dtLang = "<?php switch($dtLanguage){
-        case 'de': echo 'German'; break;
-        case 'fr': echo 'French'; break;
-        default: echo 'English';
-    }?>";
+    var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
 </script>
 <?php
 if ($this->item) :
