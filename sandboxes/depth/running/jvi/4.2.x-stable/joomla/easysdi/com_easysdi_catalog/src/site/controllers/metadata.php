@@ -582,10 +582,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             if (isset($this->data['viral']) && $this->data['viral'] == 1) {
                 $virality = $this->changeStatusViral($this->data['id'], $this->data['metadatastate_id'], $this->data['published']);
             }
+            
+            $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
 
-
-            if ($smda->update($xml) && (!isset($virality) || $virality === true)) {
+            if ($model->save($data, $xml) && (!isset($virality) || $virality === true)) {
                 $this->saveTitle($data['guid']);
+                
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
