@@ -6,6 +6,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumChildtype.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRenderType.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumStereotype.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRelationScope.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
@@ -129,6 +130,8 @@ class FormGenerator {
             $this->db->setQuery($query);
             $result = $this->db->loadObject();
 
+            $scope_id = $this->getFieldScope($this->item->id, $result->relationscope_id, $result->editorrelationscope_id);
+            
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
 
@@ -136,6 +139,8 @@ class FormGenerator {
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
                     $relation->appendChild($class);
 
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
+                    
                     $parent->appendChild($relation);
                     $root = $class;
                     $this->ajaxXpath = $relation->getNodePath();
@@ -273,9 +278,8 @@ class FormGenerator {
             if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
-                
+
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
             }
         }
 
@@ -295,12 +299,15 @@ class FormGenerator {
 
         foreach ($results as $result) {
 
+            $scope_id = $this->getFieldScope($this->item->id, $result->relationscope_id, $result->editorrelationscope_id);
+
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
 
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':level', $level);
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
 
                     switch ($result->class_stereotype_id) {
                         case EnumStereotype::$GEOGRAPHICEXTENT:
@@ -336,34 +343,15 @@ class FormGenerator {
                         $attribute->appendChild($this->structure->importNode($st, true));
                     }
 
-                    if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
-                        switch ($result->editorrelationscope_id) {
-
-                            // Visible
-                            case 2:
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                                break;
-                            // Hidden
-                            case 3:
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
-                                break;
-                        }
-                    } else {
-                        switch ($result->relationscope_id) {
-
-                            // Visible
-                            case 2:
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                                break;
-                            // Hidden
-                            case 3:
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
-                                break;
-                        }
+                    switch ($scope_id) {
+                        // readOnly
+                        case 2:
+                        case 3:
+                            $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
+                            break;
                     }
 
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'scopeId', $scope_id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
@@ -920,7 +908,7 @@ class FormGenerator {
 
                     $field->setAttribute('type', 'groupedlist');
                     $field->setAttribute('label', EText::_($guid));
-                    
+
                     if ($upperbound > 1) {
                         $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode);
                         $default = array();
@@ -929,20 +917,20 @@ class FormGenerator {
                                 $default[] = $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $node->firstChild->nodeValue), true);
                             }
                         }
-                        
+
                         $field->setAttribute('default', implode(',', $default));
                         $field->setAttribute('type', 'MultipleDefaultList');
                         $field->appendChild($option);
-                    }else{
+                    } else {
                         $field->setAttribute('default', $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $attribute->firstChild->nodeValue), true));
                         $group->appendChild($option);
                         $field->appendChild($group);
                     }
-                    
-                    
+
+
                     break;
                 case EnumStereotype::$BOUNDARY:
-                    
+
                     if ($guid != '') {
                         $field->setAttribute('label', EText::_($guid));
                     } else {
@@ -963,7 +951,7 @@ class FormGenerator {
                             }
                         }
 
-                        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()),12,15);
+                        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()), 12, 15);
                         $field->setAttribute('name', $name);
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
@@ -1066,9 +1054,9 @@ class FormGenerator {
         $validator = $this->getValidatorClass($attribute);
 
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
-        $field->setAttribute('type', 'calendar');
+        $field->setAttribute('type', 'text');
         $field->setAttribute('class', $validator);
-        $field->setAttribute('format', '%Y-%m-%d');
+        //$field->setAttribute('format', '%Y-%m-%d');
         $field->setAttribute('label', EText::_($guid)); //
         $field->setAttribute('description', EText::_($guid, 2)); //
 
@@ -1511,22 +1499,48 @@ class FormGenerator {
 
         return $result->guid;
     }
-    
+
     /**
      * 
      * @param DOMElement $element
      * @return \DOMElement
      */
-    private function clearNodeValue(DOMElement $element){
+    private function clearNodeValue(DOMElement $element) {
         $nodes = $element->getElementsByTagNameNS('*', '*');
-        
+
         foreach ($nodes as $node) {
-            if(!$this->hasChildElement($node)){
+            if (!$this->hasChildElement($node)) {
                 $node->nodeValue = NULL;
             }
         }
-        
+
         return $element;
+    }
+
+    /**
+     * get scope for specific user and field
+     * 
+     * @param int $metadata_id
+     * @param int $relationscope_id
+     * @param int $editorrelationscope_id
+     * @return int
+     */
+    private function getFieldScope($metadata_id, $relationscope_id, $editorrelationscope_id) {
+        $rights = array(EnumRelationScope::HIDDEN);
+
+        if ($this->user->authorizeOnMetadata($metadata_id, sdiUser::resourcemanager) || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataresponsible)) {
+            if (!empty($relationscope_id)) {
+                $rights[] = $relationscope_id;
+            }
+        }
+
+        if ($this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataeditor)) {
+            if (!empty($editorrelationscope_id)) {
+                $rights[] = $editorrelationscope_id;
+            }
+        }
+
+        return min($rights);
     }
 
 }
