@@ -3,20 +3,26 @@ js = jQuery.noConflict();
 var tabIsOpen;
 var resourcetypes;
 
-js('document').ready(function() {
+js('document').ready(function () {
+
+    // Remove scope-hidden field
+    removeHidden();
+
+    // change field into readonly
+    disableVisible();
 
     /**
      * Add filedset to from when user click on add-btn
      * 
      * Add listner on add buttons
      */
-    js(document).on('click', '.add-btn', function() {
+    js(document).on('click', '.add-btn', function () {
         var relid = js(this).attr('data-relid');
         var parent_path = js(this).attr('data-parentpath');
         var uuid = getUuid('add-btn', this.id);
         var button = js(this);
 
-        js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+        js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function (data) {
 
             if (js('.fds' + uuid).length > 0) {
                 js('.fds' + uuid).last().after(data);
@@ -29,33 +35,31 @@ js('document').ready(function() {
                 chosenRefresh();
             }
 
-            js(data).find('button').each(function() {
-                idbtn = js(this).attr('id');
-                if ('undefined' !== typeof idbtn)
-                    Calendar.setup({
-                        inputField: idbtn.replace('_img', ''),
-                        ifFormat: "%Y-%m-%d",
-                        button: idbtn,
-                        align: "Tl",
-                        singleClick: true,
-                        firstDay: 1
-                    });
+            js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
+                calendarSetup(js(this).attr('id'));
             });
-            
+
+            // add tooltips on new fields
             addTooltips();
             
+            // remove hidden fields
+            removeHidden();
+            
+            // change field into readonly
+            disableVisible();
+
             // refresh validator
             document.formvalidator.attachToForm(js('#form-metadata'));
 
             setRelationAction(button);
 
             // Set bouton state in data block
-            js(data).find('.add-btn').each(function() {
+            js(data).find('.add-btn').each(function () {
                 setRelationAction(js(this));
             });
 
             // Set attribute bouton state in data block
-            js(data).find('.attribute-add-btn').each(function() {
+            js(data).find('.attribute-add-btn').each(function () {
                 setAttributeAction(js(this).parent());
             });
 
@@ -66,15 +70,15 @@ js('document').ready(function() {
     /**
      * Remove fieldset from form
      */
-    js(document).on('click', '.remove-btn', function() {
+    js(document).on('click', '.remove-btn', function () {
         var id = this.id;
         var xpath = js(this).attr('data-xpath');
 
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function(result) {
+        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
             if (result) {
 
                 var uuid = getUuid('remove-btn', id);
-                js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+                js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function (data) {
                     var response = js.parseJSON(data);
                     if (response.success) {
 
@@ -89,10 +93,10 @@ js('document').ready(function() {
     /**
      * Collapse inner-fieldset
      */
-    js(document).on('click', '.collapse-btn', function() {
+    js(document).on('click', '.collapse-btn', function () {
         var uuid = getUuid('collapse-btn', this.id);
         var button = js(this);
-        js('#inner-fds' + uuid).toggle('fast', function() {
+        js('#inner-fds' + uuid).toggle('fast', function () {
             if (js('#inner-fds' + uuid).is(':visible')) {
                 button.children().first().removeClass('icon-arrow-right').addClass('icon-arrow-down');
             } else {
@@ -106,7 +110,7 @@ js('document').ready(function() {
     /**
      * Open or close all fieldset
      */
-    js(document).on('click', '#btn_toggle_all', function() {
+    js(document).on('click', '#btn_toggle_all', function () {
         toogleAll(js(this));
     });
 
@@ -114,49 +118,44 @@ js('document').ready(function() {
     /**
      * set initial state of relation action button
      */
-    js('.add-btn').each(function() {
+    js('.add-btn').each(function () {
         setRelationAction(js(this));
     });
 
     /**
      * Set initial state of attribute action button
      */
-    js('.attribute-action').each(function() {
+    js('.attribute-action').each(function () {
         setAttributeAction(js(this));
     });
 
     /**
      * Add field
      */
-    js(document).on('click', '.attribute-add-btn', function() {
+    js(document).on('click', '.attribute-add-btn', function () {
         var parent = js(this).parent();
         var relid = parent.attr('data-relid');
         var parent_path = parent.attr('data-parentpath');
         var uuid = getUuid('attribute-add-btn', this.id);
 
 
-        js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+        js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function (data) {
 
             js('.attribute-group' + uuid).last().after(data);
             if (js(data).find('select') !== null) {
                 chosenRefresh();
             }
 
-            js(data).find('button').each(function() {
-                var idbtn = js(this).attr('id');
-                Calendar.setup({
-                    inputField: idbtn.replace('_img', ''),
-                    ifFormat: "%Y-%m-%d",
-                    button: idbtn,
-                    align: "Tl",
-                    singleClick: true,
-                    firstDay: 1
-                });
+            js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
+                calendarSetup(js(this).attr('id'));
             });
 
             // refresh validator
             document.formvalidator.attachToForm(js('#form-metadata'));
             setAttributeAction(parent);
+            
+            // change field into readonly
+            disableVisible();
 
         });
 
@@ -165,13 +164,13 @@ js('document').ready(function() {
     /**
      * remove field from form
      */
-    js(document).on('click', '.attribute-remove-btn', function() {
+    js(document).on('click', '.attribute-remove-btn', function () {
         var parent = js(this).parent();
         var uuid = getUuid('attribute-remove-btn', this.id);
 
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function(result) {
+        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
             if (result) {
-                js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+                js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function (data) {
                     var response = js.parseJSON(data);
                     if (response.success) {
                         js('#attribute-group' + uuid).remove();
@@ -185,7 +184,7 @@ js('document').ready(function() {
     /**
      * Retrieves resource types and displays or not the checkboxes versions. 
      */
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getResourceType', function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getResourceType', function (data) {
         resourcetypes = js.parseJSON(data);
 
         for (var i in resourcetypes) {
@@ -199,10 +198,10 @@ js('document').ready(function() {
     /**
      * Boundaries NEW inputs events
      */
-    js('input[id$=_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal]').each(function() {
+    js('input[id$=_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal]').each(function () {
         var parentPath = js(this).attr('id').replace('jform_', '').replace('_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal', '');
 
-        js('input[id^=jform_' + parentPath + '_sla_gmd_dp_][id$=_sla_gco_dp_Decimal]').on('change', function() {
+        js('input[id^=jform_' + parentPath + '_sla_gmd_dp_][id$=_sla_gco_dp_Decimal]').on('change', function () {
             clearbbselect(parentPath.replace('_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox', ''));
             drawBB(parentPath);
         });
@@ -212,8 +211,8 @@ js('document').ready(function() {
     /**
      * displays or not the checkboxes versions on change event
      */
-    js('#resourcetype_id').change(function() {
-        js('#resourcetype_id option:selected').each(function() {
+    js('#resourcetype_id').change(function () {
+        js('#resourcetype_id option:selected').each(function () {
             if (js(this).val() == 0) {
                 for (var i in resourcetypes) {
                     if (resourcetypes[i].versioning != 0) {
@@ -230,31 +229,23 @@ js('document').ready(function() {
         });
     });
 
-    // Change publish date field to Calendar field
-    Calendar.setup({
-        // Id of the input field
-        inputField: "publish_date",
-        // Format of the input field
-        ifFormat: "%Y-%m-%d",
-        // Trigger for the calendar (button ID)
-        button: "publish_date_img",
-        // Alignment (defaults to "Bl")
-        align: "Tl",
-        singleClick: true,
-        firstDay: 1
+    // Change date field to Calendar field
+    js('.validate-sdidate, .validate-sdidatetime').each(function () {
+        calendarSetup(js(this).attr('id'));
     });
+
 
     /**
      * When the preview modal is visible, we colorize the XML.
      */
-    js('#previewModal').on('show.bs.modal', function() {
+    js('#previewModal').on('show.bs.modal', function () {
         SyntaxHighlighter.highlight();
     });
 
     /**
      * Add validation on non-required multi-lingual fields
      */
-    js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function() {
+    js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function () {
         var brothers = js(this).closest('.i18n').find('div.controls > input, div.controls > textarea, div.controls > select'),
                 labels = js(this).closest('.i18n').find('div.control-label > label');
         if (this.value !== '') {
@@ -262,7 +253,7 @@ js('document').ready(function() {
         }
         else {
             var required = false;
-            js.each(brothers, function(i, brother) {
+            js.each(brothers, function (i, brother) {
                 if (brother.value !== '')
                     required = true;
 
@@ -285,7 +276,7 @@ js('document').ready(function() {
      * @param {string} task The task to execute.
      * @returns {Boolean}
      */
-    Joomla.submitbutton = function(task, rel) {
+    Joomla.submitbutton = function (task, rel) {
 
         if (task == '') {
             return false;
@@ -329,7 +320,7 @@ js('document').ready(function() {
                         url: baseUrl + task,
                         type: js('#form-metadata').attr('method'),
                         data: js('#form-metadata').serialize(),
-                        success: function(data) {
+                        success: function (data) {
 
                             var response = js.parseJSON(data);
                             if (response.success) {
@@ -346,7 +337,7 @@ js('document').ready(function() {
                         url: baseUrl + task,
                         type: js('#form-metadata').attr('method'),
                         data: js('#form-metadata').serialize(),
-                        success: function(data) {
+                        success: function (data) {
 
                             var response = js.parseJSON(data);
                             if (response.success) {
@@ -372,14 +363,14 @@ js('document').ready(function() {
                     if (document.formvalidator.isValid(form)) {
                         js('html, body').animate({scrollTop: 0}, 'slow');
                         var rel = js.parseJSON(rel);
-                        js.get(baseUrl + 'option=com_easysdi_core&task=version.getPublishRight&metadata_id=' + rel.metadata, function(data) {
+                        js.get(baseUrl + 'option=com_easysdi_core&task=version.getPublishRight&metadata_id=' + rel.metadata, function (data) {
                             var response = js.parseJSON(data);
                             if (response !== null && response.canPublish > 0) {
                                 js('#system-message-container').remove();
                                 bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN', 'COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'));
                             }
                             else {
-                                js.get(baseUrl + 'option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version, function(data) {
+                                js.get(baseUrl + 'option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version, function (data) {
                                     var response = js.parseJSON(data);
                                     var body = buildDeletedTree(response.versions);
                                     js('#publishModalChildrenList').html(body);
@@ -451,14 +442,14 @@ js('document').ready(function() {
         },
         aaData: null,
         aoColumnDefs: [
-            {aTargets: [0], mData: function(item) {
+            {aTargets: [0], mData: function (item) {
                     return "<input type='radio' name='import[id]' id='import_id_" + item.id + "' value='" + item.id + "' checked=''>";
                 }},
             {aTargets: [1], mData: 'name'},
             {aTargets: [2], mData: 'created'},
             {aTargets: [3], mData: 'guid'},
             {aTargets: [4], mData: 'rt_name'},
-            {aTargets: [5], mData: function(item) {
+            {aTargets: [5], mData: function (item) {
                     return Joomla.JText._(item.status);
                 }}
         ]
@@ -467,10 +458,10 @@ js('document').ready(function() {
 }
 );
 
-var buildDeletedTree = function(versions) {
+var buildDeletedTree = function (versions) {
     var body = '<ul>';
 
-    js.each(versions, function(k, version) {
+    js.each(versions, function (k, version) {
         body += '<li>' + version.resource_name + ' : ' + version.version_name + ' <a href="/index.php?option=com_easysdi_catalog&task=metadata.edit&id=' + version.metadata_id + '" target="_top"><i class="icon-edit"></i></a>';
         if (typeof version.children === 'undefined') {
             body += '</li>';
@@ -494,7 +485,7 @@ var buildDeletedTree = function(versions) {
  * @returns void
  */
 function addTooltips() {
-    $$('.hasTip').each(function(el) {
+    $$('.hasTip').each(function (el) {
         var title = el.get('title');
         if (title) {
             var parts = title.split('::', 2);
@@ -502,7 +493,7 @@ function addTooltips() {
             el.store('tip:text', parts[1]);
         }
     });
-    
+
     new Tips($$('.hasTip'), {"maxTitleChars": 50, "fixed": false});
 }
 
@@ -524,8 +515,8 @@ function setRelationAction(element) {
     if (occurance < upperbound) {
         js('#add-btn' + uuid).show();
     }
-    
-    if(occurance > lowerbound){
+
+    if (occurance > lowerbound) {
         js('.fds' + uuid + ' a.remove-btn').show();
     }
 
@@ -567,7 +558,7 @@ function searchResource(task) {
         url: baseUrl + 'option=com_easysdi_catalog&task=' + task,
         type: js('#form_search_resource').attr('method'),
         data: js('#form_search_resource').serialize(),
-        success: function(data) {
+        success: function (data) {
             var response = js.parseJSON(data);
             if (response.success) {
                 if (response.total > 0) {
@@ -586,7 +577,7 @@ function searchResource(task) {
 function importSwitch(task) {
     var actions = task.split('.');
 
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function (data) {
         var response = js.parseJSON(data);
 
         if (response.success) {
@@ -631,7 +622,7 @@ function addOrRemoveCheckbox(id, relid, parent_path, path) {
 
 function addBoundaryToStructure(name, parent_path) {
 
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function (data) {
         var response = js.parseJSON(data);
         return response.success;
     });
@@ -646,7 +637,7 @@ function allopen() {
 }
 
 function confirmImport(task) {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING'), function (result) {
         if (result) {
             importSwitch(task);
         }
@@ -654,7 +645,7 @@ function confirmImport(task) {
 }
 
 function confirmReplicate() {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING'), function (result) {
         if (result) {
             js('#searchModal').modal('show');
         }
@@ -663,7 +654,7 @@ function confirmReplicate() {
 }
 
 function confirmReset() {
-    bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function(result) {
+    bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function (result) {
         if (result) {
 
         }
@@ -672,14 +663,14 @@ function confirmReset() {
 
 function removeFromStructure(id) {
     var uuid = getUuid('remove-btn-', id);
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function (data) {
         var response = js.parseJSON(data);
         return response.success;
     });
 }
 
 function confirmEmptyFile(id) {
-    bootbox.confirm("Are you sure?", function(result) {
+    bootbox.confirm("Are you sure?", function (result) {
         if (result) {
             emptyFile(id);
         }
@@ -718,16 +709,17 @@ function chosenRefresh() {
 }
 
 function filterBoundary(parentPath, value) {
-    if(value == '') return;
-    
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
+    if (value == '')
+        return;
+
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function (data) {
 
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
         var selectList = js('#jform_' + replaceId + '_sla_gmd_dp_description_sla_gco_dp_CharacterString');
         selectList.empty();
         var items = "<option value=\"\"></option>";
-        js.each(response, function(i) {
+        js.each(response, function (i) {
             if (i === 0) {
                 items += "<option selected=\"selected\" value=\"" + this.option_value + "\">" + this.option_value + "</option>";
             } else {
@@ -749,9 +741,10 @@ function filterBoundary(parentPath, value) {
 }
 
 function setBoundary(parentPath, value) {
-    if(value == '') return;
-    
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
+    if (value == '')
+        return;
+
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function (data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);
@@ -798,6 +791,36 @@ function drawBB(parent_path) {
     }
 }
 
+
+function calendarSetup(field) {
+    js('#'+field).wrap('<div class="input-append"></div>');
+    js('#'+field).after('<button class="btn" id="'+field+'_img"><i class="icon-calendar"></i></button>');
+    
+    Calendar.setup({
+        // Id of the input field
+        inputField: field,
+        // Format of the input field
+        ifFormat: "%Y-%m-%d",
+        // Trigger for the calendar (button ID)
+        button: field + "_img",
+        // Alignment (defaults to "Bl")
+        align: "Tl",
+        singleClick: true,
+        firstDay: 1
+    });
+}
+
+function removeHidden(){
+    js('.scope-hidden').remove();
+}
+
+function disableVisible(){
+    
+    js(':input[readonly], .scope-visible :input').prop('disabled',true).removeAttr('readonly').removeClass('validate-sdidate validate-sdidatetime');
+    js('fieldset.scope-visible').prev('.action a').remove();
+    js('fieldset.scope-visible .remove-btn, fieldset.scope-visible .add-btn, fieldset.scope-visible .attribute-add-btn').remove();
+    js('.scope-visible select').trigger("liszt:updated");
+}
 
 //Décode une chaîne
 function html_entity_decode(texte) {
