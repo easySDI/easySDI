@@ -551,8 +551,8 @@ var getChildNumber = function(element){
                     js(element).find('span').html(response.num);
                     version.child_number = response.num;
 
-                    if(resource.rights.metadataResponsible)
-                        getSynchronizationInfo(js('a#'+resource.id+'_synchronize'), response.children);
+                    if(resource.rights.metadataResponsible && response.num)
+                        getSynchronizationInfo(js('a#'+resource.id+'_synchronize'));
                 }
             }
             catch(e){
@@ -608,22 +608,14 @@ var getNewVersionRight = function(element){
     });
 };
 
-var getSynchronizationInfo = function(element, children){
+var getSynchronizationInfo = function(element){
     if(element.length === 0) return;
-    
-    var readyForSync = true;
-    if(children.length > 0){
-        for(var i in children){
-            if(children[i].modified_by === null)
-                readyForSync = false;
-        }
-    }
     
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
-    if(readyForSync && version.child_number > 0){
+    if(version.child_number > 0){
         js.ajax({
             cache: false,
             type: 'GET',

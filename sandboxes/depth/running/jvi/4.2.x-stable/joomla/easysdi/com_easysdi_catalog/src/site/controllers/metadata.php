@@ -144,11 +144,39 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     }
 
                     foreach ($xpaths as $xpath) {
-                        $parentNode = $parentXPath->query($xpath->xpath)->item(0);
-                        $childNode = $childXPath->query($xpath->xpath)->item(0);
+                        foreach($parentXPath->query($xpath->xpath) as $parentNode){
+                            $parentNodeXPath = $parentNode->getNodePath();
+                            
+                            $childNode = $childXPath->query($parentNodeXPath)->item(0);
 
-                        $childParentNode = $childNode->parentNode;
-                        $childParentNode->replaceChild($childDom->importNode($parentNode, true), $childNode);
+                            if($childNode !== null){
+                                $childParentNode = $childNode->parentNode;
+                                $childParentNode->replaceChild($childDom->importNode($parentNode, true), $childNode);
+                            }
+                            else{
+                                // we are trying to synchronize an xpath which doesn't exist in the children element
+                                $tmpXPathArr = explode('/', $parentNodeXPath);
+                                $depth = 0;
+                                do{
+                                    $depth++;
+                                    $tmpXPath = implode('/', array_slice($tmpXPathArr, 0, count($tmpXPathArr)-$depth));
+
+                                    $childNode = $childXPath->query($tmpXPath)->item(0);
+                                }while($childNode === null && $depth<=count($tmpXPathArr));
+
+                                if($childNode === null)
+                                    continue;
+
+                                do{
+                                    $depth--;
+                                    $tmpXPath = implode('/', array_slice($tmpXPathArr, 0, count($tmpXPathArr)-$depth));
+
+                                    $childNode->appendChild($childDom->importNode($parentXPath->query($tmpXPath)->item(0), ($depth===0)));
+                                    $childNode = $childXPath->query($tmpXPath)->item(0);
+
+                                }while($depth > 0);
+                            }
+                        }
                     }
 
                     $request = $this->CreateUpdateBody($childXPath->query('/*/*')->item(0), $children->fileidentifier);
