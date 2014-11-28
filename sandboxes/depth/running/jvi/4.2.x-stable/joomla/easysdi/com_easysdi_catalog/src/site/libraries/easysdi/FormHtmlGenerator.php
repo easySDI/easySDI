@@ -3,6 +3,7 @@
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumLayerName.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumServiceConnector.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRelationScope.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
 
@@ -158,7 +159,7 @@ class FormHtmlGenerator {
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATIONTYPE:
                     $searchField = $this->getAttribute($parent);
-
+                    $searchField->setAttribute('required', 'required');
                     $parentHtml->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     break;
             }
@@ -301,6 +302,8 @@ class FormHtmlGenerator {
 
         $legendAttribute = $element->getAttributeNS($this->catalog_uri, 'legend');
         $level = $element->getAttributeNS($this->catalog_uri, 'level');
+        $scopeId = $element->getAttributeNS($this->catalog_uri, 'scopeId');
+        
 //        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $aCollapse = $this->formHtml->createElement('a');
@@ -321,7 +324,16 @@ class FormHtmlGenerator {
         $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
 
         $fieldset = $this->formHtml->createElement('fieldset');
-
+        $class = array();
+        switch ($scopeId) {
+            case EnumRelationScope::HIDDEN:
+                $class[] = 'scope-hidden';
+                break;
+            
+            case EnumRelationScope::VISIBLE:
+                $class[] = 'scope-visible';
+                break;
+        }
 
         if ($guid != '') {
             $spanLegend = $this->formHtml->createElement('span', EText::_($guid)); //
@@ -341,7 +353,7 @@ class FormHtmlGenerator {
 
         if ($exist == 1) {
             $fieldset->setAttribute('id', 'fds' . FormUtils::serializeXpath($element->getNodePath()));
-            $fieldset->setAttribute('class', 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid);
+            $class[] = 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid;
 
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
@@ -352,7 +364,9 @@ class FormHtmlGenerator {
             $fieldset->appendChild($legend);
             $fieldset->appendChild($divInner);
         }
-
+        
+        $fieldset->setAttribute('class', implode(' ', $class));
+       
         return $fieldset;
     }
 
@@ -397,13 +411,22 @@ class FormHtmlGenerator {
 
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
+        $scopeId = $attribute->getAttributeNS($this->catalog_uri, 'scopeId');
 
         $attributeGroup = $this->formHtml->createElement('div');
+        $class = array('attribute-group');
         if ($rendertypeId == 1000) {
-            $attributeGroup->setAttribute('class', 'hidden attribute-group attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
+            $class[] = 'scope-hidden';
+            $class[] = 'attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath()));
         } else {
-            $attributeGroup->setAttribute('class', 'attribute-group attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
+            $class[] = 'attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath()));
         }
+        
+        if($scopeId == EnumRelationScope::HIDDEN){
+            $class[] = 'scope-hidden';
+        }
+        
+        $attributeGroup->setAttribute('class', implode(' ', $class));
 
         $attributeGroup->setAttribute('id', 'attribute-group' . FormUtils::serializeXpath($attribute->getNodePath()));
 
