@@ -1,5 +1,5 @@
-ALTER TABLE `#__sdi_translation` DROP FOREIGN KEY `#__sdi_translation_ibfk_1`;
-ALTER TABLE `#__sdi_translation` ADD CONSTRAINT `#__sdi_translation_ibfk_1` FOREIGN KEY (`language_id`) REFERENCES `#__sdi_language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `#__sdi_translation` DROP FOREIGN KEY `#__sdi_translation_fk1`;
+ALTER TABLE `#__sdi_translation` ADD CONSTRAINT `#__sdi_translation_fk1` FOREIGN KEY (`language_id`) REFERENCES `#__sdi_language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 UPDATE #__sdi_sys_stereotype SET defaultpattern = '^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$' WHERE id = 1;
 UPDATE #__sdi_sys_stereotype SET defaultpattern = '^[\-+]?[0-9.]+$' WHERE id = 4;
