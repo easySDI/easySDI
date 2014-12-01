@@ -311,7 +311,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
      * @since 4.3.0
      */
     public function saveProduct(){
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $basketProducts = $session->get('basketProducts');
         $basketProcess = $session->get('basketProcess');
         $currentProduct = $basketProducts[$basketProcess['treated']];

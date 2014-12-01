@@ -41,12 +41,12 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
         var request;
         var current_id;
 
-        function removeFromBasket(id) {
+        var removeFromBasket = function(id){
             current_id = id;
             jQuery('#modal-dialog-remove').modal('show');
         }
 
-        function actionRemove() {
+        var actionRemove = function(){
             jQuery('#task').val('removeFromBasket');
             jQuery('#id').val(current_id);
             jQuery('#adminForm').submit();
@@ -78,7 +78,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             return false;
         };
         
-        var sendProduct = function(){
+        var sendProduct = function(){alert(81);
             jQuery.ajax({
                 url: '<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.saveProduct');?>',
                 type: 'POST',
@@ -118,34 +118,40 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             return false;
         };
 
+        jQuery(document).on('change', 'select#thirdparty', function(e){
+            jQuery.ajax({
+                type: "POST",
+                url: "index.php?option=com_easysdi_shop&task=basket.saveBasketToSession" ,
+                data :"thirdparty="+jQuery(e.target).val()
+            }).done(function() {
+                //reload page to recalculate pricing
+                location.reload();
+            });
+        });
+        
+        jQuery(document).on('click', '#btn-login', function(){
+            document.location.href = 'index.php?option=com_users&view=login&return='+btoa(document.location.href);
+            return false;
+        });
 
-        jQuery(document).ready(function() {
-            jQuery('#btn-login').on('click', function(){
-                document.location.href = 'index.php?option=com_users&view=login&return='+btoa(document.location.href);
-                return false;
-            });
-            
-            jQuery('#btn-create-account').on('click', function(){
-                document.location.href = 'index.php?option=com_users&view=registration&return='+btoa(document.location.href);
-                return false;
-            });
-            
-            jQuery(document).on('change', 'select#thirdparty', function(e){
-                jQuery.ajax({
-                    type: "POST",
-                    url: "index.php?option=com_easysdi_shop&task=basket.saveBasketToSession" ,
-                    data :"thirdparty="+jQuery(e.target).val()
-                }).done(function(data) {
-                    //reload page to recalculate pricing
-                    location.reload();
-                });
-            });
-            
-            jQuery('#termsofuse').on('change', checkTouState);
+        jQuery(document).on('click', '#btn-create-account', function(){
+            document.location.href = 'index.php?option=com_users&view=registration&return='+btoa(document.location.href);
+            return false;
+        });
+
+        jQuery(document).on('change', '#termsofuse', checkTouState);
+
+
+        jQuery(document).ready(function(){
             checkTouState();
             
-            Joomla.submitbutton = function(task)
-            {
+            if(jQuery('select#thirdparty').val() != -1)
+                jQuery('#thirdparty-info').show();
+            else
+                jQuery('#thirdparty-info').hide();
+            
+            jQuery('#toolbar button').on('click', function(){
+                var task = jQuery(this).attr('rel');
                 if (jQuery('#features').val() === '') {
                     jQuery('#modal-error').modal('show');
                 } else {
@@ -156,18 +162,18 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     var format = new OpenLayers.Format.WMC({'layerOptions': {buffer: 0}});
                     var text = format.write(minimap);
                     jQuery('#wmc').val(text);
-                    
+
                     var taskArray = task.split('.');
                     jQuery('input[name=action]').val(taskArray[1]);
-                    
+
                     jQuery('input[name=task]').val('basket.save');
                     jQuery('input[name=option]').val('com_easysdi_shop');
-                    
+
                     sendBasket();
                     return false;
                 }
-            }
-        })
+            });
+        });
 
     </script>
     
@@ -244,20 +250,30 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                 <!-- THIRD PARTY -->
                 <?php if (!empty($this->thirdParties)): ?>
                     <div class="row-fluid shop-third-party" >
-                        <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
-                        <hr>
-                        <?php 
-                        $tp_explanation = JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_EXPLANATION');
-                        if((bool)$this->paramsarray['tp_explanation_display'] && !empty($tp_explanation) && $tp_explanation !== 'COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_EXPLANATION'):
-                        ?>
-                        <p><?php echo $tp_explanation; ?></p>
-                        <?php endif;?>
-                        <select id="thirdparty" name="thirdparty" class="inputbox input-xlarge">
-                            <option value="-1"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_NO_THIRD_PARTY'); ?></option>
-                            <?php foreach ($this->thirdParties as $thirdparty) : ?>
-                                <option value="<?php echo $thirdparty->id; ?>" <?php if ($this->item->thirdparty == $thirdparty->id) echo 'selected' ?>><?php echo $thirdparty->name; ?></option>
-                            <?php endforeach; ?>
-                        </select></div>
+                        <div class="row-fluid" >
+                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
+                            <hr>
+                            <?php 
+                            $tp_explanation = JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_EXPLANATION');
+                            if((bool)$this->paramsarray['tp_explanation_display'] && !empty($tp_explanation) && $tp_explanation !== 'COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_EXPLANATION'):
+                            ?>
+                            <p><?php echo $tp_explanation; ?></p>
+                            <?php endif;?>
+                            <select id="thirdparty" name="thirdparty" class="inputbox input-xlarge">
+                                <option value="-1"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_NO_THIRD_PARTY'); ?></option>
+                                <?php foreach ($this->thirdParties as $thirdparty) : ?>
+                                    <option value="<?php echo $thirdparty->id; ?>" <?php if ($this->item->thirdparty == $thirdparty->id) echo 'selected' ?>><?php echo $thirdparty->name; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div id="thirdparty-info">
+                                <p>Blah blah</p>
+                                <p>
+                                    <input type="text" required="true" name="mandate_ref" id="mandate_ref" placeholder="mandate ref"/>
+                                    <input type="text" required="true" name="mandate_contact" id="mandate_contact" placeholder="mandate contact"/>
+                                    <input type="text" required="true" name="mandate_email" id="mandate_email" placeholder="mandate email"/>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 <?php endif; ?>
                 <!-- ENDOF THIRD PARTY -->
@@ -396,20 +412,33 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                 <div class="row-fluid " >
                     <hr>
                     <?php if($this->get('user')->isEasySDI):?>
-                        <div>
+                        <div id="termsofuse-container">
                             <label class="checkbox">
-                                    <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse'] ; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
-                                </label>
+                                <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse'] ; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
+                            </label>
                         </div>
-                        <div  class="span5 pull-right" >
-                            <?php echo $this->getToolbar(); ?>
-                            <input type="hidden" name="action" value="" />
-                        </div>
-                        <div class="pull-right">
+                        <div id="ordername-container">
                             <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if (!empty($this->item->name)) echo $this->item->name; ?>">
                         </div>
+                        <div id="toolbar-container">
+                            <div class="btn-toolbar" id="toolbar">
+                                <div class="btn-wrapper" id="toolbar-archive">
+                                    <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE')?></button>
+                                </div>
+                                <?php if(!$this->item->free):?>
+                                    <div class="btn-wrapper" id="toolbar-edit">
+                                        <button class="btn btn-small" rel="basket.estimate"><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE')?></button>
+                                    </div>
+                                <?php endif;?>
+                                <div class="btn-wrapper" id="toolbar-publish">
+                                    <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER')?></button>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" name="action" value="" />
+                        </div>
                     <?php else:?>
-                        <div  class="span5 pull-right" >
+                        <div class="span5 pull-right" >
                             <button class="btn btn-small" id="btn-login" name="btn-login"><?php echo JText::_('COM_EASYSDI_CORE_LOGIN');?></button>
                             <button class="btn btn-small" id="btn-create-account" name="btn-create-account"><?php echo JText::_('COM_EASYSDI_CORE_CREATE_ACCOUNT');?></button>
                         </div>

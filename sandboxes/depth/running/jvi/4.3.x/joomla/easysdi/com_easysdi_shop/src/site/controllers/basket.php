@@ -132,7 +132,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
             $this->sendJsonResponse(array('error' => array(JText::sprintf('Save failed', $model->getError()))));
         }
         
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $basketProcess = $session->get('basketProcess');
         $this->sendJsonResponse($basketProcess);
     }
@@ -163,8 +163,8 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
      * @since 4.3.0
      */
     public function finalizeSave(){
-        $session =& JFactory::getSession();
-        $app =& JFactory::getApplication();
+        $session = JFactory::getSession();
+        $app = JFactory::getApplication();
         
         /*******************************/
         /** Process all notifications **/
@@ -211,7 +211,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
      * @since 4.3.0
      */
     private function clearSession(){
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $session->clear('basketData');
         $session->clear('basketProducts');
         $session->clear('basketProcess');
@@ -235,7 +235,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $messageQueue = $app->getMessageQueue();
         
         if(count($messageQueue)>0){
-            $session =& JFactory::getSession();
+            $session = JFactory::getSession();
             $session->set('application.queue', $messageQueue);
         }
         // ENDOF HACK
