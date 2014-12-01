@@ -236,15 +236,22 @@ class CswMerge {
      * @param DOMDocument $import
      */
     public function preserveFileidentifier(DOMDocument &$import, $fileIdentifier = '', DOMDocument &$original = null) {
+        $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
+        
         if(!empty($fileIdentifier)){
             $fileidentifierImportedNode = $import->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:fileIdentifier');
             $gco_character = $import->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString', $fileIdentifier);
             $fileidentifierImportedNode->appendChild($gco_character);
-            $import->appendChild($fileidentifierImportedNode);
-            //$fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
+            
+            if(!empty($fileidentifierImportNode)){
+                $fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
+            }
+            else{
+                $mdMetadata = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'MD_Metadata')->item(0);
+                $mdMetadata->appendChild($fileidentifierImportedNode);
+            }
         }
         elseif(!empty($original)){
-            $fileidentifierOriginalNode = $original->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
             $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
             
             $fileidentifierImportedNode = $import->importNode($fileidentifierOriginalNode, true);
