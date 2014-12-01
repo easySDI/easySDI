@@ -52,6 +52,20 @@ $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
+/* bootbox language */
+$ldao = new SdiLanguageDao();
+$user = new sdiUser();
+$userParams = json_decode($user->juser->params);
+$defaultLanguage = $ldao->getDefaultLanguage();
+$bbLanguage = $defaultLanguage->gemet;
+$dtLanguage = $defaultLanguage->title;
+foreach($ldao->getAll() as $bbLang){
+    if($bbLang->code === $userParams->language){
+        $bbLanguage = $bbLang->gemet;
+        $dtLanguage = $bbLang->title;
+    }
+}
+
 if (JDEBUG) {
     $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
     $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
@@ -83,11 +97,11 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 ?>
 
 <script type="text/javascript">
-
+    var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
     var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
     js = jQuery.noConflict();
     js('document').ready(function() {
-
+        bootbox.setLocale("<?php echo $bbLanguage;?>");
 <?php
 if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             toogleAll(js('#btn_toggle_all'));
