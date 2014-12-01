@@ -966,6 +966,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_catalog` (
 `cswfilter` TEXT(1000)   ,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+`scrolltoresults` TINYINT(1) NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

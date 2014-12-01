@@ -175,7 +175,8 @@ class FormGenerator {
                 case EnumChildtype::$ATTRIBUT:
                     $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
                     $cloned = $attribute->cloneNode(true);
-                    $parent->appendChild($cloned);
+                    $clearNode = $this->clearNodeValue($cloned);
+                    $parent->appendChild($clearNode);
                     $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
 
 
@@ -272,9 +273,9 @@ class FormGenerator {
             if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                if ($occurance == 0) {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                }
+                
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+                
             }
         }
 
@@ -919,13 +920,29 @@ class FormGenerator {
 
                     $field->setAttribute('type', 'groupedlist');
                     $field->setAttribute('label', EText::_($guid));
-                    $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->getAttribute('codeListValue'), true));
-
-                    $group->appendChild($option);
-                    $field->appendChild($group);
+                    
+                    if ($upperbound > 1) {
+                        $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode);
+                        $default = array();
+                        foreach ($allValues as $node) {
+                            if (!empty($node->firstChild->nodeValue)) {
+                                $default[] = $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $node->firstChild->nodeValue), true);
+                            }
+                        }
+                        
+                        $field->setAttribute('default', implode(',', $default));
+                        $field->setAttribute('type', 'MultipleDefaultList');
+                        $field->appendChild($option);
+                    }else{
+                        $field->setAttribute('default', $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $attribute->firstChild->nodeValue), true));
+                        $group->appendChild($option);
+                        $field->appendChild($group);
+                    }
+                    
+                    
                     break;
                 case EnumStereotype::$BOUNDARY:
-                    $field->setAttribute('type', 'list');
+                    
                     if ($guid != '') {
                         $field->setAttribute('label', EText::_($guid));
                     } else {
@@ -946,32 +963,36 @@ class FormGenerator {
                             }
                         }
 
+                        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()),12,15);
+                        $field->setAttribute('name', $name);
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
+                        $field->setAttribute('type', 'MultipleDefaultList');
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                         $field->setAttribute('default', $attribute->firstChild->nodeValue);
+                        $field->setAttribute('type', 'list');
                     }
                     break;
-                /*case EnumStereotype::$BOUNDARYCATEGORY:
-                    $field->setAttribute('type', 'list');
-                    if ($guid != '') {
-                        $field->setAttribute('label', EText::_($guid));
-                    } else {
-                        $field->setAttribute('label', JText::_($label));
-                    }
+                /* case EnumStereotype::$BOUNDARYCATEGORY:
+                  $field->setAttribute('type', 'list');
+                  if ($guid != '') {
+                  $field->setAttribute('label', EText::_($guid));
+                  } else {
+                  $field->setAttribute('label', JText::_($label));
+                  }
 
-                    if ($opt->guid != '') {
-                        $option = $this->form->createElement('option', EText::_($opt->guid));
-                    } else {
-                        $option = $this->form->createElement('option');
-                    }
+                  if ($opt->guid != '') {
+                  $option = $this->form->createElement('option', EText::_($opt->guid));
+                  } else {
+                  $option = $this->form->createElement('option');
+                  }
 
-                    $option->setAttribute('value', $opt->name);
+                  $option->setAttribute('value', $opt->name);
 
-                    $field->appendChild($option);
-                    $field->setAttribute('onchange', 'filterBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
-                    break;*/
+                  $field->appendChild($option);
+                  $field->setAttribute('onchange', 'filterBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                  break; */
                 case EnumStereotype::$TEXTCHOICE:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
@@ -1442,14 +1463,13 @@ class FormGenerator {
             return '';
         }
 
-        $language = $this->ldao->getDefaultLanguage();
-
         $query = $this->db->getQuery(true);
 
         if ($isList) {
-            $query->select('av.value');
+            $query->select('av.value, av.guid, a.stereotype_id');
             $query->from('#__sdi_relation_defaultvalue rdv');
             $query->innerJoin('#__sdi_attributevalue av on av.id = rdv.attributevalue_id');
+            $query->innerJoin('#__sdi_attribute a on a.id=av.attribute_id');
             $query->where('rdv.relation_id = ' . (int) $relation_id);
         } else {
             /* $query->select('attributevalue_id, value');
@@ -1468,8 +1488,45 @@ class FormGenerator {
         if (empty($result)) {
             return '';
         } else {
-            return $result->value;
+            if ($result->stereotype_id == EnumStereotype::$LOCALECHOICE) {
+                return $result->guid;
+            } else {
+                return $result->value;
+            }
         }
+    }
+
+    private function getGuidFromLocaleValue($relation_id, $texte) {
+        $query = $this->db->getQuery(true);
+
+        $query->select('av.guid');
+        $query->from('#__sdi_attributevalue av');
+        $query->innerJoin('#__sdi_relation r ON r.attributechild_id = av.attribute_id');
+        $query->innerJoin('#__sdi_translation t ON t.element_guid = av.guid');
+        $query->where('r.id = ' . (int) $relation_id);
+        $query->where('t.text2 = ' . $query->quote($texte));
+
+        $this->db->setQuery($query);
+        $result = $this->db->loadObject();
+
+        return $result->guid;
+    }
+    
+    /**
+     * 
+     * @param DOMElement $element
+     * @return \DOMElement
+     */
+    private function clearNodeValue(DOMElement $element){
+        $nodes = $element->getElementsByTagNameNS('*', '*');
+        
+        foreach ($nodes as $node) {
+            if(!$this->hasChildElement($node)){
+                $node->nodeValue = NULL;
+            }
+        }
+        
+        return $element;
     }
 
 }

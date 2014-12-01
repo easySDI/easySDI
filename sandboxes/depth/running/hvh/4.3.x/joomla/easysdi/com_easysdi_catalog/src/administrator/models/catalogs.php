@@ -40,6 +40,7 @@ class Easysdi_catalogModelcatalogs extends JModelList {
                 'xsldirectory', 'a.xsldirectory',
                 'oninitrunsearch', 'a.oninitrunsearch',
                 'cswfilter', 'a.cswfilter',
+                'scrolltoresults','a.scrolltoresults'
             );
         }
 

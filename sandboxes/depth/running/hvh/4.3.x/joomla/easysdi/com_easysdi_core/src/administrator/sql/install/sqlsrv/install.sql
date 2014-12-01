@@ -470,6 +470,7 @@ CREATE TABLE [#__sdi_catalog](
 	[cswfilter] [nvarchar](max) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
+    [scrolltoresults] [smallint] NOT NULL DEFAULT 1,
  CONSTRAINT [PK_#__sdi_catalog_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
