@@ -20,6 +20,22 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/DataTa
 $document->addScript('components/com_easysdi_core/views/version/tmpl/version.js');
 ?>
 <?php
+require_once JPATH_BASE.'/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
+/* datatable language */
+$ldao = new SdiLanguageDao();
+$user = new sdiUser();
+$userParams = json_decode($user->juser->params);
+$dtLanguage = $ldao->getDefaultLanguage()->title;
+foreach($ldao->getAll() as $dtLang){
+    if($dtLang->code === $userParams->language){
+        $dtLanguage = $dtLang->title;
+    }
+}
+?>
+<script type="text/javascript">
+    var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
+</script>
+<?php
 if ($this->item) :
     //METADATASTATES
     JText::script('INPROGRESS');
@@ -38,16 +54,6 @@ if ($this->item) :
     $document->addScriptDeclaration('var versioning=' . $versioning . ';');
     $isReadonly = !in_array($this->item->metadatastate, array($METADATASTATE_INPROGRESS, $METADATASTATE_VALIDATED));
     $document->addScriptDeclaration("var isReadonly = '{$isReadonly}';");
-    JText::script('COM_EASYSDI_CORE_DATATABLES_DISPLAY');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_RECORDSPERPAGE');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_SHOWING');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_RECORDS');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_NORESULT');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_OF');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_TO');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_NEXT');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_PREVIOUS');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_SEARCH');
     ?>
 
 <style type="text/css">
@@ -57,6 +63,11 @@ if ($this->item) :
 
     <div class="version-edit front-end-edit">
         <?php if (!empty($this->item->id)): ?>
+            <script type="text/javascript">
+                var version = <?php echo $this->item->id?>,
+                    resourcetypechild = "<?php echo $this->item->resourcetypechild;?>"
+                    baseUrl = "<?php echo JUri::base(); ?>index.php?";
+            </script>
             <?php if ($this->item->versioning): ?>
                 <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->resourcename . ' - ' . $this->item->name; ?></h1>
             <?php else: ?>
@@ -97,10 +108,6 @@ if ($this->item) :
                         </div>
                         <hr>
                         <div class="sdi-searchresult">
-                            <script type="text/javascript">
-                                availablechildrenData = <?php echo json_encode($this->item->availablechildren); ?>;
-                            </script>
-                            
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_SEARCH_RESULTS'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-availablechildren" width="100%">
                                 <thead>
@@ -127,10 +134,6 @@ if ($this->item) :
                 <div class="row-fluid">
                     <div class="span12">
                         <div class="well">
-                            <script type="text/javascript">
-                                childrenData = <?php echo json_encode($this->item->children); ?>;
-                            </script>
-                            
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_CHILDREN'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-children" width="100%">
                                 <thead>
@@ -157,9 +160,6 @@ if ($this->item) :
                 <div class="row-fluid">
                     <div class="span12">
                         <div class="well">
-                            <script type="text/javascript">
-                                parentsData = <?php echo json_encode($this->item->parents); ?>;
-                            </script>
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_PARENT'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-parents" width="100%">
                                 <thead>
