@@ -159,7 +159,6 @@ class FormHtmlGenerator {
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATIONTYPE:
                     $searchField = $this->getAttribute($parent);
-                    $searchField->setAttribute('required', 'required');
                     $parentHtml->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     break;
             }
