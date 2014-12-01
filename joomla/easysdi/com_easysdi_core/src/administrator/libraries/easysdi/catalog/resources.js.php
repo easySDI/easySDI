@@ -550,8 +550,8 @@ var getChildNumber = function(element){
                 if(response.success == "true"){
                     js(element).find('span').html(response.num);
                     version.child_number = response.num;
-
-                    if(resource.rights.metadataResponsible && response.num)
+                    
+                    if(resource.rights.metadataResponsible)
                         getSynchronizationInfo(js('a#'+resource.id+'_synchronize'));
                 }
             }
