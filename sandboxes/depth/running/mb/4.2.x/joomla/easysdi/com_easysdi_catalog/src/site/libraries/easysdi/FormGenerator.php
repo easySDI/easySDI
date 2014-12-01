@@ -1198,7 +1198,7 @@ class FormGenerator {
 
         $validator = $this->getValidatorClass($relationtype);
 
-        $field->setAttribute('class', $validator);
+        $field->setAttribute('class', 'required '.$validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
         $field->setAttribute('label', JText::_('COM_EASYSDI_CATALOG_RESOURCETYPE_NAME'));
