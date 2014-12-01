@@ -944,14 +944,19 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return mixed A database cursor resource on success, boolean false on failure
      */
     public function changeStatus($id, $metadatastate_id, $published = null) {
+        
+        $this->data['metadatastate_id'] = $metadatastate_id;
         switch ($metadatastate_id) {
             case sdiMetadata::INPROGRESS:
                 $published = '';
+                $this->data['published'] = $published;
                 $archived = '';
+                $this->data['archived'] = $archived;
                 break;
 
             case sdiMetadata::ARCHIVED:
                 $archived = date('Y-m-d');
+                $this->data['archived'] = $archived;
                 break;
         }
 
