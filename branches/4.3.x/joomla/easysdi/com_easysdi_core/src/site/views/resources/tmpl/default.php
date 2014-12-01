@@ -109,8 +109,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                     <label for="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" class="element-invisible">Rechercher</label>
                                     <input type="text" name="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" id="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php $filterName = (!empty($this->parent)) ? 'filter.search.children' : 'filter.search'; echo $this->state->get($filterName); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
 
-                                    <button class="btn hasTooltip" type="submit" title="Rechercher"><i class="icon-search"></i></button>
-                                    <button class="btn hasTooltip" type="button" title="Effacer" id="search-reset"><i class="icon-remove"></i></button>
+                                    <button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+                                    <button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" id="search-reset"><i class="icon-remove"></i></button>
                                 </div>
                             </div>
 
