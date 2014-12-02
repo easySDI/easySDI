@@ -18,11 +18,15 @@ package org.easysdi.proxy.wms.thread;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,12 +35,14 @@ import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.easysdi.proxy.wms.WMSProxyServlet;
+import org.easysdi.proxy.wms.WMSProxyServletRequest;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.json.JSONObject;
 
 /**
  * @author DEPTH SA
@@ -163,6 +169,18 @@ public class WMSProxyLayerThread extends Thread {
 
 	String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-1);
 	String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
+        
+        //Handle Esri vendor specific parameter layerDefs
+        JSONObject layerdefs = ((WMSProxyServletRequest) servlet.getProxyRequest()).getLayerdefs();
+        if(layerdefs != null){
+             paramUrlBase += "&layerDefs=";
+            try {
+                paramUrlBase += URLEncoder.encode(layerdefs.toString(), "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(WMSProxyLayerThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             paramUrlBase += "&";
+        }
 
 	//Set TRANSPARENT to TRUE if not present
 	if (paramUrlBase.toUpperCase().indexOf("TRANSPARENT=") == -1)
