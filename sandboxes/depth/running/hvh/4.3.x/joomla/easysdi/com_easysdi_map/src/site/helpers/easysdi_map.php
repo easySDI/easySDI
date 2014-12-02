@@ -166,9 +166,6 @@ abstract class Easysdi_mapHelper {
 
         //Layers
         $layers = array();
-        //Layers have to be added the lowest before the highest
-        //To do that, the groups have to be looped in reverse order
-//        $groups_reverse = array_reverse($item->groups);
         foreach ($item->groups as $group) {
             //Acces not allowed
             if (!in_array($group->access, $user->getAuthorisedViewLevels()))
@@ -243,7 +240,7 @@ abstract class Easysdi_mapHelper {
             var heigth;
             var services = ' . json_encode($services) . ';
             var layers = ' . json_encode($layers) . ';
-            var mouseposition = ' . $mouseposition . ';
+            var mouseposition = ' . $mouseposition . ';            
         </script>
         <div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
 

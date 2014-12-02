@@ -39,6 +39,10 @@ Ext.onReady(function() {
                 window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }
         }
+        if(data.level){
+            //Init the indoor layer with the default level value
+            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this,window.appname.mapPanel.map.indoorlevelslider.value);
+        }
         loadingMask.hide();
     });
 
@@ -515,7 +519,6 @@ var tip = new Ext.slider.Tip({
         }
     });
 
-    //TODO //If not cleared
     if (cleared === "false") {
         config.mapItems = [
             {
@@ -537,14 +540,12 @@ var tip = new Ext.slider.Tip({
                     defaultvalue = parseInt(key);
                 }
             }
-            var length = data.level.length;
-            var minvalue = 0;
             var maxvalue = data.level.length - 1;
             config.mapItems.push(
                     {
                xtype: "sdi_indoorlevelslider",
                value : defaultvalue,
-               minValue: minvalue,
+               minValue: 0,
                maxValue: maxvalue,
                levels: data.level,
                increment: 1,

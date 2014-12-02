@@ -85,7 +85,11 @@ Ext.extend(GeoExt.data.AttributeReader, Ext.data.DataReader, {
             attributes = data;
         } else {
             // only works with one featureType in the doc
-            attributes = this.meta.format.read(data).featureTypes[0].properties;
+            var output = this.meta.format.read(data);
+            if (!!output.error) {
+                throw new Ext.data.DataReader.Error("invalid-response", output.error);
+            }
+            attributes = output.featureTypes[0].properties;
         }
         var feature = this.meta.feature;
         var recordType = this.recordType;
@@ -202,7 +206,7 @@ GeoExt.data.AttributeStoreMixin = function() {
                     reader: new GeoExt.data.AttributeReader(
                         c, c.fields || ["name", "type", "restriction", {
                             name: "nillable", type: "boolean"
-                        }]
+                        }, "annotation"]
                     )
                 })
             );
@@ -2413,8 +2417,13 @@ Ext.extend(GeoExt.data.WFSCapabilitiesReader, Ext.data.DataReader, {
         var featureType, values, field, v, parts, layer;
         var layerOptions, protocolOptions;
 
+        var url = (parseFloat(data.version) >= 1.1) ? 
+            data.operationsMetadata && data.operationsMetadata["GetFeature"].dcp.http.post[0].url :
+                data.capability.request.getfeature.href.post;
+
         var protocolDefaults = {
-            url: data.capability.request.getfeature.href.post
+            url: url,
+            version : data.version
         };
 
         var records = [];
@@ -2911,6 +2920,9 @@ Ext.extend(GeoExt.data.CSWRecordsReader, Ext.data.JsonReader, {
         if(typeof data === "string" || data.nodeType) {
             data = this.meta.format.read(data);
         }
+        if (data.success === false) {
+            throw new Ext.data.DataReader.Error("invalid-response", data);
+        }
         var result = GeoExt.data.CSWRecordsReader.superclass.readRecords.call(
             this, data
         );
@@ -2921,7 +2933,15 @@ Ext.extend(GeoExt.data.CSWRecordsReader, Ext.data.JsonReader, {
                 if (value instanceof Array) {
                     for (var i=0, ii=value.length; i<ii; ++i) {
                         if (value[i] instanceof Object) {
-                            value[i] = value[i].value;
+                            var size = 0;
+                            for (var property in value[i]) {
+                                if (value[i].hasOwnProperty(property)) {
+                                    size++;
+                                }
+                            }
+                            if (size === 1 && value[i].value) {
+                                value[i] = value[i].value;
+                            }
                         }
                     }
                 }
@@ -3337,7 +3357,17 @@ Ext.extend(GeoExt.data.ProtocolProxy, Ext.data.DataProxy, {
      */
     loadResponse: function(o, response) {
         if (response.success()) {
-            var result = o.reader.read(response);
+            var result;
+            try {
+                result = o.reader.read(response);
+            } catch(e) {
+                // @deprecated: fire old loadexception for backwards-compat.
+                // TODO remove
+                this.fireEvent('loadexception', this, o, response, e);
+                this.fireEvent('exception', this, 'response', null, o, response, e);
+                o.request.callback.call(o.request.scope, null, o.request.arg, false);
+                return;
+            }
             this.fireEvent("load", this, o, o.request.arg);
             o.request.callback.call(
                o.request.scope, result, o.request.arg, true);
@@ -3886,7 +3916,7 @@ GeoExt.MapPanel = Ext.extend(Ext.Panel, {
     initComponent: function(){
         if(!(this.map instanceof OpenLayers.Map)) {
             this.map = new OpenLayers.Map(
-                Ext.applyIf(this.map || {}, {allOverlays: true})
+                Ext.applyIf(this.map || {}, {allOverlays: true, fallThrough: true})
             );
         }
         var layers = this.layers;
@@ -4233,7 +4263,7 @@ Ext.reg('gx_mappanel', GeoExt.MapPanel);
 
 /**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
- * 
+ *
  * Published under the BSD license.
  * See http://svn.geoext.org/core/trunk/geoext/license.txt for the full text
  * of the license.
@@ -4255,9 +4285,9 @@ Ext.namespace("GeoExt");
 
 /** api: example
  *  Sample code to create a popup anchored to a feature:
- * 
+ *
  *  .. code-block:: javascript
- *     
+ *
  *      var popup = new GeoExt.Popup({
  *          title: "My Popup",
  *          location: feature,
@@ -4269,7 +4299,7 @@ Ext.namespace("GeoExt");
 
 /** api: constructor
  *  .. class:: Popup(config)
- *   
+ *
  *      Popups are a specialized Window that supports anchoring
  *      to a particular location in a MapPanel.  When a popup
  *      is anchored to a location, that means that the popup
@@ -4306,10 +4336,10 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
 
     /** api: config[location]
      *  ``OpenLayers.Feature.Vector`` or ``OpenLayers.LonLat`` or
-     *  ``OpenLayers.Pixel`` or ``OpenLayers.Geometry`` A location for this 
+     *  ``OpenLayers.Pixel`` or ``OpenLayers.Geometry`` A location for this
      *  popup's anchor.
      */
-    
+
     /** private: property[location]
      *  ``OpenLayers.LonLat``
      */
@@ -4323,7 +4353,7 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
     /**
      * Some Ext.Window defaults need to be overriden here
      * because some Ext.Window behavior is not currently supported.
-     */    
+     */
 
     /** private: config[animCollapse]
      *  ``Boolean`` Animate the transition when the panel is collapsed.
@@ -4450,7 +4480,7 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
             }
         }
     },
-    
+
     /** private: method[maximize]
      *  Override.
      */
@@ -4460,11 +4490,11 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
         }
         GeoExt.Popup.superclass.maximize.apply(this, arguments);
     },
-    
+
     /** api: method[setSize]
      *  :param w: ``Integer``
      *  :param h: ``Integer``
-     *  
+     *
      *  Sets the size of the popup, taking into account the size of the anchor.
      */
     setSize: function(w, h) {
@@ -4523,10 +4553,15 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
                 y += ancSize.height; // ok
             }
 
+            // Needed to have the right position on the first display
+            // (no flash on the center of the map).
+            me.setPagePosition(x, y);
             // position in the next cycle - otherwise strange shifts can occur.
             window.setTimeout(function() {
-                me.setPagePosition(x, y);
-            }, 0);            
+                if (me.el.dom) {
+                    me.setPagePosition(x, y);
+                }
+            }, 0);
         }
     },
 
@@ -4560,15 +4595,15 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
      *  Pans the MapPanel's map so that an anchored popup can come entirely
      *  into view, with padding specified as per normal OpenLayers.Map popup
      *  padding.
-     */ 
+     */
     panIntoView: function() {
-        var mapBox = Ext.fly(this.map.div).getBox(true); 
+        var mapBox = Ext.fly(this.map.div).getBox(true);
 
         //assumed viewport takes up whole body element of map panel
         var popupPos =  this.getPosition(true);
         popupPos[0] -= mapBox.x;
         popupPos[1] -= mapBox.y;
-       
+
         var panelSize = [mapBox.width, mapBox.height]; // [X,Y]
 
         var popupSize = this.getSize();
@@ -4597,25 +4632,25 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
 
         this.map.pan(dx, dy);
     },
-    
+
     /** private: method[onMapMove]
      */
     onMapMove: function() {
-        if (!(this.hidden && this.insideViewport)){       
+        if (!(this.hidden && this.insideViewport)){
             this._mapMove = true;
             this.position();
             delete this._mapMove;
         }
     },
-    
+
     /** private: method[addAnchorEvents]
      */
     addAnchorEvents: function() {
         this.map.events.on({
             "move" : this.onMapMove,
-            scope : this            
+            scope : this
         });
-        
+
         this.on({
             "resize": this.position,
             "collapse": this.position,
@@ -4623,7 +4658,7 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
             scope: this
         });
     },
-    
+
     /** private: method[removeAnchorEvents]
      */
     removeAnchorEvents: function() {
@@ -4651,7 +4686,7 @@ GeoExt.Popup = Ext.extend(Ext.Window, {
 });
 
 /** api: xtype = gx_popup */
-Ext.reg('gx_popup', GeoExt.Popup); 
+Ext.reg('gx_popup', GeoExt.Popup);
 
 /**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
@@ -6949,6 +6984,8 @@ GeoExt.tree.LayerLoader = function(config) {
          */
         "load"
     );
+    
+    this.iconCls = {};
 
     GeoExt.tree.LayerLoader.superclass.constructor.call(this);
 };
@@ -6993,6 +7030,13 @@ Ext.extend(GeoExt.tree.LayerLoader, Ext.util.Observable, {
      *  uiProviders object will be taken from the ownerTree's loader.
      */
     uiProviders: null,
+
+    /** private: property[iconCls]
+     *  ``Object`` An object where the keys are the record ids and the
+     *  values are the iconCls values of the corresponding nodes. This is used
+     *  to restore the iconCls of a node after move whenever possible. It is 
+     *  needed since moving a layer node involves removing it and re-adding it.
+     */
     
     /** private: method[load]
      *  :param node: ``Ext.tree.TreeNode`` The node to add children to.
@@ -7071,7 +7115,8 @@ Ext.extend(GeoExt.tree.LayerLoader, Ext.util.Observable, {
             var child = this.createNode({
                 nodeType: 'gx_layer',
                 layer: layerRecord.getLayer(),
-                layerStore: this.store
+                layerStore: this.store,
+                iconCls: this.iconCls[layerRecord.id]
             });
             var sibling = node.item(index);
             if(sibling) {
@@ -7120,9 +7165,11 @@ Ext.extend(GeoExt.tree.LayerLoader, Ext.util.Observable, {
         // remove the record and re-insert it at the correct index
         var record = this.store.getByLayer(node.layer);
 
+        delete oldParent.loader.iconCls[record.id];
         if(newParent instanceof GeoExt.tree.LayerContainer && 
                                     this.store === newParent.loader.store) {
             newParent.loader._reordering = true;
+            newParent.loader.iconCls[record.id] = node.attributes.iconCls;
             this.store.remove(record);
             var newRecordIndex;
             if(newParent.childNodes.length > 1) {
@@ -7218,6 +7265,7 @@ Ext.extend(GeoExt.tree.LayerLoader, Ext.util.Observable, {
      */
     destroy: function() {
         this.removeStoreHandlers();
+        this.iconCls = null;
     }
 });
 
@@ -8409,7 +8457,7 @@ Ext.reg('gx_opacityslider', GeoExt.LayerOpacitySlider);
 
 /**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
- * 
+ *
  * Published under the BSD license.
  * See http://svn.geoext.org/core/trunk/geoext/license.txt for the full text
  * of the license.
@@ -8441,7 +8489,7 @@ GeoExt.LayerLegend = Ext.extend(Ext.Container, {
      *  on the LayerStore record using the hideTitle property.
      */
     showTitle: true,
-    
+
     /** api: config[legendTitle]
      *  ``String``
      *  Optional title to be displayed instead of the layer title.  If this is
@@ -8454,7 +8502,7 @@ GeoExt.LayerLegend = Ext.extend(Ext.Container, {
      *  Optional css class to use for the layer title labels.
      */
     labelCls: null,
-    
+
     /** private: property[layerStore]
      *  :class:`GeoExt.data.LayerStore`
      */
@@ -8546,32 +8594,32 @@ GeoExt.LayerLegend = Ext.extend(Ext.Container, {
      */
     update: function() {
         var title = this.getLayerTitle(this.layerRecord);
-        var item = this.items.get(0);
+        var item = this.items.itemAt(0);
         if (item instanceof Ext.form.Label && this.getLabel() !== title) {
             // we need to update the title
             item.setText(title, false);
         }
     },
-    
+
     /** private: method[getLayerTitle]
      *  :arg record: :class:GeoExt.data.LayerRecord
      *  :returns: ``String``
      *
-     *  Get a title for the layer.  If the record doesn't have a title, use the 
+     *  Get a title for the layer.  If the record doesn't have a title, use the
      *  name.
      */
     getLayerTitle: function(record) {
         var title = this.legendTitle || "";
         if (this.showTitle && !title) {
             if (record && !record.get("hideTitle")) {
-                title = record.get("title") || 
-                    record.get("name") || 
+                title = record.get("title") ||
+                    record.get("name") ||
                     record.getLayer().name || "";
             }
         }
         return title;
     },
-    
+
     /** private: method[beforeDestroy]
      */
     beforeDestroy: function() {
@@ -8602,7 +8650,7 @@ GeoExt.LayerLegend = Ext.extend(Ext.Container, {
  *      in the order of their score for support of the provided layerRecord.
  *  :return: ``Array(String)`` xtypes of legend types that can be used with
  *      the provided ``layerRecord``.
- *  
+ *
  *  Gets an array of legend xtypes that support the provided layer record,
  *  with optionally provided preferred types listed first.
  */
@@ -8631,16 +8679,16 @@ GeoExt.LayerLegend.getTypes = function(layerRecord, preferredTypes) {
     for (var i=0; i<len; ++i) {
         goodTypes[i] = scoredTypes[i].type;
     }
-    // take the remaining preferred types, and add other good types 
+    // take the remaining preferred types, and add other good types
     return types.concat(goodTypes);
 };
-    
+
 /** private: method[supports]
  *  :param layerRecord: :class:`GeoExt.data.LayerRecord` The layer record
  *      to check support for.
  *  :return: ``Integer`` score indicating how good the legend supports the
  *      provided record. 0 means not supported.
- *  
+ *
  *  Checks whether this legend type supports the provided layerRecord.
  */
 GeoExt.LayerLegend.supports = function(layerRecord) {
@@ -8650,12 +8698,12 @@ GeoExt.LayerLegend.supports = function(layerRecord) {
 /** class: constant[GeoExt.LayerLegend.types]
  *  An object containing a name-class mapping of LayerLegend subclasses.
  *  To register as LayerLegend, a subclass should add itself to this object:
- *  
+ *
  *  .. code-block:: javascript
- *  
+ *
  *      GeoExt.GetLegendGraphicLegend = Ext.extend(GeoExt.LayerLegend, {
  *      });
- *      
+ *
  *      GeoExt.LayerLegend.types["getlegendgraphic"] =
  *          GeoExt.GetLegendGraphicLegend;
  */
@@ -8722,6 +8770,16 @@ GeoExt.LegendImage = Ext.extend(Ext.BoxComponent, {
         };
     },
 
+    /** api: method[getImgEl]
+     *  :return:  ``Ext.Element`` The image element.
+     *
+     *  Returns the image element.
+     *  This method is supposed to be overriden in subclasses.
+     */
+    getImgEl: function() {
+        return this.getEl();
+    },
+
     /** api: method[setUrl]
      *  :param url: ``String`` The new URL.
      *  
@@ -8729,7 +8787,7 @@ GeoExt.LegendImage = Ext.extend(Ext.BoxComponent, {
      */
     setUrl: function(url) {
         this.url = url;
-        var el = this.getEl();
+        var el = this.getImgEl();
         if (el) {
             el.un("load", this.onImageLoad, this);
             el.on("load", this.onImageLoad, this, {single: true});
@@ -8754,7 +8812,7 @@ GeoExt.LegendImage = Ext.extend(Ext.BoxComponent, {
      *  Private method called during the destroy sequence.
      */
     onDestroy: function() {
-        var el = this.getEl();
+        var el = this.getImgEl();
         if(el) {
             el.un("load", this.onImageLoad, this);
             el.un("error", this.onImageLoadError, this);
@@ -8766,7 +8824,7 @@ GeoExt.LegendImage = Ext.extend(Ext.BoxComponent, {
      *  Private method called if the legend image fails loading.
      */
     onImageLoadError: function() {
-        var el = this.getEl();
+        var el = this.getImgEl();
         el.addClass(this.noImgCls);
         el.dom.src = this.defaultImgSrc;
     },
@@ -8775,7 +8833,7 @@ GeoExt.LegendImage = Ext.extend(Ext.BoxComponent, {
      *  Private method called after the legend image finished loading.
      */
     onImageLoad: function() {
-        var el = this.getEl();
+        var el = this.getImgEl();
         if (!OpenLayers.Util.isEquivalentUrl(el.dom.src, this.defaultImgSrc)) {
             el.removeClass(this.noImgCls);
         }
@@ -8853,7 +8911,7 @@ Ext.reg('gx_urllegend', GeoExt.UrlLegend);
 
 /**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
- * 
+ *
  * Published under the BSD license.
  * See http://svn.geoext.org/core/trunk/geoext/license.txt for the full text
  * of the license.
@@ -8910,9 +8968,9 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
      *  support vendor-specific parameters in a SLD WMS GetLegendGraphic
      *  request. To override the default MIME type of image/gif use the
      *  FORMAT parameter in baseParams.
-     *     
+     *
      *  .. code-block:: javascript
-     *     
+     *
      *      var legendPanel = new GeoExt.LegendPanel({
      *          map: map,
      *          title: 'Legend Panel',
@@ -8923,9 +8981,16 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
      *                  LEGEND_OPTIONS: 'forceLabels:on'
      *              }
      *          }
-     *      });   
+     *      });
      */
     baseParams: null,
+
+    /** api: config[itemXType]
+     *  ``String``
+     *  The xtype to be used for each item of this legend. Defaults to
+     *  `gx_legendimage`.
+     */
+    itemXType: "gx_legendimage",
     
     /** private: method[initComponent]
      *  Initializes the WMS legend. For group layers it will create multiple
@@ -8938,7 +9003,7 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
         layer.events.register("moveend", this, this.onLayerMoveend);
         this.update();
     },
-    
+
     /** private: method[onLayerMoveend]
      *  :param e: ``Object``
      */
@@ -8969,6 +9034,7 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
                              [layer.params.STYLES].join(",").split(",");
         var idx = layerNames.indexOf(layerName);
         var styleName = styleNames && styleNames[idx];
+
         // check if we have a legend URL in the record's
         // "styles" data field
         if(styles && styles.length > 0) {
@@ -8977,9 +9043,21 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
                     url = (s.name == styleName && s.legend) && s.legend.href;
                     return !url;
                 });
-            } else if(this.defaultStyleIsFirst === true && !styleNames &&
-                      !layer.params.SLD && !layer.params.SLD_BODY) {
-                url = styles[0].legend && styles[0].legend.href;
+            } else {
+                if(!styleNames && !layer.params.SLD && !layer.params.SLD_BODY) {
+                    // let's search for a style with a 'layerName' attribute
+                    Ext.each(styles, function(s) {
+                        url = (s.layerName == layerName && s.legend) &&
+                                                                s.legend.href;
+                        return !url;
+                    });
+                    if (!url && this.defaultStyleIsFirst === true) {
+                        url = styles[0].legend && styles[0].legend.href;
+                    }
+                }
+            }
+            if (url) {
+                url = decodeURIComponent(url);
             }
         }
         if(!url) {
@@ -9002,7 +9080,12 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
             // update legend after a forced layer redraw
             params._OLSALT = layer.params._OLSALT;
         }
-        url = Ext.urlAppend(url, Ext.urlEncode(params));
+        var appendParams = Ext.urlEncode(params);
+        var formatRegEx = /([&\?]?)format=[^&]*&?/i;
+        if (formatRegEx.test(appendParams) && formatRegEx.test(url)) {
+            url = url.replace(formatRegEx, '$1');
+        }
+        url = OpenLayers.Util.urlAppend(url, appendParams);
         if (url.toLowerCase().indexOf("request=getlegendgraphic") != -1) {
             if (url.toLowerCase().indexOf("format=") == -1) {
                 url = Ext.urlAppend(url, "FORMAT=image%2Fgif");
@@ -9014,7 +9097,7 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
                 url = Ext.urlAppend(url, "SCALE=" + scale);
             }
         }
-        
+
         return url;
     },
 
@@ -9031,13 +9114,15 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
             return;
         }
         GeoExt.WMSLegend.superclass.update.apply(this, arguments);
-        
+
         var layerNames, layerName, i, len;
 
         layerNames = [layer.params.LAYERS].join(",").split(",");
 
         var destroyList = [];
-        var textCmp = this.items.get(0);
+        var textCmp = this.items.find(function(item){
+            return item.isXType('label');
+        });
         this.items.each(function(cmp) {
             i = layerNames.indexOf(cmp.itemId);
             if(i < 0 && cmp != textCmp) {
@@ -9062,7 +9147,7 @@ GeoExt.WMSLegend = Ext.extend(GeoExt.LayerLegend, {
             layerName = layerNames[i];
             if(!this.items || !this.getComponent(layerName)) {
                 this.add({
-                    xtype: "gx_legendimage",
+                    xtype: this.itemXType,
                     url: this.getLegendUrl(layerName, layerNames),
                     itemId: layerName
                 });
@@ -9258,7 +9343,13 @@ GeoExt.VectorLegend = Ext.extend(GeoExt.LayerLegend, {
                 this.symbolType = this.symbolTypeFromFeature(this.feature);
             } else if (this.layer) {
                 if (this.layer.features.length > 0) {
-                    var feature = this.layer.features[0].clone();
+                    var feature;
+                    for (var i=0, ii=this.layer.features.length; i<ii; i++) {
+                        if (this.layer.features[i].geometry !== null) {
+                            feature = this.layer.features[i].clone();
+                            break;
+                        }
+                    }
                     feature.attributes = {};
                     this.feature = feature;
                     this.symbolType = this.symbolTypeFromFeature(this.feature);
@@ -9374,19 +9465,24 @@ GeoExt.VectorLegend = Ext.extend(GeoExt.LayerLegend, {
      *  Set as a one time listener for the ``featuresadded`` event on the layer
      *  if it was provided with no features originally.
      */
-    onFeaturesAdded: function() {
-        this.layer.events.un({
-            featuresadded: this.onFeaturesAdded,
-            scope: this
-        });
-        var feature = this.layer.features[0].clone();
-        feature.attributes = {};
-        this.feature = feature;
-        this.symbolType = this.symbolTypeFromFeature(this.feature);
-        if (!this.rules) {
-            this.setRules();
+    onFeaturesAdded: function(evt) {
+        for (var i=0, ii=evt.features.length; i<ii; ++i) {
+            if (evt.features[i].geometry !== null) {
+                this.layer.events.un({
+                    featuresadded: this.onFeaturesAdded,
+                    scope: this
+                });
+                var feature = evt.features[i].clone();
+                feature.attributes = {};
+                this.feature = feature;
+                this.symbolType = this.symbolTypeFromFeature(this.feature);
+                if (!this.rules) {
+                    this.setRules();
+                }
+                this.update();
+                break;
+            }
         }
-        this.update();
     },
     
     /** private: method[setRules]
@@ -9545,12 +9641,12 @@ GeoExt.VectorLegend = Ext.extend(GeoExt.LayerLegend, {
      */
     createRuleRenderer: function(rule) {
         var types = [this.symbolType, "Point", "Line", "Polygon"];
-        var type, haveType;
+        var type, haveType, i, len, ii;
         var symbolizers = rule.symbolizers;
         if (!symbolizers) {
             // TODO: remove this when OpenLayers.Symbolizer is used everywhere
             var symbolizer = rule.symbolizer;
-            for (var i=0, len=types.length; i<len; ++i) {
+            for (i=0, len=types.length; i<len; ++i) {
                 type = types[i];
                 if (symbolizer[type]) {
                     symbolizer = symbolizer[type];
@@ -9561,7 +9657,7 @@ GeoExt.VectorLegend = Ext.extend(GeoExt.LayerLegend, {
             symbolizers = [symbolizer];
         } else {
             var Type;
-            outer: for (var i=0, ii=types.length; i<ii; ++i) {
+            outer: for (i=0, ii=types.length; i<ii; ++i) {
                 type = types[i];
                 Type = OpenLayers.Symbolizer[type];
                 if (Type) {
@@ -9680,15 +9776,16 @@ GeoExt.VectorLegend = Ext.extend(GeoExt.LayerLegend, {
      */
     update: function() {
         GeoExt.VectorLegend.superclass.update.apply(this, arguments);
+        var i, ii;
         if (this.symbolType && this.rules) {
             if (this.rulesContainer.items) {
                 var comp;
-                for (var i=this.rulesContainer.items.length-1; i>=0; --i) {
+                for (i=this.rulesContainer.items.length-1; i>=0; --i) {
                     comp = this.rulesContainer.getComponent(i);
                     this.rulesContainer.remove(comp, true);
                 }
             }
-            for (var i=0, ii=this.rules.length; i<ii; ++i) {
+            for (i=0, ii=this.rules.length; i<ii; ++i) {
                 this.addRuleEntry(this.rules[i], true);
             }
             this.doLayout();
@@ -9777,7 +9874,7 @@ GeoExt.VectorLegend = Ext.extend(GeoExt.LayerLegend, {
                     "zoomend": this.onMapZoom,
                     scope: this
                 });
-    }
+            }
         }
     },
 
