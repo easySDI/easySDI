@@ -1159,6 +1159,8 @@ ALTER TABLE ONLY #__sdi_versionlink
     ADD CONSTRAINT #__sdi_versionlink_fk1 FOREIGN KEY (parent_id) REFERENCES #__sdi_version(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_versionlink
     ADD CONSTRAINT #__sdi_versionlink_fk2 FOREIGN KEY (child_id) REFERENCES #__sdi_version(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_versionlink
+    ADD CONSTRAINT #__sdi_versionlink_uk UNIQUE (parent_id, child_id);
 ALTER TABLE ONLY #__sdi_virtual_physical
     ADD CONSTRAINT #__sdi_virtual_physical_fk1 FOREIGN KEY (virtualservice_id) REFERENCES #__sdi_virtualservice(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_virtual_physical
