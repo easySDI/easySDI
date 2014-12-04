@@ -38,4 +38,4 @@ ALTER TABLE `#__sdi_physicalservice` ADD COLUMN `server_id` INT(11) NULL;
 ALTER TABLE `#__sdi_physicalservice`
 ADD CONSTRAINT `#__sdi_physicalservice_server_fk1` FOREIGN KEY (`server_id`) REFERENCES `#__sdi_sys_server` (`id`);
 
-
+ALTER TABLE `#__sdi_map_tool` MODIFY `params` VARCHAR(4000);

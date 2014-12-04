@@ -1,0 +1,9 @@
+.sdi-indoorlevelslider {
+    width: 214px;
+    padding-left: 6px;
+    background-image: url(images/ticks.gif);
+}
+
+.sdi-indoorlevelslider.x-slider-thumb {
+    background-image: url(images/slider-thumb.png);
+}

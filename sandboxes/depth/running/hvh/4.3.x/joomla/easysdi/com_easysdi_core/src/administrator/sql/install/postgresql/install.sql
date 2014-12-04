@@ -617,7 +617,7 @@ CREATE TABLE #__sdi_map_tool (
     id serial NOT NULL ,
     map_id bigint NOT NULL,
     tool_id bigint NOT NULL,
-    params character varying(500)
+    params character varying(4000)
 );
 
 CREATE TABLE #__sdi_map_virtualservice (

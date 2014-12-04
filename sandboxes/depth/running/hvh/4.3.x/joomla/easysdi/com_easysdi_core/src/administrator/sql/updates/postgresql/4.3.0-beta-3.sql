@@ -36,3 +36,5 @@ ALTER TABLE #__sdi_physicalservice ADD COLUMN server_id INT(11) UNSIGNED;
 
 ALTER TABLE ONLY #__sdi_physicalservice
     ADD CONSTRAINT #__sdi_physicalservice_server_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server(id) MATCH FULL;
+
+ALTER TABLE #__sdi_map_tool ALTER COLUMN params TYPE character varying(4000);

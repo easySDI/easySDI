@@ -41,6 +41,7 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet($base_url . '/ux/geoext/resources/css/printpreview.css');
         $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
         $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
+        $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css');
 
         //Loadind js files
         if (JDEBUG) {

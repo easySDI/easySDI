@@ -38,6 +38,11 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  it to the min value.
      */
     value: null,
+    /** api: config[baseCls]
+     *  ``String``
+     *  The CSS class name for the slider elements.  Default is "sdi-indoorlevelslider".
+     */
+    baseCls: "sdi-indoorlevelslider",
     
     /**
      * 
@@ -116,6 +121,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                     mousedown: this.stopMouseEvents,
                     click: this.stopMouseEvents
                 });
+                this.el.addClass(this.baseCls);
             },
             afterrender: function() {
                 this.map = panel.map;
