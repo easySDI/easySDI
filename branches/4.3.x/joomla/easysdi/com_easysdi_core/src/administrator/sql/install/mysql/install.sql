@@ -1672,7 +1672,8 @@ CONSTRAINT `#__sdi_versionlink_fk2`
     FOREIGN KEY (`child_id` )
     REFERENCES `#__sdi_version` (`id` )
     ON DELETE CASCADE
-    ON UPDATE NO ACTION
+    ON UPDATE NO ACTION,
+CONSTRAINT #__sdi_versionlink_uk UNIQUE (parent_id, child_id)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 

@@ -1488,7 +1488,7 @@ class FormGenerator {
         if (empty($result)) {
             return '';
         } else {
-            if ($result->stereotype_id == EnumStereotype::$LOCALECHOICE) {
+            if (isset($result->stereotype_id) && $result->stereotype_id == EnumStereotype::$LOCALECHOICE) {
                 return $result->guid;
             } else {
                 return $result->value;
