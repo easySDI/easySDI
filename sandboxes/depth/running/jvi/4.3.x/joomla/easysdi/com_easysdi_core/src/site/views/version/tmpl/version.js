@@ -1,7 +1,6 @@
 js = jQuery.noConflict();
 var childrenTable, availablechildrenTable, parents,
     tmpAdded = [], tmpRemoved = [];
-    ;
 
 var lastCriteria = {length: 0};
 js.fn.dataTableExt.afnFiltering.push(function(oSettings, aData, iDataIndex){
@@ -141,6 +140,30 @@ js(document).ready(function() {
             
         ]
     }));
+    
+    // to avoid double click event under IE !!
+    js('#toolbar button[onclick]')
+        .removeAttr('onclick')
+        .on('click', function(){
+            var task = 'version.'+js(this).closest('div').attr('id').replace('toolbar-', '');
+            
+            if(task === 'version-cancel'){
+                js('#jform_childrentoadd').val();
+                js('#jform_childrentoremove').val();
+            }
+            
+            js('input[name=task]').val(task);
+        });
+
+    /*Joomla.submitbutton = function(task)
+    {
+        if (task === 'version.save' || task === 'version.apply') {
+            js('#jform_childrentoremove').val(JSON.stringify(tmpRemoved));
+            js('#jform_childrentoadd').val(JSON.stringify(tmpAdded));
+        }
+
+        Joomla.submitform(task, document.getElementById('adminForm'));
+    };*/
 });
 
 var addChild = function(child){
@@ -151,6 +174,7 @@ var addChild = function(child){
     
     availablechildrenTable.fnDraw();
     childrenTable.fnDraw();
+    js('#jform_childrentoadd').val(JSON.stringify(tmpAdded));
 };
 
 var deleteChild = function(child){
@@ -161,14 +185,5 @@ var deleteChild = function(child){
     
     childrenTable.fnDraw();
     availablechildrenTable.fnDraw();
-};
-
-Joomla.submitbutton = function(task)
-{
-    if (task === 'version.save' || task === 'version.apply') {
-        js('#jform_childrentoremove').val(JSON.stringify(tmpRemoved));
-        js('#jform_childrentoadd').val(JSON.stringify(tmpAdded));
-    }
-    
-    Joomla.submitform(task, document.getElementById('adminForm'));
+    js('#jform_childrentoremove').val(JSON.stringify(tmpRemoved));
 };
