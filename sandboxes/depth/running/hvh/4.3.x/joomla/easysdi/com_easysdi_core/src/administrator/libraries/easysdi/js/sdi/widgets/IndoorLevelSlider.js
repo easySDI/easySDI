@@ -89,6 +89,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  Updates the ``OpenLayers.Layer`` opacity value.
      */
     changeIndoorLevel: function(slider, value) {
+        this.setValue(value);
         var layers = this.map.layers;
         var level = levels[value];
         
@@ -103,6 +104,8 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                 layers[a].redraw(true);
             }
         };
+        
+        
     },
     /** private: method[addToMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`

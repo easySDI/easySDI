@@ -39,9 +39,9 @@ Ext.onReady(function() {
                 window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }
         }
-        if(data.level){
+        if (data.level) {
             //Init the indoor layer with the default level value
-            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this,window.appname.mapPanel.map.indoorlevelslider.value);
+            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this, window.appname.mapPanel.map.indoorlevelslider.value);
         }
         loadingMask.hide();
     });
@@ -161,7 +161,7 @@ function getMapConfig() {
 
     //Groups
     layermanager.groups = {};
-    for (index = 0; index < groups.length; ++index){
+    for (index = 0; index < groups.length; ++index) {
         layermanager.groups[groups[index].alias] = {title: groups[index].title, expanded: groups[index].expanded};
     }
     layermanager.groups['background'] = {title: backgroundname, exclusive: true, expanded: backgroundexpanded};
@@ -397,14 +397,14 @@ function getMapConfig() {
                                     opacity: layer.opacity,
                                     style: layer.asOLstyle,
                                     matrixSet: layer.matrixSet
-                                    
+
                                 }
                             ]
                         };
-                        if(layer.asOLoptions){
+                        if (layer.asOLoptions) {
                             var options = JSON.parse(layer.asOLoptions);
-                            for(var key in options){
-                                wmts.args[0][key]= options[key];
+                            for (var key in options) {
+                                wmts.args[0][key] = options[key];
                             }
                         }
                         if (layer.href) {
@@ -458,13 +458,14 @@ function getMapConfig() {
                             wms.order = layer.order;
                         }
                         ;
-                        if(layer.servertype){
+                        if (layer.servertype) {
                             wms.servertype = layer.servertype;
-                        };
-                        
-                        if(layer.asOLoptions){
+                        }
+                        ;
+
+                        if (layer.asOLoptions) {
                             var options = JSON.parse(layer.asOLoptions);
-                            for(var key in options){
+                            for (var key in options) {
                                 wms.args[key] = options[key];
                             }
                         }
@@ -488,36 +489,36 @@ function getMapConfig() {
                 };
                 if (layer.attribution) {
                     overlay.attribution = layer.attribution;
-                };
+                }
+                ;
                 if (layer.fixed) {
                     overlay.fixed = layer.fixed;
-                };
+                }
+                ;
                 if (layer.href) {
                     overlay.href = layer.href;
-                };                
+                }
+                ;
                 if (layer.download) {
                     overlay.download = layer.download;
-                };
+                }
+                ;
                 if (layer.order) {
                     overlay.order = layer.order;
-                };
-                if(layer.levelfield){
+                }
+                ;
+                if (layer.levelfield) {
                     overlay.levelfield = layer.levelfield;
-                };
-                if(layer.servertype){
+                }
+                ;
+                if (layer.servertype) {
                     overlay.servertype = layer.servertype;
-                };
+                }
+                ;
                 config.map.layers.push(overlay);
                 break;
         }
     }
-
-var tip = new Ext.slider.Tip({
-    getThumbText: this.getThumbText,
-        getText: function(thumb){
-            return String.format('<b>Level {0}</b>', thumb.value);
-        }
-    });
 
     if (cleared === "false") {
         config.mapItems = [
@@ -532,32 +533,65 @@ var tip = new Ext.slider.Tip({
                 xtype: "sdi_gxp_scaleoverlay"
             }
         ];
-        
-        if(data.level){
+
+        if (data.level) {
             var defaultvalue;
-            for(var key in data.level){
-                if(data.level[key].defaultlevel == "1"){
+            for (var key in data.level) {
+                if (data.level[key].defaultlevel == "1") {
                     defaultvalue = parseInt(key);
                 }
             }
             var maxvalue = data.level.length - 1;
+            var h = 18.5 * (data.level.length - 1);
+//            var labelh = h ;
+            var labelw = 80;
+            var x = 400;
+            var y = 20;
+//            var sliderh = h ;
+
             config.mapItems.push(
                     {
-               xtype: "sdi_indoorlevelslider",
-               value : defaultvalue,
-               minValue: 0,
-               maxValue: maxvalue,
-               levels: data.level,
-               increment: 1,
-               isFormField: true,
-               plugins : new sdi.widgets.IndoorLevelSliderTip({template: '<div>{level}</div>', levels:data.level}),
-               aggressive: false,
-               vertical: true,
-               height: 100,
-               x: 450,
-               y: 20
-           }
-                    )
+                        xtype: "sdi_indoorlevelslider",
+                        value: defaultvalue,
+                        minValue: 0,
+                        maxValue: maxvalue,
+                        levels: data.level,
+                        increment: 1,
+                        isFormField: true,
+                        plugins: new sdi.widgets.IndoorLevelSliderTip({template: '<div>{level}</div>', levels: data.level}),
+                        aggressive: false,
+                        vertical: true,
+                        height: h,
+                        x: x,
+                        y: y
+                    }
+            )
+
+            var ul = document.createElement('ul');
+            for (var i = data.level.length - 1; i >= 0; i--) {
+                var li = Ext.DomHelper.append(ul, {
+                    tag: 'li',
+                    html: data.level[i].label
+                }, true);
+                li.on({
+                    click: (function(i) {
+                        window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(window.appname.mapPanel.map.indoorlevelslider, i);
+                    }).createDelegate(this, [i])
+                });
+            }
+
+
+            config.mapItems.push({
+                cls: 'levellabelpanel',
+                id: 'levellabelpanel',
+                //title: OpenLayers.i18n('Level'),
+                border: false,
+                height: h,
+                width: labelw,
+                x: x,
+                y: y,
+                contentEl: ul
+            });
         }
     }
 

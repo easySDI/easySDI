@@ -58,16 +58,32 @@ sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
      *  Called to initialize the plugin.
      */
     init: function(slider) {
+         var me = this;
         this.compiledTemplate = new Ext.Template(this.template);
         
         sdi.widgets.IndoorLevelSliderTip.superclass.init.call(this, slider);
+        
+//        slider.on('afterRender', me.onSliderRender, me, {scope:me,delay:100, single:true});
+//        slider.un("dragend", me.hide, me);
+
     },
+    
+//    onSliderRender : function(slider) {
+//        var thumbs  = slider.thumbs,
+//            t       = 0,
+//            tLen    = thumbs.length,
+//            onSlide = this.onSlide;
+//
+//        for (; t < tLen; t++) {
+//            this.onSlide(slider, null, thumbs[t]);
+//        }
+//    },
 
     /** private: method[getText]
      *  :param slider: ``Ext.slider.SingleSlider`` The slider this tip is attached to.
      */
     getText: function(thumb) {
-        var level = levels[thumb.value].label
+        var level = levels[thumb.value].label;
         var data = {
             level: level
         };
