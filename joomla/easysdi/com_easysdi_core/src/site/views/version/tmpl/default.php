@@ -65,7 +65,7 @@ if ($this->item) :
         <?php if (!empty($this->item->id)): ?>
             <script type="text/javascript">
                 var version = <?php echo $this->item->id?>,
-                    resourcetypechild = "<?php echo $this->item->resourcetypechild;?>"
+                    resourcetypechild = "<?php echo $this->item->resourcetypechild;?>",
                     baseUrl = "<?php echo JUri::base(); ?>index.php?";
             </script>
             <?php if ($this->item->versioning): ?>
