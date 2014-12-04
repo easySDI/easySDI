@@ -9,6 +9,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
+jimport('joomla.filesystem.file');
+
 class Easysdi_dashboardController extends JControllerLegacy {
 
     /**
