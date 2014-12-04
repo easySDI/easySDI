@@ -61,9 +61,6 @@ class EnumStereotype {
     /** Value: 1001
      * @var int **/
     public static $BOUNDARY = 1001;
-    /** Value: 1002
-     * @var int **/
-    public static $BOUNDARYCATEGORY = 1002;
 }
 
 ?>

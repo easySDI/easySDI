@@ -974,25 +974,6 @@ class FormGenerator {
                         $field->setAttribute('type', 'list');
                     }
                     break;
-                /* case EnumStereotype::$BOUNDARYCATEGORY:
-                  $field->setAttribute('type', 'list');
-                  if ($guid != '') {
-                  $field->setAttribute('label', EText::_($guid));
-                  } else {
-                  $field->setAttribute('label', JText::_($label));
-                  }
-
-                  if ($opt->guid != '') {
-                  $option = $this->form->createElement('option', EText::_($opt->guid));
-                  } else {
-                  $option = $this->form->createElement('option');
-                  }
-
-                  $option->setAttribute('value', $opt->name);
-
-                  $field->appendChild($option);
-                  $field->setAttribute('onchange', 'filterBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
-                  break; */
                 case EnumStereotype::$TEXTCHOICE:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
