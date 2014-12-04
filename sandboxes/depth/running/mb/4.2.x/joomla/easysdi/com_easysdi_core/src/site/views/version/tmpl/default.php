@@ -54,16 +54,6 @@ if ($this->item) :
     $document->addScriptDeclaration('var versioning=' . $versioning . ';');
     $isReadonly = !in_array($this->item->metadatastate, array($METADATASTATE_INPROGRESS, $METADATASTATE_VALIDATED));
     $document->addScriptDeclaration("var isReadonly = '{$isReadonly}';");
-    JText::script('COM_EASYSDI_CORE_DATATABLES_DISPLAY');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_RECORDSPERPAGE');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_SHOWING');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_RECORDS');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_NORESULT');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_OF');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_TO');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_NEXT');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_PREVIOUS');
-    JText::script('COM_EASYSDI_CORE_DATATABLES_SEARCH');
     ?>
 
 <style type="text/css">
@@ -75,7 +65,7 @@ if ($this->item) :
         <?php if (!empty($this->item->id)): ?>
             <script type="text/javascript">
                 var version = <?php echo $this->item->id?>,
-                    resourcetypechild = "<?php echo $this->item->resourcetypechild;?>"
+                    resourcetypechild = "<?php echo $this->item->resourcetypechild;?>",
                     baseUrl = "<?php echo JUri::base(); ?>index.php?";
             </script>
             <?php if ($this->item->versioning): ?>

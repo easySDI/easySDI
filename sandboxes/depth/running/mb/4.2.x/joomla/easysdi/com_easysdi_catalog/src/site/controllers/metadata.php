@@ -794,8 +794,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         if ($cascade) {
             $query = $this->db->getQuery(true)
-                    ->select('a.id')
-                    ->from('#__sdi_metadata a')
+                    ->select('m.id')
+                    ->from('#__sdi_metadata m')
                     ->innerJoin('#__sdi_versionlink vl ON vl.child_id=m.version_id')
                     ->innerJoin('#__sdi_metadata md ON md.version_id=vl.parent_id')
                     ->where('md.id=' . (int) $data['id']);
@@ -944,14 +944,19 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return mixed A database cursor resource on success, boolean false on failure
      */
     public function changeStatus($id, $metadatastate_id, $published = null) {
+        
+        $this->data['metadatastate_id'] = $metadatastate_id;
         switch ($metadatastate_id) {
             case sdiMetadata::INPROGRESS:
                 $published = '';
+                $this->data['published'] = $published;
                 $archived = '';
+                $this->data['archived'] = $archived;
                 break;
 
             case sdiMetadata::ARCHIVED:
                 $archived = date('Y-m-d');
+                $this->data['archived'] = $archived;
                 break;
         }
 
