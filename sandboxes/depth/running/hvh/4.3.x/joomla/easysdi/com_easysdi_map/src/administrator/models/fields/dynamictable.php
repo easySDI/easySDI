@@ -37,19 +37,19 @@ class JFormFieldDynamicTable extends JFormField
                 $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/models/fields/dynamictable.js');
 		// Initialize variables.
 		$html = array();
-                $html[] = '<table class="table table-bordered table-hover" id="tab-dyn">';
+                $html[] = '<table class="table table-bordered table-striped table-hover" id="tab-dyn">';
                 $html[] = '<thead>';
                 $html[] = '<tr>';
                 $html[] = '<th class="text-center">';
                 $html[] = '#';
                 $html[] = '</th>';
-                $html[] = '<th class="text-center">';
+                $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_LEVELLABEL').'" >';
                 $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_LEVELLABEL');
                 $html[] = '</th>';
-                $html[] = '<th class="text-center">';
+                $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_LEVELCODE').'">';
                 $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_LEVELCODE');
                 $html[] = '</th>';
-                $html[] = '<th class="text-center" class="hasTip" title="">';
+                $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_DEFAULTLEVEL').'">';
                 $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_DEFAULTLEVEL');
                 $html[] = '</th>';
                 $html[] = '</tr>';
