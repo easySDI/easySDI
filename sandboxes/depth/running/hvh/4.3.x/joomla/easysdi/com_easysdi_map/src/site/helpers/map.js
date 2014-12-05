@@ -317,10 +317,10 @@ function getMapConfig() {
                         actionTarget: "map.tbar",
                         showButtonText: false
                     };
-                    if (params.printserviceprinturl === '') {
-                        tool.printURL = params.printserviceurl + 'print.pdf';
-                    }
-                    ;
+//                    if (params.printserviceprinturl === '') {
+//                        tool.printURL = params.printserviceurl + 'print.pdf';
+//                    }
+//                    ;
                     if (params.printserviceprinturl === '') {
                         tool.printURL = params.printserviceurl + 'print.pdf';
                     } else {
@@ -328,9 +328,9 @@ function getMapConfig() {
                     }
                     ;
                     if (params.printservicecreateurl === '') {
-                        tool.printURL = params.printserviceurl + 'create.json';
+                        tool.createURL = params.printserviceurl + 'create.json';
                     } else {
-                        tool.printURL = params.printservicecreateurl;
+                        tool.createURL = params.printservicecreateurl;
                     }
                     ;
                     config.tools.push(tool);
@@ -568,7 +568,7 @@ function getMapConfig() {
             )
 
             var ul = document.createElement('ul');
-            for (var i = data.level.length - 1; i >= 0; i--) {
+            for (var i = 0;   i <= data.level.length - 1; i++) {
                 var li = Ext.DomHelper.append(ul, {
                     tag: 'li',
                     html: data.level[i].label

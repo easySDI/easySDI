@@ -18,8 +18,17 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
+$document->addScript(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/jquery.tablednd.0.7.min.js');
 ?>
 <script type="text/javascript">
+    js = jQuery.noConflict();
+    js(document).ready(function() {
+     
+// Initialise the first table (as before)
+js("#tab-dyn").tableDnD();
+ 
+   
+});
     Joomla.submitbutton = function(task)
     {
         if (task == 'map.cancel' || document.formvalidator.isValid(document.id('map-form'))) {
