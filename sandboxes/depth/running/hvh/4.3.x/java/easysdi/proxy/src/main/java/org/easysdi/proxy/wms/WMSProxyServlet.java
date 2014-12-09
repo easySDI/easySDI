@@ -576,10 +576,24 @@ public class WMSProxyServlet extends ProxyServlet {
                     Iterator<Entry<Integer, ProxyLayer>> itPL = layerTableToKeep.entrySet().iterator();
                     String layerList = "";
                     String styleList = "";
+                    
+                    //Handle Esri vendor specific parameter layerDefs       
+                    JSONObject layerdefs = ((WMSProxyServletRequest) this.getProxyRequest()).getLayerdefs();
+                    JSONObject newlayerdefs = new JSONObject();
+        
                     while (itPL.hasNext()) {
                         Entry<Integer, ProxyLayer> layer = itPL.next();
                         layerList += layer.getValue().getPrefixedName() + ",";
                         styleList += layerStyleMap.get(layer.getKey()) + ",";
+                        if(layerdefs != null){
+                            try {   
+                                //Handle Esri vendor specific parameter layerDefs       
+                                String newlayerdef = layerdefs.getString(layer.getValue().getAliasName());
+                                newlayerdefs.put(layer.getValue().getPrefixedName(), newlayerdef);
+                            } catch (JSONException ex) {
+
+                            }
+                        }
                     }
 
                     String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length() - 1);
@@ -587,15 +601,14 @@ public class WMSProxyServlet extends ProxyServlet {
 
                     //Set TRANSPARENT to TRUE if not present
                     String paramUrl = getProxyRequest().getUrlParameters();
-                    if (paramUrl.toUpperCase().indexOf("TRANSPARENT=") == -1) {
+                    if (!paramUrl.toUpperCase().contains("TRANSPARENT=")) {
                         paramUrl += "TRANSPARENT=TRUE&";
                     }
                     
                     //Handle Esri vendor specific parameter layerDefs
-                    JSONObject layerdefs = ((WMSProxyServletRequest) getProxyRequest()).getLayerdefs();
                     if(layerdefs != null){
                          paramUrl += "&layerDefs=";
-                         paramUrl += URLEncoder.encode(layerdefs.toString(), "UTF-8");
+                         paramUrl += URLEncoder.encode(newlayerdefs.toString(), "UTF-8");
                          paramUrl += "&";
                     }
 
@@ -1171,17 +1184,17 @@ public class WMSProxyServlet extends ProxyServlet {
                 
                 //If Esri vendor specific parameter layerDefs is present in the request :
                 //remove prefix of the layer name in it
-                JSONObject layerdefs = wmsRequest.getLayerdefs();
-                if(layerdefs != null){
-                    try{
-                        String layerdef = layerdefs.getString(layer.getAliasName());
-                        layerdefs.put(layer.getPrefixedName(), layerdef);
-                        layerdefs.remove(layer.getAliasName());
-                        wmsRequest.setLayerdefs(layerdefs);
-                    }catch(JSONException e){
-                        //layer is not concerned by the filter describe in parameter layerdefs
-                    }
-                }
+//                JSONObject layerdefs = wmsRequest.getLayerdefs();
+//                if(layerdefs != null){
+//                    try{
+//                        String layerdef = layerdefs.getString(layer.getAliasName());
+//                        layerdefs.put(layer.getPrefixedName(), layerdef);
+//                        layerdefs.remove(layer.getAliasName());
+//                        wmsRequest.setLayerdefs(layerdefs);
+//                    }catch(JSONException e){
+//                        //layer is not concerned by the filter describe in parameter layerdefs
+//                    }
+//                }
                                 
                 //Servers to call to complete the request
                 if (!remoteServerToCall.contains(layer.getAlias())) {

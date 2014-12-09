@@ -123,7 +123,17 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
      * is used in this JSON parameter so it has to be rewritten by the proxy
      */
     private JSONObject layerdefs;
+    
+    /**
+     * SDI specific parameter to allow WMS filtering on a virtual service 
+     * aggregating at least one geoserver service and one arcgisserver service.
+     * This specific parameter will be rewritten before being forwarded to 
+     * each remote server.
+     */
+    private JSONObject SDI_FILTER;
 
+    
+            
     /**
      * @param bodyRequest the bodyRequest to set
      */
@@ -308,6 +318,21 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
     }
 
     /**
+     * 
+     * @return 
+     */
+    public JSONObject getSDI_FILTER() {
+        return SDI_FILTER;
+    }
+
+    /**
+     * 
+     * @param SDI_FILTER 
+     */
+    public void setSDI_FILTER(JSONObject SDI_FILTER) {
+        this.SDI_FILTER = SDI_FILTER;
+    }
+    /**
      *
      */
     public void setVersion(String version) {
@@ -466,7 +491,13 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
                 } catch (JSONException e){
                     
                 }
-
+            }else if (key.equalsIgnoreCase("SDI_FILTER")) {
+                //SDI specific parameter for WMS filtering
+                try{
+                SDI_FILTER = new JSONObject(value);
+                } catch (JSONException e){
+                    
+                }
             }
         }
 

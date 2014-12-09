@@ -42,6 +42,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -161,23 +162,36 @@ public class WMSProxyLayerThread extends Thread {
 	Iterator<Entry<Integer, ProxyLayer>> itPL = layers.entrySet().iterator();
 	String layerList ="";
 	String styleList ="";
-	while(itPL.hasNext()){
-	    Entry<Integer, ProxyLayer> layer = itPL.next();
-	    layerList += layer.getValue().getPrefixedName() +",";
-	    styleList += styles.get(layer.getKey()) +",";
+        
+        //Handle Esri vendor specific parameter layerDefs       
+        JSONObject layerdefs = ((WMSProxyServletRequest) servlet.getProxyRequest()).getLayerdefs();
+        JSONObject newlayerdefs = new JSONObject();
+        
+	while(itPL.hasNext()){            
+            Entry<Integer, ProxyLayer> layer = itPL.next();
+            layerList += layer.getValue().getPrefixedName() +",";
+            styleList += styles.get(layer.getKey()) +",";
+            if(layerdefs != null){
+                try {   
+                    //Handle Esri vendor specific parameter layerDefs       
+                    String newlayerdef = layerdefs.getString(layer.getValue().getAliasName());
+                    newlayerdefs.put(layer.getValue().getPrefixedName(), newlayerdef);
+                } catch (JSONException ex) {
+
+                }
+            }       
 	}
 
 	String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-1);
 	String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
         
-        //Handle Esri vendor specific parameter layerDefs
-        JSONObject layerdefs = ((WMSProxyServletRequest) servlet.getProxyRequest()).getLayerdefs();
+        //Handle Esri vendor specific parameter layerDefs        
         if(layerdefs != null){
-             paramUrlBase += "&layerDefs=";
+             paramUrlBase += "&layerDefs=";             
             try {
-                paramUrlBase += URLEncoder.encode(layerdefs.toString(), "UTF-8");
+                paramUrlBase += URLEncoder.encode(newlayerdefs.toString(), "UTF-8");
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(WMSProxyLayerThread.class.getName()).log(Level.SEVERE, null, ex);
+                
             }
              paramUrlBase += "&";
         }
