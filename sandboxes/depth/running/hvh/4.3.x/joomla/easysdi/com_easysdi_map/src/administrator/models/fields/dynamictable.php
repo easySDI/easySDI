@@ -41,7 +41,6 @@ class JFormFieldDynamicTable extends JFormField
                 $html[] = '<thead>';
                 $html[] = '<tr>';
                 $html[] = '<th class="text-center">';
-                $html[] = '#';
                 $html[] = '</th>';
                 $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_LEVELLABEL').'" >';
                 $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_LEVELLABEL');
@@ -51,7 +50,6 @@ class JFormFieldDynamicTable extends JFormField
                 $html[] = '</th>';
                 $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_DEFAULTLEVEL').'">';
                 $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_DEFAULTLEVEL');
-                $html[] = '</th>';
                 $html[] = '</tr>';
                 $html[] = '</thead>';
                 $html[] = '<tbody>';
@@ -59,7 +57,7 @@ class JFormFieldDynamicTable extends JFormField
                 $html[] = '</tbody>';
                 $html[] = '</table>';
 
-                $html[] = '<a id="add_row" class="btn btn-default pull-left">Add Row</a><a id="delete_row" class="pull-right btn btn-default">Delete Row</a>';
+                $html[] = '<a id="add_row" class="btn btn-default pull-left">Add Row</a>';
 		return implode($html);
 	}
 }

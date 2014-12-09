@@ -24,8 +24,7 @@ $document->addScript(Juri::base(true) . '/components/com_easysdi_map/views/map/t
     js = jQuery.noConflict();
     js(document).ready(function() {
      
-// Initialise the first table (as before)
-js("#tab-dyn").tableDnD();
+    js("#tab-dyn").tableDnD();
  
    
 });
