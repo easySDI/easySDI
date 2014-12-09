@@ -1,12 +1,3 @@
-/*.sdi-indoorlevelslider {
-    width: 214px;
-    padding-left: 6px;
-    background-image: url(images/ticks.gif);
-}
-
-.sdi-indoorlevelslider.x-slider-thumb {
-    background-image: url(images/slider-thumb.png);
-}*/
 
 .levellabelpanel{
 position: absolute;
@@ -15,12 +6,3 @@ font-size: 10px;
 font-family: Arial, Helvetica, sans-serif;
 }
 
-.levellabelpanel {
-/*padding-bottom: 2px;*/
-}
-
-.levellabelpanel {
-/*margin-bottom: 4px;
-border: 1px solid black;
-background-color: white;*/
-}

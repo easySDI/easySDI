@@ -535,6 +535,8 @@ function getMapConfig() {
         ];
 
         if (data.level) {
+            //Levels are store in reverse order in the database 
+            data.level.reverse();
             var defaultvalue;
             for (var key in data.level) {
                 if (data.level[key].defaultlevel == "1") {
@@ -543,11 +545,8 @@ function getMapConfig() {
             }
             var maxvalue = data.level.length - 1;
             var h = 18.5 * (data.level.length - 1);
-//            var labelh = h ;
-            var labelw = 80;
             var x = 400;
             var y = 20;
-//            var sliderh = h ;
 
             config.mapItems.push(
                     {
@@ -568,7 +567,7 @@ function getMapConfig() {
             )
 
             var ul = document.createElement('ul');
-            for (var i = 0;   i <= data.level.length - 1; i++) {
+            for (var i = data.level.length - 1;   i >= 0; i--) {
                 var li = Ext.DomHelper.append(ul, {
                     tag: 'li',
                     html: data.level[i].label
@@ -584,10 +583,7 @@ function getMapConfig() {
             config.mapItems.push({
                 cls: 'levellabelpanel',
                 id: 'levellabelpanel',
-                //title: OpenLayers.i18n('Level'),
                 border: false,
-                height: h,
-                width: labelw,
                 x: x,
                 y: y,
                 contentEl: ul
