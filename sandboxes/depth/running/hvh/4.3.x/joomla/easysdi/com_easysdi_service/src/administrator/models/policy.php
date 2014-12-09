@@ -1249,62 +1249,68 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         $db->query();
 
         $pks = $data['organisms'];
-        foreach ($pks as $pk) {
-            try {
-                $query = $db->getQuery(true);
-                $columns = array('policy_id', 'organism_id');
-                $values = array($data['id'], $pk);
-                $query->insert('#__sdi_policy_organism');
-                $query->columns($query->quoteName($columns));
-                $query->values(implode(',', $values));
+        if(is_array($pks)){
+            foreach ($pks as $pk) {
+                try {
+                    $query = $db->getQuery(true);
+                    $columns = array('policy_id', 'organism_id');
+                    $values = array($data['id'], $pk);
+                    $query->insert('#__sdi_policy_organism');
+                    $query->columns($query->quoteName($columns));
+                    $query->values(implode(',', $values));
 
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    throw new Exception($db->getErrorMsg());
+                    $db->setQuery($query);
+                    if (!$db->query()) {
+                        throw new Exception($db->getErrorMsg());
+                    }
+                } catch (Exception $e) {
+                    $this->setError($e->getMessage());
+                    return false;
                 }
-            } catch (Exception $e) {
-                $this->setError($e->getMessage());
-                return false;
             }
         }
 
         $pks = $data['users'];
-        foreach ($pks as $pk) {
-            try {
-                $query = $db->getQuery(true);
-                $columns = array('policy_id', 'user_id');
-                $values = array($data['id'], $pk);
-                $query->insert('#__sdi_policy_user');
-                $query->columns($query->quoteName($columns));
-                $query->values(implode(',', $values));
+        if(is_array($pks)){
+            foreach ($pks as $pk) {
+                try {
+                    $query = $db->getQuery(true);
+                    $columns = array('policy_id', 'user_id');
+                    $values = array($data['id'], $pk);
+                    $query->insert('#__sdi_policy_user');
+                    $query->columns($query->quoteName($columns));
+                    $query->values(implode(',', $values));
 
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    throw new Exception($db->getErrorMsg());
+                    $db->setQuery($query);
+                    if (!$db->query()) {
+                        throw new Exception($db->getErrorMsg());
+                    }
+                } catch (Exception $e) {
+                    $this->setError($e->getMessage());
+                    return false;
                 }
-            } catch (Exception $e) {
-                $this->setError($e->getMessage());
-                return false;
             }
         }
 
         $pks = $data['categories'];
-        foreach ($pks as $pk) {
-            try {
-                $query = $db->getQuery(true);
-                $columns = array('policy_id', 'category_id');
-                $values = array($data['id'], $pk);
-                $query->insert('#__sdi_policy_category');
-                $query->columns($query->quoteName($columns));
-                $query->values(implode(',', $values));
+        if(is_array($pks)){
+            foreach ($pks as $pk) {
+                try {
+                    $query = $db->getQuery(true);
+                    $columns = array('policy_id', 'category_id');
+                    $values = array($data['id'], $pk);
+                    $query->insert('#__sdi_policy_category');
+                    $query->columns($query->quoteName($columns));
+                    $query->values(implode(',', $values));
 
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    throw new Exception($db->getErrorMsg());
+                    $db->setQuery($query);
+                    if (!$db->query()) {
+                        throw new Exception($db->getErrorMsg());
+                    }
+                } catch (Exception $e) {
+                    $this->setError($e->getMessage());
+                    return false;
                 }
-            } catch (Exception $e) {
-                $this->setError($e->getMessage());
-                return false;
             }
         }
         return true;
@@ -1416,6 +1422,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         $db->query();
 
         $arr_pks = $data['allowedoperation_' . strtolower($data['layout'])];
+        if(!is_array($arr_pks)){
+            return true;
+        }
+        
         foreach ($arr_pks as $pk) {
             try {
                 $query = $db->getQuery(true);
@@ -1978,6 +1988,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 $this->setError($je);
                 return false;
             }
+            if(is_array($arrValues)){
             foreach ($arrValues as $layerID => $value) {
                 $query = $db->getQuery(true);
                 $query->select('p.id');
@@ -2026,6 +2037,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     $this->setError($je);
                     return false;
                 }
+            }
             }
         }
         return true;
