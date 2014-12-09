@@ -34,10 +34,10 @@ function addRow(code, label, dflt) {
     if (dflt) {
         checked = "checked";
     }
-    jQuery('#level' + i).html("<td>" + (i) + "</td>\n\
-    <td><input name='jform[label][label" + i + "]' id='jform_label" + i + "'  type='text' placeholder='Label' class='form-control' value='" + label + "'></td>\n\
-    <td><input  name='jform[code][code" + i + "]' id='jform_code" + i + "' type='text' placeholder='Code'  class='form-control' value='" + code + "'></td>\n\
-    <td><input type='checkbox' name='jform[defaultlevel][defaultlevel" + i + "]' id='jform[defaultlevel" + i + "]' value='1' " + checked + " /></td>");
+    jQuery('#level' + i).html("<td></td>\n\
+    <td><input name='jform[label][" + i + "]' id='jform_label" + i + "'  type='text' placeholder='Label' class='form-control' value='" + label + "'></td>\n\
+    <td><input  name='jform[code][" + i + "]' id='jform_code" + i + "' type='text' placeholder='Code'  class='form-control' value='" + code + "'></td>\n\
+    <td><input type='checkbox' name='jform[defaultlevel][" + i + "]' id='jform[defaultlevel" + i + "]' value='1' " + checked + " /></td>");
     jQuery('#tab-dyn').append('<tr id="level' + (i + 1) + '"></tr>');
     
     i++;

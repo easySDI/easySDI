@@ -370,10 +370,12 @@ class Easysdi_mapModelmap extends JModelAdmin {
             //Indoor navigation
             $i = 1;
             $indoornavigation = '';
-            while (isset($_POST['jform']["code"]["code{$i}"])){
-                $indoornavigation = (strlen($indoornavigation) > 0 )? $indoornavigation . ',': $indoornavigation;  
-                $indoornavigation .= '{\"code\": \"'.$_POST['jform']["code"]["code{$i}"].'\", \"label\":\"'.$_POST['jform']["label"]["label{$i}"].'\",\"defaultlevel\":\"'.$_POST['jform']["defaultlevel"]["defaultlevel{$i}"].'\"}'; 
-                $i++;
+            $codes = $_POST['jform']["code"];
+            if(isset($codes)){
+                foreach ($codes as $key=>$value){
+                     $indoornavigation = (strlen($indoornavigation) > 0 )? $indoornavigation . ',': $indoornavigation;  
+                     $indoornavigation .= '{\"code\": \"'.$value.'\", \"label\":\"'.$_POST['jform']["label"][$key].'\",\"defaultlevel\":\"'.$_POST['jform']["defaultlevel"][$key].'\"}'; 
+                }
             }
             $indoornavigation = (strlen($indoornavigation) > 0 )? '[' . $indoornavigation . ']': '';  
             $columns = array('map_id', 'tool_id', 'params');
