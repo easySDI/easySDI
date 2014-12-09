@@ -138,6 +138,7 @@ class plgContentEasysdiservice extends JPlugin
 		
 		$session 	= curl_init($url);
 		$httpHeader[]='Authorization: Basic '.base64_encode($user->username .':'.$user->password);
+                $httpHeader[]='Expect:';
 		curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
 		curl_setopt($session, CURLOPT_HEADER, false);
 		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);

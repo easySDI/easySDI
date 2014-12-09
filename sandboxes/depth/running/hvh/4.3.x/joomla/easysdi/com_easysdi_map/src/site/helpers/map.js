@@ -547,7 +547,7 @@ function getMapConfig() {
             var h = 18.5 * (data.level.length - 1);
             var x = 400;
             var y = 20;
-
+            
             config.mapItems.push(
                     {
                         xtype: "sdi_indoorlevelslider",

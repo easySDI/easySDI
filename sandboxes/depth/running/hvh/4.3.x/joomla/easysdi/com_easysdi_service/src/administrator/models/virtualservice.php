@@ -450,6 +450,9 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin {
         $db->setQuery($query);
         $db->query();
 
+        if(!is_array($pks)){
+            return true;
+        }
         foreach ($pks as $pk) {
             try {
                 $query = $db->getQuery(true);
