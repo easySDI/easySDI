@@ -131,7 +131,7 @@ class FormGenerator {
             $result = $this->db->loadObject();
 
             $scope_id = $this->getFieldScope($this->item->id, $result->relationscope_id, $result->editorrelationscope_id);
-            
+
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
 
@@ -140,7 +140,7 @@ class FormGenerator {
                     $relation->appendChild($class);
 
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
-                    
+
                     $parent->appendChild($relation);
                     $root = $class;
                     $this->ajaxXpath = $relation->getNodePath();
@@ -182,7 +182,7 @@ class FormGenerator {
                     $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
                     $cloned = $attribute->cloneNode(true);
                     $clearNode = $this->clearNodeValue($cloned);
-                    
+
                     switch ($scope_id) {
                         // readOnly
                         case 2:
@@ -190,7 +190,7 @@ class FormGenerator {
                             $clearNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
                             break;
                     }
-                    
+
                     $parent->appendChild($clearNode);
                     $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
 
@@ -201,16 +201,21 @@ class FormGenerator {
             }
         }
 
+        $rootXpath = $root->getNodePath();
+
         $this->setDomXpathStr();
 
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
-            $this->mergeCsw();
+            $this->cleanStructure();
+            //$this->mergeCsw();
         }
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
-        $form = $this->buildForm($root);
+        $this->setDomXpathStr();
+
+        $form = $this->buildForm($this->domXpathStr->query($rootXpath)->item(0));
 
         return $form;
     }
@@ -251,34 +256,32 @@ class FormGenerator {
         $this->setDomXpathStr();
 
         if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
+            $occurance = 0;
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATIONTYPE:
                     $relationExist = $parent;
+                    $lowerbound = $parent->getAttributeNS($this->catalog_uri, 'lowerbound');
+                    if (isset($this->domXpathCsw)) {
+                        $occurance = $this->domXpathCsw->query('/*' . $parent->getNodePath())->length;
+                    }
                     break;
+                case EnumChildtype::$CLASS:
                 default :
                     $relationExist = $parent->parentNode;
+                    $lowerbound = $parent->parentNode->getAttributeNS($this->catalog_uri, 'lowerbound');
+                    if (isset($this->domXpathCsw)) {
+                        $occurance = $this->domXpathCsw->query('/*' . $this->removeIndex($parent->getNodePath()))->length;
+                    }
                     break;
-            }
-
-            $lowerbound = $relationExist->getAttributeNS($this->catalog_uri, 'lowerbound');
-            $occurance = 0;
-            if (isset($this->csw)) {
-                $occurance = $this->domXpathCsw->query('/*' . $relationExist->getNodePath())->length;
             }
 
             if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
 
-                if ($parent->parentNode->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
-                    $exist = 1;
+                if ($parent->parentNode->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE || $lowerbound > 0 || $occurance > 0) {
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 } else {
-                    $exist = $lowerbound + $occurance;
-                }
-
-                if ($exist < 1) {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
                     return $childs;
-                } else {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 }
             }
 
@@ -379,7 +382,7 @@ class FormGenerator {
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
-                    
+
                     if (isset($result->classass_id)) {
                         $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->classass_name, $result->classass_id, EnumChildtype::$CLASS, $result->guid);
 
@@ -434,6 +437,138 @@ class FormGenerator {
         return $element;
     }
 
+    private function cleanStructure() {
+        $clone_structure = new DOMDocument('1.0', 'utf-8');
+        $clone_structure->loadXML($this->structure->saveXML());
+
+        $domXpathClone = new DOMXPath($clone_structure);
+        foreach ($this->nsdao->getAll() as $ns) {
+            $domXpathClone->registerNamespace($ns->prefix, $ns->uri);
+        }
+
+        $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]');
+
+        for ($j = 0; $j < $coll->length; $j++) {
+
+            $node = $coll->item($j);
+
+            $occurance = $this->domXpathCsw->query('/*' . $node->getNodePath())->length;
+
+            if ($occurance == 0) {
+                while (!isset($node->nextSibling) && !isset($node->previousSibling)) {
+                    $node = $node->parentNode;
+                }
+
+                $parent = $node->parentNode;
+                $parent->removeChild($node);
+                $clone_structure->normalizeDocument();
+
+                $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]');
+                $j = 0;
+                continue;
+            }
+
+            $childtype = $node->getAttributeNS($this->catalog_uri, 'childtypeId');
+            if ($childtype == EnumChildtype::$CLASS) {
+                $node = $node->parentNode;
+            }
+            for ($i = 1; $i < $occurance; $i++) {
+
+                $cloneNode = $node->cloneNode(true);
+                //$cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+                if (isset($node->nextSibling)) {
+                    $node->parentNode->insertBefore($cloneNode, $node->nextSibling);
+                } else {
+                    $node->parentNode->appendChild($cloneNode);
+                }
+            }
+        }
+
+        /* @var $node DOMElement */
+        /* foreach ($coll as $node) {
+
+          $occurance = $this->domXpathCsw->query('/*' . $node->getNodePath())->length;
+
+          if ($occurance == 0) {
+          while (!isset($node->nextSibling) && !isset($node->previousSibling)) {
+          $node = $node->parentNode;
+          }
+
+          $parent = $node->parentNode;
+          $parent->removeChild($node);
+          $clone_structure->normalizeDocument();
+          continue;
+          }
+
+          $childtype = $node->getAttributeNS($this->catalog_uri, 'childtypeId');
+          if ($childtype == EnumChildtype::$CLASS) {
+          $node = $node->parentNode;
+          }
+          for ($i = 1; $i < $occurance; $i++) {
+
+          $cloneNode = $node->cloneNode(true);
+          //$cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+          if (isset($node->nextSibling)) {
+          $node->parentNode->insertBefore($cloneNode, $node->nextSibling);
+          } else {
+          $node->parentNode->appendChild($cloneNode);
+          }
+          }
+          } */
+
+        $this->getValue($clone_structure->firstChild);
+
+        $this->mergeToStructure($clone_structure, $domXpathClone);
+
+        $breakpoint = true;
+    }
+
+    private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
+
+        /* @var $node DOMElement */
+        foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
+            if ($domXpathClone->query($node->getNodePath())->length == 0) {
+
+                do {
+                    $childToImport = $node;
+                    $node = $node->parentNode;
+                    $id = $node->getAttributeNS($this->catalog_uri, 'id');
+                    $breakpoint = true;
+                } while ($domXpathClone->query($node->getNodePath() . '[@catalog:id="' . $id . '"]')->length == 0);
+
+                $target = $domXpathClone->query($node->getNodePath())->item(0);
+                
+                $brother = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
+                if(isset($brother)){
+                    $refNode = $domXpathClone->query($brother->getNodePath())->item(0)->nextSibling;
+                    
+                    if(isset($refNode)){
+                        $target->insertBefore($clone->importNode($childToImport, true), $refNode);
+                    }
+                    else{
+                        $target->appendChild($clone->importNode($childToImport, true));
+                    }
+                }
+                else{
+                    
+                    $refNode = $target->firstChild;
+                    
+                    if(is_null($refNode)){
+                        $target->appendChild($clone->importNode($childToImport, true));
+                    }
+                    else{
+                        //$refNode = $refNode->next
+                    }
+                    
+                    
+                    
+                }
+            }
+        }
+
+        $this->structure->loadXML($clone->saveXML());
+    }
+
     /**
      * This method adds the required number of occurrences of a relation.
      */
@@ -442,8 +577,20 @@ class FormGenerator {
         $exclude_node = array('gmd:geographicElement');
 
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $relation) {
-            $xpath = $relation->getNodePath();
+            $xpath = $relation->firstChild->getNodePath();
             $nbr = $this->domXpathCsw->query('/*' . $xpath)->length;
+
+            if ($nbr == 0) {
+                continue;
+            }
+
+            if (strstr($xpath, 'dimension')) {
+                $breakpoint = true;
+            }
+
+            if ($nbr > 1) {
+                $breakpoint = true;
+            }
 
             if (!in_array($relation->nodeName, $exclude_node)) {
                 $hasSibling = isset($relation->nextSibling);
@@ -459,10 +606,10 @@ class FormGenerator {
                         $relation->parentNode->appendChild($clone);
                     }
                 }
-
-                $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
             }
         }
+
+        $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
     }
 
     /**
@@ -470,8 +617,12 @@ class FormGenerator {
      * 
      * @param DOMNode $child The current attribute.
      */
-    private function getValue(DOMNode $child) {
-        foreach ($child->childNodes as $node) {
+    private function getValue(DOMNode &$child) {
+        if (strstr($child->getNodePath(), 'colors')) {
+            $breakpoint = true;
+        }
+
+        foreach ($child->childNodes as $i => $node) {
             if ($this->hasChildElement($node)) {
                 if ($node->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
                     $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
@@ -479,9 +630,9 @@ class FormGenerator {
                         $node->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', $nodeCsw->getAttributeNS('http://www.w3.org/1999/xlink', 'href'));
                     }
                 }
+
                 $this->getValue($node);
             } else {
-                $xpath = $node->getNodePath();
                 $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
                 if (isset($nodeCsw)) {
                     $node->nodeValue = htmlspecialchars($nodeCsw->nodeValue);
@@ -1179,7 +1330,7 @@ class FormGenerator {
 
         $validator = $this->getValidatorClass($relationtype);
 
-        $field->setAttribute('class', 'required '.$validator);
+        $field->setAttribute('class', 'required ' . $validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
         $field->setAttribute('label', JText::_('COM_EASYSDI_CATALOG_RESOURCETYPE_NAME'));
@@ -1534,6 +1685,16 @@ class FormGenerator {
         }
 
         return min($rights);
+    }
+
+    /**
+     * Remove index from XPath
+     *
+     * @param string $xpath
+     * @return string
+     */
+    private function removeIndex($xpath) {
+        return preg_replace('/[\[0-9\]*]/i', '', $xpath);
     }
 
 }
