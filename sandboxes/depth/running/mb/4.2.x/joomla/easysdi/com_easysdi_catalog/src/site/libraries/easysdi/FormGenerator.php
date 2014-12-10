@@ -438,31 +438,31 @@ class FormGenerator {
     }
 
     private function cleanStructure() {
+        //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
         $clone_structure->loadXML($this->structure->saveXML());
 
         $domXpathClone = new DOMXPath($clone_structure);
-        foreach ($this->nsdao->getAll() as $ns) {
-            $domXpathClone->registerNamespace($ns->prefix, $ns->uri);
-        }
+        $this->registerNamespace($domXpathClone);
 
         $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]');
 
         for ($j = 0; $j < $coll->length; $j++) {
-
             $node = $coll->item($j);
-
             $occurance = $this->domXpathCsw->query('/*' . $node->getNodePath())->length;
 
             if ($occurance == 0) {
+                //look for the ancestor under which we can clean the structure
                 while (!isset($node->nextSibling) && !isset($node->previousSibling)) {
                     $node = $node->parentNode;
                 }
-
+                
+                //remove the child
                 $parent = $node->parentNode;
                 $parent->removeChild($node);
                 $clone_structure->normalizeDocument();
-
+                
+                //reset collection and loop
                 $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]');
                 $j = 0;
                 continue;
@@ -473,99 +473,41 @@ class FormGenerator {
                 $node = $node->parentNode;
             }
             for ($i = 1; $i < $occurance; $i++) {
-
                 $cloneNode = $node->cloneNode(true);
-                //$cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
-                if (isset($node->nextSibling)) {
-                    $node->parentNode->insertBefore($cloneNode, $node->nextSibling);
-                } else {
-                    $node->parentNode->appendChild($cloneNode);
-                }
+                $cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+                isset($node->nextSibling) ? $node->parentNode->insertBefore($cloneNode, $node->nextSibling) : $node->parentNode->appendChild($cloneNode);
             }
         }
-
-        /* @var $node DOMElement */
-        /* foreach ($coll as $node) {
-
-          $occurance = $this->domXpathCsw->query('/*' . $node->getNodePath())->length;
-
-          if ($occurance == 0) {
-          while (!isset($node->nextSibling) && !isset($node->previousSibling)) {
-          $node = $node->parentNode;
-          }
-
-          $parent = $node->parentNode;
-          $parent->removeChild($node);
-          $clone_structure->normalizeDocument();
-          continue;
-          }
-
-          $childtype = $node->getAttributeNS($this->catalog_uri, 'childtypeId');
-          if ($childtype == EnumChildtype::$CLASS) {
-          $node = $node->parentNode;
-          }
-          for ($i = 1; $i < $occurance; $i++) {
-
-          $cloneNode = $node->cloneNode(true);
-          //$cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
-          if (isset($node->nextSibling)) {
-          $node->parentNode->insertBefore($cloneNode, $node->nextSibling);
-          } else {
-          $node->parentNode->appendChild($cloneNode);
-          }
-          }
-          } */
 
         $this->getValue($clone_structure->firstChild);
 
         $this->mergeToStructure($clone_structure, $domXpathClone);
-
-        $breakpoint = true;
     }
 
     private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
-
         /* @var $node DOMElement */
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
             if ($domXpathClone->query($node->getNodePath())->length == 0) {
-
                 do {
                     $childToImport = $node;
                     $node = $node->parentNode;
                     $id = $node->getAttributeNS($this->catalog_uri, 'id');
-                    $breakpoint = true;
                 } while ($domXpathClone->query($node->getNodePath() . '[@catalog:id="' . $id . '"]')->length == 0);
 
                 $target = $domXpathClone->query($node->getNodePath())->item(0);
                 
-                $brother = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
-                if(isset($brother)){
-                    $refNode = $domXpathClone->query($brother->getNodePath())->item(0)->nextSibling;
-                    
-                    if(isset($refNode)){
-                        $target->insertBefore($clone->importNode($childToImport, true), $refNode);
-                    }
-                    else{
-                        $target->appendChild($clone->importNode($childToImport, true));
-                    }
-                }
-                else{
-                    
-                    $refNode = $target->firstChild;
-                    
-                    if(is_null($refNode)){
-                        $target->appendChild($clone->importNode($childToImport, true));
-                    }
-                    else{
-                        //$refNode = $refNode->next
-                    }
-                    
-                    
-                    
-                }
+                $prevSibl = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
+                $coll = $domXpathClone->query($prevSibl->getNodePath());
+                
+                //try to set the refNode, depending on the prevSibl existence
+                $refNode = $coll->length>0 ? $coll->item($coll->length-1)->nextSibling : $target->firstChild;
+                
+                //add the child to the parent, before the refNode if defined or as last parent's child
+                isset($refNode) ? $target->insertBefore($clone->importNode($childToImport, true), $refNode) : $target->appendChild($clone->importNode($childToImport, true));
             }
         }
-
+        
+        //replace the structure with the clone
         $this->structure->loadXML($clone->saveXML());
     }
 
@@ -582,14 +524,6 @@ class FormGenerator {
 
             if ($nbr == 0) {
                 continue;
-            }
-
-            if (strstr($xpath, 'dimension')) {
-                $breakpoint = true;
-            }
-
-            if ($nbr > 1) {
-                $breakpoint = true;
             }
 
             if (!in_array($relation->nodeName, $exclude_node)) {
@@ -1529,19 +1463,27 @@ class FormGenerator {
         $xpath = str_replace('-dp-', ':', $xpath);
         return $xpath;
     }
+    
+    private function registerNamespace($o){
+        foreach ($this->nsdao->getAll() as $ns) {
+            $o->registerNamespace($ns->prefix, $ns->uri);
+        }
+    }
 
     private function setDomXpathStr() {
         $this->domXpathStr = new DOMXPath($this->structure);
-        foreach ($this->nsdao->getAll() as $ns) {
+        $this->registerNamespace($this->domXpathStr);
+        /*foreach ($this->nsdao->getAll() as $ns) {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
-        }
+        }*/
     }
 
     private function setDomXpathCsw() {
         $this->domXpathCsw = new DOMXPath($this->csw);
-        foreach ($this->nsdao->getAll() as $ns) {
+        $this->registerNamespace($this->domXpathCsw);
+        /*foreach ($this->nsdao->getAll() as $ns) {
             $this->domXpathCsw->registerNamespace($ns->prefix, $ns->uri);
-        }
+        }*/
     }
 
     /**
@@ -1620,7 +1562,7 @@ class FormGenerator {
         if (empty($result)) {
             return '';
         } else {
-            if ($result->stereotype_id == EnumStereotype::$LOCALECHOICE) {
+            if (isset($result->stereotype_id) && $result->stereotype_id == EnumStereotype::$LOCALECHOICE) {
                 return $result->guid;
             } else {
                 return $result->value;
@@ -1641,7 +1583,7 @@ class FormGenerator {
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
 
-        return $result->guid;
+        return isset($result) && isset($result->guid) ? $result->guid : '';
     }
 
     /**

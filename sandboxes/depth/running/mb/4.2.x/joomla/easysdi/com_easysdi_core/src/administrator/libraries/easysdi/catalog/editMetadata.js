@@ -11,121 +11,6 @@ js('document').ready(function () {
     // change field into readonly
     disableVisible();
 
-
-    /**
-     * Add filedset to from when user click on add-btn
-     * 
-     * Add listner on add buttons
-     */
-    js(document).on('click', '.add-btn', function () {
-        var relid = js(this).attr('data-relid');
-        var parent_path = js(this).attr('data-parentpath');
-        var uuid = getUuid('add-btn', this.id);
-        var button = js(this);
-
-        js.ajax({
-            url: baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid,
-            type: "GET",
-            async: false,
-            cache: false,
-            beforeSend: function () {
-                button.attr('disabled', true);
-            }
-        }).done(function (data) {
-            var elmt = (js('.fds' + uuid).length > 0) ? js('.fds' + uuid).last() : button.parent();
-            elmt.after(data);
-
-            if (js(data).find('select') !== null) {
-                chosenRefresh();
-            }
-
-            js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
-                calendarSetup(js(this).attr('id'));
-            });
-
-            // add tooltips on new fields
-            addTooltips();
-
-            // remove hidden fields
-            removeHidden();
-
-            // change field into readonly
-            disableVisible();
-
-            // refresh validator
-            document.formvalidator.attachToForm(js('#form-metadata'));
-
-            setRelationAction(button);
-
-            // Set bouton state in data block
-            js(data).find('.add-btn').each(function () {
-                setRelationAction(js(this));
-            });
-
-            // Set attribute bouton state in data block
-            js(data).find('.attribute-add-btn').each(function () {
-                setAttributeAction(js(this).parent());
-            });
-        }).fail(function () {
-            bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_ADD_RELATION', 'COM_EASYSDI_CATALOG_ERROR_ADD_RELATION'));
-        }).always(function () {
-            button.attr('disabled', false);
-        });
-
-    });
-
-    /**
-     * Remove fieldset from form
-     */
-    js(document).on('click', '.remove-btn', function () {
-        var id = this.id;
-        var xpath = js(this).attr('data-xpath');
-
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
-            if (result) {
-
-                var uuid = getUuid('remove-btn', id);
-                js.ajax({
-                    url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
-                    type: "GET",
-                    async: false,
-                    cache: false
-                }).done(function () {
-                    js('#fds' + uuid).remove();
-                    setRelationAction(js('#add-btn' + xpath));
-                }).fail(function () {
-                    bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION'));
-                });
-
-            }
-        });
-    });
-
-    /**
-     * Collapse inner-fieldset
-     */
-    js(document).on('click', '.collapse-btn', function () {
-        var uuid = getUuid('collapse-btn', this.id);
-        var button = js(this);
-        js('#inner-fds' + uuid).toggle('fast', function () {
-            if (js('#inner-fds' + uuid).is(':visible')) {
-                button.children().first().removeClass('icon-arrow-right').addClass('icon-arrow-down');
-            } else {
-                button.children().first().removeClass('icon-arrow-down').addClass('icon-arrow-right');
-            }
-        });
-
-    });
-
-
-    /**
-     * Open or close all fieldset
-     */
-    js(document).on('click', '#btn_toggle_all', function () {
-        toogleAll(js(this));
-    });
-
-
     /**
      * set initial state of relation action button
      */
@@ -138,66 +23,6 @@ js('document').ready(function () {
      */
     js('.attribute-action').each(function () {
         setAttributeAction(js(this));
-    });
-
-    /**
-     * Add field
-     */
-    js(document).on('click', '.attribute-add-btn', function () {
-        var parent = js(this).parent();
-        var relid = parent.attr('data-relid');
-        var parent_path = parent.attr('data-parentpath');
-        var uuid = getUuid('attribute-add-btn', this.id);
-
-        js.ajax({
-            url: baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid,
-            type: "GET",
-            async: false,
-            cache: false
-        }).done(function (data) {
-            js('.attribute-group' + uuid).last().after(data);
-            if (js(data).find('select') !== null) {
-                chosenRefresh();
-            }
-
-            js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
-                calendarSetup(js(this).attr('id'));
-            });
-
-            // refresh validator
-            document.formvalidator.attachToForm(js('#form-metadata'));
-            setAttributeAction(parent);
-
-            // change field into readonly
-            disableVisible();
-        }).fail(function () {
-           bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION'));
-        });
-
-    });
-
-    /**
-     * remove field from form
-     */
-    js(document).on('click', '.attribute-remove-btn', function () {
-        var parent = js(this).parent();
-        var uuid = getUuid('attribute-remove-btn', this.id);
-
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
-            if (result) {
-                js.ajax({
-                    url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
-                    type: "GET",
-                    async: false,
-                    cache: false
-                }).done(function () {
-                    js('#attribute-group' + uuid).remove();
-                    setAttributeAction(parent);
-                }).fail(function () {
-                    bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_REMOVE_ATTRIBUTE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_REMOVE_ATTRIBUTE_RELATION'));
-                });
-            }
-        });
     });
 
     /**
@@ -233,66 +58,9 @@ js('document').ready(function () {
 
     });
 
-    /**
-     * displays or not the checkboxes versions on change event
-     */
-    js('#resourcetype_id').change(function () {
-        js('#resourcetype_id option:selected').each(function () {
-            if (js(this).val() == 0) {
-                for (var i in resourcetypes) {
-                    if (resourcetypes[i].versioning != 0) {
-                        js('#version-control-group').show();
-                    }
-                }
-            } else {
-                if (resourcetypes[js(this).val()].versioning == 1) {
-                    js('#version-control-group').show();
-                } else {
-                    js('#version-control-group').hide();
-                }
-            }
-        });
-    });
-
     // Change date field to Calendar field
     js('.validate-sdidate, .validate-sdidatetime').each(function () {
         calendarSetup(js(this).attr('id'));
-    });
-
-
-    /**
-     * When the preview modal is visible, we colorize the XML.
-     */
-    js('#previewModal').on('show.bs.modal', function () {
-        SyntaxHighlighter.highlight();
-    });
-
-    /**
-     * Add validation on non-required multi-lingual fields
-     */
-    js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function () {
-        var brothers = js(this).closest('.i18n').find('div.controls > input, div.controls > textarea, div.controls > select'),
-                labels = js(this).closest('.i18n').find('div.control-label > label');
-        if (this.value !== '') {
-            brothers.addClass('required');
-        }
-        else {
-            var required = false;
-            js.each(brothers, function (i, brother) {
-                if (brother.value !== '')
-                    required = true;
-
-                if (i === brothers.length - 1) {
-                    if (required) {
-                        brothers.addClass('required');
-                    }
-                    else {
-                        brothers.removeClass('required invalid');
-                        labels.removeClass('invalid');
-                    }
-                }
-            });
-        }
     });
 
     /**
@@ -491,6 +259,235 @@ js('document').ready(function () {
 }
 );
 
+/**
+ * When the preview modal is visible, we colorize the XML.
+ */
+js(document).on('show.bs.modal', '#previewModal', function () {
+    SyntaxHighlighter.highlight();
+});
+
+/**
+ * Add validation on non-required multi-lingual fields
+ */
+js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function () {
+    var brothers = js(this).closest('.i18n').find('div.controls > input, div.controls > textarea, div.controls > select'),
+            labels = js(this).closest('.i18n').find('div.control-label > label');
+    if (this.value !== '') {
+        brothers.addClass('required');
+    }
+    else {
+        var required = false;
+        js.each(brothers, function (i, brother) {
+            if (brother.value !== '')
+                required = true;
+
+            if (i === brothers.length - 1) {
+                if (required) {
+                    brothers.addClass('required');
+                }
+                else {
+                    brothers.removeClass('required invalid');
+                    labels.removeClass('invalid');
+                }
+            }
+        });
+    }
+});
+
+/**
+ * displays or not the checkboxes versions on change event
+ */
+js(document).on('change', '#resourcetype_id', function () {
+    js('#resourcetype_id option:selected').each(function () {
+        if (js(this).val() == 0) {
+            for (var i in resourcetypes) {
+                if (resourcetypes[i].versioning != 0) {
+                    js('#version-control-group').show();
+                }
+            }
+        } else {
+            if (resourcetypes[js(this).val()].versioning == 1) {
+                js('#version-control-group').show();
+            } else {
+                js('#version-control-group').hide();
+            }
+        }
+    });
+});
+
+/**
+ * Add field
+ */
+js(document).on('click', '.attribute-add-btn', function () {
+    var parent = js(this).parent();
+    var relid = parent.attr('data-relid');
+    var parent_path = parent.attr('data-parentpath');
+    var uuid = getUuid('attribute-add-btn', this.id);
+
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid,
+        type: "GET",
+        async: false,
+        cache: false
+    }).done(function (data) {
+        js('.attribute-group' + uuid).last().after(data);
+        if (js(data).find('select') !== null) {
+            chosenRefresh();
+        }
+
+        js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
+            calendarSetup(js(this).attr('id'));
+        });
+
+        // refresh validator
+        document.formvalidator.attachToForm(js('#form-metadata'));
+        setAttributeAction(parent);
+
+        // change field into readonly
+        disableVisible();
+    }).fail(function () {
+       bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION'));
+    });
+
+});
+
+/**
+ * remove field from form
+ */
+js(document).on('click', '.attribute-remove-btn', function () {
+    var parent = js(this).parent();
+    var uuid = getUuid('attribute-remove-btn', this.id);
+
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
+        if (result) {
+            js.ajax({
+                url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
+                type: "GET",
+                async: false,
+                cache: false
+            }).done(function () {
+                js('#attribute-group' + uuid).remove();
+                setAttributeAction(parent);
+            }).fail(function () {
+                bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_REMOVE_ATTRIBUTE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_REMOVE_ATTRIBUTE_RELATION'));
+            });
+        }
+    });
+});
+
+/**
+ * Add filedset to from when user click on add-btn
+ * 
+ * Add listner on add buttons
+ */
+js(document).on('click', '.add-btn', function () {
+    var relid = js(this).attr('data-relid');
+    var parent_path = js(this).attr('data-parentpath');
+    var uuid = getUuid('add-btn', this.id);
+    var button = js(this);
+
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid,
+        type: "GET",
+        async: false,
+        cache: false,
+        beforeSend: function () {
+            button.attr('disabled', true);
+        }
+    }).done(function (data) {
+        var elmt = (js('.fds' + uuid).length > 0) ? js('.fds' + uuid).last() : button.parent();
+        elmt.after(data);
+
+        if (js(data).find('select') !== null) {
+            chosenRefresh();
+        }
+
+        js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
+            calendarSetup(js(this).attr('id'));
+        });
+
+        // add tooltips on new fields
+        addTooltips();
+
+        // remove hidden fields
+        removeHidden();
+
+        // change field into readonly
+        disableVisible();
+
+        // refresh validator
+        document.formvalidator.attachToForm(js('#form-metadata'));
+
+        setRelationAction(button);
+
+        // Set bouton state in data block
+        js(data).find('.add-btn').each(function () {
+            setRelationAction(js(this));
+        });
+
+        // Set attribute bouton state in data block
+        js(data).find('.attribute-add-btn').each(function () {
+            setAttributeAction(js(this).parent());
+        });
+    }).fail(function () {
+        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_ADD_RELATION', 'COM_EASYSDI_CATALOG_ERROR_ADD_RELATION'));
+    }).always(function () {
+        button.attr('disabled', false);
+    });
+
+});
+
+/**
+ * Remove fieldset from form
+ */
+js(document).on('click', '.remove-btn', function () {
+    var id = this.id;
+    var xpath = js(this).attr('data-xpath');
+
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
+        if (result) {
+
+            var uuid = getUuid('remove-btn', id);
+            js.ajax({
+                url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
+                type: "GET",
+                async: false,
+                cache: false
+            }).done(function () {
+                js('#fds' + uuid).remove();
+                setRelationAction(js('#add-btn' + xpath));
+            }).fail(function () {
+                bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION'));
+            });
+
+        }
+    });
+});
+
+/**
+ * Collapse inner-fieldset
+ */
+js(document).on('click', '.collapse-btn', function () {
+    var uuid = getUuid('collapse-btn', this.id);
+    var button = js(this);
+    js('#inner-fds' + uuid).toggle('fast', function () {
+        if (js('#inner-fds' + uuid).is(':visible')) {
+            button.children().first().removeClass('icon-arrow-right').addClass('icon-arrow-down');
+        } else {
+            button.children().first().removeClass('icon-arrow-down').addClass('icon-arrow-right');
+        }
+    });
+
+});
+
+
+/**
+ * Open or close all fieldset
+ */
+js(document).on('click', '#btn_toggle_all', function () {
+    toogleAll(js(this));
+});
+
 var buildDeletedTree = function (versions) {
     var body = '<ul>';
 
@@ -615,7 +612,7 @@ function importSwitch(task) {
         type: "GET",
         async: false,
         cache: false
-    }).done(function () {
+    }).done(function (data) {
         var response = js.parseJSON(data);
 
         if (response.success) {
@@ -707,7 +704,7 @@ function removeFromStructure(id) {
         type: "GET",
         async: false,
         cache: false
-    }).done(function () {
+    }).done(function (data) {
         var response = js.parseJSON(data);
         return response.success;
     }).fail(function () {
