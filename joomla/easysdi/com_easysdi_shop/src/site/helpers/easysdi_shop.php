@@ -19,6 +19,11 @@ require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
 jimport('joomla.application.component.helper');
 
 abstract class Easysdi_shopHelper {
+    
+    // PRICING
+    const PRICING_FREE                  = 1;
+    const PRICING_FEE_WITHOUT_PROFILE   = 2;
+    const PRICING_FEE_WITH_PROFILE      = 3;
 
     /**
      * 
@@ -198,21 +203,25 @@ abstract class Easysdi_shopHelper {
      * @param string $item : json {"id":perimeter_id,"name":perimeter_name,"features":[{"id": feature_id, "name":feature_name}]}
      */
     public static function addExtentToBasket($item) {
-        if (empty($item)):
-            $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
-            $basket->extent = null;
-            JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
-            $return['MESSAGE'] = 'OK';
-            echo json_encode($return);
-            die();
-        endif;
-
-        $perimeter = json_decode($item);
+        //add extent if defined
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
-        $basket->extent = $perimeter;
+        $basket->extent = empty($item) ? null : json_decode($item);
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
+        $return = array(
+            'MESSAGE'   => 'OK',
+            'extent'    => $basket->extent
+        );
+        
+        //recalculate pricing if enable
+        // rebuild extractions array to allow by supplier grouping
+        self::extractionsBySupplierGrouping($basket);
 
-        $return['MESSAGE'] = 'OK';
+        // calculate price for the current basket (only if surface is defined)
+        self::basketPriceCalculation($basket);
+
+        $return['pricing'] = $basket->pricing;
+        
+        header('content-type: application/json');
         echo json_encode($return);
         die();
     }
@@ -406,33 +415,45 @@ abstract class Easysdi_shopHelper {
             // calculate prices by supplier
             $prices->suppliers = array();
             $prices->cal_total_amount_ti = 0;
+            $prices->hasFeeWithoutPricingProfileProduct = false;
             foreach($basket->extractions as $supplier_id => $supplier){
                 $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
-                $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
+                if($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct)
+                    $prices->hasFeeWithoutPricingProfileProduct = true;
+                else
+                    $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
             }
             
             // set the platform tax
-            $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
-
-            if( ($prices->cfg_free_data_fee==true || $prices->cal_total_amount_ti>0) && count($prices->debtor->categories)){
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true)
-                        ->select('c.overall_fee, c.name')
-                        ->from('#__sdi_category c')
-                        ->where('c.id IN ('.implode(',', $prices->debtor->categories).') AND c.overall_fee IS NOT NULL');
-                $db->setQuery($query, 0, 1);
-                $category = $db->loadObject();
+            if($prices->cal_total_amount_ti==0 && !$prices->cfg_free_data_fee)
+                $prices->cal_fee_ti = 0;
+            else{
+                $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
                 
-                if($category !== null){
-                    $prices->cal_fee_ti = $category->overall_fee;
-                    $prices->ind_lbl_category_order_fee = $category->name;
+                if(count($prices->debtor->categories)){
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true)
+                            ->select('c.overall_fee, c.name')
+                            ->from('#__sdi_category c')
+                            ->where('c.overall_fee IS NOT NULL')
+                            ->where('c.id IN ('.implode(',', $prices->debtor->categories).')');
+                    $db->setQuery($query, 0, 1);
+                    $category = $db->loadObject();
+
+                    if($category !== null){
+                        $prices->cal_fee_ti = $category->overall_fee;
+                        $prices->ind_lbl_category_order_fee = $category->name;
+                    }
                 }
             }
             
             $prices->cal_fee_ti = self::rounding($prices->cal_fee_ti, $prices->cfg_rounding);
             
             // total amount for the platform
-            $prices->cal_total_amount_ti += $prices->cal_fee_ti;
+            if($prices->hasFeeWithoutPricingProfileProduct)
+                $prices->cal_total_amount_ti = '-';
+            else
+                $prices->cal_total_amount_ti += $prices->cal_fee_ti;
             
             $basket->pricing = $prices;
         }
@@ -468,7 +489,7 @@ abstract class Easysdi_shopHelper {
         
         // calculate supplier rebate
         $prices->supplierRebate = new stdClass();
-        if($provider->internal_free==true && $prices->debtor->id==$provider->id){
+        if($provider->cfg_internal_free==true && $prices->debtor->id==$provider->id){
             $prices->supplierRebate->pct = 100;
             $prices->supplierRebate->name = $organism->name;
         }
@@ -486,22 +507,36 @@ abstract class Easysdi_shopHelper {
             $prices->supplierRebate->pct = $supplierRebate['rebate'];
             $prices->supplierRebate->name = $supplierRebate['name'];
         }
+        else{
+            $prices->supplierRebate->pct = 0;
+            $prices->supplierRebate->name = '';
+        }
         
         // calculate price for each product and increment the provider sub-total
         $provider->products = array();
         $provider->cal_total_amount_ti = 0;
         $provider->cal_total_rebate_ti = 0;
+        $provider->hasFeeWithoutPricingProfileProduct = false;
         foreach($supplier->items as $product){
             $provider->products[$product->id] = self::basketPriceCalculationByProduct($product, $prices);
-            $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
-            $provider->cal_total_rebate_ti += $provider->products[$product->id]->cal_total_rebate_ti;
+            if($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE)
+                $provider->hasFeeWithoutPricingProfileProduct = true;
+            elseif($product->pricing == self::PRICING_FEE_WITH_PROFILE){
+                $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
+                $provider->cal_total_rebate_ti += $provider->products[$product->id]->cal_total_rebate_ti;
+            }
         }
         
         // set the provider tax
         $provider->cal_fee_ti = ($provider->cal_total_amount_ti>0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
         
         // total amount for this provider
-        $provider->cal_total_amount_ti += $provider->cal_fee_ti;
+        if($provider->hasFeeWithoutPricingProfileProduct){
+            unset($provider->cal_total_amount_ti);
+            unset($provider->cal_total_rebate_ti);
+        }
+        else
+            $provider->cal_total_amount_ti += $provider->cal_fee_ti;
         
         return $provider;
     }
@@ -521,7 +556,7 @@ abstract class Easysdi_shopHelper {
         
         $price->cfg_pricing_type = $product->pricing;
         
-        if($price->cfg_pricing_type != 3)
+        if($price->cfg_pricing_type != self::PRICING_FEE_WITH_PROFILE)
             return $price;
         
         // get base parameters to calculate product price
@@ -549,20 +584,21 @@ abstract class Easysdi_shopHelper {
         $price->cfg_pct_category_profile_discount = 0;
         $price->ind_lbl_category_profile_discount = '';
         
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-                ->select('ppcpr.category_id, c.name')
-                ->from('#__sdi_pricing_profile_category_pricing_rebate ppcpr')
-                ->join('LEFT', '#__sdi_category c ON c.id=ppcpr.category_id')
-                ->where('ppcpr.pricing_profile_id='.(int)$pricingProfile->id);
-        if(count($prices->debtor->categories))
-            $query->where('ppcpr.category_id IN ('.  implode(',', $prices->debtor->categories).')');
-        $db->setQuery($query);
-        $category_free = $db->loadAssoc();
-        
-        if($category_free !== null){
-            $price->cfg_pct_category_profile_discount = 100;
-            $price->ind_lbl_category_profile_discount = $category_free['name'];
+        if(count($prices->debtor->categories)){
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('ppcpr.category_id, c.name')
+                    ->from('#__sdi_pricing_profile_category_pricing_rebate ppcpr')
+                    ->join('LEFT', '#__sdi_category c ON c.id=ppcpr.category_id')
+                    ->where('ppcpr.pricing_profile_id='.(int)$pricingProfile->id)
+                    ->where('ppcpr.category_id IN ('.  implode(',', $prices->debtor->categories).')');
+            $db->setQuery($query);
+            $category_free = $db->loadAssoc();
+            
+            if($category_free !== null){
+                $price->cfg_pct_category_profile_discount = 100;
+                $price->ind_lbl_category_profile_discount = $category_free['name'];
+            }
         }
         
         // rebate based on category and supplier
@@ -582,18 +618,22 @@ abstract class Easysdi_shopHelper {
     
     /**
      * priceFormatter - format price according to the shop configuration
+     * a js implementation is located in basket.js
      * 
-     * @param float $price
+     * @param mixed $price - float price or string
      * @param boolean $displayCurrency
      * @return string
      * @since 4.3.0
      */
     public static function priceFormatter($price, $displayCurrency = true){
-        return number_format(
-                $price, 
-                JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), 
-                JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), 
-                JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'"))
+        return  ($price == '-'
+                    ? $price
+                    : number_format(
+                    $price, 
+                    JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), 
+                    JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), 
+                    JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'"))
+                )
                 .' '.
                 ($displayCurrency ? JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '');
     }
