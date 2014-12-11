@@ -52,6 +52,22 @@ $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
+/* bootbox language */
+$ldao = new SdiLanguageDao();
+$user = new sdiUser();
+$userParams = json_decode($user->juser->params);
+$defaultLanguage = $ldao->getDefaultLanguage();
+$bbLanguage = $defaultLanguage->gemet;
+$dtLanguage = $defaultLanguage->title;
+if(isset($ldao) && isset($userParams)){
+    foreach($ldao->getAll() as $bbLang){
+        if($bbLang->code === $userParams->language){
+            $bbLanguage = $bbLang->gemet;
+            $dtLanguage = $bbLang->title;
+        }
+    }
+}
+
 if (JDEBUG) {
     $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
     $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
@@ -76,17 +92,18 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/syntax
 
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js');
 
+
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shCore.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shThemeDefault.css');
 $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
 ?>
 
 <script type="text/javascript">
-
+    var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
     var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
     js = jQuery.noConflict();
     js('document').ready(function() {
-
+        bootbox.setLocale("<?php echo $bbLanguage;?>");
 <?php
 if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             toogleAll(js('#btn_toggle_all'));
@@ -95,13 +112,13 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             tabIsOpen = false;
 <?php
 }
-foreach ($this->validators as $validator) {
-
-    echo $validator;
-}
 ?>
     });
 </script>
+
+<?php
+    require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/validators.js.php';
+?>
 
 <div class="metadata-edit front-end-edit">
 
@@ -309,7 +326,7 @@ foreach ($this->validators as $validator) {
                         <div class="control-group">
                             <div class="control-label"><label id="publish_date-lbl" for="publish_date" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></label></div>
                             <div class="controls"><div class="input-append">
-                                    <input type="text" name="publish_date" id="publish_date" value="" class=" required  validate-sdidatetime" aria-required="true" required="required" aria-invalid="false"><button class="btn" id="publish_date_img"><i class="icon-calendar"></i></button>
+                                    <input type="text" name="publish_date" id="publish_date" value="" class=" required validate-sdidatetime" aria-required="true" required="required" aria-invalid="false"><button class="btn" id="publish_date_img"><i class="icon-calendar"></i></button>
                                 </div>
                             </div>
                         </div>

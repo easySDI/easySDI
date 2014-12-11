@@ -1138,7 +1138,7 @@ ALTER TABLE ONLY #__sdi_tilematrix_policy
 ALTER TABLE ONLY #__sdi_tilematrixset_policy
     ADD CONSTRAINT #__sdi_tilematrixset_policy_fk1 FOREIGN KEY (wmtslayerpolicy_id) REFERENCES #__sdi_wmtslayer_policy(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_translation
-    ADD CONSTRAINT #__sdi_translation_fk1 FOREIGN KEY (language_id) REFERENCES #__sdi_language(id) MATCH FULL;
+    ADD CONSTRAINT #__sdi_translation_fk1 FOREIGN KEY (language_id) REFERENCES #__sdi_language(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_user
     ADD CONSTRAINT #__sdi_user_fk1 FOREIGN KEY (user_id) REFERENCES #__users(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_user_role_resource
@@ -1159,6 +1159,8 @@ ALTER TABLE ONLY #__sdi_versionlink
     ADD CONSTRAINT #__sdi_versionlink_fk1 FOREIGN KEY (parent_id) REFERENCES #__sdi_version(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_versionlink
     ADD CONSTRAINT #__sdi_versionlink_fk2 FOREIGN KEY (child_id) REFERENCES #__sdi_version(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_versionlink
+    ADD CONSTRAINT #__sdi_versionlink_uk UNIQUE (parent_id, child_id);
 ALTER TABLE ONLY #__sdi_virtual_physical
     ADD CONSTRAINT #__sdi_virtual_physical_fk1 FOREIGN KEY (virtualservice_id) REFERENCES #__sdi_virtualservice(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_virtual_physical

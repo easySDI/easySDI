@@ -6,7 +6,7 @@
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.2.0-rc-1"/>
+    <property name="version" value="4.2.0-rc-2"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -373,6 +373,7 @@
                 <languages>
                     <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.pkg_easysdi.sys.ini</language>
                 </languages>
                 <updateservers>
                     <server type="collection">http://update.easysdi.org/packages/easysdi/manifest.xml</server>

@@ -690,7 +690,9 @@ REFERENCES [#__sdi_namespace] ([id]);
 ALTER TABLE [#__sdi_sys_stereotype] CHECK CONSTRAINT [#__sdi_sys_stereotype$#__sdi_sys_stereotype_fk2];
 
 ALTER TABLE [#__sdi_translation]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1] FOREIGN KEY([language_id])
-REFERENCES [#__sdi_language] ([id]);
+REFERENCES [#__sdi_language] ([id])
+ON UPDATE CASCADE
+ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_translation] CHECK CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1];
 
@@ -750,6 +752,8 @@ REFERENCES [#__sdi_version] ([id])
 ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_versionlink] CHECK CONSTRAINT [#__sdi_versionlink$#__sdi_versionlink_fk2];
+
+ALTER TABLE [#__sdi_versionlink] ADD CONSTRAINT [#__sdi_versionlink$#__sdi_versionlink_uk] UNIQUE ([parent_id], [child_id]);
 
 ALTER TABLE [#__sdi_visualization]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_visualization$#__sdi_visualization_fk1] FOREIGN KEY([accessscope_id])
 REFERENCES [#__sdi_sys_accessscope] ([id]);

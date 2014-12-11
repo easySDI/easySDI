@@ -3,6 +3,7 @@
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumLayerName.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumServiceConnector.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRelationScope.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
 
@@ -158,7 +159,6 @@ class FormHtmlGenerator {
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATIONTYPE:
                     $searchField = $this->getAttribute($parent);
-
                     $parentHtml->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     break;
             }
@@ -266,12 +266,11 @@ class FormHtmlGenerator {
         $divAction->setAttribute('class', 'action');
 
         if ($firstChild = $this->getFirstNonTextChild($relation->childNodes)) {
-            
-                if (!$firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
-                    $aAdd->appendChild($iAdd);
-                    $divAction->appendChild($aAdd);
-                }
-            
+
+            if (!$firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
+                $aAdd->appendChild($iAdd);
+                $divAction->appendChild($aAdd);
+            }
         } else {
             $aAdd->appendChild($iAdd);
             $divAction->appendChild($aAdd);
@@ -299,6 +298,8 @@ class FormHtmlGenerator {
 
         $legendAttribute = $element->getAttributeNS($this->catalog_uri, 'legend');
         $level = $element->getAttributeNS($this->catalog_uri, 'level');
+        $scopeId = $element->getAttributeNS($this->catalog_uri, 'scopeId');
+        
 //        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $aCollapse = $this->formHtml->createElement('a');
@@ -319,7 +320,16 @@ class FormHtmlGenerator {
         $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
 
         $fieldset = $this->formHtml->createElement('fieldset');
-        
+        $class = array();
+        switch ($scopeId) {
+            case EnumRelationScope::HIDDEN:
+                $class[] = 'scope-hidden';
+                break;
+            
+            case EnumRelationScope::VISIBLE:
+                $class[] = 'scope-visible';
+                break;
+        }
 
         if ($guid != '') {
             $spanLegend = $this->formHtml->createElement('span', EText::_($guid)); //
@@ -339,8 +349,8 @@ class FormHtmlGenerator {
 
         if ($exist == 1) {
             $fieldset->setAttribute('id', 'fds' . FormUtils::serializeXpath($element->getNodePath()));
-            $fieldset->setAttribute('class', 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())).'-'.$guid);
-            
+            $class[] = 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid;
+
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
             $legend->appendChild($spanLegend);
@@ -350,7 +360,9 @@ class FormHtmlGenerator {
             $fieldset->appendChild($legend);
             $fieldset->appendChild($divInner);
         }
-
+        
+        $fieldset->setAttribute('class', implode(' ', $class));
+       
         return $fieldset;
     }
 
@@ -395,13 +407,22 @@ class FormHtmlGenerator {
 
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
+        $scopeId = $attribute->getAttributeNS($this->catalog_uri, 'scopeId');
 
         $attributeGroup = $this->formHtml->createElement('div');
+        $class = array('attribute-group');
         if ($rendertypeId == 1000) {
-            $attributeGroup->setAttribute('class', 'hidden attribute-group attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
+            $class[] = 'scope-hidden';
+            $class[] = 'attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath()));
         } else {
-            $attributeGroup->setAttribute('class', 'attribute-group attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
+            $class[] = 'attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath()));
         }
+        
+        if($scopeId == EnumRelationScope::HIDDEN){
+            $class[] = 'scope-hidden';
+        }
+        
+        $attributeGroup->setAttribute('class', implode(' ', $class));
 
         $attributeGroup->setAttribute('id', 'attribute-group' . FormUtils::serializeXpath($attribute->getNodePath()));
 
@@ -502,14 +523,12 @@ class FormHtmlGenerator {
                                       } */
 
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
-
-                                    $fieldid = $jfield->__get('id');
-                                    $query = 'descendant::*[@id="' . $fieldid . '"]';
-                                    $occurance = $this->domXpathFormHtml->query($query)->length;
-
                                     break;
                             }
 
+                            $fieldid = $jfield->__get('id');
+                            $query = 'descendant::*[@id="' . $fieldid . '"]';
+                            $occurance = $this->domXpathFormHtml->query($query)->length;
 
                             // Single list
                         } else {
@@ -859,7 +878,7 @@ class FormHtmlGenerator {
                     appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
                     lang: '" . $default . "',
                     outputLangs: [" . implode(',', $languages) . "],
-                    title: 'GEMET Thesaurus',
+                    title: '" . JText::_('COM_EASYSDI_CATALOG_GEMET_THESAURUS_TITLE') . "',
                     separator: ' > ',
                     returnPath: true,
                     returnInspire: true,
@@ -1242,19 +1261,19 @@ class FormHtmlGenerator {
     private function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
     }
-    
+
     /**
      * 
      * @param DOMNodeList $childNodes
      * @return DOMElement First non text node
      */
-    private function getFirstNonTextChild(DOMNodeList $childNodes){
+    private function getFirstNonTextChild(DOMNodeList $childNodes) {
         foreach ($childNodes as $child) {
-            if($child->nodeType != XML_TEXT_NODE){
+            if ($child->nodeType != XML_TEXT_NODE) {
                 return $child;
             }
         }
-        
+
         return false;
     }
 

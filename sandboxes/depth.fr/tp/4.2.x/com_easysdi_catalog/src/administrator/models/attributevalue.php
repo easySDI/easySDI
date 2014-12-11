@@ -50,8 +50,19 @@ class Easysdi_catalogModelattributevalue extends sdiModel {
         // Initialise variables.
         $app = JFactory::getApplication();
 
+        $jform = new DOMDocument('1.0', 'utf-8');
+        $jform->load(JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/models/forms/attributevalue.xml');
+
+        $item = $this->getItem();
+        
+        if ($item->stereotype_id == 10) {
+            $this->removeNodeByName('value', $jform);
+        } else {
+            $this->removeNodeByName('text2', $jform);
+        }
+
         // Get the form.
-        $form = $this->loadForm('com_easysdi_catalog.attributevalue', 'attributevalue', array('control' => 'jform', 'load_data' => $loadData));
+        $form = $this->loadForm('com_easysdi_catalog.attributevalue', $jform->saveXML(), array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) {
             return false;
         }
@@ -85,18 +96,18 @@ class Easysdi_catalogModelattributevalue extends sdiModel {
      * @since	1.6
      */
     public function getItem($pk = null) {
-         
+
         if ($item = parent::getItem($pk)) {
 
             //Do any procesing on fields here if needed
-            
         }
-       $app = JFactory::getApplication('administrator');
-       $item->attribute_id =  $app->getUserState( 'com_easysdi_catalog.attributevalues.filter.attribute','filter_attribute');
-       $attributetable = JTable::getInstance('attribute', 'Easysdi_catalogTable');
-       $attributetable->load($item->attribute_id);
-       $item->attributename = $attributetable->name ;  
-       return $item;
+        $app = JFactory::getApplication('administrator');
+        $item->attribute_id = $app->getUserState('com_easysdi_catalog.attributevalues.filter.attribute', 'filter_attribute');
+        $attributetable = JTable::getInstance('attribute', 'Easysdi_catalogTable');
+        $attributetable->load($item->attribute_id);
+        $item->attributename = $attributetable->name;
+        $item->stereotype_id = $attributetable->stereotype_id;
+        return $item;
     }
 
     /**
@@ -115,12 +126,27 @@ class Easysdi_catalogModelattributevalue extends sdiModel {
                 $query = $db->getQuery(true);
                 $query->select('MAX(ordering)');
                 $query->from('#__sdi_attributevalue');
-                
+
                 $db->setQuery($query);
                 $max = $db->loadResult();
                 $table->ordering = $max + 1;
             }
         }
+    }
+
+    /**
+     * 
+     * @param string $name
+     * @param DOMDocument $dom
+     * @return \DOMDocument
+     */
+    private function removeNodeByName($name, DOMDocument $dom) {
+        $xpath = new DOMXPath($dom);
+        $value_node = $xpath->query('//field[@name="' . $name . '"]')->item(0);
+        $parent = $value_node->parentNode;
+        $parent->removeChild($value_node);
+
+        return $dom;
     }
 
 }

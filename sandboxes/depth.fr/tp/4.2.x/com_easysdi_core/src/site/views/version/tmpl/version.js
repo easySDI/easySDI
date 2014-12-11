@@ -1,6 +1,6 @@
 js = jQuery.noConflict();
-var childrenTable, availablechildrenTable, parents, availablechildrenData, childrenData;
-var availablechildrenData = [], childrenData = [], parentsData = [];
+var childrenTable, availablechildrenTable, parents,
+    tmpAdded = [], tmpRemoved = [];
 
 var lastCriteria = {length: 0};
 js.fn.dataTableExt.afnFiltering.push(function(oSettings, aData, iDataIndex){
@@ -8,24 +8,25 @@ js.fn.dataTableExt.afnFiltering.push(function(oSettings, aData, iDataIndex){
 });
 
 js(document).ready(function() {
-    
-    availablechildrenTable = js('#sdi-availablechildren').dataTable({
-        //"bFilter": false,
-        "bLengthChange": false,
-        "oLanguage": {
-            "sSearch": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SEARCH'),
-            "sZeroRecords": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NORESULT'),
-            "sInfo": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " _START_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " _END_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " _TOTAL_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
-            "sInfoEmpty": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
-            "sInfoFiltered": "(filtered from _MAX_ total records)"
 
-            ,
-            "oPaginate": {
-                "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
-                "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
-            }
+    var dtDefaultSettings = {
+        bLengthChange: false,
+        bProcessing: true,
+        bServerSide: true,
+        oLanguage: {
+            sUrl: 'http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json'
         },
-        aaData: availablechildrenData,
+        deferRender: true
+    };
+    
+    availablechildrenTable = js('#sdi-availablechildren').dataTable(js.extend(true, {}, dtDefaultSettings, {
+        sAjaxSource: baseUrl+'option=com_easysdi_core&task=version.getAvailableChildren4DT',
+        fnServerParams: function(aoData){
+            aoData.push({ name: 'version', value: version });
+            aoData.push({ name: 'resourcetypechild', value: resourcetypechild });
+            aoData.push({ name: 'inc', value: tmpRemoved.toString()});
+            aoData.push({ name: 'exc', value: tmpAdded.toString()});
+        },
         aoColumnDefs: [
             { bVisible: false, aTargets: [0], mData: 'id' },
             { bVisible: false, aTargets: [1], mData: 'guid' },
@@ -36,18 +37,13 @@ js(document).ready(function() {
             { aTargets: [6], mData: 'metadatastate_id', bVisible: false },
             { aTargets: [7], mData: function(child){
                     return Joomla.JText._(child.state, child.state);
-            }},
-            {
-                aTargets: [8],
-                mData: function(child){
+            }, bSearchable: false},
+            { aTargets: [8], mData: function(child){
                     return "<button type='button' id='sdi-availablechildbutton-"+child.id+"' class='btn btn-success btn-mini' onclick='addChild("+JSON.stringify(child)+");'><i class='icon-white icon-new'></i></button>";
-                },
-                sClass: 'center'
-            }
-            
+                }, sClass: 'center', bSearchable: false }
         ],
         aaSorting: [[3, 'desc']]
-    });
+    }));
     
     // apply search criteria on available children table
     js('#jform_searchtype').on('change', function(){
@@ -87,75 +83,52 @@ js(document).ready(function() {
     
     // clear criteria
     js('#clear-btn').on('click', function(){
-        js('#jform_searchtype').val('');
+        js('#jform_searchtype').val('').trigger('liszt:updated');
         availablechildrenTable.fnFilter('', 4);
         js('#jform_searchid').val('');
         availablechildrenTable.fnFilter('', 1);
         js('#jform_searchname').val('');
         availablechildrenTable.fnFilter('', 2);
-        js('#jform_searchstate').val('');
+        js('#jform_searchstate').val('').trigger('liszt:updated');
         availablechildrenTable.fnFilter('', 6);
         js('input[type=radio][name="jform[searchlast]"][value=all]').attr('checked', true);
         lastCriteria = {length: 0};
         availablechildrenTable.fnFilter('');
-        availablechildrenTable.fnDraw();
+        //availablechildrenTable.fnDraw();
         this.blur();
         return false;
     });
 
-    childrenTable = js('#sdi-children').dataTable({
-        "bLengthChange": false,
-        "oLanguage": {
-            "sSearch": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SEARCH'),
-            "sZeroRecords": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NORESULT'),
-            "sInfo": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " _START_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " _END_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " _TOTAL_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
-            "sInfoEmpty": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
-            "sInfoFiltered": "(filtered from _MAX_ total records)"
-
-            ,
-            "oPaginate": {
-                "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
-                "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
-            }
+    childrenTable = js('#sdi-children').dataTable(js.extend(true, {}, dtDefaultSettings, {
+        sAjaxSource: baseUrl+'option=com_easysdi_core&task=version.getChildren4DT',
+        fnServerParams: function(aoData){
+            aoData.push({ name: 'version', value: version });
+            aoData.push({ name: 'inc', value: tmpAdded.toString()});
+            aoData.push({ name: 'exc', value: tmpRemoved.toString()});
         },
-        aaData: childrenData,
         aoColumnDefs: [
             { bVisible: false, aTargets: [0], mData: 'id' },
-            { aTargets: [1], mData: 'resource' },
-            { bVisible: versioning, aTargets: [2], mData: 'version' },
-            { aTargets: [3], mData: 'resourcetype' },
-            { aTargets: [4], mData: function(child){
+            { bVisible: false, aTargets: [1], mData: 'guid' },
+            { aTargets: [2], mData: 'resource' },
+            { bVisible: versioning, aTargets: [3], mData: 'version' },
+            { aTargets: [4], mData: 'resourcetype_id', bVisible: false },
+            { aTargets: [5], mData: 'resourcetype' },
+            { aTargets: [6], mData: 'metadatastate_id', bVisible: false },
+            { aTargets: [7], mData: function(child){
                     return Joomla.JText._(child.state, child.state);
-            }},
-            {
-                aTargets: [5],
-                bVisible: !isReadonly,
-                mData: function(child){
+            }, bSearchable: false},
+            { aTargets: [8], mData: function(child){
                     return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
-                },
-                sClass: 'center'
-            }
-            
+                }, sClass: 'center', bSearchable: false }
         ]
-    });
+    }));
     
-    parents = js('#sdi-parents').dataTable({
+    parents = js('#sdi-parents').dataTable(js.extend(true, {}, dtDefaultSettings, {
         "bFilter": true,
-        "bLengthChange": false,
-        "oLanguage": {
-            "sSearch": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SEARCH'),
-            "sZeroRecords": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NORESULT'),
-            "sInfo": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " _START_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " _END_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " _TOTAL_ " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
-            "sInfoEmpty": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
-            "sInfoFiltered": "(filtered from _MAX_ total records)"
-
-            ,
-            "oPaginate": {
-                "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
-                "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
-            }
+        sAjaxSource: baseUrl+'option=com_easysdi_core&task=version.getParents4DT',
+        fnServerParams: function(aoData){
+            aoData.push({ name: 'version', value: version });
         },
-        aaData: parentsData,
         aoColumnDefs: [
             { bVisible: false, aTargets: [0], mData: 'id' },
             { aTargets: [1], mData: 'resource' },
@@ -163,57 +136,54 @@ js(document).ready(function() {
             { aTargets: [3], mData: 'resourcetype' },
             { aTargets: [4], mData: function(parent){
                     return Joomla.JText._(parent.state, parent.state);
-            }}
+            }, bSearchable: false}
             
         ]
-    });
+    }));
     
-    /*js('#search-btn').on('click', function(){
-        //var q = [];
-        js('#searchForm :input').each(function(i, input){
-            if('' !== js(input).val()){
-                //q[js(input).attr('name')] = js(input).val();
-                console.log(js(input).attr('name'));
-                switch(js(input).attr('name')){
-                    case 'jform[searchid]':
-                        availablechildrenTable.fnFilter(js(input).val());
-                        break;
-                    
-                    default:
-                        
-                }
-                
+    // to avoid double click event under IE !!
+    js('#toolbar button[onclick]')
+        .removeAttr('onclick')
+        .on('click', function(){
+            var task = 'version.'+js(this).closest('div').attr('id').replace('toolbar-', '');
+            
+            if(task === 'version-cancel'){
+                js('#jform_childrentoadd').val();
+                js('#jform_childrentoremove').val();
             }
+            
+            js('input[name=task]').val(task);
         });
-        
-        return false;
-    });*/
+
+    /*Joomla.submitbutton = function(task)
+    {
+        if (task === 'version.save' || task === 'version.apply') {
+            js('#jform_childrentoremove').val(JSON.stringify(tmpRemoved));
+            js('#jform_childrentoadd').val(JSON.stringify(tmpAdded));
+        }
+
+        Joomla.submitform(task, document.getElementById('adminForm'));
+    };*/
 });
 
-function addChild(child) {
-    childrenTable.fnAddData(child);
-    availablechildrenTable.fnDeleteRow(js('#sdi-availablechildbutton-' + child.id).parent().parent()[0]);
-}
-
-function deleteChild(child) {
-    availablechildrenTable.fnAddData(child);
-    childrenTable.fnDeleteRow(js('#sdi-childbutton-' + child.id).parent().parent()[0]);
-}
-
-Joomla.submitbutton = function(task)
-{
-    if (task === 'version.save' || task === 'version.apply') {
-        var results = [];
-        var children = childrenTable.fnGetData();
-        children.each(function(value) {
-            results.push(value.id);
-        });
-
-        var r = JSON.stringify(results);
-
-        js('#jform_selectedchildren').val(r);
-    }
+var addChild = function(child){
+    if(tmpRemoved.indexOf(child.id) > -1)
+        tmpRemoved.splice(tmpRemoved.indexOf(child.id), 1);
+    else if(tmpAdded.indexOf(child.id) === -1)
+        tmpAdded.push(child.id);
     
-    var form = document.getElementById('adminForm');
-    Joomla.submitform(task, document.getElementById('adminForm'));
+    availablechildrenTable.fnDraw();
+    childrenTable.fnDraw();
+    js('#jform_childrentoadd').val(JSON.stringify(tmpAdded));
+};
+
+var deleteChild = function(child){
+    if(tmpAdded.indexOf(child.id) > -1)
+        tmpAdded.splice(tmpAdded.indexOf(child.id), 1);
+    else if(tmpRemoved.indexOf(child.id) === -1)
+        tmpRemoved.push(child.id);
+    
+    childrenTable.fnDraw();
+    availablechildrenTable.fnDraw();
+    js('#jform_childrentoremove').val(JSON.stringify(tmpRemoved));
 };
