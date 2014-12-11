@@ -12,110 +12,6 @@ js('document').ready(function () {
     disableVisible();
 
     /**
-     * Add filedset to from when user click on add-btn
-     * 
-     * Add listner on add buttons
-     */
-    js(document).on('click', '.add-btn', function () {
-        var relid = js(this).attr('data-relid');
-        var parent_path = js(this).attr('data-parentpath');
-        var uuid = getUuid('add-btn', this.id);
-        var button = js(this);
-
-        js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function (data) {
-
-            if (js('.fds' + uuid).length > 0) {
-                js('.fds' + uuid).last().after(data);
-            } else {
-                button.parent().after(data);
-            }
-
-
-            if (js(data).find('select') !== null) {
-                chosenRefresh();
-            }
-
-            js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
-                calendarSetup(js(this).attr('id'));
-            });
-
-            // add tooltips on new fields
-            addTooltips();
-            
-            // remove hidden fields
-            removeHidden();
-            
-            // change field into readonly
-            disableVisible();
-
-            // refresh validator
-            document.formvalidator.attachToForm(js('#form-metadata'));
-
-            setRelationAction(button);
-
-            // Set bouton state in data block
-            js(data).find('.add-btn').each(function () {
-                setRelationAction(js(this));
-            });
-
-            // Set attribute bouton state in data block
-            js(data).find('.attribute-add-btn').each(function () {
-                setAttributeAction(js(this).parent());
-            });
-
-        });
-
-    });
-
-    /**
-     * Remove fieldset from form
-     */
-    js(document).on('click', '.remove-btn', function () {
-        var id = this.id;
-        var xpath = js(this).attr('data-xpath');
-
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
-            if (result) {
-
-                var uuid = getUuid('remove-btn', id);
-                js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function (data) {
-                    var response = js.parseJSON(data);
-                    if (response.success) {
-
-                        js('#fds' + uuid).remove();
-                        setRelationAction(js('#add-btn' + xpath));
-                    }
-                });
-            }
-        });
-    });
-
-    /**
-     * Collapse inner-fieldset
-     */
-    js(document).on('click', '.collapse-btn', function () {
-        var uuid = getUuid('collapse-btn', this.id);
-        var button = js(this);
-        js('#inner-fds' + uuid).toggle('fast', function () {
-            if (js('#inner-fds' + uuid).is(':visible')) {
-                button.children().first().removeClass('icon-arrow-right').addClass('icon-arrow-down');
-            } else {
-                button.children().first().removeClass('icon-arrow-down').addClass('icon-arrow-right');
-            }
-        });
-
-    });
-
-
-    /**
-     * Open or close all fieldset
-     */
-    js(document).on('click', '#btn_toggle_all', function () {
-        toogleAll(js(this));
-    });
-
-
-    /**
      * set initial state of relation action button
      */
     js('.add-btn').each(function () {
@@ -130,61 +26,14 @@ js('document').ready(function () {
     });
 
     /**
-     * Add field
-     */
-    js(document).on('click', '.attribute-add-btn', function () {
-        var parent = js(this).parent();
-        var relid = parent.attr('data-relid');
-        var parent_path = parent.attr('data-parentpath');
-        var uuid = getUuid('attribute-add-btn', this.id);
-
-
-        js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function (data) {
-
-            js('.attribute-group' + uuid).last().after(data);
-            if (js(data).find('select') !== null) {
-                chosenRefresh();
-            }
-
-            js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
-                calendarSetup(js(this).attr('id'));
-            });
-
-            // refresh validator
-            document.formvalidator.attachToForm(js('#form-metadata'));
-            setAttributeAction(parent);
-            
-            // change field into readonly
-            disableVisible();
-
-        });
-
-    });
-
-    /**
-     * remove field from form
-     */
-    js(document).on('click', '.attribute-remove-btn', function () {
-        var parent = js(this).parent();
-        var uuid = getUuid('attribute-remove-btn', this.id);
-
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
-            if (result) {
-                js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function (data) {
-                    var response = js.parseJSON(data);
-                    if (response.success) {
-                        js('#attribute-group' + uuid).remove();
-                        setAttributeAction(parent);
-                    }
-                });
-            }
-        });
-    });
-
-    /**
      * Retrieves resource types and displays or not the checkboxes versions. 
      */
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getResourceType', function (data) {
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&task=ajax.getResourceType',
+        type: "GET",
+        async: false,
+        cache: false
+    }).done(function (data) {
         resourcetypes = js.parseJSON(data);
 
         for (var i in resourcetypes) {
@@ -192,7 +41,8 @@ js('document').ready(function () {
                 js('#version-control-group').show();
             }
         }
-
+    }).fail(function () {
+        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_VERSION', 'COM_EASYSDI_CATALOG_ERROR_RETRIEVE_VERSION'));
     });
 
     /**
@@ -208,66 +58,9 @@ js('document').ready(function () {
 
     });
 
-    /**
-     * displays or not the checkboxes versions on change event
-     */
-    js('#resourcetype_id').change(function () {
-        js('#resourcetype_id option:selected').each(function () {
-            if (js(this).val() == 0) {
-                for (var i in resourcetypes) {
-                    if (resourcetypes[i].versioning != 0) {
-                        js('#version-control-group').show();
-                    }
-                }
-            } else {
-                if (resourcetypes[js(this).val()].versioning == 1) {
-                    js('#version-control-group').show();
-                } else {
-                    js('#version-control-group').hide();
-                }
-            }
-        });
-    });
-
     // Change date field to Calendar field
     js('.validate-sdidate, .validate-sdidatetime').each(function () {
         calendarSetup(js(this).attr('id'));
-    });
-
-
-    /**
-     * When the preview modal is visible, we colorize the XML.
-     */
-    js('#previewModal').on('show.bs.modal', function () {
-        SyntaxHighlighter.highlight();
-    });
-
-    /**
-     * Add validation on non-required multi-lingual fields
-     */
-    js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function () {
-        var brothers = js(this).closest('.i18n').find('div.controls > input, div.controls > textarea, div.controls > select'),
-                labels = js(this).closest('.i18n').find('div.control-label > label');
-        if (this.value !== '') {
-            brothers.addClass('required');
-        }
-        else {
-            var required = false;
-            js.each(brothers, function (i, brother) {
-                if (brother.value !== '')
-                    required = true;
-
-                if (i === brothers.length - 1) {
-                    if (required) {
-                        brothers.addClass('required');
-                    }
-                    else {
-                        brothers.removeClass('required invalid');
-                        labels.removeClass('invalid');
-                    }
-                }
-            });
-        }
     });
 
     /**
@@ -363,15 +156,25 @@ js('document').ready(function () {
                     if (document.formvalidator.isValid(form)) {
                         js('html, body').animate({scrollTop: 0}, 'slow');
                         var rel = js.parseJSON(rel);
-                        js.get(baseUrl + 'option=com_easysdi_core&task=version.getPublishRight&metadata_id=' + rel.metadata, function (data) {
+
+                        js.ajax({
+                            url: baseUrl + 'option=com_easysdi_core&task=version.getPublishRight&metadata_id=' + rel.metadata,
+                            type: "GET",
+                            async: false,
+                            cache: false
+                        }).done(function (data) {
                             var response = js.parseJSON(data);
                             if (response !== null && response.canPublish > 0) {
                                 js('#system-message-container').remove();
                                 bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN', 'COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'));
-                            }
-                            else {
-                                js.get(baseUrl + 'option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version, function (data) {
-                                    var response = js.parseJSON(data);
+                            } else {
+                                js.ajax({
+                                    url: baseUrl + 'option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version,
+                                    type: "GET",
+                                    async: false,
+                                    cache: false
+                                }).done(function (data_version) {
+                                    var response = js.parseJSON(data_version);
                                     var body = buildDeletedTree(response.versions);
                                     js('#publishModalChildrenList').html(body);
 
@@ -386,6 +189,8 @@ js('document').ready(function () {
                                     js('#publishModal').modal('show');
                                 });
                             }
+                        }).fail(function () {
+                            bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_PUBLISHING_RIGHT', 'COM_EASYSDI_CATALOG_ERROR_RETRIEVE_PUBLISHING_RIGHT'));
                         });
                         break;
                     }
@@ -434,7 +239,7 @@ js('document').ready(function () {
     js('#search_table').dataTable({
         "bFilter": false,
         "oLanguage": {
-            sUrl: 'http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json'
+            sUrl: 'http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/' + dtLang + '.json'
         },
         aaData: null,
         aoColumnDefs: [
@@ -453,6 +258,235 @@ js('document').ready(function () {
     js('#search_table_wrapper').hide();
 }
 );
+
+/**
+ * When the preview modal is visible, we colorize the XML.
+ */
+js(document).on('show.bs.modal', '#previewModal', function () {
+    SyntaxHighlighter.highlight();
+});
+
+/**
+ * Add validation on non-required multi-lingual fields
+ */
+js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function () {
+    var brothers = js(this).closest('.i18n').find('div.controls > input, div.controls > textarea, div.controls > select'),
+            labels = js(this).closest('.i18n').find('div.control-label > label');
+    if (this.value !== '') {
+        brothers.addClass('required');
+    }
+    else {
+        var required = false;
+        js.each(brothers, function (i, brother) {
+            if (brother.value !== '')
+                required = true;
+
+            if (i === brothers.length - 1) {
+                if (required) {
+                    brothers.addClass('required');
+                }
+                else {
+                    brothers.removeClass('required invalid');
+                    labels.removeClass('invalid');
+                }
+            }
+        });
+    }
+});
+
+/**
+ * displays or not the checkboxes versions on change event
+ */
+js(document).on('change', '#resourcetype_id', function () {
+    js('#resourcetype_id option:selected').each(function () {
+        if (js(this).val() == 0) {
+            for (var i in resourcetypes) {
+                if (resourcetypes[i].versioning != 0) {
+                    js('#version-control-group').show();
+                }
+            }
+        } else {
+            if (resourcetypes[js(this).val()].versioning == 1) {
+                js('#version-control-group').show();
+            } else {
+                js('#version-control-group').hide();
+            }
+        }
+    });
+});
+
+/**
+ * Add field
+ */
+js(document).on('click', '.attribute-add-btn', function () {
+    var parent = js(this).parent();
+    var relid = parent.attr('data-relid');
+    var parent_path = parent.attr('data-parentpath');
+    var uuid = getUuid('attribute-add-btn', this.id);
+
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid,
+        type: "GET",
+        async: false,
+        cache: false
+    }).done(function (data) {
+        js('.attribute-group' + uuid).last().after(data);
+        if (js(data).find('select') !== null) {
+            chosenRefresh();
+        }
+
+        js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
+            calendarSetup(js(this).attr('id'));
+        });
+
+        // refresh validator
+        document.formvalidator.attachToForm(js('#form-metadata'));
+        setAttributeAction(parent);
+
+        // change field into readonly
+        disableVisible();
+    }).fail(function () {
+       bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION'));
+    });
+
+});
+
+/**
+ * remove field from form
+ */
+js(document).on('click', '.attribute-remove-btn', function () {
+    var parent = js(this).parent();
+    var uuid = getUuid('attribute-remove-btn', this.id);
+
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
+        if (result) {
+            js.ajax({
+                url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
+                type: "GET",
+                async: false,
+                cache: false
+            }).done(function () {
+                js('#attribute-group' + uuid).remove();
+                setAttributeAction(parent);
+            }).fail(function () {
+                bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_REMOVE_ATTRIBUTE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_REMOVE_ATTRIBUTE_RELATION'));
+            });
+        }
+    });
+});
+
+/**
+ * Add filedset to from when user click on add-btn
+ * 
+ * Add listner on add buttons
+ */
+js(document).on('click', '.add-btn', function () {
+    var relid = js(this).attr('data-relid');
+    var parent_path = js(this).attr('data-parentpath');
+    var uuid = getUuid('add-btn', this.id);
+    var button = js(this);
+
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid,
+        type: "GET",
+        async: false,
+        cache: false,
+        beforeSend: function () {
+            button.attr('disabled', true);
+        }
+    }).done(function (data) {
+        var elmt = (js('.fds' + uuid).length > 0) ? js('.fds' + uuid).last() : button.parent();
+        elmt.after(data);
+
+        if (js(data).find('select') !== null) {
+            chosenRefresh();
+        }
+
+        js(data).find('.validate-sdidate, .validate-sdidatetime').each(function () {
+            calendarSetup(js(this).attr('id'));
+        });
+
+        // add tooltips on new fields
+        addTooltips();
+
+        // remove hidden fields
+        removeHidden();
+
+        // change field into readonly
+        disableVisible();
+
+        // refresh validator
+        document.formvalidator.attachToForm(js('#form-metadata'));
+
+        setRelationAction(button);
+
+        // Set bouton state in data block
+        js(data).find('.add-btn').each(function () {
+            setRelationAction(js(this));
+        });
+
+        // Set attribute bouton state in data block
+        js(data).find('.attribute-add-btn').each(function () {
+            setAttributeAction(js(this).parent());
+        });
+    }).fail(function () {
+        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_ADD_RELATION', 'COM_EASYSDI_CATALOG_ERROR_ADD_RELATION'));
+    }).always(function () {
+        button.attr('disabled', false);
+    });
+
+});
+
+/**
+ * Remove fieldset from form
+ */
+js(document).on('click', '.remove-btn', function () {
+    var id = this.id;
+    var xpath = js(this).attr('data-xpath');
+
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
+        if (result) {
+
+            var uuid = getUuid('remove-btn', id);
+            js.ajax({
+                url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
+                type: "GET",
+                async: false,
+                cache: false
+            }).done(function () {
+                js('#fds' + uuid).remove();
+                setRelationAction(js('#add-btn' + xpath));
+            }).fail(function () {
+                bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION'));
+            });
+
+        }
+    });
+});
+
+/**
+ * Collapse inner-fieldset
+ */
+js(document).on('click', '.collapse-btn', function () {
+    var uuid = getUuid('collapse-btn', this.id);
+    var button = js(this);
+    js('#inner-fds' + uuid).toggle('fast', function () {
+        if (js('#inner-fds' + uuid).is(':visible')) {
+            button.children().first().removeClass('icon-arrow-right').addClass('icon-arrow-down');
+        } else {
+            button.children().first().removeClass('icon-arrow-down').addClass('icon-arrow-right');
+        }
+    });
+
+});
+
+
+/**
+ * Open or close all fieldset
+ */
+js(document).on('click', '#btn_toggle_all', function () {
+    toogleAll(js(this));
+});
 
 var buildDeletedTree = function (versions) {
     var body = '<ul>';
@@ -573,7 +607,12 @@ function searchResource(task) {
 function importSwitch(task) {
     var actions = task.split('.');
 
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function (data) {
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2],
+        type: "GET",
+        async: false,
+        cache: false
+    }).done(function (data) {
         var response = js.parseJSON(data);
 
         if (response.success) {
@@ -584,6 +623,8 @@ function importSwitch(task) {
                 js('#importXmlModal').modal('show');
             }
         }
+    }).fail(function () {
+        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_IMPORT_REF', 'COM_EASYSDI_CATALOG_ERROR_RETRIEVE_IMPORT_REF'));
     });
 }
 
@@ -614,16 +655,14 @@ function addOrRemoveCheckbox(id, relid, parent_path, path) {
 
 }
 
-function addBoundaryToStructure(name, parent_path) {
-
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function (data) {
-        var response = js.parseJSON(data);
-        return response.success;
-    });
-}
-
 function addToStructure(relid, parent_path) {
-    js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid);
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid,
+        type: "GET",
+        async: false,
+        cache: false
+    });
+
 }
 
 function allopen() {
@@ -657,9 +696,17 @@ function confirmReset() {
 
 function removeFromStructure(id) {
     var uuid = getUuid('remove-btn-', id);
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function (data) {
+
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
+        type: "GET",
+        async: false,
+        cache: false
+    }).done(function (data) {
         var response = js.parseJSON(data);
         return response.success;
+    }).fail(function () {
+        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_REMOVE', 'COM_EASYSDI_CATALOG_ERROR_REMOVE'));
     });
 }
 
@@ -702,51 +749,23 @@ function chosenRefresh() {
     });
 }
 
-function filterBoundary(parentPath, value) {
-    if (value == '')
-        return;
-
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function (data) {
-
-        var response = js.parseJSON(data);
-        var replaceId = parentPath.replace(/-/g, '_');
-        var selectList = js('#jform_' + replaceId + '_sla_gmd_dp_description_sla_gco_dp_CharacterString');
-        selectList.empty();
-        var items = "<option value=\"\"></option>";
-        js.each(response, function (i) {
-            if (i === 0) {
-                items += "<option selected=\"selected\" value=\"" + this.option_value + "\">" + this.option_value + "</option>";
-            } else {
-                items += "<option value=\"" + this.option_value + "\">" + this.option_value + "</option>";
-            }
-        });
-        selectList.html(items);
-        selectList.trigger("liszt:updated");
-
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].northbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
-        //js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response['0'].alias);
-
-        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox';
-        drawBB(map_parent_path);
-    });
-}
-
 function setBoundary(parentPath, value) {
     if (value == '')
         return;
 
-    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function (data) {
+    js.ajax({
+        url: baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value,
+        type: "GET",
+        async: false,
+        cache: false
+    }).done(function (data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response.southbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
-        //js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response.alias);
-
+   
         var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
@@ -787,9 +806,9 @@ function drawBB(parent_path) {
 
 
 function calendarSetup(field) {
-    js('#'+field).wrap('<div class="input-append"></div>');
-    js('#'+field).after('<button class="btn" id="'+field+'_img"><i class="icon-calendar"></i></button>');
-    
+    js('#' + field).wrap('<div class="input-append"></div>');
+    js('#' + field).after('<button class="btn" id="' + field + '_img"><i class="icon-calendar"></i></button>');
+
     Calendar.setup({
         // Id of the input field
         inputField: field,
@@ -804,13 +823,13 @@ function calendarSetup(field) {
     });
 }
 
-function removeHidden(){
+function removeHidden() {
     js('.scope-hidden').remove();
 }
 
-function disableVisible(){
-    
-    js(':input[readonly], .scope-visible :input').prop('disabled',true).removeAttr('readonly').removeClass('validate-sdidate validate-sdidatetime');
+function disableVisible() {
+
+    js(':input[readonly], .scope-visible :input').prop('disabled', true).removeAttr('readonly').removeClass('validate-sdidate validate-sdidatetime');
     js('fieldset.scope-visible').prev('.action a').remove();
     js('fieldset.scope-visible .remove-btn, fieldset.scope-visible .add-btn, fieldset.scope-visible .attribute-add-btn').remove();
     js('.scope-visible select').trigger("liszt:updated");
