@@ -179,9 +179,10 @@ abstract class Easysdi_mapHelper {
         }
 
         //Mouseposition
+        $mouseposition = 'false';      
         foreach ($item->tools as $tool) {
             if ($tool->alias == 'mouseposition') {
-                $mouseposition = true;                
+                $mouseposition = 'true';                
                 break;
             }
         }
@@ -199,7 +200,7 @@ abstract class Easysdi_mapHelper {
         $data->srs = $item->srs;
         $data->maxextent = $item->maxextent;
         $data->maxresolution = $item->maxresolution;
-        $data->units = $item->units;
+        $data->units = $item->unit;
         $data->centercoordinates = $item->centercoordinates;
         $data->restrictedextent = $item->restrictedextent;
         $data->zoom = $item->zoom;
