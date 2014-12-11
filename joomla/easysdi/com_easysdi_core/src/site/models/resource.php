@@ -86,6 +86,7 @@ class Easysdi_coreModelResource extends JModelForm {
                 //Load accessscope
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
+                $this->_item->categories = sdiModel::getAccessScopeCategory($this->_item->guid);
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -256,8 +257,6 @@ class Easysdi_coreModelResource extends JModelForm {
         $jform = $jinput->get('jform', '', 'ARRAY');
         
         // --extra fields : resources users rights
-        for($index=2; $index<8; $index++)
-            JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']',$jform[$index]);
         if(!isset($jform[2])){
             $this->setError(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR_RESOURCE_MANAGER'));
             return false;
@@ -316,7 +315,7 @@ class Easysdi_coreModelResource extends JModelForm {
             $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
             $userroleresource->deleteByResourceId($table->id);
             
-            for ($index = 2; $index < 8; $index++) {
+            for ($index = 2; $index < 8; $index++) { // $index refers to sys_role ID - role with id 8 was removed !
                 if (!isset($jform[$index]))
                     continue;
 
@@ -335,7 +334,7 @@ class Easysdi_coreModelResource extends JModelForm {
                 $version = JTable::getInstance('version', 'Easysdi_coreTable');
                 $version->resource_id = $table->id;
                 $version->name = date("Y-m-d H:i:s");
-                $version->store();
+                $version->save();
 
                 require_once JPATH_SITE . '/components/com_easysdi_catalog/models/metadata.php';
                 $metadata = JModelLegacy::getInstance('metadata', 'Easysdi_catalogModel');

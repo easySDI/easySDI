@@ -211,6 +211,7 @@ CREATE TABLE [#__sdi_accessscope](
 	[entity_guid] [nvarchar](36) NOT NULL,
 	[organism_id] [bigint] NULL,
 	[user_id] [bigint] NULL,
+	[category_id] [bigint] NULL,
  CONSTRAINT [PK_#__sdi_accessscope_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -284,8 +285,8 @@ CREATE TABLE [#__sdi_application](
 	[alias] [nvarchar](50) NOT NULL,
 	[created_by] [int] NOT NULL,
 	[created] [datetime2](0) NOT NULL,
-	[modified_by] [int] NOT NULL,
-	[modified] [datetime2](0) NOT NULL,
+	[modified_by] [int] NULL,
+	[modified] [datetime2](0) NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[checked_out] [int] NOT NULL,
@@ -315,7 +316,7 @@ CREATE TABLE [#__sdi_assignment](
 	[assigned] [datetime2](0) NULL,
 	[assigned_by] [bigint] NOT NULL,
 	[assigned_to] [bigint] NOT NULL,
-	[version_id] [bigint] NOT NULL,
+	[metadata_id] [bigint] NOT NULL,
 	[text] [nvarchar](500) NULL,
  CONSTRAINT [PK_#__sdi_assignment_id] PRIMARY KEY CLUSTERED 
 (
@@ -482,8 +483,15 @@ SET QUOTED_IDENTIFIER ON;
 
 CREATE TABLE [#__sdi_catalog_resourcetype](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[guid] [nvarchar](36) NOT NULL,
+	[created_by] [int] NOT NULL,
+	[created] [datetime2](0) NOT NULL,
+	[modified_by] [int] NULL,
+	[modified] [datetime2](0) NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
+	[checked_out] [int] NOT NULL,
+	[checked_out_time] [datetime2](0) NOT NULL,
 	[catalog_id] [bigint] NOT NULL,
 	[resourcetype_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_catalog_resourcetype_id] PRIMARY KEY CLUSTERED 
@@ -603,14 +611,14 @@ CREATE TABLE [#__sdi_diffusion](
 	[created_by] [int] NOT NULL,
 	[created] [datetime2](0) NOT NULL,
 	[modified_by] [int] NULL,
-	[modified] [datetime2](0) NOT NULL,
+	[modified] [datetime2](0) NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[checked_out] [int] NOT NULL,
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[version_id] [bigint] NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
-	[description] [nvarchar](500) NOT NULL,
+	[description] [nvarchar](500) NULL,
 	[accessscope_id] [bigint] NOT NULL,
 	[pricing_id] [bigint] NOT NULL,
 	[deposit] [nvarchar](255) NULL,
@@ -1113,7 +1121,7 @@ CREATE TABLE [#__sdi_order](
 	[created_by] [int] NOT NULL,
 	[created] [datetime2](0) NOT NULL,
 	[modified_by] [int] NULL,
-	[modified] [datetime2](0) NOT NULL,
+	[modified] [datetime2](0) NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[checked_out] [int] NOT NULL,
@@ -1125,7 +1133,7 @@ CREATE TABLE [#__sdi_order](
 	[thirdparty_id] [bigint] NULL,
 	[buffer] [numeric](38, 18) NULL,
 	[surface] [numeric](38, 18) NULL,
-	[remark] [nvarchar](500) NOT NULL,
+	[remark] [nvarchar](500) NULL,
 	[sent] [datetime2](0) NOT NULL,
 	[completed] [datetime2](0) NOT NULL,
 	[access] [int] NOT NULL,
@@ -1146,11 +1154,11 @@ CREATE TABLE [#__sdi_order_diffusion](
 	[order_id] [bigint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[productstate_id] [bigint] NOT NULL,
-	[remark] [nvarchar](500) NOT NULL,
-	[fee] [decimal](10, 0) NOT NULL,
-	[completed] [datetime2](0) NOT NULL,
-	[file] [nvarchar](500) NOT NULL,
-	[size] [decimal](10, 0) NOT NULL,
+	[remark] [nvarchar](500) NULL,
+	[fee] [decimal](10, 0) NULL,
+	[completed] [datetime2](0) NULL,
+	[file] [nvarchar](500) NULL,
+	[size] [decimal](10, 0) NULL,
 	[created_by] [int] NOT NULL,
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
@@ -1246,11 +1254,11 @@ CREATE TABLE [#__sdi_category](
 	[name] [nvarchar](255) NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
- CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_category_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 SET ANSI_NULLS ON;
 
@@ -1264,7 +1272,7 @@ CREATE TABLE [#__sdi_organism_category](
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 
 SET ANSI_NULLS ON;
@@ -1497,7 +1505,7 @@ CREATE TABLE [#__sdi_policy_category](
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 
 SET ANSI_NULLS ON;
@@ -1766,8 +1774,8 @@ CREATE TABLE [#__sdi_resourcetype](
 	[alias] [nvarchar](50) NOT NULL,
 	[created_by] [int] NOT NULL,
 	[created] [datetime2](0) NOT NULL,
-	[modified_by] [int] NOT NULL,
-	[modified] [datetime2](0) NOT NULL,
+	[modified_by] [int] NULL,
+	[modified] [datetime2](0) NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[checked_out] [int] NOT NULL,
@@ -1805,8 +1813,8 @@ CREATE TABLE [#__sdi_resourcetypelink](
 	[alias] [nvarchar](50) NOT NULL,
 	[created_by] [int] NOT NULL,
 	[created] [datetime2](0) NOT NULL,
-	[modified_by] [int] NOT NULL,
-	[modified] [datetime2](0) NOT NULL,
+	[modified_by] [int] NULL,
+	[modified] [datetime2](0) NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[checked_out] [int] NOT NULL,
@@ -1817,8 +1825,6 @@ CREATE TABLE [#__sdi_resourcetypelink](
 	[parentboundupper] [int] NOT NULL,
 	[childboundlower] [int] NOT NULL,
 	[childboundupper] [int] NOT NULL,
-	[class_id] [bigint] NULL,
-	[attribute_id] [bigint] NULL,
 	[viralversioning] [smallint] NOT NULL,
 	[inheritance] [smallint] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
@@ -2666,6 +2672,7 @@ CREATE TABLE [#__sdi_translation](
 	[language_id] [bigint] NULL,
 	[text1] [nvarchar](255) NULL,
 	[text2] [nvarchar](500) NULL,
+	[text3] [nvarchar](255) NULL,
  CONSTRAINT [PK_#__sdi_translation_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -3414,1546 +3421,801 @@ CREATE TABLE [users](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY];
 
-ALTER TABLE [actions] ADD  DEFAULT (NULL) FOR [TARGET];
 
-ALTER TABLE [actions] ADD  DEFAULT (NULL) FOR [LANGUAGE];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MAX_RESP_TIME];
 
-ALTER TABLE [alerts] ADD  DEFAULT (NULL) FOR [HTTP_CODE];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MIN_RESP_TIME];
 
-ALTER TABLE [alerts] ADD  DEFAULT (NULL) FOR [CONTENT_TYPE];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MAX_RESP_TIME_INSPIRE];
 
-ALTER TABLE [holidays] ADD  DEFAULT (NULL) FOR [NAME];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MIN_RESP_TIME_INSPIRE];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_MAX_RESP_TIME];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_UNAVAILABILITY];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_MIN_RESP_TIME];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_UNAVAILABILITY_INSPIRE];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_MAX_RESP_TIME_INSPIRE];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_FAILURE];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_MIN_RESP_TIME_INSPIRE];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_FAILURE_INSPIRE];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_UNAVAILABILITY];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_UNTESTED];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_UNAVAILABILITY_INSPIRE];
+ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_UNTESTED_INSPIRE];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_FAILURE];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [H24_MAX_RESP_TIME];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_FAILURE_INSPIRE];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [H24_MIN_RESP_TIME];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_UNTESTED];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_MAX_RESP_TIME];
 
-ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_UNTESTED_INSPIRE];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_MIN_RESP_TIME];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_MAX_RESP_TIME];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_UNAVAILABILITY];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_MIN_RESP_TIME];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [H24_UNAVAILABILITY];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_MAX_RESP_TIME];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_FAILURE];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_MIN_RESP_TIME];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [H24_FAILURE];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_UNAVAILABILITY];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_UNTESTED];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_UNAVAILABILITY];
+ALTER TABLE [job_agg_log_entries] ADD  DEFAULT '0' FOR [H24_UNTESTED];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_FAILURE];
+ALTER TABLE [jobs] ADD  DEFAULT '0' FOR [BUSINESS_ERRORS];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_FAILURE];
+ALTER TABLE [jobs] ADD  DEFAULT '0' FOR [IS_PUBLIC];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_UNTESTED];
+ALTER TABLE [jobs] ADD  DEFAULT '0' FOR [IS_AUTOMATIC];
 
-ALTER TABLE [job_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_UNTESTED];
+ALTER TABLE [jobs] ADD  DEFAULT '0' FOR [ALLOWS_REALTIME];
 
-ALTER TABLE [job_defaults] ADD  DEFAULT (NULL) FOR [STRING_VALUE];
+ALTER TABLE [jobs] ADD  DEFAULT '0' FOR [TRIGGERS_ALERTS];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [BUSINESS_ERRORS];
+ALTER TABLE [jobs] ADD  DEFAULT '4' FOR [ID_STATUS];
 
-ALTER TABLE [jobs] ADD  DEFAULT (NULL) FOR [LOGIN];
+ALTER TABLE [jobs] ADD  DEFAULT '0' FOR [HTTP_ERRORS];
 
-ALTER TABLE [jobs] ADD  DEFAULT (NULL) FOR [PASSWORD];
+ALTER TABLE [jobs] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [STATUS_UPDATE_TIME];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [IS_PUBLIC];
+ALTER TABLE [jobs] ADD  DEFAULT '0' FOR [SAVE_RESPONSE];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [IS_AUTOMATIC];
+ALTER TABLE [jobs] ADD  DEFAULT '0' FOR [RUN_SIMULTANEOUS];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [ALLOWS_REALTIME];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [TRIGGERS_ALERTS];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((4)) FOR [ID_STATUS];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [HTTP_ERRORS];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [jobs] ADD  DEFAULT (getdate()) FOR [STATUS_UPDATE_TIME];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT '1' FOR [sameascontact];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [SAVE_RESPONSE];
+ALTER TABLE [#__sdi_application] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [RUN_SIMULTANEOUS];
+ALTER TABLE [#__sdi_application] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_accessscope] ADD  DEFAULT (NULL) FOR [organism_id];
+ALTER TABLE [#__sdi_application] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_accessscope] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [alias];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [organism_id];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [civility];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [firstname];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [lastname];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [function];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [address];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [addresscomplement];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [postalcode];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [postalbox];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [locality];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [country_id];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [phone];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [mobile];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [fax];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [email];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_address] ADD  DEFAULT ((1)) FOR [sameascontact];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_application] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_application] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_application] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT '0' FOR [oninitrunsearch];
 
-ALTER TABLE [#__sdi_assignment] ADD  DEFAULT (NULL) FOR [assigned];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_assignment] ADD  DEFAULT (NULL) FOR [text];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_catalog_resourcetype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_category] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [isocode];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [length];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT '0' FOR [issystem];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [pattern];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT '0' FOR [isrootclass];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [listnamespace_id];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [type_isocode];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [codelist];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_attribute] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '0' FOR [hasdownload];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '0' FOR [hasextraction];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '0' FOR [restrictedperimeter];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (NULL) FOR [value];
+ALTER TABLE [#__sdi_diffusion_download] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [executed];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_diffusion_notifieduser] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_diffusion_perimeter] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_diffusion_propertyvalue] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT '1' FOR [enabled];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT '1' FOR [inheritedspatialpolicy];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [northbound];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [southbound];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [eastbound];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT '0' FOR [ordering];
 
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [westbound];
-
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [category_id];
-
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [parent_id];
-
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_boundary] ADD  DEFAULT ((0)) FOR [asset_id];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [parent_id];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT ((0)) FOR [asset_id];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [description];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [xsldirectory];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((0)) FOR [oninitrunsearch];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((0)) FOR [asset_id];
-
-ALTER TABLE [#__sdi_catalog_resourcetype] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_catalog_resourcetype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvalue];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvaluefrom];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvalueto];
-
-ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [params];
-
-ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT (NULL) FOR [ogcsearchsorting];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [description];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT ((0)) FOR [issystem];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT ((0)) FOR [isrootclass];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [isocode];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [stereotype_id];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_class] ADD  DEFAULT ((0)) FOR [asset_id];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [eastboundlongitude];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [westboundlongitude];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [northboundlatitude];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [southboundlatitude];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxx];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxy];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [minx];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [miny];
-
-ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [srssource];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [deposit];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [productmining_id];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [surfacemin];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [surfacemax];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [productstorage_id];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [file];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [fileurl];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [perimeter_id];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [hasdownload];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [hasextraction];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [restrictedperimeter];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [asset_id];
-
-ALTER TABLE [#__sdi_diffusion_download] ADD  DEFAULT (NULL) FOR [user_id];
-
-ALTER TABLE [#__sdi_diffusion_download] ADD  DEFAULT (getdate()) FOR [executed];
-
-ALTER TABLE [#__sdi_diffusion_notifieduser] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_diffusion_perimeter] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_diffusion_propertyvalue] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT (NULL) FOR [description];
-
-ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT ((1)) FOR [enabled];
-
-ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
-
-ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [description];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [xsl4sdi];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [xsl4ext];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [cswservice_id];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [cswversion_id];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [cswoutputschema];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [importtype_id];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_importref] ADD  DEFAULT ((0)) FOR [asset_id];
-
-ALTER TABLE [#__sdi_language] ADD  DEFAULT ((0)) FOR [ordering];
-
-ALTER TABLE [#__sdi_language] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT '1' FOR [state];
 
 ALTER TABLE [#__sdi_language] ADD  DEFAULT (N'') FOR [gemet];
 
-ALTER TABLE [#__sdi_language] ADD  DEFAULT (NULL) FOR [iso639-2T];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_language] ADD  DEFAULT (NULL) FOR [iso639-1];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_language] ADD  DEFAULT (NULL) FOR [iso3166-1-alpha2];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_language] ADD  DEFAULT (NULL) FOR [iso639-2B];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_layer] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_layer] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_layer] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_layer] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT '0' FOR [isdefaultopen];
 
-ALTER TABLE [#__sdi_layer] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_layer] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_layer] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_layer_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_map_layergroup] ADD  DEFAULT '0' FOR [isbackground];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_map_layergroup] ADD  DEFAULT '0' FOR [isdefault];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '0' FOR [istiled];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT ((0)) FOR [isdefaultopen];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '0' FOR [isdefaultvisible];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '1.00' FOR [opacity];
 
-ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '0' FOR [asOL];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '1' FOR [accessscope_id];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT '1' FOR [metadatastate_id];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [rootnodetext];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT '0' FOR [notification];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [maxresolution];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [numzoomlevel];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [restrictedextent];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [centercoordinates];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [zoom];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_map_layergroup] ADD  DEFAULT ((0)) FOR [isbackground];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT '0' FOR [system];
 
-ALTER TABLE [#__sdi_map_layergroup] ADD  DEFAULT ((0)) FOR [isdefault];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_map_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_map_tool] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [sent];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [completed];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [service_id];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [servicetype];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((0)) FOR [istiled];
+ALTER TABLE [#__sdi_order_diffusion] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [completed];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((0)) FOR [isdefaultvisible];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((1.00)) FOR [opacity];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((0)) FOR [asOL];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [attribution];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((1)) FOR [accessscope_id];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT '0'  FOR [asset_id];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((1)) FOR [metadatastate_id];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [published];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [archived];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [lastsynchronization];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT '1' FOR [servicescope_id];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [synchronized_by];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((0)) FOR [notification];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT '1' FOR [anyitem];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT '1' FOR [inheritedspatialpolicy];
 
-ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportDesc];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportName];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportType];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [xsltUrl];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [allowfrom];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [allowto];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [anyoperation];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [anyservice];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [accessscope_id];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [csw_version_id];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [csw_anyattribute];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [csw_anycontext];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((0)) FOR [system];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [csw_anystate];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [csw_anyvisibility];
 
-ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [csw_includeharvested];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [csw_anyresourcetype];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [csw_accessscope_id];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [ordertype_id];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [thirdparty_id];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [buffer];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [surface];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (getdate()) FOR [sent];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT (getdate()) FOR [completed];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_order] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_order_diffusion] ADD  DEFAULT (getdate()) FOR [completed];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [acronym];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [logo];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [website];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [username];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [password];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT '0' FOR [issearchfilter];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_relation_catalog] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_relation_profile] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [wfsservice_id];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [wfsservicetype_id];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypename];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [prefix];
+ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [namespace];
+ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldid];
+ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldname];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldsurface];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefielddescription];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldgeometry];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldresource];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT '0' FOR [issystem];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [wmsservice_id];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [wmsservicetype_id];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [layername];
+ALTER TABLE [#__sdi_searchcriteriafilter] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_sys_accessscope] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_sys_accessscope] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_sys_addresstype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_sys_authenticationconnector] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_sys_authenticationlevel] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_sys_criteriatype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_sys_criteriatype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [name];
+ALTER TABLE [#__sdi_sys_entity] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT ((1)) FOR [servicescope_id];
+ALTER TABLE [#__sdi_sys_entity] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceauthentication_id];
+ALTER TABLE [#__sdi_sys_exceptionlevel] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceurl];
+ALTER TABLE [#__sdi_sys_importtype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceusername];
+ALTER TABLE [#__sdi_sys_importtype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourcepassword];
+ALTER TABLE [#__sdi_sys_isolanguage] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceauthentication_id];
+ALTER TABLE [#__sdi_sys_isolanguage] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceurl];
+ALTER TABLE [#__sdi_sys_loglevel] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceusername];
+ALTER TABLE [#__sdi_sys_logroll] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [servicepassword];
+ALTER TABLE [#__sdi_sys_maptool] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_sys_metadatastate] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_sys_metadatastate] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_sys_metadataversion] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [prefix];
+ALTER TABLE [#__sdi_sys_metadataversion] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [namespace];
+ALTER TABLE [#__sdi_sys_operationcompliance] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT ((1)) FOR [anyitem];
+ALTER TABLE [#__sdi_sys_operationcompliance] ADD  DEFAULT '0' FOR [implemented];
 
-ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
+ALTER TABLE [#__sdi_sys_orderstate] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [csw_spatialpolicy_id];
+ALTER TABLE [#__sdi_sys_orderstate] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wms_spatialpolicy_id];
+ALTER TABLE [#__sdi_sys_ordertype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wmts_spatialpolicy_id];
+ALTER TABLE [#__sdi_sys_ordertype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wfs_spatialpolicy_id];
+ALTER TABLE [#__sdi_sys_perimetertype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_perimetertype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_sys_pricing] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_sys_pricing] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_sys_productmining] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_sys_productmining] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_sys_productstate] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (getdate()) FOR [allowfrom];
+ALTER TABLE [#__sdi_sys_productstate] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (getdate()) FOR [allowto];
+ALTER TABLE [#__sdi_sys_productstorage] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [anyoperation];
+ALTER TABLE [#__sdi_sys_productstorage] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [anyservice];
+ALTER TABLE [#__sdi_sys_propertytype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [accessscope_id];
+ALTER TABLE [#__sdi_sys_proxytype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [csw_spatialpolicy_id];
+ALTER TABLE [#__sdi_sys_relationscope] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_spatialpolicy_id];
+ALTER TABLE [#__sdi_sys_relationscope] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wmts_spatialpolicy_id];
+ALTER TABLE [#__sdi_sys_relationtype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wfs_spatialpolicy_id];
+ALTER TABLE [#__sdi_sys_relationtype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_version_id];
+ALTER TABLE [#__sdi_sys_rendertype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyattribute];
+ALTER TABLE [#__sdi_sys_rendertype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anycontext];
+ALTER TABLE [#__sdi_sys_role] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anystate];
+ALTER TABLE [#__sdi_sys_role] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyvisibility];
+ALTER TABLE [#__sdi_sys_searchtab] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_includeharvested];
+ALTER TABLE [#__sdi_sys_searchtab] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyresourcetype];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_accessscope_id];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT '0' FOR [implemented];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_minimumwidth];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT '0' FOR [relayable];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_minimumheight];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT '0' FOR [aggregatable];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_maximumwidth];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT '0' FOR [harvestable];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_maximumheight];
+ALTER TABLE [#__sdi_sys_serviceconnector] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_sys_serviceoperation] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_sys_servicescope] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_sys_servicescope] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy_metadatastate] ADD  DEFAULT (NULL) FOR [metadataversion_id];
+ALTER TABLE [#__sdi_sys_servicetype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_policy_visibility] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_sys_servicetype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_policy_visibility] ADD  DEFAULT (NULL) FOR [organism_id];
+ALTER TABLE [#__sdi_sys_serviceversion] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_sys_spatialoperator] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_sys_spatialoperator] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_topiccategory] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_sys_topiccategory] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_sys_unit] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_sys_versiontype] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_sys_versiontype] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_profile] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT '1' FOR [anytile];
 
-ALTER TABLE [#__sdi_property] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_tilematrixset_policy] ADD  DEFAULT '1' FOR [anytilematrix];
 
-ALTER TABLE [#__sdi_property] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_property] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT '1' FOR [ordering];
 
-ALTER TABLE [#__sdi_property] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_property] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_property] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_property] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_property] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT '1' FOR [notificationrequesttreatment];
 
-ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT '0' FOR [asset_id];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1' FOR [inheritedtitle];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1' FOR [inheritedsummary];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [attributechild_id];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1' FOR [inheritedkeyword];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [classchild_id];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1' FOR [inheritedfee];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [lowerbound];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1' FOR [inheritedaccessconstraint];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [upperbound];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT '1' FOR [inheritedcontact];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [relationtype_id];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [rendertype_id];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [namespace_id];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [isocode];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [classassociation_id];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT '1' FOR [servicescope_id];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((0)) FOR [issearchfilter];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT '0' FOR [reflectedmetadata];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [relationscope_id];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT '0' FOR [harvester];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [editorrelationscope_id];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [childresourcetype_id];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT '1' FOR [state];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [childtype_id];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT '0'  FOR [checked_out];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
-ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT '1' FOR [access];
 
-ALTER TABLE [#__sdi_relation_catalog] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_wmslayer_policy] ADD  DEFAULT '0' FOR [enabled];
 
-ALTER TABLE [#__sdi_relation_catalog] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_wmslayer_policy] ADD  DEFAULT '1' FOR [inheritedspatialpolicy];
 
-ALTER TABLE [#__sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [attributevalue_id];
+ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT '1' FOR [spatialoperator_id];
 
-ALTER TABLE [#__sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [value];
+ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT '1' FOR [enabled];
 
-ALTER TABLE [#__sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [language_id];
+ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT '1' FOR [inheritedspatialpolicy];
 
-ALTER TABLE [#__sdi_relation_profile] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT '1' FOR [anytilematrixset];
 
-ALTER TABLE [#__sdi_relation_profile] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [last_ids] ADD  DEFAULT '0' FOR [LAST_ID];
 
-ALTER TABLE [#__sdi_resource] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [overview_page] ADD  DEFAULT '0' FOR [IS_PUBLIC];
 
-ALTER TABLE [#__sdi_resource] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [MONDAY];
 
-ALTER TABLE [#__sdi_resource] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [TUESDAY];
 
-ALTER TABLE [#__sdi_resource] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [WEDNESDAY];
 
-ALTER TABLE [#__sdi_resource] ADD  DEFAULT (NULL) FOR [checked_out];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [THURSDAY];
 
-ALTER TABLE [#__sdi_resource] ADD  DEFAULT (NULL) FOR [checked_out_time];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [FRIDAY];
 
-ALTER TABLE [#__sdi_resource] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [SATURDAY];
 
-ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [SUNDAY];
 
-ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [HOLIDAYS];
 
-ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT (NULL) FOR [fragmentnamespace_id];
+ALTER TABLE [periods] ADD  DEFAULT '0' FOR [INCLUDE];
 
-ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT (NULL) FOR [fragment];
+ALTER TABLE [queries] ADD  DEFAULT '4' FOR [ID_STATUS];
 
-ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT (NULL) FOR [sitemapparams];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MAX_RESP_TIME];
 
-ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MIN_RESP_TIME];
 
-ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MAX_RESP_TIME_INSPIRE];
 
-ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MIN_RESP_TIME_INSPIRE];
 
-ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (NULL) FOR [class_id];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_UNAVAILABILITY];
 
-ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (NULL) FOR [attribute_id];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_UNAVAILABILITY_INSPIRE];
 
-ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_FAILURE];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_FAILURE_INSPIRE];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_UNTESTED];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_UNTESTED_INSPIRE];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [H24_MAX_RESP_TIME];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [H24_MIN_RESP_TIME];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_MAX_RESP_TIME];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_MIN_RESP_TIME];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [issystem];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_UNAVAILABILITY];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [rendertype_id];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [H24_UNAVAILABILITY];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [relation_id];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_FAILURE];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [H24_FAILURE];
 
-ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [SLA_UNTESTED];
 
-ALTER TABLE [#__sdi_searchcriteriafilter] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [query_agg_log_entries] ADD  DEFAULT '0' FOR [H24_UNTESTED];
 
-ALTER TABLE [#__sdi_searchcriteriafilter] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [query_validation_settings] ADD  DEFAULT '0' FOR [USE_SIZE_VALIDATION];
 
-ALTER TABLE [#__sdi_sys_accessscope] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [query_validation_settings] ADD  DEFAULT '0' FOR [USE_TIME_VALIDATION];
 
-ALTER TABLE [#__sdi_sys_accessscope] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [query_validation_settings] ADD  DEFAULT '0' FOR [USE_XPATH_VALIDATION];
 
-ALTER TABLE [#__sdi_sys_addresstype] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [sla] ADD  DEFAULT '0' FOR [EXCLUDE_WORST];
 
-ALTER TABLE [#__sdi_sys_addresstype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [sla] ADD  DEFAULT '0' FOR [MEASURE_TIME_TO_FIRST];
 
-ALTER TABLE [#__sdi_sys_authenticationconnector] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [users] ADD  DEFAULT '1' FOR [ENABLED];
 
-ALTER TABLE [#__sdi_sys_authenticationconnector] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_authenticationlevel] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_authenticationlevel] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT (NULL) FOR [iso2];
-
-ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT (NULL) FOR [iso3];
-
-ALTER TABLE [#__sdi_sys_criteriatype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_criteriatype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_entity] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_entity] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_exceptionlevel] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_importtype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_importtype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_isolanguage] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_isolanguage] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_loglevel] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_logroll] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_maptool] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_maptool] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_metadatastate] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_metadatastate] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_metadataversion] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_metadataversion] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_operationcompliance] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_operationcompliance] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_operationcompliance] ADD  DEFAULT ((0)) FOR [implemented];
-
-ALTER TABLE [#__sdi_sys_orderstate] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_orderstate] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_ordertype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_ordertype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_perimetertype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_perimetertype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_pricing] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_pricing] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_productmining] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_productmining] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_productstate] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_productstate] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_productstorage] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_productstorage] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_propertytype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_proxytype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_relationscope] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_relationscope] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_relationtype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_relationtype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_rendertype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_rendertype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_role] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_role] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_searchtab] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_searchtab] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [implemented];
-
-ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [relayable];
-
-ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [aggregatable];
-
-ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [harvestable];
-
-ALTER TABLE [#__sdi_sys_serviceconnector] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_serviceconnector] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_serviceoperation] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_serviceoperation] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_servicescope] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_servicescope] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_servicetype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_servicetype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_serviceversion] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_serviceversion] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_spatialoperator] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_spatialoperator] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [defaultpattern];
-
-ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [isocode];
-
-ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [namespace_id];
-
-ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [entity_id];
-
-ALTER TABLE [#__sdi_sys_topiccategory] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_topiccategory] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_unit] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_sys_versiontype] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_sys_versiontype] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tileminrow];
-
-ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemaxrow];
-
-ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemincol];
-
-ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemaxcol];
-
-ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT ((1)) FOR [anytile];
-
-ALTER TABLE [#__sdi_tilematrixset_policy] ADD  DEFAULT ((1)) FOR [anytilematrix];
-
-ALTER TABLE [#__sdi_tilematrixset_policy] ADD  DEFAULT (NULL) FOR [srssource];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT ((1)) FOR [ordering];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [language_id];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [text1];
-
-ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [text2];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT ((1)) FOR [notificationrequesttreatment];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [catid];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [params];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [asset_id];
-
-ALTER TABLE [#__sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [user_id];
-
-ALTER TABLE [#__sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [role_id];
-
-ALTER TABLE [#__sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [organism_id];
-
-ALTER TABLE [#__sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [user_id];
-
-ALTER TABLE [#__sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [role_id];
-
-ALTER TABLE [#__sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [resource_id];
-
-ALTER TABLE [#__sdi_version] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_version] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_version] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_version] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_version] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_version] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_version] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_version] ADD  DEFAULT ((0)) FOR [asset_id];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [title];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedtitle];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [summary];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedsummary];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [keyword];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedkeyword];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [fee];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedfee];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [accessconstraint];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedaccessconstraint];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedcontact];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactorganization];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactname];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactposition];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactaddress];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactaddresstype];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactrole];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactpostalcode];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactlocality];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactstate];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [country_id];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactphone];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactfax];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactemail];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contacturl];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactavailability];
-
-ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactinstruction];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (getdate()) FOR [created];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((1)) FOR [servicescope_id];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [url];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [reflectedurl];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((0)) FOR [reflectedmetadata];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [xsltfilename];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((0)) FOR [harvester];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [maximumrecords];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [identifiersearchattribute];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [params];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [asset_id];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [modified_by];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [modified];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [ordering];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT ((1)) FOR [state];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT ((0)) FOR [checked_out];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [maplayer_id];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT ((1)) FOR [access];
-
-ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [asset_id];
-
-ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxx];
-
-ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxy];
-
-ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [minx];
-
-ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [miny];
-
-ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maximumscale];
-
-ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [minimumscale];
-
-ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [srssource];
-
-ALTER TABLE [#__sdi_wmslayer_policy] ADD  DEFAULT ((0)) FOR [enabled];
-
-ALTER TABLE [#__sdi_wmslayer_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
-
-ALTER TABLE [#__sdi_wmslayer_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
-
-ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT ((1)) FOR [spatialoperator_id];
-
-ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [eastboundlongitude];
-
-ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [westboundlongitude];
-
-ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [northboundlatitude];
-
-ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [southboundlatitude];
-
-ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [enabled];
-
-ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
-
-ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
-
-ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [anytilematrixset];
-
-ALTER TABLE [last_ids] ADD  DEFAULT ((0)) FOR [LAST_ID];
-
-ALTER TABLE [last_query_results] ADD  DEFAULT (NULL) FOR [PICTURE_URL];
-
-ALTER TABLE [last_query_results] ADD  DEFAULT (NULL) FOR [CONTENT_TYPE];
-
-ALTER TABLE [log_entries] ADD  DEFAULT (NULL) FOR [HTTP_CODE];
-
-ALTER TABLE [log_entries] ADD  DEFAULT (NULL) FOR [EXCEPTION_CODE];
-
-ALTER TABLE [log_entries] ADD  DEFAULT (NULL) FOR [RESPONSE_SIZE];
-
-ALTER TABLE [overview_page] ADD  DEFAULT ((0)) FOR [IS_PUBLIC];
-
-ALTER TABLE [periods] ADD  DEFAULT (NULL) FOR [NAME];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [MONDAY];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [TUESDAY];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [WEDNESDAY];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [THURSDAY];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [FRIDAY];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [SATURDAY];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [SUNDAY];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [HOLIDAYS];
-
-ALTER TABLE [periods] ADD  DEFAULT ((0)) FOR [INCLUDE];
-
-ALTER TABLE [periods] ADD  DEFAULT (NULL) FOR [DATE];
-
-ALTER TABLE [queries] ADD  DEFAULT ((4)) FOR [ID_STATUS];
-
-ALTER TABLE [queries] ADD  DEFAULT (NULL) FOR [SOAP_URL];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_MAX_RESP_TIME];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_MIN_RESP_TIME];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_MAX_RESP_TIME_INSPIRE];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_MIN_RESP_TIME_INSPIRE];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_UNAVAILABILITY];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_UNAVAILABILITY_INSPIRE];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_FAILURE];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_FAILURE_INSPIRE];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_UNTESTED];
-
-ALTER TABLE [query_agg_hour_log_entries] ADD  DEFAULT ((0)) FOR [H1_UNTESTED_INSPIRE];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_MAX_RESP_TIME];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_MIN_RESP_TIME];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_MAX_RESP_TIME];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_MIN_RESP_TIME];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_UNAVAILABILITY];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_UNAVAILABILITY];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_FAILURE];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_FAILURE];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [SLA_UNTESTED];
-
-ALTER TABLE [query_agg_log_entries] ADD  DEFAULT ((0)) FOR [H24_UNTESTED];
-
-ALTER TABLE [query_validation_results] ADD  DEFAULT (NULL) FOR [SIZE_VALIDATION_RESULT];
-
-ALTER TABLE [query_validation_results] ADD  DEFAULT (NULL) FOR [RESPONSE_SIZE];
-
-ALTER TABLE [query_validation_results] ADD  DEFAULT (NULL) FOR [TIME_VALIDATION_RESULT];
-
-ALTER TABLE [query_validation_results] ADD  DEFAULT (NULL) FOR [DELIVERY_TIME];
-
-ALTER TABLE [query_validation_results] ADD  DEFAULT (NULL) FOR [XPATH_VALIDATION_RESULT];
-
-ALTER TABLE [query_validation_results] ADD  DEFAULT (NULL) FOR [XPATH_VALIDATION_OUTPUT];
-
-ALTER TABLE [query_validation_settings] ADD  DEFAULT ((0)) FOR [USE_SIZE_VALIDATION];
-
-ALTER TABLE [query_validation_settings] ADD  DEFAULT (NULL) FOR [NORM_SIZE];
-
-ALTER TABLE [query_validation_settings] ADD  DEFAULT (NULL) FOR [NORM_SIZE_TOLERANCE];
-
-ALTER TABLE [query_validation_settings] ADD  DEFAULT ((0)) FOR [USE_TIME_VALIDATION];
-
-ALTER TABLE [query_validation_settings] ADD  DEFAULT (NULL) FOR [NORM_TIME];
-
-ALTER TABLE [query_validation_settings] ADD  DEFAULT ((0)) FOR [USE_XPATH_VALIDATION];
-
-ALTER TABLE [query_validation_settings] ADD  DEFAULT (NULL) FOR [XPATH_EXPRESSION];
-
-ALTER TABLE [query_validation_settings] ADD  DEFAULT (NULL) FOR [XPATH_EXPECTED_OUTPUT];
-
-ALTER TABLE [sla] ADD  DEFAULT ((0)) FOR [EXCLUDE_WORST];
-
-ALTER TABLE [sla] ADD  DEFAULT ((0)) FOR [MEASURE_TIME_TO_FIRST];
-
-ALTER TABLE [users] ADD  DEFAULT (NULL) FOR [ID_ROLE];
-
-ALTER TABLE [users] ADD  DEFAULT (NULL) FOR [EXPIRATION];
-
-ALTER TABLE [users] ADD  DEFAULT ((1)) FOR [ENABLED];
-
-ALTER TABLE [users] ADD  DEFAULT ((0)) FOR [LOCKED];
+ALTER TABLE [users] ADD  DEFAULT '0' FOR [LOCKED];
 
 

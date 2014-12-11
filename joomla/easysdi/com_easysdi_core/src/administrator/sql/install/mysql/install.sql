@@ -468,9 +468,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_accessscope` (
 `entity_guid` VARCHAR(36)  NOT NULL ,
 `organism_id` INT(11) UNSIGNED   ,
 `user_id` INT(11) UNSIGNED   ,
+`category_id` INT(11) UNSIGNED   ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_accessscope_fk1` (`organism_id` ASC) ,
   INDEX `#__sdi_accessscope_fk2` (`user_id` ASC) ,
+  INDEX `#__sdi_accessscope_fk3` (`category_id` ASC) ,
   CONSTRAINT `#__sdi_accessscope_fk1`
     FOREIGN KEY (`organism_id`)
     REFERENCES `#__sdi_organism` (`id`)
@@ -479,6 +481,11 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_accessscope_fk2`
     FOREIGN KEY (`user_id`)
     REFERENCES `#__sdi_user` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_accessscope_fk3`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `#__sdi_category` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -1516,13 +1523,14 @@ CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 `language_id` INT(11) UNSIGNED ,
 `text1` VARCHAR(255)   ,
 `text2` VARCHAR(500) ,
+`text3` VARCHAR(255) ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_translation_fk1` (`language_id` ASC) ,
   CONSTRAINT `#__sdi_translation_fk1`
     FOREIGN KEY (`language_id` )
     REFERENCES `#__sdi_language` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
@@ -1606,8 +1614,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_application` (
 `alias` VARCHAR(50)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
+`modified_by` INT(11)  NULL ,
+`modified` DATETIME NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -1646,7 +1654,8 @@ CONSTRAINT `#__sdi_versionlink_fk2`
     FOREIGN KEY (`child_id` )
     REFERENCES `#__sdi_version` (`id` )
     ON DELETE CASCADE
-    ON UPDATE NO ACTION
+    ON UPDATE NO ACTION,
+CONSTRAINT #__sdi_versionlink_uk UNIQUE (parent_id, child_id)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
@@ -1669,8 +1678,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
 `parentboundupper` INT(10)  NOT NULL ,
 `childboundlower` INT(10)  NOT NULL ,
 `childboundupper` INT(10)  NOT NULL ,
-`class_id` INT(11) UNSIGNED NULL ,
-`attribute_id` INT(11) UNSIGNED  NULL ,
 `viralversioning` TINYINT(1)  NOT NULL ,
 `inheritance` TINYINT(1)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -1678,8 +1685,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_resourcetypelink_fk1` (`parent_id` ASC) ,
 INDEX `#__sdi_resourcetypelink_fk2` (`child_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk3` (`class_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
   CONSTRAINT `#__sdi_resourcetypelink_fk1`
     FOREIGN KEY (`parent_id` )
     REFERENCES `#__sdi_resourcetype` (`id` )
@@ -1688,16 +1693,6 @@ INDEX `#__sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
 CONSTRAINT `#__sdi_resourcetypelink_fk2`
     FOREIGN KEY (`child_id` )
     REFERENCES `#__sdi_resourcetype` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk3`
-    FOREIGN KEY (`class_id` )
-    REFERENCES `#__sdi_class` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk4`
-    FOREIGN KEY (`attribute_id` )
-    REFERENCES `#__sdi_attribute` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -1759,8 +1754,15 @@ INDEX `#__sdi_metadata_fk3` (`version_id` ASC) ,
 
 CREATE TABLE IF NOT EXISTS `#__sdi_catalog_resourcetype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`guid` VARCHAR(36) NOT NULL,
+`created_by` INT(11) NOT NULL,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`modified_by` INT(11),
+`modified` DATETIME,
 `ordering` INT(11)   ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11) NOT NULL DEFAULT '0',
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `catalog_id` INT(11) UNSIGNED  NOT NULL ,
 `resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`) ,
@@ -1793,7 +1795,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_assignment` (
 `assigned` DATETIME ,
 `assigned_by` INT(11) UNSIGNED  NOT NULL,
 `assigned_to` INT(11) UNSIGNED NOT NULL ,
-`version_id` INT(11) UNSIGNED NOT NULL ,
+`metadata_id` INT(11) UNSIGNED NOT NULL ,
 `text` VARCHAR (500),
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_assignment_fk1` (`assigned_by`) ,
@@ -1810,8 +1812,8 @@ INDEX `#__sdi_assignment_fk3` (`version_id`) ,
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
  CONSTRAINT `#__sdi_assignment_fk3`
-    FOREIGN KEY (`version_id` )
-    REFERENCES `#__sdi_version` (`id` )
+    FOREIGN KEY (`metadata_id` )
+    REFERENCES `#__sdi_metadata` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -2176,14 +2178,14 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `modified_by` INT(11)   ,
-`modified` DATETIME NOT NULL ,
+`modified` DATETIME NULL ,
 `ordering` INT(11)  NOT NULL DEFAULT '1',
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL DEFAULT '0' ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `version_id` INT(11) UNSIGNED NOT NULL ,
 `name` VARCHAR(255)  NOT NULL ,
-`description` VARCHAR(500)  NOT NULL ,
+`description` VARCHAR(500)  NULL ,
 `accessscope_id` INT(11) UNSIGNED NOT NULL ,
 `pricing_id` INT(11) UNSIGNED NOT NULL ,
 `deposit` VARCHAR(255)   ,
@@ -2239,7 +2241,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `modified_by` INT(11)   ,
-`modified` DATETIME NOT NULL ,
+`modified` DATETIME NULL ,
 `ordering` INT(11)  NOT NULL DEFAULT '1',
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL DEFAULT '0' ,
@@ -2251,7 +2253,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `thirdparty_id` INT(11) UNSIGNED  NULL ,
 `buffer` FLOAT(40,20)  NULL ,
 `surface` FLOAT(40,20)  NULL ,
-`remark` VARCHAR(500)  NOT NULL ,
+`remark` VARCHAR(500)  NULL ,
 `sent` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `completed` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `access` INT(10)  NOT NULL DEFAULT '1',
@@ -2288,11 +2290,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `order_id` INT(11) UNSIGNED NOT NULL ,
 `diffusion_id` INT(11) UNSIGNED NOT NULL ,
 `productstate_id` INT(11) UNSIGNED NOT NULL ,
-`remark` VARCHAR(500)  NOT NULL ,
-`fee` DECIMAL(10)  NOT NULL ,
-`completed` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`file` VARCHAR(500)  NOT NULL ,
-`size` DECIMAL(10)  NOT NULL ,
+`remark` VARCHAR(500)  NULL ,
+`fee` DECIMAL(10)  NULL ,
+`completed` DATETIME NULL DEFAULT '0000-00-00 00:00:00',
+`file` VARCHAR(500)  NULL ,
+`size` DECIMAL(10)  NULL ,
 `created_by` INT(11)  NOT NULL ,
 PRIMARY KEY (`id`),
   INDEX `#__sdi_order_diffusion_fk1` (`order_id` ASC) ,

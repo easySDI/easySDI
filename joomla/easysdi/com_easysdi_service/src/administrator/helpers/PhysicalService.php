@@ -42,15 +42,41 @@ abstract class PhysicalService {
     public function getCapabilities($rawXML = null) {
         $this->rawXml = $rawXML;
         if (!isset($rawXML)) {
+
+            //try to set compliance
+            try {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+                $query->select('sv.value as value');
+                $query->from('#__sdi_physicalservice_servicecompliance ssc');
+                $query->join('INNER', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id ');
+                $query->join('INNER', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id ');
+                $query->where('ssc.service_id = ' . (int) $this->id);
+                $query->order('sv.ordering DESC');
+                $db->setQuery($query);
+                $this->compliance = $db->loadResult();
+            } catch (Exception $e) {
+                $this->setError($e->getMessage());
+            }
+
+
             $completeUrl = $this->url . "?REQUEST=GetCapabilities&SERVICE=" . $this->connector;
             if (isset($this->compliance)) {
                 $completeUrl .= "&version=" . $this->compliance;
             }
 
             $session = curl_init($completeUrl);
+            $httpHeader = array();
+            // cURL obeys the RFCs as it should. Meaning that for a HTTP/1.1 backend if the POST size is above 1024 bytes
+            // cURL sends a 'Expect: 100-continue' header. The server acknowledges and sends back the '100' status code.
+            // cuRL then sends the request body. This is proper behaviour. Nginx supports this header.
+            // This allows to work around servers that do not support that header.
+            // We're emptying the 'Expect' header, saying to the server: please accept the body right now. 
+            $httpHeader [] = 'Expect:';
             if (!empty($this->user) && !empty($this->password)) {
-                curl_setopt($session, CURLOPT_HTTPHEADER, Array('Authorization: Basic ' . base64_encode($this->user . ':' . $this->password)));
+                $httpHeader[] = 'Authorization: Basic ' . base64_encode($this->user . ':' . $this->password);                
             }
+            curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
             curl_setopt($session, CURLOPT_HEADER, false);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);

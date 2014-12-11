@@ -75,6 +75,14 @@ class Easysdi_coreModelVersion extends JModelForm {
                 $result = $db->loadObject();
                 $this->_item->versioning = $result->versioning;
                 $this->_item->resourcename = $result->name;
+                
+                //Get metadatastate
+                $query = $db->getQuery(true)
+                        ->select('m.metadatastate_id')
+                        ->from('#__sdi_metadata m')
+                        ->where('m.version_id='.(int)$this->_item->id);
+                $db->setQuery($query);
+                $this->_item->metadatastate = (int)$db->loadResult();
 
                 //Allowed resourcetype as children
                 $query = $db->getQuery(true)
@@ -86,83 +94,7 @@ class Easysdi_coreModelVersion extends JModelForm {
                         ->where('r.id = ' . (int) $table->resource_id);
                 $db->setQuery($query);
                 $resourcetypechild = $db->loadRow();
-
-                //Get parents
-                $query = $db->getQuery(true)
-                        ->select('v.id as id, v.name as version, r.name as resource, rt.alias as resourcetype, ms.value as state')
-                        ->from('#__sdi_version v')
-                        ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
-                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                        ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
-                        ->where('vl.child_id = ' . (int) $table->id)
-                ;
-                $db->setQuery($query);
-                $this->_item->parents = $db->loadObjectList();
-
-                //Get children
-                $query = $db->getQuery(true)
-                        ->select('v.id as id, v.name as version,r.name as resource, rt.alias as resourcetype, ms.value as state')
-                        ->from('#__sdi_version v')
-                        ->innerJoin('#__sdi_versionlink vl ON vl.child_id = v.id')
-                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                        ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
-                        ->where('vl.parent_id = ' . (int) $table->id)
-                ;
-                $db->setQuery($query);
-                $this->_item->children = $db->loadObjectList();
-
-                //Get session
-                $app = JFactory::getApplication();
-                $data = $app->getUserState('com_easysdi_core.edit.version.data');
-                $this->_item->searchtype = (!empty($data['searchtype']))? $data['searchtype'] : null;
-                $this->_item->searchid = (!empty($data['searchid']))?$data['searchid'] : null;
-                $this->_item->searchname = (!empty($data['searchname']))?$data['searchname'] : null;
-                $this->_item->searchstate = (!empty($data['searchstate']))?$data['searchstate'] : null;
-                $this->_item->searchlast = (!empty($data['searchlast']))?$data['searchlast'] : null;
-
-                //Get search result
-                if (!empty($resourcetypechild)) {//No resourcetype can be child
-                    $run = $app->getUserState('com_easysdi_core.edit.version.runsearch');
-                    if (!empty($run)) {
-                        $query = $db->getQuery(true)
-                                ->select('v.id as id, v.name as version, r.name as resource, rt.alias as resourcetype, ms.value as state')
-                                ->from('#__sdi_version v')
-                                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                                ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                                ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
-                                ->where(' v.id <> ' . (int) $table->id)
-                                ->where('rt.id IN (' . implode(',', $resourcetypechild) . ')')
-                        ;
-                        if (!empty($this->_item->searchtype)) {
-                            $query->where('rt.id = ' . $this->_item->searchtype);
-                        }
-                        if (!empty($this->_item->searchid)) {
-                            $query->where('m.guid = "' . $this->_item->searchid .'"');
-                        }
-                        if (!empty($this->_item->searchname)) {
-                            $query->where('r.name LIKE "%' . $this->_item->searchname .'%"');
-                        }
-                        if (!empty($this->_item->searchstate)) {
-                            $query->where('m.metadatastate_id = ' . $this->_item->searchstate);
-                        }
-                        if (!empty($this->_item->children)) {
-                            $list = array();
-                            foreach ($this->_item->children as $child):
-                                $list[] = $child->id;
-                            endforeach;
-                            $query->where('v.id NOT IN (' . implode(',', $list) . ')');
-                        }
-
-                        $db->setQuery($query);
-                        $result = $db->loadObjectList();
-                        $this->_item->availablechildren = $result;
-                    }
-                }
+                $this->_item->resourcetypechild = !empty($resourcetypechild) ? implode(',', $resourcetypechild) : '0';
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -306,34 +238,37 @@ class Easysdi_coreModelVersion extends JModelForm {
         $table = $this->getTable();
         if ($table->save($data) === true) {
             $db = JFactory::getDbo();
-
-            //Delete recorded children
-            $query = $db->getQuery(true)
-                    ->delete('#__sdi_versionlink')
-                    ->where('parent_id = ' . (int) $table->id)
-            ;
-            $db->setQuery($query);
-            if (!$db->query()):
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_MSG_CANT_SAVE_VERSIONLINK'), 'error');
-                return false;
-            endif;
-
-            //Save selected children
-            $selectedchildren = json_decode($data['selectedchildren']);
-            if (!empty($selectedchildren)):
-                foreach ($selectedchildren as $child):
+            $error = false;
+            
+            //Delete selected children
+            $childrentoremove = json_decode($data['childrentoremove']);
+            if(!empty($childrentoremove)){
+                $query = $db->getQuery(true)
+                        ->delete('#__sdi_versionlink')
+                        ->where('child_id IN ('.implode(',', $childrentoremove).')');
+                $db->setQuery($query);
+                if(!$db->execute()){
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_MSG_CANT_SAVE_VERSIONLINK'), 'error');
+                    $error = true;
+                }
+            }
+            
+            //Add selected children
+            $childrentoadd = json_decode($data['childrentoadd']);
+            if(!empty($childrentoadd)){
+                foreach($childrentoadd as $child){
                     $obj_child = new stdClass();
                     $obj_child->parent_id = (int) $table->id;
                     $obj_child->child_id = $child;
-
-                    // Insert the object into the sdi_versionlink table.
-                    if (!JFactory::getDbo()->insertObject('#__sdi_versionlink', $obj_child)):
+                    
+                    if(!$db->insertObject('#__sdi_versionlink', $obj_child)){
                         JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_MSG_CANT_SAVE_VERSIONLINK'), 'error');
-                        return false;
-                    endif;
-                endforeach;
-            endif;
-            return $table->id;
+                        $error = true;
+                    }
+                }
+            }
+            
+            return $error ? false : $table->id;
         } else {
             return false;
         }

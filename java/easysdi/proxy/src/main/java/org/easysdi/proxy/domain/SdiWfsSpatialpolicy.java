@@ -79,6 +79,7 @@ public class SdiWfsSpatialpolicy implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiWfsSpatialpolicy")
+        @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiFeaturetypePolicy> getSdiFeaturetypePolicies() {
 		return this.sdiFeaturetypePolicies;
 	}
@@ -89,6 +90,7 @@ public class SdiWfsSpatialpolicy implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiWfsSpatialpolicy")
+        @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiPhysicalservicePolicy> getSdiPhysicalservicePolicies() {
 		return this.sdiPhysicalservicePolicies;
 	}
@@ -99,6 +101,7 @@ public class SdiWfsSpatialpolicy implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiWfsSpatialpolicy")
+        @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiPolicy> getSdiPolicies() {
 		return this.sdiPolicies;
 	}

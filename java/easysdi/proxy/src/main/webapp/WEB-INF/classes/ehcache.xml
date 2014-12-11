@@ -7,7 +7,7 @@
 		VM. The following properties are translated: user.home - User's home directory user.dir - User's current working directory java.io.tmpdir - Default
 		temp file path
 	-->
-	<diskStore path="C:\Resources\ProxyCache" />
+	<diskStore path="D:\ProxyCache" />
 
 
 	<!--
@@ -118,11 +118,11 @@
 	<cache 
 		name="operationBasedCache" 
 		maxElementsInMemory="10000" 
-		diskPersistent="false" 
+		diskPersistent="true" 
 		timeToLiveSeconds="1200" 
-		overflowToDisk="false"
+		overflowToDisk="true"
 		memoryStoreEvictionPolicy="LFU" 
 		clearOnFlush="true" 
-		eternal="true" />
+		eternal="false" />
 
 </ehcache>

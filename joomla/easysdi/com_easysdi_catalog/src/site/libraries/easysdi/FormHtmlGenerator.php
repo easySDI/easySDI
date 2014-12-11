@@ -3,6 +3,7 @@
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumLayerName.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumServiceConnector.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRelationScope.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
 
@@ -75,6 +76,7 @@ class FormHtmlGenerator {
 
     function __construct(JForm $form, DOMDocument $structure, $ajaxXpath = null) {
         $this->form = $form;
+        $structure->preserveWhiteSpace = false;
         $this->structure = $structure;
         $this->ldao = new SdiLanguageDao();
         $this->nsdao = new SdiNamespaceDao();
@@ -157,17 +159,17 @@ class FormHtmlGenerator {
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATIONTYPE:
                     $searchField = $this->getAttribute($parent);
-
                     $parentHtml->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     break;
             }
         }
 
-        foreach ($this->domXpathStr->query($query, $parent) as $child) {
+        foreach ($this->domXpathStr->query($query, $parent) as $index => $child) {
+            $exist = $child->getAttributeNS($this->catalog_uri, 'exist');
 
             switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATION:
-                    if (($child->getAttributeNS($this->catalog_uri, 'lowerbound') - $child->getAttributeNS($this->catalog_uri, 'upperbound')) != 0 && $child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -180,8 +182,6 @@ class FormHtmlGenerator {
                     }
                     break;
                 case EnumChildtype::$ATTRIBUT:
-                    $parentname = $parent->nodeName;
-                    $childName = $child->nodeName;
                     if ($child->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEMET) {
                         if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
                             $field = $this->getAttribute($child);
@@ -198,15 +198,23 @@ class FormHtmlGenerator {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
-                    $searchField = $this->getAttribute($child);
+
                     $fieldset = $this->getFieldset($child);
 
-                    $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                    $searchField = $this->getAttribute($child);
+                    if ($fieldset->getElementsByTagName('div')->length > 0) {
+                        $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                    }
+
+                    /* if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                      $searchField = $this->getAttribute($child);
+                      $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                      } */
 
 
                     $parentInner->appendChild($fieldset);
 
-                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                    if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
                         $this->recBuildForm($child, $fieldset);
                     }
                     break;
@@ -225,10 +233,12 @@ class FormHtmlGenerator {
      */
     private function getAction(DOMElement $relation) {
 
+
         $lowerbound = $relation->getAttributeNS($this->catalog_uri, 'lowerbound');
         $upperbound = $relation->getAttributeNS($this->catalog_uri, 'upperbound');
         $exist = $relation->getAttributeNS($this->catalog_uri, 'exist');
         $level = $relation->getAttributeNS($this->catalog_uri, 'level');
+        $guid = $relation->getAttributeNS($this->catalog_uri, 'id');
 
         switch ($relation->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
@@ -240,34 +250,34 @@ class FormHtmlGenerator {
                 break;
         }
 
-        $occurance = $this->domXpathStr->query($this->removeIndex($relation->getNodePath()))->length;
-
-        //$debug = '[oc:' . $occurance . ' lb:' . $lowerbound . ' ub:' . $upperbound . '][' . $relation->nodeName . ']';
-        $debug = '';
-
         $aAdd = $this->formHtml->createElement('a');
-        $aAdd->setAttribute('id', 'add-btn-' . FormUtils::serializeXpath($relation->getNodePath()));
-        $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn add-btn-' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())));
-        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())) . '\',' . $relid . ', \'' . FormUtils::serializeXpath($relation->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
-
-        if ($exist == 1) {
-            if ($upperbound <= $occurance) {
-                $aAdd->setAttribute('style', 'display:none;');
-            }
-        }
+        $aAdd->setAttribute('id', 'add-btn' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())) . '-' . $guid);
+        $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn');
+        $aAdd->setAttribute('data-relid', $relid);
+        $aAdd->setAttribute('data-parentpath', FormUtils::serializeXpath($relation->parentNode->getNodePath()));
+        $aAdd->setAttribute('data-lowerbound', $lowerbound);
+        $aAdd->setAttribute('data-upperbound', $upperbound);
 
         $iAdd = $this->formHtml->createElement('i');
         $iAdd->setAttribute('class', 'icon-white icon-plus-2');
 
         $divOuter = $this->formHtml->createElement('div');
-        $divOuter->setAttribute('id', 'outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
-        $divOuter->setAttribute('class', 'outer-' . $level . ' outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
+        $divOuter->setAttribute('id', 'outer-fds' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())));
+        $divOuter->setAttribute('class', 'outer-' . $level);
 
-        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')) . ' ' . $debug);
-        $divAction->setAttribute('class', 'action-' . $level);
+        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')));
+        $divAction->setAttribute('class', 'action');
 
-        $aAdd->appendChild($iAdd);
-        $divAction->appendChild($aAdd);
+        if ($firstChild = $this->getFirstNonTextChild($relation->childNodes)) {
+
+            if (!$firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
+                $aAdd->appendChild($iAdd);
+                $divAction->appendChild($aAdd);
+            }
+        } else {
+            $aAdd->appendChild($iAdd);
+            $divAction->appendChild($aAdd);
+        }
 
         return $divAction;
     }
@@ -285,75 +295,78 @@ class FormHtmlGenerator {
     private function getFieldset(DOMElement $element) {
         $lowerbound = $element->getAttributeNS($this->catalog_uri, 'lowerbound');
         $upperbound = $element->getAttributeNS($this->catalog_uri, 'upperbound');
-        $occurance = $this->domXpathStr->query($this->removeIndex($element->getNodePath()))->length;
-        $index = $element->getAttributeNS($this->catalog_uri, 'index');
-        $exist = $element->getAttributeNS($this->catalog_uri, 'exist');
         $guid = $element->getAttributeNS($this->catalog_uri, 'id');
+
+        $exist = $element->getAttributeNS($this->catalog_uri, 'exist');
+
         $legendAttribute = $element->getAttributeNS($this->catalog_uri, 'legend');
         $level = $element->getAttributeNS($this->catalog_uri, 'level');
+        $scopeId = $element->getAttributeNS($this->catalog_uri, 'scopeId');
+        
 //        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $aCollapse = $this->formHtml->createElement('a');
-        $aCollapse->setAttribute('id', 'collapse-btn-' . FormUtils::serializeXpath($element->getNodePath()));
+        $aCollapse->setAttribute('id', 'collapse-btn' . FormUtils::serializeXpath($element->getNodePath()));
         $aCollapse->setAttribute('class', 'btn btn-mini collapse-btn');
-        $aCollapse->setAttribute('onclick', 'collapse(this.id)');
 
         $iCollapse = $this->formHtml->createElement('i');
         $iCollapse->setAttribute('class', 'icon-white icon-arrow-down');
 
         $aRemove = $this->formHtml->createElement('a');
-        $aRemove->setAttribute('id', 'remove-btn-' . FormUtils::serializeXpath($element->getNodePath()));
-        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
-        $aRemove->setAttribute('onclick', 'confirmFieldset(this.id, \'' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '\' , ' . $lowerbound . ',' . $upperbound . ')');
+        $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
+        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn');
+        $aRemove->setAttribute('data-lowerbound', $lowerbound);
+        $aRemove->setAttribute('data-upperbound', $upperbound);
+        $aRemove->setAttribute('data-xpath', FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid);
 
         $iRemove = $this->formHtml->createElement('i');
         $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
 
-        $divOuter = $this->formHtml->createElement('div');
-        $divOuter->setAttribute('id', 'outer-fds-' . FormUtils::serializeXpath($element->getNodePath()));
-        $divOuter->setAttribute('class', ' outer-' . $level . ' outer-fds-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
-
         $fieldset = $this->formHtml->createElement('fieldset');
-        $fieldset->setAttribute('id', 'fds-' . FormUtils::serializeXpath($element->getNodePath()));
+        $class = array();
+        switch ($scopeId) {
+            case EnumRelationScope::HIDDEN:
+                $class[] = 'scope-hidden';
+                break;
+            
+            case EnumRelationScope::VISIBLE:
+                $class[] = 'scope-visible';
+                break;
+        }
 
         if ($guid != '') {
-            $spanLegend = $this->formHtml->createElement('span', EText::_($guid));
+            $spanLegend = $this->formHtml->createElement('span', EText::_($guid)); //
         } else {
             $spanLegend = $this->formHtml->createElement('span', JText::_($legendAttribute));
         }
 
-        $spanLegend->setAttribute('class', 'legend-' . $level);
+        $spanLegend->setAttribute('class', 'legend');
         $legend = $this->formHtml->createElement('legend');
 
         $divInner = $this->formHtml->createElement('div');
-        $divInner->setAttribute('id', 'inner-fds-' . FormUtils::serializeXpath($element->getNodePath()));
+        $divInner->setAttribute('id', 'inner-fds' . FormUtils::serializeXpath($element->getNodePath()));
         $divInner->setAttribute('class', 'inner-fds');
         if (!isset($_GET['relid'])) {
             $divInner->setAttribute('style', 'display:none;');
         }
 
-        $divBottom = $this->formHtml->createElement('div');
-        $divBottom->setAttribute('id', 'bottom-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
-
         if ($exist == 1) {
+            $fieldset->setAttribute('id', 'fds' . FormUtils::serializeXpath($element->getNodePath()));
+            $class[] = 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid;
+
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
             $legend->appendChild($spanLegend);
-            if ($lowerbound < $occurance) {
-                $aRemove->appendChild($iRemove);
-                $legend->appendChild($aRemove);
-            }
+            $aRemove->appendChild($iRemove);
+            $legend->appendChild($aRemove);
+
             $fieldset->appendChild($legend);
             $fieldset->appendChild($divInner);
-
-            $divOuter->appendChild($fieldset);
         }
-
-        if ($index == $occurance) {
-            $divOuter->appendChild($divBottom);
-        }
-
-        return $divOuter;
+        
+        $fieldset->setAttribute('class', implode(' ', $class));
+       
+        return $fieldset;
     }
 
     /**
@@ -383,41 +396,62 @@ class FormHtmlGenerator {
      */
     private function getAttribute(DOMElement $attribute) {
 
-        $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        $languages = $this->ldao->getSupported();
+        // retrieve user data
+        $user = new sdiUser();
+        $userParams = json_decode($user->juser->params);
+        $userLanguageIndex = 0;
+
+        if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
+            $upperbound = 1;
+        } else {
+            $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        }
+
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
-
-        $languages = $this->ldao->getSupported();
-        if ($upperbound > 1) {
-            $showButton = true;
-        } else {
-            $showButton = false;
-        }
+        $scopeId = $attribute->getAttributeNS($this->catalog_uri, 'scopeId');
 
         $attributeGroup = $this->formHtml->createElement('div');
-        if($rendertypeId == 1000){
-            $attributeGroup->setAttribute('class', 'hidden attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
-        }else{
-            $attributeGroup->setAttribute('class', 'attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
+        $class = array('attribute-group');
+        if ($rendertypeId == 1000) {
+            $class[] = 'scope-hidden';
+            $class[] = 'attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath()));
+        } else {
+            $class[] = 'attribute-group' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath()));
         }
         
-        $attributeGroup->setAttribute('id', 'attribute-group-' . FormUtils::serializeXpath($attribute->getNodePath()));
+        if($scopeId == EnumRelationScope::HIDDEN){
+            $class[] = 'scope-hidden';
+        }
+        
+        $attributeGroup->setAttribute('class', implode(' ', $class));
+
+        $attributeGroup->setAttribute('id', 'attribute-group' . FormUtils::serializeXpath($attribute->getNodePath()));
+
+        if ($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1)) {
+            $attributeGroup->appendChild($this->getAttributeAction($attribute));
+        }
 
         switch ($stereotypeId) {
             case EnumStereotype::$GEMET:
             case EnumStereotype::$LOCALE:
                 if ($stereotypeId == EnumStereotype::$GEMET) {
                     $attributeGroup->appendChild($this->getGemet($attribute));
-                    $showButton = false;
+                } elseif ($stereotypeId == EnumStereotype::$LOCALE) {
+                    $class = $attributeGroup->getAttribute('class') . ' i18n';
+                    $attributeGroup->setAttribute('class', $class);
                 }
 
                 $nodePath = $attribute->firstChild->getNodePath();
                 $jfield = $this->form->getField(FormUtils::serializeXpath($nodePath));
-                foreach ($this->buildField($attribute, $jfield, $showButton) as $element) {
+
+                foreach ($this->buildField($attribute, $jfield) as $element) {
                     $attributeGroup->appendChild($element);
                 }
 
                 foreach ($languages as $key => $value) {
+
                     $jfield = $this->form->getField(FormUtils::serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
                     if ($jfield) {
                         foreach ($this->buildField($attribute, $jfield) as $element) {
@@ -428,8 +462,21 @@ class FormHtmlGenerator {
 
                 if ($stereotypeId == EnumStereotype::$GEMET) {
 
-                    foreach ($this->domXpathFormHtml->query('descendant::div[@class="control-group"][position()>1]', $attributeGroup) as $control_group) {
-                        $control_group->setAttribute('style', 'height:0px; opacity:0;');
+                    $cnt = 0;
+                    foreach ($this->ldao->getAll() as $key => $value) {
+                        if (strpos($userParams->language, $key)) {
+                            $userLanguageIndex = $cnt;
+                            break;
+                        }
+                        $cnt++;
+                    }
+
+                    $cnt = 0;
+                    foreach ($this->domXpathFormHtml->query('descendant::div[@class="control-group"][position()>0]', $attributeGroup) as $control_group) {
+                        if ($cnt != $userLanguageIndex) {
+                            $control_group->setAttribute('style', 'display: none;');
+                        }
+                        $cnt++;
                     }
 
                     foreach ($this->domXpathFormHtml->query('descendant::select', $attributeGroup) as $select) {
@@ -447,12 +494,11 @@ class FormHtmlGenerator {
             default:
                 if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
                     $nodePath = $attribute->getNodePath();
-                    $showButton = false;
                 } else {
                     $nodePath = $attribute->firstChild->getNodePath();
                 }
 
-                $nbrOccurance = 0;
+                $occurance = 0;
 
                 switch ($rendertypeId) {
                     case EnumRendertype::$CHECKBOX:
@@ -460,16 +506,34 @@ class FormHtmlGenerator {
                         $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
                         $fieldid = $jfield->__get('id');
                         $query = 'descendant::*[@id="' . $fieldid . '"]';
-                        $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
+                        $occurance = $this->domXpathFormHtml->query($query)->length;
                         break;
                     case EnumRendertype::$LIST:
                         // Mutiple list
                         if ($upperbound > 1) {
-                            $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+                            switch ($stereotypeId) {
+                                case EnumStereotype::$BOUNDARY:
+                                    $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath), 12, 15));
+                                    break;
+
+                                default:
+                                    /* if (!empty($this->ajaxXpath)) {
+                                      $path = explode('/', $nodePath);
+                                      $lastPart = $path[count($path) - 1];
+                                      unset($path[count($path) - 1]);
+                                      $xpath = explode('[', $lastPart);
+                                      $newPath = implode('/', $path) . '/' . $xpath[0];
+
+                                      $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
+                                      } */
+                                    $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+                                    break;
+                            }
+
                             $fieldid = $jfield->__get('id');
                             $query = 'descendant::*[@id="' . $fieldid . '"]';
-                            $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
-                            $showButton = false;
+                            $occurance = $this->domXpathFormHtml->query($query)->length;
+
                             // Single list
                         } else {
                             $jfield = $this->form->getField(FormUtils::serializeXpath($nodePath));
@@ -481,8 +545,9 @@ class FormHtmlGenerator {
                 }
 
                 if ($jfield) {
-                    if ($nbrOccurance < 1) {
-                        foreach ($this->buildField($attribute, $jfield, $showButton) as $element) {
+
+                    if ($occurance < 1) {
+                        foreach ($this->buildField($attribute, $jfield) as $element) {
                             $attributeGroup->appendChild($element);
                         }
                     }
@@ -499,7 +564,6 @@ class FormHtmlGenerator {
                 $attributeGroup->appendChild($this->getMap($attribute, $map_id));
             }
         }
-
         return $attributeGroup;
     }
 
@@ -536,13 +600,13 @@ class FormHtmlGenerator {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('m.srs, m.unit_id, m.maxresolution, m.restrictedextent, m.zoom, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.`alias` as unit_alias');
+        $query->select('m.srs, m.unit_id, m.maxresolution, m.restrictedextent, m.zoom, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.alias as unit_alias');
         $query->from('#__sdi_map as m');
         $query->innerJoin('#__sdi_map_layergroup mlg ON m.id = mlg.map_id');
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
         $query->innerJoin('#__sdi_maplayer l ON l.id = llg.layer_id');
         $query->innerJoin('#__sdi_sys_unit u ON u.id = m.unit_id');
-        $query->where('m.id=' . (int)$map_id);
+        $query->where('m.id=' . (int) $map_id);
         $query->where('mlg.isbackground = 1');
 
         $this->db->setQuery($query);
@@ -553,12 +617,12 @@ class FormHtmlGenerator {
             case 'physical':
                 $query->select('resourceurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_physicalservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . (int) $map_config->service_id);
                 break;
             case 'virtual':
                 $query->select('url, reflectedurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_virtualservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . (int) $map_config->service_id);
                 break;
         }
 
@@ -581,19 +645,19 @@ class FormHtmlGenerator {
                     case EnumLayerName::$TERRAIN:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Physicial',
-                                                {type: G_PHYSICAL_MAP}
+                                                {type: google.maps.MapTypeId.TERRAIN}
                                             );";
                         break;
                     case EnumLayerName::$SATELLITE:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Satellite',
-                                                {type: G_SATELLITE_MAP, numZoomLevels: 22}
+                                                {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
                                             );";
                         break;
-                    case EnumLayerName::$HYBRIDE:
+                    case EnumLayerName::$HYBRID:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Hybrid',
-                                                {type: G_HYBRID_MAP, numZoomLevels: 20}
+                                                {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
                                             );";
                         break;
                 }
@@ -605,19 +669,19 @@ class FormHtmlGenerator {
                 $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Bing({
                                         name: 'Bing',
                                         key: apiKey,
-                                        type: " . $map_config->layername . "
+                                        type: '" . $map_config->layername . "'
                                     });";
                 break;
             case EnumServiceConnector::$WMS:
                 $layer_definition = "layer_$parent_path = new OpenLayers.Layer.WMS( 'WMS name',
-                                    " . $service->serviceurl . ",
-                                    {layers: " . $map_config->layername . "});";
+                                    '" . $service->serviceurl . "',
+                                    {layers: '" . $map_config->layername . "'});";
                 break;
             case EnumServiceConnector::$WMTS:
                 $layer_definition = "layer_$parent_path = new OpenLayers.Layer.WMTS({
                                         name: 'Couche WMTS',
-                                        url: " . $service->serviceurl . ",
-                                        layer: " . $map_config->layername . ",
+                                        url: '" . $service->serviceurl . "',
+                                        layer: '" . $map_config->layername . "',
                                         matrixSet: " . $map_config->asOLmatrixset . ",
                                         style: " . $map_config->asOLstyle . ",
                                         " . $map_config->asOLoptions . "
@@ -664,19 +728,19 @@ class FormHtmlGenerator {
 
                                 map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
 
-                                    var psource = new proj4.Proj(\"" . $map_config->srs . "\");
-                                    var pdest   = new proj4.Proj(\"EPSG:4326\");
+                                    var psource = new Proj4js.Proj(\"" . $map_config->srs . "\");
+                                    var pdest   = new Proj4js.Proj(\"EPSG:4326\");
 
                     ";
 
 
         if (!empty($map_config->centercoordinates) && !empty($map_config->zoom)) {
             $script->nodeValue .= "
-                                    var centercoord = new proj4.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
+                                    var centercoord = new Proj4js.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
                                     map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y), $map_config->zoom);";
         } else if (!empty($map_config->centercoordinates)) {
             $script->nodeValue .= "
-                                    var centercoord = new proj4.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
+                                    var centercoord = new Proj4js.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
                                     map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y));";
         } else {
             $script->nodeValue .= "map_$parent_path.zoomToMaxExtent(); ";
@@ -691,7 +755,7 @@ class FormHtmlGenerator {
 
                                 map_$parent_path.addControl(polygonControl_$parent_path);
 
-                               drawBB('$parent_path');
+                               setTimeout(function(){drawBB('$parent_path');}, 2000);
 
                                polygonLayer_$parent_path.events.register('featureadded', polygonLayer_$parent_path, function(e) {
                                     polygonControl_$parent_path.deactivate();
@@ -699,14 +763,14 @@ class FormHtmlGenerator {
 
                                     var bounds = e.feature.geometry.getBounds();
 
-                                    var source = new proj4.Proj(map_" . $parent_path . ".getProjection());
-                                    var dest   = new proj4.Proj(\"EPSG:4326\");
+                                    var source = new Proj4js.Proj(map_" . $parent_path . ".getProjection());
+                                    var dest   = new Proj4js.Proj(\"EPSG:4326\");
 
-                                    var bottom_left = new proj4.Point(bounds.left, bounds.bottom);
-                                    var top_right = new proj4.Point(bounds.right, bounds.top);
+                                    var bottom_left = new Proj4js.Point(bounds.left, bounds.bottom);
+                                    var top_right = new Proj4js.Point(bounds.right, bounds.top);
 
-                                    proj4.transform(source, dest, bottom_left);
-                                    proj4.transform(source, dest, top_right);
+                                    Proj4js.transform(source, dest, bottom_left);
+                                    Proj4js.transform(source, dest, top_right);
 
                                     js('#jform_" . $parent_path . "_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', top_right.y);
                                     js('#jform_" . $parent_path . "_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', bottom_left.y);
@@ -741,12 +805,22 @@ class FormHtmlGenerator {
      * @return DOMElement
      */
     private function getGemet(DOMElement $attribute) {
+        // predefine default language
+        $default = $this->ldao->getDefaultLanguage()->gemet;
+
+        // retrieve user data
+        $user = new sdiUser();
+        $userParams = json_decode($user->juser->params);
+
+        // build languages array
         $languages = array();
         foreach ($this->ldao->getAll() as $language) {
-            $languages[] = '\'' . $language->gemet . '\'';
-        }
+            $languages[] = "'{$language->gemet}'";
 
-        $default = $this->ldao->getDefaultLanguage();
+            // if match, override default language
+            if ($language->code == $userParams->language)
+                $default = $language->gemet;
+        }
 
         $parent_path = str_replace('-', '_', FormUtils::serializeXpath($attribute->parentNode->getNodePath()));
         $div = $this->formHtml->createElement('div');
@@ -756,91 +830,99 @@ class FormHtmlGenerator {
 
         $script_code = "js = jQuery.noConflict();
 
-                                js('document').ready(function() {
+        js('document').ready(function() {
 
-                                var languages = new Array(" . implode(',', $languages) . ");
-                                var index = '';
-                                if(js('#jform_" . $parent_path . "_sla_gmd_dp_keyword_sla_gco_dp_CharacterString').length == 0){
-                                     index = '_la_1_ra_';
-                                }
+            var languages = new Array(" . implode(',', $languages) . ");
+            var index = '';
+            if(js('#jform_" . $parent_path . "_sla_gmd_dp_keyword_sla_gco_dp_CharacterString').length == 0){
+                 index = '_la_1_ra_';
+            }
 
-                                // path to Ext images
-                                Ext.BLANK_IMAGE_URL = 'http://gis.bnhelp.cz/wwwlibs/ext/ext3/resources/images/default/s.gif';
+            // path to Ext images
+            Ext.BLANK_IMAGE_URL = 'http://gis.bnhelp.cz/wwwlibs/ext/ext3/resources/images/default/s.gif';
 
-                                // sets the user interface language
-                                HS.setLang('" . $default->gemet . "');
+            // sets the user interface language
+            HS.setLang('" . $default . "');
 
-                                Ext.onReady(function() {
+            var writeTerms = function(result) {
 
-                                    var thes = new ThesaurusReader({
-                                        appPath: '". JUri::base() ."administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
-                                        lang: '" . $default->gemet . "',
-                                        outputLangs: [" . implode(',', $languages) . "],
-                                        title: 'GEMET Thesaurus',
-                                        separator: ' > ',
-                                        returnPath: true,
-                                        returnInspire: true,
-                                        width: 520, height: 300,
-                                        layout: 'fit',
-                                        proxy: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
-                                        handler: writeTerms
-                                    });
+                for(var i=0; i < languages.length; i++){
+                    var paths = result.terms[languages[i]].split('>');
+                    var keyword = paths[paths.length - 1];
+                    var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
 
-                                    thes.render('gemet');
-                                });
+                    if(i==0){
+                        var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
+                        var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
 
+                    }else{
+                        var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                        var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
+                    }
+                    current_select.append(option_string);
+                    current_select.trigger('liszt:updated');
+                    current_div.attr('style','width: 0px');
 
-                                    js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString').on('change',function(evt, params){
+                    addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
+                }
+            }
 
-                                                var id_default = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('id');
-                                                var index_number = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('index');
+            Ext.onReady(function() {
 
-                                                for(var i=1; i < languages.length; i++){
-                                                    var id_i18n = id_default.replace('_sla_gco_dp_CharacterString','_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
-                                                    js('option[id=\''+id_i18n+'\']').remove();
-                                                    js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()).trigger('liszt:updated');
-                                                }
+                var thes = new ThesaurusReader({
+                    appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
+                    lang: '" . $default . "',
+                    outputLangs: [" . implode(',', $languages) . "],
+                    title: '" . JText::_('COM_EASYSDI_CATALOG_GEMET_THESAURUS_TITLE') . "',
+                    separator: ' > ',
+                    returnPath: true,
+                    returnInspire: true,
+                    width: 520, height: 300,
+                    layout: 'fit',
+                    proxy: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
+                    handler: writeTerms
+                });
 
-                                                removeFromStructure('" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
+                thes.render('gemet');
 
-                                    });
+                // HACK TO FIX RENDER
+                js('#ext-gen10').css('width', 'auto');
+                js('html').remove('#gemet #ext-comp-1002-xcollapsed');
+            });
 
+            js('select[id^=jform_{$parent_path}_sla_gmd_dp_keyword]').on('change',function(evt, params){
+                if(params.deselected){
+                    var opt = js('select[id^=jform_{$parent_path}_sla_gmd_dp_keyword] option[value=\"'+params.deselected+'\"]');
+                    
+                    var index_number = opt[0].index;
+                    
+                    for(var i=0; i<languages.length; i++){
+                        if(i == 0){
+                            var select = js('#jform_{$parent_path}_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
+                        }
+                        else{
+                            var select = js('#jform_{$parent_path}_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                        }
+                        
+                        js('#'+select[0][index_number].id).remove();
+                        js('#'+select[0].id).trigger('liszt:updated');
+                    }
+                    
+                    removeFromStructure('" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
+                }
+            });
 
-
-                                var writeTerms = function(result) {
-
-                                    for(var i=0; i < languages.length; i++){
-                                        var paths = result.terms[languages[i]].split('>');
-                                        var keyword = paths[paths.length - 1];
-                                        var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
-
-                                        if(i==0){
-                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
-                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
-
-                                        }else{
-                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
-                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
-                                        }
-                                        current_select.append(option_string);
-                                        current_select.trigger('liszt:updated');
-                                        current_div.attr('style','width: 0px');
-
-                                        addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
-                                    }
-                                }
-
-                            });";
+        });";
 
         $script->nodeValue = $script_code;
 
-        $aModal = $this->formHtml->createElement('a', JText::_('COM_EASYSDI_CATALOGE_THESAURUS_GEMET'));
+        $aModal = $this->formHtml->createElement('a', JText::_('COM_EASYSDI_CATALOG_THESAURUS_GEMET'));
         $aModal->setAttribute('data-toggle', 'modal');
         $aModal->setAttribute('href', '#myModal');
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
 
         $divModal = $this->formHtml->createElement('div');
-        $divModal->setAttribute('class', 'modal fade hide');
+        $divModal->setAttribute('class', 'modal fade hide ext-strict');
         $divModal->setAttribute('id', 'myModal');
         $divModal->setAttribute('tabindex', '-1');
         $divModal->setAttribute('role', 'dialog');
@@ -862,7 +944,7 @@ class FormHtmlGenerator {
         $btnClose->setAttribute('data-dismiss', 'modal');
         $btnClose->setAttribute('aria-hidden', 'true');
 
-        $h4 = $this->formHtml->createElement('h4', JText::_('COM_EASYSDI_CATALOGE_THESAURUS_GEMET'));
+        $h4 = $this->formHtml->createElement('h4', JText::_('COM_EASYSDI_CATALOG_THESAURUS_GEMET'));
         $h4->setAttribute('class', 'modal-title');
 
         $divBody = $this->formHtml->createElement('div');
@@ -902,11 +984,13 @@ class FormHtmlGenerator {
      * @param boolean $addButton Defines whether the "Add" button must be created.
      * @return DOMElement[]
      */
-    private function buildField(DOMElement $attribute, $field, $addButton = FALSE) {
+    private function buildField(DOMElement $attribute, $field) {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
+        $occurance = $this->domXpathStr->query($attribute->getNodePath())->length;
 
         $elements = array();
 
@@ -924,12 +1008,13 @@ class FormHtmlGenerator {
         }
 
         $control->appendChild($this->getInput($field));
-        if ($addButton) {
-            $control->appendChild($this->getAttributeAction($attribute));
-        }
 
         $controlGroup->appendChild($controlLabel);
         $controlGroup->appendChild($control);
+
+        if ($occurance < $lowerbound) {
+            $controlGroup->appendChild($this->getAttributeRemoveAction($attribute));
+        }
 
         if ($stereotypeId == EnumStereotype::$FILE) {
             $jfieldhidden = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
@@ -945,9 +1030,9 @@ class FormHtmlGenerator {
 
         $elements[] = $controlGroup;
 
-        $elements[] = $this->getInputScript($field, $guid);
+        //$elements[] = $this->getInputScript($field, $guid);
 
-        if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) {
+        if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1 && $stereotypeId != EnumStereotype::$BOUNDARY) {
             $elements[] = $this->getMultiSelectScript($field, $attribute);
         }
 
@@ -976,6 +1061,21 @@ class FormHtmlGenerator {
         $imported = $this->formHtml->importNode($cloned, TRUE);
 
         return $imported;
+    }
+
+    /**
+     * Import the HTML structure of the label in a DOMElement.
+     *
+     * @author Depth S.A.
+     * @since 4.2
+     *
+     * @param JField $field The Joomla JField
+     * @return DOMElement
+     */
+    private function getLabelText($field) {
+        $element = $this->getLabel($field);
+
+        return $element->nodeValue;
     }
 
     /**
@@ -1012,7 +1112,7 @@ class FormHtmlGenerator {
         $script_content = "js = jQuery.noConflict();
 
                     js('document').ready(function() {
-                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . addslashes(EText::_($guid, 2)) . "\"});
+                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . preg_replace('/(\r\n|\n|\r)/', '<br/>', addslashes(EText::_($guid, 2, null))) . "\"});
                     });";
 
         $script = $this->formHtml->createElement('script', $script_content);
@@ -1033,9 +1133,8 @@ class FormHtmlGenerator {
     private function getMultiSelectScript($field, DOMElement $attribute) {
 
         $script_content = "js = jQuery.noConflict();
-
-                            js('#" . $field->__get('id') . "').chosen().change(function(e, params) {
-
+                            js('#" . $field->__get('id') . "').on('change',function(e, params) {
+                                
                                 if(params.selected != null){
                                     addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
                                 }else{
@@ -1043,6 +1142,7 @@ class FormHtmlGenerator {
                                 }
 
                             });";
+
 
         $script = $this->formHtml->createElement('script', $script_content);
         $script->setAttribute('type', 'text/javascript');
@@ -1064,29 +1164,44 @@ class FormHtmlGenerator {
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
 
-        $debug = ' [oc: lb:' . $lowerbound . ' ub:' . $upperbound . ']';
-        $action = $this->formHtml->createElement('div', 'attribute actions' . $debug);
+        $action = $this->formHtml->createElement('div');
+        $action->setAttribute('id', 'attribute-action' . FormUtils::serializeXpath($attribute->getNodePath()));
+        $action->setAttribute('class', 'attribute-action attribute-action' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
+        $action->setAttribute('data-lowerbound', $lowerbound);
+        $action->setAttribute('data-upperbound', $upperbound);
+        $action->setAttribute('data-relid', $relid);
+        $action->setAttribute('data-parentpath', FormUtils::serializeXpath($attribute->parentNode->getNodePath()));
+        $action->setAttribute('data-button-class', FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
 
         $aAdd = $this->formHtml->createElement('a');
+        $aAdd->setAttribute('id', 'attribute-add-btn' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
+        $aAdd->setAttribute('class', 'btn btn-success pull-right btn-mini attribute-add-btn');
+        $aAdd->setAttribute('style', 'display:none');
+
         $iAdd = $this->formHtml->createElement('i');
+        $iAdd->setAttribute('class', 'icon-white icon-plus-2');
 
-        if (isset($_GET['relid'])) {
-            $aAdd->setAttribute('id', 'remove-btn-' . FormUtils::serializeXpath($attribute->getNodePath()));
-            $aAdd->setAttribute('class', 'btn btn-danger btn-mini remove-btn remove-btn-' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
-            $aAdd->setAttribute('onclick', 'confirmField(this.id, \'' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())) . '\',' . $relid . ', \'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
+        $aRemove = $this->formHtml->createElement('a');
+        $aRemove->setAttribute('id', 'attribute-remove-btn' . FormUtils::serializeXpath($attribute->getNodePath()));
+        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right attribute-remove-btn');
+        $aRemove->setAttribute('style', 'display:none');
 
-            $iAdd->setAttribute('class', 'icon-white icon-cancel-2');
-        } else {
-            $aAdd->setAttribute('id', 'add-btn-' . FormUtils::serializeXpath($attribute->getNodePath()));
-            $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn add-btn-' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
-            $aAdd->setAttribute('onclick', 'addField(this.id, \'' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())) . '\',' . $relid . ', \'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
-
-            $iAdd->setAttribute('class', 'icon-white icon-plus-2');
-        }
+        $iRemove = $this->formHtml->createElement('i');
+        $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
+        $aRemove->appendChild($iRemove);
 
         $aAdd->appendChild($iAdd);
+        $action->appendChild($aAdd);
+        $action->appendChild($aRemove);
 
-        return $aAdd;
+        if (JDEBUG) {
+            $lowerboundspan = $this->formHtml->createElement('span', 'lowerbound:' . $lowerbound);
+            $upperboundspan = $this->formHtml->createElement('span', 'upperbound:' . $upperbound);
+            $action->appendChild($lowerboundspan);
+            $action->appendChild($upperboundspan);
+        }
+
+        return $action;
     }
 
     /**
@@ -1147,6 +1262,21 @@ class FormHtmlGenerator {
      */
     private function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
+    }
+
+    /**
+     * 
+     * @param DOMNodeList $childNodes
+     * @return DOMElement First non text node
+     */
+    private function getFirstNonTextChild(DOMNodeList $childNodes) {
+        foreach ($childNodes as $child) {
+            if ($child->nodeType != XML_TEXT_NODE) {
+                return $child;
+            }
+        }
+
+        return false;
     }
 
 }

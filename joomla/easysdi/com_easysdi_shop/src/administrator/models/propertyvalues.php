@@ -119,8 +119,8 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
         // Join over the user field 'created_by'
-        $query->select('created_by.name AS created_by');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+//        $query->select('created_by.name AS created_by');
+//        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
 
         // Filter by published state

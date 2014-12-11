@@ -118,7 +118,6 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
         if (!$andclose) {
             // Redirect back to the edit screen.
-            $app->setUserState('com_easysdi_core.edit.resource.ur', null);
             $app->setUserState('com_easysdi_core.edit.resource.data', null);
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $return, false));
@@ -224,11 +223,12 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('uro.role_id, u.id, user.name');
+        $query->select('uro.role_id, u.id, s.name');
         $query->from('#__sdi_user_role_organism uro');
         $query->innerJoin('#__sdi_user u ON u.id = uro.user_id');
-        $query->innerJoin('#__users user ON u.user_id = user.id');
+        $query->innerJoin('#__users s ON u.user_id = s.id');
         $query->where('organism_id=' . (int)$organism_id);
+        $query->order('s.name');
         
         $db->setQuery($query);
         $users = $db->loadObjectList();
@@ -257,6 +257,7 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         $app->setUserState('com_easysdi_core.edit.resource.id', null);
         $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', null);
         // Flush the data from the session.
+        $app->setUserState('com_easysdi_core.edit.resource.ur', null);
         $app->setUserState('com_easysdi_core.edit.resource.data', null);
     }
 

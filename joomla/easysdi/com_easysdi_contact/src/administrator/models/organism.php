@@ -156,9 +156,12 @@ class Easysdi_contactModelorganism extends JModelAdmin {
         }
 
         if (parent::save($data)) {
+            $db = JFactory::getDbo();
+            
+            //Get the last inserted id if new object
+            if($data['id'] == 0) $data['id'] = (int) $this->getState($this->getName() . '.id');
             
             //Manage organism's categories
-            $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                         ->delete($db->quoteName('#__sdi_organism_category'))
                         ->where('organism_id = '. $data['id']);
@@ -167,7 +170,7 @@ class Easysdi_contactModelorganism extends JModelAdmin {
                 
             if($data['categories'] && is_array($data['categories'])){
                 $query = $db->getQuery(true)
-                            ->insert($db->quoteName('#__sdi_organism_category'), 'id')
+                            ->insert($db->quoteName('#__sdi_organism_category'))
                             ->columns($db->quoteName(array('organism_id', 'category_id')));
                 foreach($data['categories'] as $category)
                     $query->values(implode (',', array($data['id'], $category)));

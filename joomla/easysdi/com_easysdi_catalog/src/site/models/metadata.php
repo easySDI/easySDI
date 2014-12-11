@@ -41,7 +41,6 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      *
      * @var stdClass[] 
      */
-    public $_validators = array();
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
 
@@ -92,10 +91,6 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         return $this->_structure;
     }
 
-    public function getValidators() {
-        return $this->_validators;
-    }
-
     /**
      * Method to get an ojbect.
      *
@@ -128,7 +123,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         return false;
                     }
 
-                    if (!$user->authorizeOnMetadata($id, sdiUser::metadataeditor) || !$user->authorizeOnMetadata($id, sdiUser::metadataresponsible)) {
+                    if (!($user->authorizeOnMetadata($id, sdiUser::metadataeditor) || $user->authorizeOnMetadata($id, sdiUser::metadataresponsible))) {
                         //Try to update a resource but not its resource manager
                         JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                         JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -186,7 +181,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         if ($merged = $cswm->mergeImport($import['importref_id'], $import['fileidentifier'])) {
                             $this->_item->csw = $merged;
                         } else {
-                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_NOT_FOUND_ERROR'), 'error');
+                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_NOT_FOUND_ERROR'), 'error');
                         }
                     }
                 }
@@ -280,12 +275,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         $this->_structure = $formGenerator->structure;
 
-        $this->buildValidators();
-
         if (empty($form)) {
             return false;
         }
-
+        //print_r($form->getXml()->saveXML());die();
         return $form;
     }
 
@@ -311,7 +304,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @return	mixed		The user id on success, false on failure.
      * @since	1.6
      */
-    public function save($data) {
+    public function save($data, $xml = null) {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
@@ -332,7 +325,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         }
 
         $table = $this->getTable();
-        if ($table->save($data) === true) {
+        $table->load($id);
+        if ($table->save($data, '', array('created', 'created_by')) === true) {
             $CSWmetadata = new sdiMetadata($table->id);
             if ($new) {
                 if (!$CSWmetadata->insert()) {
@@ -340,7 +334,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     throw new Exception('Echec de création dans le catalog');
                 }
             } else {
-                if (!$CSWmetadata->update()) {
+                if (!$CSWmetadata->update($xml)) {
                     throw new Exception('Echec de mise à jour du catalog');
                 }
             }
@@ -385,145 +379,5 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         return true;
     }
-
-    /**
-     * Built validators depending on pattern of stereotype and attribute.
-     * @since  4.0.0
-     */
-    private function buildValidators_old() {
-        $tmpValidators = array();
-
-        foreach ($this->_structure as $rel) {
-            if ($rel->childtype_id == SdiRelation::$ATTRIBUT) {
-                $patterns = array();
-                $validator = new stdClass();
-                if ($rel->getAttribut_child()->getStereotype()->defaultpattern != '') {
-                    $validator->name = $rel->getAttribut_child()->getStereotype()->value;
-                    $patterns[] = $rel->getAttribut_child()->getStereotype()->defaultpattern;
-                }
-
-                if ($rel->getAttribut_child()->pattern != '') {
-                    $validator->name = $rel->getAttribut_child()->guid;
-                    $patterns[] = $rel->getAttribut_child()->pattern;
-                }
-
-                $validator->patterns = $patterns;
-                if (isset($validator->name)) {
-                    $tmpValidators[$validator->name] = $validator;
-                }
-            }
-        }
-
-        foreach ($tmpValidators as $v) {
-            $js = 'document.formvalidator.setHandler(\'sdi' . $v->name . '\', function(value) {
-                    ';
-            $condition = '';
-            for ($i = 0; $i < count($v->patterns); $i++) {
-                $js .= 'regex_' . $i . ' = /' . $v->patterns[$i] . '/;
-                        ';
-                $condition .= 'regex_' . $i . '.test(value) && ';
-            }
-
-            $js .= 'if(' . substr($condition, 0, -4) . '){
-                            return true;
-                        }else{
-                            return false;
-                        }';
-
-            $js .= '});
-                    ';
-
-            $this->_validators[] = $js;
-        }
-    }
-
-    private function buildValidators() {
-        $domXpathStr = new DOMXPath($this->_structure);
-
-        $nsdao = new SdiNamespaceDao();
-        $patterns = $this->getPatterns();
-
-        foreach ($nsdao->getAll() as $ns) {
-            $domXpathStr->registerNamespace($ns->prefix, $ns->uri);
-        }
-
-        $tmpValidator = array();
-        foreach ($domXpathStr->query('//*[@catalog:childtypeId="2"]') as $attribute) {
-
-            $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
-
-            if (array_key_exists($guid, $patterns)) {
-                $validator = new stdClass();
-                $validator_pattern = array();
-
-                if ($patterns[$guid]->stereotype_pattern != '') {
-                    $validator->name = $patterns[$guid]->stereotype_name;
-                    $validator_pattern[] = $patterns[$guid]->stereotype_pattern;
-                }
-
-                if ($patterns[$guid]->attribute_pattern != '') {
-                    $validator->name = $patterns[$guid]->guid;
-                    $validator_pattern[] = $patterns[$guid]->attribute_pattern;
-                }
-
-                $validator->patterns = $validator_pattern;
-                if (isset($validator->name)) {
-                    $tmpValidator[$validator->name] = $validator;
-                }
-            }
-        }
-
-        foreach ($tmpValidator as $v) {
-            $js = 'document.formvalidator.setHandler(\'sdi' . $v->name . '\', function(value) {
-                    ';
-            $condition = '';
-            for ($i = 0; $i < count($v->patterns); $i++) {
-                $js .= 'regex_' . $i . ' = new RegExp("' . $v->patterns[$i] . '");
-                        ';
-                $condition .= 'regex_' . $i . '.test(value) && ';
-            }
-
-            $js .= 'if(' . substr($condition, 0, -4) . '){
-                            return true;
-                        }else{
-                            return false;
-                        }';
-
-            $js .= '});
-                    ';
-
-            $this->_validators[] = $js;
-        }
-    }
-
-    /**
-     * 
-     * @return array
-     */
-    private function getPatterns() {
-        $query = $this->db->getQuery(true);
-
-        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.`value` as stereotype_name');
-        $query->from('#__sdi_relation as r');
-        $query->innerJoin('#__sdi_attribute as a on r.attributechild_id = a.id');
-        $query->leftJoin('#__sdi_sys_stereotype as s on a.stereotype_id = s.id');
-        $query->where('r.`state` = 1');
-
-        $this->db->setQuery($query);
-        return $this->db->loadObjectList('guid');
-    }
-
-    private function getGUID() {
-        mt_srand((double) microtime() * 10000); //optional for php 4.2.0 and up.
-        $charid = strtoupper(md5(uniqid(rand(), true)));
-        $hyphen = chr(45); // "-"
-        $uuid = substr($charid, 0, 8) . $hyphen
-                . substr($charid, 8, 4) . $hyphen
-                . substr($charid, 12, 4) . $hyphen
-                . substr($charid, 16, 4) . $hyphen
-                . substr($charid, 20, 12);
-
-        return $uuid;
-    }
-
+    
 }

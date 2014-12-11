@@ -44,8 +44,7 @@
         <echoxml file="${dashboard.src.out.dir}/easysdi_dashboard.xml">
             <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_dashboard</name>
-                <creationDate>15 August 2012</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>
@@ -104,6 +103,8 @@
                         <language tag="en-GB">language/en-GB/en-GB.com_easysdi_dashboard.sys.ini</language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_dashboard.ini</language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_dashboard.sys.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_dashboard.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_dashboard.sys.ini</language>
                     </languages>
                 </administration>
             </extension>

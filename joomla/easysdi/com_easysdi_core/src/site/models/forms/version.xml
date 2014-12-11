@@ -57,7 +57,9 @@
         <field name="resourcetype_id" type="hidden" filter="safehtml" />
         <field name="resource_id" type="hidden" filter="safehtml" /> 
         <field name="rights" type="hidden" filter="safehtml" /> 
-        <field name="selectedchildren" id="selectedchildren" type="hidden" filter="safehtml" /> 
+        <field name="childrentoremove" id="childrentoremove" type="hidden" filter="safehtml" /> 
+        <field name="childrentoadd" id="childrentoadd" type="hidden" filter="safehtml" /> 
+        <field name="ordering" type="hidden" filter="safehtml" />
     </fieldset>
     
 

@@ -64,8 +64,7 @@
         <echoxml file="${contact.src.out.dir}/easysdi_contact.xml">
             <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_contact</name>
-                <creationDate>14 february 2013</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>
@@ -114,6 +113,7 @@
                 <languages folder="site">
                     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_contact.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_contact.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.com_easysdi_contact.ini</language>
                 </languages>
                 <administration>
                     <files folder="administrator">
@@ -135,6 +135,8 @@
                         <language tag="en-GB">language/en-GB/en-GB.com_easysdi_contact.sys.ini</language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_contact.ini</language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_contact.sys.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_contact.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_contact.sys.ini</language>
                     </languages>
                 </administration>
             </extension>

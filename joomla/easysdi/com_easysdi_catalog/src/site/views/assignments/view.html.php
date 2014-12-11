@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * @version     4.0.0
  * @package     com_easysdi_catalog
@@ -22,6 +21,7 @@ class Easysdi_catalogViewAssignments extends JViewLegacy {
     protected $items;
     protected $params;
     protected $pagination;
+    protected $backUrl;
 
     /**
      * Display the view
@@ -33,7 +33,7 @@ class Easysdi_catalogViewAssignments extends JViewLegacy {
         $this->items = $this->get('Items');
         $this->params = $app->getParams('com_easysdi_catalog');
         $this->pagination = $this->get('Pagination');
-        
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
@@ -81,6 +81,8 @@ class Easysdi_catalogViewAssignments extends JViewLegacy {
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+
+        $this->backUrl = $_SERVER['HTTP_REFERER'];//JRoute::_('index.php?option=com_easysdi_core&view=resources');
     }
 
 }
