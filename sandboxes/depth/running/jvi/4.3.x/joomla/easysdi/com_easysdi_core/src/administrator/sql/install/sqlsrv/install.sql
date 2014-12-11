@@ -484,8 +484,15 @@ SET QUOTED_IDENTIFIER ON;
 
 CREATE TABLE [#__sdi_catalog_resourcetype](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[guid] [nvarchar](36) NOT NULL,
+	[created_by] [int] NOT NULL,
+	[created] [datetime2](0) NOT NULL,
+	[modified_by] [int] NULL,
+	[modified] [datetime2](0) NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
+	[checked_out] [int] NOT NULL,
+	[checked_out_time] [datetime2](0) NOT NULL,
 	[catalog_id] [bigint] NOT NULL,
 	[resourcetype_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_catalog_resourcetype_id] PRIMARY KEY CLUSTERED 
