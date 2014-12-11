@@ -20,15 +20,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+$msg = "Service temporarily unavailable";
 $url = $_REQUEST['url'];
 $purl = parse_url($url);
 if($purl['scheme']=='http' || $purl['scheme']=='https'){
 	$s = @file_get_contents($_REQUEST['url']);
-	if($s){
-	  $s = str_replace(array('\r','\n'), array(' ','<BR>'), $s);
-	}
-	else $s = "[]";  
+	if($s)
+	  $return = "{success:true,results:'".str_replace(array('\r','\n'), array(' ','<BR>'), $s)."'}";
+	else
+            $return = "{success:false,message:'".JText::_('COM_EASYSDI_CATALOG_GEMET_REMOTE_SERVICE_UNAVAILABLE')."'}";
 	header("Content-type: application/json; charset=utf-8");
-	echo '{"success":"true","results":'.$s.'}';
+	echo $return;
 }
