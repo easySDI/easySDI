@@ -68,10 +68,12 @@ $userParams = json_decode($user->juser->params);
 $defaultLanguage = $ldao->getDefaultLanguage();
 $bbLanguage = $defaultLanguage->gemet;
 $dtLanguage = $defaultLanguage->title;
-foreach($ldao->getAll() as $bbLang){
-    if($bbLang->code === $userParams->language){
-        $bbLanguage = $bbLang->gemet;
-        $dtLanguage = $bbLang->title;
+if(isset($ldao) && isset($userParams)){
+    foreach($ldao->getAll() as $bbLang){
+        if($bbLang->code === $userParams->language){
+            $bbLanguage = $bbLang->gemet;
+            $dtLanguage = $bbLang->title;
+        }
     }
 }
 
