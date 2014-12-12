@@ -45,7 +45,7 @@ class plgUserEasysdicontact extends JPlugin {
                     if(sizeof($organisms_ids))
                         $query->where('r.organism_id NOT IN ('.implode(',',$organisms_ids).')');
                     $query->group('urr2.resource_id')
-                    ->having('cnt=1');
+                    ->having('COUNT(urr2.id)=1');
             
             $dbo->setQuery($query);
             $dbo->execute();
@@ -67,7 +67,9 @@ class plgUserEasysdicontact extends JPlugin {
 	 */
 	function onUserBeforeDelete($user)
 	{
-		// ensure the user id is really an int
+                $app = JFactory::getApplication();
+                
+                // ensure the user id is really an int
 		$user_id = (int)$user['id'];
 
 		// Load user_easysdi plugin language (not done automatically).
@@ -87,10 +89,11 @@ class plgUserEasysdicontact extends JPlugin {
                 
 		$dbo->setQuery($query);
 		$id = $dbo->loadResult();
-		if($id){
+                
+		if(isset($id)){
 			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'), 'error');
-			//throw new Exception (JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'));
-			return false;
+                        $app->redirect(JRoute::_('index.php?option=com_users&view=profile&layout=edit'));
+                        jExit();
 		}
 		return true;
 	}

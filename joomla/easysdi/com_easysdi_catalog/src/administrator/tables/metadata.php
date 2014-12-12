@@ -28,22 +28,6 @@ class Easysdi_catalogTablemetadata extends sdiTable {
     }
 
     /**
-     * Overloaded bind function to pre-process the params.
-     *
-     * @param	array		Named array
-     * @return	null|string	null is operation was satisfactory, otherwise returns an error
-     * @see		JTable:bind
-     * @since	1.5
-     */
-    public function bind($array, $ignore = '') {
-        $task = JRequest::getVar('task');
-        if ($task == 'apply' || $task == 'save') {
-            $array['modified'] = date("Y-m-d H:i:s");
-        }
-        return parent::bind($array, $ignore);
-    }
-
-    /**
      * Define a namespaced asset name for inclusion in the #__assets table
      * @return string The asset name 
      *
@@ -71,6 +55,10 @@ class Easysdi_catalogTablemetadata extends sdiTable {
             $assetParentId = $assetParent->id;
         }
         return $assetParentId;
+    }
+    
+    public function store($updateNulls = true){
+        return parent::store(false);
     }
 
     /**

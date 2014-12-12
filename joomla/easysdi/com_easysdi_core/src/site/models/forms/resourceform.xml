@@ -45,7 +45,7 @@
         <field name="organism_id" 
                 type="sql" 
             class="inputbox"
-            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
             key_field="id" 
             value_field="name"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ORGANISM_ID"
@@ -76,7 +76,7 @@
                         label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_MEMBER"
                         description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_MEMBER" 
                         translate="true" 
-                        query="SELECT id, name as value FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
+                        query="SELECT id, name as value FROM #__sdi_organism WHERE state=1 ORDER BY name" key_field="id" value_field="value"
         />
         
     </fieldset> 

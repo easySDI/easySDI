@@ -124,6 +124,9 @@ class plgContentEasysdiservice extends JPlugin
 		else if ($context == 'com_easysdi_contact.organism') {
 			$entity = "SdiOrganism";
 		}
+                else if ($context == "com_easysdi_contact.category") {
+                        $entity = "SdiCategory";
+                }
 				
 		$params = JComponentHelper::getParams('com_easysdi_service');
 		if(!isset($params))return true;

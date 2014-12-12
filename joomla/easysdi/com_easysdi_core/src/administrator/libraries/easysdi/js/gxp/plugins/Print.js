@@ -17,6 +17,7 @@
  * @requires plugins/Tool.js
  * @requires GeoExt/data/PrintProvider.js
  * @requires GeoExt/widgets/PrintMapPanel.js
+ * @requires OpenLayers/Control/ScaleLine.js
  */
 
 /** api: (define)
@@ -44,11 +45,11 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
 	/** api: ptype = gxp_print */
     ptype: "sdi_gxp_print",
 
-    /** private: method[constructor]
-     */
-    constructor: function(config) {
-        sdi.gxp.plugins.Print.superclass.constructor.apply(this, arguments);
-    },
+//    /** private: method[constructor]
+//     */
+//    constructor: function(config) {
+//        sdi.gxp.plugins.Print.superclass.constructor.apply(this, arguments);
+//    },
 
     
     /** api: method[addActions]

@@ -1,10 +1,10 @@
 /**
  * @version     4.0.0
-* * @package     com_easysdi_core
-* @copyright   Copyright (C) 2012. All rights reserved.
-* @license     GNU General Public License version 3 or later; see LICENSE.txt
-* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
-*/
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 Ext.namespace("sdi.gxp.plugins");
 
 /** api: constructor
@@ -36,22 +36,18 @@ Ext.namespace("sdi.gxp.plugins");
  *
  */
 sdi.gxp.plugins.OSMSource = Ext.extend(gxp.plugins.OSMSource, {
-	
-	/** api: ptype = gxp_googlesource */
+    /** api: ptype = gxp_googlesource */
     ptype: "sdi_gxp_osmsource",
-    
-	 /** api: method[createLayerRecord]
+    /** api: method[createLayerRecord]
      *  :arg config:  ``Object``  The application config for this layer.
      *  :returns: ``GeoExt.data.LayerRecord``
      *
      *  Create a layer record given the config.
      */
     createLayerRecord: function(config) {
-    	var record = sdi.gxp.plugins.OSMSource.superclass.createLayerRecord.apply(this, arguments);
+        var record = sdi.gxp.plugins.OSMSource.superclass.createLayerRecord.apply(this, arguments);
         
-        record.set("metadataURL", config.metadataURL);
-        record.commit();
-        
+        record.json = config;
         return record;
     }
 });

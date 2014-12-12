@@ -42,7 +42,7 @@
                type="sql" 
                class="inputbox"
                multiple="true"
-                query="SELECT id, name, ordering FROM #__sdi_resourcetype WHERE state=1 ORDER BY ordering" 
+                query="SELECT id, name FROM #__sdi_resourcetype WHERE state=1 ORDER BY name" 
                 key_field="id" 
                 value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_RESOURCETYPE_ID"

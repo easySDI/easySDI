@@ -67,6 +67,11 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
             }
         });
         
+        var baseAttrs;
+        if (this.initialConfig.loader && this.initialConfig.loader.baseAttrs) {
+            baseAttrs = this.initialConfig.loader.baseAttrs;
+        }
+        
         var defaultGroup = this.defaultGroup,
             plugin = this,
             groupConfig,
@@ -83,8 +88,8 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                 group: group == this.defaultGroup ? undefined : group,
                 loader: new GeoExt.tree.LayerLoader({
                     baseAttrs: exclusive ?
-                        {checkedGroup: Ext.isString(exclusive) ? exclusive : group} :
-                        undefined,
+                        Ext.apply({checkedGroup: Ext.isString(exclusive) ? exclusive : group}, baseAttrs) :
+                        baseAttrs,
                     store: this.target.mapPanel.layers,
                     filter: (function(group) {
                         return function(record) {
@@ -126,80 +131,14 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                     beforeselect: this.handleBeforeSelect,
                     scope: this
                 }
-            }),
-            listeners: {
-                contextmenu: this.handleTreeContextMenu,
-                beforemovenode: this.handleBeforeMoveNode,                
-                scope: this
-            },
+            }),           
             contextMenu: new Ext.menu.Menu({
                 items: []
             })
         };
     },
     
-    /** private: method[configureLayerNode]
-     *  :arg loader: ``GeoExt.tree.LayerLoader``
-     *  :arg node: ``Object`` The node
-     */
-    configureLayerNode: function(loader, attr) {
-        attr.uiProvider = this.treeNodeUI;
-        var layer = attr.layer;
-        var store = attr.layerStore;
-        if (layer && store) {
-            var record = store.getAt(store.findBy(function(r) {
-                return r.getLayer() === layer;
-            }));
-            if (record) {
-                attr.qtip = record.get('abstract');
-                if (!record.get("queryable")) {
-                    attr.iconCls = "gxp-tree-rasterlayer-icon";
-                }
-                if (record.get("fixed")) {
-                    attr.allowDrag = false;
-                }
-               
-                if(record.json)
-                {
-                	if(record.json.metadataURL)
-                	{
-                		attr.href = record.json.metadataURL;
-                        attr.hrefTarget = "_blank";
-                        attr.cls="sdiMDlink";
-                	}	
-                }
-                if(record.data)
-                {
-                	if(record.data.metadataURL)
-                	{
-                		attr.href = record.data.metadataURL;
-                        attr.hrefTarget = "_blank";
-                        attr.cls="sdiMDlink";
-                	}	
-                }
-                if(layer.metadataURL)
-                {
-                	attr.href = layer.metadataURL;
-                    attr.hrefTarget = "_blank";
-                    attr.cls="sdiMDlink";
-                }
-                
-                attr.listeners = {
-                    rendernode: function(node) {
-                        if (record === this.target.selectedLayer) {
-                            node.select();
-                        }
-                        this.target.on("layerselectionchange", function(rec) {
-                            if (!this.selectionChanging && rec === record) {
-                                node.select();
-                            }
-                        }, this);
-                    },
-                    scope: this
-                };
-            }
-        }
-    },
+
    
         
 });

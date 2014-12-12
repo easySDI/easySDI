@@ -116,8 +116,8 @@ class Easysdi_catalogModelattributevalues extends JModelList {
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
         // Join over the user field 'created_by'
-        $query->select('created_by.name AS created_by');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+//        $query->select('created_by.name AS created_by');
+//        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
         
         // Join over the foreign key 'attribute_id'
         $query->select('#__sdi_attribute_593639.name AS attributes_name_593639');

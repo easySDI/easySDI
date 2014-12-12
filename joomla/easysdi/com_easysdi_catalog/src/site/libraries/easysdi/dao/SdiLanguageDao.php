@@ -33,8 +33,9 @@ class SdiLanguageDao extends SdiDao{
         $query = $this->db->getQuery(true);
         
         $query->select('*');
-        $query->from('#__sdi_language');
+        $query->from('#__sdi_language l');
         $query->where('id IN (' . $languageIds . ')');
+        $query->innerJoin('#__languages ls ON ls.lang_code=l.code');
 
         $this->db->setQuery($query);
         $languages = $this->db->loadObjectList('iso3166-1-alpha2');
@@ -47,13 +48,14 @@ class SdiLanguageDao extends SdiDao{
      * @return stdClass
      */
     public function getDefault(){
-        $languageIds = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
+        $languageId = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
         
         $query = $this->db->getQuery(true);
         
         $query->select('*');
-        $query->from('#__sdi_language');
-        $query->where('id IN (' . $languageIds . ')');
+        $query->from('#__sdi_language l');
+        $query->where('id = '.(int)$languageId);
+        $query->innerJoin('#__languages ls ON ls.lang_code=l.code');
 
         $this->db->setQuery($query);
         $languages = $this->db->loadObjectList('iso3166-1-alpha2');
@@ -63,13 +65,14 @@ class SdiLanguageDao extends SdiDao{
     }
     
     public function getDefaultLanguage(){
-        $languageIds = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
+        $languageId = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
         
         $query = $this->db->getQuery(true);
         
         $query->select('*');
-        $query->from('#__sdi_language');
-        $query->where('id IN (' . $languageIds . ')');
+        $query->from('#__sdi_language l');
+        $query->where('id = '.(int)$languageId);
+        $query->innerJoin('#__languages ls ON ls.lang_code=l.code');
 
         $this->db->setQuery($query);
         $language = $this->db->loadObject();
@@ -81,8 +84,9 @@ class SdiLanguageDao extends SdiDao{
         $query = $this->db->getQuery(true);
 
         $query->select('*');
-        $query->from('#__sdi_language');
+        $query->from('#__sdi_language l');
         $query->where('code = ' . $query->quote($code) );
+        $query->innerJoin('#__languages ls ON ls.lang_code=l.code');
         $this->db->setQuery($query);
         $language = $this->db->loadObject();
         
@@ -94,8 +98,9 @@ class SdiLanguageDao extends SdiDao{
         $query = $this->db->getQuery(true);
 
         $query->select('*');
-        $query->from('#__sdi_language');
+        $query->from('#__sdi_language l');
         $query->where('`iso639-2T` = ' . $query->quote($code) );
+        $query->innerJoin('#__languages ls ON ls.lang_code=l.code');
         $this->db->setQuery($query);
         
         $language = $this->db->loadObject();
@@ -107,8 +112,9 @@ class SdiLanguageDao extends SdiDao{
         $query = $this->db->getQuery(true);
 
         $query->select('*');
-        $query->from('#__sdi_language');
+        $query->from('#__sdi_language l');
         $query->where('`iso3166-1-alpha2` = ' . $query->quote($code) );
+        $query->innerJoin('#__languages ls ON ls.lang_code=l.code');
         $this->db->setQuery($query);
         
         $language = $this->db->loadObject();

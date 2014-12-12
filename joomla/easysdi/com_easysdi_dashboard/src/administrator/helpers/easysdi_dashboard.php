@@ -144,6 +144,7 @@ class Easysdi_dashboardHelper {
         curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($c, CURLOPT_HEADER, false);
+        curl_setopt($c, CURLOPT_HTTPHEADER, array('Expect:'));
         curl_setopt($c, CURLOPT_POST, true);
         curl_setopt($c, CURLOPT_POSTFIELDS, 
                 '__report=' . $reportName . '&' .

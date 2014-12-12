@@ -76,6 +76,7 @@ public class SdiFeaturetypePolicy implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "spatialpolicy_id")
+        @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	public SdiWfsSpatialpolicy getSdiWfsSpatialpolicy() {
 		if(this.sdiWfsSpatialpolicy == null)
 		{
@@ -98,6 +99,7 @@ public class SdiFeaturetypePolicy implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "physicalservicepolicy_id", nullable = false)
+        @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	public SdiPhysicalservicePolicy getSdiPhysicalservicePolicy() {
 		return this.sdiPhysicalservicePolicy;
 	}
@@ -144,6 +146,7 @@ public class SdiFeaturetypePolicy implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiFeaturetypePolicy")
+        @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiIncludedattribute> getSdiIncludedattributes() {
 		return this.sdiIncludedattributes;
 	}

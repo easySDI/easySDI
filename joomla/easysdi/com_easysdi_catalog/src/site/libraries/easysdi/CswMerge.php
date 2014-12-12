@@ -57,7 +57,7 @@ class CswMerge {
         // Import from an provided document
         elseif (!empty($importref_id)) {
             $importref = $this->getImportRef($importref_id);
-            return $this->mergeImportCsw($importref);
+            return $this->mergeImportCsw($importref, $xpaths);
         }
         // import from the local catalog
         elseif (!empty($fileidentifier)) {
@@ -117,9 +117,11 @@ class CswMerge {
      * @return type
      */
     private function mergeImportCsw($importref, $xpath) {
-        $this->preserveFileidentifier($this->import, '', $this->original);
-
         $this->transformXml($importref);
+        
+        $this->addGetRecordById();
+        
+        $this->preserveFileidentifier($this->import, '', $this->original);
 
         return $this->switchOnImportType($importref);
     }
@@ -191,15 +193,15 @@ class CswMerge {
     private function transformXml($importref) {
         /* Transform the external xml if necessary. */
         if (!empty($importref->xsl4ext)) {
-            if ($xmltranform = $this->xslProceed($this->import, $importref->xsl4ext)) {
-                $this->import = $xmltranform;
+            if ($xmltransform = $this->xslProceed($this->import, $importref->xsl4ext)) {
+                $this->import = $xmltransform;
             }
         }
 
         /* Transform the sdi xml if necessary. */
         if (!empty($importref->xsl4sdi)) {
-            if ($xmltrasform = $this->xslProceed($this->original, $importref->xsl4sdi)) {
-                $this->original = $xmltranform;
+            if ($xmltransform = $this->xslProceed($this->original, $importref->xsl4sdi)) {
+                $this->original = $xmltransform;
             }
         }
     }
@@ -233,19 +235,34 @@ class CswMerge {
      * @param DOMDocument $original
      * @param DOMDocument $import
      */
-    public function preserveFileidentifier(DOMDocument $import, $fileIdentifier = '', DOMDocument $original = null) {
+    public function preserveFileidentifier(DOMDocument &$import, $fileIdentifier = '', DOMDocument &$original = null) {
         $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
-
-        if (!empty($original)) {
-            $fileidentifierOriginalNode = $original->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
-            $fileidentifierImportedNode = $import->importNode($fileidentifierOriginalNode, true);
-        } else {
+        
+        if(!empty($fileIdentifier)){
             $fileidentifierImportedNode = $import->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:fileIdentifier');
             $gco_character = $import->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString', $fileIdentifier);
             $fileidentifierImportedNode->appendChild($gco_character);
+            
+            if(!empty($fileidentifierImportNode)){
+                $fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
+            }
+            else{
+                $mdMetadata = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'MD_Metadata')->item(0);
+                $mdMetadata->appendChild($fileidentifierImportedNode);
+            }
         }
-
-        $fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
+        elseif(!empty($original)){
+            $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
+            
+            $fileidentifierImportedNode = $import->importNode($fileidentifierOriginalNode, true);
+            
+            if(empty($fileidentifierImportNode)){
+                $import->firstChild->appendChild($fileidentifierImportedNode);
+            }
+            else{
+                $import->firstChild->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
+            }
+        }
     }
 
     /**
@@ -261,7 +278,10 @@ class CswMerge {
      * Merge import to original
      */
     private function merge() {
-
+        
+        //$this->import->save(JPATH_BASE.'/tmp/'.session_id().'-import.xml');
+        //$this->original->save(JPATH_BASE.'/tmp/'.session_id().'-original.xml');
+        
         $domXpathImport = new DOMXPath($this->import);
         $domXpathOriginal = new DOMXPath($this->original);
 
@@ -269,26 +289,22 @@ class CswMerge {
             $domXpathImport->registerNamespace($ns->prefix, $ns->uri);
             $domXpathOriginal->registerNamespace($ns->prefix, $ns->uri);
         }
-
-        $this->import->save('D:\\tmp\\import.xml');
         
-        /* @var $originalNode DOMNode */
-        foreach ($domXpathOriginal->query('descendant::*', $this->original->firstChild) as $originalNode) {
-            if (!$this->hasChild($originalNode)) {
-                $originalName = $originalNode->nodeName;
-                if ($importNode = $domXpathImport->query($originalNode->getNodePath())->item(0)) {
+        /*foreach ($domXpathOriginal->query('descendant::*', $this->original->firstChild) as $originalNode) {
+            if (!$this->hasChild($originalNode) && ($importNode = $domXpathImport->query($originalNode->getNodePath())->item(0)) ){
 
                     $importedNode = $this->original->importNode($importNode, true);
-                    $importName = $importNode->nodeName;
-                    $importValue = $importNode->nodeValue;
-                    $success = $originalNode->parentNode->replaceChild($importedNode, $originalNode);
-                    $sucName = $success->nodeName;
-                    $sucValue = $success->nodeValue;
-                }
+                    
+                    $originalNode->parentNode->replaceChild($importedNode, $originalNode);
+            }
+        }*/
+        
+        foreach($domXpathImport->query('descendant::*', $this->import->firstChild) as $nodeToImport){
+            if(!$this->hasChild($nodeToImport) && ($originalNode = $domXpathOriginal->query($nodeToImport->getNodePath())->item(0))){
+                $importedNode = $this->original->importNode($nodeToImport, true);
+                $originalNode->parentNode->replaceChild($importedNode, $originalNode);
             }
         }
-        
-        $this->original->save('D:\\tmp\\original.xml');
     }
 
     /**

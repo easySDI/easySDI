@@ -60,6 +60,8 @@ INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (3, 3
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'list');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'textbox');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'date');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'datetime');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'gemet');
 SET IDENTITY_INSERT [#__sdi_sys_rendertype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 
@@ -73,19 +75,19 @@ INSERT [#__sdi_sys_entity] ([id], [ordering], [state], [value]) VALUES (2, 2, 1,
 SET IDENTITY_INSERT [#__sdi_sys_entity] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_stereotype] ON;
 
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (1, 1, 1, N'guid', N'([A-Z0-9]{8}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{12})', N'CharacterString', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (1, 1, 1, N'guid', N'^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (2, 2, 1, N'text', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (3, 3, 1, N'locale', N'', NULL, NULL, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (4, 4, 1, N'number', N'[0-9.-]', N'Decimal', 2, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (5, 5, 1, N'date', N'([0-9]{4}-[0-9]{2}-[0-9]{2})', N'Date', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (4, 4, 1, N'number', N'^[\-+]?[0-9.]+$', N'Decimal', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (5, 5, 1, N'date', N'^([0-9]{4}-[0-9]{2}-[0-9]{2})$', N'Date', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (6, 6, 1, N'list', N'', NULL, NULL, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (7, 7, 1, N'link', N'((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)', N'URL', 1, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (8, 8, 1, N'datetime', N'([0-9]{4}-[0-9]{2}-[0-9]{2})', N'DateTime', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (7, 7, 1, N'link', N'^((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)$', N'URL', 1, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (8, 8, 1, N'datetime', N'^([0-9]{4}-[0-9]{2}-[0-9]{2})$', N'DateTime', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (9, 9, 1, N'textchoice', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (10, 10, 1, N'localechoice', N'', NULL, NULL, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (11, 11, 1, N'gemet', NULL, NULL, NULL, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (12, 12, 1, N'distance', N'[0-9.-]', N'Distance', 2, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (13, 13, 1, N'integer', N'[0-9.-]', N'Integer', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (12, 12, 1, N'distance', N'^[\-+]?[0-9.]*[0-9]([Ee]\-?[0-9.]*[0-9])?$', N'Distance', 2, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (13, 13, 1, N'integer', N'^[\-+]?[0-9]+$', N'Integer', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (14, 14, 1, N'file', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (15, 15, 1, N'geographicextent', NULL, NULL, NULL, 2);
 SET IDENTITY_INSERT [#__sdi_sys_stereotype] OFF;
@@ -158,6 +160,7 @@ INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (18, 12, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (19, 13, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (20, 14, 5);
+INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 8);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_accessscope] ON;
 
@@ -586,9 +589,26 @@ SET IDENTITY_INSERT [#__sdi_sys_productstate] ON;
 
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'available');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'await');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'sent');
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
-SET IDENTITY_INSERT [#__sdi_sys_propertytype] ON;
+SET IDENTITY_INSERT [#__sdi_sys_pricing] ON;
 
+INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'free');
+INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'fee');
+SET IDENTITY_INSERT [#__sdi_sys_pricing] OFF;
+SET IDENTITY_INSERT [#__sdi_sys_productstorage] ON;
+
+INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'upload');
+INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'url');
+INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'zoning');
+SET IDENTITY_INSERT [#__sdi_sys_productstorage] OFF;
+
+SET IDENTITY_INSERT [#__sdi_sys_productmining] ON;
+INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'automatic');
+INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'manual');
+SET IDENTITY_INSERT [#__sdi_sys_productmining] OFF;
+
+SET IDENTITY_INSERT [#__sdi_sys_propertytype] ON;
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'list');
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'multiplelist');
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'checkbox');
@@ -782,17 +802,27 @@ INSERT [#__sdi_namespace] ([id], [guid], [alias], [created_by], [created], [modi
 SET IDENTITY_INSERT [#__sdi_namespace] OFF;
 SET IDENTITY_INSERT [#__sdi_searchcriteria] ON;
 
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (1, N'58dfe161-60c3-4b72-b768-e4a09bae8cdb', N'fulltext', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'fulltext', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (2, N'05b0fb40-459c-4ed2-a985-ce1611593969', N'resourcetype', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'resourcetype', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (3, N'f839e3ae-d983-4366-b24f-2678f4cbe188', N'versions', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'versions', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (4, N'4d402bfd-b50a-42ae-8db4-af8ef940575b', N'resourcename', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'resourcename', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (5, N'2157fe2c-3705-4db9-a623-462ae38405fa', N'created', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'created', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (6, N'979a4e90-601e-46fe-9239-9080e4238c1e', N'published', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'published', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (7, N'f761bc2d-57ac-4252-9cd2-17ae5e92793b', N'organism', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'organism', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (8, N'b2a4c66a-f40c-473d-a03f-5b5e4f93f760', N'definedBoundary', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'definedBoundary', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (9, N'8a85ed55-6a9c-4af7-aba1-a3c0f8281453', N'isDownloadable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isDownloadable', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (10, N'f80fcf1c-84df-4202-8838-6bbcb273a68d', N'isFree', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isFree', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (11, N'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', N'isOrderable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isOrderable', 1, 1, 1, NULL, 0, 0);
-INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (12, N'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', N'isViewable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isViewable', 1, 1, 1, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (1, N'58dfe161-60c3-4b72-b768-e4a09bae8cdb', N'fulltext', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'fulltext', 1, 1, 5, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (2, N'05b0fb40-459c-4ed2-a985-ce1611593969', N'resourcetype', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'resourcetype', 1, 1, 2, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (3, N'f839e3ae-d983-4366-b24f-2678f4cbe188', N'versions', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'versions', 1, 1, 2, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (4, N'4d402bfd-b50a-42ae-8db4-af8ef940575b', N'resourcename', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'resourcename', 1, 1, 5, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (5, N'2157fe2c-3705-4db9-a623-462ae38405fa', N'created', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'created', 1, 1, 6, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (6, N'979a4e90-601e-46fe-9239-9080e4238c1e', N'published', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'published', 1, 1, 6, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (7, N'f761bc2d-57ac-4252-9cd2-17ae5e92793b', N'organism', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'organism', 1, 1, 4, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (8, N'b2a4c66a-f40c-473d-a03f-5b5e4f93f760', N'definedBoundary', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'definedBoundary', 1, 1, 4, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (9, N'8a85ed55-6a9c-4af7-aba1-a3c0f8281453', N'isDownloadable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isDownloadable', 1, 1, 2, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (10, N'f80fcf1c-84df-4202-8838-6bbcb273a68d', N'isFree', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isFree', 1, 1, 2, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (11, N'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', N'isOrderable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isOrderable', 1, 1, 2, NULL, 0, 0);
+INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (12, N'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', N'isViewable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isViewable', 1, 1, 2, NULL, 0, 0);
 SET IDENTITY_INSERT [#__sdi_searchcriteria] OFF;
 
+SET IDENTITY_INSERT [#__sdi_sys_perimetertype] ON;
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (1,1,'extraction');
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (2,1,'download');
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (3,1,'both');
+SET IDENTITY_INSERT [#__sdi_sys_perimetertype] OFF;
+
+SET IDENTITY_INSERT [#__sdi_perimeter] ON;
+INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (1, N'1a9f342c-bb1e-9bc4-dd19-38910dff0f59', N'freeperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'Free perimeter', '',1,1);
+INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (2, N'9adc6d4e-262a-d6e4-e152-6de437ba80ed', N'myperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'My perimeter', '',1,1);
+SET IDENTITY_INSERT [#__sdi_perimeter] OFF;

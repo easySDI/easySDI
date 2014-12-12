@@ -182,7 +182,7 @@ class Easysdi_contactModelorganisms extends JModelList {
         }
 
         // group by user.id to have unique rows in result
-        $query->group('a.id');
+        //$query->group('a.id');
 
         return $query;
     }

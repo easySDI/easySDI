@@ -150,13 +150,8 @@ class Easysdi_catalogTablesearchcriteria extends sdiTable {
     	return true;
     }
     
-    public function loadByRelationID($id = null, $reset = true)
+    public function loadByRelationID($id = null)
     {
-    	if ($reset)
-    	{
-    		$this->reset();
-    	}
-    
     	// Initialise the query.
     	$query = $this->_db->getQuery(true);
     	$query->select('id');

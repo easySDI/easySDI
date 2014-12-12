@@ -108,7 +108,23 @@ abstract class sdiTable extends JTable {
         if (!isset($array['created_by']) || $array['created_by'] == 0) {
             $array['created_by'] = JFactory::getUser()->id;
         }
-
+        
+        if (!isset($array['created'])) {
+            $array['created'] = JFactory::getDate()->toSql();
+        }
+        
+        if (!isset($array['state'])) {
+            $array['state'] = 1;
+        }
+        
+        if (!isset($array['checked_out'])) {
+            $array['checked_out'] = 0;
+        }
+        
+        if (!isset($array['checked_out_time'])) {
+            $array['checked_out_time'] = JFactory::getDate()->toSql();
+        }
+        
         if (isset($array['params']) && is_array($array['params'])) {
             $registry = new JRegistry();
             $registry->loadArray($array['params']);
@@ -331,22 +347,15 @@ abstract class sdiTable extends JTable {
             if (empty($this->alias)) {
                 $this->alias = $this->name;
             }
-            $this->alias = preg_replace('/\s+/', '-', $this->alias);
-            $this->alias = str_replace(array('Ã ', 'Ã¡', 'Ã¢', 'Ã£', 'Ã¤', 'Ã§', 'Ã¨', 'Ã©', 'Ãª', 'Ã«', 'Ã¬', 'Ã­', 'Ã®', 'Ã¯', 'Ã±', 'Ã²', 'Ã³', 'Ã´', 'Ãµ', 'Ã¶', 'Ã¹', 'Ãº', 'Ã»', 'Ã¼', 'Ã½', 'Ã¿', 'Ã€', 'Ã�', 'Ã‚', 'Ãƒ', 'Ã„', 'Ã‡', 'Ãˆ', 'Ã‰', 'ÃŠ', 'Ã‹', 'ÃŒ', 'Ã�', 'ÃŽ', 'Ã�', 'Ã‘', 'Ã’', 'Ã“', 'Ã”', 'Ã•', 'Ã–', 'Ã™', 'Ãš', 'Ã›', 'Ãœ', 'Ã�'), array('a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'y', 'y', 'A', 'A', 'A', 'A', 'A', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'N', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y'), $this->alias);
-            $this->alias = str_replace("'", "_", $this->alias);
-            $this->alias = strtolower($this->alias);
+            $this->alias = JApplication::stringURLSafe($this->alias);
             $this->alias = $this::getUniqueAlias($this->alias);
-            $this->alias = JFilterOutput::stringURLSafe($this->alias);
+            
         }
         //If there is an ordering column and this is a new row then get the next ordering value
         if (property_exists($this, 'ordering') && $this->id == 0) {
             $this->ordering = $this->getNextOrder();
         }
         return parent::check();
-    }
-
-    public function getNextOrder($where = '') {
-        return parent::getNextOrder($where);
     }
 
     /**
