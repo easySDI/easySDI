@@ -54,7 +54,7 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                 $keys = array ();
                 $keys ['element_guid'] = $element_guid;
                 $keys ['language_id'] = $language_id;
-                if($this->load($keys)){
+                if($this->load($keys, false)){
                     //Update
                     $this->text1 = $value;
                 }else{
@@ -72,8 +72,16 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                     }
                 }
                 
-                if (!$this->store())
-		{
+                
+                if (isset($src['text3']) && is_array($src['text3'])) {
+                    foreach($src['text3'] as $k => $v) {
+                        if($k == $key){
+                             $this->text3 = $v;
+                             break;
+                        }
+                    }
+                }
+		if (!$this->save())		{
                      $this->setError('Can t store');
                     return false;
 		}
@@ -97,18 +105,13 @@ class Easysdi_catalogTabletranslation extends sdiTable {
 	  * @throws  RuntimeException
 	 * @throws  UnexpectedValueException
 	 */
-	public function loadAll($element_guid = null, $reset = true)
+	public function loadAll($element_guid = null)
 	{
 		if (empty($element_guid))
 		{
 			return false;
 		}
 		
-		if ($reset)
-		{
-			$this->reset();
-		}
-
 		// Initialise the query.
 		$query = $this->_db->getQuery(true)
 			->select('*')
@@ -130,6 +133,7 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                 foreach ($rows as $row){
                    $result['text1'] [$row['language_id']] = $row['text1'];
                    $result['text2'] [$row['language_id']] = $row['text2'];
+                   $result['text3'] [$row['language_id']] = $row['text3'];
                 }
                 
                 return $result;
@@ -166,6 +170,21 @@ class Easysdi_catalogTabletranslation extends sdiTable {
 
 		return true;
 	}
+        
+        /**
+	 * Method to perform sanity checks on the JTable instance properties to ensure
+	 * they are safe to store in the database. 
+	 *
+	 * @return  boolean  True if the instance is sane and able to be stored in the database.
+	 *
+	 * @link    http://docs.joomla.org/JTable/check
+	 * @since   11.1
+	 */
+    public function check() {
+        $this->alias = $this->element_guid;
+        
+        return parent::check();
+    }
         
 
 }

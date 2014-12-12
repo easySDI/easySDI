@@ -15,6 +15,11 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" />
+        
+        <field name="text2" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_VALUE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_VALUE" 
+               filter="ARRAY" />
 
         <field name="created_by" type="createdby" default="" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_CREATED_BY"

@@ -53,11 +53,9 @@ Ext.namespace("sdi.gxp.plugins");
  *    }
  *
  */
-sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.LayerSource, {
-    
+sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.OLSource, {
     /** api: ptype = gxp_olsource */
     ptype: "sdi_gxp_olsource",
-    
     /** api: method[createLayerRecord]
      *  :arg config:  ``Object``  The application config for this layer.
      *  :returns: ``GeoExt.data.LayerRecord``
@@ -65,84 +63,11 @@ sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.LayerSource, {
      *  Create a layer record given the config.
      */
     createLayerRecord: function(config) {
-
-        var record;
+        var record = sdi.gxp.plugins.OLSource.superclass.createLayerRecord.apply(this, arguments);
         
-        // get class based on type in config
-        var Class = window;
-        var parts = config.type.split(".");
-        for (var i=0, ii=parts.length; i<ii; ++i) {
-            Class = Class[parts[i]];
-            if (!Class) {
-                break;
-            }
-        }
-
-        // TODO: consider static method on OL classes to construct instance with args
-        if (Class && Class.prototype && Class.prototype.initialize) {
-            
-            // create a constructor for the given layer type
-            var Constructor = function() {
-                // this only works for args that can be serialized as JSON
-                Class.prototype.initialize.apply(this, config.args);
-            };
-            Constructor.prototype = Class.prototype;
-
-            // create a new layer given type and args
-            var layer = new Constructor();
-
-            // apply properties that may have come from saved config
-            if ("visibility" in config) {
-                layer.visibility = config.visibility;
-            }
-            
-            // create a layer record for this layer
-            var Record = GeoExt.data.LayerRecord.create([
-                {name: "name", type: "string"},
-                {name: "source", type: "string"}, 
-                {name: "group", type: "string"},
-                {name: "fixed", type: "boolean"},
-                {name: "selected", type: "boolean"},
-                {name: "type", type: "string"},
-                {name: "args"}
-            ]);
-            var data = {
-                layer: layer,
-                title: layer.name,
-                name: config.name || layer.name,
-                source: config.source,
-                group: config.group,
-                fixed: ("fixed" in config) ? config.fixed : false,
-                selected: ("selected" in config) ? config.selected : false,
-                type: config.type,
-                args: config.args,
-                properties: ("properties" in config) ? config.properties : undefined
-            };
-            record = new Record(data, layer.id);
-            record.json = config;
-        } else {
-            throw new Error("Cannot construct OpenLayers layer from given type: " + config.type);
-        }
+        record.json = config;
         return record;
-    },
-
-    /** api: method[getConfigForRecord]
-     *  :arg record: :class:`GeoExt.data.LayerRecord`
-     *  :returns: ``Object``
-     *
-     *  Create a config object that can be used to recreate the given record.
-     */
-    getConfigForRecord: function(record) {
-        // get general config
-        var config = sdi.gxp.plugins.OLSource.superclass.getConfigForRecord.apply(this, arguments);
-        // add config specific to this source
-        var layer = record.getLayer();
-        return Ext.apply(config, {
-            type: record.get("type"),
-            args: record.get("args")
-        });
     }
-
 });
 
 Ext.preg(sdi.gxp.plugins.OLSource.prototype.ptype, sdi.gxp.plugins.OLSource);

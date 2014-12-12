@@ -140,7 +140,7 @@ public class Users implements java.io.Serializable {
 		this.Block = Block;
 	}
 
-	@Column(name = "`sendEmail`")
+	@Column(name = "sendEmail")
 	public Byte getSendEmail() {
 		return this.SendEmail;
 	}
@@ -150,7 +150,7 @@ public class Users implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "`registerDate`", nullable = false, length = 19)
+	@Column(name = "registerDate", nullable = false, length = 19)
 	public Date getRegisterDate() {
 		return this.RegisterDate;
 	}
@@ -160,7 +160,7 @@ public class Users implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "`lastvisitDate`", nullable = false, length = 19)
+	@Column(name = "lastvisitDate", nullable = false, length = 19)
 	public Date getLastvisitDate() {
 		return this.LastvisitDate;
 	}
@@ -188,7 +188,7 @@ public class Users implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "`lastResetTime`", nullable = false, length = 19)
+	@Column(name = "lastResetTime", nullable = false, length = 19)
 	public Date getLastResetTime() {
 		return this.LastResetTime;
 	}
@@ -197,7 +197,7 @@ public class Users implements java.io.Serializable {
 		this.LastResetTime = LastResetTime;
 	}
 
-	@Column(name = "`resetCount`", nullable = false)
+	@Column(name = "resetCount", nullable = false)
 	public int getResetCount() {
 		return this.ResetCount;
 	}

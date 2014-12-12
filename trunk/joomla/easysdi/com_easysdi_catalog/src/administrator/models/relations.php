@@ -178,6 +178,20 @@ class Easysdi_catalogModelrelations extends JModelList {
         $orderCol = $this->state->get('list.ordering');
         $orderDirn = $this->state->get('list.direction');
         if ($orderCol && $orderDirn) {
+            switch ($orderCol){
+                case 'resourcetypechildname':
+                    $orderCol='resourcetype.name';
+                    break;
+                case 'attributechildname':
+                    $orderCol='childattribute.name';
+                    break;
+                case 'classchildname':
+                    $orderCol='childclass.name';
+                    break;
+                case 'parentname':
+                    $orderCol='parentclass.name';
+                    break;
+            }
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
 

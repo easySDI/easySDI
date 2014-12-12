@@ -11,6 +11,9 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
  */
 class Cswrecords extends SearchForm {
 
+    /** */
+    const ROLE_MEMBEROF = 1;
+    
     /** @var array */
     private $searchcriteria;
 
@@ -208,7 +211,7 @@ class Cswrecords extends SearchForm {
         // Configuration
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"', 'Expect:'));
         curl_setopt($ch, CURLOPT_COOKIE, $cookies);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_ENCODING, "");
@@ -484,7 +487,7 @@ class Cswrecords extends SearchForm {
                 continue;
             }
             if ($params->searchboundarytype == parent::SEARCHTYPEID) {
-                $or->appendChild($this->ogcFilters->getIsEqualTo($params->boundarysearchfield, $literal));
+                $this->getDefinedBoundaryById($or,$literal,$params->boundarysearchfield);
             } else {
                 $coordinate = explode('#', $literal);
                 $or->appendChild($this->ogcFilters->getBBox($coordinate[3], $coordinate[1], $coordinate[2], $coordinate[0]));
@@ -493,6 +496,20 @@ class Cswrecords extends SearchForm {
 
         return $or;
     }
+    
+    private function getDefinedBoundaryById(&$or, $literal, $boundarysearchfield) {
+        $query = $this->db->getQuery(true);
+        $query->select('b.alias, b.parent_id, p.alias as parent_alias');
+        $query->from('#__sdi_boundary b');
+        $query->join('LEFT', '#__sdi_boundary p on b.parent_id = p.id');
+        $query->where('b.alias LIKE ' . $this->db->quote($literal));
+        $this->db->setQuery($query);
+        $bound = $this->db->loadObject();
+        if(!empty($bound)){
+            $this->getDefinedBoundaryById($or, $bound->parent_alias, $boundarysearchfield);
+        }
+        $or->appendChild($this->ogcFilters->getIsEqualTo($boundarysearchfield, $literal));
+    }    
 
     private function getIsDownloadable() {
         return $this->ogcFilters->getIsEqualTo('isdownloadable', 'true');
@@ -539,7 +556,7 @@ class Cswrecords extends SearchForm {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('u.guid as user_guid, o.guid as organism_guid');
+        $query->select('distinct u.guid as user_guid, o.guid as organism_guid');
         $query->from('#__sdi_user u');
         $query->innerJoin('#__sdi_user_role_organism uro on uro.user_id = u.id');
         $query->innerJoin('#__sdi_organism o on uro.organism_id = o.id');
@@ -550,6 +567,29 @@ class Cswrecords extends SearchForm {
 
         return $results;
     }
+    
+    /**
+     * 
+     * @param int $id
+     * @return array
+     */
+    private function getOrganismCategoriesForUser($id) {
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('distinct c.guid as category_guid');
+        $query->from('#__sdi_user u');
+        $query->innerJoin('#__sdi_user_role_organism uro on uro.user_id = u.id');
+        $query->innerJoin('#__sdi_organism o on uro.organism_id = o.id');
+        $query->innerJoin('#__sdi_organism_category oc on oc.organism_id = o.id');
+        $query->innerJoin('#__sdi_category c on c.id = oc.category_id');
+        $query->where('u.user_id = ' . (int)$id);
+        $query->where('uro.role_id = ' . (int)self::ROLE_MEMBEROF);
+        $this->db->setQuery($query);
+        $results = $this->db->loadObjectList();
+
+        return $results;
+    }    
 
     private function getOrganismBlock() {
         $user = JFactory::getUser();
@@ -559,6 +599,7 @@ class Cswrecords extends SearchForm {
 
         if ($user->id > 0) {
             $organisms = $this->getOrganismForUser($user->id);
+            $orgCategories = $this->getOrganismCategoriesForUser($user->id);
 
             $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
             $and->appendChild($this->ogcFilters->getIsEqualTo('scope', 'user'));
@@ -572,6 +613,13 @@ class Cswrecords extends SearchForm {
 
                 $or->appendChild($and);
             }
+            foreach ($orgCategories as $orgCategory) {
+                $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+                $and->appendChild($this->ogcFilters->getIsEqualTo('scope', 'category'));
+                $and->appendChild($this->ogcFilters->getIsEqualTo('sdicategory', $orgCategory->category_guid));
+
+                $or->appendChild($and);
+            }            
         }
 
         return $or;

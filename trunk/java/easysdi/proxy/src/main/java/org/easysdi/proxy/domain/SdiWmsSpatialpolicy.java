@@ -149,6 +149,7 @@ public class SdiWmsSpatialpolicy implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiWmsSpatialpolicy")
+        @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiWmslayerPolicy> getSdiWmslayerPolicies() {
 		return this.sdiWmslayerPolicies;
 	}
@@ -159,7 +160,7 @@ public class SdiWmsSpatialpolicy implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiWmsSpatialpolicy")
-	public Set<SdiPolicy> getSdiPolicies() {
+        public Set<SdiPolicy> getSdiPolicies() {
 		return this.sdiPolicies;
 	}
 

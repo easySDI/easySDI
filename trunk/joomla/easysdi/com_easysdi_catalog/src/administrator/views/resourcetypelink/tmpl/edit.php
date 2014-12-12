@@ -121,18 +121,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                         </div>
                     <?php endforeach; ?>
 
-                    <div class="well">
-                        <label><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_PARENT_GUID'); ?></label>
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $this->form->getLabel('class_id'); ?></div>
-                            <div class="controls"><?php echo $this->form->getInput('class_id'); ?></div>
-                        </div>
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $this->form->getLabel('attribute_id'); ?></div>
-                            <div class="controls"><?php echo $this->form->getInput('attribute_id'); ?></div>
-                        </div>
-                    </div>
-
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('viralversioning'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('viralversioning'); ?></div>
