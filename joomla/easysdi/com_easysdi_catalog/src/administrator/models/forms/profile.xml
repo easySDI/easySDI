@@ -18,29 +18,28 @@
                filter="safehtml" /> 
 
         <field name="class_id"  required="true"
-                onchange="onClassChange()"
+               onchange="onClassChange()"
                type="sql" 
                class="inputbox"
-               query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_class WHERE isrootclass=1  ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS name, 0 as ordering 
+                        UNION SELECT id, name, ordering FROM #__sdi_class 
+                        WHERE isrootclass=1  ORDER BY name" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_CLASS_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_CLASS_ID" 
         /> 
         
-       <field
-        name="metadataidentifier" required="true"
-        type="list"
-        label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_METADATAIDENTIFIER"
-        description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_METADATAIDENTIFIER"
-        class="inputbox"
-        size="1"
-        default="0">
-        <option value="0">JSELECT</option>
-    </field>
-        
-        
-       
+        <field
+            name="metadataidentifier" required="true"
+            type="list"
+            label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_METADATAIDENTIFIER"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_METADATAIDENTIFIER"
+            class="inputbox"
+            size="1"
+            default="0">
+            <option value="0">JSELECT</option>
+        </field>
     </fieldset> 
 
     <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_ID"
@@ -48,9 +47,9 @@
            description="JGLOBAL_FIELD_ID_DESC" /> 
 
     <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" required="true" 
-               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
-               filter="ARRAY" />
+           label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+           filter="ARRAY" />
     
     <field
         name="state"
@@ -65,9 +64,9 @@
     </field> 
     
     <field name="access" type="accesslevel"
-       label="JFIELD_ACCESS_LABEL"
-       description="JFIELD_ACCESS_DESC" 
-       filter="raw" /> 
+           label="JFIELD_ACCESS_LABEL"
+           description="JFIELD_ACCESS_DESC" 
+           filter="raw" /> 
     
     <fieldset 
         name="accesscontrol">
@@ -97,17 +96,17 @@
            description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_CREATED_BY"  /> 
 
     <field name="created" type="timecreated" default="" 
-               label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_CREATED"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_CREATED"  /> 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_CREATED"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_CREATED"  /> 
 
     <field name="modified_by" type="text" size="40" class="inputbox"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_MODIFIED_BY"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_MODIFIED_BY" 
-               default="0" 
-               filter="safehtml" /> 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_MODIFIED_BY"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_MODIFIED_BY" 
+           default="0" 
+           filter="safehtml" /> 
 
     <field name="modified" type="timeupdated" default="" 
-               label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_MODIFIED"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_MODIFIED"  /> 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_MODIFIED"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_MODIFIED"  /> 
 
 </form>

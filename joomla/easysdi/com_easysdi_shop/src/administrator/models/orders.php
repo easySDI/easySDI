@@ -456,13 +456,13 @@ class Easysdi_shopModelorders extends JModelList {
         $query  = $db->getQuery(true);
 
         // Select the required fields from the table.
-        $query->select('distinct o.user_id as id, jos_users.name as name');
+        $query->select('distinct o.user_id as id, #__users.name as name');
         $query->from('#__sdi_order AS o');
         $query->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id = o.user_id');
-        $query->join('LEFT', '#__users AS jos_users ON jos_users.id = sdi_user.user_id');
+        $query->join('LEFT', '#__users AS #__users ON #__users.id = sdi_user.user_id');
 
         $query->where('sdi_user.state = 1');
-        $query->order('jos_users.name');
+        $query->order('#__users.name');
 
 
         try

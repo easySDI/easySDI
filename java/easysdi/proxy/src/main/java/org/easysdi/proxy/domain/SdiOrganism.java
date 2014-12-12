@@ -50,6 +50,8 @@ public class SdiOrganism implements java.io.Serializable {
         private String Perimeter;
 	private int Access;
 	private int Asset_id;
+        private String username;
+        private String password;
 	private Set<SdiPolicy> sdiPolicys = new HashSet<SdiPolicy>(
 			0);
 	private Set<SdiVirtualservice> sdiVirtualservices = new HashSet<SdiVirtualservice>(
@@ -59,6 +61,8 @@ public class SdiOrganism implements java.io.Serializable {
 	private Set<SdiPhysicalservice> sdiPhysicalservices = new HashSet<SdiPhysicalservice>(
 			0);
 
+        private Set<SdiCategory> sdiCategories = new HashSet<SdiCategory>(0);
+        
 	public SdiOrganism() {
 	}
 
@@ -82,6 +86,7 @@ public class SdiOrganism implements java.io.Serializable {
 			int Checked_out, Date Checked_out_time, String Acronym,
 			String Description, String Logo, String Name, String Website,String Perimeter,
 			int Access, int Asset_id,
+                        String username, String password, Set sdiCategories,
 			Set<SdiPolicy> sdiPolicys,
 			Set<SdiVirtualservice> sdiVirtualservice,
 			Set<SdiUserRoleOrganism> sdiUserRoleOrganisms,
@@ -103,6 +108,9 @@ public class SdiOrganism implements java.io.Serializable {
                 this.Perimeter = Perimeter;
 		this.Access = Access;
 		this.Asset_id = Asset_id;
+                this.username = username;
+        this.password = password;
+        this.sdiCategories = sdiCategories;
 		this.sdiPolicys = sdiPolicys;
 		this.sdiVirtualservices = sdiVirtualservice;
 		this.sdiUserRoleOrganisms = sdiUserRoleOrganisms;
@@ -275,6 +283,24 @@ public class SdiOrganism implements java.io.Serializable {
 	public void setAsset_id(int Asset_id) {
 		this.Asset_id = Asset_id;
 	}
+        
+         @Column(name = "username", length = 150)
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Column(name = "password", length = 65)
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SdiPolicyOrganism", joinColumns = {@JoinColumn(name = "organism_id")}, inverseJoinColumns = {@JoinColumn (name = "policy_id")})
@@ -317,5 +343,19 @@ public class SdiOrganism implements java.io.Serializable {
 			Set<SdiPhysicalservice> sdiPhysicalservices) {
 		this.sdiPhysicalservices = sdiPhysicalservices;
 	}
+        
+            @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "SdiOrganismCategory", joinColumns = {
+        @JoinColumn(name = "organism_id")}, inverseJoinColumns = {
+        @JoinColumn(name = "category_id")})
+    @Filter(name = "entityState", condition = "State = 1")
+    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+    public Set<SdiCategory> getSdiCategories() {
+        return this.sdiCategories;
+    }
+
+    public void setSdiCategories(Set<SdiCategory> sdiCategories) {
+        this.sdiCategories = sdiCategories;
+    }
 
 }

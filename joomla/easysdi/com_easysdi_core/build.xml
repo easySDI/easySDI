@@ -63,8 +63,7 @@
         <echoxml  file="${core.src.out.dir}/easysdi_core.xml">
             <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_core</name>
-                <creationDate>15 August 2012</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>
@@ -111,10 +110,12 @@
                     <folder>models</folder>
                     <folder>controllers</folder>
                     <folder>helpers</folder>
+                    <folder>assets</folder>
                 </files>
                 <languages folder="site">
                     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.ini</language>
                     <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_core.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.com_easysdi_core.ini</language>
                 </languages>
                 <administration>
                     <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_SOLUTION</menu>
@@ -139,6 +140,8 @@
                         <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.sys.ini</language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_core.ini</language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_core.sys.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_core.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_core.sys.ini</language>
                     </languages>
                 </administration>
             </extension>

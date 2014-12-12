@@ -37,11 +37,14 @@ abstract class sdiModel extends JModelAdmin {
                     $item->text1 = $rows['text1'];
                 if (isset($rows['text2']))
                     $item->text2 = $rows['text2'];
+                if (isset($rows['text3']))
+                    $item->text3 = $rows['text3'];
             }
 
             // Get the access scope
             $item->organisms = sdiModel::getAccessScopeOrganism($item->guid);
             $item->users = sdiModel::getAccessScopeUser($item->guid);
+            $item->categories = sdiModel::getAccessScopeCategory($item->guid);
         }
         return $item;
     }
@@ -249,6 +252,36 @@ abstract class sdiModel extends JModelAdmin {
             return false;
         }
     }
+    
+    
+    /**
+     * Method to get the organism categories authorized to access this resourcetype
+     *
+     * @param int		$id		primary key of the current resourcetype to get.
+     *
+     * @return boolean 	Object list on success, False on error
+     *
+     * @since EasySDI 3.0.0
+     */
+    public static function getAccessScopeCategory($guid) {
+        if (!isset($guid))
+            return null;
+
+        try {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('p.category_id as id');
+            $query->from('#__sdi_accessscope p');
+            $query->where('p.entity_guid = ' . $query->quote($guid) );
+            $db->setQuery($query);
+
+            $scope = $db->loadColumn();
+            return $scope;
+        } catch (Exception $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+    }    
 
     public static function deleteAccessScope($guid) {
 
