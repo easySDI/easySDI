@@ -1,0 +1,19 @@
+
+
+    #sdi-loader{
+        -moz-border-radius: 8px;
+        border-radius: 8px;
+        position:absolute; 
+        background-color: #B8B9BB;
+        opacity:0.3;
+        filter:alpha(opacity=30);
+        text-align : center; 
+        vertical-align:middle;
+        height:90%;
+        width:70%;
+        z-index:99;
+    }
+    #sdi-loader-image{
+        padding-left:60px;
+        padding-top:70px;
+    }

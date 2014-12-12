@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset>
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+
+        <field name="alias" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ALIAS"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ALIAS" 
+              filter="safehtml" /> 
+
+        <field name="created_by" type="createdby" default=""  class="readonly"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED_BY"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED_BY"  /> 
+
+        <field name="created" type="calendar" 
+              default="0" class="readonly"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED" 
+              filter="safehtml" /> 
+
+        <field name="modified_by" type="text" size="40" class="readonly"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED_BY"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED_BY" 
+              default="0" 
+              filter="safehtml" /> 
+
+        <field name="modified" type="calendar" class="inputbox"
+              default="0" 
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED" 
+              filter="safehtml" /> 
+
+        <field name="name" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_NAME"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_NAME" 
+              filter="safehtml" /> 
+
+        <field name="description" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_DESCRIPTION"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_DESCRIPTION" 
+              filter="safehtml" /> 
+
+        <field name="organism_id" 
+                type="sql" 
+            class="inputbox"
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ORGANISM_ID"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ORGANISM_ID" 
+              /> 
+
+        <field name="resourcetype" type="text" size="40" class="inputbox" readonly="true"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_RESOURCETYPE_ID"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_RESOURCETYPE_ID" 
+              filter="safehtml" />
+        
+        <field
+            name="state"
+            type="list"
+            label="JSTATUS"
+            description="JFIELD_PUBLISHED_DESC"
+            class="inputbox"
+            size="1"
+            default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field> 
+        
+        <field 	name="resourceManager" 
+                        type="sql" 
+                        class="input-xxlarge"
+                        multiple="false"
+                        label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_MEMBER"
+                        description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_MEMBER" 
+                        translate="true" 
+                        query="SELECT id, name as value FROM #__sdi_organism WHERE state=1 ORDER BY name" key_field="id" value_field="value"
+        />
+        
+    </fieldset> 
+    
+    <fieldset name="hidden">
+        <field name="checked_out" type="hidden" filter="safehtml" />
+        <field name="checked_out_time" type="hidden" filter="safehtml" /> 
+        <field name="guid" type="hidden" filter="safehtml" /> 
+        <field name="resourcetype_id" type="hidden" filter="safehtml" /> 
+        <field name="rights" type="hidden" filter="safehtml" /> 
+    </fieldset>
+</form>
