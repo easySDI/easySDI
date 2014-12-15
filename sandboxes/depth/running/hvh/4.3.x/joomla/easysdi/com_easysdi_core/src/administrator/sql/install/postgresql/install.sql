@@ -319,8 +319,15 @@ CREATE TABLE #__sdi_catalog (
 
 CREATE TABLE #__sdi_catalog_resourcetype (
     id serial NOT NULL ,
+    guid character varying(36) NOT NULL,
+    created_by integer NOT NULL,
+    created timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
+    modified_by integer,
+    modified timestamp(3) without time zone,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
+    checked_out integer DEFAULT 0 NOT NULL,
+    checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     catalog_id bigint NOT NULL,
     resourcetype_id bigint NOT NULL
 );

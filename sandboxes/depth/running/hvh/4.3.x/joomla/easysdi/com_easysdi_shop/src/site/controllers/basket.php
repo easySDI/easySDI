@@ -65,20 +65,41 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=edit', false));
     }
 
-    public function saveBasketToSession() {
+    public function saveBasketToSession($recalculatePricing = true) {
         $jinput = JFactory::getApplication()->input;
         $buffer = $jinput->get('buffer', '', 'float');
         $ordername = $jinput->get('ordername', '', 'string');
-        $thirdparty = $jinput->get('thirdparty', '', 'int');        
-//        $wmc = htmlentities($jinput->get('wmc', '', 'RAW'));
+        $thirdparty = $jinput->get('thirdparty', '', 'int');
+        $mandate_ref = $jinput->get('mandate_ref', null, 'string');
+        $mandate_contact = $jinput->get('mandate_contact', null, 'string');
+        $mandate_email = $jinput->get('mandate_email', null, 'string');
 
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         $basket->name = $ordername;
         $basket->buffer = $buffer;
         $basket->thirdparty = $thirdparty;
-//        $basket->wmc = $wmc;
+        $basket->mandate_ref = $mandate_ref;
+        $basket->mandate_contact = $mandate_contact;
+        $basket->mandate_email = $mandate_email;
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
+        
+        if($recalculatePricing){
+            //recalculate pricing if enable
+            // rebuild extractions array to allow by supplier grouping
+            Easysdi_shopHelper::extractionsBySupplierGrouping($basket);
+
+            // calculate price for the current basket (only if surface is defined)
+            Easysdi_shopHelper::basketPriceCalculation($basket);
+            
+            $return['pricing'] = $basket->pricing;
+
+            header('content-type: application/json');
+            echo json_encode($return);
+            die();
+        }
+        
+        return;
     }
 
     /**
@@ -90,7 +111,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
     public function save() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-        $this->saveBasketToSession();
+        $this->saveBasketToSession(false);
         $app = JFactory::getApplication();
 
         // Initialise variables.
@@ -99,7 +120,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         // Get the user data.
         $data = $model->getData();
         
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $session->set('basketProcess', array('total' => 0));
         
         // Attempt to save the data.
@@ -132,7 +153,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
             $this->sendJsonResponse(array('error' => array(JText::sprintf('Save failed', $model->getError()))));
         }
         
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $basketProcess = $session->get('basketProcess');
         $this->sendJsonResponse($basketProcess);
     }
@@ -163,8 +184,8 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
      * @since 4.3.0
      */
     public function finalizeSave(){
-        $session =& JFactory::getSession();
-        $app =& JFactory::getApplication();
+        $session = JFactory::getSession();
+        $app = JFactory::getApplication();
         
         /*******************************/
         /** Process all notifications **/
@@ -211,7 +232,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
      * @since 4.3.0
      */
     private function clearSession(){
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $session->clear('basketData');
         $session->clear('basketProducts');
         $session->clear('basketProcess');
@@ -231,11 +252,11 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         /*********************************************************/
         /** HACK TO PASS MESSAGE ACCROSS JAVASCRIPT REDIRECTION **/
         /*********************************************************/
-        $app =& JFactory::getApplication();
+        $app = JFactory::getApplication();
         $messageQueue = $app->getMessageQueue();
         
         if(count($messageQueue)>0){
-            $session =& JFactory::getSession();
+            $session = JFactory::getSession();
             $session->set('application.queue', $messageQueue);
         }
         // ENDOF HACK

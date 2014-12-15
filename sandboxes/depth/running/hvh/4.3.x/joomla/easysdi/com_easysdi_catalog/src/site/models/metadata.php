@@ -304,7 +304,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @return	mixed		The user id on success, false on failure.
      * @since	1.6
      */
-    public function save($data) {
+    public function save($data, $xml = null) {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
@@ -325,7 +325,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         }
 
         $table = $this->getTable();
-        if ($table->save($data) === true) {
+        $table->load($id);
+        if ($table->save($data, '', array('created', 'created_by')) === true) {
             $CSWmetadata = new sdiMetadata($table->id);
             if ($new) {
                 if (!$CSWmetadata->insert()) {
@@ -333,7 +334,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     throw new Exception('Echec de création dans le catalog');
                 }
             } else {
-                if (!$CSWmetadata->update()) {
+                if (!$CSWmetadata->update($xml)) {
                     throw new Exception('Echec de mise à jour du catalog');
                 }
             }

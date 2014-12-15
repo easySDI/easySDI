@@ -241,7 +241,7 @@ var Resource = (function(){
 }());
 
 <?php foreach ($this->items as $item) : ?>
-    var resource = new Resource(<?php echo $item->id;?>, '<?php echo $item->name; ?>', '<?php echo $item->resourcetype_name; ?>', '<?php echo $item->resourcetype_alias; ?>', '<?php echo $item->accessscope; ?>');
+    var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>', '<?php echo $item->resourcetype_alias; ?>', '<?php echo $item->accessscope; ?>');
     <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>resource.rights.metadataEditor = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>resource.rights.metadataResponsible = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>resource.rights.resourceManager = 1;<?php endif; ?>
@@ -323,7 +323,7 @@ var buildMetadataDropDown = function(resource){
     var section = [];
     section.push(buildDropDownItem(resource, 'metadata.preview'));
     
-    if(resource.rights.metadataEditor)
+    if(resource.rights.metadataEditor && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED])>-1)
         section.push(buildDropDownItem(resource, 'metadata.edit'));
     
     if(resource.rights.metadataResponsible)
@@ -548,13 +548,21 @@ var getChildNumber = function(element){
             type: 'GET',
             url: Links.ajax.child_number.replace('#0#', version.id)
         }).done(function(data){
-            var response = js.parseJSON(data);
-            if(response.success == "true"){
-                js(element).find('span').html(response.num);
-                version.child_number = response.num;
-
-                if(resource.rights.metadataResponsible)
-                    getSynchronizationInfo(js('a#'+resource.id+'_synchronize'), response.children);
+            try{
+                var response = js.parseJSON(data);
+                if(response.success == "true"){
+                    js(element).find('span').html(response.num);
+                    version.child_number = response.num;
+                    
+                    if(resource.rights.metadataResponsible)
+                        getSynchronizationInfo(js('a#'+resource.id+'_synchronize'));
+                }
+            }
+            catch(e){
+                if(window.console){
+                    console.log(e);
+                    console.log(data);
+                }
             }
         });
     }
@@ -573,58 +581,66 @@ var getNewVersionRight = function(element){
         type: 'GET',
         url: Links.ajax.new_version.replace('#0#', getMetadataId(element))
     }).done(function(data){
-        var response = js.parseJSON(data);
-        if(response.canCreate === false){
-            var message = '';
-            js.each(response.cause, function(i, cause){
-                message += '<b>'+cause.message+'</b><br/>'+cause.elements+'<br/>';
-            });
-            
-            js(element)
-                    .addClass('disabled')
-                    .css('color', '#cbcbcb')
-                    .tooltip({title: message, html: true})
-                    .on('click', function(){return false;});
+        try{
+            var response = js.parseJSON(data);
+            if(response.canCreate === false){
+                var message = '';
+                js.each(response.cause, function(i, cause){
+                    message += '<b>'+cause.message+'</b><br/>'+cause.elements+'<br/>';
+                });
+
+                js(element)
+                        .addClass('disabled')
+                        .css('color', '#cbcbcb')
+                        .tooltip({title: message, html: true})
+                        .on('click', function(){return false;});
+            }
+            else
+                js(element)
+                    .css('color', 'inherit')
+                    .removeClass('disabled')
+                    .tooltip('destroy')
+                    .on('click', function(){return true;});
         }
-        else
-            js(element)
-                .css('color', 'inherit')
-                .removeClass('disabled')
-                .tooltip('destroy')
-                .on('click', function(){return true;});
+        catch(e){
+            if(window.console){
+                console.log(e);
+                console.log(data);
+            }
+        }
     });
 };
 
-var getSynchronizationInfo = function(element, children){
+var getSynchronizationInfo = function(element){
     if(element.length === 0) return;
-    
-    var readyForSync = true;
-    if(children.length > 0){
-        for(var i in children){
-            if(children[i].modified_by === null)
-                readyForSync = false;
-        }
-    }
     
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
-    if(readyForSync && version.child_number > 0){
+    if(version.child_number > 0){
         js.ajax({
             cache: false,
             type: 'GET',
             url: Links.ajax.synchronization.replace('#0#', metadata.id)
         }).done(function(data){
-            var response = js.parseJSON(data);
-            
-            if(response.synchronized === true){
-                var message = '<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')?> '+response.synchronized_by+'<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE')?> '+response.lastsynchronization;
-                js(element)
-                        .removeClass('disabled')
-                        .css('color', 'inherit')
-                        .tooltip({title: message, html: true})
-                        .on('click', function(){return true;});
+            try{
+                var response = js.parseJSON(data);
+
+                if(response.synchronized === true){
+                    var message = '<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')?> '+response.synchronized_by+'<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE')?> '+response.lastsynchronization;
+                    js(element)
+                            .removeClass('disabled')
+                            .css('color', 'inherit')
+                            .tooltip({title: message, html: true})
+                            .on('click', function(){return true;});
+                }
+            }
+            catch(e){
+                if(window.console){
+                    console.log(e);
+                    console.log(data);
+                }
             }
         });
     }
@@ -646,19 +662,27 @@ var getPublishRight = function(element){
         type: 'GET',
         url: Links.ajax.publish_right.replace('#0#', metadata_id)
     }).done(function(data){
-        var response = js.parseJSON(data);
-        if(response !== null && response.canPublish>0)
-            js(element)
-                .addClass('disabled')
-                .css('color', '#cbcbcb')
-                .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_UNPUBLISHED_OR_UNVALIDATED_CHILDREN')?>", html: true})
-                .off('click');
-        else
-            js(element)
-                .removeClass('disabled')
-                .css('color', 'inherit')
-                .tooltip('destroy')
-                .on('click', function(){showPublishModal(this);return false;});
+        try{
+            var response = js.parseJSON(data);
+            if(response !== null && response.canPublish>0)
+                js(element)
+                    .addClass('disabled')
+                    .css('color', '#cbcbcb')
+                    .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_UNPUBLISHED_OR_UNVALIDATED_CHILDREN')?>", html: true})
+                    .off('click');
+            else
+                js(element)
+                    .removeClass('disabled')
+                    .css('color', 'inherit')
+                    .tooltip('destroy')
+                    .on('click', function(){showPublishModal(this);return false;});
+        }
+        catch(e){
+            if(window.console){
+                console.log(e);
+                console.log(data);
+            }
+        }
     });
 };
 
@@ -670,20 +694,27 @@ var getSetInProgressRight = function(element){
         type: 'GET',
         url: Links.ajax.inprogress_right.replace('#0#', getVersionId(element)).replace('#1#', metadataState.PUBLISHED)
     }).done(function(data){
-        var response = js.parseJSON(data);
-        if(response.num>0){
-            js(element)
-                    .attr('class', 'disabled')
-                    .css('color', '#cbcbcb')
-                    .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_HAS_PUBLISHED_PARENT')?>", html: true})
-                    .on('click', function(){ return false;});
+        try{
+            var response = js.parseJSON(data);
+            if(response.num>0){
+                js(element)
+                        .attr('class', 'disabled')
+                        .css('color', '#cbcbcb')
+                        .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_HAS_PUBLISHED_PARENT')?>", html: true})
+                        .on('click', function(){ return false;});
+            }
+            else
+                js(element)
+                        .removeClass('disabled')
+                        .css('color', 'inherit')
+                        .tooltip('destroy')
+                        .on('click', function(){ return true;});
         }
-        else{
-            js(element)
-                    .removeClass('disabled')
-                    .css('color', 'inherit')
-                    .tooltip('destroy')
-                    .on('click', function(){ return true;});
+        catch(e){
+            if(window.console){
+                console.log(e);
+                console.log(data);
+            }
         }
     });
 };
@@ -704,11 +735,19 @@ var showDeleteModal = function(element){
         type: 'GET',
         url: Links.ajax.delete_child.replace('#0#', version_id)
     }).done(function(data){
-        var response = js.parseJSON(data);
-        var ul = buildVersionsTree(response.versions);
-        js('#deleteModalChildrenList').html(ul);
-        js('#btn_delete').attr('href', Links.modal.delete.replace('#0#', version_id));
-        js('#deleteModal').modal('show');
+        try{
+            var response = js.parseJSON(data);
+            var ul = buildVersionsTree(response.versions);
+            js('#deleteModalChildrenList').html(ul);
+            js('#btn_delete').attr('href', Links.modal.delete.replace('#0#', version_id));
+            js('#deleteModal').modal('show');
+        }
+        catch(e){
+            if(window.console){
+                console.log(e);
+                console.log(data);
+            }
+        }
     });
 };
 
@@ -746,19 +785,27 @@ var showPublishModal = function(element){
         type: 'GET',
         url: Links.ajax.publicable_child.replace('#0#', version.id)
     }).done(function(data) {
-        var response = js.parseJSON(data);
-        js('#publishModalChildrenList').html(buildVersionsTree(response.versions));
-        
-        if('undefined' !== typeof metadata.publishDate && '0000-00-00 00:00:00' !== metadata.publishDate){
-            var datetime = metadata.publishDate.split(' ');
-            js('#publishModal #published').val(datetime[0]);
+        try{
+            var response = js.parseJSON(data);
+            js('#publishModalChildrenList').html(buildVersionsTree(response.versions));
+
+            if('undefined' !== typeof metadata.publishDate && '0000-00-00 00:00:00' !== metadata.publishDate){
+                var datetime = metadata.publishDate.split(' ');
+                js('#publishModal #published').val(datetime[0]);
+            }
+
+            if(js(response.versions).length){
+                js('#publishModal #viral').val(1);
+            }
+
+            showModal(metadata.id);
         }
-        
-        if(js(response.versions).length){
-            js('#publishModal #viral').val(1);
+        catch(e){
+            if(window.console){
+                console.log(e);
+                console.log(data);
+            }
         }
-        
-        showModal(metadata.id);
     });
     return false;
 };

@@ -103,8 +103,8 @@ class Easysdi_shopModelOrders extends JModelList {
 //        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 //
 //        // Join over the created by field 'created_by'
-//        $query->select('created_by.name AS created_by_name');
-//        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+        $query->select('created_by.name AS created_by_name');
+        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
         //Join over the order state value
         $query->select('state.value AS orderstate');
@@ -139,7 +139,8 @@ class Easysdi_shopModelOrders extends JModelList {
         
         if($this->getState('layout.validation')){
             $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
-                    ->where('uro.user_id='.(int)  sdiFactory::getSdiUser()->id);
+                    ->where('uro.user_id='.(int)  sdiFactory::getSdiUser()->id)
+                    ->where('uro.role_id=10');
         }
         else{
             //Only order which belong to the current user

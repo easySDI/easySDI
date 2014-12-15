@@ -1673,7 +1673,8 @@ CONSTRAINT `#__sdi_versionlink_fk2`
     FOREIGN KEY (`child_id` )
     REFERENCES `#__sdi_version` (`id` )
     ON DELETE CASCADE
-    ON UPDATE NO ACTION
+    ON UPDATE NO ACTION,
+CONSTRAINT #__sdi_versionlink_uk UNIQUE (parent_id, child_id)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
@@ -1772,8 +1773,15 @@ INDEX `#__sdi_metadata_fk3` (`version_id` ASC) ,
 
 CREATE TABLE IF NOT EXISTS `#__sdi_catalog_resourcetype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`guid` VARCHAR(36) NOT NULL,
+`created_by` INT(11) NOT NULL,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`modified_by` INT(11),
+`modified` DATETIME,
 `ordering` INT(11)   ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11) NOT NULL DEFAULT '0',
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `catalog_id` INT(11) UNSIGNED  NOT NULL ,
 `resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`) ,
