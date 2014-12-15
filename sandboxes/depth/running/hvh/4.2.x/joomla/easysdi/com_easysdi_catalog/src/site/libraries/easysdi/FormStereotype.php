@@ -175,7 +175,7 @@ class FormStereotype {
         $dom = new DOMDocument('1.0', 'utf-8');
 
         $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
-        $extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '1');
+        //$extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '1');
         
         $EX_Extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_Extent');
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':dbid', '0');

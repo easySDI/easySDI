@@ -6,6 +6,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumChildtype.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRenderType.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumStereotype.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRelationScope.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
@@ -129,6 +130,8 @@ class FormGenerator {
             $this->db->setQuery($query);
             $result = $this->db->loadObject();
 
+            $scope_id = $this->getFieldScope($this->item->id, $result->relationscope_id, $result->editorrelationscope_id);
+
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
 
@@ -136,7 +139,16 @@ class FormGenerator {
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
                     $relation->appendChild($class);
 
-                    $parent->appendChild($relation);
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
+
+                    $coll = $this->domXpathStr->query($parent->getNodePath().'/*[@catalog:dbid="'.$_GET['relid'].'" and @catalog:childtypeId="0"]');
+                    
+                    //try to set the refNode, depending on the prevSibl existence
+                    $refNode = $coll->item($coll->length - 1)->nextSibling;
+
+                    //add the child to the parent, before the refNode if defined or as last parent's child
+                    isset($refNode) ? $parent->insertBefore($relation, $refNode) : $parent->appendChild($relation);
+                
                     $root = $class;
                     $this->ajaxXpath = $relation->getNodePath();
 
@@ -152,6 +164,7 @@ class FormGenerator {
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
 
                     if (isset($result->classass_id)) {
                         $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->classass_name, $result->classass_id, EnumChildtype::$CLASS, $result->guid);
@@ -159,7 +172,13 @@ class FormGenerator {
                         $relation->appendChild($class);
                     }
 
-                    $parent->appendChild($relation);
+                    $coll = $this->domXpathStr->query($parent->getNodePath().'/*[@catalog:dbid="'.$_GET['relid'].'" and @catalog:childtypeId="3"]');
+
+                    //try to set the refNode, depending on the prevSibl existence
+                    $refNode = $coll->item($coll->length - 1)->nextSibling;
+
+                    //add the child to the parent, before the refNode if defined or as last parent's child
+                    isset($refNode) ? $parent->insertBefore($relation, $refNode) : $parent->appendChild($relation);
 
                     $this->ajaxXpath = $relation->getNodePath();
 
@@ -175,7 +194,24 @@ class FormGenerator {
                 case EnumChildtype::$ATTRIBUT:
                     $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
                     $cloned = $attribute->cloneNode(true);
-                    $parent->appendChild($cloned);
+                    $clearNode = $this->clearNodeValue($cloned);
+
+                    switch ($scope_id) {
+                        // readOnly
+                        case 2:
+                        case 3:
+                            $clearNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
+                            break;
+                    }
+
+                    $coll = $this->domXpathStr->query($parent->getNodePath().'/*[@catalog:dbid="'.$_GET['relid'].'" and @catalog:childtypeId="2"]');
+                    
+                    //try to set the refNode, depending on the prevSibl existence
+                    $refNode = $coll->item($coll->length - 1)->nextSibling;
+
+                    //add the child to the parent, before the refNode if defined or as last parent's child
+                    isset($refNode) ? $parent->insertBefore($clearNode, $refNode) : $parent->appendChild($clearNode);
+                    
                     $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
 
 
@@ -185,16 +221,21 @@ class FormGenerator {
             }
         }
 
+        $rootXpath = $root->getNodePath();
+
         $this->setDomXpathStr();
 
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
-            $this->mergeCsw();
+            $this->cleanStructure();
+            //$this->mergeCsw();
         }
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
-        $form = $this->buildForm($root);
+        $this->setDomXpathStr();
+
+        $form = $this->buildForm($this->domXpathStr->query($rootXpath)->item(0));
 
         return $form;
     }
@@ -235,34 +276,32 @@ class FormGenerator {
         $this->setDomXpathStr();
 
         if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
+            $occurance = 0;
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATIONTYPE:
                     $relationExist = $parent;
+                    $lowerbound = $parent->getAttributeNS($this->catalog_uri, 'lowerbound');
+                    if (isset($this->domXpathCsw)) {
+                        $occurance = $this->domXpathCsw->query('/*' . $parent->getNodePath())->length;
+                    }
                     break;
+                case EnumChildtype::$CLASS:
                 default :
                     $relationExist = $parent->parentNode;
+                    $lowerbound = $parent->parentNode->getAttributeNS($this->catalog_uri, 'lowerbound');
+                    if (isset($this->domXpathCsw)) {
+                        $occurance = $this->domXpathCsw->query('/*' . $this->removeIndex($parent->getNodePath()))->length;
+                    }
                     break;
-            }
-
-            $lowerbound = $relationExist->getAttributeNS($this->catalog_uri, 'lowerbound');
-            $occurance = 0;
-            if (isset($this->csw)) {
-                $occurance = $this->domXpathCsw->query('/*' . $relationExist->getNodePath())->length;
             }
 
             if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
 
-                if ($parent->parentNode->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
-                    $exist = 1;
+                if ($parent->parentNode->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE || $lowerbound > 0 || $occurance > 0) {
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 } else {
-                    $exist = $lowerbound + $occurance;
-                }
-
-                if ($exist < 1) {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
                     return $childs;
-                } else {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 }
             }
 
@@ -272,9 +311,8 @@ class FormGenerator {
             if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                if ($occurance == 0) {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                }
+
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
             }
         }
 
@@ -294,12 +332,15 @@ class FormGenerator {
 
         foreach ($results as $result) {
 
+            $scope_id = $this->getFieldScope($this->item->id, $result->relationscope_id, $result->editorrelationscope_id);
+
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
 
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':level', $level);
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
 
                     switch ($result->class_stereotype_id) {
                         case EnumStereotype::$GEOGRAPHICEXTENT:
@@ -335,34 +376,15 @@ class FormGenerator {
                         $attribute->appendChild($this->structure->importNode($st, true));
                     }
 
-                    if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
-                        switch ($result->editorrelationscope_id) {
-
-                            // Visible
-                            case 2:
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                                break;
-                            // Hidden
-                            case 3:
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
-                                break;
-                        }
-                    } else {
-                        switch ($result->relationscope_id) {
-
-                            // Visible
-                            case 2:
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                                break;
-                            // Hidden
-                            case 3:
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
-                                break;
-                        }
+                    switch ($scope_id) {
+                        // readOnly
+                        case 2:
+                        case 3:
+                            $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
+                            break;
                     }
 
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'scopeId', $scope_id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
@@ -379,6 +401,8 @@ class FormGenerator {
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '');
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
+
                     if (isset($result->classass_id)) {
                         $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->classass_name, $result->classass_id, EnumChildtype::$CLASS, $result->guid);
 
@@ -433,6 +457,85 @@ class FormGenerator {
         return $element;
     }
 
+    private function cleanStructure() {
+        //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
+        $clone_structure = new DOMDocument('1.0', 'utf-8');
+        $clone_structure->loadXML($this->structure->saveXML());
+
+        $domXpathClone = new DOMXPath($clone_structure);
+        $this->registerNamespace($domXpathClone);
+
+        $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]');
+
+        for ($j = 0; $j < $coll->length; $j++) {
+            $node = $coll->item($j);
+            $occurance = $this->domXpathCsw->query('/*' . $node->getNodePath())->length;
+
+            if ($occurance == 0) {
+                //look for the ancestor under which we can clean the structure
+                while (!isset($node->nextSibling) && !isset($node->previousSibling)) {
+                    $node = $node->parentNode;
+                }
+                
+                //remove the child
+                $parent = $node->parentNode;
+                $parent->removeChild($node);
+                $clone_structure->normalizeDocument();
+                
+                //reset collection and loop
+                $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]');
+                $j = 0;
+                continue;
+            }
+
+            $childtype = $node->getAttributeNS($this->catalog_uri, 'childtypeId');
+            if ($childtype == EnumChildtype::$CLASS) {
+                $node = $node->parentNode;
+            }
+            for ($i = 1; $i < $occurance; $i++) {
+                $cloneNode = $node->cloneNode(true);
+                $cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+                isset($node->nextSibling) ? $node->parentNode->insertBefore($cloneNode, $node->nextSibling) : $node->parentNode->appendChild($cloneNode);
+            }
+        }
+
+        $this->getValue($clone_structure->firstChild);
+
+        $this->mergeToStructure($clone_structure, $domXpathClone);
+    }
+
+    private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
+        /* @var $node DOMElement */
+        foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
+            if ($domXpathClone->query($node->getNodePath())->length == 0) {
+                do {
+                    $childToImport = $node;
+                    $node = $node->parentNode;
+                    $id = $node->getAttributeNS($this->catalog_uri, 'id');
+                } while ($domXpathClone->query($node->getNodePath() . '[@catalog:id="' . $id . '"]')->length == 0);
+
+                $target = $domXpathClone->query($node->getNodePath())->item(0);
+                
+                $prevSibl = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
+                if(isset($prevSibl)){
+                    $coll = $domXpathClone->query($prevSibl->getNodePath());
+
+                    //try to set the refNode, depending on the prevSibl existence
+                    $refNode = $coll->length>0 ? $coll->item($coll->length-1)->nextSibling : $target->firstChild;
+                }
+                else{
+                    $refNode = $target->firstChild;
+                }
+
+                //add the child to the parent, before the refNode if defined or as last parent's child
+                isset($refNode) ? $target->insertBefore($clone->importNode($childToImport, true), $refNode) : $target->appendChild($clone->importNode($childToImport, true));
+            }
+        }
+        
+        //replace the structure with the clone
+        $this->structure->loadXML($clone->saveXML());
+    }
+
     /**
      * This method adds the required number of occurrences of a relation.
      */
@@ -441,8 +544,12 @@ class FormGenerator {
         $exclude_node = array('gmd:geographicElement');
 
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $relation) {
-            $xpath = $relation->getNodePath();
+            $xpath = $relation->firstChild->getNodePath();
             $nbr = $this->domXpathCsw->query('/*' . $xpath)->length;
+
+            if ($nbr == 0) {
+                continue;
+            }
 
             if (!in_array($relation->nodeName, $exclude_node)) {
                 $hasSibling = isset($relation->nextSibling);
@@ -458,10 +565,10 @@ class FormGenerator {
                         $relation->parentNode->appendChild($clone);
                     }
                 }
-
-                $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
             }
         }
+
+        $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
     }
 
     /**
@@ -469,8 +576,12 @@ class FormGenerator {
      * 
      * @param DOMNode $child The current attribute.
      */
-    private function getValue(DOMNode $child) {
-        foreach ($child->childNodes as $node) {
+    private function getValue(DOMNode &$child) {
+        if (strstr($child->getNodePath(), 'colors')) {
+            $breakpoint = true;
+        }
+
+        foreach ($child->childNodes as $i => $node) {
             if ($this->hasChildElement($node)) {
                 if ($node->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
                     $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
@@ -478,9 +589,9 @@ class FormGenerator {
                         $node->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', $nodeCsw->getAttributeNS('http://www.w3.org/1999/xlink', 'href'));
                     }
                 }
+
                 $this->getValue($node);
             } else {
-                $xpath = $node->getNodePath();
                 $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
                 if (isset($nodeCsw)) {
                     $node->nodeValue = htmlspecialchars($nodeCsw->nodeValue);
@@ -919,13 +1030,29 @@ class FormGenerator {
 
                     $field->setAttribute('type', 'groupedlist');
                     $field->setAttribute('label', EText::_($guid));
-                    $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->getAttribute('codeListValue'), true));
 
-                    $group->appendChild($option);
-                    $field->appendChild($group);
+                    if ($upperbound > 1) {
+                        $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode);
+                        $default = array();
+                        foreach ($allValues as $node) {
+                            if (!empty($node->firstChild->nodeValue)) {
+                                $default[] = $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $node->firstChild->nodeValue), true);
+                            }
+                        }
+
+                        $field->setAttribute('default', implode(',', $default));
+                        $field->setAttribute('type', 'MultipleDefaultList');
+                        $field->appendChild($option);
+                    } else {
+                        $field->setAttribute('default', $this->getDefaultValue($relid, $this->getGuidFromLocaleValue($relid, $attribute->firstChild->nodeValue), true));
+                        $group->appendChild($option);
+                        $field->appendChild($group);
+                    }
+
+
                     break;
                 case EnumStereotype::$BOUNDARY:
-                    $field->setAttribute('type', 'list');
+
                     if ($guid != '') {
                         $field->setAttribute('label', EText::_($guid));
                     } else {
@@ -946,32 +1073,17 @@ class FormGenerator {
                             }
                         }
 
+                        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()), 12, 15);
+                        $field->setAttribute('name', $name);
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
+                        $field->setAttribute('type', 'MultipleDefaultList');
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                         $field->setAttribute('default', $attribute->firstChild->nodeValue);
+                        $field->setAttribute('type', 'list');
                     }
                     break;
-                /*case EnumStereotype::$BOUNDARYCATEGORY:
-                    $field->setAttribute('type', 'list');
-                    if ($guid != '') {
-                        $field->setAttribute('label', EText::_($guid));
-                    } else {
-                        $field->setAttribute('label', JText::_($label));
-                    }
-
-                    if ($opt->guid != '') {
-                        $option = $this->form->createElement('option', EText::_($opt->guid));
-                    } else {
-                        $option = $this->form->createElement('option');
-                    }
-
-                    $option->setAttribute('value', $opt->name);
-
-                    $field->appendChild($option);
-                    $field->setAttribute('onchange', 'filterBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
-                    break;*/
                 case EnumStereotype::$TEXTCHOICE:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
@@ -1045,9 +1157,9 @@ class FormGenerator {
         $validator = $this->getValidatorClass($attribute);
 
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
-        $field->setAttribute('type', 'calendar');
+        $field->setAttribute('type', 'text');
         $field->setAttribute('class', $validator);
-        $field->setAttribute('format', '%Y-%m-%d');
+        //$field->setAttribute('format', '%Y-%m-%d');
         $field->setAttribute('label', EText::_($guid)); //
         $field->setAttribute('description', EText::_($guid, 2)); //
 
@@ -1177,7 +1289,7 @@ class FormGenerator {
 
         $validator = $this->getValidatorClass($relationtype);
 
-        $field->setAttribute('class', $validator);
+        $field->setAttribute('class', 'required ' . $validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
         $field->setAttribute('label', JText::_('COM_EASYSDI_CATALOG_RESOURCETYPE_NAME'));
@@ -1376,19 +1488,27 @@ class FormGenerator {
         $xpath = str_replace('-dp-', ':', $xpath);
         return $xpath;
     }
+    
+    private function registerNamespace($o){
+        foreach ($this->nsdao->getAll() as $ns) {
+            $o->registerNamespace($ns->prefix, $ns->uri);
+        }
+    }
 
     private function setDomXpathStr() {
         $this->domXpathStr = new DOMXPath($this->structure);
-        foreach ($this->nsdao->getAll() as $ns) {
+        $this->registerNamespace($this->domXpathStr);
+        /*foreach ($this->nsdao->getAll() as $ns) {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
-        }
+        }*/
     }
 
     private function setDomXpathCsw() {
         $this->domXpathCsw = new DOMXPath($this->csw);
-        foreach ($this->nsdao->getAll() as $ns) {
+        $this->registerNamespace($this->domXpathCsw);
+        /*foreach ($this->nsdao->getAll() as $ns) {
             $this->domXpathCsw->registerNamespace($ns->prefix, $ns->uri);
-        }
+        }*/
     }
 
     /**
@@ -1442,14 +1562,13 @@ class FormGenerator {
             return '';
         }
 
-        $language = $this->ldao->getDefaultLanguage();
-
         $query = $this->db->getQuery(true);
 
         if ($isList) {
-            $query->select('av.value');
+            $query->select('av.value, av.guid, a.stereotype_id');
             $query->from('#__sdi_relation_defaultvalue rdv');
             $query->innerJoin('#__sdi_attributevalue av on av.id = rdv.attributevalue_id');
+            $query->innerJoin('#__sdi_attribute a on a.id=av.attribute_id');
             $query->where('rdv.relation_id = ' . (int) $relation_id);
         } else {
             /* $query->select('attributevalue_id, value');
@@ -1468,8 +1587,81 @@ class FormGenerator {
         if (empty($result)) {
             return '';
         } else {
-            return $result->value;
+            if (isset($result->stereotype_id) && $result->stereotype_id == EnumStereotype::$LOCALECHOICE) {
+                return $result->guid;
+            } else {
+                return $result->value;
+            }
         }
+    }
+
+    private function getGuidFromLocaleValue($relation_id, $texte) {
+        $query = $this->db->getQuery(true);
+
+        $query->select('av.guid');
+        $query->from('#__sdi_attributevalue av');
+        $query->innerJoin('#__sdi_relation r ON r.attributechild_id = av.attribute_id');
+        $query->innerJoin('#__sdi_translation t ON t.element_guid = av.guid');
+        $query->where('r.id = ' . (int) $relation_id);
+        $query->where('t.text2 = ' . $query->quote($texte));
+
+        $this->db->setQuery($query);
+        $result = $this->db->loadObject();
+
+        return isset($result) && isset($result->guid) ? $result->guid : '';
+    }
+
+    /**
+     * 
+     * @param DOMElement $element
+     * @return \DOMElement
+     */
+    private function clearNodeValue(DOMElement $element) {
+        $nodes = $element->getElementsByTagNameNS('*', '*');
+
+        foreach ($nodes as $node) {
+            if (!$this->hasChildElement($node)) {
+                $node->nodeValue = NULL;
+            }
+        }
+
+        return $element;
+    }
+
+    /**
+     * get scope for specific user and field
+     * 
+     * @param int $metadata_id
+     * @param int $relationscope_id
+     * @param int $editorrelationscope_id
+     * @return int
+     */
+    private function getFieldScope($metadata_id, $relationscope_id, $editorrelationscope_id) {
+        $rights = array(EnumRelationScope::HIDDEN);
+
+        if ($this->user->authorizeOnMetadata($metadata_id, sdiUser::resourcemanager) || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataresponsible)) {
+            if (!empty($relationscope_id)) {
+                $rights[] = $relationscope_id;
+            }
+        }
+
+        if ($this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataeditor)) {
+            if (!empty($editorrelationscope_id)) {
+                $rights[] = $editorrelationscope_id;
+            }
+        }
+
+        return min($rights);
+    }
+
+    /**
+     * Remove index from XPath
+     *
+     * @param string $xpath
+     * @return string
+     */
+    private function removeIndex($xpath) {
+        return preg_replace('/[\[0-9\]*]/i', '', $xpath);
     }
 
 }
