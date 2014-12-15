@@ -1,3 +1,4 @@
+IF OBJECT_ID('#__sdi_translation$#__sdi_translation_fk1', 'C') IS NOT NULL 
 ALTER TABLE [#__sdi_translation] DROP CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1];
 
 ALTER TABLE [#__sdi_translation]  WITH CHECK ADD CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1] FOREIGN KEY([language_id])

@@ -49,7 +49,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
 
 
 <form class="form-horizontal form-validate sdi-catalog-fe-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>#results" method="post" id="searchform" name="searchform" enctype="multipart/form-data">
-    <?php 
+    <?php
     $tmpl = JFactory::getApplication()->input->get('tmpl', null, 'string');
     if(isset($tmpl)):?>
     <input type="hidden" name="tmpl" id="tmpl" value="<?php echo $tmpl ; ?>"/>
@@ -76,7 +76,7 @@ if ($results):
     ?>
     <a name="results"></a>
     <div class="catalog-searchresults">
-        <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') . ' ' . JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
+        <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') . ' ' . JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>
         <?php
         // Build of extendend XML for each result entry
         foreach ($results as $result) :
