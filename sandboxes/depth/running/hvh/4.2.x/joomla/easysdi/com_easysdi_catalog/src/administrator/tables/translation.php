@@ -81,11 +81,11 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                         }
                     }
                 }
-		if (!$this->save())		{
+		if (!$this->store())		{
                      $this->setError('Can t store');
                     return false;
 		}
-                $this->reset();
+                //$this->reset();
                 $this->id = null;
             }
         }
