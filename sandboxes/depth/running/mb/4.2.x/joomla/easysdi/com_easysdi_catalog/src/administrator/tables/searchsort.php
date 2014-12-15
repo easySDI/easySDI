@@ -47,7 +47,7 @@ class Easysdi_catalogTablesearchsort extends JTable {
                 $keys = array ();
                 $keys ['catalog_id'] = $catalog_id;
                 $keys ['language_id'] = $language_id;
-                if($this->load($keys, false)){
+                if($this->load($keys)){
                     //Update
                     $this->ogcsearchsorting = $value;
                 }else{
@@ -63,7 +63,7 @@ class Easysdi_catalogTablesearchsort extends JTable {
                      $this->setError('Can t store');
                     return false;
 		}
-                //$this->reset();
+                $this->reset();
                 $this->id = null;
             }
         }

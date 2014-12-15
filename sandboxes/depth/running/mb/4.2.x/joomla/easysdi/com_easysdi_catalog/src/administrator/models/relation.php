@@ -313,7 +313,7 @@ class Easysdi_catalogModelrelation extends sdiModel {
                 $searchcriteria = JTable::getInstance('searchcriteria', 'Easysdi_catalogTable');
                 $keys = array();
                 $keys['relation_id'] = $item->id;
-                $searchcriteria->load($keys, false);
+                $searchcriteria->load($keys);
                 if (!$searchcriteria->save($array)) {
                     $this->setError($searchcriteria->getError());
                     return false;
