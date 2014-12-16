@@ -27,46 +27,6 @@ class Easysdi_catalogTablesearchcriteria extends sdiTable {
     }
 
     /**
-     * Overloaded bind function to pre-process the params.
-     *
-     * @param	array		Named array
-     * @return	null|string	null is operation was satisfactory, otherwise returns an error
-     * @see		JTable:bind
-     * @since	1.5
-     */
-    public function bind($array, $ignore = '') {
-
-        
-		$task = JRequest::getVar('task');
-		if($task == 'apply' || $task == 'save'){
-			$array['modified'] = date("Y-m-d H:i:s");
-		}
-		$input = JFactory::getApplication()->input;
-		$task = $input->getString('task', '');
-		if(($task == 'save' || $task == 'apply') && (!JFactory::getUser()->authorise('core.edit.state','com_easysdi_catalog.searchcriteria.'.$array['id']) && $array['state'] == 1)){
-			$array['state'] = 0;
-		}
-
-        if(!JFactory::getUser()->authorise('core.admin', 'com_easysdi_catalog.searchcriteria.'.$array['id'])){
-            $actions = JFactory::getACL()->getActions('com_easysdi_catalog','searchcriteria');
-            $default_actions = JFactory::getACL()->getAssetRules('com_easysdi_catalog.searchcriteria.'.$array['id'])->getData();
-            $array_jaccess = array();
-            foreach($actions as $action){
-                $array_jaccess[$action->name] = $default_actions[$action->name];
-            }
-            $array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-        }
-        //Bind the rules for ACL where supported.
-		if (isset($array['rules']) && is_array($array['rules'])) {
-			$this->setRules($array['rules']);
-		}
-
-        return parent::bind($array, $ignore);
-    }
-    
-    
-    
-    /**
       * Define a namespaced asset name for inclusion in the #__assets table
       * @return string The asset name 
       *
