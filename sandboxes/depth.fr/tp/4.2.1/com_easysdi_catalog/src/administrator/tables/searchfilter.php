@@ -46,7 +46,7 @@ class Easysdi_catalogTablesearchfilter extends JTable {
                 $keys = array();
                 $keys ['searchcriteria_id'] = $src['searchcriteria_id'];
                 $keys ['language_id'] = $language_id;
-                if ($this->load($keys)) {
+                if ($this->load($keys, false)) {
                     //Update
                     $this->ogcsearchfilter = $value;
                 } else {
@@ -60,7 +60,7 @@ class Easysdi_catalogTablesearchfilter extends JTable {
                     $this->setError('Can t store');
                     return false;
                 }
-                $this->reset();
+                //$this->reset();
                 $this->id = null;
             }
         }
