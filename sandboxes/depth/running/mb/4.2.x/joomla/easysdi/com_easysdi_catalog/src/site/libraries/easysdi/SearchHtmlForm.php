@@ -86,8 +86,9 @@ class SearchHtmlForm extends SearchForm {
             return $this->dom->createElement('span');
         }
         $domlocal = new DOMDocument();
-        if (isset($labelString))            
-            $domlocal->loadHTML($this->convert($labelString));
+        if (isset($labelString))
+            ;
+        $domlocal->loadHTML($this->convert($labelString));
 
         $domXapth = new DOMXPath($domlocal);
         $label = $domXapth->query('/*/*/*')->item(0);
