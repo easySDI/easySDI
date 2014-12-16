@@ -81,11 +81,17 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                         }
                     }
                 }
-		if (!$this->save())		{
+                // Run any sanity checks on the instance and verify that it is ready for storage.
+		if (!$this->check())
+		{
+                        $this->setError('Can t check');
+			return false;
+		}
+		if (!$this->store())		{
                      $this->setError('Can t store');
                     return false;
 		}
-                $this->reset();
+                //$this->reset();
                 $this->id = null;
             }
         }
