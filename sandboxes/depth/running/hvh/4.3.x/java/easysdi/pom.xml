@@ -19,16 +19,16 @@
     
     <distributionManagement>
         <repository>
-            <id>easysdi-repo</id>
-            <url>http://www.easysdi.org:8080/archiva/repository/easysdi/</url>
+			<id>easysdi</id>
+			<url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
         </repository>
     </distributionManagement>
 
     <repositories>
         <repository>
-            <id>easysdi-repo</id>
-            <name>Easysdi Repository</name>
-            <url>http://www.easysdi.org:8080/archiva/repository/easysdi/</url>
+			<id>easysdi</id>
+			<name>EasySDI Repository</name>
+			<url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -37,6 +37,19 @@
             </snapshots>
         </repository>
     </repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>easysdi</id>
+			<name>EasySDI Repository</name>
+			<url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
  
     <dependencyManagement>
         <dependencies>
