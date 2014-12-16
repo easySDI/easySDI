@@ -195,6 +195,7 @@ var Resource = (function(){
             viewManager:            false
         };
         this.versioning = false;
+        this.assignment = false;
         this.canBeChild = false;
         this.support = {
             relation:       false,
@@ -240,7 +241,11 @@ var Resource = (function(){
     return Resource;
 }());
 
-<?php foreach ($this->items as $item) : ?>
+<?php 
+    $params = JComponentHelper::getParams('com_easysdi_catalog');
+    $assignenabled = $params->get('assignenabled');
+    
+    foreach ($this->items as $item) : ?>
     var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>', '<?php echo $item->resourcetype_alias; ?>', '<?php echo $item->accessscope; ?>');
     <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>resource.rights.metadataEditor = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>resource.rights.metadataResponsible = 1;<?php endif; ?>
@@ -253,6 +258,7 @@ var Resource = (function(){
     <?php if($item->supportview): ?>resource.support.view = 1;<?php endif; ?>
     <?php if($item->canbechild): ?>resource.canBeChild = 1;<?php endif; ?>
     <?php if($item->versioning): ?>resource.versioning = 1;<?php endif; ?>
+    resource.assignment = <?php  echo $assignenabled; ?>;
     <?php foreach($item->metadata as $key => $metadata):?>
         resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, '<?php echo JText::_($metadata->value);?>', '<?php echo $metadata->published;?>');
     <?php endforeach;?>
@@ -349,9 +355,8 @@ var buildMetadataDropDown = function(resource){
     /* SECOND SECTION */
     section = [];
     
-    if(resource.rights.metadataEditor && metadata.state==metadataState.INPROGRESS){
+    if(resource.rights.metadataEditor && metadata.state==metadataState.INPROGRESS && resource.assignment == 1 ){
         section.push(buildDropDownItem(resource, 'metadata.assign'));
-        //section.push(buildDropDownItem(resource, 'metadata.notify'));
     }
     
     dropdown.push(section);
@@ -429,7 +434,7 @@ var buildManagementDropDown = function(resource){
     }
     
     /* FIFTH SECTION */
-    if(resource.rights.metadataEditor){
+    if(resource.rights.metadataEditor  && resource.assignment == 1){
         var section = [];
         
         section.push(buildDropDownItem(resource, 'management.assignment_history'));
