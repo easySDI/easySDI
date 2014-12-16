@@ -56,6 +56,7 @@ import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiSysServer;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.integratedmodelling.geospace.gis.FeatureRasterizer;
@@ -577,10 +578,29 @@ public class WMSProxyServlet extends ProxyServlet {
                     String layerList = "";
                     String styleList = "";
                     
-                    //Handle Esri vendor specific parameter layerDefs       
-                    JSONObject layerdefs = ((WMSProxyServletRequest) this.getProxyRequest()).getLayerdefs();
-                    JSONObject newlayerdefs = new JSONObject();
-        
+                    //Set TRANSPARENT to TRUE if not present
+                    String paramUrl = getProxyRequest().getUrlParameters();
+                    if (!paramUrl.toUpperCase().contains("TRANSPARENT=")) {
+                        paramUrl += "TRANSPARENT=TRUE&";
+                    }
+                    
+                    //Handle WMS filtering vendor specific parameters
+                    SdiSysServer servertype = physicalService.getSdiSysServer();                    
+                    JSONObject layerdefs = null;
+                    JSONObject newlayerdefs = null;
+                    if(servertype.getValue().equalsIgnoreCase("arcgisserver")){
+                        //Handle Esri vendor specific parameter layerDefs       
+                        layerdefs = ((WMSProxyServletRequest) this.getProxyRequest()).getLayerdefs();
+                        newlayerdefs = new JSONObject();
+                    }else{
+                        //Geoserver
+                        String CQL_FILTER = ((WMSProxyServletRequest) this.getProxyRequest()).getCQL_FILTER();
+                        if(CQL_FILTER != null){
+                            paramUrl += "CQL_FILTER="+CQL_FILTER;
+                            paramUrl += "&";
+                        }
+                    }
+                            
                     while (itPL.hasNext()) {
                         Entry<Integer, ProxyLayer> layer = itPL.next();
                         layerList += layer.getValue().getPrefixedName() + ",";
@@ -598,12 +618,6 @@ public class WMSProxyServlet extends ProxyServlet {
 
                     String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length() - 1);
                     String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length() - 1);
-
-                    //Set TRANSPARENT to TRUE if not present
-                    String paramUrl = getProxyRequest().getUrlParameters();
-                    if (!paramUrl.toUpperCase().contains("TRANSPARENT=")) {
-                        paramUrl += "TRANSPARENT=TRUE&";
-                    }
                     
                     //Handle Esri vendor specific parameter layerDefs
                     if(layerdefs != null){

@@ -131,6 +131,11 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
      * each remote server.
      */
     private JSONObject SDI_FILTER;
+    
+    /**
+     * GeoServer vendor specific parameter to allow WMS filtering     * 
+     */
+    private String CQL_FILTER;
 
     
             
@@ -332,6 +337,21 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
     public void setSDI_FILTER(JSONObject SDI_FILTER) {
         this.SDI_FILTER = SDI_FILTER;
     }
+    
+    /**
+     * @return the CQL_FILTER
+     */
+    public String getCQL_FILTER() {
+        return CQL_FILTER;
+    }
+
+    /**
+     * @param CQL_FILTER the CQL_FILTER to set
+     */
+    public void setCQL_FILTER(String CQL_FILTER) {
+        this.CQL_FILTER = CQL_FILTER;
+    }
+    
     /**
      *
      */
@@ -416,7 +436,8 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
                     || key.equalsIgnoreCase("BBOX")
                     || key.equalsIgnoreCase("SRS")
                     || key.equalsIgnoreCase("CRS")
-                    || key.equalsIgnoreCase("LAYERDEFS")) {
+                    || key.equalsIgnoreCase("LAYERDEFS")
+                    || key.equalsIgnoreCase("CQL_FILTER")) {
                 value = request.getParameter(key);
             } else {
                 try {
@@ -432,7 +453,8 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
                     && !key.equalsIgnoreCase("LAYERS")
                     && !key.equalsIgnoreCase("STYLES")
                     && !key.equalsIgnoreCase("LAYER")
-                    && !key.equalsIgnoreCase("LAYERDEFS")) {
+                    && !key.equalsIgnoreCase("LAYERDEFS")
+                    && !key.equalsIgnoreCase("CQL_FILTER")) {
                 urlParameters = urlParameters + key + "=" + value + "&";
             }
 
@@ -498,6 +520,8 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
                 } catch (JSONException e){
                     
                 }
+            }else if (key.equalsIgnoreCase("CQL_FILTER")){
+                CQL_FILTER = value;
             }
         }
 
