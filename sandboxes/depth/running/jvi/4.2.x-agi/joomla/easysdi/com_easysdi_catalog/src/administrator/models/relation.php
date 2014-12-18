@@ -130,7 +130,7 @@ class Easysdi_catalogModelrelation extends sdiModel {
                             $item->defaultlocaletextarea[$value->language_id] = $value->value;
                         }
                     } else {
-                        $item->defaultlocaletextarea[$relationdefaultvalue->language_id] = $relationdefaultvalue->value;
+                        $item->defaulttextarea = $relationdefaultvalue->value;
                     }
                 } else if (in_array($item->rendertype_id, array(self::CHECKBOX, self::RADIOBUTTON, self::LISTRT))) { 
                     if (is_array($relationdefaultvalue)) {
@@ -148,7 +148,7 @@ class Easysdi_catalogModelrelation extends sdiModel {
                             $item->defaultlocaletextbox[$value->language_id] = $value->value;
                         }
                     } else {
-                        $item->defaultlocaletextbox[$relationdefaultvalue->language_id] = $relationdefaultvalue->value;
+                        $item->defaulttextbox = $relationdefaultvalue->value;
                     }
                 } else if ($item->rendertype_id == self::DATE) { 
                     $item->defaultdate = $relationdefaultvalue->value;
