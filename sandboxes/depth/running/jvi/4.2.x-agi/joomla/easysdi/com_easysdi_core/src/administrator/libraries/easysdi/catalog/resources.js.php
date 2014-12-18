@@ -735,7 +735,8 @@ var showModal = function(id, modalId){
 var showDeleteModal = function(element){
     if(element.length === 0) return;
     
-    var version_id = getVersionId(element);
+    var version_id = getVersionId(element),
+            metadata_id = getMetadataId(element);
     js.ajax({
         cache: false,
         type: 'GET',
@@ -743,6 +744,7 @@ var showDeleteModal = function(element){
     }).done(function(data){
         try{
             var response = js.parseJSON(data);
+            response.versions[version_id].metadata_id = metadata_id;
             var ul = buildVersionsTree(response.versions);
             js('#deleteModalChildrenList').html(ul);
             js('#btn_delete').attr('href', Links.modal.delete.replace('#0#', version_id));
@@ -786,6 +788,9 @@ var showPublishModal = function(element){
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
+    console.log(version);
+    console.log(metadata);
+    
     js.ajax({
         cache: false,
         type: 'GET',
@@ -793,6 +798,7 @@ var showPublishModal = function(element){
     }).done(function(data) {
         try{
             var response = js.parseJSON(data);
+            response.versions[version.id].metadata_id = metadata.id;
             js('#publishModalChildrenList').html(buildVersionsTree(response.versions));
 
             if('undefined' !== typeof metadata.publishDate && '0000-00-00 00:00:00' !== metadata.publishDate){

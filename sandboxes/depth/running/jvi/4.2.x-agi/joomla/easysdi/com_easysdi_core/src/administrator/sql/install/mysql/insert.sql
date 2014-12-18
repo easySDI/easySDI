@@ -613,7 +613,7 @@ INSERT INTO `#__sdi_sys_stereotype` VALUES ('3', '3', '1', 'locale', '', null, n
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('4', '4', '1', 'number', '^[\-+]?[0-9.]+$', 'Decimal', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('5', '5', '1', 'date', '^([0-9]{4}-[0-9]{2}-[0-9]{2})$', 'Date', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('6', '6', '1', 'list', '', null, null,'1');
-INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '^((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)$', 'URL', '1','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '((http:\/\/|https:\/\/|ftp:\/\/)(www.)?(([a-zA-Z0-9-]){2,}\.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)', 'URL', '1','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('8', '8', '1', 'datetime', '^([0-9]{4}-[0-9]{2}-[0-9]{2})$', 'DateTime', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('9', '9', '1', 'textchoice', '', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('10', '10', '1', 'localechoice', '', null, null,'1');
