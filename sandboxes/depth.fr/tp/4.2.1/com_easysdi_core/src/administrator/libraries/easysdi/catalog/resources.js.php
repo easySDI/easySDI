@@ -241,7 +241,7 @@ var Resource = (function(){
 
 <?php 
     $params = JComponentHelper::getParams('com_easysdi_catalog');
-    $assignenabled = $params->get('assignenabled');
+    $assignenabled = $params->get('assignenabled',1);
     
     foreach ($this->items as $item) : ?>
     var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>');
