@@ -1,9 +1,3 @@
-ALTER TABLE [#__extensions] ADD  DEFAULT ('') FOR [custom_data];
-ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [path];
-ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [img];
-ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [params];
-ALTER TABLE [#__assets] ADD  DEFAULT ('') FOR [rules];
-
 ALTER TABLE [actions]  WITH CHECK ADD  CONSTRAINT [actions$FK_ACTION_JOB] FOREIGN KEY([ID_JOB])
 REFERENCES [jobs] ([ID_JOB])
 ON DELETE CASCADE;
