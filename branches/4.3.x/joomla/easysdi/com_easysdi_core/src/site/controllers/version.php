@@ -14,6 +14,7 @@ require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
 /**
  * Version controller class.
@@ -119,7 +120,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.alias as resourcetype, m.metadatastate_id, ms.value as state')
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
@@ -177,6 +178,10 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $db->setQuery($query)->execute();
         $rows = $db->getNumRows();
         $results = $db->loadObjectList();
+        
+        foreach($results as $result)
+            $result->resourcetype = EText::_($result->resourcetype);
+        
         return $filtering ? $results : $rows;
     }
     
@@ -241,7 +246,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.alias as resourcetype, m.metadatastate_id, ms.value as state')
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
@@ -298,7 +303,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query->where($where);
         $db->setQuery($query)->execute();
         
-        return $filtering ? $db->loadObjectList() : $db->getNumRows();
+        if($filtering){
+            $results = $db->loadObjectList();
+            
+            foreach($results as $result)
+                $result->resourcetype = EText::_($result->resourcetype);
+            
+            return $results;
+        }
+        else return $db->getNumRows();
     }
     
     public function getChildren4DT(){
@@ -362,7 +375,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('v.id as id, r.name as resource, v.name as version, rt.alias as resourcetype, ms.value as state')
+                ->select('v.id as id, r.name as resource, v.name as version, rt.guid as resourcetype, ms.value as state')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
@@ -412,7 +425,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db->setQuery($query)->execute();
         
-        return $filtering ? $db->loadObjectList() : $db->getNumRows();
+        if($filtering){
+            $results = $db->loadObjectList();
+            
+            foreach($results as $result)
+                $result->resourcetype = EText::_($result->resourcetype);
+            
+            return $results;
+        }
+        else return $db->getNumRows();
     }
     
     public function getParents4DT(){
@@ -474,9 +495,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
 
+        $lastversion = $this->getLastVersion($resource_id);
+        $lastversion->viralversioning = 1;
         $versions = array();
-        if ($lastversion = $this->getLastVersion($resource_id)) {
-            $versions = $this->core_helpers->getViralVersionnedChild($lastversion);
+        if ($lastversion) {
+            $versions = $this->core_helpers->getChildrenVersion($lastversion);
         }
 
         // get version to create
@@ -648,9 +671,14 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $new_version = array();
             $new_version['resource_id'] = $version->resource_id;
             $new_version['name'] = date("Y-m-d H:i:s");
+            $new_version['isViral'] = (bool)$version->viralversioning;
 
-            if (!empty($version->children)) {
+            if ($new_version['isViral'] && !empty($version->children)) {
                 $new_version['children'] = $this->getNewVersions($version->children);
+            }
+            
+            if(!$new_version['isViral']){
+                $new_version['id'] = $version->id;
             }
 
             $new_versions[] = $new_version;
@@ -751,23 +779,23 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     private function saveVersions($versions) {
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
-        $response = array('selected_children' => array(), 'success' => true);
-        $selected_children = array();
-        $success = true;
-
+        $childrentoadd = array();
+        
         try {
             foreach ($versions as $version) {
                 if (array_key_exists('children', $version)) {
-                    $version['selectedchildren'] = $this->saveVersions($version['children']);
+                    $version['childrentoadd'] = $this->saveVersions($version['children']);
                 }
 
                 // Attempt to save the data.
-                $return = $model->save($version);
-                $version['id'] = $return;
-                $this->versions[] = $version;
-                $selected_children[] = $version['id'];
+                if($version['isViral']){
+                    $version['id'] = $model->save($version);
+                    $this->versions[] = $version;
+                }
+                
+                $childrentoadd[] = $version['id'];
             }
-            return json_encode($selected_children);
+            return json_encode($childrentoadd);
         } catch (RuntimeException $exc) {
             throw $exc;
         }
@@ -789,7 +817,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db->setQuery($query);
         $version = $db->loadObject();
-
+        
         if (!empty($version)) {
             return $version;
         } else {
@@ -816,11 +844,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     }
 
     /**
-     * Get a list of cascading deleting children
+     * Get a list of cascading publicable children
      * 
      */
     public function getCascadePublicableChild() {
-        return $this->getCascadeChild(true, true);
+        return $this->getCascadeChild(false, true);
     }
     
     /**

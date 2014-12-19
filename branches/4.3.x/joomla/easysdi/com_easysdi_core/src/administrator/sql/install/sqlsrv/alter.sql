@@ -535,8 +535,7 @@ ON DELETE CASCADE;
 ALTER TABLE [#__sdi_pricing_profile_category_pricing_rebate] CHECK CONSTRAINT [#__sdi_pricing_profile_category_pricing_rebate#__sdi_pricing_profile_category_pricing_rebate_fk2];
 
 ALTER TABLE [#__sdi_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_propertyvalue$#__sdi_propertyvalue_fk1] FOREIGN KEY([property_id])
-REFERENCES [#__sdi_property] ([id])
-ON DELETE CASCADE;
+REFERENCES [#__sdi_property] ([id]);
 
 ALTER TABLE [#__sdi_propertyvalue] CHECK CONSTRAINT [#__sdi_propertyvalue$#__sdi_propertyvalue_fk1];
 

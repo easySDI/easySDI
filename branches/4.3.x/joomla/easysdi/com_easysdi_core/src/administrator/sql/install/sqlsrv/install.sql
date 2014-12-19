@@ -1,6 +1,6 @@
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [action_types](
+CREATE TABLE [action_types] (
 	[ID_ACTION_TYPE] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NOT NULL,
  CONSTRAINT [PK_action_types_ID_ACTION_TYPE] PRIMARY KEY CLUSTERED 
@@ -14,7 +14,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [actions](
+CREATE TABLE [actions] (
 	[ID_ACTION] [bigint] NOT NULL,
 	[ID_JOB] [bigint] NOT NULL,
 	[ID_ACTION_TYPE] [bigint] NOT NULL,
@@ -33,7 +33,7 @@ SET QUOTED_IDENTIFIER ON;
 
 SET ANSI_PADDING ON;
 
-CREATE TABLE [alerts](
+CREATE TABLE [alerts] (
 	[ID_ALERT] [bigint] NOT NULL,
 	[ID_JOB] [bigint] NOT NULL,
 	[ID_OLD_STATUS] [bigint] NOT NULL,
@@ -58,7 +58,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [holidays](
+CREATE TABLE [holidays] (
 	[ID_HOLIDAYS] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NULL,
 	[DATE] [datetime2](0) NOT NULL,
@@ -73,7 +73,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [http_methods](
+CREATE TABLE [http_methods] (
 	[ID_HTTP_METHOD] [bigint] NOT NULL,
 	[NAME] [nvarchar](10) NOT NULL,
  CONSTRAINT [PK_http_methods_ID_HTTP_METHOD] PRIMARY KEY CLUSTERED 
@@ -87,7 +87,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [job_agg_hour_log_entries](
+CREATE TABLE [job_agg_hour_log_entries] (
 	[DATE_LOG] [datetime2](0) NOT NULL,
 	[ID_JOB] [bigint] NOT NULL,
 	[H1_MEAN_RESP_TIME] [real] NOT NULL,
@@ -120,7 +120,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [job_agg_log_entries](
+CREATE TABLE [job_agg_log_entries] (
 	[DATE_LOG] [datetime2](0) NOT NULL,
 	[ID_JOB] [bigint] NOT NULL,
 	[SLA_MEAN_RESP_TIME] [real] NOT NULL,
@@ -153,7 +153,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [job_defaults](
+CREATE TABLE [job_defaults] (
 	[ID_PARAM] [bigint] NOT NULL,
 	[COLUMN_NAME] [nvarchar](45) NOT NULL,
 	[STRING_VALUE] [nvarchar](45) NULL,
@@ -169,7 +169,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jobs](
+CREATE TABLE [jobs] (
 	[ID_JOB] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NOT NULL,
 	[ID_SERVICE_TYPE] [bigint] NOT NULL,
@@ -206,7 +206,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_accessscope](
+CREATE TABLE [#__sdi_accessscope] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[entity_guid] [nvarchar](36) NOT NULL,
 	[organism_id] [bigint] NULL,
@@ -223,7 +223,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_address](
+CREATE TABLE [#__sdi_address] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NULL,
@@ -264,7 +264,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_allowedoperation](
+CREATE TABLE [#__sdi_allowedoperation] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[serviceoperation_id] [bigint] NOT NULL,
@@ -279,7 +279,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_application](
+CREATE TABLE [#__sdi_application] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -310,7 +310,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_assignment](
+CREATE TABLE [#__sdi_assignment] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[assigned] [datetime2](0) NULL,
@@ -329,7 +329,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_attribute](
+CREATE TABLE [#__sdi_attribute] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -364,7 +364,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_attributevalue](
+CREATE TABLE [#__sdi_attributevalue] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -392,7 +392,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_boundary](
+CREATE TABLE [#__sdi_boundary] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -424,7 +424,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_boundarycategory](
+CREATE TABLE [#__sdi_boundarycategory] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -451,7 +451,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_catalog](
+CREATE TABLE [#__sdi_catalog] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -482,7 +482,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_catalog_resourcetype](
+CREATE TABLE [#__sdi_catalog_resourcetype] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -506,7 +506,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_catalog_searchcriteria](
+CREATE TABLE [#__sdi_catalog_searchcriteria] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -533,7 +533,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_catalog_searchsort](
+CREATE TABLE [#__sdi_catalog_searchsort] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
@@ -551,7 +551,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_class](
+CREATE TABLE [#__sdi_class] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -583,7 +583,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_csw_spatialpolicy](
+CREATE TABLE [#__sdi_csw_spatialpolicy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[eastboundlongitude] [decimal](10, 6) NULL,
 	[westboundlongitude] [decimal](10, 6) NULL,
@@ -605,7 +605,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_diffusion](
+CREATE TABLE [#__sdi_diffusion] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -647,7 +647,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_diffusion_download](
+CREATE TABLE [#__sdi_diffusion_download] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[user_id] [bigint] NULL,
@@ -663,7 +663,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_diffusion_notifieduser](
+CREATE TABLE [#__sdi_diffusion_notifieduser] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
@@ -680,7 +680,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_diffusion_perimeter](
+CREATE TABLE [#__sdi_diffusion_perimeter] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
@@ -698,7 +698,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_diffusion_propertyvalue](
+CREATE TABLE [#__sdi_diffusion_propertyvalue] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
@@ -715,7 +715,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_excludedattribute](
+CREATE TABLE [#__sdi_excludedattribute] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[path] [nvarchar](500) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
@@ -730,7 +730,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_featuretype_policy](
+CREATE TABLE [#__sdi_featuretype_policy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](255) NULL,
@@ -749,7 +749,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_importref](
+CREATE TABLE [#__sdi_importref] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -782,7 +782,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_includedattribute](
+CREATE TABLE [#__sdi_includedattribute] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[name] [nvarchar](500) NOT NULL,
 	[featuretypepolicy_id] [bigint] NOT NULL,
@@ -797,7 +797,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_language](
+CREATE TABLE [#__sdi_language] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [bigint] NOT NULL,
 	[state] [int] NULL,
@@ -819,7 +819,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_layer](
+CREATE TABLE [#__sdi_layer] (
 	[id] [bigint] IDENTITY(10,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -844,7 +844,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_layer_layergroup](
+CREATE TABLE [#__sdi_layer_layergroup] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[layer_id] [bigint] NOT NULL,
 	[group_id] [bigint] NOT NULL,
@@ -860,7 +860,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_layergroup](
+CREATE TABLE [#__sdi_layergroup] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -891,7 +891,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_map](
+CREATE TABLE [#__sdi_map] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -932,7 +932,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_map_layergroup](
+CREATE TABLE [#__sdi_map_layergroup] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[group_id] [bigint] NOT NULL,
@@ -950,7 +950,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_map_physicalservice](
+CREATE TABLE [#__sdi_map_physicalservice] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[physicalservice_id] [bigint] NOT NULL,
@@ -965,7 +965,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_map_tool](
+CREATE TABLE [#__sdi_map_tool] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[tool_id] [bigint] NOT NULL,
@@ -981,7 +981,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_map_virtualservice](
+CREATE TABLE [#__sdi_map_virtualservice] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[virtualservice_id] [bigint] NOT NULL,
@@ -996,7 +996,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_maplayer](
+CREATE TABLE [#__sdi_maplayer] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -1039,7 +1039,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_metadata](
+CREATE TABLE [#__sdi_metadata] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -1070,7 +1070,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_monitor_exports](
+CREATE TABLE [#__sdi_monitor_exports] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[exportDesc] [nvarchar](500) NULL,
 	[exportName] [nvarchar](500) NULL,
@@ -1087,7 +1087,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_namespace](
+CREATE TABLE [#__sdi_namespace] (
 	[id] [bigint] IDENTITY(6,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1116,10 +1116,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-ALTER TABLE ONLY [#__sdi_order] ADD [validate] [smallint] DEFAULT NULL;
-ALTER TABLE ONLY [#__sdi_order] ADD [validated_date] [datetime2](0) DEFAULT NULL;
-ALTER TABLE ONLY [#__sdi_order] ADD [validated_reason] [nvarchar](500) DEFAULT NULL;
-CREATE TABLE [#__sdi_order](
+CREATE TABLE [#__sdi_order] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1157,7 +1154,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_order_diffusion](
+CREATE TABLE [#__sdi_order_diffusion] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[order_id] [bigint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
@@ -1179,7 +1176,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_order_perimeter](
+CREATE TABLE [#__sdi_order_perimeter] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[order_id] [bigint] NOT NULL,
 	[perimeter_id] [bigint] NOT NULL,
@@ -1197,7 +1194,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_order_propertyvalue](
+CREATE TABLE [#__sdi_order_propertyvalue] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[orderdiffusion_id] [bigint] NOT NULL,
 	[property_id] [bigint] NOT NULL,
@@ -1215,7 +1212,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_organism](
+CREATE TABLE [#__sdi_organism] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -1251,7 +1248,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_category](
+CREATE TABLE [#__sdi_category] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -1278,7 +1275,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_organism_category](
+CREATE TABLE [#__sdi_organism_category] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[organism_id] [bigint] NOT NULL FOREIGN KEY REFERENCES #__sdi_organism(id),
 	[category_id] [bigint] NOT NULL FOREIGN KEY REFERENCES #__sdi_category(id),
@@ -1293,7 +1290,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_perimeter](
+CREATE TABLE [#__sdi_perimeter] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1336,7 +1333,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_physicalservice](
+CREATE TABLE [#__sdi_physicalservice] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -1378,7 +1375,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_physicalservice_organism](
+CREATE TABLE [#__sdi_physicalservice_organism] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[physicalservice_id] [bigint] NOT NULL,
 	[organism_id] [bigint] NOT NULL,
@@ -1393,7 +1390,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_physicalservice_policy](
+CREATE TABLE [#__sdi_physicalservice_policy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[prefix] [nvarchar](255) NULL,
 	[namespace] [nvarchar](255) NULL,
@@ -1416,7 +1413,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_physicalservice_servicecompliance](
+CREATE TABLE [#__sdi_physicalservice_servicecompliance] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[service_id] [bigint] NOT NULL,
 	[servicecompliance_id] [bigint] NOT NULL,
@@ -1432,7 +1429,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_policy](
+CREATE TABLE [#__sdi_policy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[ordering] [int] NOT NULL,
@@ -1481,7 +1478,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_policy_metadatastate](
+CREATE TABLE [#__sdi_policy_metadatastate] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[metadatastate_id] [bigint] NOT NULL,
 	[policy_id] [bigint] NOT NULL,
@@ -1497,7 +1494,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_policy_organism](
+CREATE TABLE [#__sdi_policy_organism] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[organism_id] [bigint] NOT NULL,
@@ -1511,7 +1508,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_policy_category](
+CREATE TABLE [#__sdi_policy_category] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[category_id] [bigint] NOT NULL,
@@ -1526,7 +1523,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_policy_resourcetype](
+CREATE TABLE [#__sdi_policy_resourcetype] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[resourcetype_id] [bigint] NOT NULL,
 	[policy_id] [bigint] NOT NULL,
@@ -1541,7 +1538,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_policy_user](
+CREATE TABLE [#__sdi_policy_user] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[user_id] [bigint] NOT NULL,
@@ -1556,7 +1553,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_policy_visibility](
+CREATE TABLE [#__sdi_policy_visibility] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[user_id] [bigint] NULL,
@@ -1572,7 +1569,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_profile](
+CREATE TABLE [#__sdi_profile] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1601,7 +1598,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_property](
+CREATE TABLE [#__sdi_property] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1631,7 +1628,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_propertyvalue](
+CREATE TABLE [#__sdi_propertyvalue] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1659,7 +1656,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_relation](
+CREATE TABLE [#__sdi_relation] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1701,7 +1698,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_relation_catalog](
+CREATE TABLE [#__sdi_relation_catalog] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
@@ -1718,7 +1715,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_relation_defaultvalue](
+CREATE TABLE [#__sdi_relation_defaultvalue] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[relation_id] [bigint] NOT NULL,
 	[attributevalue_id] [bigint] NULL,
@@ -1735,7 +1732,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_relation_profile](
+CREATE TABLE [#__sdi_relation_profile] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
@@ -1752,7 +1749,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_resource](
+CREATE TABLE [#__sdi_resource] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1782,7 +1779,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_resourcetype](
+CREATE TABLE [#__sdi_resourcetype] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1821,7 +1818,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_resourcetypelink](
+CREATE TABLE [#__sdi_resourcetypelink] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1853,7 +1850,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_resourcetypelinkinheritance](
+CREATE TABLE [#__sdi_resourcetypelinkinheritance] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[resourcetypelink_id] [bigint] NOT NULL,
 	[xpath] [nvarchar](500) NOT NULL,
@@ -1868,7 +1865,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_searchcriteria](
+CREATE TABLE [#__sdi_searchcriteria] (
 	[id] [bigint] IDENTITY(14,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1898,7 +1895,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_searchcriteriafilter](
+CREATE TABLE [#__sdi_searchcriteriafilter] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
@@ -1916,7 +1913,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_accessscope](
+CREATE TABLE [#__sdi_sys_accessscope] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -1932,7 +1929,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_addresstype](
+CREATE TABLE [#__sdi_sys_addresstype] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -1948,7 +1945,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_authenticationconnector](
+CREATE TABLE [#__sdi_sys_authenticationconnector] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -1965,7 +1962,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_authenticationlevel](
+CREATE TABLE [#__sdi_sys_authenticationlevel] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -1981,7 +1978,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_country](
+CREATE TABLE [#__sdi_sys_country] (
 	[id] [bigint] IDENTITY(242,1) NOT NULL,
 	[ordering] [bigint] NOT NULL,
 	[state] [int] NOT NULL,
@@ -1999,7 +1996,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_criteriatype](
+CREATE TABLE [#__sdi_sys_criteriatype] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2015,7 +2012,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_entity](
+CREATE TABLE [#__sdi_sys_entity] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2031,7 +2028,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_exceptionlevel](
+CREATE TABLE [#__sdi_sys_exceptionlevel] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2047,7 +2044,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_importtype](
+CREATE TABLE [#__sdi_sys_importtype] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2063,7 +2060,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_isolanguage](
+CREATE TABLE [#__sdi_sys_isolanguage] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2079,7 +2076,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_loglevel](
+CREATE TABLE [#__sdi_sys_loglevel] (
 	[id] [bigint] IDENTITY(9,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2095,7 +2092,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_logroll](
+CREATE TABLE [#__sdi_sys_logroll] (
 	[id] [bigint] IDENTITY(5,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2111,7 +2108,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_maptool](
+CREATE TABLE [#__sdi_sys_maptool] (
 	[id] [bigint] IDENTITY(21,1) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
 	[ordering] [int] NULL,
@@ -2128,7 +2125,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_metadatastate](
+CREATE TABLE [#__sdi_sys_metadatastate] (
 	[id] [bigint] IDENTITY(6,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2144,7 +2141,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_metadataversion](
+CREATE TABLE [#__sdi_sys_metadataversion] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2160,7 +2157,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_operationcompliance](
+CREATE TABLE [#__sdi_sys_operationcompliance] (
 	[id] [bigint] IDENTITY(50,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -2178,7 +2175,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_orderstate](
+CREATE TABLE [#__sdi_sys_orderstate] (
 	[id] [bigint] IDENTITY(8,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2194,7 +2191,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_ordertype](
+CREATE TABLE [#__sdi_sys_ordertype] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2210,7 +2207,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_perimetertype](
+CREATE TABLE [#__sdi_sys_perimetertype] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2226,7 +2223,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_pricing](
+CREATE TABLE [#__sdi_sys_pricing] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2269,7 +2266,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_pricing_order](
+CREATE TABLE [#__sdi_pricing_order] (
     [id] [bigint] IDENTITY(1,1) NOT NULL,
     [guid] [nvarchar](36) NOT NULL,
     [alias] [nvarchar](50) NOT NULL,
@@ -2300,7 +2297,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_pricing_profile_category_pricing_rebate](
+CREATE TABLE [#__sdi_pricing_profile_category_pricing_rebate] (
     [id] [bigint] IDENTITY(1,1) NOT NULL,
     [pricing_profile_id] [bigint] NOT NULL,
     [category_id] [bigint] NOT NULL,
@@ -2315,7 +2312,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_productmining](
+CREATE TABLE [#__sdi_sys_productmining] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2331,7 +2328,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_productstate](
+CREATE TABLE [#__sdi_sys_productstate] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2347,7 +2344,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_extractstorage](
+CREATE TABLE [#__sdi_sys_extractstorage] (
     [id] [bigint] IDENTITY(1,1) NOT NULL,
     [ordering] [int],
     [state] [int] NOT NULL DEFAULT 1,
@@ -2362,7 +2359,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_productstorage](
+CREATE TABLE [#__sdi_sys_productstorage] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2378,7 +2375,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_propertytype](
+CREATE TABLE [#__sdi_sys_propertytype] (
 	[id] [bigint] IDENTITY(7,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2394,7 +2391,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_proxytype](
+CREATE TABLE [#__sdi_sys_proxytype] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2410,7 +2407,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_relationscope](
+CREATE TABLE [#__sdi_sys_relationscope] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2426,7 +2423,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_relationtype](
+CREATE TABLE [#__sdi_sys_relationtype] (
 	[id] [bigint] IDENTITY(5,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2442,7 +2439,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_rendertype](
+CREATE TABLE [#__sdi_sys_rendertype] (
 	[id] [bigint] IDENTITY(7,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2458,7 +2455,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_rendertype_criteriatype](
+CREATE TABLE [#__sdi_sys_rendertype_criteriatype] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[criteriatype_id] [bigint] NOT NULL,
 	[rendertype_id] [bigint] NOT NULL,
@@ -2473,7 +2470,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_rendertype_stereotype](
+CREATE TABLE [#__sdi_sys_rendertype_stereotype] (
 	[id] [bigint] IDENTITY(21,1) NOT NULL,
 	[stereotype_id] [bigint] NOT NULL,
 	[rendertype_id] [bigint] NOT NULL,
@@ -2488,7 +2485,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_role](
+CREATE TABLE [#__sdi_sys_role] (
 	[id] [bigint] IDENTITY(9,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2504,7 +2501,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_searchtab](
+CREATE TABLE [#__sdi_sys_searchtab] (
 	[id] [bigint] IDENTITY(5,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2520,7 +2517,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_servicecompliance](
+CREATE TABLE [#__sdi_sys_servicecompliance] (
 	[id] [bigint] IDENTITY(11,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -2541,7 +2538,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_servicecon_authenticationcon](
+CREATE TABLE [#__sdi_sys_servicecon_authenticationcon] (
 	[id] [bigint] IDENTITY(12,1) NOT NULL,
 	[serviceconnector_id] [bigint] NOT NULL,
 	[authenticationconnector_id] [bigint] NOT NULL,
@@ -2556,7 +2553,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_serviceconnector](
+CREATE TABLE [#__sdi_sys_serviceconnector] (
 	[id] [bigint] IDENTITY(15,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -2572,7 +2569,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_serviceoperation](
+CREATE TABLE [#__sdi_sys_serviceoperation] (
 	[id] [bigint] IDENTITY(22,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -2588,7 +2585,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_servicescope](
+CREATE TABLE [#__sdi_sys_servicescope] (
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2604,7 +2601,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_servicetype](
+CREATE TABLE [#__sdi_sys_servicetype] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2620,7 +2617,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_serviceversion](
+CREATE TABLE [#__sdi_sys_serviceversion] (
 	[id] [bigint] IDENTITY(9,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -2636,7 +2633,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_spatialoperator](
+CREATE TABLE [#__sdi_sys_spatialoperator] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2652,7 +2649,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_stereotype](
+CREATE TABLE [#__sdi_sys_stereotype] (
 	[id] [bigint] IDENTITY(16,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2672,7 +2669,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_topiccategory](
+CREATE TABLE [#__sdi_sys_topiccategory] (
 	[id] [bigint] IDENTITY(20,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2688,7 +2685,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_unit](
+CREATE TABLE [#__sdi_sys_unit] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2705,7 +2702,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_sys_versiontype](
+CREATE TABLE [#__sdi_sys_versiontype] (
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2721,7 +2718,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_tilematrix_policy](
+CREATE TABLE [#__sdi_tilematrix_policy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[tilematrixsetpolicy_id] [bigint] NOT NULL,
 	[identifier] [nvarchar](255) NOT NULL,
@@ -2741,7 +2738,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_tilematrixset_policy](
+CREATE TABLE [#__sdi_tilematrixset_policy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[wmtslayerpolicy_id] [bigint] NOT NULL,
 	[identifier] [nvarchar](255) NOT NULL,
@@ -2758,7 +2755,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_translation](
+CREATE TABLE [#__sdi_translation] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -2786,7 +2783,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_user](
+CREATE TABLE [#__sdi_user] (
 	[id] [bigint] IDENTITY(2,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -2815,7 +2812,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_user_role_organism](
+CREATE TABLE [#__sdi_user_role_organism] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[user_id] [bigint] NULL,
 	[role_id] [bigint] NULL,
@@ -2831,7 +2828,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_user_role_resource](
+CREATE TABLE [#__sdi_user_role_resource] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[user_id] [bigint] NULL,
 	[role_id] [bigint] NULL,
@@ -2847,7 +2844,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_version](
+CREATE TABLE [#__sdi_version] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -2874,7 +2871,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_versionlink](
+CREATE TABLE [#__sdi_versionlink] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[parent_id] [bigint] NOT NULL,
 	[child_id] [bigint] NOT NULL,
@@ -2889,7 +2886,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_virtual_physical](
+CREATE TABLE [#__sdi_virtual_physical] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[virtualservice_id] [bigint] NOT NULL,
 	[physicalservice_id] [bigint] NOT NULL,
@@ -2904,7 +2901,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_virtualmetadata](
+CREATE TABLE [#__sdi_virtualmetadata] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[ordering] [int] NOT NULL,
@@ -2954,7 +2951,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_virtualservice](
+CREATE TABLE [#__sdi_virtualservice] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[ordering] [int] NULL,
@@ -2995,7 +2992,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_virtualservice_organism](
+CREATE TABLE [#__sdi_virtualservice_organism] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[virtualservice_id] [bigint] NOT NULL,
 	[organism_id] [bigint] NOT NULL,
@@ -3010,7 +3007,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_virtualservice_servicecompliance](
+CREATE TABLE [#__sdi_virtualservice_servicecompliance] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[service_id] [bigint] NOT NULL,
 	[servicecompliance_id] [bigint] NOT NULL,
@@ -3025,7 +3022,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_visualization](
+CREATE TABLE [#__sdi_visualization] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -3058,7 +3055,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_wfs_spatialpolicy](
+CREATE TABLE [#__sdi_wfs_spatialpolicy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[localgeographicfilter] [nvarchar](max) NULL,
 	[remotegeographicfilter] [nvarchar](max) NULL,
@@ -3073,7 +3070,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_wms_spatialpolicy](
+CREATE TABLE [#__sdi_wms_spatialpolicy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[maxx] [decimal](18, 6) NULL,
 	[maxy] [decimal](18, 6) NULL,
@@ -3094,7 +3091,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_wmslayer_policy](
+CREATE TABLE [#__sdi_wmslayer_policy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](255) NOT NULL,
@@ -3113,7 +3110,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_wmts_spatialpolicy](
+CREATE TABLE [#__sdi_wmts_spatialpolicy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[spatialoperator_id] [bigint] NOT NULL,
 	[eastboundlongitude] [decimal](10, 6) NULL,
@@ -3131,7 +3128,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_wmtslayer_policy](
+CREATE TABLE [#__sdi_wmtslayer_policy] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[identifier] [nvarchar](255) NOT NULL,
 	[enabled] [smallint] NOT NULL,
@@ -3150,7 +3147,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [#__sdi_organism_category_pricing_rebate](
+CREATE TABLE [#__sdi_organism_category_pricing_rebate] (
     [id] [bigint] IDENTITY(1,1) NOT NULL,
     [organism_id] [bigint],
     [category_id] [bigint],
@@ -3165,7 +3162,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [last_ids](
+CREATE TABLE [last_ids] (
 	[TABLE_NAME] [nvarchar](255) NOT NULL,
 	[LAST_ID] [int] NOT NULL,
  CONSTRAINT [PK_last_ids_TABLE_NAME] PRIMARY KEY CLUSTERED 
@@ -3181,7 +3178,7 @@ SET QUOTED_IDENTIFIER ON;
 
 SET ANSI_PADDING ON;
 
-CREATE TABLE [last_query_results](
+CREATE TABLE [last_query_results] (
 	[ID_LAST_QUERY_RESULT] [bigint] NOT NULL,
 	[ID_QUERY] [bigint] NOT NULL,
 	[DATA] [varbinary](max) NULL,
@@ -3202,7 +3199,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [log_entries](
+CREATE TABLE [log_entries] (
 	[ID_LOG_ENTRY] [bigint] NOT NULL,
 	[ID_QUERY] [bigint] NOT NULL,
 	[REQUEST_TIME] [datetime2](0) NOT NULL,
@@ -3223,7 +3220,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [overview_page](
+CREATE TABLE [overview_page] (
 	[ID_OVERVIEW_PAGE] [bigint] NOT NULL,
 	[NAME] [nvarchar](255) NOT NULL,
 	[IS_PUBLIC] [smallint] NOT NULL,
@@ -3242,7 +3239,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [overview_queries](
+CREATE TABLE [overview_queries] (
 	[ID_OVERVIEW_QUERY] [bigint] NOT NULL,
 	[ID_OVERVIEW_PAGE] [bigint] NOT NULL,
 	[ID_QUERY] [bigint] NOT NULL,
@@ -3257,7 +3254,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [periods](
+CREATE TABLE [periods] (
 	[ID_PERIODS] [bigint] NOT NULL,
 	[ID_SLA] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NULL,
@@ -3284,7 +3281,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [queries](
+CREATE TABLE [queries] (
 	[ID_QUERY] [bigint] NOT NULL,
 	[ID_JOB] [bigint] NOT NULL,
 	[ID_SERVICE_METHOD] [bigint] NOT NULL,
@@ -3302,7 +3299,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [query_agg_hour_log_entries](
+CREATE TABLE [query_agg_hour_log_entries] (
 	[DATE_LOG] [datetime2](0) NOT NULL,
 	[ID_QUERY] [bigint] NOT NULL,
 	[H1_MEAN_RESP_TIME] [real] NOT NULL,
@@ -3335,7 +3332,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [query_agg_log_entries](
+CREATE TABLE [query_agg_log_entries] (
 	[DATE_LOG] [datetime2](0) NOT NULL,
 	[ID_QUERY] [bigint] NOT NULL,
 	[SLA_MEAN_RESP_TIME] [real] NOT NULL,
@@ -3368,7 +3365,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [query_params](
+CREATE TABLE [query_params] (
 	[ID_QUERY] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NOT NULL,
 	[VALUE] [nvarchar](max) NULL,
@@ -3386,7 +3383,7 @@ SET QUOTED_IDENTIFIER ON;
 
 SET ANSI_PADDING ON;
 
-CREATE TABLE [query_validation_results](
+CREATE TABLE [query_validation_results] (
 	[ID_QUERY_VALIDATION_RESULT] [int] NOT NULL,
 	[ID_QUERY] [bigint] NOT NULL,
 	[SIZE_VALIDATION_RESULT] [smallint] NULL,
@@ -3411,7 +3408,7 @@ SET QUOTED_IDENTIFIER ON;
 
 SET ANSI_PADDING ON;
 
-CREATE TABLE [query_validation_settings](
+CREATE TABLE [query_validation_settings] (
 	[ID_QUERY_VALIDATION_SETTINGS] [int] NOT NULL,
 	[ID_QUERY] [bigint] NOT NULL,
 	[USE_SIZE_VALIDATION] [smallint] NOT NULL,
@@ -3436,7 +3433,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [roles](
+CREATE TABLE [roles] (
 	[ID_ROLE] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NOT NULL,
 	[RANK] [bigint] NOT NULL,
@@ -3451,7 +3448,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [service_methods](
+CREATE TABLE [service_methods] (
 	[ID_SERVICE_METHOD] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NOT NULL,
  CONSTRAINT [PK_service_methods_ID_SERVICE_METHOD] PRIMARY KEY CLUSTERED 
@@ -3465,7 +3462,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [service_types](
+CREATE TABLE [service_types] (
 	[ID_SERVICE_TYPE] [bigint] NOT NULL,
 	[NAME] [nvarchar](20) NOT NULL,
 	[VERSION] [nvarchar](10) NOT NULL,
@@ -3480,7 +3477,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [service_types_methods](
+CREATE TABLE [service_types_methods] (
 	[ID_SERVICE_TYPE] [bigint] NOT NULL,
 	[ID_SERVICE_METHOD] [bigint] NOT NULL,
  CONSTRAINT [PK_service_types_methods_ID_SERVICE_TYPE] PRIMARY KEY CLUSTERED 
@@ -3495,7 +3492,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [sla](
+CREATE TABLE [sla] (
 	[ID_SLA] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NOT NULL,
 	[EXCLUDE_WORST] [smallint] NULL,
@@ -3511,7 +3508,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [statuses](
+CREATE TABLE [statuses] (
 	[ID_STATUS] [bigint] NOT NULL,
 	[NAME] [nvarchar](45) NOT NULL,
  CONSTRAINT [PK_statuses_ID_STATUS] PRIMARY KEY CLUSTERED 
@@ -3525,7 +3522,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [users](
+CREATE TABLE [users] (
 	[LOGIN] [nvarchar](45) NOT NULL,
 	[PASSWORD] [nvarchar](45) NOT NULL,
 	[ID_ROLE] [bigint] NULL,
