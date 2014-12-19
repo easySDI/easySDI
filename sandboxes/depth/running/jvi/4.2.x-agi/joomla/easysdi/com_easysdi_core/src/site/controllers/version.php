@@ -844,11 +844,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     }
 
     /**
-     * Get a list of cascading deleting children
+     * Get a list of cascading publicable children
      * 
      */
     public function getCascadePublicableChild() {
-        return $this->getCascadeChild(true, true);
+        return $this->getCascadeChild(false, true);
     }
     
     /**
