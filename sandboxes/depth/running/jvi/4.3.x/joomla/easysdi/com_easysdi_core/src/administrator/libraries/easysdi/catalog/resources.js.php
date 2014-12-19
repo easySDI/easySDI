@@ -195,6 +195,7 @@ var Resource = (function(){
             viewManager:            false
         };
         this.versioning = false;
+        this.assignment = false;
         this.canBeChild = false;
         this.support = {
             relation:       false,
@@ -240,7 +241,11 @@ var Resource = (function(){
     return Resource;
 }());
 
-<?php foreach ($this->items as $item) : ?>
+<?php 
+    $params = JComponentHelper::getParams('com_easysdi_catalog');
+    $assignenabled = $params->get('assignenabled',1);
+    
+    foreach ($this->items as $item) : ?>
     var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>', '<?php echo $item->resourcetype_alias; ?>', '<?php echo $item->accessscope; ?>');
     <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>resource.rights.metadataEditor = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>resource.rights.metadataResponsible = 1;<?php endif; ?>
@@ -253,6 +258,7 @@ var Resource = (function(){
     <?php if($item->supportview): ?>resource.support.view = 1;<?php endif; ?>
     <?php if($item->canbechild): ?>resource.canBeChild = 1;<?php endif; ?>
     <?php if($item->versioning): ?>resource.versioning = 1;<?php endif; ?>
+    resource.assignment = <?php  echo $assignenabled; ?>;
     <?php foreach($item->metadata as $key => $metadata):?>
         resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, '<?php echo JText::_($metadata->value);?>', '<?php echo $metadata->published;?>');
     <?php endforeach;?>
@@ -323,7 +329,11 @@ var buildMetadataDropDown = function(resource){
     var section = [];
     section.push(buildDropDownItem(resource, 'metadata.preview'));
     
-    if(resource.rights.metadataEditor && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED])>-1)
+    if(
+        (resource.rights.metadataEditor && metadata.state===metadataState.INPROGRESS)
+        ||
+        ((resource.rights.metadataResponsible || resource.rights.resourceManager) && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED]))
+    )
         section.push(buildDropDownItem(resource, 'metadata.edit'));
     
     if(resource.rights.metadataResponsible)
@@ -349,9 +359,8 @@ var buildMetadataDropDown = function(resource){
     /* SECOND SECTION */
     section = [];
     
-    if(resource.rights.metadataEditor && metadata.state==metadataState.INPROGRESS){
+    if(resource.rights.metadataEditor && metadata.state==metadataState.INPROGRESS && resource.assignment == 1 ){
         section.push(buildDropDownItem(resource, 'metadata.assign'));
-        //section.push(buildDropDownItem(resource, 'metadata.notify'));
     }
     
     dropdown.push(section);
@@ -429,7 +438,7 @@ var buildManagementDropDown = function(resource){
     }
     
     /* FIFTH SECTION */
-    if(resource.rights.metadataEditor){
+    if(resource.rights.metadataEditor  && resource.assignment == 1){
         var section = [];
         
         section.push(buildDropDownItem(resource, 'management.assignment_history'));
@@ -729,7 +738,8 @@ var showModal = function(id, modalId){
 var showDeleteModal = function(element){
     if(element.length === 0) return;
     
-    var version_id = getVersionId(element);
+    var version_id = getVersionId(element),
+            metadata_id = getMetadataId(element);
     js.ajax({
         cache: false,
         type: 'GET',
@@ -737,6 +747,7 @@ var showDeleteModal = function(element){
     }).done(function(data){
         try{
             var response = js.parseJSON(data);
+            response.versions[version_id].metadata_id = metadata_id;
             var ul = buildVersionsTree(response.versions);
             js('#deleteModalChildrenList').html(ul);
             js('#btn_delete').attr('href', Links.modal.delete.replace('#0#', version_id));
@@ -780,6 +791,9 @@ var showPublishModal = function(element){
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
+    console.log(version);
+    console.log(metadata);
+    
     js.ajax({
         cache: false,
         type: 'GET',
@@ -787,6 +801,7 @@ var showPublishModal = function(element){
     }).done(function(data) {
         try{
             var response = js.parseJSON(data);
+            response.versions[version.id].metadata_id = metadata.id;
             js('#publishModalChildrenList').html(buildVersionsTree(response.versions));
 
             if('undefined' !== typeof metadata.publishDate && '0000-00-00 00:00:00' !== metadata.publishDate){
@@ -810,27 +825,29 @@ var showPublishModal = function(element){
     return false;
 };
 
-/*var showNewVersionModal = function(resource_id){
-    js.get(Links.ajax.inprogress_child.replace('#0#', resource_id), function(data) {
-        var response = js.parseJSON(data);
-        if (response.total > 0) {
-            js('#createModalChildrenList').html(buildVersionsTree(response.versions));
-            js('#createModal').modal('show');
-            return false;
-        }
-    });
-};*/
-
 var buildActionsCell = function(resource){
     buildMetadataDropDown(resource);
     buildManagementDropDown(resource);
     
+    // Performs some action on dropdowns links
     getChildNumber(js('a#'+resource.id+'_child_list'));
     getNewVersionRight(js('a#'+resource.id+'_new_version'));
     getPublishRight(js('a#'+resource.id+'_publish'));
     getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
     SqueezeBox.assign(js('a#'+resource.id+'_preview'));
 };
+
+// Set events
+js(document).on('click', '#search-reset', resetSearch);
+
+js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', function(){showDeleteModal(this);return false;});
+
+js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
+
+js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
+
+// Fix action's link style
+js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});
 
 js(document).ready(function(){
     
