@@ -16,6 +16,12 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.modal');
 
+//Load admin language file
+$lang = JFactory::getLanguage();
+$lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
+$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
+$document = JFactory::getDocument();
+
 JText::script('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK');
 JText::script('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING');
 JText::script('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING');
@@ -53,13 +59,6 @@ JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
 
 JText::script('COM_EASYSDI_CATALOG_OPEN_ALL');
 JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
-
-
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
-$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
-$document = JFactory::getDocument();
 
 /* bootbox language */
 $ldao = new SdiLanguageDao();
@@ -138,7 +137,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
 
     <div>
         <h2><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
-        <h5><?php echo $title->name . ': ' . JText::_($title->value); ?></h5>
+        <h5><?php echo $title->name . ': ' . JText::_(strtoupper($title->value)); ?></h5>
     </div>
 
     <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">

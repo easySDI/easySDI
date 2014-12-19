@@ -82,7 +82,7 @@ INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpatt
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (4, 4, 1, N'number', N'^[\-+]?[0-9.]+$', N'Decimal', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (5, 5, 1, N'date', N'^([0-9]{4}-[0-9]{2}-[0-9]{2})$', N'Date', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (6, 6, 1, N'list', N'', NULL, NULL, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (7, 7, 1, N'link', N'^((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)$', N'URL', 1, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (7, 7, 1, N'link', N'((http://|https://|ftp://)(www.)?(([a-zA-Z0-9-]){2,}.){1,4}([a-zA-Z]){2,6}(/([a-zA-Z-_/.0-9#:?=&;,]*)?)?)', N'URL', 1, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (8, 8, 1, N'datetime', N'^([0-9]{4}-[0-9]{2}-[0-9]{2})$', N'DateTime', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (9, 9, 1, N'textchoice', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (10, 10, 1, N'localechoice', N'', NULL, NULL, 1);
@@ -824,6 +824,6 @@ INSERT [#__sdi_sys_perimetertype] ([id], [ordering], [state], [value]) VALUES (3
 SET IDENTITY_INSERT [#__sdi_sys_perimetertype] OFF;
 
 SET IDENTITY_INSERT [#__sdi_perimeter] ON; 
-INSERT [jos_sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (1, N'1a9f342c-bb1e-9bc4-dd19-38910dff0f59', N'freeperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'Free perimeter', '',1,1);
+INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (1, N'1a9f342c-bb1e-9bc4-dd19-38910dff0f59', N'freeperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'Free perimeter', '',1,1);
 INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (2, N'9adc6d4e-262a-d6e4-e152-6de437ba80ed', N'myperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'My perimeter', '',1,1);
 SET IDENTITY_INSERT [#__sdi_perimeter] OFF;

@@ -116,6 +116,8 @@
 
 #gemet #ext-comp-1007{ position: absolute; }
 
+#gemet #ext-comp-1008{ width: 60px !important; }
+
 #gemet #ext-gen26{ position: absolute; width: 100%; }
 
 #gemet div[id^=ext-comp-1002]{ display: none !important; }
