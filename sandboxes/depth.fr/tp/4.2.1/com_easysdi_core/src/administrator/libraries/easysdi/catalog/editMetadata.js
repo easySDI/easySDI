@@ -689,7 +689,7 @@ function confirmReplicate() {
 }
 
 function confirmReset() {
-    bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function (result) {
+    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE","COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
         if (result) {
 
         }
@@ -713,7 +713,7 @@ function removeFromStructure(id) {
 }
 
 function confirmEmptyFile(id) {
-    bootbox.confirm("Are you sure?", function (result) {
+    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE","COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
         if (result) {
             emptyFile(id);
         }
