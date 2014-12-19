@@ -576,7 +576,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         $element->nodeValue = $translation->text2;
                     }
                 } else {
-                    $element->nodeValue = $value;
+                    $element->nodeValue = "";
+                    $item = $this->structure->createTextNode($value);
+                    $element->appendChild($item);
                 }
             }
         }
