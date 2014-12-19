@@ -157,6 +157,7 @@ class FormGenerator {
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':accessscopeLimitation', $result->accessscope_limitation);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
 
                     if (isset($result->classass_id)) {
@@ -381,6 +382,7 @@ class FormGenerator {
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '');
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':accessscopeLimitation', $result->accessscope_limitation);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
 
                     if (isset($result->classass_id)) {
@@ -1326,6 +1328,38 @@ class FormGenerator {
 
         return $fields;
     }
+    
+    /**
+     * applyAccessScopeLimitation
+     * 
+     * @param type $query
+     * @param DOMElement|int $attribute
+     * @return string - a where clause to add to the query
+     */
+    private function applyAccessScopeLimitation(&$query, $attribute = 0){
+        $asl = is_int($attribute) ? $attribute : $attribute->getAttributeNS($this->catalog_uri, 'accessscopeLimitation');
+        switch($asl){
+            case 0: // no limitation = nothing to do
+                break;
+                
+            case 1: // limit to resources of the current user's organism
+                //user's organism
+                $organisms = $this->user->getMemberOrganisms();
+                
+                return "r.organism_id = " . (int)$organisms[0]->id;
+            
+            case 2: // limit to resources of the current metadata's organism
+                
+                $query->innerJoin('#__sdi_version v2 ON v2.id='.(int)$this->item->version_id)
+                    ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
+                    ;
+                
+                return 'r.organism_id=r2.organism_id';
+            
+            case 3: // both case 1 and case 2
+                return '('.$this->applyAccessScopeLimitation($query, 1).' OR '.$this->applyAccessScopeLimitation($query, 2).')';
+        }
+    }
 
     /**
      * Retrieves the list of options for fields such list, checkbox and radio.
@@ -1339,12 +1373,33 @@ class FormGenerator {
 
         switch ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
-                $query->select('r.id, r.name,m.guid');
+                $query->select("r.id, CONCAT(r.name, ' - ', o.name) as name , m.guid");
                 $query->from('#__sdi_resource r');
                 $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
                 $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
-                $query->where('resourcetype_id = ' . (int) $attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
-                $query->order('name ASC');
+                $query->innerJoin('#__sdi_organism o on o.id = r.organism_id');
+                $query->where('r.resourcetype_id = ' . (int) $attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
+                $query->order('r.name ASC');
+                
+                //user's organism's categories
+                $categories = $this->user->getMemberOrganismsCategoriesIds();
+                array_push($categories, 0);
+                
+                //user's organism
+                $organisms = $this->user->getMemberOrganisms();
+                
+                //apply resource's accessscope
+                $query->where("("
+                        . "r.accessscope_id = 1 "
+                        . "OR (r.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.category_id IN (" . implode(',', $categories) . ") AND a.entity_guid = r.guid ) > 0) "
+                        . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
+                        . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = r.guid ) = 1)"
+                        . ")"
+                        );
+                
+                $asl = $this->applyAccessScopeLimitation($query, $attribute);
+                if(strlen($asl))
+                    $query->where($asl);
 
                 $this->db->setQuery($query);
                 $result = $this->db->loadObjectList();
@@ -1497,7 +1552,7 @@ class FormGenerator {
      */
     private function getRelationQuery() {
         $query = $this->db->getQuery(true);
-        $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id');
+        $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id, r.accessscope_limitation');
         $query->select('c.id as class_id, c.name AS class_name, c.guid AS class_guid');
         $query->select('ca.id as classass_id, ca.name AS classass_name, ca.guid AS classass_guid');
         $query->select('a.id as attribute_id, a.name AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length');
