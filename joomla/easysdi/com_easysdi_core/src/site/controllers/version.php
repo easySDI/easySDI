@@ -474,9 +474,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
 
+        $lastversion = $this->getLastVersion($resource_id);
+        $lastversion->viralversioning = 1;
         $versions = array();
-        if ($lastversion = $this->getLastVersion($resource_id)) {
-            $versions = $this->core_helpers->getViralVersionnedChild($lastversion);
+        if ($lastversion) {
+            $versions = $this->core_helpers->getChildrenVersion($lastversion);
         }
 
         // get version to create
@@ -648,9 +650,14 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $new_version = array();
             $new_version['resource_id'] = $version->resource_id;
             $new_version['name'] = date("Y-m-d H:i:s");
+            $new_version['isViral'] = (bool)$version->viralversioning;
 
-            if (!empty($version->children)) {
+            if ($new_version['isViral'] && !empty($version->children)) {
                 $new_version['children'] = $this->getNewVersions($version->children);
+            }
+            
+            if(!$new_version['isViral']){
+                $new_version['id'] = $version->id;
             }
 
             $new_versions[] = $new_version;
@@ -751,23 +758,23 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     private function saveVersions($versions) {
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
-        $response = array('selected_children' => array(), 'success' => true);
-        $selected_children = array();
-        $success = true;
-
+        $childrentoadd = array();
+        
         try {
             foreach ($versions as $version) {
                 if (array_key_exists('children', $version)) {
-                    $version['selectedchildren'] = $this->saveVersions($version['children']);
+                    $version['childrentoadd'] = $this->saveVersions($version['children']);
                 }
 
                 // Attempt to save the data.
-                $return = $model->save($version);
-                $version['id'] = $return;
-                $this->versions[] = $version;
-                $selected_children[] = $version['id'];
+                if($version['isViral']){
+                    $version['id'] = $model->save($version);
+                    $this->versions[] = $version;
+                }
+                
+                $childrentoadd[] = $version['id'];
             }
-            return json_encode($selected_children);
+            return json_encode($childrentoadd);
         } catch (RuntimeException $exc) {
             throw $exc;
         }
@@ -789,7 +796,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db->setQuery($query);
         $version = $db->loadObject();
-
+        
         if (!empty($version)) {
             return $version;
         } else {
