@@ -86,14 +86,17 @@ class Easysdi_coreModelVersion extends JModelForm {
 
                 //Allowed resourcetype as children
                 $query = $db->getQuery(true)
-                        ->select('rtchild.id')
-                        ->from('#__sdi_resourcetype rtchild')
-                        ->innerJoin('#__sdi_resourcetypelink rtl ON rtl.child_id = rtchild.id')
-                        ->innerJoin('#__sdi_resourcetype rt ON rt.id= rtl.parent_id')
-                        ->innerJoin('#__sdi_resource r ON r.resourcetype_id = rt.id')
-                        ->where('r.id = ' . (int) $table->resource_id);
+                        ->select('rtl.child_id')
+                        ->from('#__sdi_resourcetypelink rtl')
+                        ->innerJoin('#__sdi_resource r ON r.resourcetype_id=rtl.parent_id')
+                        ->where('r.id='.(int)$table->resource_id);
+                
                 $db->setQuery($query);
-                $resourcetypechild = $db->loadRow();
+                
+                $resourcetypechild = array();
+                foreach($db->loadRowList() as $row){
+                    array_push($resourcetypechild, $row[0]);
+                }
                 $this->_item->resourcetypechild = !empty($resourcetypechild) ? implode(',', $resourcetypechild) : '0';
             } elseif ($error = $table->getError()) {
                 $this->setError($error);

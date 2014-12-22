@@ -329,7 +329,11 @@ var buildMetadataDropDown = function(resource){
     var section = [];
     section.push(buildDropDownItem(resource, 'metadata.preview'));
     
-    if(resource.rights.metadataEditor && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED])>-1)
+    if(
+        (resource.rights.metadataEditor && metadata.state===metadataState.INPROGRESS)
+        ||
+        ((resource.rights.metadataResponsible || resource.rights.resourceManager) && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED]))
+    )
         section.push(buildDropDownItem(resource, 'metadata.edit'));
     
     if(resource.rights.metadataResponsible)
@@ -733,7 +737,8 @@ var showModal = function(id, modalId){
 var showDeleteModal = function(element){
     if(element.length === 0) return;
     
-    var version_id = getVersionId(element);
+    var version_id = getVersionId(element),
+            metadata_id = getMetadataId(element);
     js.ajax({
         cache: false,
         type: 'GET',
@@ -741,6 +746,7 @@ var showDeleteModal = function(element){
     }).done(function(data){
         try{
             var response = js.parseJSON(data);
+            response.versions[version_id].metadata_id = metadata_id;
             var ul = buildVersionsTree(response.versions);
             js('#deleteModalChildrenList').html(ul);
             js('#btn_delete').attr('href', Links.modal.delete.replace('#0#', version_id));
@@ -784,6 +790,9 @@ var showPublishModal = function(element){
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
+    console.log(version);
+    console.log(metadata);
+    
     js.ajax({
         cache: false,
         type: 'GET',
@@ -791,6 +800,7 @@ var showPublishModal = function(element){
     }).done(function(data) {
         try{
             var response = js.parseJSON(data);
+            response.versions[version.id].metadata_id = metadata.id;
             js('#publishModalChildrenList').html(buildVersionsTree(response.versions));
 
             if('undefined' !== typeof metadata.publishDate && '0000-00-00 00:00:00' !== metadata.publishDate){
@@ -814,39 +824,31 @@ var showPublishModal = function(element){
     return false;
 };
 
-/*var showNewVersionModal = function(resource_id){
-    js.get(Links.ajax.inprogress_child.replace('#0#', resource_id), function(data) {
-        var response = js.parseJSON(data);
-        if (response.total > 0) {
-            js('#createModalChildrenList').html(buildVersionsTree(response.versions));
-            js('#createModal').modal('show');
-            return false;
-        }
-    });
-};*/
-
 var buildActionsCell = function(resource, reload){
     reload = reload || false;
     
     buildMetadataDropDown(resource);
     buildManagementDropDown(resource);
     
-    // Performs some action on dropdowns links initialisation
-    /*if(!reload){ // for all lines
-        js('a[id$=_child_list]').each(function(){getChildNumber(this);});
-        js('a[id$=_new_version]').each(function(){getNewVersionRight(this);});
-        js('a[id$=_publish]').each(function(){getPublishRight(this);});
-        js('a[id$=_inprogress]').each(function(){getSetInProgressRight(this);});
-        SqueezeBox.assign(js('a[id$=_preview]'));
-    }
-    else{*/ // for the re-generated line only
-        getChildNumber(js('a#'+resource.id+'_child_list'));
-        getNewVersionRight(js('a#'+resource.id+'_new_version'));
-        getPublishRight(js('a#'+resource.id+'_publish'));
-        getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
-        SqueezeBox.assign(js('a#'+resource.id+'_preview'));
-    //}
+    // Performs some action on dropdowns links
+    getChildNumber(js('a#'+resource.id+'_child_list'));
+    getNewVersionRight(js('a#'+resource.id+'_new_version'));
+    getPublishRight(js('a#'+resource.id+'_publish'));
+    getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
+    SqueezeBox.assign(js('a#'+resource.id+'_preview'));
 };
+
+// Set events
+js(document).on('click', '#search-reset', resetSearch);
+
+js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', function(){showDeleteModal(this);return false;});
+
+js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
+
+js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
+
+// Fix action's link style
+js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});
 
 js(document).ready(function(){
     
@@ -860,18 +862,6 @@ js(document).ready(function(){
             buildActionsCell(resource);
         }
     });
-    
-    // Set events
-    js(document).on('click', '#search-reset', resetSearch);
-    
-    js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', function(){showDeleteModal(this);return false;});
-    
-    js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
-    
-    js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
-    
-    // Fix action's link style
-    js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});
     
     // Fix version's select style and event
     js('td[id$=_resource_versions] > select')
