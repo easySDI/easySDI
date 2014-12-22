@@ -121,6 +121,11 @@ $document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js
                             <div class="control-label"><?php echo $this->form->getLabel('childresourcetype_id'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('childresourcetype_id'); ?></div>
                         </div>
+                        
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('accessscope_limitation'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('accessscope_limitation'); ?></div>
+                        </div>
                     </div>
 
                     <div id="commondefinition">

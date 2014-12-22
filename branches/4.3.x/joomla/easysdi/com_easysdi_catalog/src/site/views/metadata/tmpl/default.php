@@ -194,23 +194,23 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                         <form id="form_search_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
                             <input type="hidden" name="task" value="">
                             <div class="control-group">
-                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></label>
+                                <label class="control-label" for="resourcetype_id"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></label>
                                 <div class="controls">
                                     <select id="resourcetype_id" name="resourcetype_id">
                                         <?php foreach ($this->getResourceType() as $resource) { ?>
-                                        <option value="<?php echo $resource->id; ?>"><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
+                                        <option value="<?php echo $resource->id; ?>"<?php if($this->item->resourcetype_id == $resource->id):?> selected="selected"<?php endif;?>><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
                             </div>
                             <div id="resource_name_group" class="control-group">
-                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></label>
+                                <label class="control-label" for="resource_name"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></label>
                                 <div class="controls">
                                     <input id="resource_name" name="resource_name" type="text" value="">
                                 </div>
                             </div>
                             <div class="control-group">
-                                <label class="control-label" for="inputEmail">Status</label>
+                                <label class="control-label" for="status_id">Status</label>
                                 <div class="controls">
                                     <select id="status_id" name="status_id">
                                         <?php foreach ($this->getStatusList() as $status) { ?>
@@ -225,6 +225,25 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                                     <select id="version" name="version">
                                        <option value="all"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_ALL') ; ?></option>
                                        <option value="last" selected="selected"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_LAST') ; ?></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="resource_organism_group" class="control-group">
+                                <label class="control-label" for="organism_id"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_ORGANISM') ; ?></label>
+                                <div class="controls">
+                                    <select id="organism_id" name="organism_id">
+                                        <?php
+                                            $userOrganism = $user->getMemberOrganisms();
+                                            $coreHelper = new Easysdi_coreHelper();
+                                            $organisms = $coreHelper->getOrganisms();
+                                            
+                                            foreach($organisms as $organism):
+                                        ?>
+                                            <option value="<?php echo $organism->id;?>"
+                                                <?php if($organism->id === $userOrganism[0]->id): ?>selected="selected"<?php endif;?>
+                                            ><?php echo $organism->name; ?></option>
+                                        <?php endforeach; ?>
+                                        
                                     </select>
                                 </div>
                             </div>
