@@ -412,6 +412,26 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if ($_POST['resource_name'] != '') {
             $query->where('r.name like ' . $query->quote('%' . $query->escape($_POST['resource_name']) . '%'));
         }
+        if (!empty($_POST['organism_id'])) {
+            $query->where('r.organism_id = ' . (int) $_POST['organism_id']);
+        }
+        
+        $user = new sdiUser();
+        //user's organism's categories
+        $categories = $user->getMemberOrganismsCategoriesIds();
+        array_push($categories, 0);
+
+        //user's organism
+        $organisms = $user->getMemberOrganisms();
+
+        //apply resource's accessscope
+        $query->where("("
+                . "r.accessscope_id = 1 "
+                . "OR (r.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.category_id IN (" . implode(',', $categories) . ") AND a.entity_guid = r.guid ) > 0) "
+                . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
+                . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$user->id . " AND a.entity_guid = r.guid ) = 1)"
+                . ")"
+                );
 
         $this->db->setQuery($query);
         $resources = $this->db->loadObjectList();
