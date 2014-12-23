@@ -56,7 +56,7 @@ INSERT INTO #__sdi_searchcriteria (guid, alias, created_by, created, modified_by
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (1, 1, 'public');
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (3, 1, 'organism');
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (4, 1, 'user');
-INSERT INTO #__sdi_sys_accessscope (ordering, state, `value`) VALUES (2, 1, 'category');
+INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (2, 1, 'category');
 
 INSERT INTO #__sdi_sys_addresstype (ordering, state, value) VALUES (1, 1, 'contact');
 INSERT INTO #__sdi_sys_addresstype (ordering, state, value) VALUES (2, 1, 'billing');
