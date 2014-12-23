@@ -111,6 +111,8 @@ ALTER TABLE ONLY #__sdi_order_propertyvalue
     ADD CONSTRAINT #__sdi_order_propertyvalue_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY #__sdi_organism
     ADD CONSTRAINT #__sdi_organism_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY #__sdi_category
+    ADD CONSTRAINT #__sdi_category_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY #__sdi_perimeter
     ADD CONSTRAINT #__sdi_perimeter_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY #__sdi_physicalservice_organism
@@ -1211,4 +1213,8 @@ ALTER TABLE ONLY #__sdi_attribute
     ADD CONSTRAINT sdi_attribute_fk2 FOREIGN KEY (listnamespace_id) REFERENCES #__sdi_namespace(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_attribute
     ADD CONSTRAINT sdi_attribute_fk3 FOREIGN KEY (stereotype_id) REFERENCES #__sdi_sys_stereotype(id) MATCH FULL;
+ALTER TABLE ONLY #__sdi_organism_category
+    ADD CONSTRAINT #__sdi_organism_category_fk1 FOREIGN KEY (organism_id) REFERENCES #__sdi_organism(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_organism_category
+    ADD CONSTRAINT #__sdi_organism_category_fk2 FOREIGN KEY (category_id) REFERENCES #__sdi_category(id) MATCH FULL ON DELETE CASCADE;
 
