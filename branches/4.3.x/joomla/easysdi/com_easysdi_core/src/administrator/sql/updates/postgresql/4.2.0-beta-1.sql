@@ -17,13 +17,16 @@ CREATE TABLE IF NOT EXISTS #__sdi_category (
     asset_id integer NOT NULL
 );
 
+ALTER TABLE ONLY #__sdi_category
+    ADD CONSTRAINT #__sdi_category_pkey PRIMARY KEY (id);
+
 CREATE TABLE IF NOT EXISTS #__sdi_organism_category (
     id serial NOT NULL ,
-    organism_id integer NOT NULL references #__sdi_organism(id),
-    category_id integer NOT NULL references #__sdi_category(id)
+    organism_id integer NOT NULL,
+    category_id integer NOT NULL
 );
 
-INSERT INTO #__sdi_sys_accessscope (id, ordering, state, `value`) VALUES (4, 4, 1, 'category');
+INSERT INTO #__sdi_sys_accessscope (id, ordering, state, value) VALUES (4, 4, 1, 'category');
 
 CREATE TABLE IF NOT EXISTS #__sdi_policy_category (
     id serial NOT NULL ,
