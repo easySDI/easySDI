@@ -1,41 +1,97 @@
-ALTER TABLE `#__sdi_maplayer` ADD COLUMN `levelfield`  varchar(255) NULL AFTER `asOLoptions`;
-ALTER TABLE `#__sdi_maplayer` ADD COLUMN `isindoor`  TINYINT(1) NULL AFTER `asOLoptions`;
+ALTER TABLE `#__sdi_translation` ADD UNIQUE `unique_lang_element`(element_guid, language_id);
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_server` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` int(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+ALTER TABLE `#__sdi_translation` ADD COLUMN `text3`  varchar(255) NULL AFTER `text2`;
 
-INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','geoserver' );
-INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','arcgisserver' );
+ALTER TABLE `#__sdi_resourcetypelink` DROP FOREIGN KEY `#__sdi_resourcetypelink_fk3`;
+ALTER TABLE `#__sdi_resourcetypelink` DROP COLUMN `class_id`;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_server_serviceconnector` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`server_id` INT(11)  NOT NULL ,
-`serviceconnector_id` int(11)  NOT NULL,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+ALTER TABLE `#__sdi_resourcetypelink` DROP FOREIGN KEY `#__sdi_resourcetypelink_fk4`;
+ALTER TABLE `#__sdi_resourcetypelink` DROP COLUMN `attribute_id`;
 
-ALTER TABLE `#__sdi_sys_server_serviceconnector`
-ADD CONSTRAINT `#__sdi_sys_server_serviceconnector_fk1` FOREIGN KEY (`server_id`) REFERENCES `#__sdi_sys_server` (`id`);
 
-ALTER TABLE `#__sdi_sys_server_serviceconnector`
-ADD CONSTRAINT `#__sdi_sys_server_serviceconnector_fk2` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
+ALTER TABLE `#__sdi_assignment` DROP FOREIGN KEY `#__sdi_assignment_fk3`;
+ALTER TABLE `#__sdi_assignment` CHANGE `version_id` `metadata_id` INT(11) UNSIGNED NOT NULL;
+TRUNCATE `#__sdi_assignment`;
+ALTER TABLE `#__sdi_assignment` ADD CONSTRAINT `#__sdi_assignment_fk3`
+    FOREIGN KEY (`metadata_id` )
+    REFERENCES `#__sdi_metadata` (`id` )
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 
-INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('1', '1', '2');
-INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('2', '1', '3');
-INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('3', '1', '4');
-INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('4', '1', '5');
-INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('5', '1', '11');
-INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('6', '2', '2');
-INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('7', '2', '4');
-INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('8', '2', '5');
+ALTER TABLE #__sdi_resourcetype MODIFY modified_by int(11) NULL;
 
-ALTER TABLE `#__sdi_physicalservice` ADD COLUMN `server_id` INT(11) NULL;
-ALTER TABLE `#__sdi_physicalservice`
-ADD CONSTRAINT `#__sdi_physicalservice_server_fk1` FOREIGN KEY (`server_id`) REFERENCES `#__sdi_sys_server` (`id`);
+ALTER TABLE #__sdi_resourcetype MODIFY modified datetime NULL;
 
-ALTER TABLE `#__sdi_map_tool` MODIFY `params` VARCHAR(4000);
+ALTER TABLE #__sdi_resourcetypelink MODIFY modified_by int(11) NULL;
+
+ALTER TABLE #__sdi_resourcetypelink MODIFY modified datetime NULL;
+
+ALTER TABLE #__sdi_application MODIFY modified_by int(11) NULL;
+
+ALTER TABLE #__sdi_application MODIFY modified datetime NULL;
+
+ALTER TABLE #__sdi_diffusion MODIFY modified datetime NULL;
+
+ALTER TABLE #__sdi_diffusion MODIFY description VARCHAR(500) NULL;
+
+ALTER TABLE #__sdi_order MODIFY modified datetime NULL;
+
+ALTER TABLE #__sdi_order MODIFY remark VARCHAR(500) NULL;
+
+ALTER TABLE #__sdi_order_diffusion MODIFY remark VARCHAR(500) NULL;
+ALTER TABLE #__sdi_order_diffusion MODIFY fee DECIMAL(10) NULL;
+ALTER TABLE #__sdi_order_diffusion MODIFY completed datetime NULL;
+ALTER TABLE #__sdi_order_diffusion MODIFY `file` VARCHAR(500) NULL;
+ALTER TABLE #__sdi_order_diffusion MODIFY `size` DECIMAL(10) NULL;
+
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 5 WHERE id = 1;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 2;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 3;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 5 WHERE id = 4;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 6 WHERE id = 5;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 6 WHERE id = 6;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 4 WHERE id = 7;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 4 WHERE id = 8;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 9;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 10;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 11;
+UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 12;
+
+UPDATE `#__sdi_sys_accessscope` SET value='public' WHERE id=1;
+UPDATE `#__sdi_sys_accessscope` SET value='category' WHERE id=2;
+UPDATE `#__sdi_sys_accessscope` SET value='organism' WHERE id=3;
+UPDATE `#__sdi_sys_accessscope` SET value='user' WHERE id=4;
+
+UPDATE #__sdi_sys_accessscope SET ordering=1 WHERE value='public';
+UPDATE #__sdi_sys_accessscope SET ordering=2 WHERE value='category';
+UPDATE #__sdi_sys_accessscope SET ordering=3 WHERE value='organism';
+UPDATE #__sdi_sys_accessscope SET ordering=4 WHERE value='user';
+
+INSERT INTO `#__sdi_sys_rendertype` VALUES 
+(7, 7, 1, 'datetime'),
+(8, 8, 1, 'gemet');
+
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('21', '11', '8');
+
+
+
+ALTER TABLE `#__sdi_translation` DROP FOREIGN KEY `#__sdi_translation_fk1`;
+ALTER TABLE `#__sdi_translation` ADD CONSTRAINT `#__sdi_translation_fk1` FOREIGN KEY (`language_id`) REFERENCES `#__sdi_language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+UPDATE #__sdi_sys_stereotype SET defaultpattern = '^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$' WHERE id = 1;
+UPDATE #__sdi_sys_stereotype SET defaultpattern = '^[\-+]?[0-9.]+$' WHERE id = 4;
+UPDATE #__sdi_sys_stereotype SET defaultpattern = '^([0-9]{4}-[0-9]{2}-[0-9]{2})$' WHERE id = 5;
+UPDATE #__sdi_sys_stereotype SET defaultpattern = '^((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)$' WHERE id = 7;
+UPDATE #__sdi_sys_stereotype SET defaultpattern = '^([0-9]{4}-[0-9]{2}-[0-9]{2})$' WHERE id = 8;
+UPDATE #__sdi_sys_stereotype SET defaultpattern = '^[\-+]?[0-9.]*[0-9]([Ee]\-?[0-9.]*[0-9])?$' WHERE id = 12;
+UPDATE #__sdi_sys_stereotype SET defaultpattern = '^[\-+]?[0-9]+$' WHERE id = 13;
+
+
+
+ALTER TABLE #__sdi_order ADD COLUMN mandate_ref VARCHAR(75) NULL AFTER remark;
+ALTER TABLE #__sdi_order ADD COLUMN mandate_contact VARCHAR(75) NULL AFTER mandate_ref;
+ALTER TABLE #__sdi_order ADD COLUMN mandate_email VARCHAR(100) NULL AFTER mandate_email;
+
+ALTER TABLE #__sdi_catalog ADD COLUMN contextualsearchresultpaginationnumber int(3) DEFAULT 0 AFTER description;
+
+ALTER TABLE #__sdi_relation ADD COLUMN accessscope_limitation int(1) DEFAULT 0 AFTER childtype_id;
