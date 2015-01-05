@@ -496,7 +496,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
                     }
                 } else {
-                    if ($data[$key . '_filetext'] == '') {
+                    if ($data[$key . '_filehiddendelete'] == '') {
                         if ($data[$key . '_filehidden'] != '') {
                             unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
                         }

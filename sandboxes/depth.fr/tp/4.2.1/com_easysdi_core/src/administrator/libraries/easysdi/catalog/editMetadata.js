@@ -724,6 +724,7 @@ function emptyFile(id) {
     var uuid = getUuid('empty-btn-', id);
     var replaceUuid = uuid.replace(/-/g, '_');
     js('#jform_' + replaceUuid + '_filetext').attr('value', '');
+    js('#jform_' + replaceUuid + '_filehiddendelete').attr('value', '');
     js('#preview-' + uuid).hide();
     js('#empty-file-' + uuid).hide();
 }
