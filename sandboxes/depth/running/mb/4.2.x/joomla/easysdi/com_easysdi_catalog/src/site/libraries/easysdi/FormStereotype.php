@@ -205,6 +205,7 @@ class FormStereotype {
         $extentTypeCode->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$HIDDEN);
 
         $northBoundLatitude = $dom->createElementNS($this->namespaces['gmd'], 'gmd:northBoundLatitude');
+        $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$TEXTBOX);
         $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$NUMBER);
@@ -212,6 +213,7 @@ class FormStereotype {
         $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':boundingbox', 'true');
 
         $southBoundLatitude = $dom->createElementNS($this->namespaces['gmd'], 'gmd:southBoundLatitude');
+        $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$TEXTBOX);
         $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$NUMBER);
@@ -219,6 +221,7 @@ class FormStereotype {
         $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':boundingbox', 'true');
 
         $eastBoundLongitude = $dom->createElementNS($this->namespaces['gmd'], 'gmd:eastBoundLongitude');
+        $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$TEXTBOX);
         $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$NUMBER);
@@ -226,6 +229,7 @@ class FormStereotype {
         $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':boundingbox', 'true');
 
         $westBoundLongitude = $dom->createElementNS($this->namespaces['gmd'], 'gmd:westBoundLongitude');
+        $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$TEXTBOX);
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$NUMBER);

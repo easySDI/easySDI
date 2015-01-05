@@ -767,7 +767,6 @@ class FormGenerator {
         $relId = $attribute->getAttributeNS($this->catalog_uri, 'relid');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
-        $boundingbox = $attribute->getAttributeNS($this->catalog_uri, 'boundingbox');
 
         $fields = array();
         $field = $this->form->createElement('field');
@@ -1429,27 +1428,23 @@ class FormGenerator {
      * @since 4.0.0
      */
     private function getValidatorClass(DOMElement $attribute) {
-        $validator = '';
+        $validator = array();
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
         $patterns = $this->getPatterns();
 
         if ($attribute->getAttributeNS($this->catalog_uri, 'lowerbound') > 0) {
-            $validator .= ' required ';
+            $validator[] = 'required';
         }
 
         if (array_key_exists($guid, $patterns)) {
             if ($patterns[$guid]->attribute_pattern != '') {
-                $validator .= ' validate-sdi' . $patterns[$guid]->guid;
+                $validator[] = 'validate-sdi' . $patterns[$guid]->guid;
             } elseif ($patterns[$guid]->stereotype_pattern != '') {
-                $validator .= ' validate-sdi' . $patterns[$guid]->stereotype_name;
+                $validator[] = 'validate-sdi' . $patterns[$guid]->stereotype_name;
             }
-
-            return $validator;
-        } elseif ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
-            return $validator;
-        } else {
-            return '';
         }
+        
+        return implode(' ',$validator);
     }
 
     /**
