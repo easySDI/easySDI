@@ -833,8 +833,8 @@ CREATE TABLE IF NOT EXISTS #__sdi_category (
 
 CREATE TABLE IF NOT EXISTS #__sdi_organism_category (
     id serial NOT NULL ,
-    organism_id integer NOT NULL references #__sdi_organism(id),
-    category_id integer NOT NULL references #__sdi_category(id)
+    organism_id integer NOT NULL,
+    category_id integer NOT NULL
 );
 
 

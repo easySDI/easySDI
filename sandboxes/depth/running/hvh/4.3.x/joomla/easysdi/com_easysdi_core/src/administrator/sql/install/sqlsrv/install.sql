@@ -1118,7 +1118,6 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-
 CREATE TABLE [#__sdi_order](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
