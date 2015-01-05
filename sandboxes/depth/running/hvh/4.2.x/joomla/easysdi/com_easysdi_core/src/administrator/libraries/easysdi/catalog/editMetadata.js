@@ -515,7 +515,7 @@ var buildDeletedTree = function (versions) {
  * @returns void
  */
 function addTooltips() {
-    $$('.hasTip').each(function (el) {
+    $$('.hasTooltip').each(function (el) {
         var title = el.get('title');
         if (title) {
             var parts = title.split('::', 2);
@@ -524,7 +524,7 @@ function addTooltips() {
         }
     });
 
-    new Tips($$('.hasTip'), {"maxTitleChars": 50, "fixed": false});
+    new Tips($$('.hasTooltip'), {"maxTitleChars": 50, "fixed": false});
 }
 
 function setRelationAction(element) {
