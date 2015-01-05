@@ -90,7 +90,7 @@ UPDATE #__sdi_sys_stereotype SET defaultpattern = '^[\-+]?[0-9]+$' WHERE id = 13
 
 ALTER TABLE #__sdi_order ADD COLUMN mandate_ref VARCHAR(75) NULL AFTER remark;
 ALTER TABLE #__sdi_order ADD COLUMN mandate_contact VARCHAR(75) NULL AFTER mandate_ref;
-ALTER TABLE #__sdi_order ADD COLUMN mandate_email VARCHAR(100) NULL AFTER mandate_email;
+ALTER TABLE #__sdi_order ADD COLUMN mandate_email VARCHAR(100) NULL AFTER mandate_contact;
 
 ALTER TABLE #__sdi_catalog ADD COLUMN contextualsearchresultpaginationnumber int(3) DEFAULT 0 AFTER description;
 
