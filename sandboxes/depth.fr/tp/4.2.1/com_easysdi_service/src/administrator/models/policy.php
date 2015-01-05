@@ -1249,6 +1249,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         $db->query();
 
         $pks = $data['organisms'];
+		if(!is_array($pks)){
+            return true;
+        }
         foreach ($pks as $pk) {
             try {
                 $query = $db->getQuery(true);
@@ -1416,6 +1419,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         $db->query();
 
         $arr_pks = $data['allowedoperation_' . strtolower($data['layout'])];
+		if(!is_array($arr_pks)){
+            return true;
+        }
         foreach ($arr_pks as $pk) {
             try {
                 $query = $db->getQuery(true);
@@ -1724,6 +1730,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
 
         $arr_pks = $data['csw_state'];
         $version_id = $data['csw_version_id'];
+		
+		if(!is_array($arr_pks)){
+            return true;
+        }
+		
         foreach ($arr_pks as $pk) {
             $query = $db->getQuery(true);
             $columns = array('policy_id', 'metadatastate_id', 'metadataversion_id');
@@ -1762,6 +1773,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         $db->execute();
 
         $arr_pks = $data['csw_organisms'];
+		if(!is_array($arr_pks)){
+            return true;
+        }
         foreach ($arr_pks as $pk) {
             $query = $db->getQuery(true);
             $columns = array(policy_id, organism_id);
@@ -1819,6 +1833,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         $db->execute();
 
         $arr_pks = $data['csw_resourcetype'];
+		if(!is_array($arr_pks)){
+            return true;
+        }
         foreach ($arr_pks as $pk) {
             $query = $db->getQuery(true);
             $columns = array('policy_id', 'resourcetype_id');
