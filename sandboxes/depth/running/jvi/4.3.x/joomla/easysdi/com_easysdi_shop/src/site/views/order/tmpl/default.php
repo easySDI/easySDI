@@ -187,7 +187,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                 </div>
             </div>
             <div>
-                <?php if($this->state->get('layout.validation')): ?>
+                <?php if($this->state->get('layout.validation') && $this->item->orderstate_id == 8): ?>
                 <p id="validation_remark">
                     <label for="reason"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK'); ?>:</label>
                     <textarea id="reason" name="reason"></textarea>
