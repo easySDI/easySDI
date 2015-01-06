@@ -1314,6 +1314,7 @@ class FormGenerator {
         $maxlength = $attribute->getAttributeNS($this->catalog_uri, 'maxlength');
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $style = $attribute->getAttributeNS($this->catalog_uri, 'style');
 
         $field = $this->form->createElement('field');
 
@@ -1332,6 +1333,12 @@ class FormGenerator {
         $hiddenField->setAttribute('type', 'hidden');
         $hiddenField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
         $hiddenField->setAttribute('default', $attribute->firstChild->nodeValue);
+        
+        $hiddenDeleteField = $this->form->createElement('field');
+        $hiddenDeleteField->setAttribute('type', 'hidden');
+        $hiddenDeleteField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehiddendelete');
+        $hiddenDeleteField->setAttribute('default', $attribute->firstChild->nodeValue);
+
 
         $textField = $this->form->createElement('field');
         $textField->setAttribute('type', 'text');
@@ -1341,6 +1348,7 @@ class FormGenerator {
 
         $fields[] = $textField;
         $fields[] = $hiddenField;
+        $fields[] = $hiddenDeleteField;
 
         return $fields;
     }
