@@ -22,6 +22,8 @@ class Easysdi_shopModelOrders extends JModelList {
     const ORDERTYPE_ESTIMATE    = 2;
     const ORDERTYPE_DRAFT       = 3;
     
+    const USERROLE_VALIDATIONMANAGER = 10;
+    
     /**
      * Constructor.
      *
@@ -53,8 +55,11 @@ class Easysdi_shopModelOrders extends JModelList {
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
         
-        $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
+        $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status', 1);
         $this->setState('filter.status', $search);
+        
+        $search = $app->getUserStateFromRequest($this->context.'.filter_organism', 'filter_organism', 0);
+        $this->setState('filter.organism', $search);
         
         $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
         $this->setState('filter.type', $search);
@@ -117,7 +122,10 @@ class Easysdi_shopModelOrders extends JModelList {
         // Filter by state
         $status = $this->getState('filter.status');
         if (is_numeric($status)) {
-        	$query->where('a.orderstate_id = ' . (int) $status);
+            if($status == 1) // get orders to check
+        	$query->where('a.orderstate_id = 8');
+            else // get orders checked
+                $query->where('a.orderstate_id IN (1, 2, 3, 4, 5, 6, 9, 10)');
         }
         
         // Filter by type
@@ -140,7 +148,11 @@ class Easysdi_shopModelOrders extends JModelList {
         if($this->getState('layout.validation')){
             $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
                     ->where('uro.user_id='.(int)  sdiFactory::getSdiUser()->id)
-                    ->where('uro.role_id=10');
+                    ->where('uro.role_id='.self::USERROLE_VALIDATIONMANAGER);
+            
+            $tpOrganism = $this->getState('filter.organism');
+            if($tpOrganism > 0)
+                $query->where('a.thirdparty_id='.(int)$tpOrganism);
         }
         else{
             //Only order which belong to the current user
