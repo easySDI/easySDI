@@ -314,6 +314,9 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		$db->query();
 		
 		$arr_pks = json_decode ($pks);
+                if(!is_array($arr_pks)){
+                    return true;
+                }
 		foreach ($arr_pks as $pk)
 		{
 			try {
@@ -393,6 +396,9 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		$db->setQuery($query);
 		$db->query();
 	
+                if(!is_array($pks)){
+                    return true;
+                }
 		foreach ($pks as $pk)
 		{
 			try {

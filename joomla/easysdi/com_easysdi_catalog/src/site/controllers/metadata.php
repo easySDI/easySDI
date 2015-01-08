@@ -395,14 +395,20 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return stdClass[] result list of resource
      */
     public function searchresource() {
+        $lang = JFactory::getLanguage();
+        
         $query = $this->db->getQuery(true);
 
-        $query->select('m.id, r.name, v.created, m.guid, rt.name as rt_name, ms.value as status');
+        $query->select('m.id, r.name, v.name as vname, m.guid, t.text1 as rt_name, ms.value as status');
         $query->from('#__sdi_resource r');
         $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
+        $query->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid');
+        $query->innerJoin('#__sdi_language AS l ON t.language_id = l.id');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
+        $query->where('l.code = ' . $query->quote($lang->getTag()));
+        
         if ($_POST['status_id'] != '') {
             $query->where('m.metadatastate_id = ' . (int) $_POST['status_id']);
         }
@@ -435,7 +441,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $this->db->setQuery($query);
         $resources = $this->db->loadObjectList();
-
+        
         $response = array();
         $response['success'] = true;
         $response['total'] = count($resources);
@@ -516,7 +522,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
                     }
                 } else {
-                    if ($data[$key . '_filetext'] == '') {
+                    if ($data[$key . '_filehiddendelete'] == '') {
                         if ($data[$key . '_filehidden'] != '') {
                             unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
                         }
@@ -596,7 +602,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         $element->nodeValue = $translation->text2;
                     }
                 } else {
-                    $element->nodeValue = $value;
+                    $element->nodeValue = "";
+                    $item = $this->structure->createTextNode($value);
+                    $element->appendChild($item);
                 }
             }
         }
