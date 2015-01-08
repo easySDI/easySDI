@@ -399,7 +399,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         
         $query = $this->db->getQuery(true);
 
-        $query->select('m.id, r.name, v.created, m.guid, t.text1 as rt_name, ms.value as status');
+        $query->select('m.id, r.name, v.name as vname, m.guid, t.text1 as rt_name, ms.value as status');
         $query->from('#__sdi_resource r');
         $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
         $query->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid');

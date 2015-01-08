@@ -247,7 +247,7 @@ js('document').ready(function () {
                     return "<input type='radio' name='import[id]' id='import_id_" + item.id + "' value='" + item.id + "' checked=''>";
                 }},
             {aTargets: [1], mData: 'name'},
-            {aTargets: [2], mData: 'created'},
+            {aTargets: [2], mData: 'vname'},
             {aTargets: [3], mData: 'guid'},
             {aTargets: [4], mData: 'rt_name'},
             {aTargets: [5], mData: function (item) {

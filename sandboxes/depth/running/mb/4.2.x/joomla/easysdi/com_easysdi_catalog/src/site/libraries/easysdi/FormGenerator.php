@@ -90,7 +90,7 @@ class FormGenerator {
      * @version 4.0.0
      */
     public function getForm() {
-
+        
         if (!isset($_GET['relid'])) {
             $query = $this->db->getQuery(true);
             $query->select('r.id, r.name, r.childtype_id');
@@ -321,7 +321,7 @@ class FormGenerator {
         $formStereotype = new FormStereotype();
 
         $query = $this->getRelationQuery();
-        $query->where('r.parent_id = ' . $parent_id);
+        $query->where('r.parent_id = ' . $query->quote($parent_id));
         $query->where('r.state = 1');
         $query->order('r.ordering');
         $query->order('r.name');
@@ -457,6 +457,10 @@ class FormGenerator {
         return $element;
     }
 
+    /**
+     * Clone structure and remove from the clone node that not in csw domdocument and get the value from the csw
+     * 
+     */
     private function cleanStructure() {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
@@ -504,9 +508,19 @@ class FormGenerator {
         $this->mergeToStructure($clone_structure, $domXpathClone);
     }
 
+    /**
+     * Merge structure clone to original structure
+     * 
+     * @param DOMDocument $clone
+     * @param DOMXPath $domXpathClone
+     * 
+     */
     private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
         /* @var $node DOMElement */
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
+            if(strpos($node->getNodePath(), 'gmd:extent') > -1 ){
+                $breakpoint = true; 
+            }
             if ($domXpathClone->query($node->getNodePath())->length == 0) {
                 do {
                     $childToImport = $node;
