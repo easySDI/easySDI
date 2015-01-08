@@ -247,7 +247,7 @@ js('document').ready(function () {
                     return "<input type='radio' name='import[id]' id='import_id_" + item.id + "' value='" + item.id + "' checked=''>";
                 }},
             {aTargets: [1], mData: 'name'},
-            {aTargets: [2], mData: 'created'},
+            {aTargets: [2], mData: 'vname'},
             {aTargets: [3], mData: 'guid'},
             {aTargets: [4], mData: 'rt_name'},
             {aTargets: [5], mData: function (item) {
@@ -687,7 +687,7 @@ function confirmReplicate() {
 }
 
 function confirmReset() {
-    bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function (result) {
+    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE","COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
         if (result) {
 
         }
@@ -711,7 +711,7 @@ function removeFromStructure(id) {
 }
 
 function confirmEmptyFile(id) {
-    bootbox.confirm("Are you sure?", function (result) {
+    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE","COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
         if (result) {
             emptyFile(id);
         }
@@ -722,6 +722,7 @@ function emptyFile(id) {
     var uuid = getUuid('empty-btn-', id);
     var replaceUuid = uuid.replace(/-/g, '_');
     js('#jform_' + replaceUuid + '_filetext').attr('value', '');
+    js('#jform_' + replaceUuid + '_filehiddendelete').attr('value', '');
     js('#preview-' + uuid).hide();
     js('#empty-file-' + uuid).hide();
 }

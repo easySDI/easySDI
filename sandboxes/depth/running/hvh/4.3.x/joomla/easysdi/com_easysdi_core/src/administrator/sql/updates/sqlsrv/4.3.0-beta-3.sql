@@ -125,5 +125,9 @@ UPDATE  [#__sdi_sys_stereotype] SET [defaultpattern] = '^[\-+]?[0-9]+$' WHERE [i
 
 
 ALTER TABLE [#__sdi_order] ADD COLUMN [mandate_ref] [nvarchar](75) NULL;
-ALTER TABLE [#__sdi_order] ADD COLUMN [mandate_contact] [nvarchar](75);
-ALTER TABLE [#__sdi_order] ADD COLUMN [mandate_email] [nvarchar](100);
+ALTER TABLE [#__sdi_order] ADD COLUMN [mandate_contact] [nvarchar](75) NULL;
+ALTER TABLE [#__sdi_order] ADD COLUMN [mandate_email] [nvarchar](100) NULL;
+
+ALTER TABLE [#__sdi_catalog] ADD COLUMN [contextualsearchresultpaginationnumber] [tinyint] DEFAULT 0 AFTER description;
+
+ALTER TABLE [#__sdi_relation] ADD COLUMN [accessscope_limitation] [tinyint] DEFAULT 0 AFTER childtype_id;

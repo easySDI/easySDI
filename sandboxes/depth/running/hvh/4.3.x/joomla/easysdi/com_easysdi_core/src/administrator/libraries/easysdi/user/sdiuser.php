@@ -82,6 +82,7 @@ class sdiUser {
     const viewmanager = 6;
     const extractionresponsible = 7;
     const pricingmanager = 9;
+    const validationmanager = 10;
 
     /**
      * 
@@ -331,6 +332,17 @@ class sdiUser {
             return null;
         }
         return $this->role[self::pricingmanager];
+    }
+
+    /**
+     * Get the Organisms for which the user is pricing manager
+     * @return type
+     */
+    public function getTPValidationManagerOrganisms() {
+        if (!$this->isEasySDI) {
+            return null;
+        }
+        return $this->role[self::validationmanager];
     }
 
     /**
