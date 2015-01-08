@@ -5,7 +5,6 @@
         <field  name="searchtype"             
                 type="resourcetypesql" 
                 class="inputbox"
-                translate="true" 
                 key_field="id" 
                 value_field="name"
                 label="COM_EASYSDI_CORE_FORM_LBL_VERSION_SEARCH_TYPE"
