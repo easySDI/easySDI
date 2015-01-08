@@ -246,22 +246,25 @@ var priceFormatter = function(price, displayCurrency){
 var updatePricing = function(pricing){
     //total amount
     jQuery('span.pricingTotalAmountTI').html(priceFormatter(pricing.cal_total_amount_ti));
+    jQuery('span#pricingTotalAmountTI-container').show();
     
     //suppliers
     jQuery.each(pricing.suppliers, function(supplierId, supplier){
         //products
         jQuery.each(supplier.products, function(productId, product){
-            jQuery('table[rel='+supplierId+']>tbody>tr[rel='+productId+']>td.price_column').html(priceFormatter(product.cal_total_amount_ti));
+            jQuery('table[rel='+supplierId+']>tbody>tr[rel='+productId+']>td.price_column').html(priceFormatter(product.cal_total_amount_ti)).show();
         });
         
         //footer
         jQuery('table[rel='+supplierId+']>tfoot>tr>td#supplier_cal_fee_ti').html(priceFormatter(supplier.cal_fee_ti));
         jQuery('table[rel='+supplierId+']>tfoot>tr>td#supplier_cal_total_amount_ti').html(priceFormatter(supplier.cal_total_amount_ti));
         jQuery('table[rel='+supplierId+']>tfoot>tr>td#supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
+        jQuery('table[rel='+supplierId+']>tfoot').show();
     });
     
     //platform
-    jQuery('span.pricingFeeTI').html(priceFormatter(pricing.cal_fee_ti));
+    jQuery('span.pricingFeeTI').html(priceFormatter(pricing.cal_fee_ti)).show();
+    jQuery('#pricingTotal-table').show();
 };
 
 function savePerimeter() {
@@ -283,24 +286,27 @@ function savePerimeter() {
             url: "index.php?option=com_easysdi_shop&task=addExtentToBasket" ,
             data :"item="+ JSON.stringify(extent)
         }).done(function(r) {
-            console.log(r);
             if(r.MESSAGE && r.MESSAGE=='OK'){
                 //extent
-                if(Object.prototype.toString.call(r.extent.features) === '[object Array]')
+                if(Object.prototype.toString.call(r.extent.features) === '[object Array]'){
                     jQuery('#perimeter-recap-details')
                         .empty()
                         .append(jQuery(r.extent.features).each(function(){return jQuery('<div>'+jQuery(this).name+'</div>');}))
                         .show()
                         ;
+                    jQuery('#perimeter-recap').show();
+                }
                 else
                     jQuery('#perimeter-recap-details').hide();
                 
-                if(r.extent.surface != '')
+                if(r.extent.surface != ''){
                     jQuery('#perimeter-recap > div:nth-child(1) > div').html(
                         (r.extent.surface > maxmetervalue)
                         ? (r.extent.surface/1000000).toFixed(surfacedigit)+Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
                         : parseFloat(r.extent.surface).toFixed(surfacedigit)+Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
                     );
+                    jQuery('#perimeter-recap').show();
+                }
                 else
                     jQuery('#perimeter-recap > div:nth-child(1) > div').empty();
                 
@@ -484,7 +490,7 @@ jQuery(document).on('change', 'select#thirdparty', function(e){
         type: "POST",
         url: "index.php?option=com_easysdi_shop&task=basket.saveBasketToSession" ,
         data :"thirdparty="+tp
-    }).done(function(r) { console.log(r);
+    }).done(function(r) {
         thirdpartyInfoVisibility();
         //pricing
         updatePricing(r.pricing);
