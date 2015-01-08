@@ -465,6 +465,7 @@ CREATE TABLE [#__sdi_catalog](
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](500) NULL,
+        [contextualsearchresultpaginationnumber] [tinyint] DEFAULT 0,
 	[xsldirectory] [nvarchar](255) NULL,
 	[oninitrunsearch] [smallint] NULL,
 	[cswfilter] [nvarchar](max) NULL,
@@ -1143,8 +1144,11 @@ CREATE TABLE [#__sdi_order](
 	[remark] [nvarchar](500) NULL,
 	[sent] [datetime2](0) NOT NULL,
 	[completed] [datetime2](0) NOT NULL,
+        [mandate_ref] [nvarchar](75) NULL,
+        [mandate_contact] [nvarchar](75) NULL,
+        [mandate_email] [nvarchar](100) NULL,
 	[access] [int] NOT NULL,
-	[asset_id] [bigint] NOT NULL,
+	[asset_id] [bigint] NOT NULL,        
  CONSTRAINT [PK_#__sdi_order_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1689,6 +1693,7 @@ CREATE TABLE [#__sdi_relation](
 	[editorrelationscope_id] [bigint] NULL,
 	[childresourcetype_id] [bigint] NULL,
 	[childtype_id] [bigint] NULL,
+        [accessscope_limitation] [tinyint] DEFAULT 0,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_relation_id] PRIMARY KEY CLUSTERED 
