@@ -244,6 +244,7 @@ var Resource = (function(){
 <?php 
     $params = JComponentHelper::getParams('com_easysdi_catalog');
     $assignenabled = $params->get('assignenabled',1);
+    $synchronizeenabled = $params->get('synchronizeenabled',1);
     
     foreach ($this->items as $item) : ?>
     var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>', '<?php echo $item->resourcetype_alias; ?>', '<?php echo $item->accessscope; ?>');
@@ -259,6 +260,7 @@ var Resource = (function(){
     <?php if($item->canbechild): ?>resource.canBeChild = 1;<?php endif; ?>
     <?php if($item->versioning): ?>resource.versioning = 1;<?php endif; ?>
     resource.assignment = <?php  echo $assignenabled; ?>;
+    resource.synchronize = <?php  echo $synchronizeenabled; ?>;
     <?php foreach($item->metadata as $key => $metadata):?>
         resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, '<?php echo JText::_($metadata->value);?>', '<?php echo $metadata->published;?>');
     <?php endforeach;?>
@@ -368,7 +370,7 @@ var buildMetadataDropDown = function(resource){
     /* THIRD SECTION */
     section = [];
     
-    if(resource.rights.metadataResponsible && resource.support.relation){
+    if(resource.rights.metadataResponsible && resource.support.relation && resource.synchronize == 1 ){
         section.push(buildDropDownItem(resource, 'metadata.synchronize'));
     }
     
