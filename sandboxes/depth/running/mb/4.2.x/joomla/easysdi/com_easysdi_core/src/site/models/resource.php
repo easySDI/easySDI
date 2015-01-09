@@ -332,9 +332,10 @@ class Easysdi_coreModelResource extends JModelForm {
             //If it is a new resource, create the first version and its associated metadata
             if ($new) {
                 $version = JTable::getInstance('version', 'Easysdi_coreTable');
-                $version->resource_id = $table->id;
-                $version->name = date("Y-m-d H:i:s");
-                $version->save();
+//                $version->resource_id = $table->id;
+//                $version->name = date("Y-m-d H:i:s");
+                $values = array("resource_id" => $table->id, "name" => date("Y-m-d H:i:s") );
+                $version->save($values);
 
                 require_once JPATH_SITE . '/components/com_easysdi_catalog/models/metadata.php';
                 $metadata = JModelLegacy::getInstance('metadata', 'Easysdi_catalogModel');
