@@ -242,6 +242,7 @@ var Resource = (function(){
 <?php 
     $params = JComponentHelper::getParams('com_easysdi_catalog');
     $assignenabled = $params->get('assignenabled',1);
+    $synchronizeenabled = $params->get('synchronizeenabled',1);
     
     foreach ($this->items as $item) : ?>
     var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>');
@@ -257,6 +258,7 @@ var Resource = (function(){
     <?php if($item->canbechild): ?>resource.canBeChild = 1;<?php endif; ?>
     <?php if($item->versioning): ?>resource.versioning = 1;<?php endif; ?>
     resource.assignment = <?php  echo $assignenabled; ?>;
+    resource.synchronize = <?php  echo $synchronizeenabled; ?>;
     <?php foreach($item->metadata as $key => $metadata):?>
         resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, '<?php echo JText::_($metadata->value);?>', '<?php echo $metadata->published;?>');
     <?php endforeach;?>
@@ -366,7 +368,7 @@ var buildMetadataDropDown = function(resource){
     /* THIRD SECTION */
     section = [];
     
-    if(resource.rights.metadataResponsible && resource.support.relation){
+    if(resource.rights.metadataResponsible && resource.support.relation && resource.synchronize == 1 ){
         section.push(buildDropDownItem(resource, 'metadata.synchronize'));
     }
     
@@ -623,7 +625,7 @@ var getSynchronizationInfo = function(element){
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     var metadata = version.metadata();
-    
+    console.log(version.child_number);
     if(version.child_number > 0){
         js.ajax({
             cache: false,
@@ -632,14 +634,19 @@ var getSynchronizationInfo = function(element){
         }).done(function(data){
             try{
                 var response = js.parseJSON(data);
-
-                if(response.synchronized === true){
-                    var message = '<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')?> '+response.synchronized_by+'<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE')?> '+response.lastsynchronization;
-                    js(element)
+                
+                js(element)
                             .removeClass('disabled')
                             .css('color', 'inherit')
-                            .tooltip({title: message, html: true})
-                            .on('click', function(){return true;});
+                            .off('click')
+                            .on('click', function(){showSyncModal(this);return false;});
+        
+                console.log(response.synchronized);
+                if(response.synchronized === true){
+
+                    var message = '<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')?> '+response.synchronized_by+'<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE')?> '+response.lastsynchronization;
+                    js(element)
+                            .tooltip({title: message, html: true});
                 }
             }
             catch(e){
@@ -655,6 +662,7 @@ var getSynchronizationInfo = function(element){
                 .addClass('disabled')
                 .css('color', '#cbcbcb')
                 .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE')?>", html: true})
+                .off('click')
                 .on('click', function(){return false;});
     }
 };
@@ -821,6 +829,12 @@ var showPublishModal = function(element){
     });
     return false;
 };
+
+function showSyncModal(element){
+    js('#btn_synchronize').attr('href', js(element).attr('href'));
+    js('#synchronizeModal').modal('show');
+    
+}
 
 var buildActionsCell = function(resource, reload){
     reload = reload || false;

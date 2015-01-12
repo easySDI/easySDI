@@ -75,6 +75,14 @@ class SearchJForm extends SearchForm {
         $field = null;
 
         foreach ($this->loadSystemFields() as $searchCriteria) {
+            if($searchCriteria->id == 654){
+                $breakpoint = TRUE;
+            }
+            
+            if(empty($searchCriteria->rendertype_id)){
+                $searchCriteria->rendertype_id = $searchCriteria->rel_rendertype_id;
+            }
+            
             switch ($searchCriteria->rendertype_id) {
                 case EnumRendertype::$TEXTBOX:
                     $field = $this->getFormTextBoxField($searchCriteria);
