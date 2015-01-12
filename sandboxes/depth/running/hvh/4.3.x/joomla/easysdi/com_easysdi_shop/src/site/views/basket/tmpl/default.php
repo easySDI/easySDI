@@ -32,7 +32,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
     div#thirdparty-info{margin-top: 1em;}
     
     div.shop-product .table td{ width: 75%; word-break: break-all}
-    div.shop-product .table td.price_column{ width: auto; text-align: right}
+    div.shop-product .table td.price_column{ width: auto; min-width: 132px; text-align: right}
     div.shop-product .table td.action_column{ width: 5%}
     
     div.shop-product .table tfoot td{ text-align: right}
@@ -87,9 +87,9 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 </div>
                                 <div><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
                                 <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;<?php if(!is_array($this->item->extent->features)):?>display:none;<?php endif;?>">
-                                    <?php foreach($this->item->extent->features as $feature): ?>
+                                    <?php if(is_array($this->item->extent->features)): foreach($this->item->extent->features as $feature): ?>
                                         <div><?php echo $feature->name; ?></div>
-                                    <?php endforeach; ?>
+                                    <?php endforeach; endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -221,7 +221,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                         <?php endforeach; ?>
                         
                         <!-- TOTAL -->
-                        <table class="table table-striped" style="<?php if(!isset($this->item->pricing)): ?>display:none;<?php endif; ?>">
+                        <table class="table table-striped" id='pricingTotal-table' style="<?php if(!isset($this->item->pricing)): ?>display:none;<?php endif; ?>">
                             <thead>
                                 <tr>
                                     <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PLATFORM'); ?></h4></td>

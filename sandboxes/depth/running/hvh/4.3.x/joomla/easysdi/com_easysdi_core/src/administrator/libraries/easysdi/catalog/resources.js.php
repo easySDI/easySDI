@@ -628,7 +628,7 @@ var getSynchronizationInfo = function(element){
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     var metadata = version.metadata();
-    
+    console.log(version.child_number);
     if(version.child_number > 0){
         js.ajax({
             cache: false,
@@ -638,13 +638,18 @@ var getSynchronizationInfo = function(element){
             try{
                 var response = js.parseJSON(data);
 
-                if(response.synchronized === true){
-                    var message = '<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')?> '+response.synchronized_by+'<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE')?> '+response.lastsynchronization;
-                    js(element)
+                js(element)
                             .removeClass('disabled')
                             .css('color', 'inherit')
-                            .tooltip({title: message, html: true})
-                            .on('click', function(){return true;});
+                            .off('click')
+                            .on('click', function(){showSyncModal(this);return false;});
+        
+                console.log(response.synchronized);
+                if(response.synchronized === true){
+
+                    var message = '<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')?> '+response.synchronized_by+'<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE')?> '+response.lastsynchronization;
+                    js(element)
+                            .tooltip({title: message, html: true});
                 }
             }
             catch(e){
@@ -660,6 +665,7 @@ var getSynchronizationInfo = function(element){
                 .addClass('disabled')
                 .css('color', '#cbcbcb')
                 .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE')?>", html: true})
+                .off('click')
                 .on('click', function(){return false;});
     }
 };
@@ -827,7 +833,15 @@ var showPublishModal = function(element){
     return false;
 };
 
-var buildActionsCell = function(resource){
+function showSyncModal(element){
+    js('#btn_synchronize').attr('href', js(element).attr('href'));
+    js('#synchronizeModal').modal('show');
+    
+}
+
+var buildActionsCell = function(resource, reload){
+    reload = reload || false;
+    
     buildMetadataDropDown(resource);
     buildManagementDropDown(resource);
     
