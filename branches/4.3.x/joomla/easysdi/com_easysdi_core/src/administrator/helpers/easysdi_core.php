@@ -125,7 +125,7 @@ class Easysdi_coreHelper {
 
         if (count($childs) > 0) {
             $version->children = $childs;
-            $all_versions[$version->id]->children = $childs;
+            //$all_versions[$version->id]->children = $childs;
 
             foreach ($childs as $key => $child) {
                 $this->getChildrenVersion($child, $viralVersioning, $unpublished);
