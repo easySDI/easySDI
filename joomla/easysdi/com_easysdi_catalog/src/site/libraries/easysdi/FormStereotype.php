@@ -181,6 +181,7 @@ class FormStereotype {
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':dbid', '0');
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$CLASS);
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$GEOGRAPHICEXTENT);
+        $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX.':id', 'decedd18-b418-4336-9980-20f8db3ebb4b');
 
         $description = $dom->createElementNS($this->namespaces['gmd'], 'gmd:description');
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
@@ -192,6 +193,7 @@ class FormStereotype {
         $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$RELATION);
         $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '3');
         $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':upperbound', '3');
+        $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX.':id', 'e3bbff44-f3c1-498b-a940-d0bc717f82de');
 
         $geographicElement1 = $geographicElement->cloneNode();
         $geographicElement1->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '1');
@@ -199,12 +201,14 @@ class FormStereotype {
 
         $EX_GeographicBoundingBox = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_GeographicBoundingBox');
         $EX_GeographicBoundingBox->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$CLASS);
+        $EX_GeographicBoundingBox->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX.':id', '3fcd1f3c-c5a6-4f76-9ac5-195b7138e82b');
 
         $extentTypeCode = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extentTypeCode');
         $extentTypeCode->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $extentTypeCode->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$HIDDEN);
 
         $northBoundLatitude = $dom->createElementNS($this->namespaces['gmd'], 'gmd:northBoundLatitude');
+        $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$TEXTBOX);
         $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$NUMBER);
@@ -212,6 +216,7 @@ class FormStereotype {
         $northBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':boundingbox', 'true');
 
         $southBoundLatitude = $dom->createElementNS($this->namespaces['gmd'], 'gmd:southBoundLatitude');
+        $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$TEXTBOX);
         $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$NUMBER);
@@ -219,6 +224,7 @@ class FormStereotype {
         $southBoundLatitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':boundingbox', 'true');
 
         $eastBoundLongitude = $dom->createElementNS($this->namespaces['gmd'], 'gmd:eastBoundLongitude');
+        $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$TEXTBOX);
         $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$NUMBER);
@@ -226,6 +232,7 @@ class FormStereotype {
         $eastBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':boundingbox', 'true');
 
         $westBoundLongitude = $dom->createElementNS($this->namespaces['gmd'], 'gmd:westBoundLongitude');
+        $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$TEXTBOX);
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$NUMBER);
@@ -234,6 +241,7 @@ class FormStereotype {
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':map', 'true');
 
         $geographicElement2 = $geographicElement->cloneNode();
+        $geographicElement2->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX.':id', 'f8b8668a-cc39-40fd-8491-b19d28e74704');
         //$geographicElement2->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '0');
 
         $EX_GeographicDescription = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_GeographicDescription');

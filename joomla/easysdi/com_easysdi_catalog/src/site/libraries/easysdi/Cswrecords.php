@@ -134,7 +134,8 @@ class Cswrecords extends SearchForm {
 
         // Permanent criteria
         $and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'published'));
-        $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', date('Y-m-d')));
+        $datetime = new DateTime('tomorrow');
+        $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', $datetime->format('Y-m-d')));
 
         // User and organism filter
         $and4->appendChild($this->getOrganismBlock());
@@ -408,15 +409,18 @@ class Cswrecords extends SearchForm {
             $title = $this->ogcFilters->getIsLike('title', $literal);
             $keyword = $this->ogcFilters->getIsLike('keyword', $literal);
             $abstract = $this->ogcFilters->getIsLike('abstract', $literal);
+            $resourcename = $this->ogcFilters->getIsLike('resourcename', $literal);
         } else {
             $title = $this->ogcFilters->getIsLike('title_' . $language->{'iso3166-1-alpha2'}, $literal);
             $keyword = $this->ogcFilters->getIsLike('keyword_' . $language->{'iso3166-1-alpha2'}, $literal);
             $abstract = $this->ogcFilters->getIsLike('abstract_' . $language->{'iso3166-1-alpha2'}, $literal);
+            $resourcename = $this->ogcFilters->getIsLike('resourcename', $literal);
         }
 
         $or->appendChild($title);
         $or->appendChild($keyword);
         $or->appendChild($abstract);
+        $or->appendChild($resourcename);
 
         return $or;
     }
@@ -547,79 +551,34 @@ class Cswrecords extends SearchForm {
         return $resourcetype;
     }
 
-    /**
-     * 
-     * @param int $id
-     * @return array
-     */
-    private function getOrganismForUser($id) {
-
-        $query = $this->db->getQuery(true);
-
-        $query->select('distinct u.guid as user_guid, o.guid as organism_guid');
-        $query->from('#__sdi_user u');
-        $query->innerJoin('#__sdi_user_role_organism uro on uro.user_id = u.id');
-        $query->innerJoin('#__sdi_organism o on uro.organism_id = o.id');
-        $query->where('u.user_id = ' . (int)$id);
-
-        $this->db->setQuery($query);
-        $results = $this->db->loadObjectList();
-
-        return $results;
-    }
-    
-    /**
-     * 
-     * @param int $id
-     * @return array
-     */
-    private function getOrganismCategoriesForUser($id) {
-
-        $query = $this->db->getQuery(true);
-
-        $query->select('distinct c.guid as category_guid');
-        $query->from('#__sdi_user u');
-        $query->innerJoin('#__sdi_user_role_organism uro on uro.user_id = u.id');
-        $query->innerJoin('#__sdi_organism o on uro.organism_id = o.id');
-        $query->innerJoin('#__sdi_organism_category oc on oc.organism_id = o.id');
-        $query->innerJoin('#__sdi_category c on c.id = oc.category_id');
-        $query->where('u.user_id = ' . (int)$id);
-        $query->where('uro.role_id = ' . (int)self::ROLE_MEMBEROF);
-        $this->db->setQuery($query);
-        $results = $this->db->loadObjectList();
-
-        return $results;
-    }    
-
     private function getOrganismBlock() {
-        $user = JFactory::getUser();
-
         $or = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
         $or->appendChild($this->ogcFilters->getIsEqualTo('scope', 'public'));
 
-        if ($user->id > 0) {
-            $organisms = $this->getOrganismForUser($user->id);
-            $orgCategories = $this->getOrganismCategoriesForUser($user->id);
+        $sdiUser = sdiFactory::getSdiUser();
 
+        if($sdiUser->isEasySDI){
+
+            // scope user
             $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
             $and->appendChild($this->ogcFilters->getIsEqualTo('scope', 'user'));
-            $and->appendChild($this->ogcFilters->getIsEqualTo('sdiuser', $organisms[0]->user_guid));
+            $and->appendChild($this->ogcFilters->getIsEqualTo('sdiuser', $sdiUser->user->guid));
             $or->appendChild($and);
 
-            foreach ($organisms as $organism) {
-                $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
-                $and->appendChild($this->ogcFilters->getIsEqualTo('scope', 'organism'));
-                $and->appendChild($this->ogcFilters->getIsEqualTo('sdiorganism', $organism->organism_guid));
+            // scope organism
+            $organisms = $sdiUser->getMemberOrganisms();
+            $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+            $and->appendChild($this->ogcFilters->getIsEqualTo('scope', 'organism'));
+            $and->appendChild($this->ogcFilters->getIsEqualTo('sdiorganism', $organisms[0]->guid));
+            $or->appendChild($and);
 
-                $or->appendChild($and);
-            }
-            foreach ($orgCategories as $orgCategory) {
+            // scope category
+            foreach($sdiUser->getMemberOrganismsCategories() as $category){
                 $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
                 $and->appendChild($this->ogcFilters->getIsEqualTo('scope', 'category'));
-                $and->appendChild($this->ogcFilters->getIsEqualTo('sdicategory', $orgCategory->category_guid));
-
+                $and->appendChild($this->ogcFilters->getIsEqualTo('sdiorganism', $category->guid));
                 $or->appendChild($and);
-            }            
+            }
         }
 
         return $or;

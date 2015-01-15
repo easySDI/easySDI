@@ -14,6 +14,7 @@ require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
 /**
  * Version controller class.
@@ -119,7 +120,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.alias as resourcetype, m.metadatastate_id, ms.value as state')
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
@@ -177,6 +178,10 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $db->setQuery($query)->execute();
         $rows = $db->getNumRows();
         $results = $db->loadObjectList();
+        
+        foreach($results as $result)
+            $result->resourcetype = EText::_($result->resourcetype);
+        
         return $filtering ? $results : $rows;
     }
     
@@ -209,12 +214,17 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('r.id, m.modified_by')
+                ->select('r.id, m.modified_by, rtl.viralversioning')
                 ->from('#__sdi_resource r')
                 ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
                 ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
                 ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
                 ->innerJoin('#__sdi_versionlink vl ON v.id=vl.child_id')
+                
+                ->innerJoin('#__sdi_version v2 ON v2.id=vl.parent_id')
+                ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
+                ->innerJoin('#__sdi_resourcetypelink rtl ON rtl.parent_id=r2.resourcetype_id AND rtl.child_id=r.resourcetype_id')
+                
                 ->where('vl.parent_id='.(int)$parentId.' AND urr.user_id='.(int)$user->id)
                 ->group('r.id, m.modified_by')
                 ;
@@ -241,7 +251,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.alias as resourcetype, m.metadatastate_id, ms.value as state')
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
@@ -298,7 +308,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query->where($where);
         $db->setQuery($query)->execute();
         
-        return $filtering ? $db->loadObjectList() : $db->getNumRows();
+        if($filtering){
+            $results = $db->loadObjectList();
+            
+            foreach($results as $result)
+                $result->resourcetype = EText::_($result->resourcetype);
+            
+            return $results;
+        }
+        else return $db->getNumRows();
     }
     
     public function getChildren4DT(){
@@ -362,7 +380,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('v.id as id, r.name as resource, v.name as version, rt.alias as resourcetype, ms.value as state')
+                ->select('v.id as id, r.name as resource, v.name as version, rt.guid as resourcetype, ms.value as state')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
@@ -412,7 +430,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db->setQuery($query)->execute();
         
-        return $filtering ? $db->loadObjectList() : $db->getNumRows();
+        if($filtering){
+            $results = $db->loadObjectList();
+            
+            foreach($results as $result)
+                $result->resourcetype = EText::_($result->resourcetype);
+            
+            return $results;
+        }
+        else return $db->getNumRows();
     }
     
     public function getParents4DT(){
@@ -823,11 +849,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     }
 
     /**
-     * Get a list of cascading deleting children
+     * Get a list of cascading publicable children
      * 
      */
     public function getCascadePublicableChild() {
-        return $this->getCascadeChild(true, true);
+        return $this->getCascadeChild(false, true);
     }
     
     /**

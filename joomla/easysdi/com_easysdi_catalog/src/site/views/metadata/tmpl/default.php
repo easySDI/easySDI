@@ -34,6 +34,7 @@ JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_VERSION');
 JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_PUBLISHING_RIGHT');
 JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_IMPORT_REF');
 JText::script('COM_EASYSDI_CATALOG_ERROR_REMOVE');
+JText::script('COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE');
 
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
@@ -334,7 +335,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                         <div class="control-group">
                             <div class="control-label"><label id="publish_date-lbl" for="publish_date" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></label></div>
                             <div class="controls"><div class="input-append">
-                                    <input type="text" name="publish_date" id="publish_date" value="" class=" required validate-sdidatetime" aria-required="true" required="required" aria-invalid="false"><button class="btn" id="publish_date_img"><i class="icon-calendar"></i></button>
+                                    <input type="text" name="publish_date" id="publish_date" value="" class=" required validate-sdidatetime" aria-required="true" required="required" aria-invalid="false">
                                 </div>
                             </div>
                         </div>
