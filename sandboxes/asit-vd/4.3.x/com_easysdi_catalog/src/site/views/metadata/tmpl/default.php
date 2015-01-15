@@ -16,10 +16,26 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.modal');
 
+//Load admin language file
+$lang = JFactory::getLanguage();
+$lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
+$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
+$document = JFactory::getDocument();
+
 JText::script('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK');
 JText::script('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING');
 JText::script('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING');
 JText::script('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM');
+JText::script('COM_EASYSDI_CATALOG_ERROR_ADD_RELATION');
+JText::script('COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION');
+JText::script('COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION');
+JText::script('COM_EASYSDI_CATALOG_ERROR_REMOVE_ATTRIBUTE_RELATION');
+JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_VERSION');
+JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_PUBLISHING_RIGHT');
+JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_IMPORT_REF');
+JText::script('COM_EASYSDI_CATALOG_ERROR_REMOVE');
+JText::script('COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE');
+
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
 JText::script('PUBLISHED');
@@ -45,12 +61,21 @@ JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
 JText::script('COM_EASYSDI_CATALOG_OPEN_ALL');
 JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
 
-
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
-$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
-$document = JFactory::getDocument();
+/* bootbox language */
+$ldao = new SdiLanguageDao();
+$user = new sdiUser();
+$userParams = json_decode($user->juser->params);
+$defaultLanguage = $ldao->getDefaultLanguage();
+$bbLanguage = $defaultLanguage->gemet;
+$dtLanguage = $defaultLanguage->title;
+if(isset($ldao) && isset($userParams)){
+    foreach($ldao->getAll() as $bbLang){
+        if($bbLang->code === $userParams->language){
+            $bbLanguage = $bbLang->gemet;
+            $dtLanguage = $bbLang->title;
+        }
+    }
+}
 
 if (JDEBUG) {
     $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
@@ -83,11 +108,11 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 ?>
 
 <script type="text/javascript">
-
+    var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
     var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
     js = jQuery.noConflict();
     js('document').ready(function() {
-
+        bootbox.setLocale("<?php echo $bbLanguage;?>");
 <?php
 if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             toogleAll(js('#btn_toggle_all'));
@@ -113,7 +138,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
 
     <div>
         <h2><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
-        <h5><?php echo $title->name . ': ' . JText::_($title->value); ?></h5>
+        <h5><?php echo $title->name . ': ' . JText::_(strtoupper($title->value)); ?></h5>
     </div>
 
     <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
@@ -170,23 +195,23 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                         <form id="form_search_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
                             <input type="hidden" name="task" value="">
                             <div class="control-group">
-                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></label>
+                                <label class="control-label" for="resourcetype_id"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></label>
                                 <div class="controls">
                                     <select id="resourcetype_id" name="resourcetype_id">
                                         <?php foreach ($this->getResourceType() as $resource) { ?>
-                                        <option value="<?php echo $resource->id; ?>"><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
+                                        <option value="<?php echo $resource->id; ?>"<?php if($this->item->resourcetype_id == $resource->id):?> selected="selected"<?php endif;?>><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
                             </div>
                             <div id="resource_name_group" class="control-group">
-                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></label>
+                                <label class="control-label" for="resource_name"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></label>
                                 <div class="controls">
                                     <input id="resource_name" name="resource_name" type="text" value="">
                                 </div>
                             </div>
                             <div class="control-group">
-                                <label class="control-label" for="inputEmail">Status</label>
+                                <label class="control-label" for="status_id">Status</label>
                                 <div class="controls">
                                     <select id="status_id" name="status_id">
                                         <?php foreach ($this->getStatusList() as $status) { ?>
@@ -201,6 +226,25 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                                     <select id="version" name="version">
                                        <option value="all"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_ALL') ; ?></option>
                                        <option value="last" selected="selected"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_LAST') ; ?></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="resource_organism_group" class="control-group">
+                                <label class="control-label" for="organism_id"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_ORGANISM') ; ?></label>
+                                <div class="controls">
+                                    <select id="organism_id" name="organism_id">
+                                        <?php
+                                            $userOrganism = $user->getMemberOrganisms();
+                                            $coreHelper = new Easysdi_coreHelper();
+                                            $organisms = $coreHelper->getOrganisms();
+                                            
+                                            foreach($organisms as $organism):
+                                        ?>
+                                            <option value="<?php echo $organism->id;?>"
+                                                <?php if($organism->id === $userOrganism[0]->id): ?>selected="selected"<?php endif;?>
+                                            ><?php echo $organism->name; ?></option>
+                                        <?php endforeach; ?>
+                                        
                                     </select>
                                 </div>
                             </div>
@@ -310,7 +354,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                         <div class="control-group">
                             <div class="control-label"><label id="publish_date-lbl" for="publish_date" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></label></div>
                             <div class="controls"><div class="input-append">
-                                    <input type="text" name="publish_date" id="publish_date" value="" class=" required  validate-sdidatetime" aria-required="true" required="required" aria-invalid="false"><button class="btn" id="publish_date_img"><i class="icon-calendar"></i></button>
+                                    <input type="text" name="publish_date" id="publish_date" value="" class=" required validate-sdidatetime" aria-required="true" required="required" aria-invalid="false">
                                 </div>
                             </div>
                         </div>

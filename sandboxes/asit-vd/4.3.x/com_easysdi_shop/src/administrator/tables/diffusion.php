@@ -76,7 +76,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['deposit'] = null;
             $array['deposit_hidden'] = null;
             $array['notifieduser_id'] = null;
-        } else {
+        } elseif(isset($form['perimeter'])) {
             if (isset($form)) {
                 $array['perimeter'] = $form['perimeter'];
                 $array['property'] = $form['property'];
@@ -122,9 +122,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 endif;
             }
             else if ($fileError == 4) {
-                if (isset($array['deposit_hidden'])):;
-                    $array['deposit'] = $array['deposit_hidden'];
-                else :
+                if (!isset($array['deposit'])):;
                     //delete existing file
                     if (isset($array['id'])) {
                         $db = JFactory::getDbo();
@@ -193,9 +191,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 endif;
             }
             else if ($fileError == 4) {
-                if (isset($array['file_hidden'])):;
-                    $array['file'] = $array['file_hidden'];
-                else :
+                if (!isset($array['file'])):;
                     //delete existing file
                     if (isset($array['id'])) {
                         $db = JFactory::getDbo();

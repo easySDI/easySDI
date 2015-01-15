@@ -14,6 +14,7 @@ require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
 /**
  * Version controller class.
@@ -109,6 +110,99 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
     }
+    
+    private function _getAvailableChildren4DT($filtering = false){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+        
+        $id = $inputs->getInt('version', null);
+        $resourcetypechild = $inputs->getString('resourcetypechild', '0');
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
+                ->from('#__sdi_version v')
+                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
+        ;
+        $where = 'v.id <> ' . (int)$id.' AND v.id NOT IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id='.(int)$id.') AND rt.id IN ('.$resourcetypechild.')';
+        
+        $inc = $inputs->getString('inc', '');
+        $exc = $inputs->getString('exc', '');
+        if(!empty($inc))
+            $where = '('.$where.' OR v.id IN ('.$inc.'))';
+        if(!empty($exc))
+            $where .= ' AND v.id NOT IN ('.$exc.')';
+        
+        if($filtering){
+            //sorting
+            $sortingCols = $inputs->getInt('iSortingCols', 0);
+            for($i=0; $i<$sortingCols; $i++){
+                $sortCol = $inputs->getInt('iSortCol_'.$i, 0)+1;
+                $sortDir = $inputs->getString('sSortDir_'.$i, 'asc');
+                $query->order("{$sortCol} {$sortDir}");
+            }
+            
+            //filtering
+            $cols = $inputs->getInt('iColumns', 0);
+            $gSearch = $inputs->getString('sSearch', '');
+            $globalSearch = array();
+            for($i=0; $i<$cols; $i++){
+                $search = $inputs->getString('sSearch_'.$i, '');
+                $searchable = $inputs->getBool('bSearchable_'.$i, false);
+                $prop = $inputs->getString('mDataProp_'.$i, '');
+                
+                switch($prop){
+                    case 'id': $prop = 'v.id'; break;
+                    case 'guid': $prop = 'm.guid'; break;
+                    case 'resource': $prop = 'r.name'; break;
+                    case 'version': $prop = 'v.name'; break;
+                    case 'resourcetype': $prop = 'rt.alias'; break;
+                    case 'state': $prop = 'ms.value'; break;
+                    case 'function': continue 2; //directly go the next for iteration !!!
+                }
+                
+                if(!empty($prop) && $searchable===true){
+                    if(!empty($search)) $where .= is_int($search) ? ' AND '.$prop.' = '.$db->quote($search) : ' AND '.$prop.' LIKE '.$db->quote('%'.$search.'%');
+                    if(!empty($gSearch)) array_push($globalSearch, $prop.' LIKE '.$db->quote('%'.$gSearch.'%'));
+                }
+            }
+            
+            if(count($globalSearch))
+                $where .= ' AND ('.implode(' OR ', $globalSearch).')';
+        }
+        
+        $query->where($where);
+        $db->setQuery($query)->execute();
+        $rows = $db->getNumRows();
+        $results = $db->loadObjectList();
+        
+        foreach($results as $result)
+            $result->resourcetype = EText::_($result->resourcetype);
+        
+        return $filtering ? $results : $rows;
+    }
+    
+    public function getAvailableChildren4DT(){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+        
+        $start = $inputs->getInt('iDisplayStart', 1);
+        $length = $inputs->getInt('iDisplayLength', 10);
+        
+        $availableChildren = $this->_getAvailableChildren4DT(true);
+        
+        echo json_encode(array(
+            'draw'                  => 1,
+            'iTotalRecords'         => $this->_getAvailableChildren4DT(),
+            'iTotalDisplayRecords'  => count($availableChildren),
+            'aaData'                => array_slice($availableChildren, $start, $length),
+            'sEcho'                 => $inputs->getString('sEcho', '')
+        ));
+        die();
+    }
 
     /**
      * Get children of a metadata
@@ -120,12 +214,17 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('r.id, m.modified_by')
+                ->select('r.id, m.modified_by, rtl.viralversioning')
                 ->from('#__sdi_resource r')
                 ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
                 ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
                 ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
                 ->innerJoin('#__sdi_versionlink vl ON v.id=vl.child_id')
+                
+                ->innerJoin('#__sdi_version v2 ON v2.id=vl.parent_id')
+                ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
+                ->innerJoin('#__sdi_resourcetypelink rtl ON rtl.parent_id=r2.resourcetype_id AND rtl.child_id=r.resourcetype_id')
+                
                 ->where('vl.parent_id='.(int)$parentId.' AND urr.user_id='.(int)$user->id)
                 ->group('r.id, m.modified_by')
                 ;
@@ -141,6 +240,101 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $response['children'] = $children;
 
         echo json_encode($response);
+        die();
+    }
+    
+    private function _getChildren4DT($filtering = false){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+        
+        $id = $inputs->getInt('version', null);
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
+                ->from('#__sdi_version v')
+                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
+        ;
+        $where = 'v.id IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id = '.(int)$id.')';
+        
+        $inc = $inputs->getString('inc', '');
+        $exc = $inputs->getString('exc', '');
+        if(!empty($inc))
+            $where = '('.$where.' OR v.id IN ('.$inc.'))';
+        if(!empty($exc))
+            $where .= ' AND v.id NOT IN ('.$exc.')';
+        
+        if($filtering){
+            //sorting
+            $sortingCols = $inputs->getInt('iSortingCols', 0);
+            for($i=0; $i<$sortingCols; $i++){
+                $sortCol = $inputs->getInt('iSortCol_'.$i, 0)+1;
+                $sortDir = $inputs->getString('sSortDir_'.$i, 'asc');
+                $query->order("{$sortCol} {$sortDir}");
+            }
+            
+            //filtering
+            $cols = $inputs->getInt('iColumns', 0);
+            $gSearch = $inputs->getString('sSearch', '');
+            if(!empty($gSearch)){
+                $globalSearch = array();
+                for($i=0; $i<$cols; $i++){
+                    $searchable = $inputs->getBool('bSearchable_'.$i, false);
+                    $prop = $inputs->getString('mDataProp_'.$i, '');
+
+                    switch($prop){
+                        case 'id': $prop = 'v.id'; break;
+                        case 'guid': $prop = 'm.guid'; break;
+                        case 'resource': $prop = 'r.name'; break;
+                        case 'version': $prop = 'v.name'; break;
+                        case 'resourcetype': $prop = 'rt.alias'; break;
+                        case 'state': $prop = 'ms.value'; break;
+                        case 'function': continue 2; //directly go the next for iteration !!!
+                    }
+
+                    if(!empty($prop) && $searchable===true){
+                        array_push($globalSearch, $prop.' LIKE '.$db->quote('%'.$gSearch.'%'));
+                    }
+                }
+
+                if(count($globalSearch))
+                    $where .= '('.implode(' OR ', $globalSearch).')';
+            }
+        }
+        
+        $query->where($where);
+        $db->setQuery($query)->execute();
+        
+        if($filtering){
+            $results = $db->loadObjectList();
+            
+            foreach($results as $result)
+                $result->resourcetype = EText::_($result->resourcetype);
+            
+            return $results;
+        }
+        else return $db->getNumRows();
+    }
+    
+    public function getChildren4DT(){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+        
+        $start = $inputs->getInt('iDisplayStart', 1);
+        $length = $inputs->getInt('iDisplayLength', 10);
+        
+        $children = $this->_getChildren4DT(true);
+        
+        echo json_encode(array(
+            'draw'                  => 1,
+            'iTotalRecords'         => $this->_getChildren4DT(),
+            'iTotalDisplayRecords'  => count($children),
+            'aaData'                => array_slice($children, $start, $length),
+            'sEcho'                 => $inputs->getString('sEcho', '')
+        ));
         die();
     }
     
@@ -177,6 +371,94 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         echo json_encode($response);
         die();
     }
+    
+    private function _getParents4DT($filtering = false){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+        
+        $id = $inputs->getInt('version', null);
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('v.id as id, r.name as resource, v.name as version, rt.guid as resourcetype, ms.value as state')
+                ->from('#__sdi_version v')
+                ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
+                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
+                ->where('vl.child_id = ' . (int) $id)
+        ;
+        
+        if($filtering){
+            //sorting
+            $sortingCols = $inputs->getInt('iSortingCols', 0);
+            for($i=0; $i<$sortingCols; $i++){
+                $sortCol = $inputs->getInt('iSortCol_'.$i, 0)+1;
+                $sortDir = $inputs->getString('sSortDir_'.$i, 'asc');
+                $query->order("{$sortCol} {$sortDir}");
+            }
+            
+            //filtering
+            $cols = $inputs->getInt('iColumns', 0);
+            $gSearch = $inputs->getString('sSearch', '');
+            if(!empty($gSearch)){
+                $globalSearch = array();
+                for($i=0; $i<$cols; $i++){
+                    $searchable = $inputs->getBool('bSearchable_'.$i, false);
+                    $prop = $inputs->getString('mDataProp_'.$i, '');
+
+                    switch($prop){
+                        case 'id': $prop = 'v.id'; break;
+                        case 'resource': $prop = 'r.name'; break;
+                        case 'version': $prop = 'v.name'; break;
+                        case 'resourcetype': $prop = 'rt.alias'; break;
+                        case 'state': $prop = 'ms.value'; break;
+                        case 'function': continue 2; //directly go the next for iteration !!!
+                    }
+
+                    if(!empty($prop) && $searchable===true){
+                        array_push($globalSearch, $prop.' LIKE '.$db->quote('%'.$gSearch.'%'));
+                    }
+                }
+
+                if(count($globalSearch)){
+                    $query->where('('.implode(' OR ', $globalSearch).')');
+                }
+            }
+        }
+        
+        $db->setQuery($query)->execute();
+        
+        if($filtering){
+            $results = $db->loadObjectList();
+            
+            foreach($results as $result)
+                $result->resourcetype = EText::_($result->resourcetype);
+            
+            return $results;
+        }
+        else return $db->getNumRows();
+    }
+    
+    public function getParents4DT(){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+        
+        $start = $inputs->getInt('iDisplayStart', 1);
+        $length = $inputs->getInt('iDisplayLength', 10);
+        
+        $parents = $this->_getParents4DT(true);
+        
+        echo json_encode(array(
+            'draw'                  => 1,
+            'iTotalRecords'         => $this->_getParents4DT(),
+            'iTotalDisplayRecords'  => count($parents),
+            'aaData'                => array_slice($parents, $start, $length),
+            'sEcho'                 => $inputs->getString('sEcho', '')
+        ));
+        die();
+    }
 
     /**
      * 
@@ -188,19 +470,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $jform = JFactory::getApplication()->input->get('jform', array(), 'array');
 
         $app->setUserState('com_easysdi_core.edit.version.data', $jform);
-//
-//        $searchtype = $jform['searchtype'];
-//        $searchid = $jform['searchid'];
-//        $searchname = $jform['searchname'];
-//        $searchstate = $jform['searchstate'];
-//        $searchlast = $jform['searchlast'];
-//
         $app->setUserState('com_easysdi_core.edit.version.runsearch', '1');
-//        $app->setUserState('com_easysdi_core.edit.version.searchtype', $searchtype);
-//        $app->setUserState('com_easysdi_core.edit.version.searchid', $searchid);
-//        $app->setUserState('com_easysdi_core.edit.version.searchname', $searchname);
-//        $app->setUserState('com_easysdi_core.edit.version.searchstate', $searchstate);
-//        $app->setUserState('com_easysdi_core.edit.version.searchlast', $searchlast);
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
     }
@@ -217,11 +487,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $data['searchstate'] = null;
         $data['searchlast'] = null;
         $app->setUserState('com_easysdi_core.edit.version.data', $data);
-//        $app->setUserState('com_easysdi_core.edit.version.searchtype', null);
-//        $app->setUserState('com_easysdi_core.edit.version.searchid', null);
-//        $app->setUserState('com_easysdi_core.edit.version.searchname', null);
-//        $app->setUserState('com_easysdi_core.edit.version.searchstate', null);
-//        $app->setUserState('com_easysdi_core.edit.version.searchlast', null);
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
     }
@@ -235,9 +500,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
 
+        $lastversion = $this->getLastVersion($resource_id);
+        $lastversion->viralversioning = 1;
         $versions = array();
-        if ($lastversion = $this->getLastVersion($resource_id)) {
-            $versions = $this->core_helpers->getViralVersionnedChild($lastversion);
+        if ($lastversion) {
+            $versions = $this->core_helpers->getChildrenVersion($lastversion);
         }
 
         // get version to create
@@ -409,9 +676,14 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $new_version = array();
             $new_version['resource_id'] = $version->resource_id;
             $new_version['name'] = date("Y-m-d H:i:s");
+            $new_version['isViral'] = (bool)$version->viralversioning;
 
-            if (!empty($version->children)) {
+            if ($new_version['isViral'] && !empty($version->children)) {
                 $new_version['children'] = $this->getNewVersions($version->children);
+            }
+            
+            if(!$new_version['isViral']){
+                $new_version['id'] = $version->id;
             }
 
             $new_versions[] = $new_version;
@@ -512,23 +784,23 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     private function saveVersions($versions) {
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
-        $response = array('selected_children' => array(), 'success' => true);
-        $selected_children = array();
-        $success = true;
-
+        $childrentoadd = array();
+        
         try {
             foreach ($versions as $version) {
                 if (array_key_exists('children', $version)) {
-                    $version['selectedchildren'] = $this->saveVersions($version['children']);
+                    $version['childrentoadd'] = $this->saveVersions($version['children']);
                 }
 
                 // Attempt to save the data.
-                $return = $model->save($version);
-                $version['id'] = $return;
-                $this->versions[] = $version;
-                $selected_children[] = $version['id'];
+                if($version['isViral']){
+                    $version['id'] = $model->save($version);
+                    $this->versions[] = $version;
+                }
+                
+                $childrentoadd[] = $version['id'];
             }
-            return json_encode($selected_children);
+            return json_encode($childrentoadd);
         } catch (RuntimeException $exc) {
             throw $exc;
         }
@@ -550,7 +822,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db->setQuery($query);
         $version = $db->loadObject();
-
+        
         if (!empty($version)) {
             return $version;
         } else {
@@ -577,11 +849,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     }
 
     /**
-     * Get a list of cascading deleting children
+     * Get a list of cascading publicable children
      * 
      */
     public function getCascadePublicableChild() {
-        return $this->getCascadeChild(true, true);
+        return $this->getCascadeChild(false, true);
     }
     
     /**

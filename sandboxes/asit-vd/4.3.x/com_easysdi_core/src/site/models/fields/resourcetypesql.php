@@ -11,6 +11,8 @@ defined('JPATH_PLATFORM') or die;
 
 JFormHelper::loadFieldClass('list');
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
+
 /**
  * Supports an custom SQL select list
  *
@@ -41,14 +43,11 @@ class JFormFieldResourcetypeSQL extends JFormFieldList {
 
         // Initialize some field attributes.
         $key = $this->element['key_field'] ? (string) $this->element['key_field'] : 'value';
-        $value = $this->element['value_field'] ? (string) $this->element['value_field'] : (string) $this->element['name'];
-        $translate = $this->element['translate'] ? (string) $this->element['translate'] : false;
-
         //Allowed resourcetype as children
         $id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.version.id');
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('rtchild.id as id, rtchild.name as name, rtchild.ordering')
+                ->select('rtchild.id as id, rtchild.guid as guid, rtchild.name as name, rtchild.ordering')
                 ->from('#__sdi_resourcetype rtchild')
                 ->innerJoin('#__sdi_resourcetypelink rtl ON rtl.child_id = rtchild.id')
                 ->innerJoin('#__sdi_resourcetype rt ON rt.id= rtl.parent_id')
@@ -67,11 +66,7 @@ class JFormFieldResourcetypeSQL extends JFormFieldList {
         if (!empty($items)) {
             foreach ($items as $item) {
                 $options[] = JHtml::_('select.option', '', null);
-                if ($translate == true) {
-                    $options[] = JHtml::_('select.option', $item->$key, JText::_($item->$value));
-                } else {
-                    $options[] = JHtml::_('select.option', $item->$key, $item->$value);
-                }
+                $options[] = JHtml::_('select.option', $item->$key, EText::_($item->guid));
             }
         }
 

@@ -125,6 +125,9 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['buffer'] = $basket->buffer;
         $data['surface'] = $basket->extent->surface;
         $data['thirdparty_id'] = (($basket->thirdparty != -1)&&($basket->thirdparty != ""))? $basket->thirdparty : NULL;
+        $data['mandate_ref'] = $basket->mandate_ref;
+        $data['mandate_contact'] = $basket->mandate_contact;
+        $data['mandate_email'] = $basket->mandate_email;
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
                 $data['ordertype_id'] = self::ORDERTYPE_ORDER;
@@ -183,7 +186,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 endforeach;
             endforeach;
             
-            $session =& JFactory::getSession();
+            $session = JFactory::getSession();
             $session->set('basketData', $basketData);
 
             //Save perimeters
@@ -250,7 +253,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
      * @since 4.3.0
      */
     private function saveSuppliers($basket, $pricing, $pricingOrder){
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $basketProcess = array(
             'treated'   => 0,
             'total'     => $basket->extractionsNb,
@@ -290,7 +293,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         );
 
         if($pricingOrderSupplier->save($pricingOrderSupplierData) === true){
-            $session =& JFactory::getSession();
+            $session = JFactory::getSession();
             $basketProducts = $session->get('basketProducts');
             // sdi_pricing_order_supplier_product
             foreach($supplier->products as $productId => $product){
@@ -311,7 +314,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
      * @since 4.3.0
      */
     public function saveProduct(){
-        $session =& JFactory::getSession();
+        $session = JFactory::getSession();
         $basketProducts = $session->get('basketProducts');
         $basketProcess = $session->get('basketProcess');
         $currentProduct = $basketProducts[$basketProcess['treated']];

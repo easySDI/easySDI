@@ -234,8 +234,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         if($this->authentication()){
             $orders = $this->response->createElementNS($this->nsSdi, 'sdi:orders');
             
-            $this->addAttribute($orders, 'xmlns:xsi', $this->xmlnsXsi);
-            $this->addAttribute($orders, 'xsi:schemaLocation', $this->nsSdi.' '.$this->xsiGetOrders);
+            //$this->addAttribute($orders, 'xmlns:xsi', $this->xmlnsXsi);
+            //$this->response->createAttributeNS($this->xmlnsXsi, 'xmlns:xsi');
+            //$this->addAttribute($orders, 'xsi:schemaLocation', $this->xsiGetOrders);
+            $orders->setAttributeNS($this->xmlnsXsi, 'xsi:schemaLocation', $this->xsiGetOrders);
             
             $platform = $this->response->createElementNS($this->nsSdi, 'sdi:platform');
             
@@ -483,9 +485,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         
         $organism->appendChild($this->getCategories($result->id));
         
-        $organism->appendChild($this->getAddress(self::CONTACT, $clientOrganism->id, 'tierce'));
-        $organism->appendChild($this->getAddress(self::BILLING, $clientOrganism->id, 'tierce'));
-        $organism->appendChild($this->getAddress(self::DELIVERY, $clientOrganism->id, 'tierce'));
+        $organism->appendChild($this->getAddress(self::CONTACT, $id, 'organism'));
+        $organism->appendChild($this->getAddress(self::BILLING, $id, 'organism'));
+        $organism->appendChild($this->getAddress(self::DELIVERY, $id, 'organism'));
         
         return $organism;
     }
@@ -682,8 +684,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $metadata = $this->response->createElementNS($this->nsSdi, 'sdi:metadata');
         $this->addAttribute($metadata, 'id', $orderProduct->metadata_id);
         $this->addAttribute($metadata, 'guid', $orderProduct->metadata_guid);
-        $metadata->appendChild($this->response->createElementNS($this->nsSdi, 'sdi:xml', base64_encode(file_get_contents(JPATH_BASE.'/orderproductsfiles/'.$orderProduct->posp_guid.'.xml'))));
-        $metadata->appendChild($this->response->createElementNS($this->nsSdi, 'sdi:pdf', base64_encode(file_get_contents(JPATH_BASE.'/orderproductsfiles/'.$orderProduct->posp_guid.'.pdf'))));
+        $xmlStr = file_exists(JPATH_BASE.'/orderproductsfiles/'.$orderProduct->posp_guid.'.xml') ? base64_encode(file_get_contents(JPATH_BASE.'/orderproductsfiles/'.$orderProduct->posp_guid.'.xml')) : '';
+        $metadata->appendChild($this->response->createElementNS($this->nsSdi, 'sdi:xml', $xmlStr));
+        $pdfStr = file_exists(JPATH_BASE.'/orderproductsfiles/'.$orderProduct->posp_guid.'.xml') ? base64_encode(file_get_contents(JPATH_BASE.'/orderproductsfiles/'.$orderProduct->posp_guid.'.pdf')) : '';
+        $metadata->appendChild($this->response->createElementNS($this->nsSdi, 'sdi:pdf', $pdfStr));
         $root->appendChild($metadata);
         
         $query = $this->db->getQuery(true);

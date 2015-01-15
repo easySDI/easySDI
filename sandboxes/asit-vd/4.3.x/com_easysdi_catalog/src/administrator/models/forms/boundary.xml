@@ -52,6 +52,7 @@
          <field name="text3" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge"  
                label="COM_EASYSDI_CATALOG_FORM_CODE"
                description="COM_EASYSDI_CATALOG_FORM_CODE" 
+               required="true" 
                filter="ARRAY" /> 
         
         <field name="northbound" type="text" size="40" class="inputbox" 

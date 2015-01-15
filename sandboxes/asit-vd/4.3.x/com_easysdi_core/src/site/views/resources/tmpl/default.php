@@ -109,8 +109,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                     <label for="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" class="element-invisible">Rechercher</label>
                                     <input type="text" name="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" id="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php $filterName = (!empty($this->parent)) ? 'filter.search.children' : 'filter.search'; echo $this->state->get($filterName); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
 
-                                    <button class="btn hasTooltip" type="submit" title="Rechercher"><i class="icon-search"></i></button>
-                                    <button class="btn hasTooltip" type="button" title="Effacer" id="search-reset"><i class="icon-remove"></i></button>
+                                    <button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+                                    <button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" id="search-reset"><i class="icon-remove"></i></button>
                                 </div>
                             </div>
 
@@ -260,6 +260,25 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
             <div class="modal-footer">
                 <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
                 <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- synchronize modal -->
+<div class="modal fade" id="synchronizeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_TITLE'); ?></h4>
+            </div>
+            <div id="synchronizeModalBody" class="modal-body">
+                <?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_CONFIRM'); ?>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btn_synchronize"><button type="button" class="btn btn-success"><?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_TITLE'); ?></button></a>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
             </div>
         </div>
     </div>

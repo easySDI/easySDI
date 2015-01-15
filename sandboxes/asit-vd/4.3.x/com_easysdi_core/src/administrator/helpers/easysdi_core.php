@@ -104,7 +104,7 @@ class Easysdi_coreHelper {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('cv.id, cv.name AS version_name, cr.resourcetype_id, cr.name AS resource_name, cr.id AS resource_id, cm.guid AS fileidentifier, cm.id AS metadata_id, cm.metadatastate_id');
+        $query->select('cv.id, cv.name AS version_name, cr.resourcetype_id, cr.name AS resource_name, cr.id AS resource_id, cm.guid AS fileidentifier, cm.id AS metadata_id, cm.metadatastate_id, rtl.viralversioning');
         $query->from('#__sdi_versionlink vl');
         $query->innerJoin('#__sdi_version pv ON vl.parent_id = pv.id');
         $query->innerJoin('#__sdi_resource pr ON pv.resource_id = pr.id');
@@ -125,15 +125,29 @@ class Easysdi_coreHelper {
 
         if (count($childs) > 0) {
             $version->children = $childs;
-            $all_versions[$version->id]->children = $childs;
+            //$all_versions[$version->id]->children = $childs;
 
             foreach ($childs as $key => $child) {
-                $this->getViralVersionnedChild($child);
+                $this->getChildrenVersion($child, $viralVersioning, $unpublished);
             }
         }
         else $version->children = array();
 
         return $all_versions;
+    }
+    
+    public function getOrganisms(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('o.id, o.name')
+                ->from('#__sdi_organism o')
+                ->order('o.name');
+        $db->setQuery($query);
+        $organisms = $db->loadObjectList();
+        
+        array_unshift($organisms, (object)array('id' => '', 'name' => ''));
+        
+        return $organisms;
     }
 
 }

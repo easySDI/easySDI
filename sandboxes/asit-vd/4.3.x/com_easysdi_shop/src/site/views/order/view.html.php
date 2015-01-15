@@ -105,10 +105,12 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         $bar = new JToolBar('toolbar');
         
         if($this->state->get('layout.validation')){
-            $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATE'), 'order.validate', false);
-            $bar->appendButton('Separator');
-            $bar->appendButton('Standard', 'delete', JText::_('COM_EASYSDI_SHOP_ORDER_REJECT'), 'order.reject', false);
-            $bar->appendButton('Separator');
+            if($this->item->orderstate_id == 8){
+                $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATE'), 'order.validate', false);
+                $bar->appendButton('Separator');
+                $bar->appendButton('Standard', 'delete', JText::_('COM_EASYSDI_SHOP_ORDER_REJECT'), 'order.reject', false);
+                $bar->appendButton('Separator');
+            }
         }
         else{
             //display the load draft button only if order not sent

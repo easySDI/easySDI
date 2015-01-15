@@ -304,7 +304,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @return	mixed		The user id on success, false on failure.
      * @since	1.6
      */
-    public function save($data) {
+    public function save($data, $xml = null) {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
@@ -317,7 +317,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             return false;
         }
 
-        if (!empty($id) && (!$user->authorizeOnMetadata($id, sdiUser::metadataeditor) || !$user->authorizeOnMetadata($id, sdiUser::metadataresponsible))) {
+        if (!empty($id) && !($user->authorizeOnMetadata($id, sdiUser::metadataeditor) || $user->authorizeOnMetadata($id, sdiUser::metadataresponsible))) {
             //Try to update a resource but not its resource manager
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -325,7 +325,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         }
 
         $table = $this->getTable();
-        if ($table->save($data) === true) {
+        $table->load($id);
+        if ($table->save($data, '', array('created', 'created_by')) === true) {
             $CSWmetadata = new sdiMetadata($table->id);
             if ($new) {
                 if (!$CSWmetadata->insert()) {
@@ -333,7 +334,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     throw new Exception('Echec de création dans le catalog');
                 }
             } else {
-                if (!$CSWmetadata->update()) {
+                if (!$CSWmetadata->update($xml)) {
                     throw new Exception('Echec de mise à jour du catalog');
                 }
             }
