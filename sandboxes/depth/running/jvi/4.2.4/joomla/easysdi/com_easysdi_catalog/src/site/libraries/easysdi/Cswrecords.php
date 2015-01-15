@@ -409,15 +409,18 @@ class Cswrecords extends SearchForm {
             $title = $this->ogcFilters->getIsLike('title', $literal);
             $keyword = $this->ogcFilters->getIsLike('keyword', $literal);
             $abstract = $this->ogcFilters->getIsLike('abstract', $literal);
+            $resourcename = $this->ogcFilters->getIsLike('resourcename', $literal);
         } else {
             $title = $this->ogcFilters->getIsLike('title_' . $language->{'iso3166-1-alpha2'}, $literal);
             $keyword = $this->ogcFilters->getIsLike('keyword_' . $language->{'iso3166-1-alpha2'}, $literal);
             $abstract = $this->ogcFilters->getIsLike('abstract_' . $language->{'iso3166-1-alpha2'}, $literal);
+            $resourcename = $this->ogcFilters->getIsLike('resourcename', $literal);
         }
 
         $or->appendChild($title);
         $or->appendChild($keyword);
         $or->appendChild($abstract);
+        $or->appendChild($resourcename);
 
         return $or;
     }
