@@ -472,8 +472,24 @@ class FormGenerator {
         $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]');
 
         for ($j = 0; $j < $coll->length; $j++) {
+            /* @var $node DOMElement */
             $node = $coll->item($j);
-            $occurance = $this->domXpathCsw->query('/*' . $node->getNodePath())->length;
+            
+            $childType = $node->getAttributeNs($this->catalog_uri,'childtypeId');
+            $nodePath = $node->getNodePath();
+            
+            if($childType == EnumChildtype::$CLASS){
+               
+                $paths = explode('/', $nodePath);
+                $index = count($paths)-2;
+                $index_node_name = $this->removeIndex($paths[$index]);
+                $paths[$index] = $index_node_name;
+                
+                $nodePath = implode('/', $paths);
+            }
+            
+            $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
+            $occurance_clone = $domXpathClone->query($nodePath)->length;
 
             if ($occurance == 0) {
                 //look for the ancestor under which we can clean the structure
@@ -496,7 +512,8 @@ class FormGenerator {
             if ($childtype == EnumChildtype::$CLASS) {
                 $node = $node->parentNode;
             }
-            for ($i = 1; $i < $occurance; $i++) {
+            
+            for ($i = $occurance_clone; $i < $occurance; $i++) {
                 $cloneNode = $node->cloneNode(true);
                 $cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
                 isset($node->nextSibling) ? $node->parentNode->insertBefore($cloneNode, $node->nextSibling) : $node->parentNode->appendChild($cloneNode);
