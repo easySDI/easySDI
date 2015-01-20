@@ -1696,6 +1696,7 @@ class FormGenerator {
      *
      * @param string $xpath
      * @return string
+     * @deprecated since version 4.2.4 Please use FormUtils::removeIndexFromXpath
      */
     private function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
