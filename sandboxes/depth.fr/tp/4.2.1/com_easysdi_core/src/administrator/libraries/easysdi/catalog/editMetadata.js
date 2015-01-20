@@ -395,6 +395,7 @@ js(document).on('click', '.add-btn', function () {
             button.attr('disabled', true);
         }
     }).done(function (data) {
+        
         var elmt = (js('.fds' + uuid).length > 0) ? js('.fds' + uuid).last() : button.parent();
         elmt.after(data);
 
@@ -757,7 +758,7 @@ function setBoundary(parentPath, value) {
         return;
 
     js.ajax({
-        url: baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value,
+        url: encodeURI(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value),
         type: "GET",
         async: false,
         cache: false
