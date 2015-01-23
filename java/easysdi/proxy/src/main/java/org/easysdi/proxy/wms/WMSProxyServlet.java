@@ -13,6 +13,8 @@
  */
 package org.easysdi.proxy.wms;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -28,6 +30,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,14 +43,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
@@ -55,6 +56,7 @@ import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiSysServer;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.integratedmodelling.geospace.gis.FeatureRasterizer;
@@ -82,14 +84,13 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.xml.sax.SAXException;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
 import org.springframework.context.ApplicationContext;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -281,7 +282,7 @@ public class WMSProxyServlet extends ProxyServlet {
             //This processing is out of this method because it is also used in the GetFeatureInfo request
             List<Object> r = checkGetMapRequestValidity(req, resp);
 
-            //If the result is null, ann exception has already been sent to the client 
+            //If the result is null, an exception has already been sent to the client 
             if (r == null) {
                 return;
             }
@@ -318,15 +319,7 @@ public class WMSProxyServlet extends ProxyServlet {
                     return;
                 }
             }
-            //			Method m = this.getClass().getMethod("requestSendingGetMap"+req.getMethod(), new Class[]{Class.forName ("javax.servlet.http.HttpServletRequest"), 
-            //																									 Class.forName ("javax.servlet.http.HttpServletResponse"),
-            //																									 Class.forName ("java.util.ArrayList"),
-            //																									 Class.forName ("java.util.TreeMap"),
-            //																									 Class.forName ("java.util.TreeMap")});
-            //			if(!(Boolean)m.invoke(this, new Object[] {req,resp,remoteServerToCall,layerTableToKeep,layerStyleMap}))
-            //				return;
-            //			if(!requestSendingGetMapGET(req,resp,remoteServerToCall,layerTableToKeep,layerStyleMap))
-            //				return;
+
             //Post Treatment
             if (wmsGetMapResponseFilePathMap.size() > 0) {
                 logger.trace("requestPreTraitementGET begin transform");
@@ -584,21 +577,54 @@ public class WMSProxyServlet extends ProxyServlet {
                     Iterator<Entry<Integer, ProxyLayer>> itPL = layerTableToKeep.entrySet().iterator();
                     String layerList = "";
                     String styleList = "";
+                    
+                    //Set TRANSPARENT to TRUE if not present
+                    String paramUrl = getProxyRequest().getUrlParameters();
+                    if (!paramUrl.toUpperCase().contains("TRANSPARENT=")) {
+                        paramUrl += "TRANSPARENT=TRUE&";
+                    }
+                    
+                    //Handle WMS filtering vendor specific parameters
+                    SdiSysServer servertype = physicalService.getSdiSysServer();                    
+                    JSONObject layerdefs = null;
+                    JSONObject newlayerdefs = null;
+                    if(servertype.getValue().equalsIgnoreCase("arcgisserver")){
+                        //Handle Esri vendor specific parameter layerDefs       
+                        layerdefs = ((WMSProxyServletRequest) this.getProxyRequest()).getLayerdefs();
+                        newlayerdefs = new JSONObject();
+                    }else{
+                        //Handle Geoserver vendor specific parameter
+                        String CQL_FILTER = ((WMSProxyServletRequest) this.getProxyRequest()).getCQL_FILTER();
+                        if(CQL_FILTER != null){
+                            paramUrl += "CQL_FILTER="+CQL_FILTER;
+                            paramUrl += "&";
+                        }
+                    }
+                            
                     while (itPL.hasNext()) {
                         Entry<Integer, ProxyLayer> layer = itPL.next();
                         layerList += layer.getValue().getPrefixedName() + ",";
                         styleList += layerStyleMap.get(layer.getKey()) + ",";
+                        if(layerdefs != null){
+                            try {   
+                                //Handle Esri vendor specific parameter layerDefs       
+                                String newlayerdef = layerdefs.getString(layer.getValue().getAliasName());
+                                newlayerdefs.put(layer.getValue().getPrefixedName(), newlayerdef);
+                            } catch (JSONException ex) {
+
+                            }
+                        }
+                    }
+                    //Handle Esri vendor specific parameter layerDefs       
+                    if(layerdefs != null){
+                         paramUrl += "&layerDefs=";
+                         paramUrl += URLEncoder.encode(newlayerdefs.toString(), "UTF-8");
+                         paramUrl += "&";
                     }
 
                     String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length() - 1);
                     String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length() - 1);
-
-                    //Set TRANSPARENT to TRUE if not present
-                    String paramUrl = getProxyRequest().getUrlParameters();
-                    if (paramUrl.toUpperCase().indexOf("TRANSPARENT=") == -1) {
-                        paramUrl += "TRANSPARENT=TRUE&";
-                    }
-
+                    
                     sendDataDirectStream(resp, "GET", physicalService.getResourceurl(), paramUrl + layersUrl + stylesUrl);
                     return false;
                 }
@@ -1079,9 +1105,11 @@ public class WMSProxyServlet extends ProxyServlet {
      * @throws Exception
      */
     public List<Object> checkGetMapRequestValidity(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        
+        WMSProxyServletRequest wmsRequest = (WMSProxyServletRequest) getProxyRequest();
+        
         //Check the WIDTH and HEIGHT parameters validity against the policy rules
-        if (!isSizeInTheRightRange(Integer.parseInt(((WMSProxyServletRequest) getProxyRequest()).getWidth()),
-                Integer.parseInt(((WMSProxyServletRequest) getProxyRequest()).getWidth()))) {
+        if (!isSizeInTheRightRange(Integer.parseInt(wmsRequest.getWidth()),Integer.parseInt(wmsRequest.getWidth()))) {
             logger.error(OWSExceptionReport.TEXT_INVALID_DIMENSION_VALUE);
             owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_INVALID_DIMENSION_VALUE, OWSExceptionReport.CODE_INVALID_DIMENSION_VALUE, "WIDTH", HttpServletResponse.SC_OK);
             return null;
@@ -1092,13 +1120,13 @@ public class WMSProxyServlet extends ProxyServlet {
 
         //Get the requested layer names
         TreeMap<Integer, String> layerMap = new TreeMap<Integer, String>();
-        if (((WMSProxyServletRequest) getProxyRequest()).getLayers() == null) {
+        if (wmsRequest.getLayers() == null) {
             logger.error("LAYERS " + OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
             owsExceptionReport.sendExceptionReport(request, response, "LAYERS " + OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE, OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "LAYERS", HttpServletResponse.SC_OK);
             return null;
         }
 
-        ArrayList<String> layerParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest) getProxyRequest()).getLayers().split(",")));
+        ArrayList<String> layerParamAsArray = new ArrayList<String>(Arrays.asList(wmsRequest.getLayers().split(",")));
         for (int index = 0; index < layerParamAsArray.size(); index++) {
             layerMap.put(index, layerParamAsArray.get(index));
         }
@@ -1106,8 +1134,8 @@ public class WMSProxyServlet extends ProxyServlet {
         //Check the STYLES parameter
         TreeMap<Integer, String> layerStyleMap = new TreeMap<Integer, String>();
         ArrayList<String> layerStyleParamAsArray = new ArrayList<String>();
-        if (((WMSProxyServletRequest) getProxyRequest()).getStyles() != null) {
-            layerStyleParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest) getProxyRequest()).getStyles().split(",")));
+        if (wmsRequest.getStyles() != null) {
+            layerStyleParamAsArray = new ArrayList<String>(Arrays.asList(wmsRequest.getStyles().split(",")));
         }
 
         //A style definition is mandatory for each layer, we create them if needed
@@ -1124,7 +1152,7 @@ public class WMSProxyServlet extends ProxyServlet {
         //Get the BBOX parameter
         ReferencedEnvelope rEnvelope;
         try {
-            rEnvelope = new ReferencedEnvelope(((WMSProxyServletRequest) getProxyRequest()).getX1(), ((WMSProxyServletRequest) getProxyRequest()).getX2(), ((WMSProxyServletRequest) getProxyRequest()).getY1(), ((WMSProxyServletRequest) getProxyRequest()).getY2(), CRS.decode(((WMSProxyServletRequest) getProxyRequest()).getSrsName()));
+            rEnvelope = new ReferencedEnvelope(wmsRequest.getX1(), wmsRequest.getX2(), wmsRequest.getY1(), wmsRequest.getY2(), CRS.decode(wmsRequest.getSrsName()));
         } catch (Exception ex) {
             logger.error(OWSExceptionReport.TEXT_INVALID_SRS);
             owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_INVALID_SRS, OWSExceptionReport.CODE_INVALID_SRS, "SRS", HttpServletResponse.SC_OK);
@@ -1163,9 +1191,24 @@ public class WMSProxyServlet extends ProxyServlet {
             }
 
             //Check if the scale is available
-            if (isLayerInScale(layer.getPrefixedName(), physicalService, RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest) getProxyRequest()).getWidth()), null))) {
+            if (isLayerInScale(layer.getPrefixedName(), physicalService, RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(wmsRequest.getWidth()), null))) {
                 //Layer to keep in the request
                 layerTableToKeep.put(layerOrdered.getKey(), layer);
+                
+                //If Esri vendor specific parameter layerDefs is present in the request :
+                //remove prefix of the layer name in it
+//                JSONObject layerdefs = wmsRequest.getLayerdefs();
+//                if(layerdefs != null){
+//                    try{
+//                        String layerdef = layerdefs.getString(layer.getAliasName());
+//                        layerdefs.put(layer.getPrefixedName(), layerdef);
+//                        layerdefs.remove(layer.getAliasName());
+//                        wmsRequest.setLayerdefs(layerdefs);
+//                    }catch(JSONException e){
+//                        //layer is not concerned by the filter describe in parameter layerdefs
+//                    }
+//                }
+                                
                 //Servers to call to complete the request
                 if (!remoteServerToCall.contains(layer.getAlias())) {
                     remoteServerToCall.add(layer.getAlias());

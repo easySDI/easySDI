@@ -193,6 +193,19 @@ class Easysdi_mapModelmap extends JModelAdmin {
                     }                    
                 }
                 
+                //indoor navigation
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=21');
+                $query->where('map_id = ' . $item->id);
+                
+                $db->setQuery($query);
+                $indoornavigation = $db->loadResult();
+                if(!empty($indoornavigation)){
+                    $item->level = stripslashes($indoornavigation);                   
+                }
+                
                 $item->services = array();
                 
                 $query = $db->getQuery(true);
@@ -290,8 +303,6 @@ class Easysdi_mapModelmap extends JModelAdmin {
                         $tool = substr($key, 4);
                         $columns = array('map_id', 'tool_id', 'params');
                         
-//                        ($tool == '17')? $params = $data['catalog_id']: $params = 'NULL';   
-//                        $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
                         if($tool == '17'){
                             $params = $data['catalog_id'];
                             $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
@@ -330,14 +341,12 @@ class Easysdi_mapModelmap extends JModelAdmin {
 
             //Scale line params
             $scaleparamsparams = '{\"bottomInUnits\" :\"'.$data["bottomInUnits"].'\",\"bottomOutUnits\" :\"'.$data["bottomOutUnits"].'\",\"topInUnits\" :\"'.$data["topInUnits"].'\",\"topOutUnits\" :\"'.$data["topOutUnits"].'\"}';
-            
             $columns = array('map_id', 'tool_id', 'params');
             $values = array($this->getItem()->get('id'), 14, $query->quote($scaleparamsparams));
             $query = $db->getQuery(true);
             $query->insert('#__sdi_map_tool');
             $query->columns($query->quoteName($columns));
             $query->values(implode(',', $values));
-            
             $db->setQuery($query);
                         if (!$db->query()) {
                             $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
@@ -346,21 +355,41 @@ class Easysdi_mapModelmap extends JModelAdmin {
                         
             //Wfs locator
             $locatorparamsparams = '{\"urlwfslocator\" :\"'.$data["urlwfslocator"].'\",\"fieldname\" :\"'.$data["fieldname"].'\",\"featuretype\" :\"'.$data["featuretype"].'\",\"featureprefix\" :\"'.$data["featureprefix"].'\",\"geometryname\" :\"'.$data["geometryname"].'\"}';
-            
             $columns = array('map_id', 'tool_id', 'params');
             $values = array($this->getItem()->get('id'), 16, $query->quote($locatorparamsparams));
             $query = $db->getQuery(true);
             $query->insert('#__sdi_map_tool');
             $query->columns($query->quoteName($columns));
             $query->values(implode(',', $values));
-            
-            
             $db->setQuery($query);
                         if (!$db->query()) {
                             $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
                             return false;
                         }
                         
+            //Indoor navigation
+            $i = 1;
+            $indoornavigation = '';
+            $codes = $_POST['jform']["code"];
+            if(isset($codes)){
+                foreach ($codes as $key=>$value){
+                     $indoornavigation = (strlen($indoornavigation) > 0 )? $indoornavigation . ',': $indoornavigation;  
+                     $indoornavigation .= '{\"code\": \"'.$value.'\", \"label\":\"'.$_POST['jform']["label"][$key].'\",\"defaultlevel\":\"'.$_POST['jform']["defaultlevel"][$key].'\"}'; 
+                }
+            }
+            $indoornavigation = (strlen($indoornavigation) > 0 )? '[' . $indoornavigation . ']': '';  
+            $columns = array('map_id', 'tool_id', 'params');
+            $values = array($this->getItem()->get('id'), 21, $query->quote($indoornavigation));
+            $query = $db->getQuery(true);
+            $query->insert('#__sdi_map_tool');
+            $query->columns($query->quoteName($columns));
+            $query->values(implode(',', $values));
+            $db->setQuery($query);
+            if (!$db->query()) {
+                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                return false;
+            }
+            
             //Service
             $services = $data['services'];
             foreach ($services as $service) {

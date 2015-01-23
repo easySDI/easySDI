@@ -37,6 +37,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 	private SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByResourceauthenticationId;
 	private SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByServiceauthenticationId;
 	private SdiSysServiceconnector sdiSysServiceconnector;
+        private SdiSysServer sdiSysServer;
 	private String Guid;
 	private String Alias;
 	private int Created_by;
@@ -58,7 +59,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 	private String Params;
 	private int Access;
 	private Integer Asset_id;
-	private Set<SdiVirtualservice> sdiVirtualservices = new HashSet<SdiVirtualservice>(
+        private Set<SdiVirtualservice> sdiVirtualservices = new HashSet<SdiVirtualservice>(
 			0);
 	private Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies = new HashSet<SdiPhysicalservicePolicy>(
 			0);
@@ -92,6 +93,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 			SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByResourceauthenticationId,
 			SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByServiceauthenticationId,
 			SdiSysServiceconnector sdiSysServiceconnector,
+                        SdiSysServer sdiSysServer,
 			String Guid,
 			String Alias,
 			int Created_by,
@@ -121,6 +123,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.sdiSysAuthenticationconnectorByResourceauthenticationId = sdiSysAuthenticationconnectorByResourceauthenticationId;
 		this.sdiSysAuthenticationconnectorByServiceauthenticationId = sdiSysAuthenticationconnectorByServiceauthenticationId;
 		this.sdiSysServiceconnector = sdiSysServiceconnector;
+                this.sdiSysServer = sdiSysServer;
 		this.Guid = Guid;
 		this.Alias = Alias;
 		this.Created_by = Created_by;
@@ -201,6 +204,17 @@ public class SdiPhysicalservice implements java.io.Serializable {
 	public void setSdiSysServiceconnector(
 			SdiSysServiceconnector sdiSysServiceconnector) {
 		this.sdiSysServiceconnector = sdiSysServiceconnector;
+	}
+        
+        @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "server_id", nullable = false)
+	public SdiSysServer getSdiSysServer() {
+		return this.sdiSysServer;
+	}
+
+	public void setSdiSysServer(
+			SdiSysServer sdiSysServer) {
+		this.sdiSysServer = sdiSysServer;
 	}
 
 	@Column(name = "guid", nullable = false, length = 36)
