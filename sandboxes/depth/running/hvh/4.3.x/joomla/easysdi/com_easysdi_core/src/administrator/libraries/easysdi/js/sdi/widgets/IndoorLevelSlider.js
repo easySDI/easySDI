@@ -49,6 +49,8 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     levels : [],
     
+    style : "position: absolute; right: 50px; top: 20px; z-index: 100;",
+    
     /** private: method[constructor]
      *  Construct the component.
      */

@@ -477,6 +477,12 @@ function getMapConfig() {
                 break;
 
             default :
+//                var overlay={};
+//                for (var property in layer) {
+//                    if (layer.hasOwnProperty(property)) {
+//                        overlay[property name] = property value;
+//                    }
+//                }
                 var overlay = {
                     source: layer.source,
                     tiled: layer.tiled,
@@ -545,8 +551,6 @@ function getMapConfig() {
             }
             var maxvalue = data.level.length - 1;
             var h = 18.5 * (data.level.length - 1);
-            var x = 400;
-            var y = 20;
             
             config.mapItems.push(
                     {
@@ -560,9 +564,7 @@ function getMapConfig() {
                         plugins: new sdi.widgets.IndoorLevelSliderTip({template: '<div>{level}</div>', levels: data.level}),
                         aggressive: false,
                         vertical: true,
-                        height: h,
-                        x: x,
-                        y: y
+                        height: h
                     }
             )
 
@@ -584,8 +586,7 @@ function getMapConfig() {
                 cls: 'levellabelpanel',
                 id: 'levellabelpanel',
                 border: false,
-                x: x,
-                y: y,
+                style : "position: absolute; right: 30px; top: 20px; z-index: 100;",
                 contentEl: ul
             });
         }

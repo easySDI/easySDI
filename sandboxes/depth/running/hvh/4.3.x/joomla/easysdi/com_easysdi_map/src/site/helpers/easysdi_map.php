@@ -241,7 +241,7 @@ abstract class Easysdi_mapHelper {
             var heigth;
             var services = ' . json_encode($services) . ';
             var layers = ' . json_encode($layers) . ';
-            var mouseposition = ' . $mouseposition . ';          
+            var mouseposition = "' . $mouseposition . '";          
                 
 
         </script>
