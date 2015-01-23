@@ -214,12 +214,17 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('r.id, m.modified_by')
+                ->select('r.id, m.modified_by, rtl.viralversioning')
                 ->from('#__sdi_resource r')
                 ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
                 ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
                 ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
                 ->innerJoin('#__sdi_versionlink vl ON v.id=vl.child_id')
+                
+                ->innerJoin('#__sdi_version v2 ON v2.id=vl.parent_id')
+                ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
+                ->innerJoin('#__sdi_resourcetypelink rtl ON rtl.parent_id=r2.resourcetype_id AND rtl.child_id=r.resourcetype_id')
+                
                 ->where('vl.parent_id='.(int)$parentId.' AND urr.user_id='.(int)$user->id)
                 ->group('r.id, m.modified_by')
                 ;
