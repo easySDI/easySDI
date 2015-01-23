@@ -197,6 +197,25 @@ class Easysdi_mapModelMap extends JModelForm {
                     $this->setError($je);
                     return false;
                 }
+                
+                //Load the indoor navigation
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=21');
+                $query->where('map_id = ' . (int)$id);
+                
+                $db->setQuery($query);
+                try {
+                    $indoor = $db->loadResult();
+                    if(!empty($indoor)){
+                        $this->_item->level = json_decode(stripslashes($indoor));                        
+                    }
+                } catch (JDatabaseException $e) {
+                    $je = new JException($e->getMessage());
+                    $this->setError($je);
+                    return false;
+                }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }

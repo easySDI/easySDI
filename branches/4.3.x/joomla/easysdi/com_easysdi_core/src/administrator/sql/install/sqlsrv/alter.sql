@@ -485,7 +485,7 @@ ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_property
 
 ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3] FOREIGN KEY([propertyvalue_id])
 REFERENCES [#__sdi_propertyvalue] ([id])
-ON DELETE CASCADE
+ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3];
@@ -935,3 +935,17 @@ ON DELETE NO ACTION;
 
 ALTER TABLE [#__sdi_wmts_spatialpolicy] CHECK CONSTRAINT [#__sdi_wmts_spatialpolicy$#__sdi_sys_spatialoperator_fk1];
 
+ALTER TABLE [#__sdi_sys_server_serviceconnector] WITH CHECK ADD CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_server_fk1] FOREIGN KEY ([server_id])
+REFERENCES [#__sdi_sys_server] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_sys_server_serviceconnector] CHECK CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_server_fk1];
+
+ALTER TABLE [#__sdi_sys_server_serviceconnector] WITH CHECK ADD CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_serviceconnector_fk2] FOREIGN KEY ([serviceconnector_id])
+REFERENCES [#__sdi_sys_serviceconnector] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_sys_server_serviceconnector] CHECK CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_serviceconnector_fk2];
+
+ALTER TABLE [#__sdi_physicalservice] WITH CHECK ADD CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1] FOREIGN KEY ([server_id])
+REFERENCES [#__sdi_sys_server] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_physicalservice] CHECK CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1];

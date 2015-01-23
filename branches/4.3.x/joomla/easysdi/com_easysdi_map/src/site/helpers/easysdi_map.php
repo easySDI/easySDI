@@ -21,9 +21,8 @@ abstract class Easysdi_mapHelper {
         //The goal is to have a clean map to use as a simple and quick data preview
         if ($cleared) {
             $item->tools = array();
-            $item->urlwfslocator = null;
+            $item->urlwfslocator = "";
         }
-
 
         //Load admin language file
         $lang = JFactory::getLanguage();
@@ -42,6 +41,7 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet($base_url . '/ux/geoext/resources/css/printpreview.css');
         $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
         $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
+        $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css');
 
         //Loadind js files
         if (JDEBUG) {
@@ -93,12 +93,15 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
         }
 
+        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
+        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js');
+
         foreach (glob(JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
             $doc->addScript(str_replace(JPATH_BASE, '', $file));
         }
 
         $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/helpers/map.js');
-        
+
         $app = JFactory::getApplication();
         $params = $app->getParams('com_easysdi_map');
         $proxyhost = $params->get('proxyhost');
@@ -148,22 +151,23 @@ abstract class Easysdi_mapHelper {
                 //Acces not allowed
                 if (!in_array($service->access, $user->getAuthorisedViewLevels()))
                     continue;
+                if($service->serviceconnector_id == 3) //WMTS
+                    continue;
                 array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
             endforeach;
         endif;
 
         if (isset($item->virtualservices)) :
             foreach ($item->virtualservices as $service) {
+                if($service->serviceconnector_id == 3) //WMTS
+                    continue;
                 array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
             }
         endif;
 
         //Layers
         $layers = array();
-        //Layers have to be added the lowest before the highest
-        //To do that, the groups have to be looped in reverse order
-        $groups_reverse = array_reverse($item->groups);
-        foreach ($groups_reverse as $group) {
+        foreach ($item->groups as $group) {
             //Acces not allowed
             if (!in_array($group->access, $user->getAuthorisedViewLevels()))
                 continue;
@@ -179,10 +183,10 @@ abstract class Easysdi_mapHelper {
         }
 
         //Mouseposition
-        $mouseposition = 'false';      
+        $mouseposition = 'false';
         foreach ($item->tools as $tool) {
             if ($tool->alias == 'mouseposition') {
-                $mouseposition = 'true';                
+                $mouseposition = 'true';
                 break;
             }
         }
@@ -210,9 +214,12 @@ abstract class Easysdi_mapHelper {
         $data->featureprefix = $item->featureprefix;
         $data->fieldname = $item->fieldname;
         $data->geometryname = $item->geometryname;
-        
-        $c = ($cleared)? 'true' : 'false';
-        
+        if(isset($item->level)){
+            $data->level = $item->level;
+        }
+
+        $c = ($cleared) ? 'true' : 'false';
+
         $output = '<script>
             var msg = "' . JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE') . '";
             var layermsg = "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '";
@@ -234,10 +241,12 @@ abstract class Easysdi_mapHelper {
             var heigth;
             var services = ' . json_encode($services) . ';
             var layers = ' . json_encode($layers) . ';
-            var mouseposition = ' . $mouseposition . ';
+            var mouseposition = "' . $mouseposition . '";          
+                
+
         </script>
         <div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
-        
+
         return $output;
     }
 
@@ -255,6 +264,9 @@ abstract class Easysdi_mapHelper {
             $url = $service->url;
         }
         $obj = new stdClass();
+        if ($service->server_id) {
+            $obj->server = $service->server_id;
+        }
         switch ($service->serviceconnector_id) :
             case 2 :
                 $obj->alias = $service->alias;
@@ -347,6 +359,14 @@ abstract class Easysdi_mapHelper {
 
     public static function getLayerDescriptionObject($layer, $group) {
         $obj = new stdClass();
+        if ($layer->isindoor == 1):
+            $obj->isindoor = 1;
+            $obj->levelfield = $layer->levelfield;
+        endif;
+
+        if ($layer->servertype) {
+            $obj->servertype = $layer->servertype;
+        }
         if ($layer->asOL) {
             $obj->source = "ol";
 
@@ -370,8 +390,14 @@ abstract class Easysdi_mapHelper {
                     $obj->transitionEffect = "resize";
                     $obj->opacity = $layer->opacity;
                     $obj->style = $layer->asOLstyle;
-                    $obj->matrixSet = $layer->asOLmatrixset;
+                    $obj->matrixSet = $layer->asOLmatrixset;                    
                     $obj->asOLoptions = $layer->asOLoptions;
+//                    $options = preg_replace("/\s\s+/", " ", $layer->asOLoptions);
+//                    $params = explode(',', $options);
+//                    foreach($params as $param){
+//                        $KVP = explode(':',$param);
+//                        $obj->asOLoptions[$KVP[0]] = $KVP[1];
+//                    }
                     break;
                 case 'WMS' :
                 case 'WMSC' :
