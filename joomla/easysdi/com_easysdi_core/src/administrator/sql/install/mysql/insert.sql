@@ -15,6 +15,8 @@ INSERT INTO `#__sdi_sys_role` VALUES ('4','4','1','metadataeditor' );
 INSERT INTO `#__sdi_sys_role` VALUES ('5','5','1','diffusionmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','previewmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('7','7','1','extractionresponsible' );
+INSERT INTO `#__sdi_sys_role` SET id=9, ordering=9, `state`=1, value='pricingmanager';
+INSERT INTO `#__sdi_sys_role` SET id=10, ordering=10, `state`=1, `value`='validationmanager';
 
 INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
 VALUES 
@@ -496,6 +498,9 @@ INSERT INTO `#__sdi_sys_orderstate` VALUES ('4', '4', '1', 'await');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('5', '5', '1', 'progress');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('6', '6', '1', 'sent');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '7', '1', 'saved');
+INSERT INTO `#__sdi_sys_orderstate` SET id=8, ordering=8, `state`=1, `value`='validation';
+INSERT INTO `#__sdi_sys_orderstate` SET id=9, ordering=9, `state`=1, `value`='rejected by thirdparty';
+INSERT INTO `#__sdi_sys_orderstate` SET id=10, ordering=10, `state`=1, `value`='rejected by supplier';
 
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('1', '1', '1', 'order');
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('2', '2', '1', 'estimate');
@@ -504,10 +509,14 @@ INSERT INTO `#__sdi_sys_ordertype` VALUES ('3', '3', '1', 'draft');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('1', '1', '1', 'available');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('2', '2', '1', 'await');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('3', '3', '1', 'sent');
+INSERT INTO `#__sdi_sys_productstate` SET id=4, ordering=4, `state`=1, `value`='validation';
+INSERT INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejected by thirdparty';
+INSERT INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejected by supplier';
 
 
 INSERT INTO `#__sdi_sys_pricing` VALUES ('1', '1', '1', 'free');
-INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'fee');
+INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'fee without a pricing profile');
+INSERT INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='fee with a pricing profile';
 
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('1', '1', '1', 'upload');
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('2', '2', '1', 'url');
@@ -522,6 +531,9 @@ VALUES
 (2,1,'download'),
 (3,1,'both')
 ;
+
+INSERT INTO `#__sdi_sys_extractstorage` SET id=1, ordering=1, `state`=1, `value`='local';
+INSERT INTO `#__sdi_sys_extractstorage` SET id=2, ordering=2, `state`=1, `value`='remote';
 
 INSERT INTO `#__sdi_language` VALUES ('1', '0', '1', 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ', 'ara');
 INSERT INTO `#__sdi_language` VALUES ('3', '0', '1', 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG','bul');
@@ -728,3 +740,14 @@ VALUES
 ('2', '9adc6d4e-262a-d6e4-e152-6de437ba80ed', 'myperimeter', '356', '2013-07-23 09:16:11','2', '1', 'My perimeter', '',1,1)
 ;
 
+INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','geoserver' );
+INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','arcgisserver' );
+
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('1', '1', '2');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('2', '1', '3');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('3', '1', '4');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('4', '1', '5');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('5', '1', '11');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('6', '2', '2');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('7', '2', '4');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('8', '2', '5');

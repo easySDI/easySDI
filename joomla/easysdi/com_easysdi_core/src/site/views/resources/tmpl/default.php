@@ -21,7 +21,7 @@ JHtml::_('behavior.calendar');
 
 $document = JFactory::getDocument();
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js.php');
-//$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
+$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
 ?>
 <style> 
     .tooltip{
@@ -51,7 +51,8 @@ $document = JFactory::getDocument();
             <?php // echo $this->itemmap->_item->text; ?>
             <div class="well">
                 <div class="row-fluid">
-                    <form class="form-search" action="" method="post">
+                    <form id='criterias' class="form-search" action="" method="post">
+                        <input type='hidden' id='filter_ordering' name='filter_ordering' value='ASC'/>
 
                         <div class="btn-group pull-left">
                             <?php if (empty($this->parent)) : ?>
@@ -129,10 +130,10 @@ $document = JFactory::getDocument();
         <div class="well">
             <div class="row-fluid">
                 <?php $show = count($this->items); ?>
-                <table class="table table-striped">
+                <table id="resources" class="table table-striped">
                     <thead>
                         <tr>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?></th>
+                            <th id="resources_name"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?><span id='resources_ordering'><?php echo $this->state->get('filter.ordering');?></span></th>
                             <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
                             <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
                             <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
@@ -173,6 +174,13 @@ $document = JFactory::getDocument();
     </div>
     <?php if ($show): ?>
         <div class="pagination">
+            <p class="resources_counter">
+                <?php
+                $resourceFrom   = ($this->pagination->pagesCurrent-1)*$this->pagination->limit + 1;
+                $resourceTo     = min($resourceFrom + $this->pagination->limit - 1, $this->pagination->total);
+                
+                echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESULTS').' '.$resourceFrom.' '.JText::_('COM_EASYSDI_CORE_RESOURCES_TO').' '.$resourceTo.' '.JText::_('COM_EASYSDI_CORE_RESOURCES_OF').' '.$this->pagination->total; ?>
+            </p>
             <p class="counter">
                 <?php echo $this->pagination->getPagesCounter(); ?>
             </p>
@@ -252,6 +260,25 @@ $document = JFactory::getDocument();
             <div class="modal-footer">
                 <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
                 <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- synchronize modal -->
+<div class="modal fade" id="synchronizeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_TITLE'); ?></h4>
+            </div>
+            <div id="synchronizeModalBody" class="modal-body">
+                <?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_CONFIRM'); ?>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btn_synchronize"><button type="button" class="btn btn-success"><?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_TITLE'); ?></button></a>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
             </div>
         </div>
     </div>

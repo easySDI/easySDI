@@ -35,14 +35,16 @@ class Easysdi_shopTablediffusion extends sdiTable {
      * @since	1.5
      */
     public function bind($array, $ignore = '') {
-        
+
         //Clean and prepare data
         $jinput = JFactory::getApplication()->input;
-        $form = $jinput->get('jform', 'null', 'ARRAY');
+        $form = $jinput->get('jform', null, 'ARRAY');
         (empty($array['hasdownload'])) ? $array['hasdownload'] = "0" : $array['hasdownload'] = "1";
         (empty($array['hasextraction'])) ? $array['hasextraction'] = "0" : $array['hasextraction'] = "1";
-        if(empty($array['surfacemin']))  $array['surfacemin'] = null;
-        if(empty($array['surfacemax']))  $array['surfacemax'] = null;
+        if (empty($array['surfacemin']))
+            $array['surfacemin'] = null;
+        if (empty($array['surfacemax']))
+            $array['surfacemax'] = null;
         if ($array['hasdownload'] == 0) {
             $array['productstorage_id'] = null;
             $array['file'] = null;
@@ -74,9 +76,11 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['deposit'] = null;
             $array['deposit_hidden'] = null;
             $array['notifieduser_id'] = null;
-        } else {
-            $array['perimeter'] = $form['perimeter'];
-            $array['property'] = $form['property'];
+        } elseif(isset($form['perimeter'])) {
+            if (isset($form)) {
+                $array['perimeter'] = $form['perimeter'];
+                $array['property'] = $form['property'];
+            }
         }
         if ($array['pricing_id'] == 2) {
             $array['hasdownload'] = "0";

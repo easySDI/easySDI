@@ -44,6 +44,8 @@ class Easysdi_contactViewUser extends JViewLegacy
 		
 		$app 				= JFactory::getApplication();
 		$this->shop 		= $app->getUserState( 'com_easysdi_shop-installed');
+                
+                $this->pricing = JComponentHelper::getParams('com_easysdi_shop')->get('is_activated', false);
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {

@@ -310,7 +310,7 @@ class FormHtmlGenerator {
         $aCollapse->setAttribute('class', 'btn btn-mini collapse-btn');
 
         $iCollapse = $this->formHtml->createElement('i');
-        $iCollapse->setAttribute('class', 'icon-white icon-arrow-down');
+        $iCollapse->setAttribute('class', 'icon-white icon-arrow-right');
 
         $aRemove = $this->formHtml->createElement('a');
         $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
@@ -1017,6 +1017,7 @@ class FormHtmlGenerator {
         }
 
         if ($stereotypeId == EnumStereotype::$FILE) {
+            $jfieldhiddendelete = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehiddendelete');
             $jfieldhidden = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
             $jfieldtext = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
 
@@ -1024,6 +1025,7 @@ class FormHtmlGenerator {
             $control->appendChild($br);
             $control->appendChild($this->getInput($jfieldtext));
             $control->appendChild($this->getInput($jfieldhidden));
+            $control->appendChild($this->getInput($jfieldhiddendelete));
             $control->appendChild($this->getPreviewAction($attribute));
             $control->appendChild($this->getEmptyFileAction($attribute));
         }

@@ -47,7 +47,8 @@ var Links = {
             synchronize: {
                 href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.synchronize&id=#0#')?>',
                 property: 'metadata',
-                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA')?>"
+                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA')?>",
+                disabled: true
             }
         },
         management: {
@@ -165,6 +166,7 @@ var Version = (function(){
         this.id = id;
         
         this.child_number = 0;
+        this.viralChild_number = 0;
         
         this.metadata = function(id, name, state, stateName, publishDate){
             if(arguments.length>0)
@@ -179,12 +181,14 @@ var Version = (function(){
 
 var Resource = (function(){
     
-    function Resource(id, name, type){
+    function Resource(id, name, type, typeAlias, accessscope){
         var versions = [];
         
         this.id = id;
         this.name = name;
         this.type = type;
+        this.typeAlias = typeAlias;
+        this.accessscope = accessscope;
         this.rights = {
             metadataEditor:         false,
             metadataResponsible:    false,
@@ -242,9 +246,10 @@ var Resource = (function(){
 <?php 
     $params = JComponentHelper::getParams('com_easysdi_catalog');
     $assignenabled = $params->get('assignenabled',1);
+    $synchronizeenabled = $params->get('synchronizeenabled',1);
     
     foreach ($this->items as $item) : ?>
-    var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>');
+    var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>', '<?php echo $item->resourcetype_alias; ?>', '<?php echo $item->accessscope; ?>');
     <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>resource.rights.metadataEditor = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>resource.rights.metadataResponsible = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>resource.rights.resourceManager = 1;<?php endif; ?>
@@ -257,11 +262,20 @@ var Resource = (function(){
     <?php if($item->canbechild): ?>resource.canBeChild = 1;<?php endif; ?>
     <?php if($item->versioning): ?>resource.versioning = 1;<?php endif; ?>
     resource.assignment = <?php  echo $assignenabled; ?>;
+    resource.synchronize = <?php  echo $synchronizeenabled; ?>;
     <?php foreach($item->metadata as $key => $metadata):?>
         resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, '<?php echo JText::_($metadata->value);?>', '<?php echo $metadata->published;?>');
     <?php endforeach;?>
     resources.add(resource);
 <?php endforeach; ?>
+
+var enableLink = function(link, f){
+    link.off('click').on('click','function'===typeof f?f:function(){return true;}).removeClass('disabled').css('color','inherit');
+};
+
+var disableLink = function(link){
+    link.off('click').on('click',function(){return false;}).addClass('disabled').css('color','#cbcbcb');
+};
 
 var buildDropDownItem = function(resource, type){
     var typeTab = type.split('.');
@@ -290,6 +304,8 @@ var buildDropDownItem = function(resource, type){
     if(link.href) a.attr('href', link.href.replace('#0#', value));
     if(link.class) a.addClass(link.class);
     if(link.rel) a.attr('rel', link.rel);
+    
+    if(link.disabled) disableLink(a);
     
     return li.append(a);
 };
@@ -366,7 +382,7 @@ var buildMetadataDropDown = function(resource){
     /* THIRD SECTION */
     section = [];
     
-    if(resource.rights.metadataResponsible && resource.support.relation){
+    if(resource.rights.metadataResponsible && resource.synchronize == 1 ){
         section.push(buildDropDownItem(resource, 'metadata.synchronize'));
     }
     
@@ -404,7 +420,8 @@ var buildManagementDropDown = function(resource){
         if(resource.support.application)
             section.push(buildDropDownItem(resource, 'management.application'));
         
-        dropdown.push(section);
+        if(section.length)
+            dropdown.push(section);
     }
     
     /* SECOND SECTION */
@@ -444,7 +461,7 @@ var buildManagementDropDown = function(resource){
     }
     
     js('td#'+resource.id+'_resource_management_actions').empty().append(div.append(a.append(span)).append(dropDown2HTML(dropdown)));
-}
+};
 
 var buildStatusCell = function(resource){
     if(resource.versioning){
@@ -547,34 +564,36 @@ var getChildNumber = function(element){
     if(element.length === 0) return;
     
     var resource = resources.get(getResourceId(element));
-    var version = resource.currentVersion();
-    try{
-        js.ajax({
-            cache: false,
-            type: 'GET',
-            url: Links.ajax.child_number.replace('#0#', version.id)
-        }).done(function(data){
-            try{
-                var response = js.parseJSON(data);
-                if(response.success == "true"){
-                    js(element).find('span').html(response.num);
-                    version.child_number = response.num;
-                    
-                    if(resource.rights.metadataResponsible)
+    
+    if(resource.support.relation){
+        var version = resource.currentVersion();
+        try{
+            js.ajax({
+                cache: false,
+                type: 'GET',
+                url: Links.ajax.child_number.replace('#0#', version.id)
+            }).done(function(data){
+                try{
+                    var response = js.parseJSON(data);
+                    if(response.success == "true"){
+                        js(element).find('span').html(response.num);
+                        version.child_number = response.num;
+                        version.viralChild_number = response.children.reduce(function(a,b,c,d){return a+parseInt(b.viralversioning);},0);
                         getSynchronizationInfo(js('a#'+resource.id+'_synchronize'));
+                    }
                 }
-            }
-            catch(e){
-                if(window.console){
-                    console.log(e);
-                    console.log(data);
+                catch(e){
+                    if(window.console){
+                        console.log(e);
+                        console.log(data);
+                    }
                 }
-            }
-        });
-    }
-    catch(e){
-        console.warn('Catch error');
-        setTimeout(function(){getChildNumber(element)}, 50);
+            });
+        }
+        catch(e){
+            console.warn('Catch error');
+            setTimeout(function(){getChildNumber(element)}, 50);
+        }
     }
 };
 
@@ -623,40 +642,31 @@ var getSynchronizationInfo = function(element){
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     var metadata = version.metadata();
+    var tooltips = new Array();
     
-    if(version.child_number > 0){
-        js.ajax({
-            cache: false,
-            type: 'GET',
-            url: Links.ajax.synchronization.replace('#0#', metadata.id)
-        }).done(function(data){
-            try{
-                var response = js.parseJSON(data);
-
-                if(response.synchronized === true){
-                    var message = '<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')?> '+response.synchronized_by+'<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE')?> '+response.lastsynchronization;
-                    js(element)
-                            .removeClass('disabled')
-                            .css('color', 'inherit')
-                            .tooltip({title: message, html: true})
-                            .on('click', function(){return true;});
-                }
+    if(resource.support.relation && version.viralChild_number === 0)
+        tooltips.push("<?php echo JText::_('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE')?>");
+    
+    js.ajax({
+        cache: false,
+        type: 'GET',
+        url: Links.ajax.synchronization.replace('#0#', metadata.id)
+    }).done(function(data){
+        try{
+            var response = js.parseJSON(data);
+            if(response.synchronized === true)
+                tooltips.push('<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')?> '+response.synchronized_by+'<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE')?> '+response.lastsynchronization);
+        }
+        catch(e){
+            if(window.console){
+                console.log(e);
+                console.log(data);
             }
-            catch(e){
-                if(window.console){
-                    console.log(e);
-                    console.log(data);
-                }
-            }
-        });
-    }
-    else{
-        js(element)
-                .addClass('disabled')
-                .css('color', '#cbcbcb')
-                .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE')?>", html: true})
-                .on('click', function(){return false;});
-    }
+        }
+    }).always(function(){
+        js(element).tooltip({title:tooltips.join('<hr/>'),html:true});
+        version.viralChild_number > 0 && resource.rights.metadataResponsible ? enableLink(js(element), function(){showSyncModal(this);return false;}) : disableLink(js(element));
+    });
 };
 
 var getPublishRight = function(element){
@@ -788,8 +798,8 @@ var showPublishModal = function(element){
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
-    console.log(version);
-    console.log(metadata);
+    //console.log(version);
+    //console.log(metadata);
     
     js.ajax({
         cache: false,
@@ -822,6 +832,12 @@ var showPublishModal = function(element){
     return false;
 };
 
+function showSyncModal(element){
+    js('#btn_synchronize').attr('href', js(element).attr('href'));
+    js('#synchronizeModal').modal('show');
+    
+}
+
 var buildActionsCell = function(resource, reload){
     reload = reload || false;
     
@@ -829,7 +845,7 @@ var buildActionsCell = function(resource, reload){
     buildManagementDropDown(resource);
     
     // Performs some action on dropdowns links
-    getChildNumber(js('a#'+resource.id+'_child_list'));
+    js('a#'+resource.id+'_child_list').length>0 ? getChildNumber(js('a#'+resource.id+'_child_list')) : getSynchronizationInfo(js('a#'+resource.id+'_synchronize'));
     getNewVersionRight(js('a#'+resource.id+'_new_version'));
     getPublishRight(js('a#'+resource.id+'_publish'));
     getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
@@ -858,8 +874,31 @@ js(document).ready(function(){
             buildStatusCell(resource);
             
             buildActionsCell(resource);
+            
+            js('#'+resource.id+'_resource').addClass('resourcetype_'+resource.typeAlias).addClass('accessscope_'+resource.accessscope).show();
         }
     });
+    
+    // Set events
+    js(document).on('click', '#search-reset', resetSearch);
+    
+    js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', function(){showDeleteModal(this);return false;});
+    
+    js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
+    
+    js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
+    
+    var ordering = js('#resources_ordering').html();
+    
+    js(document).on('click', 'th#resources_name', function(){
+        js('#filter_ordering').val( ordering === 'ASC' ? 'DESC' : 'ASC');
+        js('form#criterias').submit();
+    }).on('mouseover', 'th#resources_name', function(){js(this).css('cursor', 'pointer')});
+    
+    js('#resources_ordering').html('&nbsp;').css('background', js('#resources_ordering').css('background').replace(/_\w{3,4}\.png/, '_'+ordering.toLowerCase()+'.png'));
+    
+    // Fix action's link style
+    js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});
     
     // Fix version's select style and event
     js('td[id$=_resource_versions] > select')

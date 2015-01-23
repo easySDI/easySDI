@@ -465,11 +465,13 @@ CREATE TABLE [#__sdi_catalog](
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](500) NULL,
+        [contextualsearchresultpaginationnumber] [tinyint] DEFAULT 0,
 	[xsldirectory] [nvarchar](255) NULL,
 	[oninitrunsearch] [smallint] NULL,
 	[cswfilter] [nvarchar](max) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
+    [scrolltoresults] [smallint] NOT NULL DEFAULT 1,
  CONSTRAINT [PK_#__sdi_catalog_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -621,6 +623,7 @@ CREATE TABLE [#__sdi_diffusion](
 	[description] [nvarchar](500) NULL,
 	[accessscope_id] [bigint] NOT NULL,
 	[pricing_id] [bigint] NOT NULL,
+        [pricing_profile_id] [bigint],
 	[deposit] [nvarchar](255) NULL,
 	[productmining_id] [bigint] NULL,
 	[surfacemin] [nvarchar](50) NULL,
@@ -967,7 +970,7 @@ CREATE TABLE [#__sdi_map_tool](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[tool_id] [bigint] NOT NULL,
-	[params] [nvarchar](500) NULL,
+	[params] [nvarchar](MAX) NULL,
  CONSTRAINT [PK_#__sdi_map_tool_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1017,6 +1020,8 @@ CREATE TABLE [#__sdi_maplayer](
 	[asOLstyle] [nvarchar](max) NULL,
 	[asOLmatrixset] [nvarchar](max) NULL,
 	[asOLoptions] [nvarchar](max) NULL,
+        [isindoor] [smallint] NULL,
+        [levelfield] [nvarchar](255) NULL,
 	[metadatalink] [nvarchar](max) NULL,
 	[attribution] [nvarchar](255) NULL,
 	[accessscope_id] [bigint] NOT NULL,
@@ -1131,13 +1136,19 @@ CREATE TABLE [#__sdi_order](
 	[orderstate_id] [bigint] NOT NULL,
 	[user_id] [bigint] NOT NULL,
 	[thirdparty_id] [bigint] NULL,
+        [validate] [smallint] DEFAULT NULL,
+        [validated_date] [datetime2](0) DEFAULT NULL,
+        [validated_reason] [nvarchar](500) DEFAULT NULL,
 	[buffer] [numeric](38, 18) NULL,
 	[surface] [numeric](38, 18) NULL,
 	[remark] [nvarchar](500) NULL,
 	[sent] [datetime2](0) NOT NULL,
 	[completed] [datetime2](0) NOT NULL,
+        [mandate_ref] [nvarchar](75) NULL,
+        [mandate_contact] [nvarchar](75) NULL,
+        [mandate_email] [nvarchar](100) NULL,
 	[access] [int] NOT NULL,
-	[asset_id] [bigint] NOT NULL,
+	[asset_id] [bigint] NOT NULL,        
  CONSTRAINT [PK_#__sdi_order_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1146,6 +1157,7 @@ CREATE TABLE [#__sdi_order](
 
 
 SET ANSI_NULLS ON;
+
 
 SET QUOTED_IDENTIFIER ON;
 
@@ -1224,10 +1236,15 @@ CREATE TABLE [#__sdi_organism](
 	[name] [nvarchar](255) NOT NULL,
 	[website] [nvarchar](500) NULL,
 	[perimeter] [nvarchar](max) NULL,
+        [selectable_as_thirdparty] smallint DEFAULT 0,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
 	[username] [nvarchar](150) NULL,
 	[password] [nvarchar](65) NULL,
+        [internal_free] smallint DEFAULT 0,
+        [fixed_fee_ti] decimal(6,2) DEFAULT 0,
+        [data_free_fixed_fee] smallint DEFAULT 0,
+
  CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1254,6 +1271,7 @@ CREATE TABLE [#__sdi_category](
 	[name] [nvarchar](255) NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
+        [overall_fee] decimal(6,2) DEFAULT 0,
  CONSTRAINT [PK_#__sdi_category_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1346,6 +1364,7 @@ CREATE TABLE [#__sdi_physicalservice](
 	[serviceusername] [nvarchar](150) NULL,
 	[servicepassword] [nvarchar](150) NULL,
 	[catid] [int] NOT NULL,
+        [server_id] [int] NULL,
 	[params] [nvarchar](1024) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
@@ -1674,6 +1693,7 @@ CREATE TABLE [#__sdi_relation](
 	[editorrelationscope_id] [bigint] NULL,
 	[childresourcetype_id] [bigint] NULL,
 	[childtype_id] [bigint] NULL,
+        [accessscope_limitation] [tinyint] DEFAULT 0,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_relation_id] PRIMARY KEY CLUSTERED 
@@ -2223,6 +2243,79 @@ CREATE TABLE [#__sdi_sys_pricing](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY];
 
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_profile](
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [guid] [nvarchar](36) NOT NULL,
+    [alias] [nvarchar](50) NOT NULL,
+    [created_by] [int] NOT NULL,
+    [created] [datetime2](0) NOT NULL,
+    [modified_by] [int] NULL,
+    [modified] [datetime2](0) NULL,
+    [ordering] [int] NOT NULL,
+    [state] [int] NOT NULL,
+    [checked_out] [int] NOT NULL,
+    [checked_out_time] [datetime2](0) NOT NULL,
+    [organism_id] [bigint] NOT NULL,
+    [name] [nvarchar](75) NOT NULL,
+    [fixed_fee] [decimal](6,2),
+    [surface_rate] [decimal](6,2),
+    [min_fee] [decimal](6,2),
+    [max_fee] [decimal](6,2),
+CONSTRAINT [PK_#__sdi_pricing_profile] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_order](
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [guid] [nvarchar](36) NOT NULL,
+    [alias] [nvarchar](50) NOT NULL,
+    [created_by] [int] NOT NULL,
+    [created] [datetime2](0) NOT NULL,
+    [modified_by] [int] NULL,
+    [modified] [datetime2](0) NULL,
+    [ordering] [int] NOT NULL,
+    [state] [int] NOT NULL,
+    [checked_out] [int] NOT NULL,
+    [checked_out_time] [datetime2](0) NOT NULL,
+    [order_id] [bigint] NOT NULL,
+    [cfg_vat] [decimal](6,2) NOT NULL DEFAULT 0,
+    [cfg_currency] [char](3) NOT NULL DEFAULT 'CHF',
+    [cfg_rounding] [decimal](3,2) NOT NULL DEFAULT '0.05',
+    [cfg_overall_default_fee] [decimal](6,2) NOT NULL DEFAULT 0,
+    [cfg_free_data_fee] [smallint] DEFAULT 0,
+    [cal_total_amount_ti] [decimal],
+    [cal_fee_ti] [decimal](6,2) NOT NULL DEFAULT 0,
+    [ind_lbl_category_order_fee] [nvarchar](255),
+CONSTRAINT [PK_#__sdi_pricing_order] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_profile_category_pricing_rebate](
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [pricing_profile_id] [bigint] NOT NULL,
+    [category_id] [bigint] NOT NULL,
+    [rebate] [decimal](6,2) default 100,
+CONSTRAINT [PK_#__sdi_pricing_profile_category_pricing_rebate] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
 
 SET ANSI_NULLS ON;
 
@@ -2255,6 +2348,21 @@ CREATE TABLE [#__sdi_sys_productstate](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY];
 
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_sys_extractstorage](
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [ordering] [int],
+    [state] [int] NOT NULL DEFAULT 1,
+    [value] [nvarchar](255) NOT NULL,
+CONSTRAINT [PK_#__sdi_sys_extractstorage] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
 
 SET ANSI_NULLS ON;
 
@@ -3043,6 +3151,21 @@ CREATE TABLE [#__sdi_wmtslayer_policy](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY];
 
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_organism_category_pricing_rebate](
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [organism_id] [bigint],
+    [category_id] [bigint],
+    [rebate] [decimal](6,2),
+CONSTRAINT [PK_#__sdi_organism_category_pricing_rebate] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
 
 SET ANSI_NULLS ON;
 
@@ -4217,5 +4340,30 @@ ALTER TABLE [sla] ADD  DEFAULT '0' FOR [MEASURE_TIME_TO_FIRST];
 ALTER TABLE [users] ADD  DEFAULT '1' FOR [ENABLED];
 
 ALTER TABLE [users] ADD  DEFAULT '0' FOR [LOCKED];
+
+SET QUOTED_IDENTIFIER ON;
+CREATE TABLE [#__sdi_sys_server](
+	[id] [bigint] IDENTITY(4,1) NOT NULL,
+	[ordering] [int] NOT NULL,
+	[state] [int] NOT NULL,
+	[value] [nvarchar](150) NOT NULL,
+ CONSTRAINT [PK_#__sdi_sys_server] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+CREATE TABLE [#__sdi_sys_server_serviceconnector](
+	[id] [bigint] IDENTITY(12,1) NOT NULL,
+	[server_id] [bigint] NOT NULL,
+	[serviceconnector_id] [bigint] NOT NULL,
+ CONSTRAINT [PK_#__sdi_sys_server_serviceconnector] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
+SET ANSI_NULLS ON;
 
 

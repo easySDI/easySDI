@@ -44,6 +44,18 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                         <?php echo JText::_($this->item->orderstate); ?>
                                     </div>
                                 </div>
+                                
+                                <?php if(!is_null($this->item->validated)): ?>
+                                <div class="row-fluid">
+                                    <div class="span4 order-edit-label" >
+                                        <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_VALIDATED_REASON'); ?>
+                                    </div>
+                                    <div class="span6 order-edit-value" >
+                                        <?php echo nl2br($this->item->validated_reason); ?>
+                                    </div>
+                                </div>
+                                <?php endif;?>
+                                
                                 <div class="row-fluid">
                                     <div class="span4 order-edit-label" >
                                         <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERTYPE_ID'); ?>
@@ -175,7 +187,13 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                 </div>
             </div>
             <div>
-                <?php echo $this->getToolbar(); ?>
+                <?php if($this->state->get('layout.validation') && $this->item->orderstate_id == 8): ?>
+                <p id="validation_remark">
+                    <label for="reason"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK'); ?>:</label>
+                    <textarea id="reason" name="reason"></textarea>
+                </p>
+                <?php endif;
+                echo $this->getToolbar(); ?>
             </div>
             <?php if($this->item->basket->extent->id == 1 || $this->item->basket->extent->id == 2  ):?>
                 <?php echo $this->form->getInput('perimeter', null, $this->item->basket->extent->features); ?>
@@ -206,6 +224,16 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     loadPerimeter(false);                    
                 })
             })
+    </script>
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+           if(jQuery('textarea#reason').length){
+               jQuery('div#toolbar-delete>button').prop('disabled', true);
+               jQuery('textarea#reason').on('input propertychange', function(){
+                   jQuery('div#toolbar-delete>button').prop('disabled', !(this.value.length>20));
+               });
+           }
+        });
     </script>
     <?php
 else:

@@ -24,7 +24,14 @@
                class="input-xxlarge"
                filter="safehtml"
                label="COM_EASYSDI_CONTACT_FORM_LBL_CATEGORY_DESCRIPTION"
-               description="COM_EASYSDI_CONTACT_FORM_DESC_CATEGORY_DESCRIPTION"  /> 
+               description="COM_EASYSDI_CONTACT_FORM_DESC_CATEGORY_DESCRIPTION"  />             /> 
+
+             <field name="overall_fee" 
+                    type="text"
+                    size="4"
+                    class="inputbox"
+                    label="COM_EASYSDI_CONTACT_FORM_LBL_CATEGORY_OVERALL_FEE"
+                    description="COM_EASYSDI_CONTACT_FORM_DESC_CATEGORY_OVERALL_FEE"             /> 
        
         <field name="id" 
                type="text" 

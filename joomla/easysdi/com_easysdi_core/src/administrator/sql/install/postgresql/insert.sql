@@ -56,7 +56,7 @@ INSERT INTO #__sdi_searchcriteria (guid, alias, created_by, created, modified_by
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (1, 1, 'public');
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (3, 1, 'organism');
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (4, 1, 'user');
-INSERT INTO #__sdi_sys_accessscope (ordering, state, `value`) VALUES (2, 1, 'category');
+INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (2, 1, 'category');
 
 INSERT INTO #__sdi_sys_addresstype (ordering, state, value) VALUES (1, 1, 'contact');
 INSERT INTO #__sdi_sys_addresstype (ordering, state, value) VALUES (2, 1, 'billing');
@@ -428,6 +428,9 @@ INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (4, 1, 'await'
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (5, 1, 'progress');
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (6, 1, 'sent');
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (7, 1, 'saved');
+INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (8, 1, 'validation');
+INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (9, 1, 'rejected by thirdparty');
+INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (10, 1, 'rejected by supplier');
 
 INSERT INTO #__sdi_sys_ordertype (ordering, state, value) VALUES (1, 1, 'order');
 INSERT INTO #__sdi_sys_ordertype (ordering, state, value) VALUES (2, 1, 'estimate');
@@ -438,7 +441,8 @@ INSERT INTO #__sdi_sys_perimetertype (ordering, state, value) VALUES (2, 1, 'dow
 INSERT INTO #__sdi_sys_perimetertype (ordering, state, value) VALUES (3, 1, 'both');
 
 INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (1, 1, 'free');
-INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (2, 1, 'fee');
+INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (2, 1, 'fee without a pricing profile');
+INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (3, 1, 'fee with a pricing profile');
 
 INSERT INTO #__sdi_sys_productmining (ordering, state, value) VALUES (1, 1, 'automatic');
 INSERT INTO #__sdi_sys_productmining (ordering, state, value) VALUES (2, 1, 'manual');
@@ -446,10 +450,16 @@ INSERT INTO #__sdi_sys_productmining (ordering, state, value) VALUES (2, 1, 'man
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (1, 1, 'available');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (2, 1, 'await');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (3, 1, 'sent');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (4, 1, 'validation');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (5, 1, 'rejected by thirdparty');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (6, 1, 'rejected by supplier');
 
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (1, 1, 'upload');
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (2, 1, 'url');
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (3, 1, 'zoning');
+
+INSERT INTO #__sdi_sys_extractstorage (ordering, state, value) VALUES (1, 1, 'local');
+INSERT INTO #__sdi_sys_extractstorage (ordering, state, value) VALUES (2, 1, 'remote');
 
 INSERT INTO #__sdi_sys_propertytype (ordering, state, value) VALUES (1, 1, 'list');
 INSERT INTO #__sdi_sys_propertytype (ordering, state, value) VALUES (2, 1, 'multiplelist');
@@ -517,6 +527,8 @@ INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (4, 1, 'metadataedit
 INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (5, 1, 'diffusionmanager');
 INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (6, 1, 'previewmanager');
 INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (7, 1, 'extractionresponsible');
+INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (9, 1, 'pricingmanager');
+INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (10, 1, 'validationmanager');
 
 INSERT INTO #__sdi_sys_searchtab (ordering, state, value) VALUES (1, 1, 'simple');
 INSERT INTO #__sdi_sys_searchtab (ordering, state, value) VALUES (2, 1, 'advanced');
@@ -737,3 +749,15 @@ INSERT INTO statuses ("ID_STATUS", "NAME") VALUES (4, 'NOT_TESTED');
 
 INSERT INTO users ("LOGIN", "PASSWORD", "ID_ROLE", "EXPIRATION", "ENABLED", "LOCKED") VALUES ('Admin', 'adm', 1, NULL, 1, 0);
 INSERT INTO users ("LOGIN", "PASSWORD", "ID_ROLE", "EXPIRATION", "ENABLED", "LOCKED") VALUES ('user', 'usr', 2, NULL, 1, 0);
+
+INSERT INTO #__sdi_sys_server (ordering, state, value) VALUES (1, 1, 'geoserver');
+INSERT INTO #__sdi_sys_server (ordering, state, value) VALUES (2, 1, 'arcgisserver');
+
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('1', '1', '2');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('2', '1', '3');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('3', '1', '4');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('4', '1', '5');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('5', '1', '11');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('6', '2', '2');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('7', '2', '4');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('8', '2', '5');
