@@ -167,51 +167,62 @@ public class WMSProxyLayerThread extends Thread {
             paramUrl += "TRANSPARENT=TRUE&";
         }
 
+        /*
+        "Handle WMS filtering vendor specific parameters" is commented below
+        because
+        in an easySDI context, request with such a filter is always performed
+        on a unique layer so the request can be send directly to the remote server
+        with WMSProxyServlet.sendDataDirectStream()
+        so this kind of request will never use WMSProxyLayerThread and never 
+        reach this code section.
+        */
         //Handle WMS filtering vendor specific parameters
-        SdiSysServer servertype = physicalService.getSdiSysServer();
-        JSONObject layerdefs = null;
-        JSONObject newlayerdefs = null;
-        if (servertype.getValue().equalsIgnoreCase("arcgisserver")) {
-            //Handle Esri vendor specific parameter layerDefs       
-            layerdefs = ((WMSProxyServletRequest) servlet.getProxyRequest()).getLayerdefs();
-            newlayerdefs = new JSONObject();
-        } else {
-            //Geoserver
-            String CQL_FILTER = ((WMSProxyServletRequest) servlet.getProxyRequest()).getCQL_FILTER();
-            if (CQL_FILTER != null) {
-                paramUrl += "CQL_FILTER=" + CQL_FILTER;
-                paramUrl += "&";
-            }
-        }
+//        SdiSysServer servertype = physicalService.getSdiSysServer();
+//        JSONObject layerdefs = null;
+//        JSONObject newlayerdefs = null;
+//        if (servertype.getValue().equalsIgnoreCase("arcgisserver")) {
+//            //Handle Esri vendor specific parameter layerDefs       
+//            layerdefs = ((WMSProxyServletRequest) servlet.getProxyRequest()).getLayerdefs();
+//            newlayerdefs = new JSONObject();
+//        } else {
+//            //Geoserver
+//            String CQL_FILTER = ((WMSProxyServletRequest) servlet.getProxyRequest()).getCQL_FILTER();
+//            if (CQL_FILTER != null) {
+//                paramUrl += "CQL_FILTER=" + CQL_FILTER;
+//                paramUrl += "&";
+//            }
+//        }
 
         while (itPL.hasNext()) {
             Entry<Integer, ProxyLayer> layer = itPL.next();
             layerList += layer.getValue().getPrefixedName() + ",";
             styleList += styles.get(layer.getKey()) + ",";
-            if (layerdefs != null) {
-                try {
-                    //Handle Esri vendor specific parameter layerDefs       
-                    String newlayerdef = layerdefs.getString(layer.getValue().getAliasName());
-                    newlayerdefs.put(layer.getValue().getPrefixedName(), newlayerdef);
-                } catch (JSONException ex) {
-
-                }
-            }
+//            if (layerdefs != null) {
+//                try {
+//                    //Handle Esri vendor specific parameter layerDefs       
+//                    String newlayerdef = layerdefs.getString(layer.getValue().getAliasName());
+//                    newlayerdefs.put(layer.getValue().getPrefixedName(), newlayerdef);
+//                } catch (JSONException ex) {
+//
+//                }
+//            }
         }
+        
+        //Handle Esri vendor specific parameter layerDefs
+//        if (layerdefs != null) {
+//            try {
+//                paramUrl += "&layerDefs=";
+//                paramUrl += URLEncoder.encode(newlayerdefs.toString(), "UTF-8");
+//                paramUrl += "&";
+//            } catch (UnsupportedEncodingException ex) {
+//                Logger.getLogger(WMSProxyLayerThread.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
 
         String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length() - 1);
         String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length() - 1);
 
-        //Handle Esri vendor specific parameter layerDefs
-        if (layerdefs != null) {
-            try {
-                paramUrl += "&layerDefs=";
-                paramUrl += URLEncoder.encode(newlayerdefs.toString(), "UTF-8");
-                paramUrl += "&";
-            } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(WMSProxyLayerThread.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        
 
         return paramUrlBase + layersUrl + stylesUrl;
     }

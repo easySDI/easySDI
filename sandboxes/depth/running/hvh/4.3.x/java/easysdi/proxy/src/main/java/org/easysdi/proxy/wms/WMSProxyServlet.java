@@ -593,7 +593,7 @@ public class WMSProxyServlet extends ProxyServlet {
                         layerdefs = ((WMSProxyServletRequest) this.getProxyRequest()).getLayerdefs();
                         newlayerdefs = new JSONObject();
                     }else{
-                        //Geoserver
+                        //Handle Geoserver vendor specific parameter
                         String CQL_FILTER = ((WMSProxyServletRequest) this.getProxyRequest()).getCQL_FILTER();
                         if(CQL_FILTER != null){
                             paramUrl += "CQL_FILTER="+CQL_FILTER;
@@ -615,17 +615,16 @@ public class WMSProxyServlet extends ProxyServlet {
                             }
                         }
                     }
-
-                    String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length() - 1);
-                    String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length() - 1);
-                    
-                    //Handle Esri vendor specific parameter layerDefs
+                    //Handle Esri vendor specific parameter layerDefs       
                     if(layerdefs != null){
                          paramUrl += "&layerDefs=";
                          paramUrl += URLEncoder.encode(newlayerdefs.toString(), "UTF-8");
                          paramUrl += "&";
                     }
 
+                    String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length() - 1);
+                    String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length() - 1);
+                    
                     sendDataDirectStream(resp, "GET", physicalService.getResourceurl(), paramUrl + layersUrl + stylesUrl);
                     return false;
                 }

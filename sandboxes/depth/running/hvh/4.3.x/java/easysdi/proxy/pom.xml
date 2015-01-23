@@ -17,6 +17,7 @@
     <properties>
         <gt.version>2.7.0</gt.version>
         <gt2.version>2.4.1</gt2.version>
+        <geotools.version>12-RC1</geotools.version>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     </properties>
     
@@ -69,7 +70,19 @@
             <version>2.1.4</version>
         </dependency>
 
-        <!-- GeoTools -->
+<!--        Geotools-->        
+<!--        <dependency>
+            <groupId>org.easysdi.geotools</groupId>
+            <artifactId>sdi-geotools</artifactId>
+            <version>1.0</version>
+        </dependency>-->
+        
+<!--         <dependency>
+            <groupId>org.geotools.demo</groupId>
+            <artifactId>example</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>-->
+         <!-- GeoTools -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -132,7 +145,6 @@
             <artifactId>gt2-epsg-hsql</artifactId>
             <version>${gt2.version}</version>
         </dependency>     
-        
 		
         <!-- Divers -->
         <dependency>
