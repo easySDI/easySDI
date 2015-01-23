@@ -74,6 +74,8 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/easysdi/js/geoext/data/PrintProvider.js');
             $doc->addScript($base_url . '/easysdi/js/geoext/ux/PrintPreview.js');
             $doc->addScript($base_url . '/easysdi/js/geoext/widgets/PrintMapPanel.js');
+            $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
+            $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js');
             $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
             $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
         } else {
@@ -86,6 +88,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
             $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
             $doc->addScript($base_url . '/geoext/lib/geoext.min.js');
+            $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/gxp.min.js');
             $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
@@ -93,8 +96,8 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
         }
 
-        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
-        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js');
+//        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
+//        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js');
 
         foreach (glob(JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
             $doc->addScript(str_replace(JPATH_BASE, '', $file));
