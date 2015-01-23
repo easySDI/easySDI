@@ -131,6 +131,8 @@ class Easysdi_coreModelResources extends JModelList {
         $query->group('rt.application');
         $query->group('rtl.state');
         $query->group('rtl2.state');
+        $query->group('ac.value');
+        $query->group('rt.alias');
  	
         $query->innerJoin('#__sdi_version v ON v.resource_id = a.id');
         $query->innerJoin('#__sdi_metadata md ON md.version_id = v.id');
