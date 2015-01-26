@@ -317,10 +317,6 @@ function getMapConfig() {
                         actionTarget: "map.tbar",
                         showButtonText: false
                     };
-//                    if (params.printserviceprinturl === '') {
-//                        tool.printURL = params.printserviceurl + 'print.pdf';
-//                    }
-//                    ;
                     if (params.printserviceprinturl === '') {
                         tool.printURL = params.printserviceurl + 'print.pdf';
                     } else {
@@ -477,50 +473,12 @@ function getMapConfig() {
                 break;
 
             default :
-//                var overlay={};
-//                for (var property in layer) {
-//                    if (layer.hasOwnProperty(property)) {
-//                        overlay[property name] = property value;
-//                    }
-//                }
-                var overlay = {
-                    source: layer.source,
-                    tiled: layer.tiled,
-                    version: layer.version,
-                    name: layer.name,
-                    title: layer.title,
-                    group: layer.group,
-                    visibility: layer.visibility,
-                    opacity: layer.opacity
-                };
-                if (layer.attribution) {
-                    overlay.attribution = layer.attribution;
+                var overlay={};
+                for (var property in layer) {
+                    if (layer.hasOwnProperty(property)) {
+                        overlay[property] = layer[property];
+                    }
                 }
-                ;
-                if (layer.fixed) {
-                    overlay.fixed = layer.fixed;
-                }
-                ;
-                if (layer.href) {
-                    overlay.href = layer.href;
-                }
-                ;
-                if (layer.download) {
-                    overlay.download = layer.download;
-                }
-                ;
-                if (layer.order) {
-                    overlay.order = layer.order;
-                }
-                ;
-                if (layer.levelfield) {
-                    overlay.levelfield = layer.levelfield;
-                }
-                ;
-                if (layer.servertype) {
-                    overlay.servertype = layer.servertype;
-                }
-                ;
                 config.map.layers.push(overlay);
                 break;
         }
@@ -540,6 +498,7 @@ function getMapConfig() {
             }
         ];
 
+        //Indoor navigation
         if (data.level) {
             //Levels are store in reverse order in the database 
             data.level.reverse();
@@ -550,7 +509,8 @@ function getMapConfig() {
                 }
             }
             var maxvalue = data.level.length - 1;
-            var h = 18.5 * (data.level.length - 1);
+            var l = 18;
+            var h = (l + (l/(data.level.length))) * (data.level.length - 1);
             
             config.mapItems.push(
                     {
@@ -572,7 +532,8 @@ function getMapConfig() {
             for (var i = data.level.length - 1;   i >= 0; i--) {
                 var li = Ext.DomHelper.append(ul, {
                     tag: 'li',
-                    html: data.level[i].label
+                    html: data.level[i].label,
+                    style: {"line-height":l+'px'}
                 }, true);
                 li.on({
                     click: (function(i) {
@@ -586,7 +547,7 @@ function getMapConfig() {
                 cls: 'levellabelpanel',
                 id: 'levellabelpanel',
                 border: false,
-                style : "position: absolute; right: 30px; top: 20px; z-index: 100;",
+                style : "position: absolute; right: 30px; top: 20px; z-index: 1000;",
                 contentEl: ul
             });
         }
