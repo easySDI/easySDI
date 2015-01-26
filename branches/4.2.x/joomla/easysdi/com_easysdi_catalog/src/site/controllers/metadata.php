@@ -610,6 +610,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
           die(); */
 
         $this->removeNoneExist();
+        $this->removeEmptyListNode();
         $this->removeCatalogNS();
 
         if ($commit) {
@@ -1205,6 +1206,19 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $toRemove[] = $relation;
         }
 
+        foreach ($toRemove as $remove) {
+            $remove->parentNode->removeChild($remove);
+        }
+    }
+    
+    private function removeEmptyListNode() {
+        $listNodes = $this->domXpathStr->query('descendant::*[@codeListValue=""]');
+        
+        $toRemove = array();
+        foreach ($listNodes as $listNode) {
+            $toRemove[]=$listNode->parentNode;
+        }
+        
         foreach ($toRemove as $remove) {
             $remove->parentNode->removeChild($remove);
         }
