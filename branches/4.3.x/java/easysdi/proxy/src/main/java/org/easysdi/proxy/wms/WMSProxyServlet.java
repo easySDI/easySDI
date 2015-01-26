@@ -585,19 +585,21 @@ public class WMSProxyServlet extends ProxyServlet {
                     }
                     
                     //Handle WMS filtering vendor specific parameters
-                    SdiSysServer servertype = physicalService.getSdiSysServer();                    
+                    SdiSysServer servertype = physicalService.getSdiSysServer();   
                     JSONObject layerdefs = null;
                     JSONObject newlayerdefs = null;
-                    if(servertype.getValue().equalsIgnoreCase("arcgisserver")){
-                        //Handle Esri vendor specific parameter layerDefs       
-                        layerdefs = ((WMSProxyServletRequest) this.getProxyRequest()).getLayerdefs();
-                        newlayerdefs = new JSONObject();
-                    }else{
-                        //Handle Geoserver vendor specific parameter
-                        String CQL_FILTER = ((WMSProxyServletRequest) this.getProxyRequest()).getCQL_FILTER();
-                        if(CQL_FILTER != null){
-                            paramUrl += "CQL_FILTER="+CQL_FILTER;
-                            paramUrl += "&";
+                    if(servertype != null){                    
+                        if(servertype.getValue().equalsIgnoreCase("arcgisserver")){
+                            //Handle Esri vendor specific parameter layerDefs       
+                            layerdefs = ((WMSProxyServletRequest) this.getProxyRequest()).getLayerdefs();
+                            newlayerdefs = new JSONObject();
+                        }else{
+                            //Handle Geoserver vendor specific parameter
+                            String CQL_FILTER = ((WMSProxyServletRequest) this.getProxyRequest()).getCQL_FILTER();
+                            if(CQL_FILTER != null){
+                                paramUrl += "CQL_FILTER="+CQL_FILTER;
+                                paramUrl += "&";
+                            }
                         }
                     }
                             

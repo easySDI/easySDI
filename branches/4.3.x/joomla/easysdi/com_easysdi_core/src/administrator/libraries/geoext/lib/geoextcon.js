@@ -2327,6 +2327,241 @@ Ext.extend(GeoExt.data.WMSCapabilitiesStore, Ext.data.Store);
 
 /**
  * @include GeoExt/data/LayerRecord.js
+ * @require OpenLayers/Format/WMTSCapabilities.js
+ * @require OpenLayers/Format/WMTSCapabilities/v1_0_0.js
+ * @require OpenLayers/Util.js
+ * @require OpenLayers/Layer/WMTS.js
+ */
+
+/** api: (define)
+ *  module = GeoExt.data
+ *  class = WMTSCapabilitiesReader
+ *  base_link = `Ext.data.DataReader <http://dev.sencha.com/deploy/dev/docs/?class=Ext.data.DataReader>`_
+ */
+Ext.namespace("GeoExt.data");
+
+/** api: constructor
+ *  .. class:: WMTSCapabilitiesReader(meta, recordType)
+ *  
+ *      :param meta: ``Object`` Reader configuration from which:
+ *          ``layerOptions`` is an optional object passed as default options
+ *          to the ``OpenLayers.Layer.WMTS`` constructor.
+ *          ``layerParams`` is an optional set of parameters to pass into the
+ *          ``OpenLayers.Layer.WMTS`` constructor.
+ *      :param recordType: ``Array | Ext.data.Record`` An array of field
+ *          configuration objects or a record object.  Default is
+ *          :class:`GeoExt.data.LayerRecord` with the following fields:
+ *          name, title, abstract, queryable, opaque, noSubsets, cascaded,
+ *          fixedWidth, fixedHeight, minScale, maxScale, prefix, formats,
+ *          styles, srs, dimensions, bbox, llbbox, attribution, keywords,
+ *          identifiers, authorityURLs, metadataURLs, infoFormats.
+ *          The type of these fields is the same as for the matching fields in
+ *          the object returned from
+ *          ``OpenLayers.Format.WMTSCapabilities::read()``.
+ *   
+ *      Data reader class to create an array of
+ *      :class:`GeoExt.data.LayerRecord` objects from a WMTS GetCapabilities
+ *      response.
+ */
+GeoExt.data.WMTSCapabilitiesReader = function(meta, recordType) {
+    meta = meta || {};
+    if (!meta.format) {
+        meta.format = new OpenLayers.Format.WMTSCapabilities();
+    }
+    if (typeof recordType !== "function") {
+        recordType = GeoExt.data.LayerRecord.create(
+            recordType || meta.fields || [
+                {name: "name", type: "string", mapping: "identifier"},
+                {name: "title", type: "string"},
+                {name: "abstract", type: "string"},
+                {name: "queryable", type: "boolean"},
+                {name: "llbbox", mapping: "bounds", convert: function(v){
+                    return [v.left, v.bottom, v.right, v.top];
+                }},
+                {name: "formats"}, // array
+                {name: "infoFormats"}, // array
+                {name: "styles"}, // array
+                {name: "keywords"} // object
+            ]
+        );
+    }
+    GeoExt.data.WMTSCapabilitiesReader.superclass.constructor.call(
+        this, meta, recordType
+    );
+};
+
+Ext.extend(GeoExt.data.WMTSCapabilitiesReader, Ext.data.DataReader, {
+
+
+    /** private: method[read]
+     *  :param request: ``Object`` The XHR object which contains the parsed XML
+     *      document.
+     *  :return: ``Object`` A data block which is used by an ``Ext.data.Store``
+     *      as a cache of ``Ext.data.Record`` objects.
+     */
+    read: function(request) {
+        var data = request.responseXML;
+        if (!data || !data.documentElement) {
+            data = request.responseText;
+        }
+        return this.readRecords(data);
+    },
+    
+    /** private: method[imageFormat]
+     *  :param layer: ``Object`` The layer's capabilities object.
+     *  :return: ``String`` The (supposedly) best mime type for requesting 
+     *      tiles.
+     */
+    imageFormat: function(layer) {
+        var formats = layer.formats;
+        if (OpenLayers.Util.indexOf(formats, "image/png")>-1) {
+            return "image/png";
+        }
+        if (OpenLayers.Util.indexOf(formats, "image/jpeg")>-1) {
+            return "image/jpeg";
+        }
+        if (OpenLayers.Util.indexOf(formats, "image/png8")>-1) {
+            return "image/png8";
+        }
+        if (OpenLayers.Util.indexOf(formats, "image/gif")>-1) {
+            return "image/gif";
+        }
+        return formats[0];
+    },
+
+    /** private: method[readRecords]
+     *  :param data: ``DOMElement | String | Object`` A document element or XHR
+     *      response string.  As an alternative to fetching capabilities data
+     *      from a remote source, an object representing the capabilities can
+     *      be provided given that the structure mirrors that returned from the
+     *      capabilities parser.
+     *  :return: ``Object`` A data block which is used by an ``Ext.data.Store``
+     *      as a cache of ``Ext.data.Record`` objects.
+     *  
+     *  Create a data block containing Ext.data.Records from an XML document.
+     */
+    readRecords: function(data) {
+        if (typeof data === "string" || data.nodeType) {
+            data = this.meta.format.read(data);
+        }
+        if (!!data.error) {
+            throw new Ext.data.DataReader.Error("invalid-response", data.error);
+        }
+        var operationsMetadata = data.operationsMetadata,
+            layers = data.contents && data.contents.layers;
+        
+        var records = [];
+
+        if (layers) {
+            var fields = this.recordType.prototype.fields; 
+            var layer, values, options, params, field, v, matrixSet;
+
+            for (var i=0, lenI=layers.length; i<lenI; i++){
+                layer = layers[i];
+                if (layer.identifier) {
+                    values = {};
+                    for (var j=0, lenJ=fields.length; j<lenJ; j++) {
+                        field = fields.items[j];
+                        v = layer[field.mapping || field.name] ||
+                        field.defaultValue;
+                        v = field.convert(v);
+                        values[field.name] = v;
+                    }
+                    values.queryable = !!layer.infoFormats;
+
+                    try {
+                        values.layer = this.meta.format.createLayer(data, Ext.apply({
+                            layer: layer.identifier,
+                            name: layer.title || layer.identifier,
+                            format: this.imageFormat(layer)
+                        }, this.meta.layerOptions || {}));
+
+                        records.push(new this.recordType(values, values.layer.id));
+                    } catch (e) {
+                        // ignore silently (eg: no matching CRS)
+                    }
+                }
+            }
+        }
+
+        return {
+            totalRecords: records.length,
+            success: true,
+            records: records
+        };
+
+    }
+});
+/**
+ * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
+ * 
+ * Published under the BSD license.
+ * See http://svn.geoext.org/core/trunk/geoext/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @include GeoExt/data/WMTSCapabilitiesReader.js
+ */
+
+/** api: (define)
+ *  module = GeoExt.data
+ *  class = WMTSCapabilitiesStore
+ *  base_link = `Ext.data.Store <http://dev.sencha.com/deploy/dev/docs/?class=Ext.data.Store>`_
+ */
+Ext.namespace("GeoExt.data");
+
+/** api: constructor
+ *  .. class:: WMTSCapabilitiesStore
+ *  
+ *      Small helper class to make creating stores for remote WMTS layer data
+ *      easier.  The store is pre-configured with a built-in
+ *      ``Ext.data.HttpProxy`` and :class:`GeoExt.data.WMTSCapabilitiesReader`.
+ *      The proxy is configured to allow caching and issues requests via GET.
+ *      If you require some other proxy/reader combination then you'll have to
+ *      configure this with your own proxy or create a basic
+ *      :class:`GeoExt.data.LayerStore` and configure as needed.
+ */
+
+/** api: config[format]
+ *  ``OpenLayers.Format``
+ *  A parser for transforming the XHR response into an array of objects
+ *  representing attributes.  Defaults to an ``OpenLayers.Format.WMTSCapabilities``
+ *  parser.
+ */
+
+/** api: config[fields]
+ *  ``Array | Function``
+ *  Either an Array of field definition objects as passed to
+ *  ``Ext.data.Record.create``, or a record constructor created using
+ *  ``Ext.data.Record.create``.  Defaults to ``["name", "type"]``. 
+ */
+GeoExt.data.WMTSCapabilitiesStore = function(c) {
+    c = c || {};
+    GeoExt.data.WMTSCapabilitiesStore.superclass.constructor.call(
+        this,
+        Ext.apply(c, {
+            proxy: c.proxy || (!c.data ?
+                new Ext.data.HttpProxy({url: c.url, disableCaching: false, method: "GET"}) :
+                undefined
+            ),
+            reader: new GeoExt.data.WMTSCapabilitiesReader(
+                c, c.fields
+            )
+        })
+    );
+};
+Ext.extend(GeoExt.data.WMTSCapabilitiesStore, Ext.data.Store);
+/**
+ * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
+ * 
+ * Published under the BSD license.
+ * See http://svn.geoext.org/core/trunk/geoext/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @include GeoExt/data/LayerRecord.js
  * @require OpenLayers/Format/WFSCapabilities.js
  * @require OpenLayers/Format/WFSCapabilities/v1_1_0.js
  * @require OpenLayers/Protocol/WFS.js
@@ -9183,6 +9418,155 @@ GeoExt.LayerLegend.types["gx_wmslegend"] = GeoExt.WMSLegend;
 Ext.reg('gx_wmslegend', GeoExt.WMSLegend);
 
 /**
+ * Copyright (c) 2008-2011 The Open Source Geospatial Foundation
+ * 
+ * Published under the BSD license.
+ * See http://svn.geoext.org/core/trunk/geoext/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @include GeoExt/widgets/LegendImage.js
+ * @requires GeoExt/widgets/LayerLegend.js
+ */
+GeoExt.WMTSLegend = Ext.extend(GeoExt.LayerLegend, {
+
+    /** private: method[initComponent]
+     *  Initializes the WMTS legend. 
+     */
+    initComponent: function() {
+        GeoExt.WMTSLegend.superclass.initComponent.call(this);
+        var layer = this.layerRecord.getLayer();
+        this._noMap = !layer.map;
+        layer.events.register("moveend", this, this.onLayerMoveend);
+        this.update();
+    },
+    
+    /** private: method[onLayerMoveend]
+     *  :param e: ``Object``
+     */
+    onLayerMoveend: function(e) {
+        if (e.zoomChanged === true || this._noMap) {
+            delete this._noMap;
+            this.update();
+        }
+    },
+
+    /** private: method[getLegendUrl]
+
+     *  :return: ``String`` The legend URL.
+     *
+     *  Get the legend URL of a layer.
+     */
+    getLegendUrl: function() {
+        var rec = this.layerRecord,
+            layer = rec.getLayer();
+
+        var mapDenominator = layer.map && layer.map.getScale();
+        if (!mapDenominator) {
+            return;
+        }
+
+        var styles = rec.get("styles"),
+            url, style, legends, legend;
+
+        for (var i=0, l=styles.length; i<l; i++) {
+            style = styles[i];
+            if (style.identifier === layer.style) {
+                legends = style.legends;
+                if (!legends) {
+                    return;
+                }
+                // get the legend for the current layer scale
+                for (var j=0, ll=legends.length; j<ll; j++) {
+                    legend = legends[j];
+                    if (!legend.href) {
+                        continue;
+                    }
+                    var hasMin = legend.hasOwnProperty("minScaleDenominator"),
+                        hasMax = legend.hasOwnProperty("maxScaleDenominator");
+                    if (!hasMin && !hasMax) {
+                        return legend.href;
+                    }
+                    if (!hasMin && mapDenominator<legend.maxScaleDenominator) {
+                        return legend.href;
+                    }
+                    if (!hasMax && mapDenominator>=legend.minScaleDenominator){
+                        return legend.href;
+                    }
+                    if (mapDenominator < legend.maxScaleDenominator && 
+                        mapDenominator >= legend.minScaleDenominator) {
+
+                        return legend.href;
+                    }
+                }
+                break;
+            }
+        }
+        return url;
+    },
+
+    /** private: method[update]
+     *  Update the legend, adding, removing or updating
+     *  the box component.
+     */
+    update: function() {
+        var layer = this.layerRecord.getLayer();
+        // In some cases, this update function is called on a layer
+        // that has just been removed, see ticket #238.
+        // The following check bypass the update if map is not set.
+        if(!(layer && layer.map)) {
+            return;
+        }
+        GeoExt.WMTSLegend.superclass.update.apply(this, arguments);
+
+        var newURL = this.getLegendUrl();
+        if (this.items.getCount() == 2) {
+            var cmp = this.items.itemAt(1);
+            if (cmp.url !== newURL) {
+                this.remove(cmp);
+                cmp.destroy();
+                if (newURL) {
+                    this.add({
+                        xtype: "gx_legendimage",
+                        url: newURL
+                    });
+                }
+            }
+        } else if (newURL) {
+            this.add({
+                xtype: "gx_legendimage",
+                url: newURL
+            });
+        }
+        this.doLayout();
+    },
+
+    /** private: method[beforeDestroy]
+     */
+    beforeDestroy: function() {
+        var layer = this.layerRecord.getLayer();
+        layer && layer.events &&
+            layer.events.unregister("moveend", this, this.onLayerMoveend);
+
+        GeoExt.WMTSLegend.superclass.beforeDestroy.apply(this, arguments);
+    }
+
+});
+
+/** private: method[supports]
+ *  Private override
+ */
+GeoExt.WMTSLegend.supports = function(layerRecord) {
+    return layerRecord.getLayer() instanceof OpenLayers.Layer.WMTS ? 1 : 0;
+};
+
+/** api: legendtype = gx_wmtslegend */
+GeoExt.LayerLegend.types["gx_wmtslegend"] = GeoExt.WMTSLegend;
+
+/** api: xtype = gx_wmtslegend */
+Ext.reg('gx_wmtslegend', GeoExt.WMTSLegend);
+/**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
  * 
  * Published under the BSD license.
@@ -12810,90 +13194,4 @@ GeoExt.Lang = new (Ext.extend(Ext.util.Observable, {
     }
 }))();
 
-
-/**
- * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
- * 
- * Published under the BSD license.
- * See http://svn.geoext.org/core/trunk/geoext/license.txt for the full text
- * of the license.
- */
-
-/**
- * @requires OpenLayers/Request.js
- */
-
-/** api: override = Ext.Ajax */
-(function() {
-
-    /** private: function[createComplete]
-     *  ``Function``
-     */
-    var createComplete = function(fn, cb) {
-        return function(request) {
-            if(cb && cb[fn]) {
-                cb[fn].call(cb.scope || window, Ext.applyIf({
-                    argument: cb.argument
-                }, request));
-            }
-        };
-    };
-
-    Ext.apply(Ext.lib.Ajax, {
-        /** private: method[request]
-         */
-        request: function(method, uri, cb, data, options) {
-            options = options || {};
-            method = method || options.method;
-            var hs = options.headers;
-            if(options.xmlData) {
-                if(!hs || !hs["Content-Type"]) {
-                    hs = hs || {};
-                    hs["Content-Type"] = "text/xml";
-                }
-                method = method || "POST";
-                data = options.xmlData;
-            } else if(options.jsonData) {
-                if(!hs || !hs["Content-Type"]) {
-                    hs = hs || {};
-                    hs["Content-Type"] = "application/json";
-                }
-                method = method || "POST";
-                data = typeof options.jsonData == "object" ?
-                       Ext.encode(options.jsonData) : options.jsonData;
-            }
-            // if POST method, options.form or options.params means
-            // form-encoded data, so change content-type
-            if ((method && method.toLowerCase() == "post") &&
-               (options.form || options.params) &&
-               (!hs || !hs["Content-Type"])) {
-                hs = hs || {};
-                hs["Content-Type"] = "application/x-www-form-urlencoded";
-            }
-            return OpenLayers.Request.issue({
-                success: createComplete("success", cb),
-                failure: createComplete("failure", cb),
-                method: method,
-                headers: hs,
-                data: data,
-                url: uri
-            });
-        },
-
-        /** private: method[isCallInProgress]
-         *  :params request: ``Object`` The XHR object.
-         */
-        isCallInProgress: function(request) {
-            // do not prevent our caller from calling abort()
-            return true;
-        },
-
-        /** private: method[abort]
-         *  :params request: ``Object`` The XHR object.
-         */
-        abort: function(request) {
-            request.abort();
-        }
-    });
-})();
 

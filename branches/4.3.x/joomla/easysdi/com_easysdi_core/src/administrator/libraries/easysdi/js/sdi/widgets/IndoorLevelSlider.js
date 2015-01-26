@@ -43,20 +43,22 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  The CSS class name for the slider elements.  Default is "sdi-indoorlevelslider".
      */
     baseCls: "sdi-indoorlevelslider",
-    
+//    /** private: property[updating]
+//     *  ``Boolean``
+//     *  The slider position is being updated by itself .
+//     */
+//    updating: false,
     /**
      * 
      */
-    levels : [],
-    
-    style : "position: absolute; right: 50px; top: 20px; z-index: 100;",
-    
+    levels: [],
+    style: "position: absolute; right: 50px; top: 20px; z-index: 100;",
     /** private: method[constructor]
      *  Construct the component.
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
-        
+
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
     /** private: method[initComponent]
@@ -65,25 +67,29 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
     initComponent: function() {
         sdi.widgets.IndoorLevelSlider.superclass.initComponent.call(this);
 
-//        if (this.map) {
-//            if (this.map instanceof GeoExt.MapPanel) {
-//                this.map = this.map.map;
-//            }            
-//        }
+        if (this.map) {
+            if (this.map instanceof GeoExt.MapPanel) {
+                this.map = this.map.map;
+            }            
+        }
         if (this.aggressive === true) {
             this.on('change', this.changeIndoorLevel, this);
         } else {
             this.on('changecomplete', this.changeIndoorLevel, this);
         }
-       // this.on("beforedestroy", this.unbind, this);        
-    },    
-//    /**
-//     * @param {type} evt
-//     * Registered as a listener for map ready.  Updates the value of the layers filter.
-//     */
-//    initLayer:function(evt){
-//        this.changeIndoorLevel(this, this.value);
-//    },
+//         this.on("beforedestroy", this.unbind, this);        
+    },
+    
+    /** private: method[onRender]
+     *  Override onRender to set base css class.
+     */
+    onRender: function() {
+        sdi.widgets.IndoorLevelSlider.superclass.onRender.apply(this, arguments);
+        this.el.addClass(this.baseCls);
+    },
+    
+    
+
     /** private: method[changeLayerOpacity]
      *  :param slider: :class:`GeoExt.LayerOpacitySlider`
      *  :param value: ``Number`` The slider value
@@ -94,24 +100,25 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         this.setValue(value);
         var layers = this.map.layers;
         var level = levels[value];
-        
-        for (var a = 0; a < layers.length; a++){
+
+        for (var a = 0; a < layers.length; a++) {
             if (layers[a].levelfield) {
                 var servertype = layers[a].servertype;
                 if (servertype == 1) {
                     layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
                 } else if (servertype == 2) {
                     layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                } else if(servertype == 3){
+                } else if (servertype == 3) {
                     //layers[a].mergeNewParams({'SDI_FILTER': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
                     layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
                     layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
                 }
                 layers[a].redraw(true);
             }
-        };
-        
-        
+        }
+        ;
+
+
     },
     /** private: method[addToMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
@@ -166,7 +173,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
 //    bind: function(map) {
 //        this.map = map;
 //        this.map.events.on({
-//            ready: this.initLayer,
+//            
 //            scope: this
 //        });
 //
@@ -176,7 +183,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
 //    unbind: function() {
 //        if (this.map && this.map.events) {
 //            this.map.events.un({
-//                ready: this.initLayer,
+//                
 //                scope: this
 //            });
 //        }
