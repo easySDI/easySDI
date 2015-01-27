@@ -18,16 +18,16 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
-$document->addScript(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/jquery.tablednd.0.7.min.js');
+$document->addScript(Juri::base(true) . '/components/com_easysdi_core/libraries/tablednd/jquery.tablednd.0.7.min.js');
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
-     
-    js("#tab-dyn").tableDnD();
- 
-   
-});
+
+        js("#tab-dyn").tableDnD();
+
+
+    });
     Joomla.submitbutton = function(task)
     {
         if (task == 'map.cancel' || document.formvalidator.isValid(document.id('map-form'))) {
@@ -63,51 +63,65 @@ $document->addScript(Juri::base(true) . '/components/com_easysdi_map/views/map/t
                     <?php endforeach; ?>
                 </div>
                 <div class="tab-pane" id="tools">
-                    <?php foreach ($this->form->getFieldset('toolsstate') as $field): ?>
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $field->label; ?></div>
-                            <div class="row controls form-inline"><span><?php echo $field->input; ?></span>
-                            <?php if ($field->fieldname == 'tool17') : ?>
-                                <span><?php echo $this->form->getField('catalog_id')->input; ?></span>
-                            <?php endif; ?>
-                                </div>
+                    <div class="span10 form-horizontal">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#misc" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_MISC'); ?></a></li>
+                            <li><a href="#scale" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_SCALE'); ?></a></li>
+                            <li><a href="#wfs" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_WFS'); ?></a></li>
+                            <li><a href="#indoor" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_INDOOR'); ?></a></li>                            
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- Begin Tabs -->
+                            <div class="tab-pane active" id="misc">
+                                <?php foreach ($this->form->getFieldset('toolsstate') as $field): ?>
+                                    <div class="control-group">
+                                        <div class="control-label"><?php echo $field->label; ?></div>
+                                        <div class="row controls form-inline"><span><?php echo $field->input; ?></span>
+                                            <?php if ($field->fieldname == 'tool17') : ?>
+                                                <span><?php echo $this->form->getField('catalog_id')->input; ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="tab-pane" id="scale">                                
+                                <h5><?php echo JText::_('COM_EASYSDI_MAP_FORM_TITLE_TOOLS_SCALE'); ?></h5>
+                                <p><?php echo JText::_('COM_EASYSDI_MAP_FORM_TEXT_TOOLS_SCALE'); ?></p>
+                                <br />
+                                <?php foreach ($this->form->getFieldset('scaleline') as $field): ?>
+                                    <div class="control-group">
+                                        <div class="control-label"><?php echo $field->label; ?></div>
+                                        <div class="controls"><?php echo $field->input; ?></div>
+                                    </div>
+
+                                <?php endforeach; ?>
+
+                            </div>
+                            <div class="tab-pane" id="wfs">
+                                <h5><?php echo JText::_('COM_EASYSDI_MAP_FORM_TITLE_TOOLS_WFS'); ?></h5>
+                                <p><?php echo JText::_('COM_EASYSDI_MAP_FORM_TEXT_TOOLS_WFS'); ?></p>
+                                <br />
+                                <?php foreach ($this->form->getFieldset('wfslocator') as $field): ?>
+                                    <div class="control-group">
+                                        <div class="control-label"><?php echo $field->label; ?></div>
+                                        <div class="controls"><?php echo $field->input; ?></div>
+                                    </div>
+                                <?php endforeach; ?>
+
+                            </div>
+                            <div class="tab-pane" id="indoor">
+                                <h5><?php echo JText::_('COM_EASYSDI_MAP_FORM_TITLE_TOOLS_INDOOR'); ?></h5>
+                                <p><?php echo JText::_('COM_EASYSDI_MAP_FORM_TEXT_TOOLS_INDOOR'); ?></p>
+                                <br />
+                                <?php foreach ($this->form->getFieldset('indoornavigation') as $field): ?>
+                                    <div><?php echo $field->input; ?></div>
+                                <?php endforeach; ?>
+
+                            </div>
                         </div>
-                    <?php endforeach; ?>
-
-                    <fieldset id ="scaleline">
-                        <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_SCALELINE'); ?></legend>
-                        <?php foreach ($this->form->getFieldset('scaleline') as $field): ?>
-                            <div class="control-group">
-                                <div class="control-label"><?php echo $field->label; ?></div>
-                                <div class="controls"><?php echo $field->input; ?></div>
-                            </div>
-
-                        <?php endforeach; ?>
-                    </fieldset>
-
-                    <fieldset id ="wfslocator">
-                        <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_WFSLOCATOR'); ?></legend>
-                        <?php foreach ($this->form->getFieldset('wfslocator') as $field): ?>
-                            <div class="control-group">
-                                <div class="control-label"><?php echo $field->label; ?></div>
-                                <div class="controls"><?php echo $field->input; ?></div>
-                            </div>
-
-                        <?php endforeach; ?>
-                    </fieldset>
-                    
-                    <fieldset id ="indoornavigation">
-                        <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_INDOORNAVIGATION'); ?></legend>
-                        <?php foreach ($this->form->getFieldset('indoornavigation') as $field): ?>
-                            <div class="control-group">
-                                <div class="control-label"><?php echo $field->label; ?></div>
-                                <div class="controls"><?php echo $field->input; ?></div>
-                            </div>
-
-                        <?php endforeach; ?>
-                    </fieldset>
+                    </div>
                 </div>
-
                 <div class="tab-pane" id="publishing">
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
@@ -136,11 +150,11 @@ $document->addScript(Juri::base(true) . '/components/com_easysdi_map/views/map/t
                     </div>
                 <?php endif; ?>
             </div>
-            <!-- End Tabs -->
         </div>
 
+
         <input type="hidden" name="task" value="" />
-        
+
         <?php echo JHtml::_('form.token'); ?>
 
         <!-- Begin Sidebar -->
