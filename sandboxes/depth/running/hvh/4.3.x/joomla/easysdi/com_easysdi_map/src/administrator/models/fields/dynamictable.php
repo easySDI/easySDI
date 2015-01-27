@@ -37,19 +37,19 @@ class JFormFieldDynamicTable extends JFormField
                 $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/models/fields/dynamictable.js');
 		// Initialize variables.
 		$html = array();
-                $html[] = '<table class="table table-bordered table-striped table-hover" id="tab-dyn">';
+                $html[] = '<table class="table  table-striped table-hover" id="tab-dyn">';
                 $html[] = '<thead>';
                 $html[] = '<tr>';
-                $html[] = '<th class="text-center">';
+                $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_DEFAULTLEVEL').'">';
+                $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_DEFAULTLEVEL');
                 $html[] = '</th>';
                 $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_LEVELLABEL').'" >';
                 $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_LEVELLABEL');
                 $html[] = '</th>';
                 $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_LEVELCODE').'">';
                 $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_LEVELCODE');
-                $html[] = '</th>';
-                $html[] = '<th class="text-center hasTip" title="'.JText::_('COM_EASYSDI_MAP_FORM_DESC_MAP_DEFAULTLEVEL').'">';
-                $html[] = JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_DEFAULTLEVEL');
+                $html[] = '</th>';                
+                $html[] = '<th class="text-center">';
                 $html[] = '</tr>';
                 $html[] = '</thead>';
                 $html[] = '<tbody>';
@@ -57,7 +57,7 @@ class JFormFieldDynamicTable extends JFormField
                 $html[] = '</tbody>';
                 $html[] = '</table>';
 
-                $html[] = '<a id="add_row" class="btn btn-default pull-left">Add Row</a>';
+                $html[] = '<a id="add_row" class="btn btn-success pull-right">Add Row</a>';
 		return implode($html);
 	}
 }

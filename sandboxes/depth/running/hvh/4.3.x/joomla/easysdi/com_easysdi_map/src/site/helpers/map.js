@@ -492,11 +492,15 @@ function getMapConfig() {
                 vertical: true,
                 height: 100
             }
-            ,
-            {
-                xtype: "sdi_gxp_scaleoverlay"
-            }
+            
+            
         ];
+         
+        if(data.topInUnits || data.bottomOutUnits || data.topInUnits || data.topOutUnits){
+            config.mapItems.push({
+                xtype: "sdi_gxp_scaleoverlay"
+            });
+        }
 
         //Indoor navigation
         if (data.level) {
