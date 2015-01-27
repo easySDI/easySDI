@@ -108,32 +108,33 @@ class plgContentEasysdiservice extends JPlugin
 	 * @return	boolean
 	 */
 	private function onContentIdAfterAction($context, $id, $operation){
-		$entity = "";
-		if ($context == 'com_easysdi_service.policy') {
-			$entity = "SdiPolicy";
-		}
-		else if ($context == 'com_easysdi_service.virtualservice') {
-			$entity = "SdiVirtualservice";
-		}
-		else if ($context == 'com_easysdi_service.physicalservice') {
-			$entity = "SdiPhysicalservice";
-		}
-		else if ($context == 'com_easysdi_contact.user') {
-			$entity = "SdiUser";
-		}
-		else if ($context == 'com_easysdi_contact.organism') {
-			$entity = "SdiOrganism";
-		}
-                else if ($context == "com_easysdi_contact.category") {
-                        $entity = "SdiCategory";
-                }
+//		$entity = "";
+//		if ($context == 'com_easysdi_service.policy') {
+//			$entity = "SdiPolicy";
+//		}
+//		else if ($context == 'com_easysdi_service.virtualservice') {
+//			$entity = "SdiVirtualservice";
+//		}
+//		else if ($context == 'com_easysdi_service.physicalservice') {
+//			$entity = "SdiPhysicalservice";
+//		}
+//		else if ($context == 'com_easysdi_contact.user') {
+//			$entity = "SdiUser";
+//		}
+//		else if ($context == 'com_easysdi_contact.organism') {
+//			$entity = "SdiOrganism";
+//		}
+//                else if ($context == "com_easysdi_contact.category") {
+//                        $entity = "SdiCategory";
+//                }
 				
 		$params = JComponentHelper::getParams('com_easysdi_service');
 		if(!isset($params))return true;
 		$url = $params->get('proxyurl');
 		if(!isset($url)) return true;
 		
-		$url .= "cache?entityclass=".$entity."&id=".$id."&operation=".$operation."&complete=FALSE";
+		//$url .= "cache?entityclass=".$entity."&id=".$id."&operation=".$operation."&complete=FALSE";
+                $url .= "cache?complete=TRUE";
 		$user = JFactory::getUser();
 		
 		$session 	= curl_init($url);

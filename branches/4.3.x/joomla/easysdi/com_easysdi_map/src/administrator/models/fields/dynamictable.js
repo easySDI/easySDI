@@ -29,10 +29,10 @@ function addRow(code, label, dflt) {
     if (dflt) {
         checked = "checked";
     }
-    jQuery('#level' + i).html("<td><a id='delete_row" + i + "' class='btn btn-danger btn-small'><i class='icon-white icon-minus'></i></a></td>\n\
+    jQuery('#level' + i).html("<td><input type='checkbox' name='jform[defaultlevel][" + i + "]' id='jform[defaultlevel" + i + "]' value='1' " + checked + " /></td>\n\
     <td><input name='jform[label][" + i + "]' id='jform_label" + i + "'  type='text' placeholder='Label' class='form-control' value='" + label + "'></td>\n\
     <td><input  name='jform[code][" + i + "]' id='jform_code" + i + "' type='text' placeholder='Code'  class='form-control' value='" + code + "'></td>\n\
-    <td><input type='checkbox' name='jform[defaultlevel][" + i + "]' id='jform[defaultlevel" + i + "]' value='1' " + checked + " /></td>\n\
+    <td><a id='delete_row" + i + "' class='btn btn-default btn-small'><i class='icon-trash'></i></a></td>\n\
 ");
     jQuery('#tab-dyn').append('<tr id="level' + (i + 1) + '"></tr>');
 

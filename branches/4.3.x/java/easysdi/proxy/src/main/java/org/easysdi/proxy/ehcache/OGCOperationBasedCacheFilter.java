@@ -1,9 +1,11 @@
 package org.easysdi.proxy.ehcache;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.logging.Level;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -29,6 +31,7 @@ import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.exception.InvalidServiceNameException;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
+import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +44,8 @@ public final class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPage
     private final Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
     private final ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
     private String operationValue = null;
-//    private static final int MILLISECONDS_PER_SECOND = 1000;
-    
+    private HttpServletRequest request;
+    private HttpServletResponse response;
     private final CacheManager cm;
     @Autowired
     private final SdiVirtualserviceHome sdiVirtualserviceHome;
@@ -64,6 +67,8 @@ public final class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPage
     protected void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws AlreadyGzippedException,
             AlreadyCommittedException, FilterNonReentrantException, LockTimeoutException, Exception {
 
+        this.request = request;
+        this.response = response;
         String method = request.getMethod();
         operationValue = null;
 
@@ -118,7 +123,7 @@ public final class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPage
     }
 
     @Override
-    protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException, InvalidServiceNameException {
+    protected String calculateKey(HttpServletRequest httpRequest) {
         String servletName = httpRequest.getServletPath().substring(1);
 
         String username = null;
@@ -136,12 +141,29 @@ public final class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPage
         SdiVirtualservice virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
 
         if (virtualservice == null) {
-            throw new InvalidServiceNameException("No service found");
+            try {
+                this.response.setHeader("easysdi-proxy-error-occured", "true");
+                OWS200ExceptionReport report = new OWS200ExceptionReport();
+                report.sendHttpServletResponse(this.request, this.response,
+                        report.generateExceptionReport(this.request, this.response, OWS200ExceptionReport.TEXT_INVALID_SERVICE_NAME, OWS200ExceptionReport.CODE_NO_APPLICABLE_CODE, "SERVICE", HttpServletResponse.SC_OK), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+                return null;
+            } catch (IOException ex) {
+                logger.error("Error occured trying to send exception to client.", ex);
+            }
         }
         SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id, authorities);
         if (policy == null) {
-            throw new PolicyNotFoundException("No policy found.");
+            try {
+                this.response.setHeader("easysdi-proxy-error-occured", "true");
+                OWS200ExceptionReport report = new OWS200ExceptionReport();
+                report.sendHttpServletResponse(this.request, this.response,
+                        report.generateExceptionReport(this.request, this.response, OWS200ExceptionReport.TEXT_NO_POLICY, OWS200ExceptionReport.CODE_NO_APPLICABLE_CODE, "SERVICE", HttpServletResponse.SC_OK), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+                return null;
+            } catch (IOException ex) {
+                logger.error("Error occured trying to send exception to client.", ex);
+            }
         }
+
         StringBuilder stringBuffer = new StringBuilder();
         String url;
         try {
@@ -167,45 +189,16 @@ public final class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPage
     @Override
     protected PageInfo buildPageInfo(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain)
             throws Exception {
-        
+
         PageInfo pageInfo = super.buildPageInfo(request, response, chain);
         //If an exception was raised during request treatment and properly catched, 
         //response header contains "easysdi-proxy-error-occured".
         //This response must be removed from the cache (was put in it in the call of super.buildPageInfo(...))
-        if(response.containsHeader("easysdi-proxy-error-occured")){
+        if (response.containsHeader("easysdi-proxy-error-occured")) {
             final String key = calculateKey(request);
             logger.debug("Exception occured in easySDI Proxy. Putting null into cache " + blockingCache.getName() + " with key " + key);
             blockingCache.put(new Element(key, null));
         }
         return pageInfo;
     }
-    
-//    //Originally used to overwrite headers information in case of "easysdi-proxy-error-occured"
-//    //but seems to be useless...
-//    @SuppressWarnings("unchecked")
-//    @Override
-//    protected PageInfo buildPage(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws AlreadyGzippedException, Exception {
-//        PageInfo pageInfo = super.buildPage(request, response, chain);
-//        if (!response.containsHeader("easysdi-proxy-error-occured")) {
-//            // add expires and last-modified headers
-//            Date now = new Date();
-//            List<String[]> headers = new ArrayList<String[]>(pageInfo.getResponseHeaders());
-//            HttpDateFormatter httpDateFormatter = new HttpDateFormatter();
-//            String lastModified = httpDateFormatter.formatHttpDate(pageInfo.getCreated());
-//            long ttlMilliseconds = calculateTimeToLiveMilliseconds();
-//            headers.add(new String[] { "Last-Modified", lastModified });
-//            headers.add(new String[] { "Expires", httpDateFormatter.formatHttpDate(new Date(now.getTime() + ttlMilliseconds)) });
-//            headers.add(new String[] { "Cache-Control", "max-age=" + ttlMilliseconds / MILLISECONDS_PER_SECOND });
-//            headers.add(new String[] { "ETag", generateEtag(ttlMilliseconds) });
-//        }
-//        return pageInfo;
-//    }
-//
-//    private String generateEtag(long ttlMilliseconds) {
-//        StringBuffer stringBuffer = new StringBuffer();
-//        Long eTagRaw = System.currentTimeMillis() + ttlMilliseconds;
-//        String eTag = stringBuffer.append("\"").append(eTagRaw).append("\"").toString();
-//        return eTag;
-//    }
-
 }
