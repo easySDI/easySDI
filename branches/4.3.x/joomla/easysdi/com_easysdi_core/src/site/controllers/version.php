@@ -231,7 +231,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
                 ->innerJoin('#__sdi_resourcetypelink rtl ON rtl.parent_id=r2.resourcetype_id AND rtl.child_id=r.resourcetype_id')
                 ->where('vl.parent_id=' . (int) $parentId . ' AND urr.user_id=' . (int) $user->id)
-                ->group('r.id, m.modified_by')
+                ->group('r.id, m.modified_by, rtl.viralversioning')
         ;
 
         $db->setQuery($query)->execute();
