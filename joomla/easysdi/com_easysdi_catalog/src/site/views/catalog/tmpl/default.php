@@ -55,7 +55,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
 
 
 
-<form class="form-horizontal form-validate sdi-catalog-fe-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog' ); ?>" method="get" id="searchform" name="searchform" enctype="multipart/form-data">
+<form class="form-horizontal form-validate sdi-catalog-fe-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog' ); ?>#results" method="get" id="searchform" name="searchform" enctype="multipart/form-data">
     <?php
     $tmpl = JFactory::getApplication()->input->get('tmpl', null, 'string');
     if(isset($tmpl)):?>
