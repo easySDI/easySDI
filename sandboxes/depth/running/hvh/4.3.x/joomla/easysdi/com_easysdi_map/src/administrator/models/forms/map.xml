@@ -322,6 +322,13 @@
     /> 
     
     <fieldset name="scaleline">
+        <field name="tool14" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_SCALELINE"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_SCALELINE" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field 	name="topOutUnits" 
                 type="text" 
                 size="255" 
@@ -353,6 +360,13 @@
     </fieldset>
     
     <fieldset name="wfslocator">
+        <field name="tool16" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_WFSLOCATOR"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_WFSLOCATOR" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field 	name="urlwfslocator" 
                 type="text" 
                 size="255" 
@@ -391,6 +405,13 @@
     </fieldset>
 	
     <fieldset name="indoornavigation">
+        <field name="tool21" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_INDOORNAVIGATION"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_INDOORNAVIGATION" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field 	name="levellabel" 
                 type="DynamicTable"                 
                 label=""
