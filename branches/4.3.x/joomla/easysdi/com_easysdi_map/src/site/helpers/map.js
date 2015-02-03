@@ -376,9 +376,10 @@ function getMapConfig() {
         var layer = layers[index];
         switch (layer.source) {
             case 'ol':
+                var openlayer;
                 switch (layer.type) {
                     case 'OpenLayers.Layer.WMTS':
-                        var wmts = {
+                        openlayer = {
                             source: "ol",
                             type: layer.type,
                             group: layer.group,
@@ -393,32 +394,25 @@ function getMapConfig() {
                                     opacity: layer.opacity,
                                     style: layer.asOLstyle,
                                     matrixSet: layer.matrixSet
-
                                 }
                             ]
                         };
                         if (layer.asOLoptions) {
                             var options = JSON.parse(layer.asOLoptions);
                             for (var key in options) {
-                                wmts.args[0][key] = options[key];
+                                var option = options[key];
+                                if(typeof option === 'string' && option.indexOf("new OpenLayers") > -1){
+                                    openlayer.args[0][key] = eval(option);
+                                }else{
+                                    openlayer.args[0][key] = option;
+                                }
                             }
                         }
-                        if (layer.href) {
-                            wmts.href = layer.href;
-                        }
-                        ;
-                        if (layer.download) {
-                            wmts.download = layer.download;
-                        }
-                        ;
-                        if (layer.order) {
-                            wmts.order = layer.order;
-                        }
-                        ;
-                        config.map.layers.push(wmts);
-                        break
+                        //"maxExtent": "new OpenLayers.Bounds(420000,30000,900000,350000)", 
+                        //openlayer.args[0]['maxExtent'] = new OpenLayers.Bounds(420000,30000,900000,350000);
+                        break;
                     case 'OpenLayers.Layer.WMS' :
-                        var wms = {
+                        openlayer = {
                             source: "ol",
                             type: layer.type,
                             group: layer.group,
@@ -439,41 +433,45 @@ function getMapConfig() {
                             ]
                         };
                         if (layer.style) {
-                            wms.args[3].style = layer.style;
+                            openlayer.args[3].style = layer.style;
                         }
                         ;
-                        if (layer.href) {
-                            wms.href = layer.href;
-                        }
-                        ;
-                        if (layer.download) {
-                            wms.download = layer.download;
-                        }
-                        ;
-                        if (layer.order) {
-                            wms.order = layer.order;
-                        }
-                        ;
-                        if (layer.servertype) {
-                            wms.servertype = layer.servertype;
-                        }
-                        ;
-
                         if (layer.asOLoptions) {
                             var options = JSON.parse(layer.asOLoptions);
                             for (var key in options) {
-                                wms.args[key] = options[key];
+                                var option = options[key];
+                                if(typeof option === 'string' && option.indexOf("new OpenLayers") > -1){
+                                    openlayer.args[key] = eval(option);
+                                }else{
+                                    openlayer.args[key] = option;
+                                }
                             }
                         }
-                        config.map.layers.push(wms);
-                        break;
-                    default:
                         break;
                 }
+                if (layer.servertype) {
+                    openlayer.servertype = layer.servertype;
+                };
+                if (layer.isindoor) {
+                    openlayer.isindoor = layer.isindoor;
+                };
+                if (layer.levelfield) {
+                    openlayer.levelfield = layer.levelfield;
+                };
+                if (layer.href) {
+                    openlayer.href = layer.href;
+                };
+                if (layer.download) {
+                    openlayer.download = layer.download;
+                };
+                if (layer.order) {
+                    openlayer.order = layer.order;
+                };
+                config.map.layers.push(openlayer);
                 break;
 
             default :
-                var overlay={};
+                var overlay = {};
                 for (var property in layer) {
                     if (layer.hasOwnProperty(property)) {
                         overlay[property] = layer[property];
@@ -492,11 +490,11 @@ function getMapConfig() {
                 vertical: true,
                 height: 100
             }
-            
-            
+
+
         ];
-         
-        if(data.topInUnits || data.bottomOutUnits || data.topInUnits || data.topOutUnits){
+
+        if (data.topInUnits || data.bottomOutUnits || data.topInUnits || data.topOutUnits) {
             config.mapItems.push({
                 xtype: "sdi_gxp_scaleoverlay"
             });
@@ -514,8 +512,8 @@ function getMapConfig() {
             }
             var maxvalue = data.level.length - 1;
             var l = 18;
-            var h = (l + (l/(data.level.length))) * (data.level.length - 1);
-            
+            var h = (l + (l / (data.level.length))) * (data.level.length - 1);
+
             config.mapItems.push(
                     {
                         xtype: "sdi_indoorlevelslider",
@@ -533,11 +531,11 @@ function getMapConfig() {
             )
 
             var ul = document.createElement('ul');
-            for (var i = data.level.length - 1;   i >= 0; i--) {
+            for (var i = data.level.length - 1; i >= 0; i--) {
                 var li = Ext.DomHelper.append(ul, {
                     tag: 'li',
                     html: data.level[i].label,
-                    style: {"line-height":l+'px'}
+                    style: {"line-height": l + 'px'}
                 }, true);
                 li.on({
                     click: (function(i) {
@@ -545,13 +543,11 @@ function getMapConfig() {
                     }).createDelegate(this, [i])
                 });
             }
-
-
             config.mapItems.push({
                 cls: 'levellabelpanel',
                 id: 'levellabelpanel',
                 border: false,
-                style : "position: absolute; right: 30px; top: 20px; z-index: 1000;",
+                style: "position: absolute; right: 30px; top: 20px; z-index: 1000;",
                 contentEl: ul
             });
         }
