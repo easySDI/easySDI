@@ -114,10 +114,13 @@ $document->addScript(Juri::base(true) . '/components/com_easysdi_core/libraries/
                                 <h5><?php echo JText::_('COM_EASYSDI_MAP_FORM_TITLE_TOOLS_INDOOR'); ?></h5>
                                 <p><?php echo JText::_('COM_EASYSDI_MAP_FORM_TEXT_TOOLS_INDOOR'); ?></p>
                                 <br />
-                                <?php foreach ($this->form->getFieldset('indoornavigation') as $field): ?>
-                                    <div><?php echo $field->input; ?></div>
-                                <?php endforeach; ?>
-
+                                <div class="control-group">
+                                    <div class="control-label"><?php echo $this->form->getLabel('tool21'); ?></div>
+                                    <div class="controls"><?php echo $this->form->getInput('tool21'); ?></div>
+                                </div>
+                               
+                                    <div><?php echo $this->form->getInput('levellabel'); ?></div>
+                               
                             </div>
                         </div>
                     </div>

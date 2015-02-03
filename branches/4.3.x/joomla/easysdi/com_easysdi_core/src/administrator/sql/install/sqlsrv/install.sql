@@ -971,6 +971,7 @@ CREATE TABLE [#__sdi_map_tool](
 	[map_id] [bigint] NOT NULL,
 	[tool_id] [bigint] NOT NULL,
 	[params] [nvarchar](MAX) NULL,
+        [activated] [tinyint] NULL DEFAULT 0,
  CONSTRAINT [PK_#__sdi_map_tool_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
