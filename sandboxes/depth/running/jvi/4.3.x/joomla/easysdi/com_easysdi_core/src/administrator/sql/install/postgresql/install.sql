@@ -308,12 +308,13 @@ CREATE TABLE #__sdi_catalog (
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
     description character varying(500),
+    contextualsearchresultpaginationnumber integer DEFAULT 0,
     xsldirectory character varying(255),
     oninitrunsearch integer DEFAULT 0,
     cswfilter text,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL,
-    scrolltoresults SMALLINT DEFAULT 1 NOT NULL 
+    scrolltoresults SMALLINT DEFAULT 1 NOT NULL,
 );
 
 
@@ -624,7 +625,9 @@ CREATE TABLE #__sdi_map_tool (
     id serial NOT NULL ,
     map_id bigint NOT NULL,
     tool_id bigint NOT NULL,
-    params character varying(500)
+    params character varying(4000),
+    activated TINYINT(1) DEFAULT 0
+
 );
 
 CREATE TABLE #__sdi_map_virtualservice (
@@ -657,6 +660,8 @@ CREATE TABLE #__sdi_maplayer (
     "asOLstyle" text,
     "asOLmatrixset" text,
     "asOLoptions" text,
+    isindoor integer,
+    levelfield character varying(255),
     metadatalink text,
     attribution character varying(255),
     accessscope_id bigint DEFAULT 1::bigint NOT NULL,
@@ -741,6 +746,9 @@ CREATE TABLE #__sdi_order (
     buffer double precision,
     surface double precision,
     remark character varying(500),
+    mandate_ref VARCHAR(75) NULL,
+    mandate_contact VARCHAR(75) NULL,
+    mandate_email VARCHAR(100) NULL,
     sent timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     access integer DEFAULT 1 NOT NULL,
@@ -895,6 +903,7 @@ CREATE TABLE #__sdi_physicalservice (
     serviceusername character varying(150),
     servicepassword character varying(150),
     catid integer NOT NULL,
+    server_id integer NULL,
     params character varying(1024),
     access integer DEFAULT 1 NOT NULL,
     asset_id integer
@@ -1107,6 +1116,7 @@ CREATE TABLE #__sdi_relation (
     editorrelationscope_id bigint,
     childresourcetype_id bigint,
     childtype_id bigint,
+    accessscope_limitation integer DEFAULT 0,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
@@ -2329,6 +2339,25 @@ CREATE TABLE users (
     "EXPIRATION" date,
     "ENABLED" integer DEFAULT 1 NOT NULL,
     "LOCKED" integer DEFAULT 0 NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_sys_server (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    ordering integer DEFAULT 1 NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
+    value character varying(150) NOT NULL
+    PRIMARY KEY (id)  
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_sys_server_serviceconnector (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    server_id INT(11) UNSIGNED,
+    serviceconnector_id INT(11) UNSIGNED,
+    PRIMARY KEY (id),
+  KEY #__sdi_sys_server_serviceconnector_fk1 (server_id),
+  KEY #__sdi_sys_server_serviceconnector_fk2 (serviceconnector_id),
+  CONSTRAINT #__sdi_sys_server_serviceconnector_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT #__sdi_sys_server_serviceconnector_fk2 FOREIGN KEY (serviceconnector_id) REFERENCES #__sdi_sys_serviceconnector (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 

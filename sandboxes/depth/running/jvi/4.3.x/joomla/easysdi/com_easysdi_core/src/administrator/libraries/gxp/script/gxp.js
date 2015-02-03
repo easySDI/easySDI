@@ -7849,199 +7849,6 @@ Ext.reg('gxp_rulepanel', gxp.RulePanel);
  */
 
 /**
- * @requires OpenLayers/Control/ScaleLine.js
- * @requires GeoExt/data/ScaleStore.js
- */
-
-/** api: (define)
- *  module = gxp
- *  class = ScaleOverlay
- *  base_link = `Ext.Panel <http://dev.sencha.com/deploy/dev/docs/?class=Ext.Panel>`_
- */
-Ext.namespace("gxp");
-
-/** api: constructor
- *  .. class:: ScaleOverlay(config)
- *   
- *      Create a panel for showing a ScaleLine control and a combobox for 
- *      selecting the map scale.
- */
-gxp.ScaleOverlay = Ext.extend(Ext.Panel, {
-    
-    /** api: config[map]
-     *  ``OpenLayers.Map`` or :class:`GeoExt.MapPanel`
-     *  The map for which to show the scale info.
-     */
-    map: null,
-
-    /** i18n */
-    zoomLevelText: "Zoom level",
-
-    /** private: method[initComponent]
-     *  Initialize the component.
-     */
-    initComponent: function() {
-        gxp.ScaleOverlay.superclass.initComponent.call(this);
-        this.cls = 'map-overlay';
-        if(this.map) {
-            if(this.map instanceof GeoExt.MapPanel) {
-                this.map = this.map.map;
-            }
-            this.bind(this.map);
-        }
-        this.on("beforedestroy", this.unbind, this);        
-    },
-    
-    /** private: method[addToMapPanel]
-     *  :param panel: :class:`GeoExt.MapPanel`
-     *  
-     *  Called by a MapPanel if this component is one of the items in the panel.
-     */
-    addToMapPanel: function(panel) {
-        this.on({
-            afterrender: function() {
-                this.bind(panel.map);
-            },
-            scope: this
-        });
-    },
-    
-    /** private: method[stopMouseEvents]
-     *  :param e: ``Object``
-     */
-    stopMouseEvents: function(e) {
-        e.stopEvent();
-    },
-    
-    /** private: method[removeFromMapPanel]
-     *  :param panel: :class:`GeoExt.MapPanel`
-     *  
-     *  Called by a MapPanel if this component is one of the items in the panel.
-     */
-    removeFromMapPanel: function(panel) {
-        var el = this.getEl();
-        el.un("mousedown", this.stopMouseEvents, this);
-        el.un("click", this.stopMouseEvents, this);
-        this.unbind();
-    },
-
-    /** private: method[addScaleLine]
-     *  
-     *  Create the scale line control and add it to the panel.
-     */
-    addScaleLine: function() {
-        var scaleLinePanel = new Ext.BoxComponent({
-            autoEl: {
-                tag: "div",
-                cls: "olControlScaleLine overlay-element overlay-scaleline"
-            }
-        });
-        this.on("afterlayout", function(){
-            scaleLinePanel.getEl().dom.style.position = 'relative';
-            scaleLinePanel.getEl().dom.style.display = 'inline';
-
-            this.getEl().on("click", this.stopMouseEvents, this);
-            this.getEl().on("mousedown", this.stopMouseEvents, this);
-        }, this);
-        scaleLinePanel.on('render', function(){
-            var scaleLine = new OpenLayers.Control.ScaleLine({
-                geodesic: true,
-                div: scaleLinePanel.getEl().dom
-            });
-
-            this.map.addControl(scaleLine);
-            scaleLine.activate();
-        }, this);
-        this.add(scaleLinePanel);
-    },
-
-    /** private: method[handleZoomEnd]
-     *
-     * Set the correct value in the scale combo box.
-     */
-    handleZoomEnd: function() {
-        var scale = this.zoomStore.queryBy(function(record) { 
-            return this.map.getZoom() == record.data.level;
-        }, this);
-        if (scale.length > 0) {
-            scale = scale.items[0];
-            this.zoomSelector.setValue("1 : " + parseInt(scale.data.scale, 10));
-        } else {
-            if (!this.zoomSelector.rendered) {
-                return;
-            }
-            this.zoomSelector.clearValue();
-        }
-    },
-
-    /** private: method[addScaleCombo]
-     *  
-     *  Create the scale combo and add it to the panel.
-     */
-    addScaleCombo: function() {
-        this.zoomStore = new GeoExt.data.ScaleStore({
-            map: this.map
-        });
-        this.zoomSelector = new Ext.form.ComboBox({
-            emptyText: this.zoomLevelText,
-            tpl: '<tpl for="."><div class="x-combo-list-item">1 : {[parseInt(values.scale)]}</div></tpl>',
-            editable: false,
-            triggerAction: 'all',
-            mode: 'local',
-            store: this.zoomStore,
-            width: 110
-        });
-        this.zoomSelector.on({
-            click: this.stopMouseEvents,
-            mousedown: this.stopMouseEvents,
-            select: function(combo, record, index) {
-                this.map.zoomTo(record.data.level);
-            },
-            scope: this
-        });
-        this.map.events.register('zoomend', this, this.handleZoomEnd);
-        var zoomSelectorWrapper = new Ext.Panel({
-            items: [this.zoomSelector],
-            cls: 'overlay-element overlay-scalechooser',
-            border: false
-        });
-        this.add(zoomSelectorWrapper);
-    },
-
-    /** private: method[bind]
-     *  :param map: ``OpenLayers.Map``
-     */
-    bind: function(map) {
-        this.map = map;
-        this.addScaleLine();
-        this.addScaleCombo();
-        this.doLayout();
-    },
-    
-    /** private: method[unbind]
-     */
-    unbind: function() {
-        if(this.map && this.map.events) {
-            this.map.events.unregister('zoomend', this, this.handleZoomEnd);
-        }
-        this.zoomStore = null;
-        this.zoomSelector = null;
-    }
-
-});
-
-/** api: xtype = gxp_scaleoverlay */
-Ext.reg('gxp_scaleoverlay', gxp.ScaleOverlay);
-
-/**
- * Copyright (c) 2008-2011 The Open Planning Project
- * 
- * Published under the GPL license.
- * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
- * of the license.
- */
-
-/**
  * @include widgets/tips/SliderTip.js
  */
 
@@ -11718,6 +11525,192 @@ gxp.form.ViewerField = Ext.extend(Ext.form.TextArea, {
 Ext.reg("gxp_viewerfield", gxp.form.ViewerField);
 
 /**
+ * Copyright (c) 2008-2012 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/** api: (define)
+ *  module = gxp.form
+ *  class = ExtendedDateField
+ *  base_link = `Ext.form.DateField <http://extjs.com/deploy/dev/docs/?class=Ext.form.DateField>`_
+ */
+Ext.namespace("gxp.form");
+
+Date.defaults.d = 1;
+Date.defaults.m = 1;
+
+gxp.form.ExtendedDateTimeField = Ext.extend(Ext.form.CompositeField, {
+   
+    initComponent: function() {
+        //ensure that qtips are initialized
+        Ext.QuickTips.init();
+        this.items = [{
+            xtype: 'gxp_datefield',
+            allowBlank: (this.initialConfig.allowBlank !== false),
+            todayText: this.initialConfig.todayText,
+            selectToday: this.initialConfig.selectToday,
+            ref: "date"
+        }, {
+            xtype: 'timefield',
+            width: 80,
+            ref: "time"
+        }];
+        gxp.form.ExtendedDateTimeField.superclass.initComponent.apply(this, arguments);
+    },
+
+    getValue : function() {
+        var dateValue = this.date.getValue();
+        var timeValue = this.time.getValue();
+        if (dateValue !== null && timeValue === "") {
+            timeValue = "12:00 AM";
+        }
+        if (timeValue !== "") {
+            var dateTimeCurrent = this.time.parseDate(timeValue);
+            var dateTimeOriginal = new Date(this.time.initDate);
+            var diff = (dateTimeCurrent.getTime()/1000) - (dateTimeOriginal.getTime()/1000);
+            // we should always return times as UTC
+            return dateValue + diff - (new Date(dateValue*1000).getTimezoneOffset()*60);
+        } else {
+            return dateValue;
+        }
+    },
+
+    setValue: function(v) {
+        this.date.setValue(v);
+        var value = new Date(parseFloat(v)*1000);
+        value.setTime( value.getTime() + value.getTimezoneOffset()*60*1000 );
+        if (value) {
+            var hours = value.getHours();
+            if (hours > 12) {
+                hours -= 12;
+            } else if (hours === 0) {
+                hours = 12;
+            }
+            var minutes = value.getMinutes();
+            if (minutes < 10) {
+                minutes = '0' + minutes;
+            }
+            this.time.setValue(hours + ":" + minutes + " " + (value.getHours() > 12 ? "PM" : "AM"));
+        }
+    }
+
+});
+
+/** api: xtype = gxp_datetimefield */
+Ext.reg('gxp_datetimefield', gxp.form.ExtendedDateTimeField);
+
+/** api: constructor
+ *  .. class:: ExtendedDateField(config)
+ *   
+ *      It has been noted that to support the entire date range of earth's
+ *      history, we'll need an approach that does not totally rely on date
+ *      objects. A reasonable approach is to use a big integer (or
+ *      long) that represents the number of seconds before or after
+ *      1970-01-01. This allows us to use date objects with little effort when
+ *      a value is within the supported range and to use a date-like object
+ *      (ignores things like leap-year, etc.) when the value is outside of
+ *      that range.
+ */
+gxp.form.ExtendedDateField = Ext.extend(Ext.form.DateField, {
+
+    //negative year formats will parse but give a positive year 
+    altFormats : "-c|-Y|m -Y|n -Y|M -Y|m/d/-Y|n/j/-Y|m/j/-Y|n/d/-Y|c|Y|" + 
+                    "m/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|m-d-Y|" +
+                    "m/d|m-d|md|mdy|mdY|d|Y-m-d|n-j|n/j",
+    
+    bcYrRegEx : /^(-\d{3,4})|(-\d{3,4})$/,
+    
+    invalidText : "{0} is not a valid date. If you are attempting to enter a BCE date please enter a zero padded 4 digit year or just enter the year",
+    
+    beforeBlur: Ext.emptyFn,
+    
+    getValue : function() {
+        var value = Ext.form.DateField.superclass.getValue.call(this);
+        var date = this.parseDate(value);
+        var bcYear = value.match(this.bcYrRegEx) && ((value.match(/-/g)||[]).length === 1 || value.charAt(0) === '-');
+        if (bcYear) {
+            if(date){
+                date = new Date(-1*date.getFullYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes(),date.getSeconds());
+            }
+        }
+        return (date) ? date.getTime()/1000 : null;
+    },
+
+    setValue: function(v) {
+        var d = v;
+        if (Ext.isNumber(parseFloat(v))) {
+            d = new Date(parseFloat(v)*1000);
+            d.setTime( d.getTime() + d.getTimezoneOffset()*60*1000 );
+        }
+        var str = this.formatDate(d);
+        if (str) {
+            var bcYear = str.match(this.bcYrRegEx);
+            if (bcYear) {
+                bcYear = bcYear[0] || bcYear[1];
+                if (bcYear && bcYear.length < 5) {
+                    var zeropad = '-';
+                    for (var i=bcYear.length;i<=4; ++i) {
+                        zeropad += '0';
+                    }
+                    str = str.replace(bcYear, zeropad + Math.abs(parseInt(bcYear, 10)));
+                }
+            }
+        }
+        return Ext.form.DateField.superclass.setValue.call(this, str);
+    },
+
+    getPickerDate: function() {
+        return new Date();
+    },
+
+    onTriggerClick : function(){
+        if(this.disabled){
+            return;
+        }
+        if(!this.menu){
+            this.menu = new Ext.menu.DateMenu({
+                hideOnClick: false,
+                focusOnSelect: false
+            });
+        }
+        this.onFocus();
+        Ext.apply(this.menu.picker,  {
+            minDate : this.minValue,
+            todayText: this.todayText ? this.todayText: Ext.DatePicker.prototype.todayText,
+            selectToday: this.selectToday ? this.selectToday: Ext.DatePicker.prototype.selectToday,
+            maxDate : this.maxValue,
+            disabledDatesRE : this.disabledDatesRE,
+            disabledDatesText : this.disabledDatesText,
+            disabledDays : this.disabledDays,
+            disabledDaysText : this.disabledDaysText,
+            format : this.format,
+            showToday : this.showToday,
+            startDay: this.startDay,
+            minText : String.format(this.minText, this.formatDate(this.minValue)),
+            maxText : String.format(this.maxText, this.formatDate(this.maxValue))
+        });
+        // changed code
+        var d;
+        var v = this.getValue();
+        if (v === null) {
+            d = this.getPickerDate();
+        } else {
+            d = new Date(v*1000);
+        }
+        this.menu.picker.setValue(d);
+        // end of change
+        this.menu.show(this.el, "tl-bl?");
+        this.menuEvents('on');
+    }
+
+});
+
+Ext.reg('gxp_datefield', gxp.form.ExtendedDateField);
+
+/**
  * Copyright (c) 2008-2011 The Open Planning Project
  * 
  * Published under the GPL license.
@@ -13071,6 +13064,430 @@ gxp.slider.Tip = Ext.extend(Ext.slider.Tip, {
     }
 
 });
+
+/**
+ * Copyright (c) 2008-2012 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ * @requires OpenLayers/Control/DimensionManager.js
+ * @requires OpenLayers/Dimension/Agent.js
+ * @requires OpenLayers/Dimension/Model.js
+ */
+ 
+/** api: (define)
+ *  module = gxp.slider
+ *  class = TimeSlider
+ *  base_link = `Ext.slider.MultiSlider <http://extjs.com/deploy/dev/docs/?class=Ext.slider.MultiSlider>`_
+ */
+Ext.ns("gxp.slider");
+
+gxp.slider.TimeSlider = Ext.extend(Ext.slider.MultiSlider, {
+    ref : 'slider',
+    cls : 'gx_timeslider',
+    indexMap : null,
+    width : 200,
+    animate : false,
+    timeFormat : "l, F d, Y g:i:s A",
+    timeManager : null,
+    playbackMode : 'track',
+    autoPlay : false,
+    aggressive: false,
+    changeBuffer: 10,
+    map: null,
+    initComponent : function() {
+        if(!this.timeManager) {
+            this.timeManager = new OpenLayers.Control.DimensionManager();
+            this.map.addControl(this.timeManager);
+        }
+                
+        if(!this.model){
+            this.model = this.timeManager.model;
+        }
+
+        if(this.timeManager.agents) {
+            if(!this.timeManager.timeUnits && !this.timeManager.snapToList) {
+                if(this.model.values && !this.model.resolution && this.timeManager.snapToList !== false){
+                    this.timeManager.snapToList = true;
+                }
+                if(this.model.resolution && !this.model.values && this.model.timeUnits){
+                    this.timeManager.timeUnits = this.model.timeUnits;
+                    this.timeManager.timeStep = this.model.timeStep;
+                }
+                if(this.model.values && this.model.resolution){
+                    //this.manageConflict();
+                }
+            }
+            if(this.playbackMode && this.playbackMode != 'track') {
+                if(this.timeManager.timeUnits) {
+                    this.timeManager.incrementTimeValue(this.timeManager.rangeInterval);
+                }
+            }
+        }
+        
+        var sliderInfo = this.buildSliderValues();
+        if(sliderInfo) {
+            if(!this.timeManager.snapToList && !this.timeManager.timeUnits){
+            this.timeManager.guessPlaybackRate();
+            }
+            var initialSettings = {
+                maxValue: sliderInfo.maxValue,
+                minValue: sliderInfo.minValue,
+                increment : sliderInfo.interval,
+                keyIncrement : sliderInfo.interval,
+                indexMap : sliderInfo.map,
+                values: sliderInfo.values
+            };
+            //set an appropiate time format if one was not specified
+            if(!this.initialConfig.timeFormat){
+                if (sliderInfo.interval) {
+                    var interval = sliderInfo.interval*OpenLayers.TimeStep[this.timeManager.timeUnits];
+                    this.setTimeFormat(gxp.PlaybackToolbar.guessTimeFormat(interval));
+                } else if (this.model.values) {
+                    var allUnits = ['Seconds', 'Minutes', 'Hours', 'Days', 'Months', 'Years'];
+                    var units = {};
+                    for (var i = 1, ii = this.model.values.length; i<ii; ++i) {
+                        diff = this.model.values[i] - this.model.values[i-1];
+                        info = gxp.PlaybackToolbar.smartIntervalFormat(diff);
+                        units[info.units] = true;
+                    }
+                    var unit = null;
+                    for (i = 0, ii = allUnits.length; i < ii; ++i) {
+                        if (units[allUnits[i]] === true) {
+                            unit = allUnits[i];
+                            break;
+                        }
+                    }
+                    if (unit !== null) {
+                        var format = gxp.PlaybackToolbar.timeFormats[unit];
+                        if (format) {
+                            this.setTimeFormat(format);
+                        }
+                    }
+                }
+            }
+            //modify initialConfig so that it properly
+            //reflects the initial state of this component
+            Ext.applyIf(this.initialConfig,initialSettings);
+            Ext.apply(this,this.initialConfig);
+        }
+        
+        this.timeManager.events.on({
+            'rangemodified': this.onRangeModified,
+            'tick': this.onTimeTick,
+            scope: this
+        });
+        
+        this.plugins = (this.plugins || []).concat(
+            [new Ext.slider.Tip({cls: 'gxp-timeslider-tip', getText:this.getThumbText})]);
+
+        this.listeners = Ext.applyIf(this.listeners || {}, {
+            'dragstart' : function() {
+                if(this.timeManager.timer) {
+                    this.timeManager.stop();
+                    this._restartPlayback = true;
+                }
+            },
+            'beforechange' : function(slider, newVal, oldVal, thumb) {
+                var allow = true;
+                if(!(this.timeManager.timeUnits || this.timeManager.snapToList)) {
+                    allow = false;
+                }
+                else if(this.playbackMode == 'cumulative' && slider.indexMap[thumb.index] == 'tail') {
+                    allow = false;
+                }
+                return allow;
+            },
+            'afterrender' : function(slider) {
+                this.sliderTip = slider.plugins[0];
+                if(this.timeManager.units && slider.thumbs.length > 1) {
+                    slider.setThumbStyles();
+                }
+                //start playing after everything is rendered when autoPlay is true
+                if(this.autoPlay) {
+                    this.timeManager.play();
+                }
+            },
+            scope : this
+        });
+        if (this.aggressive === true) {
+            this.listeners['change'] = {fn: this.onSliderChangeComplete, buffer: this.changeBuffer};
+        } else {
+            this.listeners['changecomplete'] = this.onSliderChangeComplete;
+        }
+        gxp.slider.TimeSlider.superclass.initComponent.call(this);
+        this.addEvents(
+            /**
+             * @event sliderclick
+             * Fires when somebody clicks in the slider to change its position.
+             * @param {Ext.slider.MultiSlider} slider The slider
+             */
+            'sliderclick'
+        );
+    },
+
+    onClickChange : function(local) {
+        this.fireEvent('sliderclick', this);
+        gxp.slider.TimeSlider.superclass.onClickChange.apply(this, arguments);
+    },
+
+    beforeDestroy : function(){
+        this.map = null;
+        gxp.slider.TimeSlider.superclass.beforeDestroy.call(this);
+    },
+
+    /** api: method[setPlaybackMode]
+     * :arg mode: {String} one of 'track',
+     * 'cumulative', or 'ranged'
+     *  
+     *  Set the playback mode of the control.
+     */
+    setPlaybackMode: function(mode){
+        this.playbackMode = mode;
+        var sliderInfo = this.buildSliderValues();
+        this.reconfigureSlider(sliderInfo);
+        if (this.playbackMode != 'track') {
+            if(this.timeManager.rangeInterval){ 
+                this.timeManager.incrementTimeValue(this.timeManager.rangeInterval); 
+                this.setValue(0,this.timeManager.currentValue);
+            }
+        }
+        this.setThumbStyles();
+    },
+    
+    setTimeFormat : function(format){
+        if(format){
+            this.timeFormat = format;
+        }
+    },
+    
+    onRangeModified : function(evt) {
+        var ctl = this.timeManager;
+        if(!ctl.agents || !ctl.agents.length) {
+            //we don't have any time agents which means we should get rid of the time manager control
+            //we will automattically add the control back when a time layer is added via handlers on the
+            //playback plugin or the application code if the playback toolbar was not build via the plugin
+            ctl.map.removeControl(this.ctl);
+            ctl.destroy();
+            ctl = null;
+        }
+        else {
+            var oldvals = {
+                start : ctl.animationRange[0],
+                end : ctl.animationRange[1],
+                resolution : {
+                    units : ctl.units,
+                    step : ctl.step
+                }
+            };
+            ctl.guessPlaybackRate();
+            if(ctl.animationRange[0] != oldvals.start || ctl.animationRange[1] != oldvals.end ||
+                 ctl.units != oldvals.units || ctl.step != oldvals.step) {
+                this.reconfigureSlider(this.buildSliderValues());
+                /*
+                 if (this.playbackMode == 'ranged') {
+                 this.timeManager.incrementTime(this.control.rangeInterval, this.control.units);
+                 }
+                 */
+                this.setThumbStyles();
+                this.fireEvent('rangemodified', this, ctl.animationRange);
+            }
+        }
+    },
+    
+    onTimeTick : function(evt) {
+        var currentValue = evt.currentValue;
+        if (currentValue) {
+            var toolbar = this.refOwner; //TODO use relay event instead
+            var tailIndex = this.indexMap ? this.indexMap.indexOf('tail') : -1;
+            var offset = (tailIndex > -1) ? currentValue - this.thumbs[0].value : 0;
+            this.setValue(0, currentValue);
+            if(tailIndex > -1) {
+                this.setValue(tailIndex, this.thumbs[tailIndex].value + offset);
+            }
+            this.updateTimeDisplay();
+            //TODO use relay event instead, fire this directly from the slider
+            toolbar.fireEvent('timechange', toolbar, currentValue);
+        }
+    },
+    
+    updateTimeDisplay: function(){
+        this.sliderTip.onSlide(this,null,this.thumbs[0]);
+        this.sliderTip.el.alignTo(this.el, 'b-t?', this.offsets);
+    },
+    
+    buildSliderValues : function() {
+        var mngr = this.timeManager;
+        if(!mngr.step && !mngr.snapToList){
+            //timeManager is essentially empty if both of these are false/null
+            return false;
+        }
+        else{
+            var indexMap = ['primary'], 
+                values = [mngr.currentValue],
+                min = mngr.animationRange[0],
+                max = mngr.animationRange[1],
+                interval = false;
+
+            if(this.dynamicRange) {
+                var rangeAdj = (min - max) * 0.1;
+                values.push( min = min - rangeAdj, max = max + rangeAdj);
+                indexMap[1] = 'minTime';
+                indexMap[2] = 'maxTime';
+            }
+            if(this.playbackMode != 'track') {
+                values.push(min);
+                indexMap[indexMap.length] = 'tail';
+            }
+            //set slider interval based on the step value
+            if(!mngr.snapToList){
+                // OpenLayers.Control.DimensionManger.step should
+                // always be a real numeric value, even if timeUnits & timeStep are set
+                interval = mngr.step;
+            }
+
+            return {
+                'values' : values,
+                'map' : indexMap,
+                'maxValue' : max,
+                'minValue' : min,
+                'interval' : interval
+            };
+        }
+    },
+
+    reconfigureSlider : function(sliderInfo) {
+        var slider = this;
+        slider.setMaxValue(sliderInfo.maxValue);
+        slider.setMinValue(sliderInfo.minValue);
+        Ext.apply(slider, {
+            increment : sliderInfo.interval,
+            keyIncrement : sliderInfo.interval,
+            indexMap : sliderInfo.map
+        });
+        for(var i = 0; i < sliderInfo.values.length; i++) {
+            if(slider.thumbs[i]) {
+                slider.setValue(i, sliderInfo.values[i]);
+            }
+            else {
+                slider.addThumb(sliderInfo.values[i]);
+            }
+        }
+        //set format of slider based on the interval steps
+        if(!sliderInfo.interval && slider.timeManager.modelCache.values) {
+            sliderInfo.interval = Math.round((sliderInfo.maxValue - sliderInfo.minValue) / this.timeManager.modelCache.values.length);
+        }
+        this.setTimeFormat(gxp.PlaybackToolbar.guessTimeFormat(sliderInfo.interval));
+    },
+
+    setThumbStyles : function() {
+        var slider = this;
+        var tailIndex = slider.indexMap.indexOf('tail');
+        if(slider.indexMap[1] == 'min') {
+            slider.thumbs[1].el.addClass('x-slider-min-thumb');
+            slider.thumbs[2].el.addClass('x-slider-max-thumb');
+        }
+        if(tailIndex > -1) {
+            var tailThumb = slider.thumbs[tailIndex];
+            var headThumb = slider.thumbs[0];
+            tailThumb.el.addClass('x-slider-tail-thumb');
+            tailThumb.constrain = false;
+            headThumb.constrain = false;
+        }
+    },    
+
+    getThumbText: function(thumb) {
+        if(thumb.slider.indexMap[thumb.index] != 'tail') {
+            var d = new Date(thumb.value);
+            d.setTime( d.getTime() + d.getTimezoneOffset()*60*1000 );
+            return (d.format(thumb.slider.timeFormat));
+        }
+        else {
+            var formatInfo = gxp.PlaybackToolbar.smartIntervalFormat.call(thumb, thumb.slider.thumbs[0].value - thumb.value);
+            return formatInfo.value + ' ' + formatInfo.units;
+        }
+    },
+
+    onSliderChangeComplete: function(slider, value, thumb, silent){
+        var timeManager = slider.timeManager;
+        if (value === timeManager.currentValue) {
+            return;
+        }
+        //test if this is the main time slider
+        switch (slider.indexMap[thumb.index]) {
+            case 'primary':
+                //if we have a tail slider, then the range interval should be updated first
+                var tailIndex = slider.indexMap.indexOf('tail'); 
+                if (tailIndex>-1){
+                    slider.onSliderChangeComplete(slider,slider.thumbs[tailIndex].value,slider.thumbs[tailIndex],true);
+                }
+                if (!timeManager.snapToList && timeManager.timeUnits) {
+                    //this will make the value actually be modified by the exact time unit
+                    var op = value > timeManager.currentValue ? 'ceil' : 'floor';
+                    var steps = Math[op]((value-timeManager.currentValue)/OpenLayers.TimeStep[timeManager.timeUnits]);
+                    timeManager.setCurrentValue(timeManager.incrementTimeValue(steps));
+                            } else {
+                    timeManager.setCurrentValue(value);
+                }
+                break;
+            case 'min':
+                    timeManager.setAnimationStart(value);
+                break;
+            case 'max':
+                    timeManager.seAnimantionEnd(value);
+                break;
+            case 'tail':
+                for (var i = 0, len = timeManager.agents.length; i < len; i++) {
+                    if(timeManager.agents[i].tickMode == 'range'){
+                        timeManager.agents[i].rangeInterval = (slider.thumbs[0].value - value);
+                    }
+                }
+                if(!silent){
+                    timeManager.setCurrentValue(slider.thumbs[0].value);
+                }
+        }
+        if (this._restartPlayback) {
+            delete this._restartPlayback;
+            timeManager.play();
+        }
+    },
+
+    // override to add pre buffer progress
+    onRender : function() {
+        this.autoEl = {
+            cls: 'x-slider ' + (this.vertical ? 'x-slider-vert' : 'x-slider-horz'),
+            cn : [{
+                cls: 'x-slider-end',
+                cn : {
+                    cls:'x-slider-inner',
+                    cn : [{tag:'a', cls:'x-slider-focus', href:"#", tabIndex: '-1', hidefocus:'on'}]
+                }
+            }, {cls: 'x-slider-progress'}]
+        };
+
+        Ext.slider.MultiSlider.superclass.onRender.apply(this, arguments);
+
+        this.endEl   = this.el.first();
+        this.progressEl = this.el.child('.x-slider-progress');
+        this.innerEl = this.endEl.first();
+        this.focusEl = this.innerEl.child('.x-slider-focus');
+
+        //render each thumb
+        for (var i=0; i < this.thumbs.length; i++) {
+            this.thumbs[i].render();
+        }
+
+        //calculate the size of half a thumb
+        var thumb      = this.innerEl.child('.x-slider-thumb');
+        this.halfThumb = (this.vertical ? thumb.getHeight() : thumb.getWidth()) / 2;
+
+        this.initEvents();
+    }
+
+});
+
+Ext.reg('gxp_timeslider', gxp.slider.TimeSlider);
 
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
@@ -15715,6 +16132,199 @@ gxp.CatalogueSearchPanel = Ext.extend(Ext.Panel, {
 
 /** api: xtype = gxp_cataloguesearchpanel */
 Ext.reg('gxp_cataloguesearchpanel', gxp.CatalogueSearchPanel);
+
+/**
+ * Copyright (c) 2008-2011 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @requires OpenLayers/Control/ScaleLine.js
+ * @requires GeoExt/data/ScaleStore.js
+ */
+
+/** api: (define)
+ *  module = gxp
+ *  class = ScaleOverlay
+ *  base_link = `Ext.Panel <http://dev.sencha.com/deploy/dev/docs/?class=Ext.Panel>`_
+ */
+Ext.namespace("gxp");
+
+/** api: constructor
+ *  .. class:: ScaleOverlay(config)
+ *   
+ *      Create a panel for showing a ScaleLine control and a combobox for 
+ *      selecting the map scale.
+ */
+gxp.ScaleOverlay = Ext.extend(Ext.Panel, {
+    
+    /** api: config[map]
+     *  ``OpenLayers.Map`` or :class:`GeoExt.MapPanel`
+     *  The map for which to show the scale info.
+     */
+    map: null,
+
+    /** i18n */
+    zoomLevelText: "Zoom level",
+
+    /** private: method[initComponent]
+     *  Initialize the component.
+     */
+    initComponent: function() {
+        gxp.ScaleOverlay.superclass.initComponent.call(this);
+        this.cls = 'map-overlay';
+        if(this.map) {
+            if(this.map instanceof GeoExt.MapPanel) {
+                this.map = this.map.map;
+            }
+            this.bind(this.map);
+        }
+        this.on("beforedestroy", this.unbind, this);        
+    },
+    
+    /** private: method[addToMapPanel]
+     *  :param panel: :class:`GeoExt.MapPanel`
+     *  
+     *  Called by a MapPanel if this component is one of the items in the panel.
+     */
+    addToMapPanel: function(panel) {
+        this.on({
+            afterrender: function() {
+                this.bind(panel.map);
+            },
+            scope: this
+        });
+    },
+    
+    /** private: method[stopMouseEvents]
+     *  :param e: ``Object``
+     */
+    stopMouseEvents: function(e) {
+        e.stopEvent();
+    },
+    
+    /** private: method[removeFromMapPanel]
+     *  :param panel: :class:`GeoExt.MapPanel`
+     *  
+     *  Called by a MapPanel if this component is one of the items in the panel.
+     */
+    removeFromMapPanel: function(panel) {
+        var el = this.getEl();
+        el.un("mousedown", this.stopMouseEvents, this);
+        el.un("click", this.stopMouseEvents, this);
+        this.unbind();
+    },
+
+    /** private: method[addScaleLine]
+     *  
+     *  Create the scale line control and add it to the panel.
+     */
+    addScaleLine: function() {
+        var scaleLinePanel = new Ext.BoxComponent({
+            autoEl: {
+                tag: "div",
+                cls: "olControlScaleLine overlay-element overlay-scaleline"
+            }
+        });
+        this.on("afterlayout", function(){
+            scaleLinePanel.getEl().dom.style.position = 'relative';
+            scaleLinePanel.getEl().dom.style.display = 'inline';
+
+            this.getEl().on("click", this.stopMouseEvents, this);
+            this.getEl().on("mousedown", this.stopMouseEvents, this);
+        }, this);
+        scaleLinePanel.on('render', function(){
+            var scaleLine = new OpenLayers.Control.ScaleLine({
+                geodesic: true,
+                div: scaleLinePanel.getEl().dom
+            });
+
+            this.map.addControl(scaleLine);
+            scaleLine.activate();
+        }, this);
+        this.add(scaleLinePanel);
+    },
+
+    /** private: method[handleZoomEnd]
+     *
+     * Set the correct value in the scale combo box.
+     */
+    handleZoomEnd: function() {
+        var scale = this.zoomStore.queryBy(function(record) { 
+            return this.map.getZoom() == record.data.level;
+        }, this);
+        if (scale.length > 0) {
+            scale = scale.items[0];
+            this.zoomSelector.setValue("1 : " + parseInt(scale.data.scale, 10));
+        } else {
+            if (!this.zoomSelector.rendered) {
+                return;
+            }
+            this.zoomSelector.clearValue();
+        }
+    },
+
+    /** private: method[addScaleCombo]
+     *  
+     *  Create the scale combo and add it to the panel.
+     */
+    addScaleCombo: function() {
+        this.zoomStore = new GeoExt.data.ScaleStore({
+            map: this.map
+        });
+        this.zoomSelector = new Ext.form.ComboBox({
+            emptyText: this.zoomLevelText,
+            tpl: '<tpl for="."><div class="x-combo-list-item">1 : {[parseInt(values.scale)]}</div></tpl>',
+            editable: false,
+            triggerAction: 'all',
+            mode: 'local',
+            store: this.zoomStore,
+            width: 110
+        });
+        this.zoomSelector.on({
+            click: this.stopMouseEvents,
+            mousedown: this.stopMouseEvents,
+            select: function(combo, record, index) {
+                this.map.zoomTo(record.data.level);
+            },
+            scope: this
+        });
+        this.map.events.register('zoomend', this, this.handleZoomEnd);
+        var zoomSelectorWrapper = new Ext.Panel({
+            items: [this.zoomSelector],
+            cls: 'overlay-element overlay-scalechooser',
+            border: false
+        });
+        this.add(zoomSelectorWrapper);
+    },
+
+    /** private: method[bind]
+     *  :param map: ``OpenLayers.Map``
+     */
+    bind: function(map) {
+        this.map = map;
+        this.addScaleLine();
+        this.addScaleCombo();
+        this.doLayout();
+    },
+    
+    /** private: method[unbind]
+     */
+    unbind: function() {
+        if(this.map && this.map.events) {
+            this.map.events.unregister('zoomend', this, this.handleZoomEnd);
+        }
+        this.zoomStore = null;
+        this.zoomSelector = null;
+    }
+
+});
+
+/** api: xtype = gxp_scaleoverlay */
+Ext.reg('gxp_scaleoverlay', gxp.ScaleOverlay);
 
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
@@ -18766,6 +19376,225 @@ Ext.preg(gxp.plugins.GeoNodeCatalogueSource.prototype.ptype, gxp.plugins.GeoNode
  * of the license.
  */
 
+/**
+ * @requires plugins/LayerSource.js
+ * @requires OpenLayers/Layer/TMS.js
+ * @requires OpenLayers/Format/TMSCapabilities.js
+ */
+
+Ext.ns('gxp.data', 'gxp.plugins');
+
+gxp.data.TMSCapabilitiesReader = Ext.extend(Ext.data.DataReader, {
+    constructor: function(meta, recordType) {
+        meta = meta || {};
+        if (!meta.format) {
+            meta.format = new OpenLayers.Format.TMSCapabilities();
+        }
+        if(typeof recordType !== "function") {
+            recordType = GeoExt.data.LayerRecord.create(
+                recordType || meta.fields || [
+                    {name: "name", type: "string"},
+                    {name: "title", type: "string"},
+                    {name: "tileMapUrl", type: "string"}
+                ]);
+        }
+        gxp.data.TMSCapabilitiesReader.superclass.constructor.call(
+            this, meta, recordType);
+    },
+    read: function(request) {
+        var data = request.responseXML;
+        if(!data || !data.documentElement) {
+            data = request.responseText;
+        }
+        return this.readRecords(data);
+    },
+    readRecords: function(data) {
+        var records = [], i, ii, url, proj;
+        if (typeof data === "string" || data.nodeType) {
+            data = this.meta.format.read(data);
+            this.raw = data;
+            // a single tileMap, someone supplied a url to a TileMap
+            if (!data.tileMaps) {
+                if (data.tileSets) {
+                    proj = new OpenLayers.Projection(data.srs);
+                    if (this.meta.mapProjection.equals(proj)) {
+                        var serverResolutions = [];
+                        for (i=0, ii=data.tileSets.length; i<ii; ++i) {
+                            serverResolutions.push(data.tileSets[i].unitsPerPixel);
+                        }
+                        url = this.meta.baseUrl;
+                        var layerName = url.substring(
+                            url.indexOf(this.meta.version) + this.meta.version.length + 1,
+                            url.lastIndexOf('/'));
+                        records.push(new this.recordType({
+                            layer: new OpenLayers.Layer.TMS(
+                                data.title,
+                                data.tileMapService.replace("/" + this.meta.version, ""), {
+                                    serverResolutions: serverResolutions,
+                                    type: data.tileFormat.extension,
+                                    layername: layerName
+                                }
+                            ),
+                            title: data.title,
+                            name: data.title,
+                            tileMapUrl: this.meta.baseUrl
+                        }));
+                    }
+                }
+            } else {
+                for (i=0, ii=data.tileMaps.length; i<ii; ++i) {
+                    var tileMap = data.tileMaps[i];
+                    proj = new OpenLayers.Projection(tileMap.srs);
+                    if (this.meta.mapProjection.equals(proj)) {
+                        url = tileMap.href;
+                        var layername = url.substring(url.indexOf(this.meta.version + '/') + 6);
+                        records.push(new this.recordType({
+                            layer: new OpenLayers.Layer.TMS(
+                                tileMap.title, 
+                                (this.meta.baseUrl.indexOf(this.meta.version) !== -1) ? this.meta.baseUrl.replace(this.meta.version + '/', '') : this.meta.baseUrl, {
+                                    layername: layername
+                                }
+                            ),
+                            title: tileMap.title,
+                            name: tileMap.title,
+                            tileMapUrl: url
+                        }));
+                    }
+                }
+            }
+        }
+        return {
+            totalRecords: records.length,
+            success: true,
+            records: records
+        };
+    }
+});
+
+/** api: (define)
+ *  module = gxp.plugins
+ *  class = TMSSource
+ */
+
+/** api: (extends)
+ *  plugins/LayerSource.js
+ */
+
+/** api: constructor
+ *  .. class:: TMSSource(config)
+ *
+ *    Plugin for using TMS layers with :class:`gxp.Viewer` instances. The
+ *    plugin issues a Capabilities request to create a store of the TMS's
+ *    tile maps. It is currently not supported to use this source type directly
+ *    in the viewer config, it is only used to add a TMS service dynamically
+ *    through the AddLayers plugin.
+ */
+gxp.plugins.TMSSource = Ext.extend(gxp.plugins.LayerSource, {
+
+    /** api: ptype = gxp_tmssource */
+    ptype: "gxp_tmssource",
+
+    /** api: config[url]
+     *  ``String`` TMS service URL for this source
+     */
+
+    /** api: config[version]
+     *  ``String`` TMS version to use, defaults to 1.0.0
+     */
+    version: "1.0.0",
+
+    /** private: method[constructor]
+     */
+    constructor: function(config) {
+        gxp.plugins.TMSSource.superclass.constructor.apply(this, arguments);
+        this.format = new OpenLayers.Format.TMSCapabilities();
+        if (this.url.slice(-1) !== '/') {
+            this.url = this.url + '/';
+        }
+    },
+
+    /** api: method[createStore]
+     *
+     *  Creates a store of layer records.  Fires "ready" when store is loaded.
+     */
+    createStore: function() {
+        var format = this.format;
+        this.store = new Ext.data.Store({
+            autoLoad: true,
+            listeners: {
+                load: function() {
+                    this.title = this.store.reader.raw.title;
+                    this.fireEvent("ready", this);
+                },
+                exception: function() {
+                    var msg = "Trouble creating TMS layer store from response.";
+                    var details = "Unable to handle response.";
+                    this.fireEvent("failure", this, msg, details);
+                },
+                scope: this
+            },
+            proxy: new Ext.data.HttpProxy({
+                url: this.url.indexOf(this.version) === -1 ? this.url + this.version : this.url,
+                disableCaching: false,
+                method: "GET"
+            }),
+            reader: new gxp.data.TMSCapabilitiesReader({
+                baseUrl: this.url, 
+                version: this.version, 
+                mapProjection: this.getMapProjection()
+            })
+        });
+    },
+
+    /** api: method[createLayerRecord]
+     *  :arg config:  ``Object``  The application config for this layer.
+     *  :returns: ``GeoExt.data.LayerRecord`` or null when the source is lazy.
+     *
+     *  Create a layer record given the config.
+     */
+    createLayerRecord: function(config, callback, scope) {
+        var index = this.store.findExact("name", config.name);
+        if (index > -1) {
+            var record = this.store.getAt(index);
+            var layer = record.getLayer();
+            if (layer.serverResolutions !== null) {
+                return record;
+            } else {
+                Ext.Ajax.request({
+                    url: record.get('tileMapUrl'),
+                    success: function(response) {
+                        var serverResolutions = [];
+                        var info = this.format.read(response.responseText);
+                        for (var i=0, ii=info.tileSets.length; i<ii; ++i) {
+                            serverResolutions.push(info.tileSets[i].unitsPerPixel);
+                        }
+                        layer.addOptions({
+                            serverResolutions: serverResolutions,
+                            type: info.tileFormat.extension
+                        });
+                        this.target.createLayerRecord({
+                            source: this.id,
+                            name: config.name
+                        }, callback, scope);
+                    },
+                    scope: this
+                });
+            }
+        }
+    }
+
+});
+
+Ext.preg(gxp.plugins.TMSSource.prototype.ptype, gxp.plugins.TMSSource);
+
+/**
+ * Copyright (c) 2008-2011 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
 /** api: (define)
  *  module = gxp.plugins
  *  class = StyleWriter
@@ -21070,6 +21899,171 @@ Ext.preg(gxp.plugins.WMSGetFeatureInfo.prototype.ptype, gxp.plugins.WMSGetFeatur
  * of the license.
  */
 
+/** api: (define)
+ *  module = gxp.plugins
+ *  class = FormFieldHelp
+ */
+
+Ext.namespace("gxp.plugins");
+
+/** api: constructor
+ *  .. class:: FormFieldHelp(config)
+ *
+ *    Plugin for showing a help text when hovering over a form field.
+ *    Uses an Ext.QuickTip.
+ */
+/** api: example
+ *    The code example below shows how to use this plugin with a form field:
+ *
+ *    .. code-block:: javascript
+ *
+ *      var field = new Ext.form.TextField({
+ *          name: 'foo',
+ *          value: 'bar',
+ *          plugins: [{
+ *              ptype: 'gxp_formfieldhelp',
+ *              helpText: 'This is the help text for my form field'
+ *          }]
+ *      });
+ */
+gxp.plugins.FormFieldHelp = Ext.extend(Object, {
+
+    /** api: ptype = gxp_formfieldhelp */
+    ptype: 'gxp_formfieldhelp',
+
+    /** api: config[helpText]
+     *  ``String`` The help text to show.
+     */
+    helpText: null,
+
+    /** api: config[dismissDelay]
+     *  ``Integer`` How long before the quick tip should disappear.
+     *  Defaults to 5 seconds.
+     */
+    dismissDelay: 5000,
+
+    /** private: method[constructor]
+     */
+    constructor: function(config) {
+        Ext.apply(this, config);
+    },
+
+    /** private: method[init]
+     *
+     *  :arg target: ``Ext.form.Field`` The form field initializing this 
+     *  plugin.
+     */
+    init: function(target){
+        this.target = target;
+        target.on('render', this.showHelp, this);
+    },
+
+    /** private: method[showHelp]
+     *  Show the help popup for the field. Show it on the associated label if
+     *  present, with a fallback to the form element itself.
+     */
+    showHelp: function() {
+        var target;
+        if (this.target.label) {
+            target = this.target.label;
+        } else {
+            target = this.target.getEl();
+        }
+        Ext.QuickTips.register({
+            target: target, 
+            dismissDelay: this.dismissDelay,
+            text: this.helpText
+        });
+    }
+});
+
+Ext.preg(gxp.plugins.FormFieldHelp.prototype.ptype, gxp.plugins.FormFieldHelp);
+
+/**
+ * Copyright (c) 2008-2012 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/** api: (define)
+ *  module = gxp.plugins
+ *  class = FormFieldHelp
+ */
+
+Ext.namespace("gxp.plugins");
+
+/** api: constructor
+ *  .. class:: SchemaAnnotations
+ *
+ *    Module for getting annotations from the WFS DescribeFeatureType schema.
+ *    This is currently used in gxp.plugins.FeatureEditorForm and
+ *    gxp.plugins.FeatureEditorGrid.
+ *   
+ *    The WFS needs to provide xsd:annotation in the XML Schema which is 
+ *    reported back on a WFS DescribeFeatureType request. An example is:
+ *  
+ *    .. code-block:: xml
+ *
+ *      <xsd:element maxOccurs="1" minOccurs="0" name="PERSONS" nillable="true" type="xsd:double">
+ *        <xsd:annotation>
+ *          <xsd:appinfo>{"title":{"en":"Population"}}</xsd:appinfo>
+ *          <xsd:documentation xml:lang="en">
+ *            Number of persons living in the state
+ *          </xsd:documentation>
+ *        </xsd:annotation>
+ *      </xsd:element>
+ *
+ *    To use this module simply use Ext.override in your class, and use the 
+ *    getAnnotationsFromSchema function on a record from the attribute store.
+ *
+ *    .. code-block:: javascript
+ *
+ *    Ext.override(gxp.plugins.YourPlugin, gxp.plugins.SchemaAnnotations);
+ *
+ */
+gxp.plugins.SchemaAnnotations = {
+
+    /** api: method[getAnnotationsFromSchema]
+     *
+     *  :arg r: ``Ext.data.Record`` a record from the AttributeStore
+     *  :returns: ``Object`` Object with label and helpText properties or
+     *  null if no annotation was found.
+     */
+    getAnnotationsFromSchema: function(r) {
+        var result = null;
+        var annotation = r.get('annotation');
+        if (annotation !== undefined) {
+            result = {};
+            var lang = GeoExt.Lang.locale.split("-").shift();
+            var i, ii;
+            for (i=0, ii=annotation.appinfo.length; i<ii; ++i) {
+                var json = Ext.decode(annotation.appinfo[i]);
+                if (json.title && json.title[lang]) {
+                    result.label = json.title[lang];
+                    break;
+                }
+            }
+            for (i=0, ii=annotation.documentation.length; i<ii; ++i) {
+                if (annotation.documentation[i].lang === lang) {
+                    result.helpText = annotation.documentation[i].textContent;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+};
+
+/**
+ * Copyright (c) 2008-2012 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
 /**
  * @requires GeoExt/widgets/form.js
  * @requires plugins/SchemaAnnotations.js
@@ -21625,6 +22619,157 @@ Ext.override(gxp.plugins.FeatureEditorForm, gxp.plugins.SchemaAnnotations);
 
 Ext.preg(gxp.plugins.FeatureEditorForm.prototype.ptype, gxp.plugins.FeatureEditorForm);
 Ext.reg(gxp.plugins.FeatureEditorForm.prototype.xtype, gxp.plugins.FeatureEditorForm);
+
+/**
+ * Copyright (c) 2008-2012 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @requires plugins/FeatureEditorGrid.js
+ */
+
+Ext.namespace("gxp.plugins");
+
+gxp.plugins.VersionedEditor = Ext.extend(Ext.TabPanel, {
+
+    /** api: config[url]
+     *  ``String``
+     *  Url of the web-api endpoint of GeoGit.
+     */
+    url: null,
+
+    /** api: config[historyTpl]
+     *  ``String`` Template to use for displaying the commit history.
+     *  If not set, a default template will be provided.
+     */
+    historyTpl: '<ol><tpl for="."><li class="commit"><div class="commit-msg">{message}</div><div>{author} <span class="commit-datetime">authored {date:this.formatDate}</span></div></li></tpl>',
+
+    /* i18n */
+    attributesTitle: "Attributes",
+    historyTitle: "History",
+    hour: "hour",
+    hours: "hours",
+    day: "day",
+    days: "days",
+    ago: "ago",
+    /* end i18n */
+
+    border: false,
+    activeTab: 0,
+
+    /** api: config[editor]
+     *  The ptype of the attribute editor to use. One of 'gxp_editorgrid' or
+     *  'gxp_editorform'. Defaults to 'gxp_editorgrid'.
+     */
+    editor: null,
+
+    /** private: property[attributeEditor]
+     *  ``gxp.plugins.FeatureEditorGrid`` or ``gxp.plugins.FeatureEditorForm``
+     */
+    attributeEditor: null,
+
+    /** api: ptype = gxp_versionededitor */
+    ptype: "gxp_versionededitor",
+
+    /** private: method[initComponent]
+     */
+    initComponent: function() {
+        gxp.plugins.VersionedEditor.superclass.initComponent.call(this);
+        var editorConfig = {
+            feature: this.initialConfig.feature,
+            schema: this.initialConfig.schema,
+            fields: this.initialConfig.fields,
+            excludeFields: this.initialConfig.excludeFields,
+            propertyNames: this.initialConfig.propertyNames,
+            readOnly: this.initialConfig.readOnly
+        };
+        var config = Ext.apply({
+            xtype: this.initialConfig.editor || "gxp_editorgrid",
+            title: this.attributesTitle
+        }, editorConfig);
+        this.attributeEditor = Ext.ComponentMgr.create(config);
+        this.add(this.attributeEditor);
+        var dataView = this.createDataView();
+        this.add({
+            xtype: 'panel',
+            border: false,
+            plain: true,
+            layout: 'fit', 
+            autoScroll: true, 
+            items: [dataView], 
+            title: this.historyTitle
+        });
+    },
+
+    /** private: method[createDataView]
+     */
+    createDataView: function() {
+        var typeName = this.schema.reader.raw.featureTypes[0].typeName;
+        var path = typeName.split(":").pop() + "/" + this.feature.fid;
+        if (this.url.charAt(this.url.length-1) !== '/') {
+            this.url = this.url + "/";
+        }
+        var command = 'log';
+        var url = this.url + command;
+        url = Ext.urlAppend(url, 'path=' + path + '&output_format=json');
+        var store = new Ext.data.JsonStore({
+            url: url,
+            root: 'response.commit',
+            fields: ['message', 'author', 'email', 'commit', {
+                name: 'date', type: 'date', convert: function(value) {
+                    return new Date(value);
+                }
+            }],
+            autoLoad: true
+        });
+        var me = this;
+        var tpl = new Ext.XTemplate(this.historyTpl, {
+            formatDate: function(value) {
+                var now = new Date(), result = '';
+                if (value > now.add(Date.DAY, -1)) {
+                    var hours = Math.round((now-value)/(1000*60*60));
+                    result += hours + ' ';
+                    result += (result > 1) ? me.hours : me.hour;
+                    result += ' ' + me.ago;
+                    return result;
+                } else if (value > now.add(Date.MONTH, -1)) {
+                    var days = Math.round((now-value)/(1000*60*60*24));
+                    result += days + ' ';
+                    result += (result > 1) ? me.days : me.day;
+                    result += ' ' + me.ago;
+                    return result;
+                }
+            }
+        });
+        return new Ext.DataView({
+            store: store,
+            tpl: tpl,
+            autoHeight:true
+        });
+    },
+
+    /** private: method[init]
+     *
+     *  :arg target: ``gxp.FeatureEditPopup`` The feature edit popup 
+     *  initializing this plugin.
+     */
+    init: function(target) {
+        // make sure the editor is not added, we will take care
+        // of adding the editor to our container later on
+        target.on('beforeadd', OpenLayers.Function.False, this);
+        this.attributeEditor.init(target);
+        target.un('beforeadd', OpenLayers.Function.False, this);
+        target.add(this);
+        target.doLayout();
+    }
+
+});
+
+Ext.preg(gxp.plugins.VersionedEditor.prototype.ptype, gxp.plugins.VersionedEditor);
 
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
@@ -28739,3 +29884,184 @@ gxp.plugins.Playback = Ext.extend(gxp.plugins.Tool, {
 
 Ext.preg(gxp.plugins.Playback.prototype.ptype, gxp.plugins.Playback);
 
+/**
+ * Copyright (c) 2008 The Open Planning Project
+ */
+
+/**
+ * @require widgets/form/ColorField.js
+ */
+
+Ext.namespace("gxp");
+
+/**
+ * Class: gxp.ColorManager
+ * A simple manager that handles the rendering of a ColorPicker window and
+ *     coordinates the setting of values in a ColorField.  May be used as a
+ *     plugin for a ColorField (or any text field that is intended to gather a
+ *     RGB hex color value).
+ */
+gxp.ColorManager = function(config) {
+    Ext.apply(this, config);
+};
+
+Ext.apply(gxp.ColorManager.prototype, {
+    
+    /**
+     * Property: field
+     * {<Styer.form.ColorField>} The currently focussed field.
+     */
+    field: null,
+    
+    /**
+     * Method: init
+     * Called when the color manager is used as a plugin.
+     *
+     * Parameters:
+     * field - {<Styler.form.ColorField>} The field using this manager as a
+     *     plugin.
+     */
+    init: function(field) {
+        this.register(field);
+    },
+    
+    /**
+     * Method: destroy
+     * Cleans up the manager.
+     */
+    destroy: function() {
+        if(this.field) {
+            this.unregister(this.field);
+        }
+    },
+    
+    
+    /**
+     * Method: register
+     * Register a field with this manager.
+     *
+     * Parameters:
+     * field - {<Styler.form.ColorField>} The field using this manager as a
+     *     plugin.
+     */
+    register: function(field) {
+        if(this.field) {
+            this.unregister(this.field);
+        }
+        this.field = field;
+        field.on({
+            focus: this.fieldFocus,
+            destroy: this.destroy,
+            scope: this
+        });
+    },
+    
+    /**
+     * Method: unregister
+     * Unregister a field with this manager.
+     * 
+     * Parameters:
+     * field - {<Styler.form.ColorField>} The field using this manager as a
+     *     plugin.
+     */
+    unregister: function(field) {
+        field.un("focus", this.fieldFocus, this);
+        field.un("destroy", this.destroy, this);
+        if(gxp.ColorManager.picker && field == this.field) {
+            gxp.ColorManager.picker.un("pickcolor", this.setFieldValue, this);
+        }
+        this.field = null;
+    },
+    
+    /**
+     * Method: fieldFocus
+     * Listener for "focus" event on a field.
+     *
+     * Parameters:
+     * field - {<Styler.form.ColorField>} The focussed field.
+     */
+    fieldFocus: function(field) {
+        if(!gxp.ColorManager.pickerWin) {
+            gxp.ColorManager.picker = new Ext.ColorPalette();
+            gxp.ColorManager.pickerWin = new Ext.Window({
+                title: "Color Picker",
+                closeAction: "hide",
+                autoWidth: true,
+                autoHeight: true
+            });
+        } else {
+            gxp.ColorManager.picker.purgeListeners();
+        }
+        var listenerCfg = {
+            select: this.setFieldValue,
+            scope: this
+        };
+        var value = this.getPickerValue();
+        if (value) {
+            var colors = [].concat(gxp.ColorManager.picker.colors);
+            if (!~colors.indexOf(value)) {
+                if (gxp.ColorManager.picker.ownerCt) {
+                    gxp.ColorManager.pickerWin.remove(gxp.ColorManager.picker);
+                    gxp.ColorManager.picker = new Ext.ColorPalette();
+                }
+                colors.push(value);
+                gxp.ColorManager.picker.colors = colors;
+            }
+            gxp.ColorManager.pickerWin.add(gxp.ColorManager.picker);
+            gxp.ColorManager.pickerWin.doLayout();
+            if (gxp.ColorManager.picker.rendered) {
+                gxp.ColorManager.picker.select(value);
+            } else {
+                listenerCfg.afterrender = function() {
+                    gxp.ColorManager.picker.select(value);
+                };
+            }
+        }
+        gxp.ColorManager.picker.on(listenerCfg);
+        gxp.ColorManager.pickerWin.show();
+    },
+    
+    /**
+     * Method: setFieldValue
+     * Listener for the "pickcolor" event of the color picker.  Only sets the
+     *     field value if the field is visible.
+     *
+     * Parameters:
+     * picker - {Ext.ux.ColorPicker} The color picker
+     * color - {String} The RGB hex value (not prefixed with "#")
+     */
+    setFieldValue: function(picker, color) {
+        if(this.field.isVisible()) {
+            this.field.setValue("#" + color);
+        }
+    },
+    
+    /**
+     * Method: getPickerValue
+     */
+    getPickerValue: function() {
+        var field = this.field;
+        var hex = field.getHexValue ?
+            (field.getHexValue() || field.defaultBackground) :
+            field.getValue();
+        if (hex) {
+            return hex.substr(1);
+        }
+    }
+    
+});
+
+(function() {
+    // register the color manager with every color field
+    Ext.util.Observable.observeClass(gxp.form.ColorField);
+    gxp.form.ColorField.on({
+        render: function(field) {
+            var manager = new gxp.ColorManager();
+            manager.register(field);
+        }
+    });
+})();
+
+gxp.ColorManager.picker = null;
+
+gxp.ColorManager.pickerWin = null;

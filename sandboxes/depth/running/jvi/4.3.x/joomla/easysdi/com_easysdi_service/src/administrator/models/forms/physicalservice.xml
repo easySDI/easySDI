@@ -45,6 +45,16 @@
                         description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEURL" 
                         validate="url" 
                         filter="safehtml" /> 
+        
+        <field 	name="server_id" 
+                        type="sql" 
+                        class="inputbox"
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVER_ID"
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVER_ID" 
+                        query="SELECT id, value FROM #__sdi_sys_server WHERE state=1 ORDER BY ordering" 
+                        key_field="id" 
+                        value_field="value"
+        /> 
 		
         <field 	name="servicescope_id" 
                         onchange="enableOrganism();"

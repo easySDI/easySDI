@@ -11,14 +11,14 @@ Ext.onReady(function() {
     window.appname = new gxp.Viewer(getMapConfig());
     //Add the mouseposition control if activated in the map configuration
     //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
-    if (mouseposition == 1) {
+    if (mouseposition === 'true') {
         window.appname.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());
     }
     var locator = null;
     window.appname.on("ready", function() {
         window.appname.portalConfig.renderTo = "sdiNewContainer";
-        if (data.urlwfslocator != "") {
-            if (locator == null) {
+        if (data.urlwfslocator !== "") {
+            if (locator === null) {
                 locator = {xtype: "gxp_autocompletecombo",
                     listeners: {
                         select: function(list, record) {
@@ -39,10 +39,14 @@ Ext.onReady(function() {
                 window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }
         }
+        if (data.level) {
+            //Init the indoor layer with the default level value
+            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this, window.appname.mapPanel.map.indoorlevelslider.value);
+        }
         loadingMask.hide();
     });
 
-    if (cleared == "false") {
+    if (cleared === "false") {
         SdiScaleLineParams = {
             bottomInUnits: data.bottomInUnits,
             bottomOutUnits: data.bottomOutUnits,
@@ -100,7 +104,7 @@ function getMapConfig() {
     var layertreeactivated = false;
     if (data.tools !== null && data.tools.length > 0) {
         for (index = 0; index < data.tools.length; ++index) {
-            if (data.tools[index].alias == 'layertree') {
+            if (data.tools[index].alias === 'layertree') {
                 config.portalConfig.items.push({
                     id: "westpanel",
                     xtype: "panel",
@@ -116,7 +120,7 @@ function getMapConfig() {
                 });
                 layertreeactivated = true;
             }
-            if (data.tools[index].alias == 'getfeatureinfo') {
+            if (data.tools[index].alias === 'getfeatureinfo') {
                 config.portalConfig.items.push(
                         {
                             id: "hiddentbar",
@@ -126,11 +130,11 @@ function getMapConfig() {
                             height: 0,
                             region: "south",
                             items: []
-                        })
+                        });
             }
         }
     }
-    if (layertreeactivated == false) {
+    if (layertreeactivated === false) {
         config.portalConfig.items.push(
                 {
                     id: "westpanel",
@@ -156,10 +160,11 @@ function getMapConfig() {
     };
 
     //Groups
-    layermanager.groups = {background: {title: backgroundname, exclusive: true, expanded: backgroundexpanded}};
+    layermanager.groups = {};
     for (index = 0; index < groups.length; ++index) {
         layermanager.groups[groups[index].alias] = {title: groups[index].title, expanded: groups[index].expanded};
     }
+    layermanager.groups['background'] = {title: backgroundname, exclusive: true, expanded: backgroundexpanded};
     config.tools.push(layermanager);
 
     for (index = 0; index < data.tools.length; ++index) {
@@ -195,7 +200,7 @@ function getMapConfig() {
                 config.tools.push(tool);
                 break;
             case 'zoomtoextent':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {
                         ptype: "gxp_zoomtoextent",
                         actionTarget: "map.tbar"
@@ -218,7 +223,7 @@ function getMapConfig() {
                 config.tools.push(tool);
                 break;
             case 'addlayer':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {
                         ptype: "gxp_addlayers",
                         actionTarget: "tree.tbar"
@@ -227,7 +232,7 @@ function getMapConfig() {
                 }
                 break;
             case 'searchcatalog':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {
                         ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar",
@@ -239,7 +244,7 @@ function getMapConfig() {
                 }
                 break;
             case 'layerdetailsheet':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {
                         ptype: "sdi_layerdetailsheet",
                         actionTarget: ["tree.contextMenu"],
@@ -250,7 +255,7 @@ function getMapConfig() {
                 }
                 break;
             case 'layerdownload':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {ptype: "sdi_layerdownload",
                         actionTarget: ["tree.contextMenu"],
                         iwidth: mwidth,
@@ -259,7 +264,7 @@ function getMapConfig() {
                 }
                 break;
             case 'layerorder':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {ptype: "sdi_layerorder",
                         actionTarget: ["tree.contextMenu"],
                         iwidth: mwidth,
@@ -268,14 +273,14 @@ function getMapConfig() {
                 }
                 break;
             case 'removelayer':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {ptype: "gxp_removelayer",
                         actionTarget: ["tree.contextMenu"]};
                     config.tools.push(tool);
                 }
                 break;
             case 'layerproperties':
-                if (layertreeactivated == true) {
+                if (layertreeactivated === true) {
                     var tool = {ptype: "gxp_layerproperties",
                         id: "layerproperties",
                         actionTarget: ["tree.contextMenu"]};
@@ -290,7 +295,7 @@ function getMapConfig() {
                     format: "' . $tool->params . '",
                     actionTarget: "hiddentbar",
                     defaultAction: 0
-                }
+                };
                 config.tools.push(tool);
                 break;
             case 'googlegeocoder':
@@ -298,11 +303,11 @@ function getMapConfig() {
                 var tool = {
                     ptype: "gxp_googlegeocoder",
                     outputTarget: "map.tbar"
-                }
+                };
                 config.tools.push(tool);
                 break;
             case 'print':
-                if (params.printserviceurl != null) {
+                if (params.printserviceurl !== null) {
                     config.tools.push({actions: ["-"], actionTarget: "map.tbar"});
                     var tool = {
                         ptype: "sdi_gxp_print",
@@ -312,20 +317,16 @@ function getMapConfig() {
                         actionTarget: "map.tbar",
                         showButtonText: false
                     };
-                    if (params.printserviceprinturl == '') {
-                        tool.printURL = params.printserviceurl + 'print.pdf';
-                    }
-                    ;
-                    if (params.printserviceprinturl == '') {
+                    if (params.printserviceprinturl === '') {
                         tool.printURL = params.printserviceurl + 'print.pdf';
                     } else {
                         tool.printURL = params.printserviceprinturl;
                     }
                     ;
-                    if (params.printservicecreateurl == '') {
-                        tool.printURL = params.printserviceurl + 'create.json';
+                    if (params.printservicecreateurl === '') {
+                        tool.createURL = params.printserviceurl + 'create.json';
                     } else {
-                        tool.printURL = params.printservicecreateurl;
+                        tool.createURL = params.printservicecreateurl;
                     }
                     ;
                     config.tools.push(tool);
@@ -342,7 +343,7 @@ function getMapConfig() {
     config.sources = {"ol": {ptype: "sdi_gxp_olsource"}};
 
     for (index = 0; index < services.length; ++index) {
-        if (services[index].url != null) {
+        if (services[index].url !== null) {
             config.sources[services[index].alias] = {ptype: services[index].ptype, url: services[index].url};
         }
         else {
@@ -365,7 +366,7 @@ function getMapConfig() {
         config.map["restrictedExtent"] = JSON.parse("[" + data.restrictedextent + "]");
     if (data.zoom)
         config.map["zoom"] = data.zoom;
-    if (cleared == "true") {
+    if (cleared === "true") {
         config.map.controls = [];
     }
 
@@ -375,11 +376,12 @@ function getMapConfig() {
         var layer = layers[index];
         switch (layer.source) {
             case 'ol':
+                var openlayer;
                 switch (layer.type) {
-                    case 'WMTS':
-                        var wmts = {
+                    case 'OpenLayers.Layer.WMTS':
+                        openlayer = {
                             source: "ol",
-                            type: "OpenLayers.Layer.WMTS",
+                            type: layer.type,
                             group: layer.group,
                             args: [
                                 {
@@ -395,28 +397,24 @@ function getMapConfig() {
                                 }
                             ]
                         };
-                        for (prop = 0; prop < layer.asOLoptions.lentgh; ++prop) {
-                            //layer[]
+                        if (layer.asOLoptions) {
+                            var options = JSON.parse(layer.asOLoptions);
+                            for (var key in options) {
+                                var option = options[key];
+                                if(typeof option === 'string' && option.indexOf("new OpenLayers") > -1){
+                                    openlayer.args[0][key] = eval(option);
+                                }else{
+                                    openlayer.args[0][key] = option;
+                                }
+                            }
                         }
-                        if (layer.href) {
-                            wmts.href = layer.href;
-                        }
-                        ;
-                        if (layer.download) {
-                            wmts.download = layer.download;
-                        }
-                        ;
-                        if (layer.order) {
-                            wmts.order = layer.order;
-                        }
-                        ;
-                        config.map.layers.push(wmts);
-                        break
-                    case 'WMSC':
-                    case 'WMS' :
-                        var wms = {
+                        //"maxExtent": "new OpenLayers.Bounds(420000,30000,900000,350000)", 
+                        //openlayer.args[0]['maxExtent'] = new OpenLayers.Bounds(420000,30000,900000,350000);
+                        break;
+                    case 'OpenLayers.Layer.WMS' :
+                        openlayer = {
                             source: "ol",
-                            type: "OpenLayers.Layer.WMS",
+                            type: layer.type,
                             group: layer.group,
                             args: [
                                 layer.name,
@@ -435,76 +433,124 @@ function getMapConfig() {
                             ]
                         };
                         if (layer.style) {
-                            wms.args[3].style = layer.style;
+                            openlayer.args[3].style = layer.style;
                         }
                         ;
-                        if (layer.href) {
-                            wms.href = layer.href;
+                        if (layer.asOLoptions) {
+                            var options = JSON.parse(layer.asOLoptions);
+                            for (var key in options) {
+                                var option = options[key];
+                                if(typeof option === 'string' && option.indexOf("new OpenLayers") > -1){
+                                    openlayer.args[key] = eval(option);
+                                }else{
+                                    openlayer.args[key] = option;
+                                }
+                            }
                         }
-                        ;
-                        if (layer.download) {
-                            wms.download = layer.download;
-                        }
-                        ;
-                        if (layer.order) {
-                            wms.order = layer.order;
-                        }
-                        ;
-                        //TODO : asoloptions
-                        config.map.layers.push(wms);
-                        break;
-                    default:
                         break;
                 }
+                if (layer.servertype) {
+                    openlayer.servertype = layer.servertype;
+                };
+                if (layer.isindoor) {
+                    openlayer.isindoor = layer.isindoor;
+                };
+                if (layer.levelfield) {
+                    openlayer.levelfield = layer.levelfield;
+                };
+                if (layer.href) {
+                    openlayer.href = layer.href;
+                };
+                if (layer.download) {
+                    openlayer.download = layer.download;
+                };
+                if (layer.order) {
+                    openlayer.order = layer.order;
+                };
+                config.map.layers.push(openlayer);
                 break;
 
             default :
-                var overlay = {
-                    source: layer.source,
-                    tiled: layer.tiled,
-                    version: layer.version,
-                    name: layer.name,
-                    title: layer.title,
-                    group: layer.group,
-                    visibility: layer.visibility,
-                    opacity: layer.opacity
-                };
-                if (layer.attribution) {
-                    overlay.attribution = layer.attribution;
+                var overlay = {};
+                for (var property in layer) {
+                    if (layer.hasOwnProperty(property)) {
+                        overlay[property] = layer[property];
+                    }
                 }
-                if (layer.fixed) {
-                    overlay.fixed = layer.fixed;
-                }
-                if (layer.href) {
-                    overlay.href = layer.href;
-                }
-                ;
-                if (layer.download) {
-                    overlay.download = layer.download;
-                }
-                ;
-                if (layer.order) {
-                    overlay.order = layer.order;
-                }
-                ;
                 config.map.layers.push(overlay);
                 break;
         }
     }
 
-    //TODO //If not cleared
-    if (cleared == "false") {
+    if (cleared === "false") {
         config.mapItems = [
             {
                 xtype: "gx_zoomslider",
+                aggressive: true,
                 vertical: true,
                 height: 100
             }
-            ,
-            {
-                xtype: "sdi_gxp_scaleoverlay"
-            }
+
+
         ];
+
+        if (data.topInUnits || data.bottomOutUnits || data.topInUnits || data.topOutUnits) {
+            config.mapItems.push({
+                xtype: "sdi_gxp_scaleoverlay"
+            });
+        }
+
+        //Indoor navigation
+        if (data.level) {
+            //Levels are store in reverse order in the database 
+            data.level.reverse();
+            var defaultvalue;
+            for (var key in data.level) {
+                if (data.level[key].defaultlevel == "1") {
+                    defaultvalue = parseInt(key);
+                }
+            }
+            var maxvalue = data.level.length - 1;
+            var l = 18;
+            var h = (l + (l / (data.level.length))) * (data.level.length - 1);
+
+            config.mapItems.push(
+                    {
+                        xtype: "sdi_indoorlevelslider",
+                        value: defaultvalue,
+                        minValue: 0,
+                        maxValue: maxvalue,
+                        levels: data.level,
+                        increment: 1,
+                        isFormField: true,
+                        plugins: new sdi.widgets.IndoorLevelSliderTip({template: '<div>{level}</div>', levels: data.level}),
+                        aggressive: false,
+                        vertical: true,
+                        height: h
+                    }
+            )
+
+            var ul = document.createElement('ul');
+            for (var i = data.level.length - 1; i >= 0; i--) {
+                var li = Ext.DomHelper.append(ul, {
+                    tag: 'li',
+                    html: data.level[i].label,
+                    style: {"line-height": l + 'px'}
+                }, true);
+                li.on({
+                    click: (function(i) {
+                        window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(window.appname.mapPanel.map.indoorlevelslider, i);
+                    }).createDelegate(this, [i])
+                });
+            }
+            config.mapItems.push({
+                cls: 'levellabelpanel',
+                id: 'levellabelpanel',
+                border: false,
+                style: "position: absolute; right: 30px; top: 20px; z-index: 1000;",
+                contentEl: ul
+            });
+        }
     }
 
     config.mapPlugins =

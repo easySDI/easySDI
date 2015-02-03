@@ -170,9 +170,10 @@ class Easysdi_mapModelgroup extends JModelAdmin
 			}			
 			
 			//Clean up the database from layers no more selected
+                        if(is_array($pks)){
 			foreach ($pks as $pk)
 			{
-				if(in_array($pk,$layers))//Existing layer
+				if(is_array($layers) && in_array($pk,$layers))//Existing layer
 				{
 					//Remove this layer from the selected list, because it doesn't have to be changed in the database
 					if(($key = array_search($pk, $layers)) !== false) {
@@ -196,6 +197,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 					}
 				}
 			}
+                        }
 			
 			//Select max ordering for the layers of the current group
 			$query = $db->getQuery(true);
@@ -215,6 +217,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 				$ordering = 0;
 			
 			//Insert the new relation
+                        if(is_array($layers)){
 			foreach ($layers as $layer)
 			{
 				if(empty($layer))
@@ -237,6 +240,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 					return false;
 				}
 			}
+                        }
 			return true;
 		}
 	}

@@ -57,6 +57,8 @@ class sdiUser {
      * @var    array
      */
     public $orgCategoriesIds = null;
+    
+    public $organismsCategories = null;
 
     /**
      * @var boolean
@@ -107,7 +109,7 @@ class sdiUser {
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                    ->select('uro.role_id as  role_id, o.name as organism_name, o.id as organism_id')
+                    ->select('uro.role_id as  role_id, o.name as organism_name, o.id as organism_id, o.guid as organism_guid')
                     ->from('#__sdi_user_role_organism  uro')
                     ->innerJoin('#__sdi_organism o ON o.id = uro.organism_id')
                     ->where('uro.user_id = ' . (int) $this->id)
@@ -123,18 +125,23 @@ class sdiUser {
                 $organism = new stdClass();
                 $organism->id = $role->organism_id;
                 $organism->name = $role->organism_name;
+                $organism->guid = $role->organism_guid;
                 array_push($this->role[$role->role_id], $organism);
             }
 
             //populates organim's categories, if member of an organism
-            $this->orgCategoriesIds = array();
-            if (isset($this->role[self::member][0])) {
+            if(isset($this->role[self::member][0])){
                 $query = $db->getQuery(true)
-                        ->select($db->quoteName('oc.category_id'))
-                        ->from($db->quoteName('#__sdi_organism_category') . ' as oc')
-                        ->where('oc.organism_id=' . (int) $this->role[self::member][0]->id);
+                        ->select('c.*')
+                        ->from('#__sdi_organism_category AS oc')
+                        ->innerJoin('#__sdi_category AS c ON c.id=oc.category_id')
+                        ->where('oc.organism_id='.(int)$this->role[self::member][0]->id);
                 $db->setQuery($query);
-                $this->orgCategoriesIds = $db->loadColumn();
+                $this->organismsCategories = $db->loadObjectList();
+                
+                $this->orgCategoriesIds = array();
+                foreach($this->organismsCategories as $category)
+                    array_push($this->orgCategoriesIds, $category->id);
             }
         }
     }
@@ -244,6 +251,13 @@ class sdiUser {
             return null;
         }
         return $this->role[1];
+    }
+    
+    public function getMemberOrganismsCategories(){
+        if (!$this->isEasySDI) {
+            return null;
+        }
+        return $this->organismsCategories;
     }
 
     /**

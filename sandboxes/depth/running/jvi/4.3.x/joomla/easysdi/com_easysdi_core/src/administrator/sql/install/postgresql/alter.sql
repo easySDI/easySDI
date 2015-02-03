@@ -1218,3 +1218,5 @@ ALTER TABLE ONLY #__sdi_organism_category
 ALTER TABLE ONLY #__sdi_organism_category
     ADD CONSTRAINT #__sdi_organism_category_fk2 FOREIGN KEY (category_id) REFERENCES #__sdi_category(id) MATCH FULL ON DELETE CASCADE;
 
+ALTER TABLE ONLY #__sdi_physicalservice
+    ADD CONSTRAINT #__sdi_physicalservice_server_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server(id) MATCH FULL;

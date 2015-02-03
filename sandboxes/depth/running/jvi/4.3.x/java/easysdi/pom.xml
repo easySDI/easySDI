@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.easysdi</groupId>
     <artifactId>easysdi</artifactId>
-    <version>4.3.0-beta-3</version>
+    <version>4.3.0-beta-5</version>
     <packaging>pom</packaging>
     <name>easysdi</name>
  
@@ -18,38 +18,38 @@
     </scm>
     
     <distributionManagement>
-		<repository>
-			<id>easysdi</id>
-			<url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
-		</repository>
-	</distributionManagement>
+        <repository>
+            <id>easysdi</id>
+            <url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
+        </repository>
+    </distributionManagement>
 
-	<repositories>
-		<repository>
-			<id>easysdi</id>
-			<name>EasySDI Repository</name>
-			<url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>easysdi</id>
-			<name>EasySDI Repository</name>
-			<url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+    <repositories>
+        <repository>
+            <id>easysdi</id>
+            <name>EasySDI Repository</name>
+            <url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>easysdi</id>
+            <name>EasySDI Repository</name>
+            <url>https://archiva.depth.ch/archiva/repository/easysdi/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
  
     <dependencyManagement>
         <dependencies>
@@ -96,7 +96,7 @@
             </dependency>
             
             
-            <!-- Hibernate -->
+             <!--Hibernate--> 
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
@@ -119,21 +119,21 @@
             </dependency>
             
             
-            <!-- MySql -->
+             <!--MySql--> 
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.connector.version}</version>
             </dependency>
             
-            <!-- Sql server -->
+             <!--Sql server--> 
             <dependency>
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>sqljdbc4</artifactId>
                 <version>3.0</version>
             </dependency>
             
-            <!-- Postgresql -->
+             <!--Postgresql--> 
             <dependency>
                 <groupId>postgresql</groupId>
                 <artifactId>postgresql</artifactId>
@@ -144,16 +144,16 @@
     </dependencyManagement>
  
     <build>
-       <plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-				  <show>private</show>
-				  <nohelp>true</nohelp>
-				</configuration>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <show>private</show>
+                    <nohelp>true</nohelp>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>

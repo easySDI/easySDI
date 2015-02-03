@@ -6,9 +6,30 @@
  * @author Marc Battaglia <marc.battaglia@depth.ch>
  */
 class FormUtils {
-    
+
     /**
-     * Remove index to xpath at a specific position
+     * Remove index from a xpath
+     * 
+     * @param string $xpath
+     * @param int $offset Si offset est non-négatif, la série commencera à cet offset dans le tableau array. Si offset est négatif, cette série commencera à l'offset offset, mais en commençant à la fin du tableau array.
+     * @param int $length
+     * @return string
+     */
+    public static function removeIndexFromXpath($xpath, $offset, $length = null) {
+        $segments = explode('/', $xpath);
+        $replacement = array_slice($segments, $offset, $length);
+
+        for ($i = 0; $i < count($replacement); $i++) {
+            $replacement[$i] = preg_replace('/[\[0-9\]*]/i', '', $replacement[$i]);
+        }
+
+        array_splice($segments, $offset, count($replacement), $replacement);
+        
+        return implode('/', $segments);
+    }
+
+    /**
+     * Remove index to serialized xpath at a specific position
      * 
      * @param string $xpath
      * @param int $position
@@ -16,7 +37,7 @@ class FormUtils {
      */
     public static function removeIndexToXpath($xpath, $to = 4, $from = 7) {
         $arrayPath = array_reverse(explode('-', $xpath));
-        if($arrayPath[$to+1] != 'ra'){
+        if ($arrayPath[$to + 1] != 'ra') {
             return $xpath;
         }
 
@@ -26,7 +47,7 @@ class FormUtils {
 
         return implode('-', array_reverse($arrayPath));
     }
-    
+
     /**
      * Serialze the Xpath
      * 
@@ -60,7 +81,7 @@ class FormUtils {
         $xpath = str_replace('-dp-', ':', $xpath);
         return $xpath;
     }
-    
+
     /**
      * Remove index from XPath
      * 
@@ -70,7 +91,7 @@ class FormUtils {
     public static function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
     }
-    
+
 }
 
 ?>
