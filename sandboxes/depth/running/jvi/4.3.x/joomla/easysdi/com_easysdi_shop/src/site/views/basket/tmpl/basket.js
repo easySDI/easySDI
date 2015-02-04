@@ -233,14 +233,17 @@ var number_format = function(number, decimals, dec_point, thousands_sep) {
 var priceFormatter = function(price, displayCurrency){
     if('undefined' === typeof displayCurrency) displayCurrency = true;
     
-    return  ( price === '-'
-            ? price
-            : number_format(
-                price,
-                digit_after_decimal,
-                decimal_symbol,
-                digit_grouping_symbol)
-            )+' '+(displayCurrency ? currency : '');
+    return  price == '-'
+            ? '-'
+            :   (   price == 0
+                    ?   0
+                    :   number_format(
+                            price,
+                            digit_after_decimal,
+                            decimal_symbol,
+                            digit_grouping_symbol
+                        )
+                )+(displayCurrency ? ' '+currency : '');
 };
 
 var updatePricing = function(pricing){
