@@ -741,7 +741,7 @@ VALUES
 ;
 
 INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','geoserver' );
-INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','arcgisserver' );
+INSERT INTO `#__sdi_sys_server` VALUES ('2','1','1','arcgisserver' );
 
 INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('1', '1', '2');
 INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('2', '1', '3');
