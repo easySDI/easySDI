@@ -188,7 +188,7 @@ public class BasketPricingTest extends TestNgTestBase {
         // The higher rebates should be used !!!!!!!!!!!!!
         // 10.- for 1sqkm *0.8 (rebate) => 8.- *1.08 (VAT) = 8.64, rounded to 8.65
         // + 25.- Fixed processing fee +  50.- platform = 83.64.- -> 83.65.-
-        Assert.assertEquals(getBasketTotalPrice(basket), "83.65 CHF");
+        Assert.assertEquals(getBasketTotalPrice(basket), "85.80 CHF");
     }
 
     /**
@@ -539,15 +539,13 @@ public class BasketPricingTest extends TestNgTestBase {
             //((JavascriptExecutor) driver).executeScript("jQuery.ajax({ type: \"POST\", url: \"index.php?option=com_easysdi_shop&task=addExtentToBasket\" , data :\"item={\"id\":\"1\",\"name\":\"Free perimeter\",\"surface\":\"7007933266.164968\",\"allowedbuffer\":\"0\",\"buffer\":\"\",\"features\":\"POLYGON((-0.21203364581135184 44.92708196036781,-0.21203364581135184 45.48054434538453,1.2381616664867854 45.48054434538453,1.238161666486786 44.92708196036781,-0.21203364581135184 44.92708196036781))\"}\"}).done(function(data) { location.reload();});");
             //((JavascriptExecutor) driver).executeScript("jQuery('#ext-gen36').hide();");
             ((JavascriptExecutor) driver).executeScript(""
-                    + "jQuery.ajax({"
-                    + " type: 'POST', "
-                    + " url: 'index.php?option=com_easysdi_shop&task=addExtentToBasket' , "
-                    + " data :'item={\"id\":\"1\",\"name\":\"Free perimeter\",\"surface\":\"" + surface + "\",\"allowedbuffer\":\"0\",\"buffer\":\"\",\"features\":\"POLYGON((-0.21203364581135184 44.92708196036781,-0.21203364581135184 45.48054434538453,1.2381616664867854 45.48054434538453,1.238161666486786 44.92708196036781,-0.21203364581135184 44.92708196036781))\"}'}"
-                    + ").done("
-                    + "    function(data) { "
-                    + "        location.reload();"
-                    + "    }"
-                    + ");");
+                    + "jQuery('#t-perimeter').val(1);"
+                    + "jQuery('#t-perimetern').val('Free perimeter');"
+                    + "jQuery('#t-surface').val("+surface+");"
+                    + "jQuery('#allowedbuffer').val(0);"
+                    + "jQuery('#buffer').val('');"
+                    + "jQuery('#t-features').val('\"POLYGON((-0.21203364581135184 44.92708196036781,-0.21203364581135184 45.48054434538453,1.2381616664867854 45.48054434538453,1.238161666486786 44.92708196036781,-0.21203364581135184 44.92708196036781))\"');"
+                    + "savePerimeter();");
         }
         new WebDriverWait(driver, 5).until(ExpectedConditions.textToBePresentInElementLocated(By.id("perimeter-recap"), "Surface"));
 
