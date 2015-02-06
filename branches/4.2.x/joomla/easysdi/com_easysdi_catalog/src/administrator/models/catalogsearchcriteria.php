@@ -17,7 +17,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 /**
  * Easysdi_catalog model.
  */
-class Easysdi_catalogModelsearchcriteria extends sdiModel {
+class Easysdi_catalogModelcatalogsearchcriteria extends sdiModel {
 
     /**
      * @var		string	The prefix to use with controller messages.
@@ -34,7 +34,7 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
      * @return	JTable	A database object
      * @since	1.6
      */
-    public function getTable($type = 'Searchcriteria', $prefix = 'Easysdi_catalogTable', $config = array()) {
+    public function getTable($type = 'Catalogsearchcriteria', $prefix = 'Easysdi_catalogTable', $config = array()) {
         return JTable::getInstance($type, $prefix, $config);
     }
 
@@ -87,7 +87,7 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
     public function getItem($pk = null) {
         if ($item = parent::getItem($pk)) {
             $app = JFactory::getApplication('administrator');
-            $catalog = $app->getUserStateFromRequest('com_easysdi_catalog.catalogsearchcriterias.filter.catalog', 'filter_catalog');
+            $catalog = $app->getUserStateFromRequest('com_easysdi_catalog.searchcriterias.filter.catalog', 'filter_catalog');
             if (isset($catalog)) {
                 $item->catalog_id = $catalog;
                 //Merge searchcriteria object with catalog_searchcriteria object
