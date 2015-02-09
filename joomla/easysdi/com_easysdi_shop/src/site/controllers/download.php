@@ -93,6 +93,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         if($diffusion === false)
             return false;
 
+        $id = JFactory::getApplication()->input->getInt('id', null);
         if (!empty($diffusion->file) || !empty($diffusion->fileurl)):
             $url = 'index.php?option=com_easysdi_shop&view=download&layout=default&id=' . $id;
         elseif (!empty($diffusion->perimeter_id)) :
@@ -167,7 +168,8 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         else:
             $id = null;
         endif;
-        $values = array($diffusion->id, $id, $query->quote(date("Y-m-d H:i:s")));
+        $db = JFactory::getDBO();
+        $values = array($diffusion->id, $id, $db->quote(date("Y-m-d H:i:s")));
         $query = $db->getQuery(true)
                 ->insert('#__sdi_diffusion_download')
                 ->columns($columns)
