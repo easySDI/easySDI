@@ -10,12 +10,12 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','geoserver' );
-INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','arcgisserver' );
+INSERT INTO `#__sdi_sys_server` VALUES ('2','1','1','arcgisserver' );
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_server_serviceconnector` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`server_id` INT(11)  NOT NULL ,
-`serviceconnector_id` int(11)  NOT NULL,
+`server_id` INT(11) UNSIGNED  NOT NULL ,
+`serviceconnector_id` int(11) UNSIGNED NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -34,7 +34,7 @@ INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('6', '2', '2');
 INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('7', '2', '4');
 INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('8', '2', '5');
 
-ALTER TABLE `#__sdi_physicalservice` ADD COLUMN `server_id` INT(11) NULL;
+ALTER TABLE `#__sdi_physicalservice` ADD COLUMN `server_id` INT(11) UNSIGNED NULL;
 ALTER TABLE `#__sdi_physicalservice`
 ADD CONSTRAINT `#__sdi_physicalservice_server_fk1` FOREIGN KEY (`server_id`) REFERENCES `#__sdi_sys_server` (`id`);
 
