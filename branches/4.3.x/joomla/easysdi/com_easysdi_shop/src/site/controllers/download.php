@@ -109,6 +109,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         $jinput = JFactory::getApplication()->input;
         $params = JFactory::getApplication()->getParams('com_easysdi_shop');
         $fileFolder = $params->get('fileFolder');
+		$id = JFactory::getApplication()->input->getInt('id', null);
 
         $diffusion = $this->common();
         if($diffusion === false)
