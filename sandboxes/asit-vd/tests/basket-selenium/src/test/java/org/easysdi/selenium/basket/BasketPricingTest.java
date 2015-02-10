@@ -117,6 +117,7 @@ public class BasketPricingTest extends TestNgTestBase {
     private final SdiUser cliMembre = new SdiUser("commune", "cliMembre", "987654321");
     private final SdiUser cliReseaux = new SdiUser("reseaux", "cliReseaux", "987654321");
     private final SdiUser cliSansCategorie = new SdiUser("sansCategorie", "cliSansCategorie", "987654321");
+    private final SdiOrganism orgDoubleCategories = new SdiOrganism("DoubleCatégories", 14);
     private final SdiUser cliDoubleCat = new SdiUser("deuxCatégories", "cliDoubleCat", "987654321");
 
     /**
@@ -176,7 +177,9 @@ public class BasketPricingTest extends TestNgTestBase {
         Assert.assertEquals(getBasketTotalPrice(basket), "0 CHF");
     }
 
-    /**
+
+    
+     /**
      * Test a client with 2 categories, a product with with a profile.
      */
     @Test
@@ -188,9 +191,25 @@ public class BasketPricingTest extends TestNgTestBase {
         // The higher rebates should be used !!!!!!!!!!!!!
         // 10.- for 1sqkm *0.8 (rebate) => 8.- *1.08 (VAT) = 8.64, rounded to 8.65
         // + 25.- Fixed processing fee +  50.- platform = 83.64.- -> 83.65.-
-        Assert.assertEquals(getBasketTotalPrice(basket), "85.80 CHF");
+        Assert.assertEquals(getBasketTotalPrice(basket), "83.65 CHF");
     }
-
+    
+    /**
+     * Test a client without categ, a thirdparty with 2 categories, a product with with a profile.
+     */
+    @Test
+    public void clientWithoutCateg1ProdWithProfileThird2Categ() {
+        login(cliSansCategorie);
+        SdiBasket basket = new SdiBasket("clientWithoutCateg1ProdWithProfileThird2Categ", "1000000");
+        basket.metadatas.add(mdProdCantonProfile);
+        basket.setThridparty(orgDoubleCategories);
+        // The third party organism has 2 categories, the provider gives 10% & 20% rebates
+        // The higher rebates should be used !!!!!!!!!!!!!
+        // 10.- for 1sqkm *0.8 (rebate) => 8.- *1.08 (VAT) = 8.64, rounded to 8.65
+        // + 25.- Fixed processing fee +  50.- platform = 83.64.- -> 83.65.-
+        Assert.assertEquals(getBasketTotalPrice(basket), "83.65 CHF");
+    }    
+    
     /**
      * Test a member client, a product with with a profile.
      */
@@ -396,11 +415,11 @@ public class BasketPricingTest extends TestNgTestBase {
     }   
     
         /**
-     * Test an external order with multiple free products. <br/>
+     * Test an external order with multiple fee products. <br/>
      * provider: Canton + Commune<br/>
      * client: cliSansCategorie<br/>
      * thirdparty: none<br/>
-     * total should be 0.00 because all products are free
+     * total should be not defined
      */
     @Test
     public void multipleFeeProducts() {
@@ -408,7 +427,7 @@ public class BasketPricingTest extends TestNgTestBase {
         SdiBasket basket = new SdiBasket("multipleFeeProducts", "1000000");
         basket.metadatas.add(mdProdCantonFee);
         basket.metadatas.add(mdProdCommuneFee);
-        Assert.assertEquals(getBasketTotalPrice(basket), "- CHF");
+        Assert.assertEquals(getBasketTotalPrice(basket), noTotalMessage);
     } 
     
  
