@@ -488,8 +488,10 @@ abstract class Easysdi_shopHelper {
         $provider->cfg_data_free_fixed_fee = (bool)$organism->data_free_fixed_fee;
         
         // calculate supplier rebate
+	$internalFreeOrder = false;
         $prices->supplierRebate = new stdClass();
         if($provider->cfg_internal_free==true && $prices->debtor->id==$provider->id){
+	    $internalFreeOrder = true;
             $prices->supplierRebate->pct = 100;
             $prices->supplierRebate->name = $organism->name;
         }
@@ -519,7 +521,7 @@ abstract class Easysdi_shopHelper {
         $provider->hasFeeWithoutPricingProfileProduct = false;
         foreach($supplier->items as $product){
             $provider->products[$product->id] = self::basketPriceCalculationByProduct($product, $prices);
-            if($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE)
+            if($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder)
                 $provider->hasFeeWithoutPricingProfileProduct = true;
             elseif($product->pricing == self::PRICING_FEE_WITH_PROFILE){
                 $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
@@ -626,16 +628,18 @@ abstract class Easysdi_shopHelper {
      * @since 4.3.0
      */
     public static function priceFormatter($price, $displayCurrency = true){
-        return  ($price == '-'
-                    ? $price
-                    : number_format(
-                    $price, 
-                    JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), 
-                    JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), 
-                    JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'"))
-                )
-                .' '.
-                ($displayCurrency ? JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '');
+        return  $price == '-'
+                ?   '-'
+                :   (   $price == 0
+                    ?   0
+                    :   number_format(
+                            $price, 
+                            JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), 
+                            JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), 
+                            JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'")
+                        )
+                    ).($displayCurrency ? ' '.JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '')
+                ;
     }
     
     /**************************/

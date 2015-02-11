@@ -809,15 +809,23 @@ var showPublishModal = function(element){
         try{
             var response = js.parseJSON(data);
             response.versions[version.id].metadata_id = metadata.id;
-            js('#publishModalChildrenList').html(buildVersionsTree(response.versions));
+            
+            var children = response.versions[version.id].children;
+            delete response.versions[version.id].children;
+            js('#publishModalCurrentMetadata').html(buildVersionsTree(response.versions));
+
+            if(js(children).length){
+                js('#publishModalChildrenList').html(buildVersionsTree(children));
+                js('#publishModalViralPublication').attr('checked', true).trigger('change');
+                js('#publishModalChildrenDiv').show();
+            }
+            else{
+                js('#publishModalViralPublication').attr('checked', false).trigger('change');
+            }
 
             if('undefined' !== typeof metadata.publishDate && '0000-00-00 00:00:00' !== metadata.publishDate){
                 var datetime = metadata.publishDate.split(' ');
                 js('#publishModal #published').val(datetime[0]);
-            }
-
-            if(js(response.versions).length){
-                js('#publishModal #viral').val(1);
             }
 
             showModal(metadata.id);
@@ -860,6 +868,8 @@ js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', func
 js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
 
 js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
+
+js(document).on('change', '#publishModalViralPublication', function(){js('#publishModal #viral').val(js(this).attr('checked')==='checked'?1:0)});
 
 // Fix action's link style
 js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});
