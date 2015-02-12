@@ -885,7 +885,7 @@ class cswmetadata {
         $language = JFactory::getLanguage();
 
         $query = $this->db->getQuery(true)
-                ->select('DISTINCT p.id as property_id, p.alias as alias , p.name as name, t.text1 as label, p.mandatory, p.propertytype_id,pt.value as propertytype, p.accessscope_id')
+                ->select('DISTINCT p.id as property_id, p.alias as alias , p.name as name, t.text1 as label, p.mandatory, p.propertytype_id,pt.value as propertytype, p.accessscope_id,p.ordering')
                 ->from('#__sdi_diffusion_propertyvalue dpv')
                 ->innerJoin('#__sdi_propertyvalue pv ON pv.id = dpv.propertyvalue_id')
                 ->innerJoin('#__sdi_property p ON p.id = pv.property_id')

@@ -468,7 +468,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_category` (
 `name` VARCHAR(255)  NOT NULL ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10)  NOT NULL ,
-`overall_fee` FLOAT(6,2) UNSIGNED DEFAULT 0,
+`overall_fee` FLOAT(6,2) UNSIGNED DEFAULT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -568,7 +568,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
 `serviceusername` VARCHAR(150)  ,
 `servicepassword` VARCHAR(150)  ,
 `catid` INT(11)  NOT NULL ,
-`server_id` INT(11)  NULL ,
 `params` VARCHAR(1024)   ,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10)   ,
@@ -961,7 +960,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_catalog` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(500)  ,
-`contextualsearchresultpaginationnumber` int(3) DEFAULT 0,
 `xsldirectory` VARCHAR(255) ,
 `oninitrunsearch` TINYINT(1) DEFAULT '0' ,
 `cswfilter` TEXT(1000)   ,
@@ -1225,7 +1223,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
 `editorrelationscope_id` INT(11) UNSIGNED  ,
 `childresourcetype_id` INT(11)  UNSIGNED,
 `childtype_id` INT(11)  UNSIGNED,
-`accessscope_limitation` int(1) DEFAULT 0
+
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
@@ -1936,8 +1934,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `asOLstyle` TEXT,
 `asOLmatrixset` TEXT,
 `asOLoptions` TEXT,
-`isindoor` TINYINT(1) NULL,
-`levelfield` VARCHAR(255) NULL ,
 `metadatalink` TEXT  ,
 `attribution` VARCHAR(255)   ,
 `accessscope_id` INT(11) UNSIGNED NOT NULL DEFAULT '1',
@@ -1996,8 +1992,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_tool` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `map_id` INT(11) UNSIGNED  NOT NULL ,
 `tool_id` INT(11) UNSIGNED NOT NULL ,
-`params` VARCHAR(4000) ,
-`activated` TINYINT(1)  NULL DEFAULT '0',
+`params` VARCHAR(500) ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -2310,9 +2305,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `buffer` FLOAT(40,20)  NULL ,
 `surface` FLOAT(40,20)  NULL ,
 `remark` VARCHAR(500)  NULL ,
-`mandate_ref` VARCHAR(75) NULL,
-`mandate_contact` VARCHAR(75) NULL,
-`mandate_email` VARCHAR(100),
 `sent` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `completed` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `access` INT(10)  NOT NULL DEFAULT '1',
@@ -3155,17 +3147,3 @@ CREATE TABLE IF NOT EXISTS `#__sdi_monitor_exports` (
                   PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_server` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` int(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_server_serviceconnector` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`server_id` INT(11)  NOT NULL ,
-`serviceconnector_id` int(11)  NOT NULL,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
