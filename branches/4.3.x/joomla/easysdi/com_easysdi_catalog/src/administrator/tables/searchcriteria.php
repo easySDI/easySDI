@@ -151,6 +151,7 @@ class Easysdi_catalogTablesearchcriteria extends sdiTable {
     	// Bind the object with the row and return.
     	return $rows;
     }
+   
     
 
 }
