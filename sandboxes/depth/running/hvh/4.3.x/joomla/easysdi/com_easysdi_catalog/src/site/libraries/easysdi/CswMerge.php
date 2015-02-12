@@ -31,10 +31,11 @@ class CswMerge {
         if (!empty($import)) {
             $this->setImport($import);
         }
+        
         if (!empty($original)) {
             $this->setOriginal($original);
         }
-        $this->original = $original;
+        
         $this->nsdao = new SdiNamespaceDao();
     }
 
@@ -49,19 +50,23 @@ class CswMerge {
         $xpath = array('xpath' => '/gmd:MD_Metadata/sdi:platform');
         $xpaths[] = JArrayHelper::toObject($xpath);
 
-        // Import from a CSW catalog
-        if (!empty($importref_id) && !empty($fileidentifier)) {
-            $importref = $this->getImportRef($importref_id);
-            return $this->mergeImportService($importref, $fileidentifier);
-        }
-        // Import from an provided document
-        elseif (!empty($importref_id)) {
-            $importref = $this->getImportRef($importref_id);
-            return $this->mergeImportCsw($importref, $xpaths);
-        }
-        // import from the local catalog
-        elseif (!empty($fileidentifier)) {
-            return $this->mergeInheriteCsw($fileidentifier, $xpaths);
+        try {
+            // Import from a CSW catalog
+            if (!empty($importref_id) && !empty($fileidentifier)) {
+                $importref = $this->getImportRef($importref_id);
+                return $this->mergeImportService($importref, $fileidentifier);
+            }
+            // Import from an provided document
+            elseif (!empty($importref_id)) {
+                $importref = $this->getImportRef($importref_id);
+                return $this->mergeImportCsw($importref, $xpaths);
+            }
+            // import from the local catalog
+            elseif (!empty($fileidentifier)) {
+                return $this->mergeInheriteCsw($fileidentifier, $xpaths);
+            }
+        } catch (Exception $exc) {
+            throw $exc;
         }
     }
 
@@ -115,13 +120,18 @@ class CswMerge {
      * 
      * @param type $importref
      * @return type
+     * @throws Exception
      */
     private function mergeImportCsw($importref, $xpath) {
         $this->transformXml($importref);
-        
-        $this->addGetRecordById();
-        
-        $this->preserveFileidentifier($this->import, '', $this->original);
+       
+        try {
+            $this->preserveFileidentifier($this->import, '', $this->original);
+        } catch (Exception $exc) {
+            throw $exc;
+        }
+
+
 
         return $this->switchOnImportType($importref);
     }
@@ -170,17 +180,17 @@ class CswMerge {
     /**
      * Add GetRecordById to import file if necessary
      */
-    private function addGetRecordById() {
+    public function addGetRecordById($toWrap) {
         $firstChildName = $this->import->firstChild->nodeName;
 
         if ($firstChildName != 'csw:GetRecordByIdResponse') {
             $dom = new DOMDocument('1.0', 'utf-8');
             $dom->appendChild($dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:GetRecordByIdResponse'));
 
-            if ($imported = $dom->importNode($this->import->firstChild, TRUE)) {
+            if ($imported = $dom->importNode($toWrap->firstChild, TRUE)) {
                 $dom->firstChild->appendChild($imported);
 
-                $this->import = $dom;
+                return $dom;
             }
         }
     }
@@ -234,32 +244,36 @@ class CswMerge {
      * @param string $fileIdentifier Original fileidentifier
      * @param DOMDocument $original
      * @param DOMDocument $import
+     * @throws Exception
      */
     public function preserveFileidentifier(DOMDocument &$import, $fileIdentifier = '', DOMDocument &$original = null) {
         $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
-        
-        if(!empty($fileIdentifier)){
+
+        if (!empty($fileIdentifier)) {
             $fileidentifierImportedNode = $import->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:fileIdentifier');
             $gco_character = $import->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString', $fileIdentifier);
             $fileidentifierImportedNode->appendChild($gco_character);
-            
-            if(!empty($fileidentifierImportNode)){
+
+            if (!empty($fileidentifierImportNode)) {
                 $fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
-            }
-            else{
+            } else {
                 $mdMetadata = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'MD_Metadata')->item(0);
                 $mdMetadata->appendChild($fileidentifierImportedNode);
             }
-        }
-        elseif(!empty($original)){
-            $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
-            
-            $fileidentifierImportedNode = $import->importNode($fileidentifierOriginalNode, true);
-            
-            if(empty($fileidentifierImportNode)){
-                $import->firstChild->appendChild($fileidentifierImportedNode);
+        } elseif (!empty($original)) {
+            $fileidentifierOriginalNode = $original->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
+
+            if (empty($fileidentifierOriginalNode)) {
+                throw new Exception(JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_FILEIDENTIFIER_EMPTY'));
             }
-            else{
+
+            $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
+
+            $fileidentifierImportedNode = $import->importNode($fileidentifierOriginalNode, true);
+
+            if (empty($fileidentifierImportNode)) {
+                $import->firstChild->appendChild($fileidentifierImportedNode);
+            } else {
                 $import->firstChild->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
             }
         }
@@ -279,9 +293,6 @@ class CswMerge {
      */
     private function merge() {
         
-        //$this->import->save(JPATH_BASE.'/tmp/'.session_id().'-import.xml');
-        //$this->original->save(JPATH_BASE.'/tmp/'.session_id().'-original.xml');
-        
         $domXpathImport = new DOMXPath($this->import);
         $domXpathOriginal = new DOMXPath($this->original);
 
@@ -290,21 +301,13 @@ class CswMerge {
             $domXpathOriginal->registerNamespace($ns->prefix, $ns->uri);
         }
         
-        /*foreach ($domXpathOriginal->query('descendant::*', $this->original->firstChild) as $originalNode) {
-            if (!$this->hasChild($originalNode) && ($importNode = $domXpathImport->query($originalNode->getNodePath())->item(0)) ){
-
-                    $importedNode = $this->original->importNode($importNode, true);
-                    
-                    $originalNode->parentNode->replaceChild($importedNode, $originalNode);
-            }
-        }*/
-        
-        foreach($domXpathImport->query('descendant::*', $this->import->firstChild) as $nodeToImport){
-            if(!$this->hasChild($nodeToImport) && ($originalNode = $domXpathOriginal->query($nodeToImport->getNodePath())->item(0))){
+        foreach ($domXpathImport->query('descendant::*') as $nodeToImport) {
+            if (!$this->hasChild($nodeToImport) && ($originalNode = $domXpathOriginal->query($nodeToImport->getNodePath())->item(0))) {
                 $importedNode = $this->original->importNode($nodeToImport, true);
                 $originalNode->parentNode->replaceChild($importedNode, $originalNode);
             }
         }
+        
     }
 
     /**

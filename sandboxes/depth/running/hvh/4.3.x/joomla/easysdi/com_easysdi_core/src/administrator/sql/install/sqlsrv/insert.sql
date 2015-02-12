@@ -76,7 +76,7 @@ INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpatt
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (4, 4, 1, N'number', N'^[\-+]?[0-9.]+$', N'Decimal', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (5, 5, 1, N'date', N'^([0-9]{4}-[0-9]{2}-[0-9]{2})$', N'Date', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (6, 6, 1, N'list', N'', NULL, NULL, 1);
-INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (7, 7, 1, N'link', N'((http://|https://|ftp://)(www.)?(([a-zA-Z0-9-]){2,}.){1,4}([a-zA-Z]){2,6}(/([a-zA-Z-_/.0-9#:?=&;,]*)?)?)', N'URL', 1, 1);
+INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (7, 7, 1, N'link', N'^((https?://)?([w.-]+).([a-z.]{2,6})([/w .#:+?%=&;,]*)*/?)$', N'URL', 1, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (8, 8, 1, N'datetime', N'^([0-9]{4}-[0-9]{2}-[0-9]{2})$', N'DateTime', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (9, 9, 1, N'textchoice', N'', N'CharacterString', 2, 1);
 INSERT [#__sdi_sys_stereotype] ([id], [ordering], [state], [value], [defaultpattern], [isocode], [namespace_id], [entity_id]) VALUES (10, 10, 1, N'localechoice', N'', NULL, NULL, 1);
