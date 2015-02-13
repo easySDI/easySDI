@@ -158,6 +158,8 @@ class Easysdi_shopModelproperty extends sdiModel
                         'name' => 'default',
                         'alias' => 'default'.$item->id,
                         'id' => 0,
+                        'modified' => '',
+                        'description' => 'default'.$item->id,
                         'access' => 1,
                         'state' => 1,
                         'property_id' => $item->id,
