@@ -206,7 +206,11 @@ $document = JFactory::getDocument();
                         </div>
                     </div>
                     <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
-                    <span id="publishModalChildrenList"></span>
+                    <span id="publishModalCurrentMetadata"></span>
+                    <div id="publishModalChildrenDiv" style="display:none">
+                        <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?>
+                        <span id="publishModalChildrenList"></span>
+                    </div>
 
                 </div>
                 <div class="modal-footer">
