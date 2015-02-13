@@ -116,6 +116,16 @@
                    description="COM_EASYSDI_SHOP_CONFIG_DESC_TERMSOFUSE">
            </field>
            
+           <field name="emptybasketurl"
+                   type="text"
+                   default=""
+                   class="inputbox input-xxlarge"
+                   required ="false"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_EMPTYBASKETURL"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_EMPTYBASKETURL">
+           </field>           
+           
            <field name="shopinfomessage"
                    type="editor"
                    default=""
