@@ -1264,7 +1264,7 @@ CREATE TABLE [#__sdi_category] (
 	[name] [nvarchar](255) NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
-        [overall_fee] decimal(6,2) UNSIGNED DEFAULT NULL,
+        [overall_fee] decimal(6,2)  NULL,
  CONSTRAINT [PK_#__sdi_category_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
