@@ -44,10 +44,20 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css');
 
         //Loadind js files
-//        if (JDEBUG) {
+        if (JDEBUG) {
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
             $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.js');
+            $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
+            $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
+        }else{
+            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
+            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.min.js');
+            $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core.js');
+            $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
+        }
+//        if (JDEBUG) {
             $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
             $doc->addScript($base_url . '/ext/ext-all-debug.js');
@@ -76,12 +86,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/easysdi/js/geoext/widgets/PrintMapPanel.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js');
-            $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
-            $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
 //        } else {
-//            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
-//            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
-//            $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.min.js');
 //            $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
 //            $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
 //            $doc->addScript($base_url . '/ext/ext-all.js');
@@ -92,8 +97,6 @@ abstract class Easysdi_mapHelper {
 //            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
 //            $doc->addScript($base_url . '/gxp/script/gxp.min.js');
 //            $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
-//            $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core.js');
-//            $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
 //        }
 
 //        $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
