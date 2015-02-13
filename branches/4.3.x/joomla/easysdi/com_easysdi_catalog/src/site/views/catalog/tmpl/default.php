@@ -47,7 +47,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
         <?php endif; ?>
         <?php if ($this->item->scrolltoresults && JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true' ): ?>
             //autoscroll to results
-            jQuery(window).scrollTop(jQuery('#sdi-search-results').offset().top);
+            var sdiSearchResults = jQuery('#sdi-search-results');
+            if(sdiSearchResults.length) jQuery(window).scrollTop(sdiSearchResults.offset().top);
         <?php endif; ?>
     });
 
