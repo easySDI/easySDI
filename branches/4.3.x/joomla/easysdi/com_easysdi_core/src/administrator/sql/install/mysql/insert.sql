@@ -713,7 +713,8 @@ VALUES
 ('searchcatalog',17,1,'Catalog search'),
 ('layerdetailsheet',18,1,'Layer detail sheet'),
 ('layerdownload',19,1,'Layer download'),
-('layerorder',20,1,'Layer order')
+('layerorder',20,1,'Layer order'),
+('indoornavigation',21,1,'Indoor navigation')
 ;
 
 -- com_easysdi_shop
