@@ -1050,6 +1050,7 @@ CREATE TABLE [#__sdi_metadata] (
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[accessscope_id] [bigint] NOT NULL,
 	[published] [datetime2](0) NULL,
+        [endpublished] [datetime2](0) NULL,
 	[archived] [datetime2](0) NULL,
 	[lastsynchronization] [datetime2](0) NULL,
 	[synchronized_by] [bigint] NULL,

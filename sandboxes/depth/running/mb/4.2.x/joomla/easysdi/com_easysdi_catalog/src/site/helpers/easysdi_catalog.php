@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @version     4.0.0
  * @package     com_easysdi_catalog
@@ -6,16 +7,48 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
  */
-
 defined('_JEXEC') or die;
 
-abstract class Easysdi_catalogHelper
-{
-	public static function myFunction()
-	{
-		$result = 'Something';
-		return $result;
-	}
+abstract class Easysdi_catalogHelper {
+
+    public static function myFunction() {
+        $result = 'Something';
+        return $result;
+    }
+
+    /**
+     * Get the preview version of a metadata
+     * 
+     * @param int $metadata_id
+     * @return stdClass
+     */
+    public static function getPreviewMetadata($metadata_id) {
+        $db = JFactory::getDbo();
+        
+        // resource
+        $query = $db->getQuery(true);
+        $query->select('r.id');
+        $query->from('#__sdi_resource r');
+        $query->innerJoin('#__sdi_version v ON v.resource_id = r.id');
+        $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+        $query->where('m.id = '.(int)$metadata_id);
+        
+        $db->setQuery($query);
+        $resource = $db->loadObject();
+        
+        // preview metadata
+        $query = $db->getQuery(true);
+        $query->select('m.*');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_version v ON v.id = m.version_id');
+        $query->where('v.resource_id = ' . (int) $resource->id);
+        $query->where('m.id < ' . (int) $metadata_id);
+        $query->order('m.id DESC');
+
+        $db->setQuery($query, 0, 1);
+        $preview = $db->loadObject();
+
+        return $preview;
+    }
 
 }
-
