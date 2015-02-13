@@ -77,7 +77,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
             var perimeterLayer, selectControl, selectLayer;
 
             Ext.onReady(function() {
-                app.on("ready", function() {
+                window.appname.on("ready", function() {
                     perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
                             "<?php echo $this->item->perimeter->wmsservice->resourceurl; ?>",
                             {layers: "<?php echo $this->item->perimeter->layername; ?>",
@@ -86,7 +86,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                         protocol: new OpenLayers.Protocol.WFS({
                             version: "1.0.0",
                             url: "<?php echo $this->item->perimeter->wfsservice->resourceurl; ?>",
-                            srsName: app.mapPanel.map.projection,
+                            srsName: window.appname.mapPanel.map.projection,
                             featureType: "<?php echo $this->item->perimeter->featuretypename; ?>",
                             featureNS: "<?php echo $this->item->perimeter->namespace; ?>",
                             geometryName: "<?php echo $this->item->perimeter->featuretypefieldgeometry; ?>"
