@@ -361,6 +361,7 @@ INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('searchcat
 INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('layerdetailsheet', 18, 1, 'Layer detail sheet');
 INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('layerdownload', 19, 1, 'Layer download');
 INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('layerorder', 20, 1, 'Layer order');
+INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('indoornavigation', 21, 1, 'Indoor navigation');
 
 INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (1, 1, 'inprogress');
 INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (2, 1, 'validated');
