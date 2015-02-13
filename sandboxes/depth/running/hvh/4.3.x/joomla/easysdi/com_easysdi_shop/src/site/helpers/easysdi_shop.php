@@ -24,6 +24,16 @@ abstract class Easysdi_shopHelper {
     const PRICING_FREE                  = 1;
     const PRICING_FEE_WITHOUT_PROFILE   = 2;
     const PRICING_FEE_WITH_PROFILE      = 3;
+    
+    const ROLE_MEMBER                   = 1;
+    const ROLE_RESOURCEMANAGER          = 2;
+    const ROLE_METADATARESPONSIBLE      = 3;
+    const ROLE_METADATAEDITOR           = 4;
+    const ROLE_DIFFUSIONMANAGER         = 5;
+    const ROLE_PREVIEWMANAGER           = 6;
+    const ROLE_EXTRACTIONRESPONSIBLE    = 7;
+    const ROLE_PRICINGMANAGER           = 9;
+    const ROLE_VALIDATIONMANAGER        = 10;
 
     /**
      * 
@@ -389,8 +399,8 @@ abstract class Easysdi_shopHelper {
                 $prices->debtor->id = $basket->thirdparty;
             }
             else{
-                $prices->debtor->id = $basket->sdiUser->role[2][0]->id;
-                $prices->debtor->name = $basket->sdiUser->role[2][0]->name;
+                $prices->debtor->id = $basket->sdiUser->role[self::ROLE_MEMBER][0]->id;
+                $prices->debtor->name = $basket->sdiUser->role[self::ROLE_MEMBER][0]->name;
             }
 
             $db = JFactory::getDbo();
@@ -436,7 +446,8 @@ abstract class Easysdi_shopHelper {
                             ->select('c.overall_fee, c.name')
                             ->from('#__sdi_category c')
                             ->where('c.overall_fee IS NOT NULL')
-                            ->where('c.id IN ('.implode(',', $prices->debtor->categories).')');
+                            ->where('c.id IN ('.implode(',', $prices->debtor->categories).')')
+                            ->order('overall_fee');
                     $db->setQuery($query, 0, 1);
                     $category = $db->loadObject();
 
