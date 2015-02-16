@@ -601,6 +601,7 @@ else:
     $emptybasketurl = $app->getParams('com_easysdi_shop')->get('emptybasketurl');
     //in case of custom empty basket page, redirect to it, otherwise show a simple message
     if (!empty($emptybasketurl)):
+        JResponse::allowCache(false);
         $app->redirect(JRoute::_($emptybasketurl));
     else:
         echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE_EMPTY_BASKET');
