@@ -161,6 +161,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $filename = '';
         $data = '';
 
+        ini_set('memory_limit','4096M');
+        
         $inputs = $this->request->getElementsByTagNameNS($this->nsWps, 'Input');
 
         /* @var $input DOMElement */
