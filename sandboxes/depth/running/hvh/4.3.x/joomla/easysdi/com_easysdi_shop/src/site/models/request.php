@@ -223,7 +223,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             $keys['order_id'] = (int)$id;
             $keys['diffusion_id'] = (int)$diffusion_id;
             $orderdiffusion->load($keys);
-            $orderdiffusion->fee = $data['fee'][$diffusion_id];
+            $orderdiffusion->fee = (int)$data['fee'][$diffusion_id];
             $orderdiffusion->remark = $data['remark'][$diffusion_id];
             if (!empty($files['file'][$diffusion_id][0]['name'])):
                 //Save uploaded file 
