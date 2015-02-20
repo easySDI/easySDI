@@ -11,6 +11,8 @@ defined('_JEXEC') or die;
 
 JHTML::_('behavior.modal');
 JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
