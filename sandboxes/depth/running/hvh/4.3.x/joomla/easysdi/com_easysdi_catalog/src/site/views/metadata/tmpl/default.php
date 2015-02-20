@@ -92,7 +92,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 $document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.1.0/lib/proj4js.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.js');
 
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
 
@@ -110,6 +110,28 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 <script type="text/javascript">
     var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
     var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
+    var dataTableTranslation = {
+	"sProcessing":     "Traitement en cours...",
+	"sSearch":         "Rechercher&nbsp;:",
+    "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+	"sInfo":           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+	"sInfoEmpty":      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+	"sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+	"sInfoPostFix":    "",
+	"sLoadingRecords": "Chargement en cours...",
+    "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+	"sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+	"oPaginate": {
+		"sFirst":      "Premier",
+		"sPrevious":   "Pr&eacute;c&eacute;dent",
+		"sNext":       "Suivant",
+		"sLast":       "Dernier"
+	},
+	"oAria": {
+		"sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+		"sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+	}
+}
     js = jQuery.noConflict();
     js('document').ready(function() {
         bootbox.setLocale("<?php echo $bbLanguage;?>");

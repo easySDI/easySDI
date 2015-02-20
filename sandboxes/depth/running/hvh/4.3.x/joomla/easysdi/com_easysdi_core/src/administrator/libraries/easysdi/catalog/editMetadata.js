@@ -247,10 +247,8 @@ js('document').ready(function () {
 
     js('#search_table').dataTable({
         "bFilter": false,
-        "oLanguage": {
-            sUrl: 'http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/' + dtLang + '.json'
-        },
-        aaData: null,
+        "oLanguage": dataTableTranslation,
+	aaData: null,
         aoColumnDefs: [
             {aTargets: [0], mData: function (item) {
                     return "<input type='radio' name='import[id]' id='import_id_" + item.id + "' value='" + item.id + "' checked=''>";
