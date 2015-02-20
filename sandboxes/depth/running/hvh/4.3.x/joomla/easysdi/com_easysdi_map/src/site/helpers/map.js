@@ -17,7 +17,7 @@ Ext.onReady(function() {
     var locator = null;
     window.appname.on("ready", function() {
         window.appname.portalConfig.renderTo = "sdiNewContainer";
-        if (data.urlwfslocator !== "") {
+        if (data.urlwfslocator) {
             if (locator === null) {
                 locator = {xtype: "gxp_autocompletecombo",
                     listeners: {
