@@ -46,7 +46,7 @@ class Cswrecords extends SearchForm {
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $catalogurl = $params->get('catalogurl');
         $srpn = $params->get('searchresultpaginationnumber');
-        $startposition = JFactory::getApplication()->input->getInt('start', 1);
+        $startposition = JFactory::getApplication()->input->getInt('start',0 ) + 1;
         
         //Contextual search result pagination number
         $q = $this->db->getQuery(true)
