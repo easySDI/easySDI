@@ -39,7 +39,7 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         $this->paramsarray = $this->params->toArray();
         $this->user = sdiFactory::getSdiUser();
 
-        if($this->_layout != 'confirm'){            
+        if($this->_layout != 'confirm' && $this->item && $this->item->extractions){            
             if(isset($this->paramsarray['ordermap'])){
                 $this->mapscript = Easysdi_mapHelper::getMapScript($this->paramsarray['ordermap']);
             }

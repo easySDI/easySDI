@@ -141,6 +141,8 @@ abstract class Easysdi_shopHelper {
             $basket->setPerimeters($common);
         endif;
 
+        $basket->sdiUser->lang = null;
+        
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
         $return['COUNT'] = count($basket->extractions);
         echo json_encode($return);
