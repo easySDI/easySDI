@@ -34,7 +34,7 @@ abstract class Easysdi_mapHelper {
         $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
         $doc->addStyleSheet($base_url . '/ext/resources/css/ext-all.css');
         $doc->addStyleSheet($base_url . '/ext/resources/css/xtheme-gray.css');
-        $doc->addStyleSheet($base_url . '/openlayers/theme/default/style.css');
+        $doc->addStyleSheet($base_url . '/OpenLayers-2.13.1/theme/default/style.css');
         $doc->addStyleSheet($base_url . '/geoext/resources/css/popup.css');
         $doc->addStyleSheet($base_url . '/geoext/resources/css/layerlegend.css');
         $doc->addStyleSheet($base_url . '/geoext/resources/css/gxtheme-gray.css');
