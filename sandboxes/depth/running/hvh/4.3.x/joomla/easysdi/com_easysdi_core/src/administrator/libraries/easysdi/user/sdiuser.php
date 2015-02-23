@@ -68,7 +68,7 @@ class sdiUser {
     /**
      * Unique lang
      *
-     * @var    object
+     * @var    
      */
     public $lang = null;
 
@@ -98,7 +98,7 @@ class sdiUser {
             $user = $this->getCurrentUser();
         endif;
 
-        $this->lang = JFactory::getLanguage();
+        $this->lang = JFactory::getLanguage()->getTag();
 
         if (!$user) {
             $this->isEasySDI = false;
@@ -232,7 +232,7 @@ class sdiUser {
                 ->from('#__sdi_resourcetype rt')
                 ->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid')
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
-                ->where('l.code = ' . $db->quote($this->lang->getTag()))
+                ->where('l.code = ' . $db->quote($this->lang))
                 ->where('rt.predefined = 0')
                 ->where($cls)
         ;

@@ -60,7 +60,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $id = $jinput->get('id', '', 'int');
         $basket = new sdiBasket();
         $basket->loadOrder($id);
-
+        
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=edit', false));
     }
