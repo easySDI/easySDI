@@ -10,10 +10,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+
 /**
  * orderdiffusion Table class
  */
-class Easysdi_shopTableorderdiffusion extends JTable {
+class Easysdi_shopTableorderdiffusion extends sdiTable {
 
     /**
      * Constructor

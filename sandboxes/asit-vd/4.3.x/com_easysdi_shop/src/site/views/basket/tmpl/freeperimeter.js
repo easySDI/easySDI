@@ -32,7 +32,8 @@ function putFeaturesVerticesInHiddenField(feature) {
     var wkt = new OpenLayers.Format.WKT();
     var featureAsString = wkt.write(feature);
 
-    jQuery('#t-features').val(JSON.stringify(featureAsString));
+    jQuery("#t-features").val(featureAsString);
+    //jQuery('#t-features').val(JSON.stringify(featureAsString));
 }
 
 function selectPerimeter1() {
@@ -58,36 +59,17 @@ var listenerFeatureDrawToZoom = function(e) {
 function selectPolygon() {
     resetAll();
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}});
-    
-//    app.mapPanel.map.addControl(selectControl);
-//    jQuery('#t-perimeter').val('1');
-//    jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
-//    jQuery('#t-features').val('');
-//    toggleSelectControl('selection');
     initSelectcontrol(selectControl);
 }
 
 function selectRectangle() {
     resetAll();
-//    selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
-//    
-//    app.mapPanel.map.addControl(selectControl);
-//    jQuery('#t-perimeter').val('1');
-//    jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
-//    jQuery('#t-features').val('');
-//    toggleSelectControl('selection');
     toggleRectangle();
 }
 
 function toggleRectangle() {
    selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
-    
-//    app.mapPanel.map.addControl(selectControl);
-//    jQuery('#t-perimeter').val('1');
-//    jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
-//    jQuery('#t-features').val('');
-//    toggleSelectControl('selection');
-    initSelectcontrol(selectControl);
+   initSelectcontrol(selectControl);
 }
 
 function initSelectcontrol(selectControl){

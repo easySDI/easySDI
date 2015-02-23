@@ -160,6 +160,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             }
 
             //Save diffusions
+            $products = array();
             foreach ($basket->extractions as $diffusion):
                 $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
                 $od = array();
@@ -170,6 +171,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $od['created_by'] = JFactory::getUser()->id;
                 $orderdiffusion->save($od);
                 array_push($basketData['diffusions'], $orderdiffusion->diffusion_id);
+                array_push($products, $orderdiffusion);
                 
                 //Save properties
                 foreach ($diffusion->properties as $property):
@@ -217,25 +219,37 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             // calculate price for the current basket (only if surface is defined)
             Easysdi_shopHelper::basketPriceCalculation($basket);
             
-            $pricing = $basket->pricing;
-            
-            // sdi_pricing_order
-            $pricingOrder = $this->getTable('PricingOrder', 'Easysdi_shopTable');
-            $pricingOrderData = array(
-                'order_id'                      => $table->id,
-                'cfg_vat'                       => $pricing->cfg_vat,
-                'cfg_currency'                  => $pricing->cfg_currency,
-                'cfg_rounding'                  => $pricing->cfg_rounding,
-                'cfg_overall_default_fee'       => $pricing->cfg_overall_default_fee,
-                'cfg_free_data_fee'             => $pricing->cfg_free_data_fee,
-                'cal_total_amount_ti'           => $pricing->cal_total_amount_ti,
-                'cal_fee_ti'                    => $pricing->cal_fee_ti,
-                'ind_lbl_category_order_fee'    => $pricing->ind_lbl_category_order_fee
+            $session = JFactory::getSession();
+            $basketProcess = array(
+                'treated'   => 0,
+                'total'     => $basket->extractionsNb,
+                'rate'      => 0
             );
+            $session->set('basketProcess', $basketProcess);
+            $session->set('basketProducts', array());
             
-            if($pricingOrder->save($pricingOrderData) === true){
-                $this->saveSuppliers($basket, $pricing, $pricingOrder);
+            if($basket->pricing->isActivated){
+                $pricing = $basket->pricing;
+
+                // sdi_pricing_order
+                $pricingOrder = $this->getTable('PricingOrder', 'Easysdi_shopTable');
+                $pricingOrderData = array(
+                    'order_id'                      => $table->id,
+                    'cfg_vat'                       => $pricing->cfg_vat,
+                    'cfg_currency'                  => $pricing->cfg_currency,
+                    'cfg_rounding'                  => $pricing->cfg_rounding,
+                    'cfg_overall_default_fee'       => $pricing->cfg_overall_default_fee,
+                    'cfg_free_data_fee'             => $pricing->cfg_free_data_fee,
+                    'cal_total_amount_ti'           => $pricing->cal_total_amount_ti,
+                    'cal_fee_ti'                    => $pricing->cal_fee_ti,
+                    'ind_lbl_category_order_fee'    => $pricing->ind_lbl_category_order_fee
+                );
+
+                if($pricingOrder->save($pricingOrderData) === true){
+                    $this->saveSuppliers($basket, $pricing, $pricingOrder);
+                }
             }
+            else $this->pushProductsToSession($products);
             // ENDOF PRICING
         }
         
@@ -253,15 +267,6 @@ class Easysdi_shopModelBasket extends JModelLegacy {
      * @since 4.3.0
      */
     private function saveSuppliers($basket, $pricing, $pricingOrder){
-        $session = JFactory::getSession();
-        $basketProcess = array(
-            'treated'   => 0,
-            'total'     => $basket->extractionsNb,
-            'rate'      => 0
-        );
-        $session->set('basketProcess', $basketProcess);
-        $session->set('basketProducts', array());
-
         // sdi_pricing_order_supplier
         foreach($pricing->suppliers as $supplierId => $supplier){
             $this->saveSupplier($supplierId, $supplier, $pricingOrder);
@@ -292,19 +297,33 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             'cal_total_rebate_ti'       => $supplier->cal_total_rebate_ti
         );
 
-        if($pricingOrderSupplier->save($pricingOrderSupplierData) === true){
-            $session = JFactory::getSession();
-            $basketProducts = $session->get('basketProducts');
-            // sdi_pricing_order_supplier_product
-            foreach($supplier->products as $productId => $product){
+        if($pricingOrderSupplier->save($pricingOrderSupplierData) === true)
+            $this->pushProductsToSession($supplier->products, $pricingOrderSupplier->id);
+    }
+    
+    private function pushProductsToSession($products, $posId = null){
+        $session = JFactory::getSession();
+        $basketProducts = $session->get('basketProducts');
+        
+        if($posId === null){ // when pricing is not activated
+            foreach($products as $product){
+                array_push($basketProducts, array(
+                    'product'   => $product,
+                    'productId' => $product->diffusion_id
+                ));
+            }
+        }
+        else{ // sdi_pricing_order_supplier_product
+            foreach($products as $productId => $product){
                 array_push($basketProducts, array(
                     'productId'             => $productId,
                     'product'               => $product,
-                    'pricingOrderSupplier_id'  => $pricingOrderSupplier->id
+                    'pricingOrderSupplier_id'  => $posId
                 ));
             }
-            $session->set('basketProducts', $basketProducts);
         }
+        
+        $session->set('basketProducts', $basketProducts);
     }
     
     /**
@@ -322,38 +341,45 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         
         // reset time limit to avoid crash - files creation can take a while
         set_time_limit(30);
-
-        $pricingOrderSupplierProduct = $this->getTable('PricingOrderSupplierProduct', 'Easysdi_shopTable');
-        $pricingOrderSupplierProductData = array(
-            'pricing_order_supplier_id'             => $pricingOrderSupplier_id,
-            'product_id'                            => $productId,
-            'pricing_id'                            => $product->cfg_pricing_type,
-            'cfg_pct_category_supplier_discount'    => $product->cfg_pct_category_supplier_discount,
-            'ind_lbl_category_supplier_discount'    => $product->ind_lbl_category_supplier_discount,
-            'cal_amount_data_te'                    => $product->cal_amount_data_te,
-            'cal_total_amount_te'                   => $product->cal_total_amount_te,
-            'cal_total_amount_ti'                   => $product->cal_total_amount_ti,
-            'cal_total_rebate_ti'                   => $product->cal_total_rebate_ti
-        );
-
-        if($pricingOrderSupplierProduct->save($pricingOrderSupplierProductData) === true && $pricingOrderSupplierProduct->pricing_id == 3){
-
-            // sdi_pricing_order_supplier_product_profile
-            $pricingOrderSupplierProductProfile = $this->getTable('PricingOrderSupplierProductProfile', 'Easysdi_shopTable');
-            $pricingOrderSupplierProductProfileData = array(
-                'pricing_order_supplier_product_id' => $pricingOrderSupplierProduct->id,
-                'pricing_profile_id'                => $product->cfg_profile_id,
-                'pricing_profile_name'              => $product->cfg_profile_name,
-                'cfg_fixed_fee'                     => $product->cfg_fixed_fee,
-                'cfg_surface_rate'                  => $product->cfg_surface_rate,
-                'cfg_min_fee'                       => $product->cfg_min_fee,
-                'cfg_max_fee'                       => $product->cfg_max_fee,
-                'cfg_pct_category_profile_discount' => $product->cfg_pct_category_profile_discount,
-                'ind_lbl_category_profile_discount'  => $product->ind_lbl_category_profile_discount
+        
+        if((bool)JComponentHelper::getParams('com_easysdi_shop')->get('is_activated')){
+            $pricingOrderSupplierProduct = $this->getTable('PricingOrderSupplierProduct', 'Easysdi_shopTable');
+            $pricingOrderSupplierProductData = array(
+                'pricing_order_supplier_id'             => $pricingOrderSupplier_id,
+                'product_id'                            => $productId,
+                'pricing_id'                            => $product->cfg_pricing_type,
+                'cfg_pct_category_supplier_discount'    => $product->cfg_pct_category_supplier_discount,
+                'ind_lbl_category_supplier_discount'    => $product->ind_lbl_category_supplier_discount,
+                'cal_amount_data_te'                    => $product->cal_amount_data_te,
+                'cal_total_amount_te'                   => $product->cal_total_amount_te,
+                'cal_total_amount_ti'                   => $product->cal_total_amount_ti,
+                'cal_total_rebate_ti'                   => $product->cal_total_rebate_ti
             );
 
-            $pricingOrderSupplierProductProfile->save($pricingOrderSupplierProductProfileData);
-            $pricingOrderSupplierProductProfile = false;
+            if($pricingOrderSupplierProduct->save($pricingOrderSupplierProductData) === true && $pricingOrderSupplierProduct->pricing_id == 3){
+
+                // sdi_pricing_order_supplier_product_profile
+                $pricingOrderSupplierProductProfile = $this->getTable('PricingOrderSupplierProductProfile', 'Easysdi_shopTable');
+                $pricingOrderSupplierProductProfileData = array(
+                    'pricing_order_supplier_product_id' => $pricingOrderSupplierProduct->id,
+                    'pricing_profile_id'                => $product->cfg_profile_id,
+                    'pricing_profile_name'              => $product->cfg_profile_name,
+                    'cfg_fixed_fee'                     => $product->cfg_fixed_fee,
+                    'cfg_surface_rate'                  => $product->cfg_surface_rate,
+                    'cfg_min_fee'                       => $product->cfg_min_fee,
+                    'cfg_max_fee'                       => $product->cfg_max_fee,
+                    'cfg_pct_category_profile_discount' => $product->cfg_pct_category_profile_discount,
+                    'ind_lbl_category_profile_discount'  => $product->ind_lbl_category_profile_discount
+                );
+
+                $pricingOrderSupplierProductProfile->save($pricingOrderSupplierProductProfileData);
+                $pricingOrderSupplierProductProfile = false;
+            }
+            
+            $filename = $pricingOrderSupplierProduct->guid;
+        }
+        else{
+            $filename = $product->guid;
         }
 
         // Generate XML and PDF files
@@ -374,8 +400,8 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         if(!file_exists($requestFolder))
             mkdir($requestFolder, 0755, true);
         
-        file_put_contents($requestFolder.$pricingOrderSupplierProduct->guid.'.xml', $sheet->exportXML($guid, FALSE));
-        file_put_contents($requestFolder.$pricingOrderSupplierProduct->guid.'.pdf', $sheet->exportPDF($guid, FALSE));
+        file_put_contents($requestFolder.$filename.'.xml', $sheet->exportXML($guid, FALSE));
+        file_put_contents($requestFolder.$filename.'.pdf', $sheet->exportPDF($guid, FALSE));
         
         // Update session data
         $basketProcess['treated']++;
