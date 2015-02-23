@@ -236,7 +236,10 @@ var priceFormatter = function(price, displayCurrency){
                 )+(displayCurrency ? ' '+currency : '');
 };
 
-var updatePricing = function(pricing){
+var updatePricing = function(pricing){ console.log(pricing);
+    if(!pricing.isActivated)
+        return;
+    
     //total amount
     jQuery('span.pricingTotalAmountTI').html(priceFormatter(pricing.cal_total_amount_ti));
     jQuery('span#pricingTotalAmountTI-container').show();
