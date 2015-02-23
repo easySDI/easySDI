@@ -111,27 +111,28 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
     var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
     var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
     var dataTableTranslation = {
-	"sProcessing":     "Traitement en cours...",
-	"sSearch":         "Rechercher&nbsp;:",
-    "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
-	"sInfo":           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-	"sInfoEmpty":      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-	"sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-	"sInfoPostFix":    "",
-	"sLoadingRecords": "Chargement en cours...",
-    "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
-	"sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
-	"oPaginate": {
-		"sFirst":      "Premier",
-		"sPrevious":   "Pr&eacute;c&eacute;dent",
-		"sNext":       "Suivant",
-		"sLast":       "Dernier"
-	},
-	"oAria": {
-		"sSortAscending":  ": activer pour trier la colonne par ordre croissant",
-		"sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-	}
-}
+                                    "sProcessing":     "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PROCESSING'); ?>",
+                                    "sSearch":         "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_SEARCH'); ?>",
+                                    "sLengthMenu":     "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_LENGTH_MENU'); ?>",
+                                    "sInfo":           "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_INFO'); ?>",
+                                    "sInfoEmpty":      "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_INFO_EMPTY'); ?>",
+                                    "sInfoFiltered":   "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_INFO_FILTERED'); ?>",
+                                    "sInfoPostFix":    "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_INFO_POST_FIX'); ?>",
+                                    "sLoadingRecords": "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_LOADING_RECORDS'); ?>",
+                                    "sZeroRecords":    "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_ZERO_RECORDS'); ?>",
+                                    "sEmptyTable":     "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_EMPTY_TABLE'); ?>",
+                                    "oPaginate": {
+                                            "sFirst":      "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PAGINATE_FIRST'); ?>",
+                                            "sPrevious":   "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PAGINATE_PREVIOUS'); ?>",
+                                            "sNext":       "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PAGINATE_NEXT'); ?>",
+                                            "sLast":       "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PAGINATE_LAST'); ?>"
+                                    },
+                                    "oAria": {
+                                            "sSortAscending":  "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_SORT_ASCENDING'); ?>",
+                                            "sSortDescending": "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_SORT_DESCENDING'); ?>"
+                                    }
+                                }
+
     js = jQuery.noConflict();
     js('document').ready(function() {
         bootbox.setLocale("<?php echo $bbLanguage;?>");
