@@ -1156,6 +1156,15 @@ SET QUOTED_IDENTIFIER ON;
 
 CREATE TABLE [#__sdi_order_diffusion] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[guid] [nvarchar](36) NOT NULL,
+	[created_by] [int] NOT NULL,
+	[created] [datetime2](0) NOT NULL,
+	[modified_by] [int] NULL,
+	[modified] [datetime2](0) NULL,
+	[ordering] [int] NULL,
+	[state] [smallint] NOT NULL,
+	[checked_out] [int] NOT NULL,
+	[checked_out_time] [datetime2](0) NOT NULL,
 	[order_id] [bigint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[productstate_id] [bigint] NOT NULL,
@@ -1164,7 +1173,6 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[completed] [datetime2](0) NULL,
 	[file] [nvarchar](500) NULL,
 	[size] [decimal](10, 0) NULL,
-	[created_by] [int] NOT NULL,
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
