@@ -1162,7 +1162,7 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[modified_by] [int] NULL,
 	[modified] [datetime2](0) NULL,
 	[ordering] [int] NULL,
-	[state] [smallint] NOT NULL,
+	[state] [smallint] NOT NULL DEFAULT 1,
 	[checked_out] [int] NOT NULL,
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[order_id] [bigint] NOT NULL,
