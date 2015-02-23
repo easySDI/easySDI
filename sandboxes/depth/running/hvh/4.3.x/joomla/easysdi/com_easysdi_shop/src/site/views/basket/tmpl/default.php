@@ -154,8 +154,8 @@ if ($this->item && $this->item->extractions) :
                         <hr>
                         <div class="span6" >
                             <h3><?php echo $this->item->extractionsNb . " " . JText::_('COM_EASYSDI_SHOP_BASKET_SELECTED_DATA'); ?>
-                                <span id="pricingTotalAmountTI-container" style="<?php if (!isset($this->item->pricing->cal_total_amount_ti)): ?>display: none;<?php endif; ?>">
-                                    ( <span class="pricingTotalAmountTI"><?php echo!isset($this->item->pricing->cal_total_amount_ti) ? '' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span> )
+                                <span id="pricingTotalAmountTI-container" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti)): ?>display: none;<?php endif; ?>">
+                                    ( <span class="pricingTotalAmountTI"><?php echo !isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti) ? '' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span> )
                                 </span>
                             </h3>
                         </div>
@@ -175,7 +175,7 @@ if ($this->item && $this->item->extractions) :
                                 <thead>
                                     <tr>
                                         <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER') . ' : ' . $supplier->name; ?></h4></td>
-                                        <td class="price_column" style="<?php if (!isset($this->item->pricing)): ?>display:none;<?php endif; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></td>
+                                        <td class="price_column" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
                                 </thead>
@@ -200,14 +200,14 @@ if ($this->item && $this->item->extractions) :
                                                     <?php endforeach; ?>
                                                 </ul>
                                             </td>
-                                            <td class="price_column" style="<?php if (!isset($this->item->pricing)): ?>display:none;<?php endif; ?>"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->products[$item->id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->products[$item->id]->cal_total_amount_ti) : '-'; ?></td>
+                                            <td class="price_column" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->products[$item->id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->products[$item->id]->cal_total_amount_ti) : '-'; ?></td>
                                             <td class="action_column">
                                                 <a href="#" class="btn btn-danger btn-mini pull-right" title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REMOVE'); ?>"><i class="icon-white icon-remove"></i></a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
-                                <tfoot style="<?php if (!isset($this->item->pricing)): ?>display:none;<?php endif; ?>">
+                                <tfoot style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>">
                                     <tr>
                                         <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
                                         <td class="price_column" id="supplier_cal_fee_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) : '-'; ?></td>
@@ -228,7 +228,7 @@ if ($this->item && $this->item->extractions) :
                         <?php endforeach; ?>
 
                         <!-- TOTAL -->
-                        <table class="table table-striped" id='pricingTotal-table' style="<?php if (!isset($this->item->pricing)): ?>display:none;<?php endif; ?>">
+                        <table class="table table-striped" id='pricingTotal-table' style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>">
                             <thead>
                                 <tr>
                                     <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PLATFORM'); ?></h4></td>
