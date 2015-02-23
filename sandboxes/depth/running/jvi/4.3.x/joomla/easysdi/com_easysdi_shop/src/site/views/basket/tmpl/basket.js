@@ -43,25 +43,15 @@ var listenerFeatureAdded = function(e) {
 
 function clearLayersVector() {
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
-        //if (app.mapPanel.map.layers[j].__proto__.CLASS_NAME === "OpenLayers.Layer.Vector") {
         if (app.mapPanel.map.layers[j].id.indexOf("Vector") != -1){
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
     for (var j = 0; j < minimap.layers.length; j++) {
-        //if (minimap.layers[j].__proto__.CLASS_NAME === "OpenLayers.Layer.Vector") {
         if (minimap.layers[j].id.indexOf("Vector") != -1){
             minimap.layers[j].removeAllFeatures();
         }
     }
-    
-   /* if (app.mapPanel.map.getLayersByName("perimeterLayer").length > 0) {
-        perimeterLayer.removeAllFeatures();
-        selectLayer.removeAllFeatures();
-    }
-    if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
-        myLayer.removeAllFeatures();
-    }*/
 }
 
 function clearTemporaryFields() {
@@ -83,12 +73,12 @@ function resetTemporaryFields() {
     jQuery('#btn-saveperimeter').removeAttr("disabled");
 }
 
-/*function saveTemporaryFields() {
+function saveTemporaryFields() {
     jQuery('#perimeter').val(jQuery('#t-perimeter').val());
     jQuery('#perimetern').val(jQuery('#t-perimetern').val());
     jQuery('#surface').val(jQuery('#t-surface').val());
     jQuery('#features').val(jQuery('#t-features').val());
-}*/
+}
 
 function beforeFeatureAdded(event) {
     clearLayersVector();
@@ -290,6 +280,7 @@ function savePerimeter() {
             data :"item="+ JSON.stringify(extent)
         }).done(function(r) {
             if(r.MESSAGE && r.MESSAGE=='OK'){
+                saveTemporaryFields();
                 //extent
                 if(Object.prototype.toString.call(r.extent.features) === '[object Array]'){
                     jQuery('#perimeter-recap-details')
@@ -321,58 +312,6 @@ function savePerimeter() {
         });
     }
 }
-
-/*function displayExtentRecap() {
-    saveTemporaryFields();
-
-    jQuery('#perimeter-recap').empty();
-    jQuery('#perimeter-recap').append("<div><h4>" + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface') + "</h4>");
-    var surface = parseFloat(jQuery('#surface').val());
-    var surfacedigit = parseInt(jQuery('#surfacedigit').val());
-    var maxmetervalue = parseFloat(jQuery('#maxmetervalue').val());
-    if (surface > maxmetervalue) {
-        surface = surface / 1000000;
-        surface = surface.toFixed(surfacedigit);
-        surface += Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2');
-    } else {
-        surface = surface.toFixed(surfacedigit);
-        surface += Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2');
-    }
-
-    jQuery('#perimeter-recap').append("<div>" + surface + "</div></div>");
-    jQuery('#perimeter-recap').append("<div><h4>" + jQuery('#perimetern').val() + "</h4></div>");
-    
-    var features_text = jQuery('#features').val();
-
-    if (features_text === '')
-        return;
-
-    try {
-        var features = JSON.parse(features_text);
-        var createdivdetails = false;
-        if (jQuery.isArray(features)) {
-            jQuery.each(features, function(index, value) {
-                if (typeof value === "undefined")
-                    return true;
-
-                if (typeof value.name === "undefined") {
-//                    jQuery('#perimeter-recap-details').append("<div>" + features + "</div>");
-                    return false;
-                }
-                if(createdivdetails === false){
-                    jQuery('#perimeter-recap').append("<div id='perimeter-recap-details' style='overflow-y:scroll; height:100px;'>");
-                    createdivdetails = true;
-                }
-                jQuery('#perimeter-recap-details').append("<div>" + value.name + "</div>");
-            });
-        }
-    } catch (e) {
-//        jQuery('#perimeter-recap-details').append("<div>" + JSON.parse(features_text) + "</div>");
-    }
-    if(createdivdetails === true){
-        jQuery('#perimeter-recap').append("<div");
-    }
-}*/
                
 function reprojectWKT(wkt) {
     var features = new OpenLayers.Format.WKT().read(wkt);
@@ -526,6 +465,7 @@ jQuery(document).ready(function(){
 
     jQuery('#toolbar button').on('click', function(){
         var task = jQuery(this).attr('rel');
+        var t  = jQuery('#features').val();
         if (jQuery('#features').val() === '') {
             jQuery('#modal-error').modal('show');
         } else {

@@ -17,7 +17,7 @@ Ext.onReady(function() {
     var locator = null;
     window.appname.on("ready", function() {
         window.appname.portalConfig.renderTo = "sdiNewContainer";
-        if (data.urlwfslocator !== "") {
+        if (data.urlwfslocator) {
             if (locator === null) {
                 locator = {xtype: "gxp_autocompletecombo",
                     listeners: {
@@ -39,7 +39,7 @@ Ext.onReady(function() {
                 window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }
         }
-        if (data.level) {
+        if (data.level && cleared === "false") {
             //Init the indoor layer with the default level value
             window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this, window.appname.mapPanel.map.indoorlevelslider.value);
         }
@@ -547,7 +547,7 @@ function getMapConfig() {
                 cls: 'levellabelpanel',
                 id: 'levellabelpanel',
                 border: false,
-                style: "position: absolute; right: 30px; top: 20px; z-index: 1000;",
+                style: "position: absolute; right: 10px; top: 20px; z-index: 1000;",
                 contentEl: ul
             });
         }
