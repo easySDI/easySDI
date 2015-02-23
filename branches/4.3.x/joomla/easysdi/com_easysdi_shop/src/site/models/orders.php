@@ -55,10 +55,10 @@ class Easysdi_shopModelOrders extends JModelList {
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
         
-        $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status', 1);
+        $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
         $this->setState('filter.status', $search);
         
-        $search = $app->getUserStateFromRequest($this->context.'.filter_organism', 'filter_organism', 0);
+        $search = $app->getUserStateFromRequest($this->context.'.filter_organism', 'filter_organism');
         $this->setState('filter.organism', $search);
         
         $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
