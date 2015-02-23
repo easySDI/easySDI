@@ -143,9 +143,9 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 break;
         }
         $data['user_id'] = sdiFactory::getSdiUser()->id;
-
-
+        
         $table = $this->getTable();
+        $table->load($basket->id, false);
         if ($table->save($data) === true) {
             $basketData = array(
                 'orderstate_id' => $table->orderstate_id,
