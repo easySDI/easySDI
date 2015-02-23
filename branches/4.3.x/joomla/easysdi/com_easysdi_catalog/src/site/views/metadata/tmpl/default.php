@@ -92,7 +92,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 $document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.1.0/lib/proj4js.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.js');
 
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
 
@@ -110,6 +110,29 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 <script type="text/javascript">
     var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
     var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
+    var dataTableTranslation = {
+                                    "sProcessing":     "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PROCESSING'); ?>",
+                                    "sSearch":         "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_SEARCH'); ?>",
+                                    "sLengthMenu":     "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_LENGTH_MENU'); ?>",
+                                    "sInfo":           "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_INFO'); ?>",
+                                    "sInfoEmpty":      "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_INFO_EMPTY'); ?>",
+                                    "sInfoFiltered":   "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_INFO_FILTERED'); ?>",
+                                    "sInfoPostFix":    "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_INFO_POST_FIX'); ?>",
+                                    "sLoadingRecords": "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_LOADING_RECORDS'); ?>",
+                                    "sZeroRecords":    "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_ZERO_RECORDS'); ?>",
+                                    "sEmptyTable":     "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_EMPTY_TABLE'); ?>",
+                                    "oPaginate": {
+                                            "sFirst":      "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PAGINATE_FIRST'); ?>",
+                                            "sPrevious":   "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PAGINATE_PREVIOUS'); ?>",
+                                            "sNext":       "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PAGINATE_NEXT'); ?>",
+                                            "sLast":       "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_PAGINATE_LAST'); ?>"
+                                    },
+                                    "oAria": {
+                                            "sSortAscending":  "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_SORT_ASCENDING'); ?>",
+                                            "sSortDescending": "<?php echo JText::_('COM_EASYSDI_CATALOG_DATATABLE_SORT_DESCENDING'); ?>"
+                                    }
+                                }
+
     js = jQuery.noConflict();
     js('document').ready(function() {
         bootbox.setLocale("<?php echo $bbLanguage;?>");
