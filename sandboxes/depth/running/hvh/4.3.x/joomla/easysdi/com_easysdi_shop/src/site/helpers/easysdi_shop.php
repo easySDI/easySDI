@@ -351,7 +351,7 @@ abstract class Easysdi_shopHelper {
      * @since 4.3.0
      */
     private static function rounding($value, $rounding = 0.01){
-        return $rounding===null||$rounding==0?$rounding:round($value/$rounding, 0)*$rounding;
+        return round($value/$rounding, 0)*$rounding;
     }
     
     /**
@@ -387,73 +387,60 @@ abstract class Easysdi_shopHelper {
      * @since 4.3.0
      */
     public static function basketPriceCalculation(&$basket){
+        
         // init prices object
         $prices = new stdClass();
-        
-        // check if pricing is activated or not
         $prices->isActivated = (bool)JComponentHelper::getParams('com_easysdi_shop')->get('is_activated');
         
-        // set the invoiced user (based on current user and third-party)
-        $prices->debtor = new stdClass();
-        if(isset($basket->thirdparty)){
-            $prices->debtor->id = $basket->thirdparty;
-        }
-        else{
-            $prices->debtor->id = $basket->sdiUser->role[self::ROLE_MEMBER][0]->id;
-            $prices->debtor->name = $basket->sdiUser->role[self::ROLE_MEMBER][0]->name;
-        }
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-                ->select('c.id')
-                ->from('#__sdi_organism_category oc')
-                ->join('LEFT', '#__sdi_category c ON c.id=oc.category_id')
-                ->where('oc.organism_id='.(int)$prices->debtor->id);
-        $db->setQuery($query);
-        $prices->debtor->categories = $db->loadColumn();
-
-        // get easysdishop config
+        // test if pricing is activated
         if($prices->isActivated){
+            // set the invoiced user (based on current user and third-party)
+            $prices->debtor = new stdClass();
+            if(isset($basket->thirdparty)){
+                $prices->debtor->id = $basket->thirdparty;
+            }
+            else{
+                $prices->debtor->id = $basket->sdiUser->role[self::ROLE_MEMBER][0]->id;
+                $prices->debtor->name = $basket->sdiUser->role[self::ROLE_MEMBER][0]->name;
+            }
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('c.id')
+                    ->from('#__sdi_organism_category oc')
+                    ->join('LEFT', '#__sdi_category c ON c.id=oc.category_id')
+                    ->where('oc.organism_id='.(int)$prices->debtor->id);
+            $db->setQuery($query);
+            $prices->debtor->categories = $db->loadColumn();
+            
+            // get easysdishop config
             $prices->cfg_vat = (float)JComponentHelper::getParams('com_easysdi_shop')->get('vat', 0);
             $prices->cfg_currency = JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF');
             $prices->cfg_rounding = (float)JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
             $prices->cfg_overall_default_fee = (float)JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_fee', 0);
             $prices->cfg_free_data_fee = (bool)JComponentHelper::getParams('com_easysdi_shop')->get('free_data_fee', false);
-        }
-        else{ // if pricing is not activated, reset cfg value
-            $prices->cfg_vat = null;
-            $prices->cfg_currency = null;
-            $prices->cfg_rounding = null;
-            $prices->cfg_overall_default_fee = null;
-            $prices->cfg_free_data_fee = null;
-        }
+            
+            // get the surface ordered - default to 0
+            $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface/1000000 : 0;
 
-        // get the surface ordered - default to 0
-        $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface/1000000 : 0;
-
-        // calculate prices by supplier
-        $prices->suppliers = array();
-        $prices->cal_total_amount_ti = 0;
-        $prices->hasFeeWithoutPricingProfileProduct = false;
-        foreach($basket->extractions as $supplier_id => $supplier){
-            $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
-            if($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct)
-                $prices->hasFeeWithoutPricingProfileProduct = true;
-            else
-                $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
-        }
-
-        // set the platform tax
-        if(!$prices->isActivated){ // if pricing is not activated, reset cal value
-            $prices->cal_total_amount_ti = null;
-            $prices->cal_fee_ti = null;
-        }
-        else{
+            // calculate prices by supplier
+            $prices->suppliers = array();
+            $prices->cal_total_amount_ti = 0;
+            $prices->hasFeeWithoutPricingProfileProduct = false;
+            foreach($basket->extractions as $supplier_id => $supplier){
+                $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
+                if($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct)
+                    $prices->hasFeeWithoutPricingProfileProduct = true;
+                else
+                    $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
+            }
+            
+            // set the platform tax
             if($prices->cal_total_amount_ti==0 && !$prices->cfg_free_data_fee)
                 $prices->cal_fee_ti = 0;
             else{
                 $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
-
+                
                 if(count($prices->debtor->categories)){
                     $db = JFactory::getDbo();
                     $query = $db->getQuery(true)
@@ -471,9 +458,9 @@ abstract class Easysdi_shopHelper {
                     }
                 }
             }
-
+            
             $prices->cal_fee_ti = self::rounding($prices->cal_fee_ti, $prices->cfg_rounding);
-
+            
             // total amount for the platform
             if($prices->hasFeeWithoutPricingProfileProduct)
                 $prices->cal_total_amount_ti = '-';
@@ -508,16 +495,9 @@ abstract class Easysdi_shopHelper {
         $organism = $db->loadObject();
         
         $provider->name = $organism->name;
-        if($prices->isActivated){
-            $provider->cfg_internal_free = (bool)$organism->internal_free;
-            $provider->cfg_fixed_fee_ti = $organism->fixed_fee_ti;
-            $provider->cfg_data_free_fixed_fee = (bool)$organism->data_free_fixed_fee;
-        }
-        else{
-            $provider->cfg_internal_free = null;
-            $provider->cfg_fixed_fee_ti = null;
-            $provider->cfg_data_free_fixed_fee = null;
-        }
+        $provider->cfg_internal_free = (bool)$organism->internal_free;
+        $provider->cfg_fixed_fee_ti = $organism->fixed_fee_ti;
+        $provider->cfg_data_free_fixed_fee = (bool)$organism->data_free_fixed_fee;
         
         // calculate supplier rebate
 	$internalFreeOrder = false;
@@ -561,23 +541,16 @@ abstract class Easysdi_shopHelper {
             }
         }
         
-        if($prices->isActivated){
-            // set the provider tax
-            $provider->cal_fee_ti = ($provider->cal_total_amount_ti>0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
-
-            // total amount for this provider
-            if($provider->hasFeeWithoutPricingProfileProduct){
-                unset($provider->cal_total_amount_ti);
-                unset($provider->cal_total_rebate_ti);
-            }
-            else
-                $provider->cal_total_amount_ti += $provider->cal_fee_ti;
+        // set the provider tax
+        $provider->cal_fee_ti = ($provider->cal_total_amount_ti>0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
+        
+        // total amount for this provider
+        if($provider->hasFeeWithoutPricingProfileProduct){
+            unset($provider->cal_total_amount_ti);
+            unset($provider->cal_total_rebate_ti);
         }
-        else{
-            $provider->cal_total_rebate_ti = null;
-            $provider->cal_fee_ti = null;
-            $provider->cal_total_amount_ti = null;
-        }
+        else
+            $provider->cal_total_amount_ti += $provider->cal_fee_ti;
         
         return $provider;
     }
@@ -609,62 +582,50 @@ abstract class Easysdi_shopHelper {
         $price->cfg_surface_rate = $pricingProfile->surface_rate;
         $price->cfg_min_fee = $pricingProfile->min_fee;
         $price->cfg_max_fee = $pricingProfile->max_fee;
-
-        if($prices->isActivated){
-            // calculate product price
-            $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
-
-            // limit price according to min and max price
-            if($price->cfg_max_fee>0 && $price->cal_amount_data_te > $price->cfg_max_fee){
-                $price->cal_amount_data_te = $price->cfg_max_fee;
-            }
-            elseif($price->cfg_min_fee>0 && $price->cal_amount_data_te < $price->cfg_min_fee){
-                $price->cal_amount_data_te = $price->cfg_min_fee;
-            }
-
-            // rebate based on category and profile
-            $price->cfg_pct_category_profile_discount = 0;
-            $price->ind_lbl_category_profile_discount = '';
-
-            if(count($prices->debtor->categories)){
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true)
-                        ->select('ppcpr.category_id, c.name')
-                        ->from('#__sdi_pricing_profile_category_pricing_rebate ppcpr')
-                        ->join('LEFT', '#__sdi_category c ON c.id=ppcpr.category_id')
-                        ->where('ppcpr.pricing_profile_id='.(int)$pricingProfile->id)
-                        ->where('ppcpr.category_id IN ('.  implode(',', $prices->debtor->categories).')');
-                $db->setQuery($query);
-                $category_free = $db->loadAssoc();
-
-                if($category_free !== null){
-                    $price->cfg_pct_category_profile_discount = 100;
-                    $price->ind_lbl_category_profile_discount = $category_free['name'];
-                }
-            }
-
-            // rebate based on category and supplier
-            $price->cfg_pct_category_supplier_discount = $prices->supplierRebate->pct;
-            $price->ind_lbl_category_supplier_discount = $prices->supplierRebate->name;
-
-            // final price TE
-            $price->cal_total_amount_te = self::rounding($price->cal_amount_data_te * (1 - $price->cfg_pct_category_profile_discount/100) * (1 - $price->cfg_pct_category_supplier_discount/100));
-            $cal_total_rebate_te = self::rounding($price->cal_amount_data_te - $price->cal_total_amount_te);
-
-            // final price TI
-            $price->cal_total_amount_ti = self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat/100), $prices->cfg_rounding);
-            $price->cal_total_rebate_ti = self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat/100), $prices->cfg_rounding);
+        
+        // calculate product price
+        $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
+        
+        // limit price according to min and max price
+        if($price->cfg_max_fee>0 && $price->cal_amount_data_te > $price->cfg_max_fee){
+            $price->cal_amount_data_te = $price->cfg_max_fee;
         }
-        else{
-            $price->cal_amount_data_te = null;
-            $price->cfg_pct_category_profile_discount = null;
-            $price->ind_lbl_category_profile_discount = null;
-            $price->cfg_pct_category_supplier_discount = null;
-            $price->ind_lbl_category_supplier_discount = null;
-            $price->cal_total_amount_te = null;
-            $price->cal_total_amount_ti = null;
-            $price->cal_total_rebate_ti = null;
+        elseif($price->cfg_min_fee>0 && $price->cal_amount_data_te < $price->cfg_min_fee){
+            $price->cal_amount_data_te = $price->cfg_min_fee;
         }
+        
+        // rebate based on category and profile
+        $price->cfg_pct_category_profile_discount = 0;
+        $price->ind_lbl_category_profile_discount = '';
+        
+        if(count($prices->debtor->categories)){
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('ppcpr.category_id, c.name')
+                    ->from('#__sdi_pricing_profile_category_pricing_rebate ppcpr')
+                    ->join('LEFT', '#__sdi_category c ON c.id=ppcpr.category_id')
+                    ->where('ppcpr.pricing_profile_id='.(int)$pricingProfile->id)
+                    ->where('ppcpr.category_id IN ('.  implode(',', $prices->debtor->categories).')');
+            $db->setQuery($query);
+            $category_free = $db->loadAssoc();
+            
+            if($category_free !== null){
+                $price->cfg_pct_category_profile_discount = 100;
+                $price->ind_lbl_category_profile_discount = $category_free['name'];
+            }
+        }
+        
+        // rebate based on category and supplier
+        $price->cfg_pct_category_supplier_discount = $prices->supplierRebate->pct;
+        $price->ind_lbl_category_supplier_discount = $prices->supplierRebate->name;
+        
+        // final price TE
+        $price->cal_total_amount_te = self::rounding($price->cal_amount_data_te * (1 - $price->cfg_pct_category_profile_discount/100) * (1 - $price->cfg_pct_category_supplier_discount/100));
+        $cal_total_rebate_te = self::rounding($price->cal_amount_data_te - $price->cal_total_amount_te);
+        
+        // final price TI
+        $price->cal_total_amount_ti = self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat/100), $prices->cfg_rounding);
+        $price->cal_total_rebate_ti = self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat/100), $prices->cfg_rounding);
         
         return $price;
     }
