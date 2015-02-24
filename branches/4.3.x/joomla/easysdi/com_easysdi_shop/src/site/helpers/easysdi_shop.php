@@ -640,18 +640,17 @@ abstract class Easysdi_shopHelper {
      * @since 4.3.0
      */
     public static function priceFormatter($price, $displayCurrency = true){
-        return  $price == '-'
-                ?   '-'
-                :   (   $price == 0
-                    ?   0
-                    :   number_format(
+        $c = $displayCurrency ? ' '.JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '';
+        
+        if($price != '-' && $price != 0)
+            $price =    number_format(
                             $price, 
                             JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), 
                             JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), 
                             JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'")
-                        )
-                    ).($displayCurrency ? ' '.JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '')
-                ;
+                        );
+        
+        return $price.$c;
     }
     
     /**************************/
