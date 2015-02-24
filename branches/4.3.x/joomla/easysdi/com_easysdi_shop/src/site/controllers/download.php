@@ -121,7 +121,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             
             //@TODO: retrieve why file_get_contents returns false
             if($file === false)
-                $dlError = 'THE_RESOURCE_CANNOT_BE_READ';
+                $dlError = 'COM_EASYSDI_SHOP_THE_RESOURCE_CANNOT_BE_READ';
             
             $pos = strrpos($diffusion->file, '.');
             $extension = substr($diffusion->file, $pos);
@@ -143,7 +143,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             
             //@TODO: retrieve why file_get_contents returns false
             if($file === false)
-                $dlError = 'THE_RESOURCE_CANNOT_BE_READ';
+                $dlError = 'COM_EASYSDI_SHOP_THE_RESOURCE_CANNOT_BE_READ';
             
             $pos = strrpos($url, '.');
             $extension = substr($url, $pos);
