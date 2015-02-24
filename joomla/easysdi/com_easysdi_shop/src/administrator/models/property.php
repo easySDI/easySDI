@@ -152,7 +152,7 @@ class Easysdi_shopModelproperty extends sdiModel
                     array_unshift($languages, JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage'));
                     $text1 = array();
                     foreach ($languages as $language) :
-                        $text1[$language] = 'COM_EASYSDI_SHOP_PROPERTYVALUE_LABEL';
+                        $text1[$language] = '';
                     endforeach;
                     $data = array(
                         'name' => 'default',

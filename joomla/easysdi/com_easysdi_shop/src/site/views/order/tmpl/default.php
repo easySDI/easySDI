@@ -104,7 +104,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                                 else :
                                                                                     echo $value->name;
                                                                                 endif;
-                                                                                echo', ';
+                                                                                if (next($property->values)==true) echo', ';
                                                                             endforeach;
                                                                             ?>
                                                                         </div>
