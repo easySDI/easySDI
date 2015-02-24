@@ -23,4 +23,12 @@ class Easysdi_coreController extends JControllerLegacy
             parent::display($cachable, $urlparams);
                     
         }
+        
+        public function dtProxy(){
+            $dtLang = JFactory::getApplication()->input->get('dtLang');
+            
+            header('Content-Type: application/json; charset=utf-8');
+            echo file_get_contents("http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/{$dtLang}.json");
+            die();
+        }
 }
