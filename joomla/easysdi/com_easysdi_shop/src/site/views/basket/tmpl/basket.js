@@ -222,18 +222,17 @@ var number_format = function(number, decimals, dec_point, thousands_sep) {
  */
 var priceFormatter = function(price, displayCurrency){
     if('undefined' === typeof displayCurrency) displayCurrency = true;
+    var c = displayCurrency ? ' '+currency : '';
     
-    return  price == '-'
-            ? '-'
-            :   (   price == 0
-                    ?   0
-                    :   number_format(
-                            price,
-                            digit_after_decimal,
-                            decimal_symbol,
-                            digit_grouping_symbol
-                        )
-                )+(displayCurrency ? ' '+currency : '');
+    if(price != '-' && price != 0)
+        price =     number_format(
+                        price,
+                        digit_after_decimal,
+                        decimal_symbol,
+                        digit_grouping_symbol
+                    );
+    
+    return price+c;
 };
 
 var updatePricing = function(pricing){ console.log(pricing);
