@@ -158,7 +158,7 @@ function savePerimeter() {
             "surface": jQuery('#t-surface').val(),
             "allowedbuffer": jQuery('#allowedbuffer').val(),
             "buffer": jQuery('#buffer').val(),
-            "features": JSON.parse(jQuery('#t-features').val())};
+            "features": jQuery('#t-features').val()};
 
         jQuery.ajax({
             type: "POST",
