@@ -112,7 +112,7 @@ class Easysdi_catalogModelcatalogsearchcriterias extends JModelList {
         $query->from('#__sdi_catalog_searchcriteria AS a');
 
         // join on the searchcriteria
-        $query->select('sc.name, sc.id AS searchcriteria_id');
+        $query->select('sc.name, sc.id AS sc_id');
         $query->innerJoin('#__sdi_searchcriteria sc ON a.searchcriteria_id=sc.id');
 
         // Join over the users for the checked out user.
@@ -157,7 +157,7 @@ class Easysdi_catalogModelcatalogsearchcriterias extends JModelList {
         }
         
         // Join over the search tab.
-        $query->select('st.value AS searchtabname, st.id AS searchtab_id');
+        $query->select('st.value AS searchtabname, st.id AS st_id');
         $query->join('LEFT', '#__sdi_sys_searchtab AS st ON st.id=a.searchtab_id');
 
 
