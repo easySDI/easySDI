@@ -247,7 +247,9 @@ js('document').ready(function () {
 
     js('#search_table').dataTable({
         "bFilter": false,
-        "oLanguage": dataTableTranslation,
+        "oLanguage": {
+            sUrl: baseUrl + 'option=com_easysdi_core&task=dtProxy&dtLang=' + dtLang
+        },
 	aaData: null,
         aoColumnDefs: [
             {aTargets: [0], mData: function (item) {

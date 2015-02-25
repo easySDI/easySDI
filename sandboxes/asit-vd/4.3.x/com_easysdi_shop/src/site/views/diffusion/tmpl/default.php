@@ -357,7 +357,7 @@ var globdata;
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
                                                                     ?>
-                                                                    <option value="<?php echo $propertyvalue->id; ?>" <?php if (array_key_exists($property->id, $this->item->property) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected'; ?>><?php echo JText::_(sdiMultilingual::getTranslation($propertyvalue->guid)); ?></option>
+                                                                    <option value="<?php echo $propertyvalue->id; ?>" <?php if (array_key_exists($property->id, $this->item->property) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected'; ?>><?php echo JText::_('COM_EASYSDI_SHOP_PROPERTYVALUE_LABEL'); ?></option>
                                                                     <?php
                                                                 endif;
                                                             endforeach;

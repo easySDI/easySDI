@@ -14,7 +14,7 @@ js(document).ready(function() {
         bProcessing: true,
         bServerSide: true,
         oLanguage: {
-            sUrl: 'http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json'
+            sUrl: baseUrl + 'option=com_easysdi_core&task=dtProxy&dtLang=' + dtLang
         },
         deferRender: true
     };
