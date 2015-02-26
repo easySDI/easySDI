@@ -354,15 +354,17 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 $id = $table->id;
             }
 
-            $preview = Easysdi_catalogHelper::getPreviewMetadata($id);
-            if ($is_publish_update && !empty($preview)) {
-                // update endpublished
-                $table_preview = $this->getTable();
-                $table_preview->load($preview->id);
-                if ($table_preview->save(array('endpublished' => $table->published), '', array('created', 'created_by'))) {
-                    $CSWmetadata = new sdiMetadata($table_preview->id);
-                    if (!$CSWmetadata->updateSDIElement()) {
-                        throw new Exception('Echec de mise à jour du catalog');
+            if ($is_publish_update) {
+                $preview = Easysdi_catalogHelper::getPreviewMetadata($table);
+                if (!empty($preview)) {
+                    // update endpublished
+                    $table_preview = $this->getTable();
+                    $table_preview->load($preview->id);
+                    if ($table_preview->save(array('endpublished' => $table->published), '', array('created', 'created_by'))) {
+                        $CSWmetadata = new sdiMetadata($table_preview->id);
+                        if (!$CSWmetadata->updateSDIElement()) {
+                            throw new Exception('Echec de mise à jour du catalog');
+                        }
                     }
                 }
             }

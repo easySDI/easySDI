@@ -22,7 +22,7 @@ abstract class Easysdi_catalogHelper {
      * @param int $metadata_id
      * @return stdClass
      */
-    public static function getPreviewMetadata($metadata_id) {
+    public static function getPreviewMetadata(Easysdi_catalogTablemetadata $metadata) {
         $db = JFactory::getDbo();
         
         // resource
@@ -31,7 +31,7 @@ abstract class Easysdi_catalogHelper {
         $query->from('#__sdi_resource r');
         $query->innerJoin('#__sdi_version v ON v.resource_id = r.id');
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
-        $query->where('m.id = '.(int)$metadata_id);
+        $query->where('m.id = '.(int)$metadata->id);
         
         $db->setQuery($query);
         $resource = $db->loadObject();
@@ -42,8 +42,8 @@ abstract class Easysdi_catalogHelper {
         $query->from('#__sdi_metadata m');
         $query->innerJoin('#__sdi_version v ON v.id = m.version_id');
         $query->where('v.resource_id = ' . (int) $resource->id);
-        $query->where('m.id < ' . (int) $metadata_id);
-        $query->order('m.id DESC');
+        $query->where('m.created < ' .  $query->quote($metadata->created));
+        $query->order('m.created DESC');
 
         $db->setQuery($query, 0, 1);
         $preview = $db->loadObject();

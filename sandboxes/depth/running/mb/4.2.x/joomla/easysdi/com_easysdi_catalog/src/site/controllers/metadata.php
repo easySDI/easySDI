@@ -411,7 +411,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if(array_key_exists('version', $_POST)){
             if($_POST['version'] == 'last'){
                 $query->group('r.id');
-                $query->order('m.id DESC');
+                $query->order('m.created DESC');
             }
         }
         

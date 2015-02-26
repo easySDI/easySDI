@@ -130,7 +130,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         if($version == 'last'){
             $query->group('r.id');
-            $query->order('m.id DESC');
+            $query->order('m.created DESC');
         }
         
         $where = 'v.id <> ' . (int) $id . ' AND v.id NOT IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id=' . (int) $id . ') AND rt.id IN (' . $resourcetypechild . ')';
