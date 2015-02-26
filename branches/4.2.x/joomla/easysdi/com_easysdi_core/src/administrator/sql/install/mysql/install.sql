@@ -1724,6 +1724,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_metadata` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `accessscope_id` INT(11) UNSIGNED  NOT NULL ,
 `published` DATETIME ,
+`endpublished` DATETIME ,
 `archived` DATETIME ,
 `lastsynchronization` DATETIME ,
 `synchronized_by` INT(11) UNSIGNED,
