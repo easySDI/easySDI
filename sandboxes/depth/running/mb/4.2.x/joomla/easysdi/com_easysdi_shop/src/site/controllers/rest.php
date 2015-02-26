@@ -23,6 +23,9 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     const ORDERSTATEAWAIT = 4;
     const ORDERSTATEPROGRESS = 5;
     const ORDERSTATEFINISH = 3;
+    // Order productmining
+    const PRODUCTMININGAUTO = 1;
+    const PRODUCTMININGMANUAL = 2;
 
     /** @var string Possible values global or organism */
     private $userType = 'global';
@@ -116,6 +119,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
             $query->where('r.organism_id = ' . (int)$this->organism->id);
         }
         $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
+        $query->where('d.productmining_id = ' . self::PRODUCTMININGAUTO);
         $query->group('o.id');
 
         $this->db->setQuery($query);
