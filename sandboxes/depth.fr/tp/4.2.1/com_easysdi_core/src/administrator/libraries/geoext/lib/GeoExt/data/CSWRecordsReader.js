@@ -94,6 +94,9 @@ Ext.extend(GeoExt.data.CSWRecordsReader, Ext.data.JsonReader, {
         if(typeof data === "string" || data.nodeType) {
             data = this.meta.format.read(data);
         }
+        if (data.success === false) {
+            throw new Ext.data.DataReader.Error("invalid-response", data);
+        }
         var result = GeoExt.data.CSWRecordsReader.superclass.readRecords.call(
             this, data
         );
@@ -104,7 +107,15 @@ Ext.extend(GeoExt.data.CSWRecordsReader, Ext.data.JsonReader, {
                 if (value instanceof Array) {
                     for (var i=0, ii=value.length; i<ii; ++i) {
                         if (value[i] instanceof Object) {
-                            value[i] = value[i].value;
+                            var size = 0;
+                            for (var property in value[i]) {
+                                if (value[i].hasOwnProperty(property)) {
+                                    size++;
+                                }
+                            }
+                            if (size === 1 && value[i].value) {
+                                value[i] = value[i].value;
+                            }
                         }
                     }
                 }
