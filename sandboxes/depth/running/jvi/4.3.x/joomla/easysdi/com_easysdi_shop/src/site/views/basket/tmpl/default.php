@@ -40,6 +40,7 @@ if ($this->item && $this->item->extractions) :
         div.shop-product .table td.price_column{ width: auto; min-width: 132px; text-align: right}
         div.shop-product .table td.action_column{ width: 5%}
         div.shop-product .table tfoot td{ text-align: right}
+        div.modal.fade {-webkit-transition: initial;-moz-transition: initial;-o-transition: initial;transition: initial}
     </style>
     <script>
         var request, current_id,
@@ -331,7 +332,7 @@ if ($this->item && $this->item->extractions) :
             </div>
         </div>
 
-        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></h3>
