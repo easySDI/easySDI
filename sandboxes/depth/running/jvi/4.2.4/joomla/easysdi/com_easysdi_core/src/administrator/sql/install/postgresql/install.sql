@@ -524,7 +524,8 @@ CREATE TABLE #__sdi_language (
     "iso639-2T" character varying(10),
     "iso639-1" character varying(10),
     "iso3166-1-alpha2" character varying(10),
-    "iso639-2B" character varying(10)
+    "iso639-2B" character varying(10),
+    datatable character varying(50) NOT NULL DEFAULT 'English'
 );
 
 
