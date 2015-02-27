@@ -37,6 +37,8 @@ class Easysdi_coreControllerProxy extends Easysdi_coreController{
         $this->getPOSTParameters($jInput);
         $this->getCookies($jInput);
         
+        $this->prepareURL();
+        
         $this->sendCURLRequest();
         
         $this->sendResponse();
@@ -65,8 +67,13 @@ class Easysdi_coreControllerProxy extends Easysdi_coreController{
             unset($data['method']);
         }
         
-        
-        $this->get = $data;
+        if(count($data)){
+            $query = array();
+            foreach($data as $key => $value){
+                array_push($query, $key.'='.$value);
+            }
+            $this->get = implode('&', $query);
+        }
     }
     
     private function getPOSTParameters(JInput $jInput){
@@ -89,7 +96,13 @@ class Easysdi_coreControllerProxy extends Easysdi_coreController{
             unset($data['method']);
         }
         
-        $this->post = $data;
+        if(count($data)){
+            $query = array();
+            foreach($data as $key => $value){
+                array_push($query, $key.'='.$value);
+            }
+            $this->post = implode('&', $query);
+        }
     }
     
     private function getCookies(JInput $jInput){
@@ -98,6 +111,12 @@ class Easysdi_coreControllerProxy extends Easysdi_coreController{
             array_push($data, $cookieName.'='.$cookieValue);
         }
         $this->cookies = implode('; ', $data);
+    }
+    
+    private function prepareURL(){
+        if(count($this->get)){
+            $this->url .= '?'.$this->get;
+        }
     }
     
     private function sendCURLRequest(){
