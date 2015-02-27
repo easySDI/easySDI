@@ -62,7 +62,7 @@ gxp.Viewer.prototype.reactivate = function() {
     this.checkLayerRecordQueue();
 
     // broadcast ready state
-    this.fireEvent("ready");
+  //  this.fireEvent("ready");
 };
 
 

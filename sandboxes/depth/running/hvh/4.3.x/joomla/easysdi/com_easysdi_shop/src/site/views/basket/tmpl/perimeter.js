@@ -12,11 +12,15 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
     if (isrestrictedbyperimeter === 0) {
         perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
                 wmsurl,
-                {layers: wmslayername,
-                    transparent: true});
+                {
+                    layers: wmslayername,
+                    transparent: true,
+                    servertype: 2,
+                    levelfield:"CODE_NIVEAU"
+                });
 
         selectControl = new OpenLayers.Control.GetFeature({
-            protocol: new OpenLayers.Protocol.WFS({
+                protocol: new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
                 url: wfsurl,
                 srsName: app.mapPanel.map.projection,
@@ -32,13 +36,9 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
         });
 
     } else {
-
-        
         var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
         var g = featurerestriction.geometry;
         var exp = new OpenLayers.Format.WKT().write(featurerestriction);
-        
-         
         //----------------------------------------------------------------------
         // The WMS version of the perimeter layer filtered 
         // by user restricted perimeter
@@ -50,9 +50,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
                  CQL_FILTER: 'INTERSECTS(the_geom,' + exp + ')'},
                  {tileOptions: {maxGetUrlLength: 2048}, transitionEffect: 'resize'}
             );
-
         //----------------------------------------------------------------------
-        
         selectControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
@@ -74,8 +72,29 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
         });
     }
 
-    app.mapPanel.map.addLayer(perimeterLayer);
-    //perimeterLayer.events.register("loadend", perimeterLayer, listenerLoadEnd);
+var layerconfig = { type: "OpenLayers.Layer.WMS",
+                    name: wmslayername,
+                    isindoor:1,
+                    servertype: 2,
+                    levelfield:"CODE_NIVEAU",
+                    opacity: 1,
+                    source: "arcgisgva",
+                    tiled: true,
+                    title: wmslayername,
+                    iwidth:"360",
+                    iheight:"360",
+                    visibility: true};
+                                            
+var sourceconfig = {id:"arcgisgva",
+                    ptype: "sdi_gxp_wmssource",
+                    hidden : "true",
+                    url: wmsurl
+                    }
+                    
+    window.parent.app.addExtraLayer(sourceconfig, layerconfig);
+ 
+   // app.mapPanel.map.addLayer(perimeterLayer);
+
 
     selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);

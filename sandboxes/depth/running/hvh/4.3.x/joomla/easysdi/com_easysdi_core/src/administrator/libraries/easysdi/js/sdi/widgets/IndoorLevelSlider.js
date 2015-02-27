@@ -90,17 +90,28 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
     
     
 
-    /** private: method[changeLayerOpacity]
+    /** private: method[changeIndoorLevel]
      *  :param slider: :class:`GeoExt.LayerOpacitySlider`
      *  :param value: ``Number`` The slider value
      *
-     *  Updates the ``OpenLayers.Layer`` opacity value.
+     *  Updates the WMS filter.
      */
     changeIndoorLevel: function(slider, value) {
         this.setValue(value);
         var layers = this.map.layers;
         var level = levels[value];
 
+var controls = this.map.controls;
+for(var i = 0 ; i < controls.length; i++){
+    if(controls[i] instanceof OpenLayers.Control.GetFeature){
+       // selectLayer.removeAllFeatures();
+        controls[i].protocol.defaultFilter = new OpenLayers.Filter.Comparison({
+                            type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                            property: "gva_GVA:Code_du_niveau",
+                            value:level.code
+                        })
+    }
+}
         for (var a = 0; a < layers.length; a++) {
             if (layers[a].levelfield) {
                 var servertype = layers[a].servertype;

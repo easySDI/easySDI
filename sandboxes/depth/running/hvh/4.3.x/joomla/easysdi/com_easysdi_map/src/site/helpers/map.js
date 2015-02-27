@@ -63,6 +63,7 @@ Ext.onReady(function() {
 
 });
 
+
 function getMapConfig() {
     var config = {};
 
