@@ -248,7 +248,7 @@ js('document').ready(function () {
     js('#search_table').dataTable({
         "bFilter": false,
         "oLanguage": {
-            sUrl: baseUrl + 'option=com_easysdi_core&task=dtProxy&dtLang=' + dtLang
+            sUrl: baseUrl + 'option=com_easysdi_core&task=proxy.run&url='+encodeURI('http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json')
         },
 	aaData: null,
         aoColumnDefs: [
