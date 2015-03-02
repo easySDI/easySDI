@@ -120,6 +120,11 @@ li.commit div {
     background-image: url(img/silk/add.png);
 }
 
+/* sdi_searchcatalog */
+.x-btn .gxp-icon-addlayersfromcatalog {
+    background-image: url(img/silk/find.png);
+}
+
 .x-btn .delete {
     background-image: url(img/silk/delete.png);
 }
