@@ -375,11 +375,6 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $pricingOrderSupplierProductProfile->save($pricingOrderSupplierProductProfileData);
                 $pricingOrderSupplierProductProfile = false;
             }
-            
-            $filename = $pricingOrderSupplierProduct->guid;
-        }
-        else{
-            $filename = $product->guid;
         }
 
         // Generate XML and PDF files
@@ -400,8 +395,8 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         if(!file_exists($requestFolder))
             mkdir($requestFolder, 0755, true);
         
-        file_put_contents($requestFolder.$filename.'.xml', $sheet->exportXML($guid, FALSE));
-        file_put_contents($requestFolder.$filename.'.pdf', $sheet->exportPDF($guid, FALSE));
+        file_put_contents($requestFolder.$product->guid.'.xml', $sheet->exportXML($guid, FALSE));
+        file_put_contents($requestFolder.$product->guid.'.pdf', $sheet->exportPDF($guid, FALSE));
         
         // Update session data
         $basketProcess['treated']++;
