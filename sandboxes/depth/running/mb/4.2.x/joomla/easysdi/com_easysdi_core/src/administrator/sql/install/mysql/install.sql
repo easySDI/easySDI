@@ -290,6 +290,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_language` (
   `iso639-1` varchar(10) DEFAULT NULL,
   `iso3166-1-alpha2` varchar(10) DEFAULT NULL,
   `iso639-2B` varchar(10) DEFAULT NULL,
+  `datatable` varchar(50) NOT NULL DEFAULT 'English',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

@@ -806,6 +806,7 @@ CREATE TABLE [#__sdi_language] (
 	[iso639-1] [nvarchar](10) NULL,
 	[iso3166-1-alpha2] [nvarchar](10) NULL,
 	[iso639-2B] [nvarchar](10) NULL,
+	[datatable] [nvarchar](50) NOT NULL DEFAULT 'English',
  CONSTRAINT [PK_#__sdi_language_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
