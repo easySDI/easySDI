@@ -74,6 +74,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
 
 var layerconfig = { type: "OpenLayers.Layer.WMS",
                     name: wmslayername,
+                    transparent: true,
                     isindoor:1,
                     servertype: 2,
                     levelfield:"CODE_NIVEAU",
