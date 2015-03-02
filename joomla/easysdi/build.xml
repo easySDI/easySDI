@@ -6,7 +6,7 @@
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.2.3"/>
+    <property name="version" value="4.2.6"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -375,9 +375,10 @@
                     <language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
                     <language tag="de-DE">language/de-DE/de-DE.pkg_easysdi.sys.ini</language>
                 </languages>
-                <updateservers>
+				<!-- updateservers is commented until update.easysdi.org is not up -->
+                <!-- <updateservers>
                     <server type="collection">http://update.easysdi.org/packages/easysdi/manifest.xml</server>
-                </updateservers>
+                </updateservers> -->
             </extension> 
         </echoxml>
     </target>

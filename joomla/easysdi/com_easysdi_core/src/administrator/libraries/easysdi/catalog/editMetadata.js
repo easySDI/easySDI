@@ -169,22 +169,31 @@ js('document').ready(function () {
                                 bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN', 'COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'));
                             } else {
                                 js.ajax({
-                                    url: baseUrl + 'option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version,
+                                    url: baseUrl + 'option=com_easysdi_core&task=version.getCascadePublicableChild&version_id=' + rel.version,
                                     type: "GET",
                                     async: false,
                                     cache: false
                                 }).done(function (data_version) {
                                     var response = js.parseJSON(data_version);
-                                    var body = buildDeletedTree(response.versions);
-                                    js('#publishModalChildrenList').html(body);
+                                    
+                                    var children = response.versions[rel.version].children;
+                                    delete response.versions[rel.version].children;
+                                    js('#publishModalCurrentMetadata').html(buildVersionsTree(response.versions));
 
-                                    if (js(response.versions).length) {
-                                        js('#publishModal #viral').val(1);
+                                    if(js(children).length){
+                                        js('#publishModalChildrenList').html(buildVersionsTree(children));
+                                        js('#publishModalViralPublication').attr('checked', true).trigger('change');
+                                        js('#publishModalChildrenDiv').show();
                                     }
-
-                                    var publish_date = js('#jform_published').val().split(' ');
-                                    if (publish_date[0] !== '0000-00-00')
-                                        js('#publish_date').val(publish_date[0]);
+                                    else{
+                                        js('#publishModalViralPublication').attr('checked', false).trigger('change');
+                                    }
+                                    
+                                    var publish_date = js('#jform_published').val();
+                                    if('undefined' !== typeof publish_date && '0000-00-00 00:00:00' !== publish_date){
+                                        var datetime = publish_date.split(' ');
+                                        js('#publish_date').val(datetime[0]);
+                                    }
 
                                     js('#publishModal').modal('show');
                                 });
@@ -247,7 +256,7 @@ js('document').ready(function () {
                     return "<input type='radio' name='import[id]' id='import_id_" + item.id + "' value='" + item.id + "' checked=''>";
                 }},
             {aTargets: [1], mData: 'name'},
-            {aTargets: [2], mData: 'created'},
+            {aTargets: [2], mData: 'vname'},
             {aTargets: [3], mData: 'guid'},
             {aTargets: [4], mData: 'rt_name'},
             {aTargets: [5], mData: function (item) {
@@ -258,6 +267,10 @@ js('document').ready(function () {
     js('#search_table_wrapper').hide();
 }
 );
+
+
+
+js(document).on('change', '#publishModalViralPublication', function(){js('#publishModal #viral').val(js(this).attr('checked')==='checked'?1:0)});
 
 /**
  * When the preview modal is visible, we colorize the XML.
@@ -395,6 +408,7 @@ js(document).on('click', '.add-btn', function () {
             button.attr('disabled', true);
         }
     }).done(function (data) {
+        
         var elmt = (js('.fds' + uuid).length > 0) ? js('.fds' + uuid).last() : button.parent();
         elmt.after(data);
 
@@ -488,7 +502,17 @@ js(document).on('click', '#btn_toggle_all', function () {
     toogleAll(js(this));
 });
 
-var buildDeletedTree = function (versions) {
+/**
+ * 
+ * @param {type} versions
+ * @returns {String}
+ * @deprecated use buildVersionsTree instead
+ */
+var buildDeletedTree = function(versions){
+    return buildVersionsTree(versions);
+}
+
+var buildVersionsTree = function (versions) {
     var body = '<ul>';
 
     js.each(versions, function (k, version) {
@@ -689,7 +713,7 @@ function confirmReplicate() {
 }
 
 function confirmReset() {
-    bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function (result) {
+    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE","COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
         if (result) {
 
         }
@@ -713,7 +737,7 @@ function removeFromStructure(id) {
 }
 
 function confirmEmptyFile(id) {
-    bootbox.confirm("Are you sure?", function (result) {
+    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE","COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
         if (result) {
             emptyFile(id);
         }
@@ -724,6 +748,7 @@ function emptyFile(id) {
     var uuid = getUuid('empty-btn-', id);
     var replaceUuid = uuid.replace(/-/g, '_');
     js('#jform_' + replaceUuid + '_filetext').attr('value', '');
+    js('#jform_' + replaceUuid + '_filehiddendelete').attr('value', '');
     js('#preview-' + uuid).hide();
     js('#empty-file-' + uuid).hide();
 }
@@ -756,7 +781,7 @@ function setBoundary(parentPath, value) {
         return;
 
     js.ajax({
-        url: baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value,
+        url: encodeURI(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value),
         type: "GET",
         async: false,
         cache: false

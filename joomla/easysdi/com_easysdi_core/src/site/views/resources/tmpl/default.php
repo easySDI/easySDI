@@ -206,7 +206,11 @@ $document = JFactory::getDocument();
                         </div>
                     </div>
                     <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
-                    <span id="publishModalChildrenList"></span>
+                    <span id="publishModalCurrentMetadata"></span>
+                    <div id="publishModalChildrenDiv" style="display:none">
+                        <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?>
+                        <span id="publishModalChildrenList"></span>
+                    </div>
 
                 </div>
                 <div class="modal-footer">
@@ -252,6 +256,25 @@ $document = JFactory::getDocument();
             <div class="modal-footer">
                 <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
                 <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- synchronize modal -->
+<div class="modal fade" id="synchronizeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_TITLE'); ?></h4>
+            </div>
+            <div id="synchronizeModalBody" class="modal-body">
+                <?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_CONFIRM'); ?>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btn_synchronize"><button type="button" class="btn btn-success"><?php echo JText::_('COM_EASYSDI_CORE_SYNCHRONIZE_TITLE'); ?></button></a>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
             </div>
         </div>
     </div>
