@@ -162,9 +162,6 @@ class Cswrecords extends SearchForm {
 
         $body = $this->dom->saveXML();
 
-		/*echo $body;
-		die();*/
-        
         $results = $this->CURLRequest('POST', $catalogurl, $body);
         
         if (!$results) {
@@ -436,9 +433,9 @@ class Cswrecords extends SearchForm {
     }
 
     private function getVersions($literal) {
-        if ($literal) {
-            return $this->ogcFilters->getIsEqualTo('lastversion', 'true');
-        }
+        
+        return $this->ogcFilters->getIsLessOrEqual('endpublished', '0000-00-01');
+                
     }
 
     private function getResouceName($literal) {
