@@ -408,6 +408,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
         $query->where('l.code = ' . $query->quote($lang->getTag()));
+        if(array_key_exists('version', $_POST)){
+            if($_POST['version'] == 'last'){
+                $query->group('r.id');
+                $query->order('m.created DESC');
+            }
+        }
         
         if ($_POST['status_id'] != '') {
             $query->where('m.metadatastate_id = ' . (int) $_POST['status_id']);
