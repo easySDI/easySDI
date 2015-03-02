@@ -46,7 +46,7 @@ class Cswrecords extends SearchForm {
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $catalogurl = $params->get('catalogurl');
         $limit = $params->get('searchresultpaginationnumber');
-        $startposition = JFactory::getApplication()->input->getInt('start', 1);
+        $startposition = JFactory::getApplication()->input->getInt('start',0 ) + 1;
 
         //Csw sorting field
         $q = $this->db->getQuery(true)
