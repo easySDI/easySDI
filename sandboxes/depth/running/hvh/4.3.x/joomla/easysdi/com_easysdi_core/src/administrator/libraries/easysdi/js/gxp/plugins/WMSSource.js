@@ -65,6 +65,7 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
         record.data.layer.attribution = config.attribution;
         record.data.layer.levelfield = config.levelfield;
         record.data.layer.servertype = config.servertype;
+        record.data.layer.mergeNewParams(config.layerDefs);
         return record;
     }
     

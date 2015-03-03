@@ -116,6 +116,18 @@
                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_LAYERNAME"
                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYERNAME" 
                filter="safehtml" /> 
+        
+        <field
+            name="maplayer_id" 
+            type="sql" 
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_LAYER"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYER" 
+            query="SELECT id, name FROM #__sdi_maplayer WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
     </fieldset>
          
     <fieldset name="wfs" >

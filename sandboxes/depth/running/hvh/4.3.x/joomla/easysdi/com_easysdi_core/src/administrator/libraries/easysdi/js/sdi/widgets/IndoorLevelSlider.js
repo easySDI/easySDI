@@ -26,7 +26,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
     delay: 5,
     /** api: config[aggressive]
      *  ``Boolean``
-     *  If set to true, the opacity is changed as soon as the thumb is moved.
+     *  If set to true, the level is changed as soon as the thumb is moved.
      *  Otherwise when the thumb is released (default).
      */
     aggressive: false,
@@ -43,24 +43,26 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  The CSS class name for the slider elements.  Default is "sdi-indoorlevelslider".
      */
     baseCls: "sdi-indoorlevelslider",
-//    /** private: property[updating]
-//     *  ``Boolean``
-//     *  The slider position is being updated by itself .
-//     */
-//    updating: false,
+
     /**
      * 
      */
     levels: [],
+    
+    /**
+     * 
+     */
     style: "position: absolute; right: 50px; top: 20px; z-index: 100;",
+    
     /** private: method[constructor]
      *  Construct the component.
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
-
+this.addEvents("extraLayerAdded");
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
+    
     /** private: method[initComponent]
      *  Initialize the component.
      */
@@ -76,8 +78,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             this.on('change', this.changeIndoorLevel, this);
         } else {
             this.on('changecomplete', this.changeIndoorLevel, this);
-        }
-//         this.on("beforedestroy", this.unbind, this);        
+        }  
     },
     
     /** private: method[onRender]
@@ -88,10 +89,8 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         this.el.addClass(this.baseCls);
     },
     
-    
-
     /** private: method[changeIndoorLevel]
-     *  :param slider: :class:`GeoExt.LayerOpacitySlider`
+     *  :param slider: :class:`sdi.widgets.IndoorLevelSlider`
      *  :param value: ``Number`` The slider value
      *
      *  Updates the WMS filter.
@@ -109,7 +108,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                                     type: OpenLayers.Filter.Comparison.EQUAL_TO,
                                     property: "gva_GVA:Code_du_niveau",
                                     value:level.code
-                                })
+                                });
                 break;                
             }
         }
@@ -127,11 +126,9 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                 }
                 layers[a].redraw(true);
             }
-        }
-        ;
-
-
+        };
     },
+    
     /** private: method[addToMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
      *
@@ -153,12 +150,12 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             },
             afterrender: function() {
                 this.map = panel.map;
-                panel.map.indoorlevelslider = this;
-//                this.bind(panel.map);                
+                panel.map.indoorlevelslider = this;             
             },
             scope: this
         });
     },
+    
     /** private: method[removeFromMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
      *
@@ -171,35 +168,14 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             click: this.stopMouseEvents,
             scope: this
         });
-//        this.unbind();
     },
+    
     /** private: method[stopMouseEvents]
      *  :param e: ``Object``
      */
     stopMouseEvents: function(e) {
         e.stopEvent();
     },
-//    /** private: method[bind]
-//     *  :param map: ``OpenLayers.Map``
-//     */
-//    bind: function(map) {
-//        this.map = map;
-//        this.map.events.on({
-//            
-//            scope: this
-//        });
-//
-//    },
-//    /** private: method[unbind]
-//     */
-//    unbind: function() {
-//        if (this.map && this.map.events) {
-//            this.map.events.un({
-//                
-//                scope: this
-//            });
-//        }
-//    }
 });
 
 /** api: xtype = sdi_indoorlevelslider */

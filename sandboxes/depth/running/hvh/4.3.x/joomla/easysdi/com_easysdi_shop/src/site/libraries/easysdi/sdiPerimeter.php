@@ -29,14 +29,13 @@ class sdiPerimeter {
 
     private function loadData() {
         try {
-            $lang = JFactory::getLanguage();
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true)
-                    ->select('*')
+                    ->select('p.*, l.service_id, l.servicetype,l.layername as maplayername,l.istiled,l.opacity, l.isindoor,l.levelfield')
                     ->from('#__sdi_perimeter p')
-                    ->where('p.id = ' . (int) $this->id)
-            ;
+                    ->innerJoin('#__sdi_maplayer l ON l.id=p.maplayer_id')
+                    ->where('p.id = ' . (int) $this->id);
 
             $db->setQuery($query);
             $item = $db->loadObject();
@@ -46,28 +45,52 @@ class sdiPerimeter {
                 $this->$key = $value;
             }
 
-            if (!empty($this->wmsservice_id)):  
-                if ($this->wmsservicetype_id == 1):
-                    $query = $db->getQuery(true)
-                            ->select('p.*')
-                            ->from('#__sdi_physicalservice p')
-                            ->where('p.id = ' . (int) $this->wmsservice_id);
-                    $db->setQuery($query);
-                    $wmsservice = $db->loadObject();
-                    $this->wmsurl = $wmsservice->resourceurl;
-                else :
-                    $query = $db->getQuery(true)
-                            ->select('p.*')
-                            ->from('#__sdi_virtualservice p')
-                            ->where('p.id = ' . (int) $this->wmsservice_id);
-                    $db->setQuery($query);
-                    $wmsservice = $db->loadObject();
+            if(!empty($this->service_id)):
+                switch ($this->servicetype):
+                    case 'virtual':
+                        $servicetable = '#__sdi_virtualservice';
+                        break;
+                    case 'physical':
+                        $servicetable = '#__sdi_physicalservice';
+                        break;                    
+                endswitch;
+                $query = $db->getQuery(true)
+                            ->select('s.*')
+                            ->from($servicetable.' s')
+                            ->where('s.id = ' . (int) $this->service_id);
+                $db->setQuery($query);
+                $wmsservice = $db->loadObject();
+                if(!empty($wmsservice->resourceurl)):
+                    $this->wmsurl = $wmsservice->resourceurl;                
+                elseif(!empty($wmsservice->reflectedurl)):
                     $this->wmsurl = $wmsservice->reflectedurl;
-                    if ($this->wmsurl == '')
-                        $this->wmsurl = $wmsservice->url;
+                else:
+                    $this->wmsurl = $wmsservice->url;    
                 endif;
-
             endif;
+            
+            //Old version
+//            if (!empty($this->wmsservice_id)):  
+//                if ($this->wmsservicetype_id == 1):
+//                    $query = $db->getQuery(true)
+//                            ->select('p.*')
+//                            ->from('#__sdi_physicalservice p')
+//                            ->where('p.id = ' . (int) $this->wmsservice_id);
+//                    $db->setQuery($query);
+//                    $wmsservice = $db->loadObject();
+//                    $this->wmsurl = $wmsservice->resourceurl;
+//                else :
+//                    $query = $db->getQuery(true)
+//                            ->select('p.*')
+//                            ->from('#__sdi_virtualservice p')
+//                            ->where('p.id = ' . (int) $this->wmsservice_id);
+//                    $db->setQuery($query);
+//                    $wmsservice = $db->loadObject();
+//                    $this->wmsurl = $wmsservice->reflectedurl;
+//                    if ($this->wmsurl == '')
+//                        $this->wmsurl = $wmsservice->url;
+//                endif;
+//            endif;
 
             if (!empty($this->wfsservice_id)):
                 if ($this->wfsservicetype_id == 1):

@@ -42,6 +42,10 @@ Ext.onReady(function() {
         if (data.level && cleared === "false") {
             //Init the indoor layer with the default level value
             window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this, window.appname.mapPanel.map.indoorlevelslider.value);
+            //Event handling
+            window.appname.mapPanel.map.events.on({"addlayer" : function(){
+                window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this,window.appname.mapPanel.map.indoorlevelslider.value);
+            }});
         }
         loadingMask.hide();
     });

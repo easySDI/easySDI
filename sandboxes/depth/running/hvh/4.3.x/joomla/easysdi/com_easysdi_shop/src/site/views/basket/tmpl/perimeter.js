@@ -71,13 +71,16 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
             clickout: true
         });
     }
-
+    
+    var value = window.appname.mapPanel.map.indoorlevelslider.getValue();
+    var level = window.appname.mapPanel.map.indoorlevelslider.levels[value];
 var layerconfig = { type: "OpenLayers.Layer.WMS",
                     name: wmslayername,
                     transparent: true,
                     isindoor:1,
                     servertype: 2,
                     levelfield:"CODE_NIVEAU",
+                    layerDefs: {'layerDefs' :"{\"wmslayername\":\"CODE_NIVEAU\"='" + level.code + "'\"}"},
                     opacity: 1,
                     source: "arcgisgva",
                     tiled: true,
@@ -91,8 +94,9 @@ var sourceconfig = {id:"arcgisgva",
                     hidden : "true",
                     url: wmsurl
                     }
-                    
-    window.parent.app.addExtraLayer(sourceconfig, layerconfig);
+    
+    var queue = window.parent.app.addExtraLayer(sourceconfig, layerconfig);
+    gxp.util.dispatch(queue, window.parent.app.reactivate, window.parent.app);
  
    // app.mapPanel.map.addLayer(perimeterLayer);
 

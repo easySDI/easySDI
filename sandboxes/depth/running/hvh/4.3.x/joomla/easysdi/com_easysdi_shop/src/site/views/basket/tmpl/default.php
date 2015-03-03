@@ -445,18 +445,18 @@ if ($this->item && $this->item->extractions) :
                                                 <script>
             <?php if ($this->item->isrestrictedbyperimeter): ?>
                                                         //var userperimeter = '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>';
-                                                        var userperimeter = '<?php echo $this->user->perimeter; ?>';
+                var userperimeter = '<?php echo $this->user->perimeter; ?>';
             <?php endif; ?>
-                                                    function selectPerimeter<?php echo $perimeter->id; ?>() {
+function selectPerimeter<?php echo $perimeter->id; ?>() {
                                                         return selectPerimeter(<?php
             if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI) : echo 1;
             else : echo 0;
             endif;
             ?>, "<?php echo $perimeter->id; ?>", "<?php echo $perimeter->name; ?>", "<?php echo $perimeter->wmsurl; ?>", "<?php echo $perimeter->layername; ?>", "<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->namespace; ?>", "<?php echo $perimeter->featuretypefieldgeometry; ?>", "<?php echo $perimeter->featuretypefieldid; ?>", "<?php echo $perimeter->featuretypefieldname; ?>", "<?php echo $perimeter->prefix; ?>");
-                                                    }
-                                                    function reloadFeatures<?php echo $perimeter->id; ?>() {
-                                                        reloadFeatures("<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->featuretypefieldid; ?>");
-                                                    }
+}
+function reloadFeatures<?php echo $perimeter->id; ?>() {
+    reloadFeatures("<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->featuretypefieldid; ?>");
+}
                                                 </script>
                                                 <br>
                                                 <br>

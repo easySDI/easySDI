@@ -1328,6 +1328,7 @@ CREATE TABLE [#__sdi_perimeter] (
 	[wmsservice_id] [bigint] NULL,
 	[wmsservicetype_id] [bigint] NULL,
 	[layername] [nvarchar](255) NULL,
+        [maplayer_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_perimeter_id] PRIMARY KEY CLUSTERED 
