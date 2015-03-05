@@ -26,16 +26,22 @@ class WfsPhysicalService extends PhysicalService{
 	 * 
 	 */
 	public function populate () {
-		if ('SimpleXMLElement' != get_class($this->xmlCapabilities)) {
-			return;
-		}
-		
-		$featureTypeList = $this->xmlCapabilities->xpath('//dflt:FeatureType');
-		
-		//inserting each featureClass
-		foreach ($featureTypeList as $featureType) {
-			$this->addFeatureType(new WfsFeatureType((String) $featureType->Name, (String) $featureType->Title));
-		}
+            if ('SimpleXMLElement' != get_class($this->xmlCapabilities)) {
+                    return;
+            }
+
+            //We have to use a DOM document instead of an XML ELement
+            //to retrieve feature types description because XML Element
+            //presents an issue to get elements with a prefixed namespace
+            //(!= default namespace used without prefixe)
+            $capabilities = dom_import_simplexml($this->xmlCapabilities);
+            $featuretypelist = $capabilities->getElementsByTagName('FeatureType');
+            for($i = 0; $i < $featuretypelist->length; $i++) {
+                $name = $featuretypelist->item($i)->getElementsByTagName('Name');
+                $title = $featuretypelist->item($i)->getElementsByTagName('Title');
+                $this->addFeatureType(new WfsFeatureType($name->item(0)->nodeValue,$title->item(0)->nodeValue));
+            }
+
 	}
 	
 	/**

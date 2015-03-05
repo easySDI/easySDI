@@ -8,6 +8,7 @@
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/helpers/easysdi_catalog.php';
 
 class sdiMetadata extends cswmetadata {
 
@@ -360,10 +361,20 @@ class sdiMetadata extends cswmetadata {
 
         //Metadata
         $metadata = $dom->createElementNS(self::sdi_uri, 'sdi:metadata');
-        $metadata->setAttribute('lastVersion', 'true');
         $metadata->setAttribute('guid', $this->metadata->guid);
         $metadata->setAttribute('created', $this->metadata->created);
-        $metadata->setAttribute('published', $this->metadata->published);
+        if(empty($this->metadata->published)){
+            $metadata->setAttribute('published', '0000-00-00 00:00:00');
+        }else{
+            $metadata->setAttribute('published', $this->metadata->published);
+        }
+        
+        if(empty($this->metadata->endpublished)){
+            $metadata->setAttribute('endpublished', '0000-00-00 00:00:00');
+        }else{
+            $metadata->setAttribute('endpublished', $this->metadata->endpublished);
+        }
+
         $metadata->setAttribute('state', $metadatastate);
 
         //Diffusion
@@ -494,6 +505,8 @@ class sdiMetadata extends cswmetadata {
         
         return $newdom;
     }
+    
+    
 
 }
 

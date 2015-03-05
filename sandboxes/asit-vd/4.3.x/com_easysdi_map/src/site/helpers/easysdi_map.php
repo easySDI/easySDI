@@ -64,6 +64,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
             $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
+            $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/loader.js');
             $doc->addScript($base_url . '/easysdi/js/gxp/plugins/WMSSource.js');

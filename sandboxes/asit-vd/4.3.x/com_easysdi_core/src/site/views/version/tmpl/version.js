@@ -1,6 +1,6 @@
 js = jQuery.noConflict();
 var childrenTable, availablechildrenTable, parents,
-    tmpAdded = [], tmpRemoved = [];
+    tmpAdded = [], tmpRemoved = [], searchlast = 'all';
 
 var lastCriteria = {length: 0};
 js.fn.dataTableExt.afnFiltering.push(function(oSettings, aData, iDataIndex){
@@ -14,7 +14,7 @@ js(document).ready(function() {
         bProcessing: true,
         bServerSide: true,
         oLanguage: {
-            sUrl: baseUrl + 'option=com_easysdi_core&task=dtProxy&dtLang=' + dtLang
+            sUrl: baseUrl + 'option=com_easysdi_core&task=proxy.run&url='+encodeURI('http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json')
         },
         deferRender: true
     };
@@ -26,6 +26,7 @@ js(document).ready(function() {
             aoData.push({ name: 'resourcetypechild', value: resourcetypechild });
             aoData.push({ name: 'inc', value: tmpRemoved.toString()});
             aoData.push({ name: 'exc', value: tmpAdded.toString()});
+            aoData.push({ name: 'searchlast', value: searchlast});
         },
         aoColumnDefs: [
             { bVisible: false, aTargets: [0], mData: 'id' },
@@ -63,22 +64,9 @@ js(document).ready(function() {
     });
     
     js('input[type=radio][name="jform[searchlast]"]').on('change', function(){
-        if(this.value == 'all'){
-            lastCriteria = {length: 0};
-            availablechildrenTable.fnDraw();
-        }
-        else if(this.value == 'last'){
-            var data = availablechildrenTable.fnGetData();
-            js(data).each(function(i, row){
-                if('undefined' === typeof lastCriteria[row.resource] || row.version > lastCriteria[row.resource]){
-                    lastCriteria[row.resource] = row.version;
-                    lastCriteria.length++;
-                }
-                
-                if(i === js(data).length-1)
-                    availablechildrenTable.fnDraw();
-            });
-        }
+        searchlast = this.value;
+        availablechildrenTable.fnDraw();
+        
     });
     
     // clear criteria
