@@ -526,7 +526,8 @@ CREATE TABLE #__sdi_language (
     "iso639-2T" character varying(10),
     "iso639-1" character varying(10),
     "iso3166-1-alpha2" character varying(10),
-    "iso639-2B" character varying(10)
+    "iso639-2B" character varying(10),
+    datatable character varying(50) NOT NULL DEFAULT 'English'
 );
 
 
@@ -678,6 +679,7 @@ CREATE TABLE #__sdi_metadata (
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     accessscope_id bigint NOT NULL,
     published timestamp(3) without time zone,
+    endpublished timestamp(3) without time zone,
     archived timestamp(3) without time zone,
     lastsynchronization timestamp(3) without time zone,
     synchronized_by bigint,

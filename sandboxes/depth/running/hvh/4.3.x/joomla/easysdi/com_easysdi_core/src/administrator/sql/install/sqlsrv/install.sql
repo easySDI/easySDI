@@ -808,6 +808,7 @@ CREATE TABLE [#__sdi_language] (
 	[iso639-1] [nvarchar](10) NULL,
 	[iso3166-1-alpha2] [nvarchar](10) NULL,
 	[iso639-2B] [nvarchar](10) NULL,
+	[datatable] [nvarchar](50) NOT NULL DEFAULT 'English',
  CONSTRAINT [PK_#__sdi_language_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1052,6 +1053,7 @@ CREATE TABLE [#__sdi_metadata] (
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[accessscope_id] [bigint] NOT NULL,
 	[published] [datetime2](0) NULL,
+        [endpublished] [datetime2](0) NULL,
 	[archived] [datetime2](0) NULL,
 	[lastsynchronization] [datetime2](0) NULL,
 	[synchronized_by] [bigint] NULL,

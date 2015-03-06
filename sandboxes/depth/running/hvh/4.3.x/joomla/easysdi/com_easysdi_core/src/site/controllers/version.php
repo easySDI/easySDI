@@ -124,8 +124,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                 ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
-        ;
+                ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id');
+        
+        $version = $inputs->getString('searchlast','all');
+        
+        if($version == 'last'){
+            $query->group('r.id');
+            $query->order('m.created DESC');
+        }
+        
         $where = 'v.id <> ' . (int) $id . ' AND v.id NOT IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id=' . (int) $id . ') AND rt.id IN (' . $resourcetypechild . ')';
 
         $inc = $inputs->getString('inc', '');
