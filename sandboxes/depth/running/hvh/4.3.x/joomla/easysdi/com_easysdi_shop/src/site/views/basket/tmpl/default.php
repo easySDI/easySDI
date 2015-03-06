@@ -156,7 +156,7 @@ if ($this->item && $this->item->extractions) :
                         <div class="span6" >
                             <h3><?php echo $this->item->extractionsNb . " " . JText::_('COM_EASYSDI_SHOP_BASKET_SELECTED_DATA'); ?>
                                 <span id="pricingTotalAmountTI-container" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti)): ?>display: none;<?php endif; ?>">
-                                    ( <span class="pricingTotalAmountTI"><?php echo !isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti) ? '' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span> )
+                                    ( <span class="pricingTotalAmountTI"><?php echo!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti) ? '' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span> )
                                 </span>
                             </h3>
                         </div>
@@ -204,20 +204,18 @@ if ($this->item && $this->item->extractions) :
                                             <td class="price_column" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>">
                                                 <?php
                                                 $product = $this->item->pricing->suppliers[$supplier_id]->products[$item->id];
-                                                
-                                                if($product->cfg_pricing_type == Easysdi_shopHelper::PRICING_FREE):
+
+                                                if ($product->cfg_pricing_type == Easysdi_shopHelper::PRICING_FREE):
                                                     echo JText::_('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE');
                                                 else:
-                                                    $productPrice   = isset($product->cal_total_amount_ti)
-                                                                    ? $product->cal_total_amount_ti
-                                                                    : '-';
+                                                    $productPrice = isset($product->cal_total_amount_ti) ? $product->cal_total_amount_ti : '-';
 
                                                     echo Easysdi_shopHelper::priceFormatter($productPrice);
 
-                                                    if($productPrice == '0 '.JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF')):
-                                                    ?>
-                                                    <i class="icon-white icon-info" title="<?php echo JText::sprintf('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', $product->ind_lbl_category_profile_discount, $product->cfg_pct_category_profile_discount);?>"></i>
-                                                    <?php
+                                                    if ($productPrice == '0 ' . JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF')):
+                                                        ?>
+                                                        <i class="icon-white icon-info" title="<?php echo JText::sprintf('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', $product->ind_lbl_category_profile_discount, $product->cfg_pct_category_profile_discount); ?>"></i>
+                                                        <?php
                                                     endif;
                                                 endif;
                                                 ?>
@@ -226,7 +224,7 @@ if ($this->item && $this->item->extractions) :
                                                 <a href="#" class="btn btn-danger btn-mini pull-right" title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REMOVE'); ?>"><i class="icon-white icon-remove"></i></a>
                                             </td>
                                         </tr>
-                                    <?php endforeach; ?>
+        <?php endforeach; ?>
                                 </tbody>
                                 <tfoot style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>">
                                     <tr>
@@ -246,7 +244,7 @@ if ($this->item && $this->item->extractions) :
                                     </tr>
                                 </tfoot>
                             </table>
-                        <?php endforeach; ?>
+    <?php endforeach; ?>
 
                         <!-- TOTAL -->
                         <table class="table table-striped" id='pricingTotal-table' style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>">
@@ -282,19 +280,19 @@ if ($this->item && $this->item->extractions) :
                 <!-- ENDOF PRODUCTS -->
 
                 <!-- INFORMATIONS -->
-                <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
+    <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
                     <div class="row-fluid shop-info" >
                         <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3>
                             <hr>
                             <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div></div>
                     </div>
-                <?php endif; ?>
+    <?php endif; ?>
                 <!-- ENDOF INFORMATIONS -->
 
                 <!-- TOOLBAR -->
                 <div class="row-fluid " >
                     <hr>
-                    <?php if ($this->get('user')->isEasySDI): ?>
+    <?php if ($this->get('user')->isEasySDI): ?>
                         <div id="termsofuse-container">
                             <label class="checkbox">
                                 <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse']; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
@@ -308,11 +306,11 @@ if ($this->item && $this->item->extractions) :
                                 <div class="btn-wrapper" id="toolbar-archive">
                                     <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE') ?></button>
                                 </div>
-                                <?php if (!$this->item->free): ?>
+        <?php if (!$this->item->free): ?>
                                     <div class="btn-wrapper" id="toolbar-edit">
                                         <button class="btn btn-small" rel="basket.estimate"><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
                                     </div>
-                                <?php endif; ?>
+        <?php endif; ?>
                                 <div class="btn-wrapper" id="toolbar-publish">
                                     <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER') ?></button>
                                 </div>
@@ -320,12 +318,12 @@ if ($this->item && $this->item->extractions) :
 
                             <input type="hidden" name="action" value="" />
                         </div>
-                    <?php else: ?>
+    <?php else: ?>
                         <div class="span5 pull-right" >
                             <button class="btn btn-small" id="btn-login" name="btn-login"><?php echo JText::_('COM_EASYSDI_CORE_LOGIN'); ?></button>
                             <button class="btn btn-small" id="btn-create-account" name="btn-create-account"><?php echo JText::_('COM_EASYSDI_CORE_CREATE_ACCOUNT'); ?></button>
                         </div>
-                    <?php endif; ?>
+    <?php endif; ?>
                 </div>
                 <!-- ENDOF TOOLBAR -->
 
@@ -348,9 +346,9 @@ if ($this->item && $this->item->extractions) :
                     <div class="row-fluid">
                         <div class="span8">
                             <div  >
-                                <?php
-                                echo $this->mapscript;
-                                ?>
+    <?php
+    echo $this->mapscript;
+    ?>
                             </div>
                         </div>
                         <div class="span4">
@@ -362,18 +360,18 @@ if ($this->item && $this->item->extractions) :
                                 <div class="span3 offset1">
                                     <div class="btn-group" data-toggle="buttons-radio">
                                         <a href="#" id="btn-pan" class="btn btn-perimeter-selection <?php
-                                        if (!isset($this->item->extent->id) || $this->item->extent->id === '') {
-                                            echo "active";
-                                        };
-                                        ?>"  onClick="toggleSelectControl('pan');
+                            if (!isset($this->item->extent->id) || $this->item->extent->id === '') {
+                                echo "active";
+                            };
+    ?>"  onClick="toggleSelectControl('pan');
                                                     jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN_HELP'); ?>');
                                                     return false;"><i class="icon-move"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN'); ?></a><br>
                                         <br>
-                                        <?php
-                                        foreach ($item->perimeters as $perimeter):
-                                            if ($perimeter->id == 1):
-                                                if (!$this->item->isrestrictedbyperimeter):
-                                                    ?>
+                                           <?php
+                                           foreach ($item->perimeters as $perimeter):
+                                               if ($perimeter->id == 1):
+                                                   if (!$this->item->isrestrictedbyperimeter):
+                                                       ?>
                                                     <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn btn-perimeter-selection" 
                                                        onClick="selectRectangle();
                                                                                jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE_HELP'); ?>');
@@ -400,11 +398,11 @@ if ($this->item && $this->item->extractions) :
                                                         <i class="icon-star-empty"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
                                                     <br>
                                                     <br>                                        
-                                                    <?php
-                                                endif;
-                                            elseif ($perimeter->id == 2):
-                                                if ($this->user->isEasySDI):
-                                                    ?>
+                <?php
+            endif;
+        elseif ($perimeter->id == 2):
+            if ($this->user->isEasySDI):
+                ?>
                                                     <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
                                                        onClick="selectPerimeter<?php echo $perimeter->id; ?>();
                                                                                jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MY_PERIMETER_HELP'); ?>');
@@ -427,10 +425,10 @@ if ($this->item && $this->item->extractions) :
                                                     </script>
                                                     <br>
                                                     <br>
-                                                    <?php
-                                                endif;
-                                            else:
-                                                ?>
+                <?php
+            endif;
+        else:
+            ?>
                                                 <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
                                                    onClick="selectPerimeter<?php echo $perimeter->id; ?>();
                                                                        jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER_HELP'); ?>');
@@ -460,10 +458,10 @@ function reloadFeatures<?php echo $perimeter->id; ?>() {
                                                 </script>
                                                 <br>
                                                 <br>
-                                            <?php
-                                            endif;
-                                        endforeach;
-                                        ?>
+        <?php
+        endif;
+    endforeach;
+    ?>
                                     </div>
                                 </div>
                             </div>
@@ -501,7 +499,7 @@ function reloadFeatures<?php echo $perimeter->id; ?>() {
                 </div>               
                 <div class="modal-body">
                     <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
-                    <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING'); ?>
+    <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING'); ?>
                 </div>                
                 <!--<div class="modal-footer">
                     <button type="button" class="btn btn-primary"><?php echo JText::_('OK'); ?></button>
@@ -521,7 +519,7 @@ function reloadFeatures<?php echo $perimeter->id; ?>() {
                 </div>
             </div>
             <div class="modal-footer">
-                <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESS_TAKE_A_WHILE'); ?>
+    <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESS_TAKE_A_WHILE'); ?>
             </div>
         </div>
 
@@ -561,48 +559,48 @@ function reloadFeatures<?php echo $perimeter->id; ?>() {
             });
         </script>
         <input type="hidden" name="perimeter" id="perimeter" value="<?php
-        if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id;
-        endif;
-        ?>" />
+    if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id;
+    endif;
+    ?>" />
         <input type="hidden" name="perimetern" id="perimetern" value="<?php
-        if (isset($this->item->extent->name) && !empty($this->item->extent->name)): echo $this->item->extent->name;
-        endif;
-        ?>" />
+               if (isset($this->item->extent->name) && !empty($this->item->extent->name)): echo $this->item->extent->name;
+               endif;
+               ?>" />
         <input type="hidden" name="surface" id="surface" value="<?php
-        if (isset($this->item->extent->surface) && !empty($this->item->extent->surface)): echo $this->item->extent->surface;
-        endif;
-        ?>" />
+               if (isset($this->item->extent->surface) && !empty($this->item->extent->surface)): echo $this->item->extent->surface;
+               endif;
+               ?>" />
         <input type="hidden" name="allowedbuffer" id="allowedbuffer" value="" />
         <input type="hidden" name="features" id="features" value='<?php
-        if (isset($this->item->extent->features)) {
-            if (!is_array($this->item->extent->features)):
-                echo $this->item->extent->features;
-            else:
-                echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
-            endif;
-        }
-        ?>' />
+    if (isset($this->item->extent->features)) {
+        if (!is_array($this->item->extent->features)):
+            echo $this->item->extent->features;
+        else:
+            echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
+        endif;
+    }
+               ?>' />
         <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php
-        if (isset($this->item->extent->id)): echo $this->item->extent->id;
-        endif;
-        ?>" />
+               if (isset($this->item->extent->id)): echo $this->item->extent->id;
+               endif;
+               ?>" />
         <input type="hidden" name="t-perimetern" id="t-perimetern" value="<?php
-        if (isset($this->item->extent->name)): echo $this->item->extent->name;
-        endif;
-        ?>" />
+               if (isset($this->item->extent->name)): echo $this->item->extent->name;
+               endif;
+               ?>" />
         <input type="hidden" name="t-features" id="t-features" value='<?php
-        if (isset($this->item->extent->features)) {
-            if (!is_array($this->item->extent->features)):
-                echo $this->item->extent->features;
-            else:
-                echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
-            endif;
-        }
-        ?>' />
+               if (isset($this->item->extent->features)) {
+                   if (!is_array($this->item->extent->features)):
+                       echo $this->item->extent->features;
+                   else:
+                       echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
+                   endif;
+               }
+               ?>' />
         <input type="hidden" name="t-surface" id="t-surface" value="<?php
-        if (isset($this->item->extent->surface)): echo $this->item->extent->surface;
-        endif;
-        ?>" />
+               if (isset($this->item->extent->surface)): echo $this->item->extent->surface;
+               endif;
+               ?>" />
         <input type = "hidden" name= "surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin; ?>" />
         <input type = "hidden" name = "surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax; ?>" />            
         <input type = "hidden" name = "v-features" id="v-features" value="" />            
@@ -612,18 +610,23 @@ function reloadFeatures<?php echo $perimeter->id; ?>() {
         <input type = "hidden" name = "surfacedigit" id = "surfacedigit" value = "<?php echo $this->paramsarray['surfacedigit']; ?>" />
         <input type = "hidden" name = "maxmetervalue" id = "maxmetervalue" value = "<?php echo $this->paramsarray['maxmetervalue']; ?>" />
 
-        <?php echo JHtml::_('form.token'); ?>
+    <?php echo JHtml::_('form.token'); ?>
     </form>
 
     <?php
 //empty basket
 else:
     $app = JFactory::getApplication();
+
+
     $emptybasketurl = $app->getParams('com_easysdi_shop')->get('emptybasketurl');
     //in case of custom empty basket page, redirect to it, otherwise show a simple message
     if (!empty($emptybasketurl)):
-        JResponse::allowCache(false);
-        $app->redirect(JRoute::_($emptybasketurl));
+        $webapp = JApplicationWeb::getInstance();
+        $webapp->clearHeaders();
+        $webapp->setHeader('Location', JUri::base().JRoute::_($emptybasketurl));
+        header("HTTP/1.0 302 Found");
+        $webapp->sendHeaders();
     else:
         echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE_EMPTY_BASKET');
     endif;
