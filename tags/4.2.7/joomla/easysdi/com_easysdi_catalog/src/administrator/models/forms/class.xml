@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+        <field name="name" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAME"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAME" 
+               filter="safehtml" /> 
+         
+        <field name="alias" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ALIAS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ALIAS" 
+               filter="safehtml" /> 
+
+        <field name="description" type="textarea" rows="5" cols="10" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_DESCRIPTION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_DESCRIPTION" 
+               filter="safehtml" /> 
+ 
+        <field name="stereotype_id"
+               type="sql" 
+               class="multiselect"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_STEREOTYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_STEREOTYPE_ID" 
+               multiple="false"
+               query="SELECT NULL AS id, '' AS value 
+                        UNION SELECT id, value FROM #__sdi_sys_stereotype 
+                        WHERE state=1 AND entity_id = 2 ORDER BY value" 
+               key_field="id" 
+               value_field="value"
+               translate="true"/> 
+
+        <field name="isrootclass" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ISROOTCLASS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ISROOTCLASS" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+    </fieldset> 
+
+    <field name="namespace_id" 
+           type="sql" 
+           required = "true"
+           class="inputbox input-small"
+           query=" SELECT NULL AS id, '' AS name, 0 as ordering 
+                    UNION SELECT id, name, ordering 
+                    FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+           key_field="id" 
+           value_field="name"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAMESPACE_ID"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAMESPACE_ID" 
+    />  
+
+    <field name="isocode" type="text" size="40" class="inputbox"  required = "true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ISOCODE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ISOCODE" 
+               filter="safehtml" />
+        
+    <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_HELP"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_HELP" 
+            filter="ARRAY" />
+     
+    <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" />
+     
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+
+    <fieldset name="accesscontrol">
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="class"
+        />
+    </fieldset>
+
+    <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+    
+    <field name="access" type="accesslevel"
+            label="JFIELD_ACCESS_LABEL"
+            description="JFIELD_ACCESS_DESC" 
+            filter="raw" />     
+        
+    <field name="created_by" type="createdby" default="" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_CREATED_BY"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_CREATED_BY"  /> 
+
+    <field name="created" type="timecreated" default="" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_CREATED"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_CREATED"  /> 
+
+    <field name="modified_by" type="text" size="40" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_MODIFIED_BY"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_MODIFIED_BY" 
+           default="0" 
+           filter="safehtml" /> 
+
+    <field name="modified" type="timeupdated" default="" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_MODIFIED"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_MODIFIED"  /> 
+
+</form>
