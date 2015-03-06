@@ -14,6 +14,7 @@ JHtml::_('behavior.formvalidation');
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/CswMerge.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/helpers/easysdi_catalog.php';
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
@@ -169,8 +170,11 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         $xml->loadXML($import['xml']);
                         $cswm = new CswMerge($this->_item->csw, $xml);
 
-                        if ($merged = $cswm->mergeImport($import['importref_id'])) {
-                            $this->_item->csw = $merged;
+                        try {
+                            $merged = $cswm->mergeImport($import['importref_id']);
+                            $this->_item->csw = $cswm->addGetRecordById($merged);
+                        } catch (Exception $exc) {
+                            JFactory::getApplication()->enqueueMessage($exc->getMessage(), 'error');
                         }
                     }
 
@@ -326,6 +330,13 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         $table = $this->getTable();
         $table->load($id);
+
+        if ($data['published'] != $table->published) {
+            $is_publish_update = true;
+        } else {
+            $is_publish_update = false;
+        }
+
         if ($table->save($data, '', array('created', 'created_by')) === true) {
             $CSWmetadata = new sdiMetadata($table->id);
             if ($new) {
@@ -338,11 +349,27 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     throw new Exception('Echec de mise à jour du catalog');
                 }
             }
-            if (!empty($id)) {
-                return $id;
-            } else {
-                return $table->id;
+
+            if (empty($id)) {
+                $id = $table->id;
             }
+
+            if ($is_publish_update) {
+                $preview = Easysdi_catalogHelper::getPreviewMetadata($table);
+                if (!empty($preview)) {
+                    // update endpublished
+                    $table_preview = $this->getTable();
+                    $table_preview->load($preview->id);
+                    if ($table_preview->save(array('endpublished' => $table->published), '', array('created', 'created_by'))) {
+                        $CSWmetadata = new sdiMetadata($table_preview->id);
+                        if (!$CSWmetadata->updateSDIElement()) {
+                            throw new Exception('Echec de mise à jour du catalog');
+                        }
+                    }
+                }
+            }
+
+            return $id;
         } else {
             return false;
         }
@@ -368,10 +395,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {
-            /*$CSWmetadata = new sdiMetadata($table->id);
-            if (!$CSWmetadata->delete()) {
-                throw new Exception('Echec de suppression dans catalog');
-            }*/
+            /* $CSWmetadata = new sdiMetadata($table->id);
+              if (!$CSWmetadata->delete()) {
+              throw new Exception('Echec de suppression dans catalog');
+              } */
             return $id;
         } else {
             return false;
@@ -379,5 +406,9 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         return true;
     }
-    
+
+    private function isPublishDateUpdated($data, $table) {
+        
+    }
+
 }

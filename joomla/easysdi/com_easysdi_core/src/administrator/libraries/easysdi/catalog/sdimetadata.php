@@ -8,6 +8,7 @@
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/helpers/easysdi_catalog.php';
 
 class sdiMetadata extends cswmetadata {
 
@@ -257,34 +258,7 @@ class sdiMetadata extends cswmetadata {
         $xpathmetadata->registerNamespace('gmd', 'http://www.isotc211.org/2005/gmd');
         $metadata = $xpathmetadata->query($this->getMetadataRootClass()->isocode)->item(0);
 
-        $newdom = new DOMDocument('1.0', 'utf-8');
-        $transaction = $newdom->createElementNS(self::csw_uri, 'csw:Transaction');
-        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:csw', self::csw_uri);
-        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:ogc', self::ogc_uri);
-        $transaction->setAttribute('service', "CSW");
-        $transaction->setAttribute('version', "2.0.2");
-        $update = $newdom->createElementNS(self::csw_uri, 'csw:Update');
-        $update->appendChild($newdom->importNode($metadata, true));
-
-        $constraint = $newdom->createElementNS(self::csw_uri, 'csw:Constraint');
-        $constraint->setAttribute('version', '1.0.0');
-
-        $filter = $newdom->createElementNS(self::ogc_uri, 'ogc:Filter');
-        $propertyEqual = $newdom->createElementNS(self::ogc_uri, 'ogc:PropertyIsLike');
-        $propertyEqual->setAttribute('wildCard', '%');
-        $propertyEqual->setAttribute('singleChar', '_');
-        $propertyEqual->setAttribute('escape', '/');
-        $propertyName = $newdom->createElementNS(self::ogc_uri, 'ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
-        $literal = $newdom->createElementNS(self::ogc_uri, 'ogc:Literal', $this->metadata->guid);
-
-        $propertyEqual->appendChild($propertyName);
-        $propertyEqual->appendChild($literal);
-        $filter->appendChild($propertyEqual);
-        $constraint->appendChild($filter);
-
-        $update->appendChild($constraint);
-        $transaction->appendChild($update);
-        $newdom->appendChild($transaction);
+        $newdom = $this->wrapUpdateBlock($metadata);
 
         $platform = $this->getPlatformNode($newdom);
         $xpath = new DOMXPath($newdom);
@@ -387,10 +361,20 @@ class sdiMetadata extends cswmetadata {
 
         //Metadata
         $metadata = $dom->createElementNS(self::sdi_uri, 'sdi:metadata');
-        $metadata->setAttribute('lastVersion', 'true');
         $metadata->setAttribute('guid', $this->metadata->guid);
         $metadata->setAttribute('created', $this->metadata->created);
-        $metadata->setAttribute('published', $this->metadata->published);
+        if(empty($this->metadata->published)){
+            $metadata->setAttribute('published', '0000-00-00 00:00:00');
+        }else{
+            $metadata->setAttribute('published', $this->metadata->published);
+        }
+        
+        if(empty($this->metadata->endpublished)){
+            $metadata->setAttribute('endpublished', '0000-00-00 00:00:00');
+        }else{
+            $metadata->setAttribute('endpublished', $this->metadata->endpublished);
+        }
+
         $metadata->setAttribute('state', $metadatastate);
 
         //Diffusion
@@ -481,6 +465,48 @@ class sdiMetadata extends cswmetadata {
         $this->db->setQuery($query);
         return $this->db->loadObject();
     }
+    
+    /**
+     * 
+     * Wrap update transaction on xml DOMElement
+     * 
+     * @param DOMElement $xml
+     * @return \DOMDocument
+     */
+    public function wrapUpdateBlock($xml){
+        $newdom = new DOMDocument('1.0', 'utf-8');
+        $transaction = $newdom->createElementNS(self::csw_uri, 'csw:Transaction');
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:csw', self::csw_uri);
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:ogc', self::ogc_uri);
+        $transaction->setAttribute('service', "CSW");
+        $transaction->setAttribute('version', "2.0.2");
+        $update = $newdom->createElementNS(self::csw_uri, 'csw:Update');
+        $update->appendChild($newdom->importNode($xml, true));
+
+        $constraint = $newdom->createElementNS(self::csw_uri, 'csw:Constraint');
+        $constraint->setAttribute('version', '1.0.0');
+
+        $filter = $newdom->createElementNS(self::ogc_uri, 'ogc:Filter');
+        $propertyEqual = $newdom->createElementNS(self::ogc_uri, 'ogc:PropertyIsLike');
+        $propertyEqual->setAttribute('wildCard', '%');
+        $propertyEqual->setAttribute('singleChar', '_');
+        $propertyEqual->setAttribute('escape', '/');
+        $propertyName = $newdom->createElementNS(self::ogc_uri, 'ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
+        $literal = $newdom->createElementNS(self::ogc_uri, 'ogc:Literal', $this->metadata->guid);
+
+        $propertyEqual->appendChild($propertyName);
+        $propertyEqual->appendChild($literal);
+        $filter->appendChild($propertyEqual);
+        $constraint->appendChild($filter);
+
+        $update->appendChild($constraint);
+        $transaction->appendChild($update);
+        $newdom->appendChild($transaction);
+        
+        return $newdom;
+    }
+    
+    
 
 }
 

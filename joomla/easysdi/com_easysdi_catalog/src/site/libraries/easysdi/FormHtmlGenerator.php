@@ -352,7 +352,7 @@ class FormHtmlGenerator {
 
         if ($exist == 1) {
             $fieldset->setAttribute('id', 'fds' . FormUtils::serializeXpath($element->getNodePath()));
-            $class[] = 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid;
+            $class[] = 'fds' . FormUtils::serializeXpath(FormUtils::removeIndexFromXpath($element->getNodePath(),-1)) . '-' . $guid;
 
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
@@ -1017,6 +1017,7 @@ class FormHtmlGenerator {
         }
 
         if ($stereotypeId == EnumStereotype::$FILE) {
+            $jfieldhiddendelete = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehiddendelete');
             $jfieldhidden = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
             $jfieldtext = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
 
@@ -1024,6 +1025,7 @@ class FormHtmlGenerator {
             $control->appendChild($br);
             $control->appendChild($this->getInput($jfieldtext));
             $control->appendChild($this->getInput($jfieldhidden));
+            $control->appendChild($this->getInput($jfieldhiddendelete));
             $control->appendChild($this->getPreviewAction($attribute));
             $control->appendChild($this->getEmptyFileAction($attribute));
         }
@@ -1259,6 +1261,8 @@ class FormHtmlGenerator {
      *
      * @param string $xpath
      * @return string
+     * @deprecated since version 4.2.4 Please use FormUtils::removeIndexFromXpath
+     * 
      */
     private function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);

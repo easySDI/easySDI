@@ -25,10 +25,10 @@ require_once JPATH_BASE.'/components/com_easysdi_catalog/libraries/easysdi/dao/S
 $ldao = new SdiLanguageDao();
 $user = new sdiUser();
 $userParams = json_decode($user->juser->params);
-$dtLanguage = $ldao->getDefaultLanguage()->title;
+$dtLanguage = $ldao->getDefaultLanguage()->datatable;
 foreach($ldao->getAll() as $dtLang){
     if($dtLang->code === $userParams->language){
-        $dtLanguage = $dtLang->title;
+        $dtLanguage = $dtLang->datatable;
     }
 }
 ?>
