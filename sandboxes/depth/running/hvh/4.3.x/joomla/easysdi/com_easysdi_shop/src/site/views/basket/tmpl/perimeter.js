@@ -1,33 +1,49 @@
 var fromreload = false;
 
-function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wmsurl, wmslayername, wfsurl, featuretypename, namespace, featuretypefieldgeometry, featuretypefieldid, featuretypefieldname, prefix) {
+function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     resetAll();
 
-    fieldid = featuretypefieldid;
-    fieldname = featuretypefieldname;
-    jQuery('#t-perimeter').val(perimeterid);
-    jQuery('#t-perimetern').val(perimetername);
+    fieldid = perimeter.featuretypefieldid;
+    fieldname = perimeter.featuretypefieldname;
+    jQuery('#t-perimeter').val(perimeter.id);
+    jQuery('#t-perimetern').val(perimeter.name);
     jQuery('#t-features').val('');
     jQuery('#t-surface').val('');
+    
+    //Current user is not subject to perimeter restriction
     if (isrestrictedbyperimeter === 0) {
-        perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
-                wmsurl,
-                {
-                    layers: wmslayername,
-                    transparent: true,
-                    servertype: 2,
-                    levelfield:"CODE_NIVEAU"
-                });
+        var layerconfig = {type: "OpenLayers.Layer.WMS",
+            name: perimeter.maplayername,
+            transparent: true,
+            isindoor: perimeter.isindoor,
+            servertype: perimeter.server,
+            levelfield: perimeter.levelfield,
+            opacity: perimeter.opacity,
+            source: perimeter.source,
+            tiled: true,
+            title: "Perimeter Layer",
+            iwidth: "360",
+            iheight: "360",
+            visibility: true};
+
+        var sourceconfig = {id: perimeter.source,
+            ptype: "sdi_gxp_wmssource",
+            hidden: "true",
+            url: perimeter.wmsurl
+        }
+
+        var queue = window.parent.app.addExtraLayer(sourceconfig, layerconfig);
+        gxp.util.dispatch(queue, window.parent.app.reactivate, window.parent.app);
 
         selectControl = new OpenLayers.Control.GetFeature({
-                protocol: new OpenLayers.Protocol.WFS({
+            protocol: new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
-                url: wfsurl,
+                url: perimeter.wfsurl,
                 srsName: app.mapPanel.map.projection,
-                featureType: featuretypename,
-                featurePrefix: prefix,
-                featureNS: namespace,
-                geometryName: featuretypefieldgeometry
+                featureType: perimeter.featuretypename,
+                featurePrefix: perimeter.prefix,
+                featureNS: perimeter.namespace,
+                geometryName: perimeter.featuretypefieldgeometry
             }),
             box: false,
             click: true,
@@ -36,6 +52,13 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
         });
 
     } else {
+        
+        /** TODO : 
+         * - User restricted perimeter is not compatible with arcGIS server :
+         * param layerDefs must be used instead of CQL_FILTER.
+         * - User restricted perimeter is not compatible with indoor navigation :
+         * filter defined here will be overwrite when navigate through levels
+         */
         var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
         var g = featurerestriction.geometry;
         var exp = new OpenLayers.Format.WKT().write(featurerestriction);
@@ -43,23 +66,23 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
         // The WMS version of the perimeter layer filtered 
         // by user restricted perimeter
         //----------------------------------------------------------------------
-         perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
-                wmsurl,     
-                {layers: wmslayername,
-                 transparent: true,
-                 CQL_FILTER: 'INTERSECTS(the_geom,' + exp + ')'},
-                 {tileOptions: {maxGetUrlLength: 2048}, transitionEffect: 'resize'}
-            );
+        perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
+                perimeter.wmsurl,
+                {layers: perimeter.maplayername,
+                    transparent: true,
+                    CQL_FILTER: 'INTERSECTS(the_geom,' + exp + ')'},
+        {tileOptions: {maxGetUrlLength: 2048}, transitionEffect: 'resize'}
+        );
         //----------------------------------------------------------------------
         selectControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
-                url: wfsurl,
+                url: perimeter.wfsurl,
                 srsName: app.mapPanel.map.projection,
-                featureType: featuretypename,
-                featureNS: namespace,
-                featurePrefix: prefix,
-                geometryName: featuretypefieldgeometry,
+                featureType: perimeter.featuretypename,
+                featureNS: perimeter.namespace,
+                featurePrefix: perimeter.prefix,
+                geometryName: perimeter.featuretypefieldgeometry,
                 defaultFilter: new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
                     value: featurerestriction.geometry
@@ -70,52 +93,25 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
             multipleKey: "ctrlKey",
             clickout: true
         });
+        app.mapPanel.map.addLayer(perimeterLayer);
     }
-    
-    var value = window.appname.mapPanel.map.indoorlevelslider.getValue();
-    var level = window.appname.mapPanel.map.indoorlevelslider.levels[value];
-var layerconfig = { type: "OpenLayers.Layer.WMS",
-                    name: wmslayername,
-                    transparent: true,
-                    isindoor:1,
-                    servertype: 2,
-                    levelfield:"CODE_NIVEAU",
-                    layerDefs: {'layerDefs' :"{\"wmslayername\":\"CODE_NIVEAU\"='" + level.code + "'\"}"},
-                    opacity: 1,
-                    source: "arcgisgva",
-                    tiled: true,
-                    title: wmslayername,
-                    iwidth:"360",
-                    iheight:"360",
-                    visibility: true};
-                                            
-var sourceconfig = {id:"arcgisgva",
-                    ptype: "sdi_gxp_wmssource",
-                    hidden : "true",
-                    url: wmsurl
-                    }
-    
-    var queue = window.parent.app.addExtraLayer(sourceconfig, layerconfig);
-    gxp.util.dispatch(queue, window.parent.app.reactivate, window.parent.app);
- 
-   // app.mapPanel.map.addLayer(perimeterLayer);
 
-
+    //Selection 
     selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     app.mapPanel.map.addLayer(selectLayer);
     selectControl.events.register("featureselected", this, listenerFeatureSelected);
     selectControl.events.register("featureunselected", this, listenerFeatureUnselected);
-    
-    app.mapPanel.map.addControl(selectControl);
 
+    app.mapPanel.map.addControl(selectControl);
     toggleSelectControl('selection');
 
     return false;
-};
+}
+;
 
 var listenerFeatureSelected = function(e) {
-    if(fromreload === true){
+    if (fromreload === true) {
         selectLayer.removeAllFeatures();
         miniLayer.removeAllFeatures();
         fromreload = false;
@@ -124,8 +120,8 @@ var listenerFeatureSelected = function(e) {
     for (var i = 0; i < alreadySelected.length; i++) {
         if (alreadySelected[i].attributes[fieldid] === e.feature.attributes[fieldid])
             return;
-    }   
-        
+    }
+
     var features_text = jQuery('#t-features').val();
     if (features_text !== "")
         var features = JSON.parse(features_text);
@@ -137,17 +133,17 @@ var listenerFeatureSelected = function(e) {
         var surface = parseInt(jQuery('#t-surface').val());
     else
         var surface = 0;
-        
+
     jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
-    
+
     selectLayer.addFeatures([e.feature]);
 };
 
 var listenerFeatureUnselected = function(e) {
     selectLayer.removeFeatures([e.feature]);
-    var  features = miniLayer.features;
-    for (var i = 0; i < features.length ; i++){
-        if(features[i].attributes['id'] === e.feature.attributes['id']){
+    var features = miniLayer.features;
+    for (var i = 0; i < features.length; i++) {
+        if (features[i].attributes['id'] === e.feature.attributes['id']) {
             miniLayer.removeFeatures([features[i]]);
             break;
         }
@@ -168,8 +164,8 @@ var listenerFeatureUnselected = function(e) {
         jQuery('#t-features').val('');
     else
         jQuery('#t-features').val(JSON.stringify(features));
-    
-    if (jQuery('#t-surface').val() !== ''){
+
+    if (jQuery('#t-surface').val() !== '') {
         var surface = parseInt(jQuery('#t-surface').val());
         jQuery('#t-surface').val(JSON.stringify(surface - e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
     }
@@ -215,7 +211,7 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
     fromreload = true;
 }
 
-var listenerFeatureAddedToZoom = function (e){
+var listenerFeatureAddedToZoom = function(e) {
     app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
 };
 

@@ -57,15 +57,12 @@ gxp.Viewer.prototype.reactivate = function() {
         var panel = this.mapPanel;
         var map = panel.map;
         extent = record.getLayer().maxExtent.clone();
-        map.zoomToExtent(extent);
+//        map.zoomToExtent(extent);
 
         var records = baseRecords.concat(overlayRecords);
         if (records.length) {
             panel.layers.add(records);
         }
-        
-        //Fire event to update indoor level if function is activated
-        this.fireEvent("extraLayerAdded");         
     }
 
     // respond to any queued requests for layer records

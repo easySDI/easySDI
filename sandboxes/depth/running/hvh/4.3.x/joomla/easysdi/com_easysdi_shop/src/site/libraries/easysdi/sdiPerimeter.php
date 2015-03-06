@@ -45,52 +45,52 @@ class sdiPerimeter {
                 $this->$key = $value;
             }
 
-            if(!empty($this->service_id)):
+            if (!empty($this->service_id)):
                 switch ($this->servicetype):
-                    case 'virtual':
-                        $servicetable = '#__sdi_virtualservice';
-                        break;
                     case 'physical':
-                        $servicetable = '#__sdi_physicalservice';
-                        break;                    
+                        $query = $db->getQuery(true)
+                                ->select('s.*')
+                                ->from('#__sdi_physicalservice  s')
+                                ->where('s.id = ' . (int) $this->service_id);
+                        $db->setQuery($query);
+                        $wmsservice = $db->loadObject();
+                        $this->wmsurl = $wmsservice->resourceurl;
+                        $this->server = $wmsservice->server_id;
+                        break;
+                    case 'virtual':
+                        $query = $db->getQuery(true)
+                                ->select('s.*')
+                                ->from('#__sdi_virtualservice s')
+                                ->where('s.id = ' . (int) $this->service_id);
+                        $db->setQuery($query);
+                        $wmsservice = $db->loadObject();
+                        if (!empty($wmsservice->reflectedurl)):
+                            $this->wmsurl = $wmsservice->reflectedurl;
+                        else:
+                            $this->wmsurl = $wmsservice->url;
+                        endif;
+
+                        //server type
+                        $query = $db->getQuery(true);
+                        $query->select('p.server_id');
+                        $query->from('#__sdi_virtualservice AS v');
+                        $query->join('LEFT', '#__sdi_virtual_physical AS vp ON vp.virtualservice_id=v.id');
+                        $query->join('LEFT', '#__sdi_physicalservice AS p ON vp.physicalservice_id=p.id');
+                        $query->group('p.server_id');
+                        $query->where('v.id = ' .  (int) $this->service_id);
+                        $db->setQuery($query);
+                        $services = $db->loadColumn();
+                        if (count($services) > 1) {
+                            //virtual service aggregates more than one kind of physical services
+                            $this->server = 3;
+                        } else {
+                            $this->server = $services[0];
+                        }
+                        break;
                 endswitch;
-                $query = $db->getQuery(true)
-                            ->select('s.*')
-                            ->from($servicetable.' s')
-                            ->where('s.id = ' . (int) $this->service_id);
-                $db->setQuery($query);
-                $wmsservice = $db->loadObject();
-                if(!empty($wmsservice->resourceurl)):
-                    $this->wmsurl = $wmsservice->resourceurl;                
-                elseif(!empty($wmsservice->reflectedurl)):
-                    $this->wmsurl = $wmsservice->reflectedurl;
-                else:
-                    $this->wmsurl = $wmsservice->url;    
-                endif;
+
+                $this->source = $wmsservice->alias;
             endif;
-            
-            //Old version
-//            if (!empty($this->wmsservice_id)):  
-//                if ($this->wmsservicetype_id == 1):
-//                    $query = $db->getQuery(true)
-//                            ->select('p.*')
-//                            ->from('#__sdi_physicalservice p')
-//                            ->where('p.id = ' . (int) $this->wmsservice_id);
-//                    $db->setQuery($query);
-//                    $wmsservice = $db->loadObject();
-//                    $this->wmsurl = $wmsservice->resourceurl;
-//                else :
-//                    $query = $db->getQuery(true)
-//                            ->select('p.*')
-//                            ->from('#__sdi_virtualservice p')
-//                            ->where('p.id = ' . (int) $this->wmsservice_id);
-//                    $db->setQuery($query);
-//                    $wmsservice = $db->loadObject();
-//                    $this->wmsurl = $wmsservice->reflectedurl;
-//                    if ($this->wmsurl == '')
-//                        $this->wmsurl = $wmsservice->url;
-//                endif;
-//            endif;
 
             if (!empty($this->wfsservice_id)):
                 if ($this->wfsservicetype_id == 1):

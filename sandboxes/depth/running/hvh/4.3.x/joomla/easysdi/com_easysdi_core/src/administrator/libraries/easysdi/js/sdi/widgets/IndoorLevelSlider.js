@@ -59,7 +59,6 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
-this.addEvents("extraLayerAdded");
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
     
