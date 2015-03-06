@@ -1,2 +1,0 @@
-ALTER TABLE #__sdi_metadata ADD COLUMN endpublished timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL AFTER published;
-UPDATE  jos_sdi_sys_stereotype SET defaultpattern = '((http:\/\/|https:\/\/|ftp:\/\/)(www.)?(([a-zA-Z0-9-]){2,}.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/.0-9#:?=&;,]*)?)?)|^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$' WHERE id = 7;
