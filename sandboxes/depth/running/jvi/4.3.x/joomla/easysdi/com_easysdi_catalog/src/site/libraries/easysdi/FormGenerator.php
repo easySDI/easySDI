@@ -548,20 +548,38 @@ class FormGenerator {
                     $id = $node->getAttributeNS($this->catalog_uri, 'id');
                 } while ($domXpathClone->query($node->getNodePath() . '[@catalog:id="' . $id . '"]')->length == 0);
 
-                $target = $domXpathClone->query($node->getNodePath())->item(0);
-
+                //$target = $domXpathClone->query($node->getNodePath())->item(0);
+                $targets = $domXpathClone->query($node->getNodePath());
+                $target = $targets->item(0);
                 $prevSibl = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
                 if (isset($prevSibl)) {
                     $coll = $domXpathClone->query($prevSibl->getNodePath());
 
                     //try to set the refNode, depending on the prevSibl existence
-                    $refNode = $coll->length > 0 ? $coll->item($coll->length - 1)->nextSibling : $target->firstChild;
+                    //$refNode = $coll->length > 0 ? $coll->item($coll->length - 1)->nextSibling : $target->firstChild;
+                    if($coll->length>0){
+                        $refNode =  $coll->item($coll->length - 1)->nextSibling;
+                        $target = $targets->item($coll->length - 1);
+                    }
+                    else{
+                        $refNode = $target->firstChild;
+                    }
                 } else {
                     $refNode = $target->firstChild;
                 }
 
-                //add the child to the parent, before the refNode if defined or as last parent's child
-                isset($refNode) ? $target->insertBefore($clone->importNode($childToImport, true), $refNode) : $target->appendChild($clone->importNode($childToImport, true));
+                try {
+                    //add the child to the parent, before the refNode if defined or as last parent's child
+                    if(isset($refNode)){ 
+                        $target->insertBefore($clone->importNode($childToImport, true), $refNode);
+                    }else{
+                        $target->appendChild($clone->importNode($childToImport, true));
+                    }
+                } catch (Exception $exc) {
+                    echo $exc->getTraceAsString();
+                }
+
+                
             }
         }
 

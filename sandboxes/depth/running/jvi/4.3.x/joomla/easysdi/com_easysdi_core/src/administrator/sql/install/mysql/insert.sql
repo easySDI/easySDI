@@ -575,7 +575,7 @@ INSERT INTO `#__sdi_language` VALUES ('18', '0', '1', 'magyar', 'hu-HU', 'hu', '
 INSERT INTO `#__sdi_language` VALUES ('19', '0', '1', 'italiano', 'it-IT', 'it', 'ita', 'it', 'IT','ita', 'Italian');
 INSERT INTO `#__sdi_language` VALUES ('20', '0', '1', 'lietuvių kalba', 'lt-LT', 'lt', 'lit', 'lt', 'LT','lit', 'Lithuanian');
 INSERT INTO `#__sdi_language` VALUES ('21', '0', '1', 'latviešu valoda', 'lv-LV', 'lv', 'lav', 'lv', 'LV','lav', 'Latvian');
-INSERT INTO `#__sdi_language` VALUES ('22', '0', '1', 'Malti', 'mt-MT', 'mt', 'mlt', 'mt', 'MT','mlt');
+INSERT INTO `#__sdi_language` VALUES ('22', '0', '1', 'Malti', 'mt-MT', 'mt', 'mlt', 'mt', 'MT','mlt', null);
 INSERT INTO `#__sdi_language` VALUES ('23', '0', '1', 'Nederlands', 'nl-NL', 'nl', 'nld', 'nl', 'NL','dut', 'Dutch');
 INSERT INTO `#__sdi_language` VALUES ('24', '0', '1', 'Norsk', 'no-NO', 'no', 'nor', 'no', 'NO','nor', 'Norwegian');
 INSERT INTO `#__sdi_language` VALUES ('25', '0', '1', 'język polski', 'pl-PL', 'pl', 'pol', 'pl', 'PL','pol', 'Polish');

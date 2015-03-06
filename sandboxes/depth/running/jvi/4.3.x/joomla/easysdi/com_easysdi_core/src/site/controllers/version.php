@@ -977,7 +977,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query->innerJoin('#__sdi_version av ON r.id = av.resource_id');
         $query->innerJoin('#__sdi_metadata am ON av.id = am.version_id');
         $query->where('m.id = ' . $metadata_id);
-        $query->where('am.metadatastate_id = ' . sdiMetadata::INPROGRESS);
+        $query->where('am.metadatastate_id IN (' . sdiMetadata::INPROGRESS.','.sdiMetadata::VALIDATED.')');
         $db->setQuery($query);
         $metadatas = $db->loadObjectList();
 
