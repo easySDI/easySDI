@@ -1004,5 +1004,55 @@ abstract class Easysdi_mapHelper {
     public static function getLayerDetailSheetToolUrl($metadata_guid, $lang, $catalog, $preview) {
         return htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $metadata_guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
     }
+    
+    /**
+    * return options needed to use easySDImap_leaflet.js
+    * @return [type] [description]
+    */
+    public static function getCleanMap($ori){
+        $user = JFactory::getUser();
+        $res=array();
+        
+        if (in_array($ori->access, $user->getAuthorisedViewLevels())){
+            foreach (array('id','name','title','srs','maxresolution','numzoomlevel','maxextent','restrictedextent','centercoordinates','zoom','unit','tools') as $key) {
+                if(property_exists($ori, $key)) {
+                  $res[$key]=$ori->$key;
+              }
+            }
+
+            $res['groups']=array();
+
+            foreach ($ori->groups as $group) {
+                if (in_array($group->access, $user->getAuthorisedViewLevels())){
+                    $resG=array();
+                    foreach (array('id','alias','ordering','name','isbackground','isdefault') as $key) {
+                      if(property_exists($group, $key)) {
+                        $resG[$key]=$group->$key;
+                        }
+                    }
+
+                    $resG['layers']=array();
+                    foreach ($group->layers as $layer) {
+                      if (in_array($layer->access, $user->getAuthorisedViewLevels())){
+                        $resL=array();
+                        foreach (array('id','alias','ordering','name','servicetype','layername','istiled','isdefaultvisible','opacity','asOL','asOLstyle','asOLmatrixset','asOLoptions','metadatalink','attribution','serviceurl','serviceconnector','servicealias','version') as $key) {
+
+                              if(property_exists($layer, $key)) {
+                                $resL[$key]=$layer->$key;
+                              }
+                          }
+                         $resG['layers'][]=$resL;
+
+                      }
+                    }// end each layers
+                $res['groups'][]=$resG;
+              }
+            } // end each groups
+
+            $config = JFactory::getConfig();
+            $res['sitename']=$config->get( 'sitename' );
+        }
+        return $res;
+    }
 
 }

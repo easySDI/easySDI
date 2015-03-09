@@ -29,6 +29,7 @@ class Easysdi_mapViewMap extends JViewLegacy {
      */
     public function display($tpl = null) {
         $app = JFactory::getApplication();
+        $user = JFactory::getUser();
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_map');
@@ -43,7 +44,11 @@ class Easysdi_mapViewMap extends JViewLegacy {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_MAP_NOT_FOUND'), 'error');
             return;
         }
-
+        if (!in_array($this->item->access, $user->getAuthorisedViewLevels())){
+           $app->enqueueMessage(JText::_('COM_EASYSDI_MAP_VIEW_NOT_AUTHORIZED'), 'error');
+           return false;
+        }
+        
         $this->mapscript = Easysdi_mapHelper::getMapScript($this->item->id);
 
         $this->_prepareDocument();
