@@ -40,9 +40,13 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         $limit = $value;
         $this->setState('list.limit', $limit);
 
-        $value = $app->getUserStateFromRequest('com_easysdi_catalog.limitstart', 'limitstart', 1);
-        $limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 1);
-        $this->setState('list.start', $limitstart);
+        if(JFactory::getApplication()->input->getInt('start',0 ) == 0){
+             $this->setState('list.start',0);
+        }else{
+            $value = $app->getUserStateFromRequest('com_easysdi_catalog.limitstart', 'limitstart', 0);
+            $limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
+            $this->setState('list.start', $limitstart);
+        }
 
         // Load state from the request userState on edit or from the passed variable on default
         if (JFactory::getApplication()->input->get('layout') == 'edit') {

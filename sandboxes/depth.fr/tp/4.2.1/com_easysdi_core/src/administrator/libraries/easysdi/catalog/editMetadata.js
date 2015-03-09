@@ -136,7 +136,7 @@ js('document').ready(function () {
                             if (response.success) {
                                 var options = {size: {x: 600, y: 700}};
                                 SqueezeBox.initialize(options);
-                                SqueezeBox.setContent('iframe', baseUrl + 'option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&guid=' + response.guid);
+                                SqueezeBox.setContent('iframe', baseUrl + 'option=com_easysdi_catalog&tmpl=component&view=sheet&preview=public&guid=' + response.guid);
                             }
 
                         }
