@@ -117,7 +117,7 @@
                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYERNAME" 
                filter="safehtml" /> 
         
-        <field
+<!--        <field
             name="maplayer_id" 
             type="sql" 
             class="inputbox"
@@ -127,7 +127,7 @@
             key_field="id" 
             value_field="name"
             translate="true"
-        /> 
+        /> -->
     </fieldset>
          
     <fieldset name="wfs" >
