@@ -525,13 +525,13 @@ function reloadFeatures<?php echo $perimeter->id; ?>() {
 
         <script>
             Ext.onReady(function () {
-                if ('undefined' == typeof app)
+                if ('undefined' === typeof app){
                     app = window.appname;
+                }
                 app.on("ready", function () {
-                    jQuery('#modal-perimeter').show()
+                    jQuery('#modal-perimeter').show();
                     initMiniMap();
                     initDraw();
-                    //                    jQuery('#perimeter-buffer').hide();
     <?php if (!empty($this->item->extent)): ?>
         <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
                             jQuery('#perimeter-buffer').show();
@@ -547,9 +547,9 @@ function reloadFeatures<?php echo $perimeter->id; ?>() {
     <?php endif; ?>
     <?php
     if (!empty($this->item->extent) && isset($this->item->extent->features)):
-        if (is_string($this->item->extent->features)):
+        if (is_string(json_decode($this->item->extent->features))):
             ?>
-                            reprojectWKT("<?php echo $this->item->extent->features; ?>");
+                            reprojectWKT('<?php echo $this->item->extent->features; ?>');
         <?php endif; ?>
                         selectPerimeter<?php echo $this->item->extent->id; ?>();
                         reloadFeatures<?php echo $this->item->extent->id; ?>();

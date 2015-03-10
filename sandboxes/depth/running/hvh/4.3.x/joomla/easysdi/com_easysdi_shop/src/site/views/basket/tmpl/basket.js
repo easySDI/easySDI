@@ -284,16 +284,29 @@ function savePerimeter() {
             if(r.MESSAGE && r.MESSAGE=='OK'){
                 saveTemporaryFields();
                 //extent
-                if(Object.prototype.toString.call(r.extent.features) === '[object Array]'){
+                var features_text = jQuery('#features').val();
+                var features = JSON.parse(r.extent.features);
+        
+                if (jQuery.isArray(features)){
                     jQuery('#perimeter-recap-details')
                         .empty()
-                        .append(jQuery(r.extent.features).each(function(){return jQuery('<div>'+jQuery(this).name+'</div>');}))
+                        .append(jQuery.each(features,function(index,value){
+                            if (typeof value === "undefined")
+                                return;
+                            if(typeof value.name === "undefined"){
+                                return jQuery('<div>'+features+'</div>');
+                            }
+                            return jQuery('<div>'+value.name+'</div>');
+                        }))
                         .show()
                         ;
-                    jQuery('#perimeter-recap').show();
+                    jQuery('#perimeter-recap-details').show();
                 }
-                else
-                    jQuery('#perimeter-recap-details').hide();
+                else{
+                    var feature = reprojectWKT(JSON.parse(features_text));
+                    jQuery('#perimeter-recap-details').append("<div>" + feature.geometry.toString() + "</div>");
+//                    jQuery('#perimeter-recap-details').hide();
+                }
                 
                 if(r.extent.surface != ''){
                     jQuery('#perimeter-recap > div:nth-child(1) > div').html(
@@ -303,8 +316,9 @@ function savePerimeter() {
                     );
                     jQuery('#perimeter-recap').show();
                 }
-                else
+                else{
                     jQuery('#perimeter-recap > div:nth-child(1) > div').empty();
+                }
                 
                 //pricing
                 updatePricing(r.pricing);
