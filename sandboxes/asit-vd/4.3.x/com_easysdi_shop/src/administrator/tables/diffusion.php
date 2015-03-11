@@ -76,11 +76,11 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['deposit'] = null;
             $array['deposit_hidden'] = null;
             $array['notifieduser_id'] = null;
-        } elseif(isset($form['perimeter'])) {
-            if (isset($form)) {
+        } else {
+            if (isset($form['perimeter']))
                 $array['perimeter'] = $form['perimeter'];
+            if (isset($form['property']))
                 $array['property'] = $form['property'];
-            }
         }
         if ($array['pricing_id'] == 2) {
             $array['hasdownload'] = "0";
