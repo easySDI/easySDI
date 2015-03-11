@@ -535,26 +535,6 @@ VALUES
 INSERT INTO `#__sdi_sys_extractstorage` SET id=1, ordering=1, `state`=1, `value`='local';
 INSERT INTO `#__sdi_sys_extractstorage` SET id=2, ordering=2, `state`=1, `value`='remote';
 
-INSERT INTO `#__sdi_language` VALUES ('1', '0', '1', 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ', 'ara');
-INSERT INTO `#__sdi_language` VALUES ('3', '0', '1', 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG','bul');
-INSERT INTO `#__sdi_language` VALUES ('4', '0', '1', 'català', 'ca-ES', 'ca', 'cat', 'ca', 'ES','cat');
-INSERT INTO `#__sdi_language` VALUES ('5', '0', '1', 'čeština', 'cs-CZ', 'cs', 'ces', 'cs', 'CZ','cze');
-INSERT INTO `#__sdi_language` VALUES ('6', '0', '1', 'dansk', 'da-DK', 'da', 'dan', 'da', 'DK','dan');
-INSERT INTO `#__sdi_language` VALUES ('7', '0', '1', 'Deutsch', 'de-DE', 'de', 'deu', 'de', 'DE','ger');
-INSERT INTO `#__sdi_language` VALUES ('8', '0', '1', 'ελληνικά', 'el-GR', 'el', 'ell', 'el', 'GR','gre');
-INSERT INTO `#__sdi_language` VALUES ('9', '0', '1', 'English (UK)', 'en-GB', 'en', 'eng', 'en', 'GB','eng');
-INSERT INTO `#__sdi_language` VALUES ('10', '0', '1', 'English (US)', 'en-US', 'en-US', 'eng', 'en', 'US','eng');
-INSERT INTO `#__sdi_language` VALUES ('11', '0', '1', 'español', 'es-ES', 'es', 'spa', 'es', 'ES','spa');
-INSERT INTO `#__sdi_language` VALUES ('12', '0', '1', 'eesti', 'et-EE', 'et', 'est', 'et', 'EE','est');
-INSERT INTO `#__sdi_language` VALUES ('13', '0', '1', 'euskara', 'eu-ES', 'eu', 'eus', 'eu', 'ES','baq');
-INSERT INTO `#__sdi_language` VALUES ('14', '0', '1', 'suomi', 'fi-FI', 'fi', 'fin', 'fi', 'FI','fin');
-INSERT INTO `#__sdi_language` VALUES ('15', '0', '1', 'Français', 'fr-FR', 'fr', 'fra', 'fr', 'FR','fre');
-INSERT INTO `#__sdi_language` VALUES ('16', '0', '1', 'Gaeilge', 'ga-IE', 'ga', 'gle', 'ga', 'IE','gle');
-INSERT INTO `#__sdi_language` VALUES ('17', '0', '1', 'hrvatski jezik', 'hr-HR', 'hr', 'scr', 'hr', 'HR','hrv');
-INSERT INTO `#__sdi_language` VALUES ('18', '0', '1', 'magyar', 'hu-HU', 'hu', 'hun', 'hu', 'HU','hun');
-INSERT INTO `#__sdi_language` VALUES ('19', '0', '1', 'italiano', 'it-IT', 'it', 'ita', 'it', 'IT','ita');
-INSERT INTO `#__sdi_language` VALUES ('20', '0', '1', 'lietuvių kalba', 'lt-LT', 'lt', 'lit', 'lt', 'LT','lit');
-INSERT INTO `#__sdi_language` VALUES ('21', '0', '1', 'latviešu valoda', 'lv-LV', 'lv', 'lav', 'lv', 'LV','lav');
 INSERT INTO `#__sdi_language` VALUES ('1', '0', '1', 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ', 'ara', 'Arabic');
 INSERT INTO `#__sdi_language` VALUES ('3', '0', '1', 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG','bul', 'Bulgarian');
 INSERT INTO `#__sdi_language` VALUES ('4', '0', '1', 'català', 'ca-ES', 'ca', 'cat', 'ca', 'ES','cat', 'Catalan');
