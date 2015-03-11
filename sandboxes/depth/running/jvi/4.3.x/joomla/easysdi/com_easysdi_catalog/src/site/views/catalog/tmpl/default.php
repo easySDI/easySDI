@@ -39,7 +39,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
 
     js('document').ready(function() {
         if (!js( '[name="advanced"]' ).length) {
-            js("#searchtype").remove();
+            js("#searchtype").hide();
         }
         <?php if ($this->isAdvanced()): ?>
             toogleAdvanced();
