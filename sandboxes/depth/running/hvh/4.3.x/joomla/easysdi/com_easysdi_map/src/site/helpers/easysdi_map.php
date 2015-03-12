@@ -111,10 +111,7 @@ abstract class Easysdi_mapHelper {
 
         $app = JFactory::getApplication();
         $params = $app->getParams('com_easysdi_map');
-        $proxyhost = $params->get('proxyhost');
-        if (empty($proxyhost)) :
-            $proxyhost = JURI::base() . "administrator/components/com_easysdi_core/libraries/proxy/proxy.php?=&=";
-        endif;
+        $proxyhost = JURI::base() . "index.php?option=com_easysdi_core&task=proxy.run&url=";
 
         //Default group
         foreach ($item->groups as $group) :

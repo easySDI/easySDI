@@ -88,7 +88,7 @@ if ($this->item && $this->item->extractions) :
                                         ?>
                                     </div>
                                 </div>
-                                <div><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
+                                <div id="perimeter-recap-details-title"><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
                                 <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;<?php if (!is_array($this->item->extent->features)): ?>display:none;<?php endif; ?>">
                                     <?php if (is_array($this->item->extent->features)): foreach ($this->item->extent->features as $feature): ?>
                                             <div><?php echo $feature->name; ?></div>
@@ -446,14 +446,15 @@ if ($this->item && $this->item->extractions) :
                 var userperimeter = '<?php echo $this->user->perimeter; ?>';
             <?php endif; ?>
 function selectPerimeter<?php echo $perimeter->id; ?>() {
-        return selectPerimeter(<?php echo json_encode($perimeter); ?>,<?php
+
+                                            return selectPerimeter(<?php
             if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI) : echo 1;
             else : echo 0;
             endif;
-            ?>);
-}
+            ?>, "<?php echo $perimeter->id; ?>", "<?php echo $perimeter->name; ?>", "<?php echo $perimeter->wmsurl; ?>", "<?php echo $perimeter->layername; ?>", "<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->namespace; ?>", "<?php echo $perimeter->featuretypefieldgeometry; ?>", "<?php echo $perimeter->featuretypefieldid; ?>", "<?php echo $perimeter->featuretypefieldname; ?>", "<?php echo $perimeter->prefix; ?>");
+                                                    }
 function reloadFeatures<?php echo $perimeter->id; ?>() {
-    reloadFeatures("<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->featuretypefieldid; ?>");
+    reloadFeatures("<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->prefix . ':' . $perimeter->featuretypename; ?>", "<?php echo $perimeter->prefix . ':' . $perimeter->featuretypefieldid; ?>");
 }
                                                 </script>
                                                 <br>

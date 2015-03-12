@@ -7,7 +7,7 @@ function initMiniMap() {
     minimap.setBaseLayer(layer);
     minimap.zoomToExtent(app.mapPanel.map.getExtent());
     miniLayer = new OpenLayers.Layer.Vector("miniLayer");
-    
+
     minimap.addLayer(miniLayer);
     miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
 }
@@ -43,12 +43,12 @@ var listenerFeatureAdded = function(e) {
 
 function clearLayersVector() {
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
-        if (app.mapPanel.map.layers[j].id.indexOf("Vector") != -1){
+        if (app.mapPanel.map.layers[j].id.indexOf("Vector") != -1) {
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
     for (var j = 0; j < minimap.layers.length; j++) {
-        if (minimap.layers[j].id.indexOf("Vector") != -1){
+        if (minimap.layers[j].id.indexOf("Vector") != -1) {
             minimap.layers[j].removeAllFeatures();
         }
     }
@@ -61,7 +61,7 @@ function clearTemporaryFields() {
     jQuery('#t-features').val('');
     jQuery('#alert_template').fadeOut('slow');
     jQuery('#btn-saveperimeter').removeAttr("disabled");
-    jQuery('#features').val('');
+    
 }
 
 function resetTemporaryFields() {
@@ -89,7 +89,7 @@ function beforeFeatureAdded(event) {
 
 function resetAll() {
     resetTemporaryFields();
-    
+
     clearLayersVector();
     jQuery('#btns-selection').show();
 
@@ -118,11 +118,9 @@ function toggleSelectControl(action) {
             selectControl.activate();
         }
     } else if (action == 'pan') {
-        resetAll();
-        clearTemporaryFields();
-    }  else {
-        resetAll();
         selectControl.deactivate();
+    } else {
+        resetAll();
     }
 }
 
@@ -137,81 +135,81 @@ function cancel() {
 }
 
 var number_format = function(number, decimals, dec_point, thousands_sep) {
-  //  discuss at: http://phpjs.org/functions/number_format/
-  // original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // improved by: davook
-  // improved by: Brett Zamir (http://brett-zamir.me)
-  // improved by: Brett Zamir (http://brett-zamir.me)
-  // improved by: Theriault
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // bugfixed by: Michael White (http://getsprink.com)
-  // bugfixed by: Benjamin Lupton
-  // bugfixed by: Allan Jensen (http://www.winternet.no)
-  // bugfixed by: Howard Yeend
-  // bugfixed by: Diogo Resende
-  // bugfixed by: Rival
-  // bugfixed by: Brett Zamir (http://brett-zamir.me)
-  //  revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-  //  revised by: Luke Smith (http://lucassmith.name)
-  //    input by: Kheang Hok Chin (http://www.distantia.ca/)
-  //    input by: Jay Klehr
-  //    input by: Amir Habibi (http://www.residence-mixte.com/)
-  //    input by: Amirouche
-  //   example 1: number_format(1234.56);
-  //   returns 1: '1,235'
-  //   example 2: number_format(1234.56, 2, ',', ' ');
-  //   returns 2: '1 234,56'
-  //   example 3: number_format(1234.5678, 2, '.', '');
-  //   returns 3: '1234.57'
-  //   example 4: number_format(67, 2, ',', '.');
-  //   returns 4: '67,00'
-  //   example 5: number_format(1000);
-  //   returns 5: '1,000'
-  //   example 6: number_format(67.311, 2);
-  //   returns 6: '67.31'
-  //   example 7: number_format(1000.55, 1);
-  //   returns 7: '1,000.6'
-  //   example 8: number_format(67000, 5, ',', '.');
-  //   returns 8: '67.000,00000'
-  //   example 9: number_format(0.9, 0);
-  //   returns 9: '1'
-  //  example 10: number_format('1.20', 2);
-  //  returns 10: '1.20'
-  //  example 11: number_format('1.20', 4);
-  //  returns 11: '1.2000'
-  //  example 12: number_format('1.2000', 3);
-  //  returns 12: '1.200'
-  //  example 13: number_format('1 000,50', 2, '.', ' ');
-  //  returns 13: '100 050.00'
-  //  example 14: number_format(1e-8, 8, '.', '');
-  //  returns 14: '0.00000001'
+    //  discuss at: http://phpjs.org/functions/number_format/
+    // original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // improved by: davook
+    // improved by: Brett Zamir (http://brett-zamir.me)
+    // improved by: Brett Zamir (http://brett-zamir.me)
+    // improved by: Theriault
+    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // bugfixed by: Michael White (http://getsprink.com)
+    // bugfixed by: Benjamin Lupton
+    // bugfixed by: Allan Jensen (http://www.winternet.no)
+    // bugfixed by: Howard Yeend
+    // bugfixed by: Diogo Resende
+    // bugfixed by: Rival
+    // bugfixed by: Brett Zamir (http://brett-zamir.me)
+    //  revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+    //  revised by: Luke Smith (http://lucassmith.name)
+    //    input by: Kheang Hok Chin (http://www.distantia.ca/)
+    //    input by: Jay Klehr
+    //    input by: Amir Habibi (http://www.residence-mixte.com/)
+    //    input by: Amirouche
+    //   example 1: number_format(1234.56);
+    //   returns 1: '1,235'
+    //   example 2: number_format(1234.56, 2, ',', ' ');
+    //   returns 2: '1 234,56'
+    //   example 3: number_format(1234.5678, 2, '.', '');
+    //   returns 3: '1234.57'
+    //   example 4: number_format(67, 2, ',', '.');
+    //   returns 4: '67,00'
+    //   example 5: number_format(1000);
+    //   returns 5: '1,000'
+    //   example 6: number_format(67.311, 2);
+    //   returns 6: '67.31'
+    //   example 7: number_format(1000.55, 1);
+    //   returns 7: '1,000.6'
+    //   example 8: number_format(67000, 5, ',', '.');
+    //   returns 8: '67.000,00000'
+    //   example 9: number_format(0.9, 0);
+    //   returns 9: '1'
+    //  example 10: number_format('1.20', 2);
+    //  returns 10: '1.20'
+    //  example 11: number_format('1.20', 4);
+    //  returns 11: '1.2000'
+    //  example 12: number_format('1.2000', 3);
+    //  returns 12: '1.200'
+    //  example 13: number_format('1 000,50', 2, '.', ' ');
+    //  returns 13: '100 050.00'
+    //  example 14: number_format(1e-8, 8, '.', '');
+    //  returns 14: '0.00000001'
 
-  number = (number + '')
-    .replace(/[^0-9+\-Ee.]/g, '');
-  var n = !isFinite(+number) ? 0 : +number,
-    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-    s = '',
-    toFixedFix = function(n, prec) {
-      var k = Math.pow(10, prec);
-      return '' + (Math.round(n * k) / k)
-        .toFixed(prec);
-    };
-  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
-    .split('.');
-  if (s[0].length > 3) {
-    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-  }
-  if ((s[1] || '')
-    .length < prec) {
-    s[1] = s[1] || '';
-    s[1] += new Array(prec - s[1].length + 1)
-      .join('0');
-  }
-  return s.join(dec);
+    number = (number + '')
+            .replace(/[^0-9+\-Ee.]/g, '');
+    var n = !isFinite(+number) ? 0 : +number,
+            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+            s = '',
+            toFixedFix = function(n, prec) {
+                var k = Math.pow(10, prec);
+                return '' + (Math.round(n * k) / k)
+                        .toFixed(prec);
+            };
+    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+    s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+            .split('.');
+    if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+    }
+    if ((s[1] || '')
+            .length < prec) {
+        s[1] = s[1] || '';
+        s[1] += new Array(prec - s[1].length + 1)
+                .join('0');
+    }
+    return s.join(dec);
 };
 
 /**
@@ -220,43 +218,45 @@ var number_format = function(number, decimals, dec_point, thousands_sep) {
  * @param {boolean} displayCurrency
  * @returns {String}
  */
-var priceFormatter = function(price, displayCurrency){
-    if('undefined' === typeof displayCurrency) displayCurrency = true;
-    var c = displayCurrency ? ' '+currency : '';
-    
-    if(price != '-' && price != 0)
-        price =     number_format(
-                        price,
-                        digit_after_decimal,
-                        decimal_symbol,
-                        digit_grouping_symbol
-                    );
-    
-    return price+c;
+var priceFormatter = function(price, displayCurrency) {
+    if ('undefined' === typeof displayCurrency)
+        displayCurrency = true;
+    var c = displayCurrency ? ' ' + currency : '';
+
+    if (price != '-' && price != 0)
+        price = number_format(
+                price,
+                digit_after_decimal,
+                decimal_symbol,
+                digit_grouping_symbol
+                );
+
+    return price + c;
 };
 
-var updatePricing = function(pricing){ console.log(pricing);
-    if(!pricing.isActivated)
+var updatePricing = function(pricing) {
+    console.log(pricing);
+    if (!pricing.isActivated)
         return;
-    
+
     //total amount
     jQuery('span.pricingTotalAmountTI').html(priceFormatter(pricing.cal_total_amount_ti));
     jQuery('span#pricingTotalAmountTI-container').show();
-    
+
     //suppliers
-    jQuery.each(pricing.suppliers, function(supplierId, supplier){
+    jQuery.each(pricing.suppliers, function(supplierId, supplier) {
         //products
-        jQuery.each(supplier.products, function(productId, product){
-            jQuery('table[rel='+supplierId+']>tbody>tr[rel='+productId+']>td.price_column').html(priceFormatter(product.cal_total_amount_ti)).show();
+        jQuery.each(supplier.products, function(productId, product) {
+            jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column').html(priceFormatter(product.cal_total_amount_ti)).show();
         });
-        
+
         //footer
-        jQuery('table[rel='+supplierId+']>tfoot>tr>td#supplier_cal_fee_ti').html(priceFormatter(supplier.cal_fee_ti));
-        jQuery('table[rel='+supplierId+']>tfoot>tr>td#supplier_cal_total_amount_ti').html(priceFormatter(supplier.cal_total_amount_ti));
-        jQuery('table[rel='+supplierId+']>tfoot>tr>td#supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
-        jQuery('table[rel='+supplierId+']>tfoot').show();
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td#supplier_cal_fee_ti').html(priceFormatter(supplier.cal_fee_ti));
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td#supplier_cal_total_amount_ti').html(priceFormatter(supplier.cal_total_amount_ti));
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td#supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
+        jQuery('table[rel=' + supplierId + ']>tfoot').show();
     });
-    
+
     //platform
     jQuery('span.pricingFeeTI').html(priceFormatter(pricing.cal_fee_ti)).show();
     jQuery('#pricingTotal-table').show();
@@ -266,7 +266,7 @@ function savePerimeter() {
     if (jQuery('#t-perimeter').val() == '')
     {
         jQuery('#perimeter-recap').empty();
-    }else{
+    } else {
         jQuery("#progress").css('visibility', 'visible');
 
         var extent = {"id": jQuery('#t-perimeter').val(),
@@ -274,61 +274,65 @@ function savePerimeter() {
             "surface": jQuery('#t-surface').val(),
             "allowedbuffer": jQuery('#allowedbuffer').val(),
             "buffer": jQuery('#buffer').val(),
-            "features": jQuery('#t-features').val()};
+            "features": JSON.parse(jQuery('#t-features').val())};
 
         jQuery.ajax({
             type: "POST",
-            url: "index.php?option=com_easysdi_shop&task=addExtentToBasket" ,
-            data :"item="+ JSON.stringify(extent)
+            url: "index.php?option=com_easysdi_shop&task=addExtentToBasket",
+            data: "item=" + JSON.stringify(extent)
         }).done(function(r) {
-            if(r.MESSAGE && r.MESSAGE=='OK'){
+            if (r.MESSAGE && r.MESSAGE == 'OK') {
                 saveTemporaryFields();
-                //extent
-                var features_text = jQuery('#features').val();
-                var features = JSON.parse(r.extent.features);
-        
-                if (jQuery.isArray(features)){
-                    jQuery('#perimeter-recap-details')
-                        .empty()
-                        .append(jQuery.each(features,function(index,value){
-                            if (typeof value === "undefined")
+
+                try {
+                    var features = JSON.parse(jQuery('#features').val());
+
+                    if (jQuery.isArray(features)) {
+                        jQuery('#perimeter-recap-details').empty();
+                        jQuery.each(features, function() {
+                            if (typeof this === "undefined")
                                 return;
-                            if(typeof value.name === "undefined"){
-                                return jQuery('<div>'+features+'</div>');
+                            if (typeof this.name === "undefined") {
+                                jQuery('#perimeter-recap-details').append(jQuery('<div>' + features + '</div>'));
                             }
-                            return jQuery('<div>'+value.name+'</div>');
-                        }))
-                        .show()
-                        ;
-                    jQuery('#perimeter-recap-details').show();
+                            jQuery('#perimeter-recap-details').append(jQuery('<div>' + this.name + '</div>'));
+                        });
+                        jQuery('#perimeter-recap-details').show();
+
+                    }else{
+                        jQuery('#perimeter-recap-details').empty().hide();
+                    }
+                } catch (e) {
+                    jQuery('#perimeter-recap-details').empty().hide();
                 }
-                else{
-                    var feature = reprojectWKT(JSON.parse(features_text));
-                    jQuery('#perimeter-recap-details').append("<div>" + feature.geometry.toString() + "</div>");
-//                    jQuery('#perimeter-recap-details').hide();
+
+                if (r.extent.name != '') {
+                    jQuery('#perimeter-recap-details-title > h4').html(r.extent.name);
                 }
-                
-                if(r.extent.surface != ''){
+                else {
+                    jQuery('#perimeter-recap-details-title > h4').empty();
+                }
+                if (r.extent.surface != '') {
                     jQuery('#perimeter-recap > div:nth-child(1) > div').html(
-                        (r.extent.surface > maxmetervalue)
-                        ? (r.extent.surface/1000000).toFixed(surfacedigit)+Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
-                        : parseFloat(r.extent.surface).toFixed(surfacedigit)+Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
-                    );
+                            (r.extent.surface > maxmetervalue)
+                            ? (r.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
+                            : parseFloat(r.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
+                            );
                     jQuery('#perimeter-recap').show();
                 }
-                else{
+                else {
                     jQuery('#perimeter-recap > div:nth-child(1) > div').empty();
                 }
-                
+
                 //pricing
                 updatePricing(r.pricing);
             }
-            
+
             return false;
         });
     }
 }
-               
+
 function reprojectWKT(wkt) {
     var features = new OpenLayers.Format.WKT().read(wkt);
     var reprojfeatures = new Array();
@@ -349,7 +353,7 @@ function reprojectWKT(wkt) {
                 );
         var reprojfeature = new OpenLayers.Feature.Vector(geometry);
         reprojfeatures.push(reprojfeature);
-        
+
     }
     var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
     jQuery('#perimeter-recap-details').append("<div>" + reprojwkt + "</div>");
@@ -358,35 +362,35 @@ function reprojectWKT(wkt) {
 
 
 /**/
-var removeFromBasket = function(id){
+var removeFromBasket = function(id) {
     current_id = id;
     jQuery('#modal-dialog-remove').modal('show');
 };
 
-var actionRemove = function(){
+var actionRemove = function() {
     jQuery('#task').val('removeFromBasket');
     jQuery('#id').val(current_id);
     jQuery('#adminForm').submit();
 };
 
-var checkTouState = function(){
+var checkTouState = function() {
     jQuery('#toolbar-edit>button, #toolbar-publish>button').attr('disabled', !jQuery('#termsofuse').prop('checked'));
 };
 
-var processProgress = function(txt, rate){
+var processProgress = function(txt, rate) {
     jQuery('#processProgressText').text(txt);
-    if(rate)
+    if (rate)
         jQuery('#processProgress').css('width', rate + '%');
 };
 
-var sendBasket = function(){
+var sendBasket = function() {
     jQuery('#myModalProcess').modal('show');
     processProgress('Initialisation');
     jQuery.ajax({
         url: jQuery('#adminForm').attr('action'),
         type: 'POST',
         data: jQuery('#adminForm').serialize()
-    }).done(function(data){
+    }).done(function(data) {
         var text = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PROCESS_PROGRESSING').replace('%1', data.treated).replace('%2', data.total);
         processProgress(text, data.rate);
         setTimeout(sendProduct, 500);
@@ -394,24 +398,24 @@ var sendBasket = function(){
     return false;
 };
 
-var sendProduct = function(){
+var sendProduct = function() {
     jQuery.ajax({
         url: 'index.php?option=com_easysdi_shop&task=basket.saveProduct',
         type: 'POST',
         cache: false,
         data: formToken
-    }).done(function(data){
-        if('undefined' !== typeof data.total){
+    }).done(function(data) {
+        if ('undefined' !== typeof data.total) {
             var text = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PROCESS_PROGRESSING').replace('%1', data.treated).replace('%2', data.total);
             processProgress(text, data.rate);
 
-            if(data.rate<100)
+            if (data.rate < 100)
                 setTimeout(sendProduct, 100);
             else
                 setTimeout(closeBasket, 1000);
         }
-        else{
-            for(var el in data){
+        else {
+            for (var el in data) {
                 Joomla.renderMessages({el: data[el]});
                 jQuery('#myModalProcess').modal('hide');
             }
@@ -421,33 +425,33 @@ var sendProduct = function(){
     return false;
 };
 
-var closeBasket = function(){
+var closeBasket = function() {
     processProgress(Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PROCESS_ENDING'));
     jQuery.ajax({
         url: 'index.php?option=com_easysdi_shop&task=basket.finalizeSave',
         type: 'POST',
         cache: false,
         data: formToken
-    }).done(function(data){
+    }).done(function(data) {
         document.location = data.redirect;
     });
     return false;
 };
 
-var thirdpartyInfoVisibility = function(){
-    if(jQuery('select#thirdparty').val() != -1)
+var thirdpartyInfoVisibility = function() {
+    if (jQuery('select#thirdparty').val() != -1)
         jQuery('#thirdparty-info').show();
     else
         jQuery('#thirdparty-info').hide();
 };
 
-jQuery(document).on('change', 'select#thirdparty', function(e){
+jQuery(document).on('change', 'select#thirdparty', function(e) {
     var tp = jQuery(e.target).val();
-    
+
     jQuery.ajax({
         type: "POST",
-        url: "index.php?option=com_easysdi_shop&task=basket.saveBasketToSession" ,
-        data :"thirdparty="+tp
+        url: "index.php?option=com_easysdi_shop&task=basket.saveBasketToSession",
+        data: "thirdparty=" + tp
     }).done(function(r) {
         thirdpartyInfoVisibility();
         //pricing
@@ -456,32 +460,32 @@ jQuery(document).on('change', 'select#thirdparty', function(e){
     });
 });
 
-jQuery(document).on('click', '#btn-login', function(){
-    document.location.href = 'index.php?option=com_users&view=login&return='+btoa(document.location.href);
+jQuery(document).on('click', '#btn-login', function() {
+    document.location.href = 'index.php?option=com_users&view=login&return=' + btoa(document.location.href);
     return false;
 });
 
-jQuery(document).on('click', '#btn-create-account', function(){
-    document.location.href = 'index.php?option=com_users&view=registration&return='+btoa(document.location.href);
+jQuery(document).on('click', '#btn-create-account', function() {
+    document.location.href = 'index.php?option=com_users&view=registration&return=' + btoa(document.location.href);
     return false;
 });
 
 jQuery(document).on('change', '#termsofuse', checkTouState);
 
-jQuery(document).on('click', 'td.action_column>a', function(){
+jQuery(document).on('click', 'td.action_column>a', function() {
     removeFromBasket(jQuery(this).closest('tr').attr('rel'));
     return false;
 });
 
 
-jQuery(document).ready(function(){
+jQuery(document).ready(function() {
     checkTouState();
 
     thirdpartyInfoVisibility();
 
-    jQuery('#toolbar button').on('click', function(){
+    jQuery('#toolbar button').on('click', function() {
         var task = jQuery(this).attr('rel');
-        var t  = jQuery('#features').val();
+        var t = jQuery('#features').val();
         if (jQuery('#features').val() === '') {
             jQuery('#modal-error').modal('show');
         } else {
