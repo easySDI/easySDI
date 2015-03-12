@@ -164,11 +164,10 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             foreach ($basket->extractions as $diffusion):
                 $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
                 $od = array();
-                $od['order_id'] = $table->id;
-                $od['diffusion_id'] = $diffusion->id;
-                $od['productstate_id'] = ($table->orderstate_id == self::ORDERSTATE_VALIDATION) ? self::PRODUCT_VALIDATION : self::PRODUCT_SENT;
-                
-                $od['created_by'] = JFactory::getUser()->id;
+                $od['order_id']         = $table->id;
+                $od['diffusion_id']     = $diffusion->id;
+                $od['productstate_id']  = ($table->orderstate_id == self::ORDERSTATE_VALIDATION) ? self::PRODUCT_VALIDATION : self::PRODUCT_SENT;
+                $od['created_by']       = JFactory::getUser()->id;
                 $orderdiffusion->save($od);
                 array_push($basketData['diffusions'], $orderdiffusion->diffusion_id);
                 array_push($products, $orderdiffusion);
@@ -179,10 +178,10 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                         $orderpropertyvalue = JTable::getInstance('orderpropertyvalue', 'Easysdi_shopTable');
                         $v = array();
                         $v['orderdiffusion_id'] = $orderdiffusion->id;
-                        $v['property_id'] = $property->id;
-                        $v['propertyvalue_id'] = $value->id;
-                        $v['propertyvalue'] = $value->value;
-                        $v['created_by'] = JFactory::getUser()->id;
+                        $v['property_id']       = $property->id;
+                        $v['propertyvalue_id']  = $value->id;
+                        $v['propertyvalue']     = $value->value;
+                        $v['created_by']        = JFactory::getUser()->id;
                         $orderpropertyvalue->save($v);
                     endforeach;
                 endforeach;
@@ -196,19 +195,20 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 foreach ($basket->extent->features as $feature):
                     $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');
                     $op = array();
-                    $op['order_id'] = $table->id;
-                    $op['perimeter_id'] = $basket->extent->id;
-                    $op['value'] = $feature->id;
-                    $op['text'] = $feature->name;
+                    $op['order_id']        = $table->id;
+                    $op['perimeter_id']    = $basket->extent->id;
+                    $op['value']           = $feature->id;
+                    $op['text']            = $feature->name;
+                    $op['created_by']      = JFactory::getUser()->id;
                     $orderperimeter->save($op);
                 endforeach;
             else:
                 $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');
                 $op = array();
-                $op['order_id'] = $table->id;
-                $op['perimeter_id'] = $basket->extent->id;
-                $op['value'] = $basket->extent->features;
-                $op['created_by'] = JFactory::getUser()->id;
+                $op['order_id']         = $table->id;
+                $op['perimeter_id']     = $basket->extent->id;
+                $op['value']            = $basket->extent->features;
+                $op['created_by']       = JFactory::getUser()->id;
                 $orderperimeter->save($op);
             endif;
             
