@@ -23,13 +23,11 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
 ?>
 <?php if ($this->item) : ?>
-<form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
     <div class="metadata-sheet">
 <?php
     printf($this->item);
   ?>
     </div>
-</form>
 <?php
 else:
     echo JText::_('COM_EASYSDI_CATALOG_ITEM_NOT_LOADED');
