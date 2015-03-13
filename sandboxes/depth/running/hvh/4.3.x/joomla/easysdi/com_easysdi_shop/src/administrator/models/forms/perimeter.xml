@@ -66,12 +66,7 @@
             value_field="value"
             translate="true"
         /> 
-        
-        
-        
-
-        
-
+   
         <field name="id" type="text" default="0" label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_ID"
                readonly="true" class="readonly"
                description="JGLOBAL_FIELD_ID_DESC" /> 
@@ -117,17 +112,17 @@
                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYERNAME" 
                filter="safehtml" /> 
         
-<!--        <field
-            name="maplayer_id" 
-            type="sql" 
-            class="inputbox"
-            label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_LAYER"
-            description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYER" 
-            query="SELECT id, name FROM #__sdi_maplayer WHERE state=1 ORDER BY ordering" 
-            key_field="id" 
-            value_field="name"
-            translate="true"
-        /> -->
+               <field
+                   name="maplayer_id" 
+                   type="sql" 
+                   class="inputbox"
+                   label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_LAYER"
+                   description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYER" 
+                   query="SELECT id, name FROM #__sdi_maplayer WHERE state=1 ORDER BY ordering" 
+                   key_field="id" 
+                   value_field="name"
+                   translate="true"
+               /> 
     </fieldset>
          
     <fieldset name="wfs" >
