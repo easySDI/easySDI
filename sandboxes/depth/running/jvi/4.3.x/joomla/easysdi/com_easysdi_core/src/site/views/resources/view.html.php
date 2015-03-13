@@ -114,7 +114,12 @@ class Easysdi_coreViewResources extends JViewLegacy {
             $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
             $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
             $query->leftJoin('#__sdi_versionlink vl ON vl.child_id = v.id');
-            $query->where('v.resource_id = ' . (int) $item->id);
+            if (!empty($this->state->parentid)) {
+                $query->where('vl.parent_id='.(int)$this->state->parentid);
+            }
+            else{
+                $query->where('v.resource_id = ' . (int) $item->id);
+            }
             $query->order('v.name DESC');
 
             // Check if resource has a "unpublish" version
