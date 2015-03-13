@@ -61,7 +61,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                     <span class="caret"></span>
                                 </a>
                             <?php else: ?>
-                                 <a class="btn btn-success dropdown-toggle" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
+                                 <a class="btn btn-success" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
                                     <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_BACK'); ?>
                                 </a>
                             <?php endif; ?>
