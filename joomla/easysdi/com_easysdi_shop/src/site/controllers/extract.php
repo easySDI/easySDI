@@ -71,6 +71,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
     /** @var JDatabaseDriver Description */
     private $db;
+    private $transaction = false;
 
     /** @var DOMDocument */
     private $request;
@@ -199,7 +200,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      */
     private function getException($code, $details = ''){
         // Rollback SQL Transaction
-        $this->db->transactionRollback();
+        if($this->transaction){
+            $this->db->transactionRollback();
+        }
         
         if(is_array($details)){
             $details = implode('<br>', $details);
@@ -376,6 +379,8 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         /* DEFAULT INPUTS */
         $mode = 'sdi:getOrders';
 
+        $agg = 'o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, u.guid , us.name , o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') ;
+        $agg .= ', po.id , po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee, po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee';
         // retrieve all orders
         $query = $this->db->getQuery(true)
                 ->select('o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, u.guid as user_guid, us.name as user_name, o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') . ' as ordertype')
@@ -404,7 +409,8 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
         $query->where('od.productstate_id IN ('.implode(',', $this->states).')')
                 ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
-                ->group('o.id');
+                ->group($agg);
+        
         $this->db->setQuery($query);
         
         return $this->db->loadObjectList();
@@ -425,7 +431,15 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $xml = JFactory::getApplication()->input->get('xml', null, 'raw');
 
         // Open an SQL Transaction
-        $this->db->transactionStart();
+        //$this->db->transactionStart();
+        try {
+            $this->db->transactionStart();
+        } catch (Exception $exc) {
+            $this->db->connect();
+            $driver_begin_transaction = $this->db->name . '_begin_transaction';
+            $driver_begin_transaction($this->db->getConnection());
+        }
+        $this->transaction = true;
 
         $orders = $this->response->createElementNS(self::nsSdi, 'sdi:orders');
         $orders->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', self::xsiGetOrders);
@@ -859,9 +873,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         
         $query = $this->db->getQuery(true);
 
-        $query->update('#__sdi_order_diffusion od');
-        $query->set('od.productstate_id = ' . (int)self::PRODUCTSTATE_AWAIT);
-        $query->where('od.id = ' . (int)$orderProduct->od_id);
+        $query->update('#__sdi_order_diffusion ');
+        $query->set('productstate_id = ' . (int)self::PRODUCTSTATE_AWAIT);
+        $query->where('id = ' . (int)$orderProduct->od_id);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -1018,9 +1032,11 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addAttribute($surface, 'unit', 'm2');
         $perimeter->appendChild($surface);
 
+        $contentsnode = $this->response->createElementNS(self::nsSdi, 'sdi:contents');
         foreach($contents as $content){
-            $perimeter->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:content', $content->perimeter_value));
+            $contentsnode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:content', $content->perimeter_value));
         }
+        $perimeter->appendChild($contentsnode);
         
         return $perimeter;
     }
@@ -1047,7 +1063,15 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->schemaValidation(self::xsiSetProductParameters, 1);
 
         // Open an SQL Transaction
-        $this->db->transactionStart();
+        //$this->db->transactionStart();
+        try {
+            $this->db->transactionStart();
+        } catch (Exception $exc) {
+            $this->db->connect();
+            $driver_begin_transaction = $this->db->name . '_begin_transaction';
+            $driver_begin_transaction($this->db->getConnection());
+        }
+        $this->transaction = true;
 
         $this->product = $this->request->getElementsByTagNameNS(self::nsSdi, 'product')->item(0);
 
@@ -1332,7 +1356,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * 
      * call getException if the orderdiffusion cannot be updated
      */
-    private function updateOrderDiffusion($od, $order, $po = null, $pos = null, $posp = null){
+    private function  updateOrderDiffusion($od, $order, $po = null, $pos = null, $posp = null){
         $updatePricing = false;
         
         $query = $this->db->getQuery(true)
