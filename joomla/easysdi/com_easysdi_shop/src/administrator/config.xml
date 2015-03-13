@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<fieldset name="component" label="COM_EASYSDI_SHOP_COMPONENT_LABEL" description="COM_EASYSDI_SHOP_COMPONENT_DESC" >
-
-           <field name="proxyphp"
-                   type="text"
-                   default="index.php?option=com_easysdi_shop"
-                   class="inputbox input-xxlarge"
-                   required ="true"
-                   size="500"
-                   label="COM_EASYSDI_SHOP_CONFIG_LBL_PROXYPHP"
-                   description="COM_EASYSDI_SHOP_CONFIG_DESC_PROXYPHP">
-           </field>
-           
+ 
            <field name="maxuploadfilesize"
                    type="text"
                    default="32"
