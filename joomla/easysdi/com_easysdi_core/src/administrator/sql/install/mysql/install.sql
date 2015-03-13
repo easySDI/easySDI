@@ -347,6 +347,21 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_perimetertype` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_server` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` int(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_server_serviceconnector` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`server_id` INT(11) UNSIGNED  NOT NULL ,
+`serviceconnector_id` int(11) UNSIGNED NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 -- com_easysdi_contact
 
 CREATE TABLE IF NOT EXISTS `#__sdi_user` (
@@ -572,6 +587,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
 `params` VARCHAR(1024)   ,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10)   ,
+`server_id` INT(11) UNSIGNED NULL,
 PRIMARY KEY (`id`),
 UNIQUE (`name`) 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -1936,6 +1952,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `asOLstyle` TEXT,
 `asOLmatrixset` TEXT,
 `asOLoptions` TEXT,
+`isindoor`  TINYINT(1) NULL AFTER `asOLoptions`,
+`levelfield`  varchar(255) NULL AFTER `asOLoptions`,
 `metadatalink` TEXT  ,
 `attribution` VARCHAR(255)   ,
 `accessscope_id` INT(11) UNSIGNED NOT NULL DEFAULT '1',
@@ -1994,7 +2012,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_tool` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `map_id` INT(11) UNSIGNED  NOT NULL ,
 `tool_id` INT(11) UNSIGNED NOT NULL ,
-`params` VARCHAR(500) ,
+`params` VARCHAR(4000) ,
+`activated`  TINYINT(1) DEFAULT 0 ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
