@@ -31,11 +31,11 @@ class CswMerge {
         if (!empty($import)) {
             $this->setImport($import);
         }
-        
+
         if (!empty($original)) {
             $this->setOriginal($original);
         }
-        
+
         $this->nsdao = new SdiNamespaceDao();
     }
 
@@ -124,7 +124,7 @@ class CswMerge {
      */
     private function mergeImportCsw($importref, $xpath) {
         $this->transformXml($importref);
-       
+
         try {
             $this->preserveFileidentifier($this->import, '', $this->original);
         } catch (Exception $exc) {
@@ -292,7 +292,7 @@ class CswMerge {
      * Merge import to original
      */
     private function merge() {
-        
+
         $domXpathImport = new DOMXPath($this->import);
         $domXpathOriginal = new DOMXPath($this->original);
 
@@ -300,14 +300,36 @@ class CswMerge {
             $domXpathImport->registerNamespace($ns->prefix, $ns->uri);
             $domXpathOriginal->registerNamespace($ns->prefix, $ns->uri);
         }
-        
+
+        /* @var $nodeToImport DOMElement */
         foreach ($domXpathImport->query('descendant::*') as $nodeToImport) {
-            if (!$this->hasChild($nodeToImport) && ($originalNode = $domXpathOriginal->query($nodeToImport->getNodePath())->item(0))) {
-                $importedNode = $this->original->importNode($nodeToImport, true);
-                $originalNode->parentNode->replaceChild($importedNode, $originalNode);
+           
+            if (!$this->hasChild($nodeToImport)) {
+                $nodesToImport = array();
+                do {
+                    $nodesToImport[] = $nodeToImport;
+
+                    $nodeToImport = $nodeToImport->parentNode;
+                } while ($domXpathOriginal->query($nodeToImport->getNodePath())->length == 0);
+
+                $parent = $domXpathOriginal->query($nodeToImport->getNodePath())->item(0);
+                $nodesToImport = array_reverse($nodesToImport);
+                for ($i = 0; $i < count($nodesToImport); $i++) {
+                    if($i==count($nodesToImport)-1){
+                        $deep=true;
+                    }else{
+                        $deep=false;
+                    }
+                    
+                    $importedNode = $this->original->importNode($nodesToImport[$i],$deep);
+                    $parent->appendChild($importedNode);
+                    $parent = $importedNode;
+                }
+               
             }
         }
-        
+        $this->original->normalizeDocument();
+        $breakpoint = true;
     }
 
     /**
