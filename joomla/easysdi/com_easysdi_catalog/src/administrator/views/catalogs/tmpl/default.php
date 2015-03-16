@@ -197,7 +197,7 @@ if (!empty($this->extra_sidebar)) {
                             <td class='center'>
                                 <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
 
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=searchcriterias&filter_catalog=' . (int) $item->id); ?>">
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalogsearchcriterias&filter_catalog=' . (int) $item->id); ?>">
                                         <div class="icon-edit"></div>
                                     <?php else : ?>
 

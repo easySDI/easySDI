@@ -117,7 +117,7 @@ class Easysdi_shopModelorder extends JModelAdmin
 
 
         // Join over the user field 'user'
-        $query->select('users2.name AS user')
+        $query->select('users2.name AS client')
         ->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id=a.user_id')
         ->join('LEFT', '#__users AS users2 ON users2.id=sdi_user.user_id');
 
@@ -147,6 +147,46 @@ class Easysdi_shopModelorder extends JModelAdmin
                 ->group('a.id');
 
         $query->where('a.id = '. (int)$pk);
+        
+        $query->group('a.guid');
+        $query->group('a.alias');
+        $query->group('a.created_by');
+        $query->group('a.created');
+        $query->group('a.modified_by');
+        $query->group('a.modified');
+        $query->group('a.ordering');
+        $query->group('a.state');
+        $query->group('a.checked_out');
+        $query->group('a.checked_out_time');
+        $query->group('a.name');
+        $query->group('a.ordertype_id');
+        $query->group('a.orderstate_id');
+        $query->group('a.user_id');
+        $query->group('a.thirdparty_id');
+        $query->group('a.buffer');
+        $query->group('a.surface');
+        $query->group('a.remark');
+        $query->group('a.sent');
+        $query->group('a.completed');
+        $query->group('a.access');
+        $query->group('a.asset_id');
+        $query->group('a.validate');
+        $query->group('a.validated_date');
+        $query->group('a.validated_reason');
+        $query->group('a.mandate_ref');
+        $query->group('a.mandate_contact');
+        $query->group('a.mandate_email');
+        $query->group('uc.name');
+        $query->group('orderstate.value');
+        $query->group('ordertype.value');
+        $query->group('users3.name');
+        $query->group('diffusion.name');
+        $query->group('organism.name');
+        $query->group('users2.name');
+        
+        
+        
+        
 
         $db->setQuery($query);
         $items= $db->loadObjectList();

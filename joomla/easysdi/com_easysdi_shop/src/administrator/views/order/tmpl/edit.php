@@ -64,7 +64,7 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
                             ?></dl>
 
                             <dt><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_USER'); ?>&nbsp;</dt>
-                            <dl><?php echo $item->user; ?></dl>
+                            <dl><?php echo $item->client; ?></dl>
 
 
                             <dt><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED'); ?>&nbsp;</dt>
@@ -92,14 +92,3 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
                         </dl>
                     </div>
                 </div>
-
-
-
-<?php
-
-    // DEBUG
-    echo "<div style='position:absolute; left:5px; top:1500px'>";
-    var_dump($this->item);
-    echo "</div>";
-
-?>

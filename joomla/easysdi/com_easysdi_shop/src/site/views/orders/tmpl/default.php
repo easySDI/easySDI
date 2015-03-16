@@ -91,22 +91,14 @@ JHtml::_('formbehavior.chosen', 'select');
                             <td class="ordercreated"><?php echo $item->created; ?></td>
                             <td class="orderstate">
                                 <?php if ($item->ordertype_id != 3): ?>
-                                    <?php
-                                    if ($item->orderstate_id == 1):
-                                        $classlabel = '';
-                                    elseif ($item->orderstate_id == 2):
-                                        $classlabel = '';
-                                    elseif ($item->orderstate_id == 3):
-                                        $classlabel = 'label-success';
-                                    elseif ($item->orderstate_id == 4):
-                                        $classlabel = 'label-warning';
-                                    elseif ($item->orderstate_id == 5):
-                                        $classlabel = 'label-info';
-                                    elseif ($item->orderstate_id == 6):
-                                        $classlabel = 'label-inverse';
-                                    endif;
-                                    ?>
-                                    <span class="label <?php echo $classlabel; ?> "><?php echo JText::_($item->orderstate); ?></span>
+                                    <span class="label <?php 
+                                    switch($item->orderstate_id){
+                                        case 3: echo 'label-success'; break;
+                                        case 4: echo 'label-warning'; break;
+                                        case 5: echo 'label-info'; break;
+                                        case 6: echo 'label-inverse'; break;
+                                    }
+                                    ?>"><?php echo JText::_($item->orderstate); ?></span>
         <?php endif; ?>
                             </td>
                             <td >

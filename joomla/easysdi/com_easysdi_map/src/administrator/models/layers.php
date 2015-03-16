@@ -36,7 +36,7 @@ class Easysdi_mapModellayers extends JModelList
 					'modified_by', 'a.modified_by',
 					'modified', 'a.modified',
 					'ordering', 'a.ordering',
-					'groupordering', 
+					'llg.ordering', 
 					'state', 'a.state',
 					'name', 'a.name',
 					'service_id', 'a.service_id',
@@ -144,7 +144,6 @@ class Easysdi_mapModellayers extends JModelList
 		);
 		$query->from('#__sdi_maplayer AS a');
 
-
 		// Join over the users for the checked out user.
 		$query->select('uc.name AS editor');
 		$query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
@@ -207,7 +206,7 @@ class Easysdi_mapModellayers extends JModelList
 
 		//If no filter on group was set, change the 'list.ordering' user state value to be sure the list will not be ordered by the 'groupordering' field
 		// (which is not existing without a filter on group)
-		if(empty ($group) && $this->state->get('list.ordering') == 'groupordering')
+		if(empty ($group) && $this->state->get('list.ordering') == 'llg.ordering')
 			$this->state->set('list.ordering','a.name');
 		
 		// Add the list ordering clause.

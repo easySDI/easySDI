@@ -14,13 +14,7 @@ js('document').ready(function() {
      * Catch click event on searchtype button group
      */
     js('.searchtype').click(function() {
-        var btn = js(this);
-        if (btn.hasClass('active')) {
-            return;
-        }
-        
-        showAdvanced();
-
+       toogleAdvanced();
     });
 
     /**
@@ -46,16 +40,8 @@ js('document').ready(function() {
 /**
  * Show or hide advanced fieldset
  */
-function showAdvanced() {
-    js('fieldset[name="advanced"]').toggle('fast', function() {
-        js('.searchtype').each(function() {
-            if (js(this).hasClass('active')) {
-                js(this).removeClass('active');
-            } else {
-                js(this).addClass('active');
-            }
-        });
-    });
+function toogleAdvanced() {
+    js('fieldset[name="advanced"]').toggle('fast');
 }
 
 /**

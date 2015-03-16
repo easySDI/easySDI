@@ -33,9 +33,9 @@
         -->
         
         <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
-        <property name="url" value="jdbc:sqlserver://WDEV-GVASDI-HVH\SQLEXPRESS;databaseName=ESDI" />
+        <property name="url" value="jdbc:sqlserver://localhost\SQLEXPRESS;databaseName=SDI" />
         <property name="username" value="sa" />
-        <property name="password" value="JJ4864k99b" />
+        <property name="password" value="pw" />
     </bean>
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">

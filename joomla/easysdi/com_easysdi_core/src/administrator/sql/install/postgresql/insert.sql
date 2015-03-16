@@ -1,35 +1,35 @@
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ', 'ara');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG', 'bul');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'català', 'ca-ES', 'ca', 'cat', 'ca', 'ES', 'cat');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'čeština', 'cs-CZ', 'cs', 'ces', 'cs', 'CZ', 'cze');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'dansk', 'da-DK', 'da', 'dan', 'da', 'DK', 'dan');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Deutsch', 'de-DE', 'de', 'deu', 'de', 'DE', 'ger');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'ελληνικά', 'el-GR', 'el', 'ell', 'el', 'GR', 'gre');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'English (UK)', 'en-GB', 'en', 'eng', 'en', 'GB', 'eng');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'English (US)', 'en-US', 'en-US', 'eng', 'en', 'US', 'eng');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'español', 'es-ES', 'es', 'spa', 'es', 'ES', 'spa');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'eesti', 'et-EE', 'et', 'est', 'et', 'EE', 'est');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'euskara', 'eu-ES', 'eu', 'eus', 'eu', 'ES', 'baq');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'suomi', 'fi-FI', 'fi', 'fin', 'fi', 'FI', 'fin');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Français', 'fr-FR', 'fr', 'fra', 'fr', 'FR', 'fre');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Gaeilge', 'ga-IE', 'ga', 'gle', 'ga', 'IE', 'gle');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'hrvatski jezik', 'hr-HR', 'hr', 'scr', 'hr', 'HR', 'hrv');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'magyar', 'hu-HU', 'hu', 'hun', 'hu', 'HU', 'hun');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'italiano', 'it-IT', 'it', 'ita', 'it', 'IT', 'ita');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'lietuvių kalba', 'lt-LT', 'lt', 'lit', 'lt', 'LT', 'lit');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'latviešu valoda', 'lv-LV', 'lv', 'lav', 'lv', 'LV', 'lav');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Malti', 'mt-MT', 'mt', 'mlt', 'mt', 'MT', 'mlt');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Nederlands', 'nl-NL', 'nl', 'nld', 'nl', 'NL', 'dut');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Norsk', 'no-NO', 'no', 'nor', 'no', 'NO', 'nor');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'język polski', 'pl-PL', 'pl', 'pol', 'pl', 'PL', 'pol');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'português', 'pt-PT', 'pt', 'por', 'pt', 'PT', 'por');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'română', 'ro-RO', 'ro', 'ron', 'ro', 'RO', 'rum');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'русский язык', 'ru-RU', 'ru', 'rus', 'ru', 'RU', 'rus');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'slovenčina', 'sk-SK', 'sk', 'slk', 'sk', 'SK', 'slo');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Svenska', 'sv-SE', 'sv', 'swe', 'sv', 'SE', 'swe');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Türkçe', 'tr-TR', 'tr', 'tur', 'tr', 'TR', 'tur');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'українська мова', 'uk-UA', 'uk', 'ukr', 'uk', 'UA', 'ukr');
-INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (0, 1, 'Chinese', 'zh-CN', 'zh-CN', 'zho', 'zh', 'CN', 'chi');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ', 'ara', 'Arabic');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG', 'bul', 'Bulgarian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'català', 'ca-ES', 'ca', 'cat', 'ca', 'ES', 'cat', 'Catalan');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'čeština', 'cs-CZ', 'cs', 'ces', 'cs', 'CZ', 'cze', 'Czech');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'dansk', 'da-DK', 'da', 'dan', 'da', 'DK', 'dan', 'Danish');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Deutsch', 'de-DE', 'de', 'deu', 'de', 'DE', 'ger', 'German');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'ελληνικά', 'el-GR', 'el', 'ell', 'el', 'GR', 'gre', 'Greek');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'English (UK)', 'en-GB', 'en', 'eng', 'en', 'GB', 'eng', 'English');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'English (US)', 'en-US', 'en-US', 'eng', 'en', 'US', 'eng', 'English');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'español', 'es-ES', 'es', 'spa', 'es', 'ES', 'spa', 'Spanish');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'eesti', 'et-EE', 'et', 'est', 'et', 'EE', 'est', 'Estonian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'euskara', 'eu-ES', 'eu', 'eus', 'eu', 'ES', 'baq', 'Spanish');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'suomi', 'fi-FI', 'fi', 'fin', 'fi', 'FI', 'fin', 'Finnish');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Français', 'fr-FR', 'fr', 'fra', 'fr', 'FR', 'fre', 'French');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Gaeilge', 'ga-IE', 'ga', 'gle', 'ga', 'IE', 'gle', 'Irish');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'hrvatski jezik', 'hr-HR', 'hr', 'scr', 'hr', 'HR', 'hrv', 'Croatian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'magyar', 'hu-HU', 'hu', 'hun', 'hu', 'HU', 'hun', 'Hungarian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'italiano', 'it-IT', 'it', 'ita', 'it', 'IT', 'ita', 'Italian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'lietuvių kalba', 'lt-LT', 'lt', 'lit', 'lt', 'LT', 'lit', 'Lithuanian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'latviešu valoda', 'lv-LV', 'lv', 'lav', 'lv', 'LV', 'lav', 'Latvian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Malti', 'mt-MT', 'mt', 'mlt', 'mt', 'MT', 'mlt', 'English');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Nederlands', 'nl-NL', 'nl', 'nld', 'nl', 'NL', 'dut', 'Dutch');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Norsk', 'no-NO', 'no', 'nor', 'no', 'NO', 'nor', 'Norwegian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'język polski', 'pl-PL', 'pl', 'pol', 'pl', 'PL', 'pol', 'Polish');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'português', 'pt-PT', 'pt', 'por', 'pt', 'PT', 'por', 'Portuguese');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'română', 'ro-RO', 'ro', 'ron', 'ro', 'RO', 'rum', 'Romanian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'русский язык', 'ru-RU', 'ru', 'rus', 'ru', 'RU', 'rus', 'Russian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'slovenčina', 'sk-SK', 'sk', 'slk', 'sk', 'SK', 'slo', 'Slovak');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Svenska', 'sv-SE', 'sv', 'swe', 'sv', 'SE', 'swe', 'Swedish');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Türkçe', 'tr-TR', 'tr', 'tur', 'tr', 'TR', 'tur', 'Turkish');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'українська мова', 'uk-UA', 'uk', 'ukr', 'uk', 'UA', 'ukr', 'Ukranian');
+INSERT INTO #__sdi_language (ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B", datatable) VALUES (0, 1, 'Chinese', 'zh-CN', 'zh-CN', 'zho', 'zh', 'CN', 'chi', 'Chinese');
 
 INSERT INTO #__sdi_namespace (guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, prefix, uri, system, access, asset_id) VALUES ('6df1fcd1-0a57-8b74-cd21-354dc5ef0b3d', 'gmd', 356, '2013-06-21 12:12:47', NULL, NULL, 1, 1, 0, '2013-06-21 12:12:47', 'gmd', 'gmd', 'http://www.isotc211.org/2005/gmd', 1, 1, 0);
 INSERT INTO #__sdi_namespace (guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, prefix, uri, system, access, asset_id) VALUES ('016318b2-29ec-3a74-c161-14aa1b1d3b97', 'gco', 356, '2013-06-21 12:12:47', NULL, NULL, 2, 1, 0, '2013-06-21 12:12:47', 'gco', 'gco', 'http://www.isotc211.org/2005/gco', 1, 1, 0);
@@ -56,7 +56,7 @@ INSERT INTO #__sdi_searchcriteria (guid, alias, created_by, created, modified_by
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (1, 1, 'public');
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (3, 1, 'organism');
 INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (4, 1, 'user');
-INSERT INTO #__sdi_sys_accessscope (ordering, state, `value`) VALUES (2, 1, 'category');
+INSERT INTO #__sdi_sys_accessscope (ordering, state, value) VALUES (2, 1, 'category');
 
 INSERT INTO #__sdi_sys_addresstype (ordering, state, value) VALUES (1, 1, 'contact');
 INSERT INTO #__sdi_sys_addresstype (ordering, state, value) VALUES (2, 1, 'billing');
@@ -361,6 +361,7 @@ INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('searchcat
 INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('layerdetailsheet', 18, 1, 'Layer detail sheet');
 INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('layerdownload', 19, 1, 'Layer download');
 INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('layerorder', 20, 1, 'Layer order');
+INSERT INTO #__sdi_sys_maptool (alias, ordering, state, name) VALUES ('indoornavigation', 21, 1, 'Indoor navigation');
 
 INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (1, 1, 'inprogress');
 INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (2, 1, 'validated');
@@ -428,6 +429,9 @@ INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (4, 1, 'await'
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (5, 1, 'progress');
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (6, 1, 'sent');
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (7, 1, 'saved');
+INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (8, 1, 'validation');
+INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (9, 1, 'rejected by thirdparty');
+INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (10, 1, 'rejected by supplier');
 
 INSERT INTO #__sdi_sys_ordertype (ordering, state, value) VALUES (1, 1, 'order');
 INSERT INTO #__sdi_sys_ordertype (ordering, state, value) VALUES (2, 1, 'estimate');
@@ -438,7 +442,8 @@ INSERT INTO #__sdi_sys_perimetertype (ordering, state, value) VALUES (2, 1, 'dow
 INSERT INTO #__sdi_sys_perimetertype (ordering, state, value) VALUES (3, 1, 'both');
 
 INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (1, 1, 'free');
-INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (2, 1, 'fee');
+INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (2, 1, 'fee without a pricing profile');
+INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (3, 1, 'fee with a pricing profile');
 
 INSERT INTO #__sdi_sys_productmining (ordering, state, value) VALUES (1, 1, 'automatic');
 INSERT INTO #__sdi_sys_productmining (ordering, state, value) VALUES (2, 1, 'manual');
@@ -446,10 +451,16 @@ INSERT INTO #__sdi_sys_productmining (ordering, state, value) VALUES (2, 1, 'man
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (1, 1, 'available');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (2, 1, 'await');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (3, 1, 'sent');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (4, 1, 'validation');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (5, 1, 'rejected by thirdparty');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (6, 1, 'rejected by supplier');
 
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (1, 1, 'upload');
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (2, 1, 'url');
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (3, 1, 'zoning');
+
+INSERT INTO #__sdi_sys_extractstorage (ordering, state, value) VALUES (1, 1, 'local');
+INSERT INTO #__sdi_sys_extractstorage (ordering, state, value) VALUES (2, 1, 'remote');
 
 INSERT INTO #__sdi_sys_propertytype (ordering, state, value) VALUES (1, 1, 'list');
 INSERT INTO #__sdi_sys_propertytype (ordering, state, value) VALUES (2, 1, 'multiplelist');
@@ -517,6 +528,8 @@ INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (4, 1, 'metadataedit
 INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (5, 1, 'diffusionmanager');
 INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (6, 1, 'previewmanager');
 INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (7, 1, 'extractionresponsible');
+INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (9, 1, 'pricingmanager');
+INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (10, 1, 'validationmanager');
 
 INSERT INTO #__sdi_sys_searchtab (ordering, state, value) VALUES (1, 1, 'simple');
 INSERT INTO #__sdi_sys_searchtab (ordering, state, value) VALUES (2, 1, 'advanced');
@@ -608,7 +621,7 @@ INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isoco
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (4, 1, 'number', '^[\-+]?[0-9.]+$', 'Decimal', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (5, 1, 'date', '^([0-9]{4}-[0-9]{2}-[0-9]{2})$', 'Date', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (6, 1, 'list', '', NULL, NULL, 1);
-INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (7, 1, 'link', '((http://|https://|ftp://)(www.)?(([a-zA-Z0-9-]){2,}.){1,4}([a-zA-Z]){2,6}(/([a-zA-Z-_/.0-9#:?=&;,]*)?)?)', 'URL', 1, 1);
+INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (7, 1, 'link', '((http:\/\/|https:\/\/|ftp:\/\/)(www.)?(([a-zA-Z0-9-]){2,}.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/.0-9#:?=&;,]*)?)?)|^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$', 'URL', 1, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (8, 1, 'datetime', '^([0-9]{4}-[0-9]{2}-[0-9]{2})$', 'DateTime', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (9, 1, 'textchoice', '', 'CharacterString', 2, 1);
 INSERT INTO #__sdi_sys_stereotype (ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (10, 1, 'localechoice', '', NULL, NULL, 1);
@@ -737,3 +750,15 @@ INSERT INTO statuses ("ID_STATUS", "NAME") VALUES (4, 'NOT_TESTED');
 
 INSERT INTO users ("LOGIN", "PASSWORD", "ID_ROLE", "EXPIRATION", "ENABLED", "LOCKED") VALUES ('Admin', 'adm', 1, NULL, 1, 0);
 INSERT INTO users ("LOGIN", "PASSWORD", "ID_ROLE", "EXPIRATION", "ENABLED", "LOCKED") VALUES ('user', 'usr', 2, NULL, 1, 0);
+
+INSERT INTO #__sdi_sys_server (ordering, state, value) VALUES (1, 1, 'geoserver');
+INSERT INTO #__sdi_sys_server (ordering, state, value) VALUES (2, 1, 'arcgisserver');
+
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('1', '1', '2');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('2', '1', '3');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('3', '1', '4');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('4', '1', '5');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('5', '1', '11');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('6', '2', '2');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('7', '2', '4');
+INSERT INTO #__sdi_sys_server_serviceconnector (id, server_id, service_connector) VALUES ('8', '2', '5');

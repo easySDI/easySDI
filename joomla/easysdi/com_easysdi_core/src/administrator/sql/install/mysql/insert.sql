@@ -15,6 +15,8 @@ INSERT INTO `#__sdi_sys_role` VALUES ('4','4','1','metadataeditor' );
 INSERT INTO `#__sdi_sys_role` VALUES ('5','5','1','diffusionmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','previewmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('7','7','1','extractionresponsible' );
+INSERT INTO `#__sdi_sys_role` SET id=9, ordering=9, `state`=1, value='pricingmanager';
+INSERT INTO `#__sdi_sys_role` SET id=10, ordering=10, `state`=1, `value`='validationmanager';
 
 INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
 VALUES 
@@ -496,6 +498,9 @@ INSERT INTO `#__sdi_sys_orderstate` VALUES ('4', '4', '1', 'await');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('5', '5', '1', 'progress');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('6', '6', '1', 'sent');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '7', '1', 'saved');
+INSERT INTO `#__sdi_sys_orderstate` SET id=8, ordering=8, `state`=1, `value`='validation';
+INSERT INTO `#__sdi_sys_orderstate` SET id=9, ordering=9, `state`=1, `value`='rejected by thirdparty';
+INSERT INTO `#__sdi_sys_orderstate` SET id=10, ordering=10, `state`=1, `value`='rejected by supplier';
 
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('1', '1', '1', 'order');
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('2', '2', '1', 'estimate');
@@ -504,10 +509,14 @@ INSERT INTO `#__sdi_sys_ordertype` VALUES ('3', '3', '1', 'draft');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('1', '1', '1', 'available');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('2', '2', '1', 'await');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('3', '3', '1', 'sent');
+INSERT INTO `#__sdi_sys_productstate` SET id=4, ordering=4, `state`=1, `value`='validation';
+INSERT INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejected by thirdparty';
+INSERT INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejected by supplier';
 
 
 INSERT INTO `#__sdi_sys_pricing` VALUES ('1', '1', '1', 'free');
-INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'fee');
+INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'fee without a pricing profile');
+INSERT INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='fee with a pricing profile';
 
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('1', '1', '1', 'upload');
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('2', '2', '1', 'url');
@@ -523,38 +532,41 @@ VALUES
 (3,1,'both')
 ;
 
-INSERT INTO `#__sdi_language` VALUES ('1', '0', '1', 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ', 'ara');
-INSERT INTO `#__sdi_language` VALUES ('3', '0', '1', 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG','bul');
-INSERT INTO `#__sdi_language` VALUES ('4', '0', '1', 'català', 'ca-ES', 'ca', 'cat', 'ca', 'ES','cat');
-INSERT INTO `#__sdi_language` VALUES ('5', '0', '1', 'čeština', 'cs-CZ', 'cs', 'ces', 'cs', 'CZ','cze');
-INSERT INTO `#__sdi_language` VALUES ('6', '0', '1', 'dansk', 'da-DK', 'da', 'dan', 'da', 'DK','dan');
-INSERT INTO `#__sdi_language` VALUES ('7', '0', '1', 'Deutsch', 'de-DE', 'de', 'deu', 'de', 'DE','ger');
-INSERT INTO `#__sdi_language` VALUES ('8', '0', '1', 'ελληνικά', 'el-GR', 'el', 'ell', 'el', 'GR','gre');
-INSERT INTO `#__sdi_language` VALUES ('9', '0', '1', 'English (UK)', 'en-GB', 'en', 'eng', 'en', 'GB','eng');
-INSERT INTO `#__sdi_language` VALUES ('10', '0', '1', 'English (US)', 'en-US', 'en-US', 'eng', 'en', 'US','eng');
-INSERT INTO `#__sdi_language` VALUES ('11', '0', '1', 'español', 'es-ES', 'es', 'spa', 'es', 'ES','spa');
-INSERT INTO `#__sdi_language` VALUES ('12', '0', '1', 'eesti', 'et-EE', 'et', 'est', 'et', 'EE','est');
-INSERT INTO `#__sdi_language` VALUES ('13', '0', '1', 'euskara', 'eu-ES', 'eu', 'eus', 'eu', 'ES','baq');
-INSERT INTO `#__sdi_language` VALUES ('14', '0', '1', 'suomi', 'fi-FI', 'fi', 'fin', 'fi', 'FI','fin');
-INSERT INTO `#__sdi_language` VALUES ('15', '0', '1', 'Français', 'fr-FR', 'fr', 'fra', 'fr', 'FR','fre');
-INSERT INTO `#__sdi_language` VALUES ('16', '0', '1', 'Gaeilge', 'ga-IE', 'ga', 'gle', 'ga', 'IE','gle');
-INSERT INTO `#__sdi_language` VALUES ('17', '0', '1', 'hrvatski jezik', 'hr-HR', 'hr', 'scr', 'hr', 'HR','hrv');
-INSERT INTO `#__sdi_language` VALUES ('18', '0', '1', 'magyar', 'hu-HU', 'hu', 'hun', 'hu', 'HU','hun');
-INSERT INTO `#__sdi_language` VALUES ('19', '0', '1', 'italiano', 'it-IT', 'it', 'ita', 'it', 'IT','ita');
-INSERT INTO `#__sdi_language` VALUES ('20', '0', '1', 'lietuvių kalba', 'lt-LT', 'lt', 'lit', 'lt', 'LT','lit');
-INSERT INTO `#__sdi_language` VALUES ('21', '0', '1', 'latviešu valoda', 'lv-LV', 'lv', 'lav', 'lv', 'LV','lav');
-INSERT INTO `#__sdi_language` VALUES ('22', '0', '1', 'Malti', 'mt-MT', 'mt', 'mlt', 'mt', 'MT','mlt');
-INSERT INTO `#__sdi_language` VALUES ('23', '0', '1', 'Nederlands', 'nl-NL', 'nl', 'nld', 'nl', 'NL','dut');
-INSERT INTO `#__sdi_language` VALUES ('24', '0', '1', 'Norsk', 'no-NO', 'no', 'nor', 'no', 'NO','nor');
-INSERT INTO `#__sdi_language` VALUES ('25', '0', '1', 'język polski', 'pl-PL', 'pl', 'pol', 'pl', 'PL','pol');
-INSERT INTO `#__sdi_language` VALUES ('26', '0', '1', 'português', 'pt-PT', 'pt', 'por', 'pt', 'PT','por');
-INSERT INTO `#__sdi_language` VALUES ('27', '0', '1', 'română', 'ro-RO', 'ro', 'ron', 'ro', 'RO','rum');
-INSERT INTO `#__sdi_language` VALUES ('28', '0', '1', 'русский язык', 'ru-RU', 'ru', 'rus', 'ru', 'RU','rus');
-INSERT INTO `#__sdi_language` VALUES ('29', '0', '1', 'slovenčina', 'sk-SK', 'sk', 'slk', 'sk', 'SK','slo');
-INSERT INTO `#__sdi_language` VALUES ('30', '0', '1', 'Svenska', 'sv-SE', 'sv', 'swe', 'sv', 'SE','swe');
-INSERT INTO `#__sdi_language` VALUES ('31', '0', '1', 'Türkçe', 'tr-TR', 'tr', 'tur', 'tr', 'TR','tur');
-INSERT INTO `#__sdi_language` VALUES ('32', '0', '1', 'українська мова', 'uk-UA', 'uk', 'ukr', 'uk', 'UA','ukr');
-INSERT INTO `#__sdi_language` VALUES ('33', '0', '1', 'Chinese', 'zh-CN', 'zh-CN', 'zho', 'zh', 'CN','chi');
+INSERT INTO `#__sdi_sys_extractstorage` SET id=1, ordering=1, `state`=1, `value`='local';
+INSERT INTO `#__sdi_sys_extractstorage` SET id=2, ordering=2, `state`=1, `value`='remote';
+
+INSERT INTO `#__sdi_language` VALUES ('1', '0', '1', 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ', 'ara', 'Arabic');
+INSERT INTO `#__sdi_language` VALUES ('3', '0', '1', 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG','bul', 'Bulgarian');
+INSERT INTO `#__sdi_language` VALUES ('4', '0', '1', 'català', 'ca-ES', 'ca', 'cat', 'ca', 'ES','cat', 'Catalan');
+INSERT INTO `#__sdi_language` VALUES ('5', '0', '1', 'čeština', 'cs-CZ', 'cs', 'ces', 'cs', 'CZ','cze', 'Czech');
+INSERT INTO `#__sdi_language` VALUES ('6', '0', '1', 'dansk', 'da-DK', 'da', 'dan', 'da', 'DK','dan', 'Danish');
+INSERT INTO `#__sdi_language` VALUES ('7', '0', '1', 'Deutsch', 'de-DE', 'de', 'deu', 'de', 'DE','ger', 'German');
+INSERT INTO `#__sdi_language` VALUES ('8', '0', '1', 'ελληνικά', 'el-GR', 'el', 'ell', 'el', 'GR','gre', 'Greek');
+INSERT INTO `#__sdi_language` VALUES ('9', '0', '1', 'English (UK)', 'en-GB', 'en', 'eng', 'en', 'GB','eng', 'English');
+INSERT INTO `#__sdi_language` VALUES ('10', '0', '1', 'English (US)', 'en-US', 'en-US', 'eng', 'en', 'US','eng', 'English');
+INSERT INTO `#__sdi_language` VALUES ('11', '0', '1', 'español', 'es-ES', 'es', 'spa', 'es', 'ES','spa', 'Spanish');
+INSERT INTO `#__sdi_language` VALUES ('12', '0', '1', 'eesti', 'et-EE', 'et', 'est', 'et', 'EE','est', 'Estonian');
+INSERT INTO `#__sdi_language` VALUES ('13', '0', '1', 'euskara', 'eu-ES', 'eu', 'eus', 'eu', 'ES','baq', 'Spanish');
+INSERT INTO `#__sdi_language` VALUES ('14', '0', '1', 'suomi', 'fi-FI', 'fi', 'fin', 'fi', 'FI','fin', 'Finnish');
+INSERT INTO `#__sdi_language` VALUES ('15', '0', '1', 'Français', 'fr-FR', 'fr', 'fra', 'fr', 'FR','fre', 'French');
+INSERT INTO `#__sdi_language` VALUES ('16', '0', '1', 'Gaeilge', 'ga-IE', 'ga', 'gle', 'ga', 'IE','gle', 'Irish');
+INSERT INTO `#__sdi_language` VALUES ('17', '0', '1', 'hrvatski jezik', 'hr-HR', 'hr', 'scr', 'hr', 'HR','hrv', 'Croatian');
+INSERT INTO `#__sdi_language` VALUES ('18', '0', '1', 'magyar', 'hu-HU', 'hu', 'hun', 'hu', 'HU','hun', 'Hungarian');
+INSERT INTO `#__sdi_language` VALUES ('19', '0', '1', 'italiano', 'it-IT', 'it', 'ita', 'it', 'IT','ita', 'Italian');
+INSERT INTO `#__sdi_language` VALUES ('20', '0', '1', 'lietuvių kalba', 'lt-LT', 'lt', 'lit', 'lt', 'LT','lit', 'Lithuanian');
+INSERT INTO `#__sdi_language` VALUES ('21', '0', '1', 'latviešu valoda', 'lv-LV', 'lv', 'lav', 'lv', 'LV','lav', 'Latvian');
+INSERT INTO `#__sdi_language` VALUES ('22', '0', '1', 'Malti', 'mt-MT', 'mt', 'mlt', 'mt', 'MT','mlt', 'English');
+INSERT INTO `#__sdi_language` VALUES ('23', '0', '1', 'Nederlands', 'nl-NL', 'nl', 'nld', 'nl', 'NL','dut', 'Dutch');
+INSERT INTO `#__sdi_language` VALUES ('24', '0', '1', 'Norsk', 'no-NO', 'no', 'nor', 'no', 'NO','nor', 'Norwegian');
+INSERT INTO `#__sdi_language` VALUES ('25', '0', '1', 'język polski', 'pl-PL', 'pl', 'pol', 'pl', 'PL','pol', 'Polish');
+INSERT INTO `#__sdi_language` VALUES ('26', '0', '1', 'português', 'pt-PT', 'pt', 'por', 'pt', 'PT','por', 'Portuguese');
+INSERT INTO `#__sdi_language` VALUES ('27', '0', '1', 'română', 'ro-RO', 'ro', 'ron', 'ro', 'RO','rum', 'Romanian');
+INSERT INTO `#__sdi_language` VALUES ('28', '0', '1', 'русский язык', 'ru-RU', 'ru', 'rus', 'ru', 'RU','rus', 'Russian');
+INSERT INTO `#__sdi_language` VALUES ('29', '0', '1', 'slovenčina', 'sk-SK', 'sk', 'slk', 'sk', 'SK','slo', 'Slovak');
+INSERT INTO `#__sdi_language` VALUES ('30', '0', '1', 'Svenska', 'sv-SE', 'sv', 'swe', 'sv', 'SE','swe', 'Swedish');
+INSERT INTO `#__sdi_language` VALUES ('31', '0', '1', 'Türkçe', 'tr-TR', 'tr', 'tur', 'tr', 'TR','tur', 'Turkish');
+INSERT INTO `#__sdi_language` VALUES ('32', '0', '1', 'українська мова', 'uk-UA', 'uk', 'ukr', 'uk', 'UA','ukr', 'Ukranian');
+INSERT INTO `#__sdi_language` VALUES ('33', '0', '1', 'Chinese', 'zh-CN', 'zh-CN', 'zho', 'zh', 'CN','chi', 'Chinese');
 
 -- com_easysdi_contact
 
@@ -613,7 +625,7 @@ INSERT INTO `#__sdi_sys_stereotype` VALUES ('3', '3', '1', 'locale', '', null, n
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('4', '4', '1', 'number', '^[\-+]?[0-9.]+$', 'Decimal', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('5', '5', '1', 'date', '^([0-9]{4}-[0-9]{2}-[0-9]{2})$', 'Date', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('6', '6', '1', 'list', '', null, null,'1');
-INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '((http:\/\/|https:\/\/|ftp:\/\/)(www.)?(([a-zA-Z0-9-]){2,}\.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)', 'URL', '1','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '((http:\/\/|https:\/\/|ftp:\/\/)(www.)?(([a-zA-Z0-9-]){2,}.){1,4}([a-zA-Z]){2,6}(\/([a-zA-Z-_\/.0-9#:?=&;,]*)?)?)|^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$', 'URL', '1','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('8', '8', '1', 'datetime', '^([0-9]{4}-[0-9]{2}-[0-9]{2})$', 'DateTime', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('9', '9', '1', 'textchoice', '', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('10', '10', '1', 'localechoice', '', null, null,'1');
@@ -701,7 +713,8 @@ VALUES
 ('searchcatalog',17,1,'Catalog search'),
 ('layerdetailsheet',18,1,'Layer detail sheet'),
 ('layerdownload',19,1,'Layer download'),
-('layerorder',20,1,'Layer order')
+('layerorder',20,1,'Layer order'),
+('indoornavigation',21,1,'Indoor navigation')
 ;
 
 -- com_easysdi_shop
@@ -728,3 +741,14 @@ VALUES
 ('2', '9adc6d4e-262a-d6e4-e152-6de437ba80ed', 'myperimeter', '356', '2013-07-23 09:16:11','2', '1', 'My perimeter', '',1,1)
 ;
 
+INSERT INTO `#__sdi_sys_server` VALUES ('1','1','1','geoserver' );
+INSERT INTO `#__sdi_sys_server` VALUES ('2','1','1','arcgisserver' );
+
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('1', '1', '2');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('2', '1', '3');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('3', '1', '4');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('4', '1', '5');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('5', '1', '11');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('6', '2', '2');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('7', '2', '4');
+INSERT INTO `#__sdi_sys_server_serviceconnector` VALUES ('8', '2', '5');

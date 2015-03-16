@@ -18,7 +18,7 @@ jimport('joomla.application.component.controllerform');
 class Easysdi_catalogControllerSearchcriteria extends JControllerForm {
 
     function __construct() {
-        $this->view_list = 'searchcriterias';
+        $this->view_list = 'catalogsearchcriterias';
         parent::__construct();
     }
 

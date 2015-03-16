@@ -80,6 +80,14 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="controls"><?php echo $this->form->getInput('oninitrunsearch'); ?></div>
                     </div>
                     <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('scrolltoresults'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('scrolltoresults'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('contextualsearchresultpaginationnumber'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('contextualsearchresultpaginationnumber'); ?></div>
+                    </div>
+                    <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('cswfilter'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('cswfilter'); ?></div>
                     </div>

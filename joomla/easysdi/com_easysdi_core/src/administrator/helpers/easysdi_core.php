@@ -125,7 +125,7 @@ class Easysdi_coreHelper {
 
         if (count($childs) > 0) {
             $version->children = $childs;
-            $all_versions[$version->id]->children = $childs;
+            //$all_versions[$version->id]->children = $childs;
 
             foreach ($childs as $key => $child) {
                 $this->getChildrenVersion($child, $viralVersioning, $unpublished);
@@ -134,6 +134,20 @@ class Easysdi_coreHelper {
         else $version->children = array();
 
         return $all_versions;
+    }
+    
+    public function getOrganisms(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('o.id, o.name')
+                ->from('#__sdi_organism o')
+                ->order('o.name');
+        $db->setQuery($query);
+        $organisms = $db->loadObjectList();
+        
+        array_unshift($organisms, (object)array('id' => '', 'name' => ''));
+        
+        return $organisms;
     }
 
 }
