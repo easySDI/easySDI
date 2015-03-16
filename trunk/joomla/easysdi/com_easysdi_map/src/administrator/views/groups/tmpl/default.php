@@ -25,7 +25,7 @@ $listDirn = $this->state->get('list.direction');
 $archived = $this->state->get('filter.published') == 2 ? true : false;
 $trashed = $this->state->get('filter.published') == -2 ? true : false;
 $canOrder = $user->authorise('core.edit.state', 'com_easysdi_map');
-$saveOrder = $listOrder == 'mapordering';
+$saveOrder = $listOrder == 'mlg.ordering';
 if ($saveOrder) {
     $saveOrderingUrl = 'index.php?option=com_easysdi_map&task=groups.saveOrderAjax&tmpl=component';
     JHtml::_('sortablelist.sortable', 'groupList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
@@ -98,7 +98,7 @@ if (!empty($this->extra_sidebar)) {
                     <tr>
                         <?php if (isset($this->items[0]->mapordering)): ?>
                             <th width="1%" class="nowrap center hidden-phone">
-                                <?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'mapordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+                                <?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'mlg.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
                             </th>
                         <?php else : ?>
                             <th width="1%" class="nowrap center hidden-phone">

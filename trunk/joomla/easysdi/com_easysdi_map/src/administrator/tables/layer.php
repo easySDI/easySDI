@@ -147,14 +147,32 @@ class Easysdi_mapTablelayer extends sdiTable {
 									v.id as virtualserviceid');
 					$query->from($this->_db->quoteName($this->_tbl).' AS l');
 					$query->join('LEFT', '#__sdi_virtualservice AS v ON l.service_id=v.id');
-					$query->join('LEFT', '#__sdi_sys_serviceconnector AS cv ON v.serviceconnector_id=cv.id');
+                                        $query->join('LEFT', '#__sdi_sys_serviceconnector AS cv ON v.serviceconnector_id=cv.id');
 					$query->where('l.id = ' . (int) $row->id);
 					$this->_db->setQuery($query);
 					$service = $this->_db->loadObject();
 					
-					$row->serviceurl 			= $service->virtualserviceurl;
-					$row->serviceconnector 		= $service->virtualconnector;
-					$row->servicealias 			= $service->virtualservicealias;
+					$row->serviceurl 	= $service->virtualserviceurl;
+					$row->serviceconnector 	= $service->virtualconnector;
+					$row->servicealias 	= $service->virtualservicealias;
+                                        
+                                        //server type
+                                        $query = $this->_db->getQuery(true);
+                                        $query->select('p.server_id');
+					$query->from($this->_db->quoteName($this->_tbl).' AS l');
+					$query->join('LEFT', '#__sdi_virtualservice AS v ON l.service_id=v.id');
+                                        $query->join('LEFT', '#__sdi_virtual_physical AS vp ON vp.virtualservice_id=v.id');
+                                        $query->join('LEFT', '#__sdi_physicalservice AS p ON vp.physicalservice_id=p.id');
+                                        $query->group('p.server_id');					
+					$query->where('l.id = ' . (int) $row->id);
+					$this->_db->setQuery($query);
+					$services = $this->_db->loadColumn();
+                                        if(count($services) > 1){
+                                            //virtual service aggregates more than one kind of physical services
+                                            $row->servertype        = 3;
+                                        }else{
+                                            $row->servertype = $services[0];
+                                        }
 				}
 				else
 				{
@@ -162,7 +180,8 @@ class Easysdi_mapTablelayer extends sdiTable {
 					$query->select('p.resourceurl as physicalserviceurl,
 									cp.value as physicalconnector,
 									p.alias as physicalservicealias,
-									p.id as physicalserviceid');
+									p.id as physicalserviceid,
+                                                                        p.server_id as servertype');
 					$query->from($this->_db->quoteName($this->_tbl).' AS l');
 					$query->join('LEFT', '#__sdi_physicalservice AS p ON l.service_id=p.id');
 					$query->join('LEFT', '#__sdi_sys_serviceconnector AS cp ON p.serviceconnector_id=cp.id');
@@ -170,9 +189,10 @@ class Easysdi_mapTablelayer extends sdiTable {
 					$this->_db->setQuery($query);
 					$service = $this->_db->loadObject();
 					
-					$row->serviceurl 			= $service->physicalserviceurl;
-					$row->serviceconnector 		= $service->physicalconnector;
-					$row->servicealias 			= $service->physicalservicealias;
+					$row->serviceurl 	= $service->physicalserviceurl;
+					$row->serviceconnector 	= $service->physicalconnector;
+					$row->servicealias 	= $service->physicalservicealias;
+                                        $row->servertype        = $service->servertype;
 				}
 				
 				//Get the max supported version of the service

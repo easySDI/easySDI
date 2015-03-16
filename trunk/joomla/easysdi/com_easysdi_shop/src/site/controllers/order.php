@@ -14,6 +14,7 @@ require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
 require_once JPATH_COMPONENT . '/models/order.php';
+require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
 /**
  * Order controller class.
@@ -37,6 +38,86 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
 
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit', false));
+    }
+    
+    /**
+     * validate - thirdparty validation of an order
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public function validate(){
+        $app = JFactory::getApplication();
+        $validateId = $app->input->getInt('id', 0, 'int');
+        
+        if($validateId == 0){
+            // Set message
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_NO_ID'));
+        }
+        else{
+            $model = $this->getModel('Order', 'Easysdi_shopModel');
+            $model->checkout($validateId);
+
+            $model->thirdpartyValidation($validateId, $app->input->get('reason', null, 'html'));
+
+            $model->checkin($validateId);
+
+            // Clear the profile id from the session.
+            $app->setUserState('com_easysdi_shop.edit.order.id', null);
+            
+            // Notify notifiedusers and extractionresponsible for each orderdiffusion of the current order
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('diffusion_id as id')
+                    ->from('#__sdi_order_diffusion')
+                    ->where('order_id='.(int)$validateId);
+            $db->setQuery($query);
+            $diffusions = $db->loadObjectList();
+            foreach($diffusions as $diffusion){
+                Easysdi_shopHelper::notifyNotifiedUsers($diffusion->id);
+                Easysdi_shopHelper::notifyExtractionResponsible($diffusion->id);
+            }
+
+            // Set message
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
+        }
+        
+        // Redirect to the list screen.
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+    }
+    
+    /**
+     * reject - thirdparty rejection of an order
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public function reject(){
+        $app = JFactory::getApplication();
+        $validateId = $app->input->getInt('id', 0, 'int');
+        $reason = $app->input->get('reason', null, 'html');
+        
+        if($validateId == 0 || $reason == ''){
+            // Set message
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTION_NO_ID_OR_REASON'));
+        }
+        else{
+            $model = $this->getModel('Order', 'Easysdi_shopModel');
+            $model->checkout($validateId);
+
+            $model->thirdpartyRejection($validateId, $reason);
+
+            $model->checkin($validateId);
+
+            // Clear the profile id from the session.
+            $app->setUserState('com_easysdi_shop.edit.order.id', null);
+
+            // Set message
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTED_SUCCESSFULLY'));
+        }
+        
+        // Redirect to the list screen.
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
     }
 
     /**

@@ -61,6 +61,19 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+        
+        <field name="scrolltoresults" type="radio" class="btn-group" default="1"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_SCROLLTORESULTS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_CATALOG_SCROLLTORESULTS" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>     
+
+        <field name="contextualsearchresultpaginationnumber" type="text" size="40" class="inputbox" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_CONTEXTUAL_SEARCHRESULT_PAGINATIONNUMBER"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_CATALOG_CONTEXTUAL_SEARCHRESULT_PAGINATIONNUMBER" 
+               filter="safehtml" />   
 
         <field name="cswfilter" type="textarea" rows="5" cols="10"
                class="inputbox"

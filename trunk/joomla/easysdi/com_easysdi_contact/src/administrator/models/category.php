@@ -124,18 +124,42 @@ class Easysdi_contactModelcategory extends JModelAdmin {
      * @since   11.1
      */
     public function save($data) {
+        if($data['id']>0){ // it's an update
+            $table = $this->getTable();
+            $table->load($data['id']);
 
-        if (parent::save($data)) {
-            //Instantiate an address JTable
-            $addresstable = & JTable::getInstance('address', 'Easysdi_contactTable');
+            foreach($data as $key => $value){
+                if(isset($table->$key) || $key == 'overall_fee'){
+                    $table->$key = $value;
+                }
+            }
 
-            //Call the overloaded save function to store the input data
-            //$data['id'] 			= $this->getItem()->get('id');
-            $data['category_id'] = $this->getItem()->get('id');
+            if($table->overall_fee === ''){
+                $table->overall_fee = null;
+            }
 
-            return true;
+            $table->store(true);
+            $key = $table->getKeyName();
+            $this->setState($this->getName() . '.id', $table->$key);
         }
-        return false;
+        else{ // it's an insert
+            if($data['overall_fee'] === ''){
+                unset($data['overall_fee']);
+            }
+            
+            if(!parent::save($data)){
+                return false;
+            }
+        }
+        
+        //Instantiate an address JTable
+        $addresstable = & JTable::getInstance('address', 'Easysdi_contactTable');
+
+        //Call the overloaded save function to store the input data
+        //$data['id'] 			= $this->getItem()->get('id');
+        $data['category_id'] = $this->getItem()->get('id');
+
+        return true;
     }
 
 }

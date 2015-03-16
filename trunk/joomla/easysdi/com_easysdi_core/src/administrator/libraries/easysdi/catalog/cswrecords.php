@@ -33,7 +33,7 @@ class cswrecords {
         $lang = JFactory::getLanguage()->getTag();
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $catalogurl = $params->get('catalogurl');
-        $limit = $params->get('searchresultpaginationnumber');
+        $srpn = $params->get('searchresultpaginationnumber');
         $startposition = JFactory::getApplication()->input->getInt('start', 1);
 
         //Or getvar startposition of JPagination
@@ -47,13 +47,16 @@ class cswrecords {
         $db->setQuery($q);
         $resourcetypes = $db->loadColumn();
 
-        //Csw filter
+        //Csw filter + Contextual search result pagination number
         $q = $db->getQuery(true)
-                ->select('cswfilter')
+                ->select('cswfilter, contextualsearchresultpaginationnumber')
                 ->from('#__sdi_catalog')
                 ->where('id = ' . (int) $catalog_id);
         $db->setQuery($q);
-        $cswfilter = $db->loadResult();
+        $result = $db->loadAssoc();
+        
+        $cswfilter = $result['cswfilter'];
+        $csrpn = $result['contextualsearchresultpaginationnumber'];
 
         //Csw sorting field
         $q = $db->getQuery(true)
@@ -64,6 +67,11 @@ class cswrecords {
                 ->where('l.code = "' . $lang . '"');
         $db->setQuery($q);
         $ogcsearchsorting = $db->loadResult();
+        
+        
+        // choose limit between global and contextual configuration
+        $limit = empty($csrpn) || $csrpn == 0 ? $srpn : $csrpn;
+        
 
         //Get posted criterias
         //...

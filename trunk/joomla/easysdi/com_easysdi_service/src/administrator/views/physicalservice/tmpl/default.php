@@ -59,7 +59,15 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
                                 <div class="row controls form-inline"><?php echo $this->form->getInput('negotiation'); ?><?php echo $field->input; ?></div>
                             </div>
                             <?php
-                        } else {
+                        } else if($field->fieldname == 'server_id' ){
+                            if($this->item->serviceconnector == "WMS"){
+                            ?>
+                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                            </div>
+                            <?php }
+                        }else {
                             ?>
                             <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                 <div class="control-label"><?php echo $field->label; ?></div>

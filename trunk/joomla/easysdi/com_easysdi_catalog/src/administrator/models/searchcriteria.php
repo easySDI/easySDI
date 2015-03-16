@@ -87,7 +87,7 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
     public function getItem($pk = null) {
         if ($item = parent::getItem($pk)) {
             $app = JFactory::getApplication('administrator');
-            $catalog = $app->getUserStateFromRequest('com_easysdi_catalog.searchcriterias.filter.catalog', 'filter_catalog');
+            $catalog = $app->getUserStateFromRequest('com_easysdi_catalog.catalogsearchcriterias.filter.catalog', 'filter_catalog');
             if (isset($catalog)) {
                 $item->catalog_id = $catalog;
                 //Merge searchcriteria object with catalog_searchcriteria object
