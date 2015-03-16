@@ -23,6 +23,9 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     const ORDERSTATEAWAIT = 4;
     const ORDERSTATEPROGRESS = 5;
     const ORDERSTATEFINISH = 3;
+    // Order productmining
+    const PRODUCTMININGAUTO = 1;
+    const PRODUCTMININGMANUAL = 2;
 
     /** @var string Possible values global or organism */
     private $userType = 'global';
@@ -105,7 +108,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     private function getOrders() {
         $query = $this->db->getQuery(true);
 
-        $query->select('o.id, o.name, o.user_id, o.thirdparty_id, ot.value ordertype');
+        $query->select('o.id, ' . $this->db->quoteName('o.name') .', o.user_id, o.surface, o.thirdparty_id, ' . $this->db->quoteName('ot.value') .' as ordertype');
         $query->from('#__sdi_order o');
         $query->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id');
         $query->innerJoin('#__sdi_order_diffusion od on o.id = od.order_id');
@@ -116,6 +119,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
             $query->where('r.organism_id = ' . (int)$this->organism->id);
         }
         $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
+        $query->where('d.productmining_id = ' . self::PRODUCTMININGAUTO);
         $query->group('o.id');
 
         $this->db->setQuery($query);
@@ -161,6 +165,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $filename = '';
         $data = '';
 
+        ini_set('memory_limit','4096M');
+        
         $inputs = $this->request->getElementsByTagNameNS($this->nsWps, 'Input');
 
         /* @var $input DOMElement */
@@ -683,6 +689,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
      */
     private function getPerimeter($order) {
         $perimeter = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PERIMETER');
+        
+        $perimeter->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:SURFACE', $order->surface));
 
         $query = $this->db->getQuery(true);
 

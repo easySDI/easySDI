@@ -61,10 +61,12 @@ class sdiExtraction {
                         r.name as name, 
                         m.guid as metadataguid,
                         o.name as organism, 
+                        o.id as organism_id,
                         d.restrictedperimeter, 
                         d.surfacemin, 
                         d.surfacemax, 
                         d.pricing_id as pricing, 
+                        d.pricing_profile_id as pricing_profile,
                         z.id as visualization')
                     ->from('#__sdi_resource r')
                     ->innerJoin('#__sdi_version v ON v.resource_id = r.id')

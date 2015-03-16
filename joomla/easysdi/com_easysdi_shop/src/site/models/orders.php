@@ -17,7 +17,13 @@ require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
  * Methods supporting a list of Easysdi_shop records.
  */
 class Easysdi_shopModelOrders extends JModelList {
-
+    
+    const ORDERTYPE_ORDER       = 1;
+    const ORDERTYPE_ESTIMATE    = 2;
+    const ORDERTYPE_DRAFT       = 3;
+    
+    const USERROLE_VALIDATIONMANAGER = 10;
+    
     /**
      * Constructor.
      *
@@ -52,6 +58,9 @@ class Easysdi_shopModelOrders extends JModelList {
         $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
         $this->setState('filter.status', $search);
         
+        $search = $app->getUserStateFromRequest($this->context.'.filter_organism', 'filter_organism');
+        $this->setState('filter.organism', $search);
+        
         $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
         $this->setState('filter.type', $search);
                 
@@ -61,6 +70,8 @@ class Easysdi_shopModelOrders extends JModelList {
 
         $limitstart = JFactory::getApplication()->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
+        
+        $this->setState('layout.validation', (JFactory::getApplication()->input->get('layout') == 'validation'));
 
 
         if (empty($ordering)) {
@@ -97,8 +108,8 @@ class Easysdi_shopModelOrders extends JModelList {
 //        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 //
 //        // Join over the created by field 'created_by'
-//        $query->select('created_by.name AS created_by_name');
-//        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+        $query->select('created_by.name AS created_by_name');
+        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
         //Join over the order state value
         $query->select('state.value AS orderstate');
@@ -111,11 +122,14 @@ class Easysdi_shopModelOrders extends JModelList {
         // Filter by state
         $status = $this->getState('filter.status');
         if (is_numeric($status)) {
-        	$query->where('a.orderstate_id = ' . (int) $status);
+            if($status == 1) // get orders to check
+        	$query->where('a.orderstate_id = 8');
+            else // get orders checked
+                $query->where('a.orderstate_id IN (1, 2, 3, 4, 5, 6, 9, 10)');
         }
         
         // Filter by type
-        $type = $this->getState('filter.type');
+        $type = $this->getState('layout.validation') ? self::ORDERTYPE_ORDER : $this->getState('filter.type');
         if (is_numeric($type)) {
         	$query->where('a.ordertype_id = ' . (int) $type);
         }
@@ -131,8 +145,21 @@ class Easysdi_shopModelOrders extends JModelList {
             }
         }
         
-        //Only order which belong to the current user
-        $query->where('a.user_id = ' . (int) sdiFactory::getSdiUser()->id);
+        if($this->getState('layout.validation')){
+            $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
+                    ->where('uro.user_id='.(int)  sdiFactory::getSdiUser()->id)
+                    ->where('uro.role_id='.self::USERROLE_VALIDATIONMANAGER);
+            
+            $tpOrganism = $this->getState('filter.organism');
+            if($tpOrganism > 0)
+                $query->where('a.thirdparty_id='.(int)$tpOrganism);
+        }
+        else{
+            //Only order which belong to the current user
+            $query->where('a.user_id = ' . (int) sdiFactory::getSdiUser()->id);
+        }
+        
+        
         
         //Don't include historized item
         $query->where('a.orderstate_id <> 2');

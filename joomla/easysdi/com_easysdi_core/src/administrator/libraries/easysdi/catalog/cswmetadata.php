@@ -262,6 +262,12 @@ class cswmetadata {
                     $exdiffusion->setAttribute('file_size', '');
                     $exdiffusion->setAttribute('size_unit', '');
                     $exdiffusion->setAttribute('file_type', '');
+                    $propertiesXMLDoc = $this->getShopExtractionProperties();
+                    if(!is_null($propertiesXMLDoc)){
+                        $propertiesXML = $this->extendeddom->importNode($propertiesXMLDoc->documentElement, true);
+                        //print_r($propertiesXML);die();
+                        $exdiffusion->appendChild($propertiesXML);
+                    }
                     $exmetadata->appendChild($exdiffusion);
                 endif;
 
@@ -849,6 +855,132 @@ class cswmetadata {
         return $html;
     }
 
+    public function getShopExtractionProperties() {
+        if (empty($this->version)):
+            try {
+                $this->metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
+                $keys = array("guid" => $this->guid);
+                $this->metadata->load($keys);
+                $this->version = JTable::getInstance('version', 'Easysdi_coreTable');
+                if (!$this->version->load($this->metadata->version_id)):
+                    return null;
+                endif;
+            } catch (Exception $exc) {
+                //This metadata seems to be an harvested one
+                return null;
+            }
+        endif;
+
+
+        $this->diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+        $keys = array("version_id" => $this->version->id);
+        if (!$this->diffusion->load($keys)):
+            //No diffusion configured for this version
+            return null;
+        endif;
+
+        if ($this->diffusion->hasextraction == 0)
+            return null;
+
+        $language = JFactory::getLanguage();
+
+        $query = $this->db->getQuery(true)
+                ->select('DISTINCT p.id as property_id, p.alias as alias , p.name as name, t.text1 as label, p.mandatory, p.propertytype_id,pt.value as propertytype, p.accessscope_id,p.ordering')
+                ->from('#__sdi_diffusion_propertyvalue dpv')
+                ->innerJoin('#__sdi_propertyvalue pv ON pv.id = dpv.propertyvalue_id')
+                ->innerJoin('#__sdi_property p ON p.id = pv.property_id')
+                ->innerJoin('#__sdi_sys_propertytype pt ON pt.id = p.propertytype_id')
+                ->innerJoin('#__sdi_translation t ON t.element_guid = p.guid')
+                ->innerJoin('#__sdi_language l ON l.id = t.language_id')
+                ->where('dpv.diffusion_id = ' . $this->diffusion->id)
+                ->where('l.code = ' . $this->db->quote($language->getTag()))
+                ->order('p.ordering');
+        $this->db->setQuery($query);
+        $properties = $this->db->loadObjectList();
+        
+        if(count($properties)<1)
+            return null;
+        
+
+        $domDocProperties = new DOMDocument('1.0', 'UTF-8');
+        $props = $domDocProperties->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_ExtractionProperties');
+        $domDocProperties->appendChild($props);
+
+        foreach ($properties as $property):
+            try {
+                $required = '';
+                $classrequired = '';
+                $labelrequired = '';
+                if ($property->mandatory == 1):
+                    $required = 'required="required"';
+                    $classrequired = 'required';
+                    $labelrequired = '<span class="star">&nbsp;*</span>';
+                endif;
+
+                $prop = $domDocProperties->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_ExtractionProperty');
+                $prop->setAttribute("id", $property->property_id);
+                $prop->setAttribute("name", $property->name);
+                $prop->setAttribute("alias", $property->alias);
+                $prop->setAttribute("label", $property->label);
+                $prop->setAttribute("type", $property->propertytype);
+                $prop->setAttribute("mandatory", $property->mandatory==1?'true':'false');
+                $props->appendChild($prop);
+
+
+                $query = $this->db->getQuery(true)
+                        ->select(' t.text1 as label,pv.name as name, pv.alias as alias , pv.id as propertyvalue_id')
+                        ->from('#__sdi_diffusion_propertyvalue dpv')
+                        ->innerJoin('#__sdi_propertyvalue pv ON pv.id = dpv.propertyvalue_id')
+                        ->innerJoin('#__sdi_property p ON p.id = pv.property_id')
+                        ->innerJoin('#__sdi_translation t ON t.element_guid = pv.guid')
+                        ->innerJoin('#__sdi_language l ON l.id = t.language_id')
+                        ->where('dpv.diffusion_id = ' . (int) $this->diffusion->id)
+                        ->where('p.id = ' . (int) $property->property_id)
+                        ->where('l.code = ' . $query->quote($language->getTag()))
+                ;
+                $this->db->setQuery($query);
+                $values = $this->db->loadObjectList();
+
+
+
+                switch ($property->propertytype_id):
+                    case self::LISTE:
+                    case self::MULTIPLELIST:
+                    case self::CHECKBOX:
+                        foreach ($values as $value):
+                            $pv = $domDocProperties->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_PropertyValue');
+                            $pv->setAttribute("id", $value->propertyvalue_id);
+                            $pv->setAttribute("name", $value->name);
+                            $pv->setAttribute("alias", $value->alias);
+                            $pv->setAttribute("label", $value->label);
+                            $prop->appendChild($pv);
+                        endforeach;
+                        break;
+                    case self::TEXT:
+                        //No reason to place it in xml
+                        break;
+                    case self::TEXTAREA:
+                        //No reason to place it in xml
+                        break;
+                    case self::MESSAGE:
+                        if (!empty($values[0])) {
+                            $pv = $domDocProperties->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_PropertyValue');
+                            $pv->setAttribute("id", $values[0]->propertyvalue_id);
+                            $pv->setAttribute("name", $values[0]->name);
+                            $pv->setAttribute("alias", $values[0]->alias);
+                            $pv->setAttribute("label", $values[0]->label);
+                            $prop->appendChild($pv);
+                        }
+                        break;
+                endswitch;
+
+            } catch (Exception $exc) {
+                //User is not an EasySDI user
+            }
+        endforeach;
+
+        return $domDocProperties;
+    }
 
     protected function CURLRequest($type, $url, $xmlBody = "") {
         // Get COOKIE as key=value

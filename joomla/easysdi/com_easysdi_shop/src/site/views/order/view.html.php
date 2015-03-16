@@ -38,8 +38,14 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-
-        $this->user = sdiFactory::getSdiUser();
+        
+        if($this->state->get('validation.manager')){
+            $this->user = sdiFactory::getSdiUser($this->state->get('validation.manager'));
+        }
+        else{
+            $this->user = sdiFactory::getSdiUser();
+        }
+        
         if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
@@ -97,14 +103,27 @@ class Easysdi_shopViewOrder extends JViewLegacy {
     
     function getToolbar() {
         $bar = new JToolBar('toolbar');
-        //display the load draft button only if order not sent
-        $this->item = $this->get('Data');
-        if (($this->item->orderstate_id == 7))
-        {
-            $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'), 'basket.load', false);
-            $bar->appendButton('Separator');
+        
+        if($this->state->get('layout.validation')){
+            if($this->item->orderstate_id == 8){
+                $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATE'), 'order.validate', false);
+                $bar->appendButton('Separator');
+                $bar->appendButton('Standard', 'delete', JText::_('COM_EASYSDI_SHOP_ORDER_REJECT'), 'order.reject', false);
+                $bar->appendButton('Separator');
+            }
         }
+        else{
+            //display the load draft button only if order not sent
+            $this->item = $this->get('Data');
+            if (($this->item->orderstate_id == 7))
+            {
+                $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'), 'basket.load', false);
+                $bar->appendButton('Separator');
+            }
+        }
+        
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'order.cancel', false);
+        
         //generate the html and return
         return $bar->render();
     }

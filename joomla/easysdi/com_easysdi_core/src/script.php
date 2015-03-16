@@ -18,7 +18,7 @@ class com_easysdi_coreInstallerScript {
      * If preflight returns false, Joomla will abort the update and undo everything already done.
      */
 
-    function preflight($type, $parent) {
+    /*function preflight($type, $parent) {
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
         
@@ -33,7 +33,7 @@ class com_easysdi_coreInstallerScript {
             
             foreach ($sqls as $sql) {
                 $query = $db->getQuery(true);
-                $query->setQuery($sql);
+                $db->setQuery($sql);
                 $db->execute();
             }
         }
@@ -41,7 +41,7 @@ class com_easysdi_coreInstallerScript {
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Core [com_easysdi_core]';
         echo '<br />' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
-    }
+    }*/
 
     /*
      * $parent is the class calling this method.

@@ -395,14 +395,26 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return stdClass[] result list of resource
      */
     public function searchresource() {
+        $lang = JFactory::getLanguage();
+        
         $query = $this->db->getQuery(true);
 
-        $query->select('m.id, r.name, v.created, m.guid, rt.name as rt_name, ms.value as status');
+        $query->select('m.id, r.name, v.name as vname, m.guid, t.text1 as rt_name, ms.value as status');
         $query->from('#__sdi_resource r');
         $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
+        $query->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid');
+        $query->innerJoin('#__sdi_language AS l ON t.language_id = l.id');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
+        $query->where('l.code = ' . $query->quote($lang->getTag()));
+        if(array_key_exists('version', $_POST)){
+            if($_POST['version'] == 'last'){
+                $query->group('r.id');
+                $query->order('m.created DESC');
+            }
+        }
+        
         if ($_POST['status_id'] != '') {
             $query->where('m.metadatastate_id = ' . (int) $_POST['status_id']);
         }
@@ -412,10 +424,30 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if ($_POST['resource_name'] != '') {
             $query->where('r.name like ' . $query->quote('%' . $query->escape($_POST['resource_name']) . '%'));
         }
+        if (!empty($_POST['organism_id'])) {
+            $query->where('r.organism_id = ' . (int) $_POST['organism_id']);
+        }
+        
+        $user = new sdiUser();
+        //user's organism's categories
+        $categories = $user->getMemberOrganismsCategoriesIds();
+        array_push($categories, 0);
+
+        //user's organism
+        $organisms = $user->getMemberOrganisms();
+
+        //apply resource's accessscope
+        $query->where("("
+                . "r.accessscope_id = 1 "
+                . "OR (r.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.category_id IN (" . implode(',', $categories) . ") AND a.entity_guid = r.guid ) > 0) "
+                . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
+                . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$user->id . " AND a.entity_guid = r.guid ) = 1)"
+                . ")"
+                );
 
         $this->db->setQuery($query);
         $resources = $this->db->loadObjectList();
-
+        
         $response = array();
         $response['success'] = true;
         $response['total'] = count($resources);
@@ -496,7 +528,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
                     }
                 } else {
-                    if ($data[$key . '_filetext'] == '') {
+                    if ($data[$key . '_filehiddendelete'] == '') {
                         if ($data[$key . '_filehidden'] != '') {
                             unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
                         }
@@ -576,7 +608,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         $element->nodeValue = $translation->text2;
                     }
                 } else {
-                    $element->nodeValue = $value;
+                    $element->nodeValue = "";
+                    $item = $this->structure->createTextNode($value);
+                    $element->appendChild($item);
                 }
             }
         }
@@ -602,6 +636,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
           die(); */
 
         $this->removeNoneExist();
+        $this->removeEmptyListNode();
         $this->removeCatalogNS();
 
         if ($commit) {
@@ -1201,9 +1236,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $remove->parentNode->removeChild($remove);
         }
     }
+    
+    private function removeEmptyListNode() {
+        $listNodes = $this->domXpathStr->query('descendant::*[@codeListValue=""]');
+        
+        $toRemove = array();
+        foreach ($listNodes as $listNode) {
+            $toRemove[]=$listNode->parentNode;
+        }
+        
+        foreach ($toRemove as $remove) {
+            $remove->parentNode->removeChild($remove);
+        }
+    }
 
     private function removeCatalogNS() {
-        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level','scopeId');
+        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level','scopeId', 'accessscopeLimitation');
 
         foreach ($this->domXpathStr->query('//*') as $element) {
             foreach ($attributeNames as $attributeName) {
