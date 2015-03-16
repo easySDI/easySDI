@@ -278,10 +278,6 @@ class FormGenerator {
 
         $this->setDomXpathStr();
 
-        if ($parent->nodeName == 'gmd:contact') {
-            $breakpoint = true;
-        }
-
         if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
             $occurance = 0;
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
@@ -343,7 +339,7 @@ class FormGenerator {
 
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
-                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->isocode, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
 
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':level', $level);
@@ -401,7 +397,7 @@ class FormGenerator {
                     break;
                 case EnumChildtype::$RELATIONTYPE:
 
-                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->isocode, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
@@ -1571,7 +1567,7 @@ class FormGenerator {
      */
     private function getRelationQuery() {
         $query = $this->db->getQuery(true);
-        $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id');
+        $query->select('r.name, r.isocode, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id');
         $query->select('c.id as class_id, c.name AS class_name, c.guid AS class_guid');
         $query->select('ca.id as classass_id, ca.name AS classass_name, ca.guid AS classass_guid');
         $query->select('a.id as attribute_id, a.name AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length');
