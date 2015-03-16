@@ -970,7 +970,8 @@ CREATE TABLE [#__sdi_map_tool] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[tool_id] [bigint] NOT NULL,
-	[params] [nvarchar](500) NULL,
+	[params] [nvarchar](MAX) NULL,
+        [activated] [tinyint] DEFAULT 0,
  CONSTRAINT [PK_#__sdi_map_tool_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1025,6 +1026,8 @@ CREATE TABLE [#__sdi_maplayer] (
 	[accessscope_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
+        [isindoor] [smallint] NULL,
+        [levelfield] [nvarchar](255) NULL,
  CONSTRAINT [PK_#__sdi_maplayer_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -3545,6 +3548,31 @@ CREATE TABLE [users] (
 	[LOGIN] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY];
+
+SET QUOTED_IDENTIFIER ON;
+CREATE TABLE [#__sdi_sys_server](
+	[id] [bigint] IDENTITY(4,1) NOT NULL,
+	[ordering] [int] NOT NULL,
+	[state] [int] NOT NULL,
+	[value] [nvarchar](150) NOT NULL,
+ CONSTRAINT [PK_#__sdi_sys_server] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+CREATE TABLE [#__sdi_sys_server_serviceconnector](
+	[id] [bigint] IDENTITY(12,1) NOT NULL,
+	[server_id] [bigint] NOT NULL,
+	[serviceconnector_id] [bigint] NOT NULL,
+ CONSTRAINT [PK_#__sdi_sys_server_serviceconnector] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
+SET ANSI_NULLS ON;
 
 
 ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MAX_RESP_TIME];

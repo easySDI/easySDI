@@ -959,6 +959,7 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.WMSSource.superclass.createLayerRecord.apply(this, arguments);
         record.data.layer.attribution = config.attribution;
+        record.data.layer.isindoor = config.isindoor;
         record.data.layer.levelfield = config.levelfield;
         record.data.layer.servertype = config.servertype;
         return record;
@@ -1813,20 +1814,20 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         var layers = this.map.layers;
         var level = levels[value];
 
-//        var controls = this.map.controls;
-//        for(var i = 0 ; i < controls.length; i++){
-//            if(controls[i] instanceof OpenLayers.Control.GetFeature){
-//               // selectLayer.removeAllFeatures();
-//                controls[i].protocol.defaultFilter = new OpenLayers.Filter.Comparison({
-//                                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
-//                                    property: "gva_GVA:Code_du_niveau",
-//                                    value:level.code
-//                                });
-//                break;                
-//            }
-//        }
+        var controls = this.map.controls;
+        for(var i = 0 ; i < controls.length; i++){
+            if(controls[i] instanceof OpenLayers.Control.GetFeature){
+//                selectLayer.removeAllFeatures();
+                controls[i].protocol.defaultFilter = new OpenLayers.Filter.Comparison({
+                                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                                    property: "gva_GVA:Code_du_niveau",
+                                    value:level.code
+                                });
+                break;                
+            }
+        }
         for (var a = 0; a < layers.length; a++) {
-            if (layers[a].levelfield) {
+            if (layers[a].isindoor && layers[a].isindoor == 1 && layers[a].levelfield) {
                 var servertype = layers[a].servertype;
                 if (servertype == 1) {
                     layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
