@@ -137,7 +137,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
     ?>
 
     <div>
-        <h2><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
+        <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h1>
         <h5><?php echo $title->name . ': ' . JText::_(strtoupper($title->value)); ?></h5>
     </div>
 
