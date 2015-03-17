@@ -144,37 +144,35 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     }
 
                     foreach ($xpaths as $xpath) {
-                        foreach($parentXPath->query($xpath->xpath) as $parentNode){
+                        foreach ($parentXPath->query($xpath->xpath) as $parentNode) {
                             $parentNodeXPath = $parentNode->getNodePath();
-                            
+
                             $childNode = $childXPath->query($parentNodeXPath)->item(0);
 
-                            if($childNode !== null){
+                            if ($childNode !== null) {
                                 $childParentNode = $childNode->parentNode;
                                 $childParentNode->replaceChild($childDom->importNode($parentNode, true), $childNode);
-                            }
-                            else{
+                            } else {
                                 // we are trying to synchronize an xpath which doesn't exist in the children element
                                 $tmpXPathArr = explode('/', $parentNodeXPath);
                                 $depth = 0;
-                                do{
+                                do {
                                     $depth++;
-                                    $tmpXPath = implode('/', array_slice($tmpXPathArr, 0, count($tmpXPathArr)-$depth));
+                                    $tmpXPath = implode('/', array_slice($tmpXPathArr, 0, count($tmpXPathArr) - $depth));
 
                                     $childNode = $childXPath->query($tmpXPath)->item(0);
-                                }while($childNode === null && $depth<=count($tmpXPathArr));
+                                } while ($childNode === null && $depth <= count($tmpXPathArr));
 
-                                if($childNode === null)
+                                if ($childNode === null)
                                     continue;
 
-                                do{
+                                do {
                                     $depth--;
-                                    $tmpXPath = implode('/', array_slice($tmpXPathArr, 0, count($tmpXPathArr)-$depth));
+                                    $tmpXPath = implode('/', array_slice($tmpXPathArr, 0, count($tmpXPathArr) - $depth));
 
-                                    $childNode->appendChild($childDom->importNode($parentXPath->query($tmpXPath)->item(0), ($depth===0)));
+                                    $childNode->appendChild($childDom->importNode($parentXPath->query($tmpXPath)->item(0), ($depth === 0)));
                                     $childNode = $childXPath->query($tmpXPath)->item(0);
-
-                                }while($depth > 0);
+                                } while ($depth > 0);
                             }
                         }
                     }
@@ -396,7 +394,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      */
     public function searchresource() {
         $lang = JFactory::getLanguage();
-        
+
         $query = $this->db->getQuery(true);
 
         $query->select('m.id, r.name, v.name as vname, m.guid, t.text1 as rt_name, ms.value as status');
@@ -408,13 +406,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
         $query->where('l.code = ' . $query->quote($lang->getTag()));
-        if(array_key_exists('version', $_POST)){
-            if($_POST['version'] == 'last'){
+        if (array_key_exists('version', $_POST)) {
+            if ($_POST['version'] == 'last') {
                 $query->group('r.id');
                 $query->order('m.created DESC');
             }
         }
-        
+
         if ($_POST['status_id'] != '') {
             $query->where('m.metadatastate_id = ' . (int) $_POST['status_id']);
         }
@@ -427,7 +425,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if (!empty($_POST['organism_id'])) {
             $query->where('r.organism_id = ' . (int) $_POST['organism_id']);
         }
-        
+
         $user = new sdiUser();
         //user's organism's categories
         $categories = $user->getMemberOrganismsCategoriesIds();
@@ -440,14 +438,14 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->where("("
                 . "r.accessscope_id = 1 "
                 . "OR (r.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.category_id IN (" . implode(',', $categories) . ") AND a.entity_guid = r.guid ) > 0) "
-                . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
-                . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$user->id . " AND a.entity_guid = r.guid ) = 1)"
+                . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int) $organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
+                . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int) $user->id . " AND a.entity_guid = r.guid ) = 1)"
                 . ")"
-                );
+        );
 
         $this->db->setQuery($query);
         $resources = $this->db->loadObjectList();
-        
+
         $response = array();
         $response['success'] = true;
         $response['total'] = count($resources);
@@ -645,12 +643,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             if (isset($this->data['viral']) && $this->data['viral'] == 1) {
                 $virality = $this->changeStatusViral($this->data['id'], $this->data['metadatastate_id'], $this->data['published']);
             }
-            
+
             $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
 
             if ($model->save($data, $xml) && (!isset($virality) || $virality === true)) {
                 $this->saveTitle($data['guid']);
-                
+
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
@@ -979,7 +977,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return mixed A database cursor resource on success, boolean false on failure
      */
     public function changeStatus($id, $metadatastate_id, $published = null) {
-        
+
         $this->data['metadatastate_id'] = $metadatastate_id;
         switch ($metadatastate_id) {
             case sdiMetadata::INPROGRESS:
@@ -1236,22 +1234,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $remove->parentNode->removeChild($remove);
         }
     }
-    
+
     private function removeEmptyListNode() {
         $listNodes = $this->domXpathStr->query('descendant::*[@codeListValue=""]');
-        
+
         $toRemove = array();
         foreach ($listNodes as $listNode) {
-            $toRemove[]=$listNode->parentNode;
+            $toRemove[] = $listNode->parentNode;
         }
-        
+
         foreach ($toRemove as $remove) {
             $remove->parentNode->removeChild($remove);
         }
     }
 
     private function removeCatalogNS() {
-        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level','scopeId', 'accessscopeLimitation');
+        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level', 'scopeId', 'accessscopeLimitation');
 
         foreach ($this->domXpathStr->query('//*') as $element) {
             foreach ($attributeNames as $attributeName) {
@@ -1365,20 +1363,24 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private function getI18nValue($guid) {
         $defaultId = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
         $supportedIds = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
-        $languageIds = implode(',', $supportedIds);
 
         $results = array();
+        $results['supported'] = array(); 
 
-        $query = $this->db->getQuery(true);
-        $query->select('t.text2, ' . $query->quoteName('iso3166-1-alpha2'));
-        $query->from('#__sdi_translation t');
-        $query->innerJoin('#__sdi_language l ON l.id=t.language_id');
-        $query->where('t.element_guid = ' . $query->quote($guid));
-        $query->where('t.language_id IN (' . $languageIds . ')');
+        // Only if multiple languages supported
+        if ($supportedIds) {
+            $languageIds = implode(',', $supportedIds);
+            $query = $this->db->getQuery(true);
+            $query->select('t.text2, ' . $query->quoteName('iso3166-1-alpha2'));
+            $query->from('#__sdi_translation t');
+            $query->innerJoin('#__sdi_language l ON l.id=t.language_id');
+            $query->where('t.element_guid = ' . $query->quote($guid));
+            $query->where('t.language_id IN (' . $languageIds . ')');
 
-        $this->db->setQuery($query);
+            $this->db->setQuery($query);
 
-        $results['supported'] = $this->db->loadObjectList('iso3166-1-alpha2');
+            $results['supported'] = $this->db->loadObjectList('iso3166-1-alpha2');
+        } 
 
         $query = $this->db->getQuery(true);
         $query->select('t.text2, ' . $query->quoteName('iso3166-1-alpha2'));
