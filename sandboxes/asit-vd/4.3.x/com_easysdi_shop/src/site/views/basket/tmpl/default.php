@@ -88,7 +88,7 @@ if ($this->item && $this->item->extractions) :
                                         ?>
                                     </div>
                                 </div>
-                                <div><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
+                                <div id="perimeter-recap-details-title"><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
                                 <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;<?php if (!is_array($this->item->extent->features)): ?>display:none;<?php endif; ?>">
                                     <?php if (is_array($this->item->extent->features)): foreach ($this->item->extent->features as $feature): ?>
                                             <div><?php echo $feature->name; ?></div>
@@ -443,18 +443,19 @@ if ($this->item && $this->item->extractions) :
                                                 <script>
             <?php if ($this->item->isrestrictedbyperimeter): ?>
                                                         //var userperimeter = '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>';
-                                                        var userperimeter = '<?php echo $this->user->perimeter; ?>';
+                var userperimeter = '<?php echo $this->user->perimeter; ?>';
             <?php endif; ?>
-                                                    function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                        return selectPerimeter(<?php
+function selectPerimeter<?php echo $perimeter->id; ?>() {
+
+                                            return selectPerimeter(<?php
             if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI) : echo 1;
             else : echo 0;
             endif;
             ?>, "<?php echo $perimeter->id; ?>", "<?php echo $perimeter->name; ?>", "<?php echo $perimeter->wmsurl; ?>", "<?php echo $perimeter->layername; ?>", "<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->namespace; ?>", "<?php echo $perimeter->featuretypefieldgeometry; ?>", "<?php echo $perimeter->featuretypefieldid; ?>", "<?php echo $perimeter->featuretypefieldname; ?>", "<?php echo $perimeter->prefix; ?>");
                                                     }
-                                                    function reloadFeatures<?php echo $perimeter->id; ?>() {
-                                                        reloadFeatures("<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->featuretypefieldid; ?>");
-                                                    }
+function reloadFeatures<?php echo $perimeter->id; ?>() {
+    reloadFeatures("<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->prefix . ':' . $perimeter->featuretypename; ?>", "<?php echo $perimeter->prefix . ':' . $perimeter->featuretypefieldid; ?>");
+}
                                                 </script>
                                                 <br>
                                                 <br>
@@ -525,13 +526,13 @@ if ($this->item && $this->item->extractions) :
 
         <script>
             Ext.onReady(function () {
-                if ('undefined' == typeof app)
+                if ('undefined' === typeof app){
                     app = window.appname;
+                }
                 app.on("ready", function () {
-                    jQuery('#modal-perimeter').show()
+                    jQuery('#modal-perimeter').show();
                     initMiniMap();
                     initDraw();
-                    //                    jQuery('#perimeter-buffer').hide();
     <?php if (!empty($this->item->extent)): ?>
         <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
                             jQuery('#perimeter-buffer').show();
@@ -547,9 +548,9 @@ if ($this->item && $this->item->extractions) :
     <?php endif; ?>
     <?php
     if (!empty($this->item->extent) && isset($this->item->extent->features)):
-        if (is_string($this->item->extent->features)):
+        if (is_string(json_decode($this->item->extent->features))):
             ?>
-                            reprojectWKT("<?php echo $this->item->extent->features; ?>");
+                            reprojectWKT('<?php echo $this->item->extent->features; ?>');
         <?php endif; ?>
                         selectPerimeter<?php echo $this->item->extent->id; ?>();
                         reloadFeatures<?php echo $this->item->extent->id; ?>();
