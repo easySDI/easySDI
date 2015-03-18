@@ -583,9 +583,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $orderSupplier = $this->db->loadObject();
             
             $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_internal_free', (bool)$orderSupplier->cfg_internal_free ? 'true' : 'false'));
-            $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_fixed_fee_ti', $orderSupplier->cfg_fixed_fee_ti));
+            $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_fixed_fee_ti', (float)$orderSupplier->cfg_fixed_fee_ti));
             $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_data_free_fixed_fee', (bool)$orderSupplier->cfg_data_free_fixed_fee ? 'true' : 'false'));
-            $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cal_fee_ti', $orderSupplier->cal_fee_ti));
+            $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cal_fee_ti', (float)$orderSupplier->cal_fee_ti));
 
             $supplier->appendChild($pricing);
         }
