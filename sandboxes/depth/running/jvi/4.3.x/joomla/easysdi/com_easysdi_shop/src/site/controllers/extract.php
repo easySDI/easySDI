@@ -401,10 +401,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             list($mode, $restrictionList) = $this->getOrdersParameters($xml);
             // specify where clause depending on the getOrders mode
             if($mode === 'sdi:getOrdersByGuids'){ // by guids
-                $query->where('od.guid IN ('.implode(',', $restrictionList).')');
+                $query->where('d.guid IN ('.implode(',', $restrictionList).')');
             }
             elseif($mode === 'sdi:getOrdersByIds'){ // by ids
-                $query->where('od.id IN ('.implode(',', $restrictionList).')');
+                $query->where('d.id IN ('.implode(',', $restrictionList).')');
             }
         }
         $query->where('od.productstate_id IN ('.implode(',', $this->states).')')
