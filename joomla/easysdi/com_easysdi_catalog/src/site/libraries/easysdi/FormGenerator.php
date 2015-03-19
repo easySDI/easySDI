@@ -478,6 +478,10 @@ class FormGenerator {
             /* @var $node DOMElement */
             $node = $coll->item($j);
 
+            if($node->nodeName == 'bee:scale'){
+                $breakpoint = true;
+            }
+            
             $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
 
@@ -494,6 +498,7 @@ class FormGenerator {
             $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
             $occurance_clone = $domXpathClone->query($nodePath)->length;
 
+            // if occurance == 0 remove node from clone
             if ($occurance == 0) {
                 //look for the ancestor under which we can clean the structure
                 while (!isset($node->nextSibling) && !isset($node->previousSibling)) {
@@ -567,6 +572,10 @@ class FormGenerator {
                     $refNode = $target->firstChild;
                 }
 
+                if(empty($refNode)){
+                    $breakpoint = true;
+                }
+                
                 try {
                     //add the child to the parent, before the refNode if defined or as last parent's child
                     if (isset($refNode)) {
@@ -575,13 +584,14 @@ class FormGenerator {
                         $target->appendChild($clone->importNode($childToImport, true));
                     }
                 } catch (Exception $exc) {
-                    echo $exc->getTraceAsString();
+                    $exc->getTraceAsString();
                 }
             }
         }
 
         //replace the structure with the clone
         $this->structure->loadXML($clone->saveXML());
+        $breakpoint = true;
     }
 
     /**
