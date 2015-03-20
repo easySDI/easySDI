@@ -59,7 +59,7 @@ if ($this->item && $this->item->extractions) :
             <div class="well">
                 <!-- PERIMETER -->
                 <div class="row-fluid shop-perimeter" >
-                    <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3></div>
+                    <div class="row-fluid" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h2></div>
                     <hr>
                     <div class="row-fluid" >
                         <div class="map-recap span6" >
@@ -123,7 +123,7 @@ if ($this->item && $this->item->extractions) :
                 <?php if (!empty($this->thirdParties)): ?>
                     <div class="row-fluid shop-third-party" >
                         <div class="row-fluid" >
-                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
+                            <h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h2>
                             <hr>
                             <?php if ((bool) $this->paramsarray['tp_explanation_display']): ?>
                                 <p><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_EXPLANATION'); ?></p>
@@ -154,11 +154,11 @@ if ($this->item && $this->item->extractions) :
                     <div class="row-fluid" >
                         <hr>
                         <div class="span6" >
-                            <h3><?php echo $this->item->extractionsNb . " " . JText::_('COM_EASYSDI_SHOP_BASKET_SELECTED_DATA'); ?>
+                            <h2><?php echo $this->item->extractionsNb . " " . JText::_('COM_EASYSDI_SHOP_BASKET_SELECTED_DATA'); ?>
                                 <span id="pricingTotalAmountTI-container" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti)): ?>display: none;<?php endif; ?>">
                                     ( <span class="pricingTotalAmountTI"><?php echo!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti) ? '' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span> )
                                 </span>
-                            </h3>
+                            </h2>
                         </div>
                         <div class="span6" >
                             <?php if (!empty($this->item->visualization)): ?>
@@ -282,7 +282,7 @@ if ($this->item && $this->item->extractions) :
                 <!-- INFORMATIONS -->
     <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
                     <div class="row-fluid shop-info" >
-                        <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3>
+                        <div class="row-fluid" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h2>
                             <hr>
                             <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div></div>
                     </div>
