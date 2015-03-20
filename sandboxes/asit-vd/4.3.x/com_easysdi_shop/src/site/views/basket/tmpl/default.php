@@ -287,7 +287,8 @@ if ($this->item && $this->item->extractions) :
                     <div class="row-fluid shop-info" >
                         <div class="row-fluid" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h2>
                             <hr>
-                            <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div></div>
+                            <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div>
+                        </div>
                     </div>
                 <?php endif; ?>
                 <!-- ENDOF INFORMATIONS -->
@@ -306,16 +307,16 @@ if ($this->item && $this->item->extractions) :
                         </div>
                         <div id="toolbar-container">
                             <div class="btn-toolbar" id="toolbar">
-                                <div class="btn-wrapper" id="toolbar-archive">
-                                    <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE') ?></button>
+                                <div class="btn-wrapper" id="toolbar-draft">
+                                    <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE') ?></button>
                                 </div>
                                 <?php if (!$this->item->free): ?>
-                                    <div class="btn-wrapper" id="toolbar-edit">
-                                        <button class="btn btn-small" rel="basket.estimate"><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
+                                    <div class="btn-wrapper" id="toolbar-estimate">
+                                        <button class="btn btn-small" rel="basket.estimate"><span class="icon-edit"></span> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
                                     </div>
                                 <?php endif; ?>
-                                <div class="btn-wrapper" id="toolbar-publish">
-                                    <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER') ?></button>
+                                <div class="btn-wrapper" id="toolbar-order">
+                                    <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER') ?></button>
                                 </div>
                             </div>
 
