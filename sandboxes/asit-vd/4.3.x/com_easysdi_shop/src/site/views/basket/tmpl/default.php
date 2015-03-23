@@ -155,7 +155,7 @@ if ($this->item && $this->item->extractions) :
                     <div class="row-fluid" >
                         <hr>
                         <div class="span6" >
-                            <h2><?php echo $this->item->extractionsNb . " " . JText::_('COM_EASYSDI_SHOP_BASKET_SELECTED_DATA'); ?>
+                            <h2><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_N_SELECTED_DATA',$this->item->extractionsNb); ?>
                                 <span id="pricingTotalAmountTI-container" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti)): ?>display: none;<?php endif; ?>">
                                     ( <span class="pricingTotalAmountTI"><?php echo!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti) ? '' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span> )
                                 </span>
@@ -176,7 +176,7 @@ if ($this->item && $this->item->extractions) :
                             <table class="table table-striped" rel="<?php echo $supplier_id; ?>">
                                 <thead>
                                     <tr>
-                                        <td class="product_column" ><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER') . ' : ' . $supplier->name; ?></h4></td>
+                                        <td class="product_column" ><h4><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER',count($supplier->items)) . ' : ' . $supplier->name; ?></h4></td>
                                         <td class="price_column" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
