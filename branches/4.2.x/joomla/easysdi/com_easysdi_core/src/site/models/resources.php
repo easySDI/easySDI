@@ -180,7 +180,7 @@ class Easysdi_coreModelResources extends JModelList {
         }
              
         $query->order('a.name');
-
+        
         return $query;
     }
 
