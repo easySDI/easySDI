@@ -13,7 +13,9 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusion.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+require_once JPATH_SITE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 class cswmetadata {
 
@@ -97,6 +99,11 @@ class cswmetadata {
         }
         $doc = new DOMDocument();
         $doc->loadXML($response);
+
+        // add links if the metadata is complete
+        if ($content == 'complete') {
+            $this->addLinks($doc);
+        }
 
         if ($doc == false) {
             $msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
@@ -257,8 +264,8 @@ class cswmetadata {
                     $exdiffusion->setAttribute('isfree', $isfree);
                     $exdiffusion->setAttribute('isDownladable', $isDownladable);
                     $exdiffusion->setAttribute('isOrderable', $isOrderable);
-                    $exdiffusion->setAttribute('surfacemin', is_null($diffusion->surfacemin )?'':$diffusion->surfacemin);
-                    $exdiffusion->setAttribute('surfacemax', is_null($diffusion->surfacemax )?'':$diffusion->surfacemax);                    
+                    $exdiffusion->setAttribute('surfacemin', is_null($diffusion->surfacemin) ? '' : $diffusion->surfacemin);
+                    $exdiffusion->setAttribute('surfacemax', is_null($diffusion->surfacemax) ? '' : $diffusion->surfacemax);
                     $exdiffusion->setAttribute('file_size', '');
                     $exdiffusion->setAttribute('size_unit', '');
                     $exdiffusion->setAttribute('file_type', '');
@@ -849,7 +856,6 @@ class cswmetadata {
         return $html;
     }
 
-
     protected function CURLRequest($type, $url, $xmlBody = "") {
         // Get COOKIE as key=value
         $cookiesList = array();
@@ -866,7 +872,7 @@ class cswmetadata {
         // cURL sends a 'Expect: 100-continue' header. The server acknowledges and sends back the '100' status code.
         // cuRL then sends the request body. This is proper behaviour. Nginx supports this header.
         // This allows to work around servers that do not support that header.
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"','Expect:'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"', 'Expect:'));
         // We're emptying the 'Expect' header, saying to the server: please accept the body right now.        
         curl_setopt($ch, CURLOPT_COOKIE, $cookies);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -890,11 +896,99 @@ class cswmetadata {
 
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
- 
+
         $output = curl_exec($ch);
         curl_close($ch);
 
         return $output;
+    }
+
+    /**
+     * Return an array with parents and childs relation
+     * 
+     * @return array
+     */
+    protected function getRelations() {
+        $db = JFactory::getDbo();
+
+        // Get child relation
+        $query = $this->db->getQuery(true);
+        $query->select('mc.guid metadata_guid, r.`name` resource_name, rt.guid resourcetype_guid');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_versionlink vl ON vl.parent_id = m.version_id');
+        $query->innerJoin('#__sdi_metadata mc ON vl.child_id = mc.version_id');
+        $query->innerJoin('#__sdi_version vc ON vc.id = vl.child_id');
+        $query->innerJoin('#__sdi_resource r ON vc.resource_id = r.id');
+        $query->innerJoin('#__sdi_resourcetype rt ON r.resourcetype_id = rt.id');
+        $query->where('m.guid =' . $query->quote($this->guid));
+
+        $db->setQuery($query);
+
+        $childs = $db->loadObjectList();
+
+        // Get parent relation
+        $query = $this->db->getQuery(true);
+
+        $query->select('mp.guid metadata_guid, r.`name` resource_name, rt.guid resourcetype_guid');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_versionlink vl ON vl.child_id = m.version_id');
+        $query->innerJoin('#__sdi_metadata mp ON vl.parent_id = mp.version_id');
+        $query->innerJoin('#__sdi_version vp ON vp.id = vl.parent_id');
+        $query->innerJoin('#__sdi_resource r ON vp.resource_id = r.id');
+        $query->innerJoin('#__sdi_resourcetype rt ON r.resourcetype_id = rt.id');
+        $query->where('m.guid =' . $query->quote($this->guid));
+
+        $db->setQuery($query);
+
+        $parents = $db->loadObjectList();
+
+        $result = array();
+        $result['parents'] = $parents;
+        $result['childs'] = $childs;
+
+        return $result;
+    }
+
+    /**
+     * Add links node to metadata node if necessary
+     * 
+     * @param DOMDocument $doc
+     * @return void
+     */
+    protected function addLinks(DOMDocument &$doc) {
+        $nsdao = new SdiNamespaceDao();
+        $sdiNamespace = $nsdao->getByPrefix('sdi');
+        $metadataNode = $doc->getElementsByTagNameNS($sdiNamespace->uri, 'metadata')->item(0);
+
+        if(!isset($metadataNode)){
+            return;
+        }
+        
+        $links = $doc->createElementNS($sdiNamespace->uri, 'sdi:links');
+
+        $relations = $this->getRelations();
+
+        foreach ($relations['parents'] as $parent) {
+            $parentNode = $doc->createElementNS($sdiNamespace->uri, 'sdi:parent');
+            $parentNode->setAttribute('metadata_guid', $parent->metadata_guid);
+            $parentNode->setAttribute('resource_name', $parent->resource_name);
+            $parentNode->setAttribute('resourcetype', EText::_($parent->resourcetype_guid));
+
+            $links->appendChild($parentNode);
+        }
+
+        foreach ($relations['childs'] as $child) {
+            $childNode = $doc->createElementNS($sdiNamespace->uri, 'sdi:child');
+            $childNode->setAttribute('metadata_guid', $child->metadata_guid);
+            $childNode->setAttribute('resource_name', $child->resource_name);
+            $childNode->setAttribute('resourcetype', EText::_($child->resourcetype_guid));
+
+            $links->appendChild($childNode);
+        }
+
+        if ($links->hasChildNodes()) {
+            $metadataNode->appendChild($links);
+        }
     }
 
 }
