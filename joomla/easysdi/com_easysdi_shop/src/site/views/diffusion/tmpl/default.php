@@ -60,7 +60,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                         }
                     })
                     if (perimeterselected == false) {
-                        alert('<?php echo $this->escape(JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_NO_PERIMETER_SELECTED')); ?>');
+                        alert('<?php echo $this->escape(JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_NO_PERIMETER_SELECTED',true)); ?>');
                     } else {
                         Joomla.submitform(task, document.getElementById('adminForm'));
                     }
@@ -69,7 +69,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                 }
             }
             else {
-                alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>');
+                alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED',true)); ?>');
             }
         }
     }
@@ -198,9 +198,9 @@ var globdata;
         }).done(function(data){
             js('#result_testurlauthentication').removeClass('success error');
             if(data == 1)
-                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_OK'); ?>').addClass('success');
+                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_OK',true); ?>').addClass('success');
             else{
-                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE'); ?>').addClass('error');
+                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE',true); ?>').addClass('error');
                 console.log(data);
             }
         }).always(function(){
