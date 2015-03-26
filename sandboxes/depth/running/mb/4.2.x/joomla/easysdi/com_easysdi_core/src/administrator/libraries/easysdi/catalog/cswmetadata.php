@@ -100,11 +100,6 @@ class cswmetadata {
         $doc = new DOMDocument();
         $doc->loadXML($response);
 
-        // add links if the metadata is complete
-        if ($content == 'complete') {
-            $this->addLinks($doc);
-        }
-
         if ($doc == false) {
             $msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
             JFactory::getApplication()->enqueueMessage('No such metadata in the catalog.', 'error');
@@ -901,94 +896,6 @@ class cswmetadata {
         curl_close($ch);
 
         return $output;
-    }
-
-    /**
-     * Return an array with parents and childs relation
-     * 
-     * @return array
-     */
-    protected function getRelations() {
-        $db = JFactory::getDbo();
-
-        // Get child relation
-        $query = $this->db->getQuery(true);
-        $query->select('mc.guid metadata_guid, r.`name` resource_name, rt.guid resourcetype_guid');
-        $query->from('#__sdi_metadata m');
-        $query->innerJoin('#__sdi_versionlink vl ON vl.parent_id = m.version_id');
-        $query->innerJoin('#__sdi_metadata mc ON vl.child_id = mc.version_id');
-        $query->innerJoin('#__sdi_version vc ON vc.id = vl.child_id');
-        $query->innerJoin('#__sdi_resource r ON vc.resource_id = r.id');
-        $query->innerJoin('#__sdi_resourcetype rt ON r.resourcetype_id = rt.id');
-        $query->where('m.guid =' . $query->quote($this->guid));
-
-        $db->setQuery($query);
-
-        $childs = $db->loadObjectList();
-
-        // Get parent relation
-        $query = $this->db->getQuery(true);
-
-        $query->select('mp.guid metadata_guid, r.`name` resource_name, rt.guid resourcetype_guid');
-        $query->from('#__sdi_metadata m');
-        $query->innerJoin('#__sdi_versionlink vl ON vl.child_id = m.version_id');
-        $query->innerJoin('#__sdi_metadata mp ON vl.parent_id = mp.version_id');
-        $query->innerJoin('#__sdi_version vp ON vp.id = vl.parent_id');
-        $query->innerJoin('#__sdi_resource r ON vp.resource_id = r.id');
-        $query->innerJoin('#__sdi_resourcetype rt ON r.resourcetype_id = rt.id');
-        $query->where('m.guid =' . $query->quote($this->guid));
-
-        $db->setQuery($query);
-
-        $parents = $db->loadObjectList();
-
-        $result = array();
-        $result['parents'] = $parents;
-        $result['childs'] = $childs;
-
-        return $result;
-    }
-
-    /**
-     * Add links node to metadata node if necessary
-     * 
-     * @param DOMDocument $doc
-     * @return void
-     */
-    protected function addLinks(DOMDocument &$doc) {
-        $nsdao = new SdiNamespaceDao();
-        $sdiNamespace = $nsdao->getByPrefix('sdi');
-        $metadataNode = $doc->getElementsByTagNameNS($sdiNamespace->uri, 'metadata')->item(0);
-
-        if(!isset($metadataNode)){
-            return;
-        }
-        
-        $links = $doc->createElementNS($sdiNamespace->uri, 'sdi:links');
-
-        $relations = $this->getRelations();
-
-        foreach ($relations['parents'] as $parent) {
-            $parentNode = $doc->createElementNS($sdiNamespace->uri, 'sdi:parent');
-            $parentNode->setAttribute('metadata_guid', $parent->metadata_guid);
-            $parentNode->setAttribute('resource_name', $parent->resource_name);
-            $parentNode->setAttribute('resourcetype', EText::_($parent->resourcetype_guid));
-
-            $links->appendChild($parentNode);
-        }
-
-        foreach ($relations['childs'] as $child) {
-            $childNode = $doc->createElementNS($sdiNamespace->uri, 'sdi:child');
-            $childNode->setAttribute('metadata_guid', $child->metadata_guid);
-            $childNode->setAttribute('resource_name', $child->resource_name);
-            $childNode->setAttribute('resourcetype', EText::_($child->resourcetype_guid));
-
-            $links->appendChild($childNode);
-        }
-
-        if ($links->hasChildNodes()) {
-            $metadataNode->appendChild($links);
-        }
     }
 
 }
