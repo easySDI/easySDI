@@ -1,3 +1,7 @@
+<?php
+ $iframewidth = JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth');
+ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight');
+?>
 <script type="text/javascript">
 js = jQuery.noConflict();
 
@@ -10,10 +14,10 @@ var Links = {
         metadata: {
             preview: {
                 class: 'modal',
-                href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
+                href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor&type=complete', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
                 property: 'metadata',
                 html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')?>",
-                rel: "{handler:'iframe',size:{x:600,y:700}}"
+                rel: "{handler:'iframe',size:{x:<?php echo $iframewidth ; ?>,y:<?php echo $iframeheight ; ?>}}"
             },
             edit: {
                 href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=#0#')?>',
