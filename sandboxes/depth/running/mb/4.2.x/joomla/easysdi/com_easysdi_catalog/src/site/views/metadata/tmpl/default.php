@@ -112,6 +112,8 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 <script type="text/javascript">
     var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
     var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
+    var iframewidth = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth'); ?>";
+    var iframeheight = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight'); ?>";
     js = jQuery.noConflict();
     js('document').ready(function() {
         bootbox.setLocale("<?php echo $bbLanguage;?>");
