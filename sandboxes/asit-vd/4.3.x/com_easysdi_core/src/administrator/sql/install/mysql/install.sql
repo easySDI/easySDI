@@ -2382,7 +2382,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `remark` VARCHAR(500)  NULL ,
 `fee` DECIMAL(10)  NULL ,
 `completed` DATETIME NULL DEFAULT '0000-00-00 00:00:00',
-`storage_id` INT(11) UNSIGNED NOT NULL ,
+`storage_id` INT(11) UNSIGNED NULL ,
 `file` VARCHAR(500)  NULL ,
 `size` DECIMAL(10)  NULL ,
 PRIMARY KEY (`id`),
