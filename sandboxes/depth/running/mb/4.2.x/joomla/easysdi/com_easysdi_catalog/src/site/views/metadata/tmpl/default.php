@@ -251,7 +251,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')">Importer</button>
+                    <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_CLOSE') ; ?></button>
                 </div>
             </div>
