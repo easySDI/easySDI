@@ -210,7 +210,7 @@ abstract class Easysdi_shopHelper {
 
     /**
      * 
-     * @param string $item : json {"id":perimeter_id,"name":perimeter_name,"features":[{"id": feature_id, "name":feature_name}]}
+     * @param string $item : json {"id":perimeter_id,"name":perimeter_name,"features":[{"id": feature_id, "name":feature_name, "level":level_code}]}
      */
     public static function addExtentToBasket($item) {
         //add extent if defined

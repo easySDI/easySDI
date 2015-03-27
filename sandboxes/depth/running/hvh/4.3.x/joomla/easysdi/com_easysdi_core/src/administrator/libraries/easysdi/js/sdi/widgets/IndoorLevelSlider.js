@@ -59,6 +59,9 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
+        this.addEvents(
+            "layerredrawn"
+        );
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
     
@@ -92,40 +95,63 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  :param slider: :class:`sdi.widgets.IndoorLevelSlider`
      *  :param value: ``Number`` The slider value
      *
-     *  Updates the WMS filter.
+     *  Updates the WMS filter on level and redraw the layers
      */
     changeIndoorLevel: function(slider, value) {
+        if(!value){
+            value = this.getValue();
+        }
         this.setValue(value);
         var layers = this.map.layers;
-        var level = levels[value];
-
-        var controls = this.map.controls;
-        for(var i = 0 ; i < controls.length; i++){
-            if(controls[i] instanceof OpenLayers.Control.GetFeature){
-//                selectLayer.removeAllFeatures();
-                controls[i].protocol.defaultFilter = new OpenLayers.Filter.Comparison({
-                                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
-                                    property: "gva_GVA:Code_du_niveau",
-                                    value:level.code
-                                });
-                break;                
-            }
-        }
+    
         for (var a = 0; a < layers.length; a++) {
-            if (layers[a].isindoor && layers[a].isindoor == 1 && layers[a].levelfield) {
-                var servertype = layers[a].servertype;
-                if (servertype == 1) {
-                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
-                } else if (servertype == 2) {
-                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                } else if (servertype == 3) {
-                    //layers[a].mergeNewParams({'SDI_FILTER': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
-                }
-                layers[a].redraw(true);
+            this.redrawLayer(layers[a]);
+        }
+    },
+    
+    changeIndoorLevelByCode: function(slider, code){
+        if(!code)
+            return;
+        levels.forEach(function(level){
+            if(level.code == code)
+                slider.changeIndoorLevel(slider,levels.indexOf(level));
+        })
+    },
+    
+    /**
+     * Updates the WMS filter on level and redraw the layer
+     * Event "layerredrawn" is sent with the concerned layer as parameter.
+     * 
+     * @param {openlayers layer} layer
+     */
+    redrawLayer: function(layer){
+        var level = this.getLevel();
+        if (layer.isindoor && layer.isindoor == 1 && layer.levelfield) {
+            var servertype = layer.servertype;
+            if (servertype == 1) {
+                layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
+            } else if (servertype == 2) {
+                layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layer.levelfield + "='" + level.code + "'\"}"});
+            } else if (servertype == 3) {
+                layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
+                layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
             }
-        };
+            layer.redraw(true);
+            app.mapPanel.map.events.triggerEvent("layerredrawn", {layer:layer});
+        }
+    },
+    
+    /**
+     * Get the object level for a specific value
+     * or, if not specified, the current value
+     * @param {int} value
+     * @returns {object} selected level
+     */
+    getLevel : function(value){
+        if(!value){
+            value = this.getValue();
+        }
+        return levels[value];
     },
     
     /** private: method[addToMapPanel]

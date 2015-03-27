@@ -183,6 +183,11 @@
                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDRESOURCE"
                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDRESOURCE" 
                filter="safehtml" /> 
+        
+        <field name="featuretypefieldlevel" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDLEVEL"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDLEVEL" 
+               filter="safehtml" /> 
     </fieldset>
 
     <fieldset name="hidden">

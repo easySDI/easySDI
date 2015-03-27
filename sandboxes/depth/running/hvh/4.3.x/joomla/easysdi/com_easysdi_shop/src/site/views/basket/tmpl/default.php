@@ -453,7 +453,7 @@ function selectPerimeter<?php echo $perimeter->id; ?>() {
             ?>);
                                                     }
 function reloadFeatures<?php echo $perimeter->id; ?>() {
-    reloadFeatures("<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->prefix . ':' . $perimeter->featuretypename; ?>", "<?php echo $perimeter->prefix . ':' . $perimeter->featuretypefieldid; ?>");
+    reloadFeatures(<?php echo json_encode($perimeter); ?>);
 }
                                                 </script>
                                                 <br>

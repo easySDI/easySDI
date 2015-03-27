@@ -5,6 +5,7 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
 
     fieldid = perimeter.featuretypefieldid;
     fieldname = perimeter.featuretypefieldname;
+    fieldlevel = perimeter.featuretypefieldlevel;
     jQuery('#t-perimeter').val(perimeter.id);
     jQuery('#t-perimetern').val(perimeter.name);
     jQuery('#t-features').val('');
@@ -12,12 +13,8 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     
     //Current user is not subject to perimeter restriction
     if (isrestrictedbyperimeter === 0) {
-//        perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
-//                perimeter.wmsurl,
-//                {layers: perimeter.layername,
-//                    transparent: true});
         var layerconfig = {type: "OpenLayers.Layer.WMS",
-            name: perimeter.layername,
+            name: perimeter.maplayername,
             transparent: true,
             isindoor: perimeter.isindoor,
             servertype: perimeter.server,
@@ -99,8 +96,6 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
         });
         app.mapPanel.map.addLayer(perimeterLayer);
     }
-
-//    app.mapPanel.map.addLayer(perimeterLayer);
  
     //Selection  Layer
     selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
@@ -108,9 +103,30 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     app.mapPanel.map.addLayer(selectLayer);
     //Selection layer on top
     selectLayer.setZIndex(1001);
+    /* Try this to keep layer on top :
+     *
+     *map.events.on({
+      addlayer: this.raiseLayer,
+      scope: this
+    });
+     */
+    
     //Select control
     selectControl.events.register("featureselected", this, listenerFeatureSelected);
     selectControl.events.register("featureunselected", this, listenerFeatureUnselected);
+    //Managing indoor navigation with predefined perimeter WFS
+    if(perimeter.featuretypefieldlevel){
+        selectControl.fieldlevel = perimeter.prefix + ':' + perimeter.featuretypefieldlevel;
+        app.mapPanel.map.events.register("layerredrawn", this , function(obj) {
+                    selectLayer.removeAllFeatures();
+                    jQuery('#t-features').val('');
+                    selectControl.protocol.defaultFilter = new OpenLayers.Filter.Comparison({
+                                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                                    property: selectControl.fieldlevel,
+                                    value:app.mapPanel.map.indoorlevelslider.getLevel().code
+                                });
+                });
+    }
     app.mapPanel.map.addControl(selectControl);
     toggleSelectControl('selection');
 
@@ -135,7 +151,7 @@ var listenerFeatureSelected = function(e) {
         var features = JSON.parse(features_text);
     else
         var features = new Array();
-    features.push({"id": e.feature.attributes[fieldid], "name": e.feature.attributes[fieldname]});
+    features.push({"id": e.feature.attributes[fieldid], "name": e.feature.attributes[fieldname], "level": e.feature.attributes[fieldlevel]});
     jQuery('#t-features').val(JSON.stringify(features));
     if (jQuery('#t-surface').val() !== '')
         var surface = parseInt(jQuery('#t-surface').val());
@@ -179,25 +195,31 @@ var listenerFeatureUnselected = function(e) {
     }
 };
 
-function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
+function reloadFeatures(perimeter) {
+    var wfsurl = perimeter.wfsurl;
+    var featuretypename = perimeter.prefix + ':' + perimeter.featuretypename;
+    var featuretypefieldid = perimeter.prefix + ':' + perimeter.featuretypefieldid;
+    
     jQuery('#t-features').val(jQuery('#features').val());
     jQuery('#t-surface').val(jQuery('#surface').val());
     var wfsUrl = wfsurl + '?request=GetFeature&SERVICE=WFS&TYPENAME=' + featuretypename + '&VERSION=1.0.0';
     var wfsUrlWithFilter = wfsUrl + '&FILTER=';
     wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
-    var features_text = jQuery('#features').val();
+    
+    var features_text = jQuery('#features').val();    
     if (features_text !== "")
         var features = JSON.parse(features_text);
     else
         var features = new Array();
+    
     if (features.length > 1)
-    {
         wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
-    }
-
+    
+    var levelcode;
     for (var i = 0; i < features.length; i++)
     {
         wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + featuretypefieldid + '</ogc:PropertyName><ogc:Literal>' + features[i].id + '</ogc:Literal></ogc:PropertyIsEqualTo>');
+        levelcode = features[i].level;
     }
     if (features.length > 1)
     {
@@ -217,6 +239,8 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
     fromreload = true;
+    if(levelcode)
+        app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider, levelcode);
 }
 
 var listenerFeatureAddedToZoom = function(e) {

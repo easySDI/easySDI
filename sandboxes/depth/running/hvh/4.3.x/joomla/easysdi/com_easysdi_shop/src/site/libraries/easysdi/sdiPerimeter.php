@@ -31,11 +31,6 @@ class sdiPerimeter {
         try {
             $db = JFactory::getDbo();
 
-//            $query = $db->getQuery(true)
-//                    ->select('*')
-//                    ->from('#__sdi_perimeter p')
-//                    ->where('p.id = ' . (int) $this->id)
-//            ;
             $query = $db->getQuery(true)
                     ->select('p.*, l.service_id, l.servicetype,l.layername as maplayername,l.istiled,l.opacity, l.isindoor,l.levelfield')
                     ->from('#__sdi_perimeter p')
@@ -50,28 +45,6 @@ class sdiPerimeter {
                 $this->$key = $value;
             }
             
-//            if (!empty($this->wmsservice_id)):  
-//                if ($this->wmsservicetype_id == 1):
-//                    $query = $db->getQuery(true)
-//                            ->select('p.*')
-//                            ->from('#__sdi_physicalservice p')
-//                            ->where('p.id = ' . (int) $this->wmsservice_id);
-//                    $db->setQuery($query);
-//                    $wmsservice = $db->loadObject();
-//                    $this->wmsurl = $wmsservice->resourceurl;
-//                else :
-//                    $query = $db->getQuery(true)
-//                            ->select('p.*')
-//                            ->from('#__sdi_virtualservice p')
-//                            ->where('p.id = ' . (int) $this->wmsservice_id);
-//                    $db->setQuery($query);
-//                    $wmsservice = $db->loadObject();
-//                    $this->wmsurl = $wmsservice->reflectedurl;
-//                    if ($this->wmsurl == '')
-//                        $this->wmsurl = $wmsservice->url;
-//                endif;
-//            endif;
-
             if (!empty($this->service_id)):
                 switch ($this->servicetype):
                     case 'physical':

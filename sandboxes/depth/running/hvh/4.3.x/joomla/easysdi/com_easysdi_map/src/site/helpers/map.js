@@ -41,10 +41,10 @@ Ext.onReady(function() {
         }
         if (data.level && cleared === "false") {
             //Init the indoor layer with the default level value
-            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this, window.appname.mapPanel.map.indoorlevelslider.value);
+            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this);
             //Event handling
-            window.appname.mapPanel.map.events.on({"addlayer" : function(){
-                window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this,window.appname.mapPanel.map.indoorlevelslider.value);
+            window.appname.mapPanel.map.events.on({"addlayer" : function(e){
+                window.appname.mapPanel.map.indoorlevelslider.redrawLayer(e.layer);
             }});
         }
         loadingMask.hide();

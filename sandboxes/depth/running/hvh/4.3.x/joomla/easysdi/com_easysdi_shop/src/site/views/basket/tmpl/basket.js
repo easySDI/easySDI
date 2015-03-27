@@ -235,7 +235,6 @@ var priceFormatter = function(price, displayCurrency) {
 };
 
 var updatePricing = function(pricing) {
-    console.log(pricing);
     if (!pricing.isActivated)
         return;
 
