@@ -49,7 +49,7 @@ class cswmetadata {
     public $dom = null;
 
     /**
-     * 
+     * @var DOMDocument
      */
     public $extendeddom = null;
 
@@ -158,6 +158,13 @@ class cswmetadata {
 
     /**
      * Buils an extended Metadata containing EasySDI information fields for XSL transformation
+     * 
+     * @param type $catalog
+     * @param type $type
+     * @param type $preview
+     * @param type $callfromJoomla
+     * @param type $lang
+     * @return DOMDocument 
      */
     public function extend($catalog, $type, $preview, $callfromJoomla, $lang) {
 
