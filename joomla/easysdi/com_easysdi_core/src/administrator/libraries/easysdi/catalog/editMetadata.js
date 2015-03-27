@@ -126,6 +126,7 @@ js('document').ready(function () {
                     break;
                 case 'preview':
                     js('input[name="task"]').val(task);
+                    var preview = js('input[name="preview"]').val();
                     js.ajax({
                         url: baseUrl + task,
                         type: js('#form-metadata').attr('method'),
@@ -136,7 +137,7 @@ js('document').ready(function () {
                             if (response.success) {
                                 var options = {size: {x: iframewidth, y: iframeheight}};
                                 SqueezeBox.initialize(options);
-                                SqueezeBox.setContent('iframe', baseUrl + 'option=com_easysdi_catalog&tmpl=component&view=sheet&preview=public&type=complete&guid=' + response.guid);
+                                SqueezeBox.setContent('iframe', baseUrl + 'option=com_easysdi_catalog&tmpl=component&view=sheet&preview='+preview+'&type=complete&guid=' + response.guid);
                             }
 
                         }

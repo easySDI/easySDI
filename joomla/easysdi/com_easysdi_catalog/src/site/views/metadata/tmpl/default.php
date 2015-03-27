@@ -156,6 +156,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             <?php endforeach; ?>
             <input type="hidden" name="option" value="com_easysdi_catalog" />
             <input type="hidden" name="task" value="" />
+            <input type="hidden" name="preview" value="public" />
             <input type="hidden" name="viral" id="jform_viral" value="0" />
 
         </div>
