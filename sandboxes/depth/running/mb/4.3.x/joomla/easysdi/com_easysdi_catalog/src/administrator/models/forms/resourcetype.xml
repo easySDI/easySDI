@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+
+        <field name="name" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_NAME"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_NAME" 
+               filter="safehtml" />
+
+        <field name="alias" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_ALIAS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_ALIAS" 
+               filter="safehtml" /> 
+        
+        <field name="description" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_DESCRIPTION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_DESCRIPTION" 
+               filter="safehtml" /> 
+        
+        <field
+            name="accessscope_id" 
+            onchange="enableAccessScope();"
+            type="sql" 
+            class="inputbox"
+            label="COM_EASYSDI_CATALOG_FORM_LBL_ACCESSSCOPE"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_ACCESSSCOPE" 
+            query="SELECT id, value, ordering FROM #__sdi_sys_accessscope 
+                    WHERE state=1 AND value!='category' ORDER BY ordering" 
+            key_field="id" 
+            value_field="value"
+            translate="true"
+        /> 
+        <field
+            name="organisms" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field
+            name="users" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi 
+                    INNER JOIN #__users u ON u.id=sdi.user_id 
+                    WHERE state=1 ORDER BY u.name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+
+        <field name="predefined" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_PREDEFINED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_PREDEFINED" > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+        <field name="versioning" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_VERSIONING"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_VERSIONING" > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        
+         <field name="logo" type="media"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_LOGO"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_LOGO" 
+               filter="raw"
+               directory="logo" />
+         
+        <field name="application" type="radio" class="btn-group" default="1"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_APPLICATION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_APPLICATION" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+        <field name="diffusion" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_DIFFUSION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_DIFFUSION" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field> 
+
+        <field name="view" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_VIEW"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_VIEW" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+<!--        <field name="monitoring" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_MONITORING"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_MONITORING" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>-->
+        
+        <field name="sitemapparams" type="text" size="40" class="inputbox input-xxlarge"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_SITEMAPPARAMS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_SITEMAPPARAMS" 
+               filter="safehtml" />
+        
+        
+        <field name="profile_id"  required="true"
+               type="sql" 
+               class="inputbox"
+               query=" SELECT NULL AS id, '' AS name 
+                UNION SELECT id, name FROM #__sdi_profile WHERE state=1 ORDER BY name" 
+               key_field="id" 
+               value_field="name"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_PROFILE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_PROFILE" 
+        /> 
+    </fieldset> 
+
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+        
+    <fieldset 
+        name="accesscontrol">
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="resourcetype"
+        />
+
+    </fieldset>
+
+    <field name="access" type="accesslevel"
+       label="JFIELD_ACCESS_LABEL"
+       description="JFIELD_ACCESS_DESC" 
+       filter="raw" /> 
+
+    <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+        
+    <field name="created_by" type="createdby" default="" class="readonly"
+               readonly="true" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_CREATED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_CREATED_BY"  /> 
+
+    <field name="created" type="calendar" class="readonly"
+               readonly="true"
+               default="0" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_CREATED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_CREATED" 
+               filter="safehtml" /> 
+
+    <field name="modified_by" type="createdby" size="40" class="readonly"
+               readonly="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_MODIFIED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_MODIFIED_BY" 
+               default="0" 
+    /> 
+
+    <field name="modified" type="calendar" class="readonly"
+               readonly="true"
+               default="0" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_MODIFIED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_MODIFIED" 
+               filter="safehtml" /> 
+    
+    <field name="fragmentnamespace_id"  
+               type="sql" 
+               class="inputbox input-mini"
+               query=" SELECT NULL AS id, '' AS prefix 
+                UNION SELECT id, prefix FROM #__sdi_namespace WHERE state=1 ORDER BY prefix" 
+               key_field="id" 
+               value_field="prefix"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_NAMESPACE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_NAMESPACE" 
+        /> 
+        
+        <field name="fragment" type="text" size="40" class="inputbox" 
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_FRAGMENT"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_FRAGMENT" 
+                filter="safehtml" />
+        
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+               filter="ARRAY" /> 
+        
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_ID"
+              readonly="true" class="readonly"
+              description="JGLOBAL_FIELD_ID_DESC" /> 
+</form>
