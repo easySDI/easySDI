@@ -94,12 +94,12 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                         box: false,
                         toggleKey: "ctrlKey"
                     });
-                    app.mapPanel.map.addLayer(perimeterLayer);
-                    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+                    window.appname.mapPanel.map.addLayer(perimeterLayer);
+                    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
 
-                    app.mapPanel.map.addLayer(selectLayer);
+                    window.appname.mapPanel.map.addLayer(selectLayer);
                     selectControl.events.register("featureselected", this, listenerFeatureSelected);
-                    app.mapPanel.map.addControl(selectControl);
+                    window.appname.mapPanel.map.addControl(selectControl);
                     selectControl.activate();
                 }
                 );
