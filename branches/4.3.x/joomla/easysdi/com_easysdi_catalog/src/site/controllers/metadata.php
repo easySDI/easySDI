@@ -479,13 +479,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $cswm = new cswmetadata();
         $cswm->init($this->structure->firstChild);
-        $extend = $cswm->extend('', '', 'editor', 1, 'fr-FR');
+        $extend = $cswm->extend('', '', $_POST['preview'], 1, $lang->getTag());
 
         $response = array();
         $response['success'] = true;
         $response['guid'] = $_POST['jform']['guid'];
 
-        $this->session->set($_POST['jform']['guid'], '<div class="well">' . $cswm->applyXSL('', '', 'editor', null) . '</div>');
+        $this->session->set($_POST['jform']['guid'], '<div class="well">' . $cswm->applyXSL('', '', $_POST['preview'], null) . '</div>');
 
         echo json_encode($response);
         die();
