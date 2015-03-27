@@ -770,6 +770,7 @@ CREATE TABLE #__sdi_order_diffusion (
     remark character varying(500) ,
     fee numeric(10,0) ,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone ,
+    storage_id bigint NULL,
     file character varying(500) ,
     size numeric(10,0)
 );

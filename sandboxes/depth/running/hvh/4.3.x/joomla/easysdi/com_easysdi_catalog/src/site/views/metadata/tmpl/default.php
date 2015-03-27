@@ -35,6 +35,8 @@ JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_PUBLISHING_RIGHT');
 JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_IMPORT_REF');
 JText::script('COM_EASYSDI_CATALOG_ERROR_REMOVE');
 JText::script('COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE');
+JText::script('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN');
+
 
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
@@ -110,6 +112,8 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 <script type="text/javascript">
     var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
     var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
+    var iframewidth = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth'); ?>";
+    var iframeheight = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight'); ?>";
     js = jQuery.noConflict();
     js('document').ready(function() {
         bootbox.setLocale("<?php echo $bbLanguage;?>");
@@ -137,7 +141,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
     ?>
 
     <div>
-        <h2><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
+        <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h1>
         <h5><?php echo $title->name . ': ' . JText::_(strtoupper($title->value)); ?></h5>
     </div>
 
@@ -268,7 +272,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')">Importer</button>
+                    <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_CLOSE') ; ?></button>
                 </div>
             </div>

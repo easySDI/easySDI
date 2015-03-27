@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
+JHtml::_('formbehavior.chosen', 'select');
 
 JText::script('FREEPERIMETER');
 JText::script('MYPERIMETER');
@@ -59,7 +60,7 @@ if ($this->item && $this->item->extractions) :
             <div class="well">
                 <!-- PERIMETER -->
                 <div class="row-fluid shop-perimeter" >
-                    <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3></div>
+                    <div class="row-fluid" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h2></div>
                     <hr>
                     <div class="row-fluid" >
                         <div class="map-recap span6" >
@@ -123,7 +124,7 @@ if ($this->item && $this->item->extractions) :
                 <?php if (!empty($this->thirdParties)): ?>
                     <div class="row-fluid shop-third-party" >
                         <div class="row-fluid" >
-                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
+                            <h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h2>
                             <hr>
                             <?php if ((bool) $this->paramsarray['tp_explanation_display']): ?>
                                 <p><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_EXPLANATION'); ?></p>
@@ -154,11 +155,11 @@ if ($this->item && $this->item->extractions) :
                     <div class="row-fluid" >
                         <hr>
                         <div class="span6" >
-                            <h3><?php echo $this->item->extractionsNb . " " . JText::_('COM_EASYSDI_SHOP_BASKET_SELECTED_DATA'); ?>
+                            <h2><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_N_SELECTED_DATA',$this->item->extractionsNb); ?>
                                 <span id="pricingTotalAmountTI-container" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti)): ?>display: none;<?php endif; ?>">
                                     ( <span class="pricingTotalAmountTI"><?php echo!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti) ? '' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span> )
                                 </span>
-                            </h3>
+                            </h2>
                         </div>
                         <div class="span6" >
                             <?php if (!empty($this->item->visualization)): ?>
@@ -175,7 +176,7 @@ if ($this->item && $this->item->extractions) :
                             <table class="table table-striped" rel="<?php echo $supplier_id; ?>">
                                 <thead>
                                     <tr>
-                                        <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER') . ' : ' . $supplier->name; ?></h4></td>
+                                        <td class="product_column" ><h4><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER',count($supplier->items)) . ' : ' . $supplier->name; ?></h4></td>
                                         <td class="price_column" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
@@ -183,16 +184,18 @@ if ($this->item && $this->item->extractions) :
                                 <tbody>
                                     <?php foreach ($supplier->items as $item): ?>
                                         <tr rel="<?php echo $item->id; ?>">
-                                            <td>
+                                            <td class="product_column">
                                                 <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&guid=' . $item->metadataguid); ?>"><?php echo $item->name; ?></a>
                                                 <ul class="product_properties">
                                                     <?php foreach ($item->properties as $property): ?>
-                                                        <li><?php echo $property->name; ?> : 
+                                                        <li id="shop-basket-property-id-<?php echo $property->id; ?>"><span class="shop-basket-property-name"><?php echo $property->name; ?> :</span> 
                                                             <?php
                                                             $c = count($property->values);
                                                             $i = 0;
                                                             foreach ($property->values as $value):
+                                                                ?><span class="shop-basket-property-value"><?php
                                                                 echo empty($value->value) ? $value->name : $value->value;
+                                                                ?></span><?php
                                                                 $i++;
                                                                 if ($i < $c)
                                                                     echo ', ';
@@ -228,17 +231,17 @@ if ($this->item && $this->item->extractions) :
                                 </tbody>
                                 <tfoot style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>">
                                     <tr>
-                                        <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
+                                        <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
                                         <td class="price_column" id="supplier_cal_fee_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
                                     <tr>
-                                        <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
+                                        <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
                                         <td class="price_column" id="supplier_cal_total_amount_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
                                     <tr>
-                                        <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
+                                        <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
                                         <td class="price_column" id="supplier_cal_total_rebate_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
@@ -282,15 +285,16 @@ if ($this->item && $this->item->extractions) :
                 <!-- INFORMATIONS -->
     <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
                     <div class="row-fluid shop-info" >
-                        <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3>
+                        <div class="row-fluid" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h2>
                             <hr>
-                            <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div></div>
+                            <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div>
+                    </div>
                     </div>
     <?php endif; ?>
                 <!-- ENDOF INFORMATIONS -->
 
                 <!-- TOOLBAR -->
-                <div class="row-fluid " >
+                <div class="row-fluid shop-basket-toolbar" >
                     <hr>
     <?php if ($this->get('user')->isEasySDI): ?>
                         <div id="termsofuse-container">
@@ -303,15 +307,15 @@ if ($this->item && $this->item->extractions) :
                         </div>
                         <div id="toolbar-container">
                             <div class="btn-toolbar" id="toolbar">
-                                <div class="btn-wrapper" id="toolbar-archive">
+                                <div class="btn-wrapper" id="toolbar-draft">
                                     <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE') ?></button>
                                 </div>
         <?php if (!$this->item->free): ?>
-                                    <div class="btn-wrapper" id="toolbar-edit">
+                                    <div class="btn-wrapper" id="toolbar-estimate">
                                         <button class="btn btn-small" rel="basket.estimate"><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
                                     </div>
         <?php endif; ?>
-                                <div class="btn-wrapper" id="toolbar-publish">
+                                <div class="btn-wrapper" id="toolbar-order">
                                     <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER') ?></button>
                                 </div>
                             </div>

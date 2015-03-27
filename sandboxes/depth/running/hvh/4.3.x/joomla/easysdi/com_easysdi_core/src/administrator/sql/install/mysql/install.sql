@@ -2358,6 +2358,14 @@ PRIMARY KEY (`id`),
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_extractstorage` (
+    `id` int(11) unsigned not null auto_increment,
+    `ordering` int(11),
+    `state` int(11) not null default '1',
+    `value` varchar(255) not null,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
 CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36) NOT NULL,
@@ -2375,12 +2383,14 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `remark` VARCHAR(500)  NULL ,
 `fee` DECIMAL(10)  NULL ,
 `completed` DATETIME NULL DEFAULT '0000-00-00 00:00:00',
+`storage_id` INT(11) UNSIGNED NULL ,
 `file` VARCHAR(500)  NULL ,
 `size` DECIMAL(10)  NULL ,
 PRIMARY KEY (`id`),
   INDEX `#__sdi_order_diffusion_fk1` (`order_id` ASC) ,
   INDEX `#__sdi_order_diffusion_fk2` (`diffusion_id` ASC) ,
   INDEX `#__sdi_order_diffusion_fk3` (`productstate_id` ASC) ,
+  INDEX `#__sdi_order_diffusion_fk4` (`storage_id` ASC) ,
   CONSTRAINT `#__sdi_order_diffusion_fk1`
     FOREIGN KEY (`order_id`)
     REFERENCES `#__sdi_order` (`id`)
@@ -2394,6 +2404,11 @@ PRIMARY KEY (`id`),
   CONSTRAINT `#__sdi_order_diffusion_fk3`
     FOREIGN KEY (`productstate_id`)
     REFERENCES `#__sdi_sys_productstate` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_order_diffusion_fk4`
+    FOREIGN KEY (`storage_id`)
+    REFERENCES `#__sdi_sys_extractstorage` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -2663,14 +2678,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product_profile` (
     KEY `#__sdi_pricing_order_supplier_product_profile_fk2` (`pricing_profile_id`),
     CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk1` FOREIGN KEY (`pricing_order_supplier_product_id`) REFERENCES `#__sdi_pricing_order_supplier_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk2` FOREIGN KEY (`pricing_profile_id`) REFERENCES `#__sdi_pricing_profile` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_extractstorage` (
-    `id` int(11) unsigned not null auto_increment,
-    `ordering` int(11),
-    `state` int(11) not null default '1',
-    `value` varchar(255) not null,
-    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- com_easysdi_monitor
