@@ -5,6 +5,15 @@
 <script type="text/javascript">
 js = jQuery.noConflict();
 
+    
+    SqueezeBox.initialize({
+        handler: 'iframe',
+        size: {
+            x: <?php echo $iframewidth ; ?>,
+            y: <?php echo $iframeheight ; ?>
+        }
+    });
+    
 // #n# are used as placeholder
 var Links = {
     resource: {
@@ -16,8 +25,7 @@ var Links = {
                 class: 'modal',
                 href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor&type=complete', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
                 property: 'metadata',
-                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')?>",
-                rel: "{handler:'iframe',size:{x:<?php echo $iframewidth ; ?>,y:<?php echo $iframeheight ; ?>}}"
+                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')?>"
             },
             edit: {
                 href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=#0#')?>',
@@ -862,6 +870,7 @@ var buildActionsCell = function(resource, reload){
     getPublishRight(js('a#'+resource.id+'_publish'));
     getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
     SqueezeBox.assign(js('a#'+resource.id+'_preview'));
+    
 };
 
 // Set events
