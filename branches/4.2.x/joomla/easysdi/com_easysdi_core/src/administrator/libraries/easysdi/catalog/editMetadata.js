@@ -248,7 +248,7 @@ js('document').ready(function () {
     js('#search_table').dataTable({
         "bFilter": false,
         "oLanguage": {
-            sUrl: 'http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/' + dtLang + '.json'
+            sUrl: 'https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/' + dtLang + '.json'
         },
         aaData: null,
         aoColumnDefs: [
