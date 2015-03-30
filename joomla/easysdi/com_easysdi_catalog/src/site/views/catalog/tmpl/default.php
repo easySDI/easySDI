@@ -36,11 +36,11 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
     js = jQuery.noConflict();
 
     js('document').ready(function() {
-        
+
         <?php if ($this->isAdvanced()): ?>
             toogleAdvanced();
         <?php endif; ?>
-            
+
         <?php if ($this->item->oninitrunsearch && JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'false' ): ?>
             submitForm();
         <?php endif; ?>

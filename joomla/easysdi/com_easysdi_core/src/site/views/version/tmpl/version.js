@@ -14,7 +14,7 @@ js(document).ready(function() {
         bProcessing: true,
         bServerSide: true,
         oLanguage: {
-            sUrl: 'http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json'
+            sUrl: 'https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json'
         },
         deferRender: true
     };
