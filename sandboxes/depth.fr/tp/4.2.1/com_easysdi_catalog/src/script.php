@@ -92,6 +92,16 @@ class com_easysdi_catalogInstallerScript {
                 $catalogsearchcriteria->save($array);
             endforeach;
         }
+        
+        // set default params
+        $params = array('iframewidth'=>400,'iframeheight'=>600);
+        $this->setParams($params);
+        
+        // Apply pagination patch
+        $jversion = new JVersion();
+        if($jversion->getShortVersion() == '3.3.6'){
+            copy(JPATH_ROOT.'/administrator/components/com_easysdi_catalog/assets/patch/libraries/cms/router/site.php', JPATH_ROOT.'/libraries/cms/router/site.php');
+        }
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

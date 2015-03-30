@@ -13,7 +13,9 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusion.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+require_once JPATH_SITE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 class cswmetadata {
 
@@ -257,8 +259,8 @@ class cswmetadata {
                     $exdiffusion->setAttribute('isfree', $isfree);
                     $exdiffusion->setAttribute('isDownladable', $isDownladable);
                     $exdiffusion->setAttribute('isOrderable', $isOrderable);
-                    $exdiffusion->setAttribute('surfacemin', is_null($diffusion->surfacemin )?'':$diffusion->surfacemin);
-                    $exdiffusion->setAttribute('surfacemax', is_null($diffusion->surfacemax )?'':$diffusion->surfacemax);                    
+                    $exdiffusion->setAttribute('surfacemin', is_null($diffusion->surfacemin) ? '' : $diffusion->surfacemin);
+                    $exdiffusion->setAttribute('surfacemax', is_null($diffusion->surfacemax) ? '' : $diffusion->surfacemax);
                     $exdiffusion->setAttribute('file_size', '');
                     $exdiffusion->setAttribute('size_unit', '');
                     $exdiffusion->setAttribute('file_type', '');
@@ -849,7 +851,6 @@ class cswmetadata {
         return $html;
     }
 
-
     protected function CURLRequest($type, $url, $xmlBody = "") {
         // Get COOKIE as key=value
         $cookiesList = array();
@@ -866,7 +867,7 @@ class cswmetadata {
         // cURL sends a 'Expect: 100-continue' header. The server acknowledges and sends back the '100' status code.
         // cuRL then sends the request body. This is proper behaviour. Nginx supports this header.
         // This allows to work around servers that do not support that header.
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"','Expect:'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"', 'Expect:'));
         // We're emptying the 'Expect' header, saying to the server: please accept the body right now.        
         curl_setopt($ch, CURLOPT_COOKIE, $cookies);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -890,7 +891,7 @@ class cswmetadata {
 
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
- 
+
         $output = curl_exec($ch);
         curl_close($ch);
 
