@@ -4,6 +4,9 @@ var tabIsOpen;
 var resourcetypes;
 
 js('document').ready(function () {
+    
+    var options = { handler: 'iframe',size: {x: iframewidth, y: iframeheight}};
+    SqueezeBox.initialize(options);
 
     // Remove scope-hidden field
     removeHidden();
@@ -135,9 +138,7 @@ js('document').ready(function () {
 
                             var response = js.parseJSON(data);
                             if (response.success) {
-                                var options = {size: {x: iframewidth, y: iframeheight}};
-                                SqueezeBox.initialize(options);
-                                SqueezeBox.setContent('iframe', baseUrl + 'option=com_easysdi_catalog&tmpl=component&view=sheet&preview='+preview+'&type=complete&guid=' + response.guid);
+                                SqueezeBox.open('index.php?option=com_easysdi_catalog&tmpl=component&view=sheet&preview='+preview+'&type=complete&guid=' + response.guid);
                             }
 
                         }
@@ -982,3 +983,4 @@ function html_entity_decode(texte) {
     texte = texte.replace(/&yuml;/g, 'ÿ'); // 255 FF
     return texte;
 }
+
