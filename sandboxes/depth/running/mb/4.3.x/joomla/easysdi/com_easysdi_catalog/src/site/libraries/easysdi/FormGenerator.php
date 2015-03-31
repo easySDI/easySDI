@@ -480,10 +480,10 @@ class FormGenerator {
             /* @var $node DOMElement */
             $node = $coll->item($j);
 
-            if($node->nodeName == 'bee:scale'){
+            if ($node->nodeName == 'bee:scale') {
                 $breakpoint = true;
             }
-            
+
             $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
 
@@ -574,10 +574,10 @@ class FormGenerator {
                     $refNode = $target->firstChild;
                 }
 
-                if(empty($refNode)){
+                if (empty($refNode)) {
                     $breakpoint = true;
                 }
-                
+
                 try {
                     //add the child to the parent, before the refNode if defined or as last parent's child
                     if (isset($refNode)) {
@@ -823,6 +823,7 @@ class FormGenerator {
      * @return DOMElement
      */
     private function getFormTextBoxField(DOMElement $attribute) {
+
         $maxlength = $attribute->getAttributeNS($this->catalog_uri, 'maxlength');
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $relId = $attribute->getAttributeNS($this->catalog_uri, 'relid');
@@ -1412,7 +1413,7 @@ class FormGenerator {
 
         return $fields;
     }
-    
+
     /**
      * applyAccessScopeLimitation
      * 
@@ -1420,28 +1421,28 @@ class FormGenerator {
      * @param DOMElement|int $attribute
      * @return string - a where clause to add to the query
      */
-    private function applyAccessScopeLimitation(&$query, $attribute = 0){
+    private function applyAccessScopeLimitation(&$query, $attribute = 0) {
         $asl = is_int($attribute) ? $attribute : $attribute->getAttributeNS($this->catalog_uri, 'accessscopeLimitation');
-        switch($asl){
+        switch ($asl) {
             case 0: // no limitation = nothing to do
                 break;
-                
+
             case 1: // limit to resources of the current user's organism
                 //user's organism
                 $organisms = $this->user->getMemberOrganisms();
-                
-                return "r.organism_id = " . (int)$organisms[0]->id;
-            
+
+                return "r.organism_id = " . (int) $organisms[0]->id;
+
             case 2: // limit to resources of the current metadata's organism
-                
-                $query->innerJoin('#__sdi_version v2 ON v2.id='.(int)$this->item->version_id)
-                    ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
-                    ;
-                
+
+                $query->innerJoin('#__sdi_version v2 ON v2.id=' . (int) $this->item->version_id)
+                        ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
+                ;
+
                 return 'r.organism_id=r2.organism_id';
-            
+
             case 3: // both case 1 and case 2
-                return '('.$this->applyAccessScopeLimitation($query, 1).' OR '.$this->applyAccessScopeLimitation($query, 2).')';
+                return '(' . $this->applyAccessScopeLimitation($query, 1) . ' OR ' . $this->applyAccessScopeLimitation($query, 2) . ')';
         }
     }
 
@@ -1464,25 +1465,25 @@ class FormGenerator {
                 $query->innerJoin('#__sdi_organism o on o.id = r.organism_id');
                 $query->where('r.resourcetype_id = ' . (int) $attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
                 $query->order('r.name ASC');
-                
+
                 //user's organism's categories
                 $categories = $this->user->getMemberOrganismsCategoriesIds();
                 array_push($categories, 0);
-                
+
                 //user's organism
                 $organisms = $this->user->getMemberOrganisms();
-                
+
                 //apply resource's accessscope
                 $query->where("("
                         . "r.accessscope_id = 1 "
                         . "OR (r.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.category_id IN (" . implode(',', $categories) . ") AND a.entity_guid = r.guid ) > 0) "
-                        . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
-                        . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = r.guid ) = 1)"
+                        . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int) $organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
+                        . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int) $this->user->id . " AND a.entity_guid = r.guid ) = 1)"
                         . ")"
-                        );
-                
+                );
+
                 $asl = $this->applyAccessScopeLimitation($query, $attribute);
-                if(strlen($asl))
+                if (strlen($asl))
                     $query->where($asl);
 
                 $this->db->setQuery($query);
@@ -1671,7 +1672,7 @@ class FormGenerator {
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
 
 
-        if (!empty($value)) {
+        if (!empty($value) || $value == 0) {
             return $value;
         }
 
