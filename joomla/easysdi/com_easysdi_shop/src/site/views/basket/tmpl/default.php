@@ -166,7 +166,7 @@ if ($this->item && $this->item->extractions) :
                                 <div class="pull-right">
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview') . '&id=' . $this->item->visualization; ?>" target="_blank"
                                        title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_PREVIEW'); ?>"
-                                       class="btn btn-success btn-mini pull-right" >
+                                       class="btn btn-eye btn-mini pull-right" >
                                         <i class="icon-eye"></i>
                                     </a>
                                 </div>
