@@ -31,8 +31,6 @@ function putFeaturesVerticesInHiddenField(feature) {
 
     var wkt = new OpenLayers.Format.WKT();
     var featureAsString = wkt.write(feature);
-
-    //jQuery("#t-features").val(featureAsString);
     jQuery('#t-features').val(JSON.stringify(featureAsString));
 }
 

@@ -215,11 +215,11 @@ function reloadFeatures(perimeter) {
     if (features.length > 1)
         wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
     
-    var levelcode;
+    
     for (var i = 0; i < features.length; i++)
     {
         wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + featuretypefieldid + '</ogc:PropertyName><ogc:Literal>' + features[i].id + '</ogc:Literal></ogc:PropertyIsEqualTo>');
-        levelcode = features[i].level;
+        
     }
     if (features.length > 1)
     {
@@ -239,8 +239,8 @@ function reloadFeatures(perimeter) {
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
     fromreload = true;
-    if(levelcode)
-        app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider, levelcode);
+    
+       
 }
 
 var listenerFeatureAddedToZoom = function(e) {

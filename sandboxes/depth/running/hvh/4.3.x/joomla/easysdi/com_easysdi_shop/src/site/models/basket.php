@@ -124,6 +124,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['created_by'] = $basket->created_by;
         $data['buffer'] = $basket->buffer;
         $data['surface'] = $basket->extent->surface;
+        $data['level'] = $basket->extent->level;
         $data['thirdparty_id'] = (($basket->thirdparty != -1)&&($basket->thirdparty != ""))? $basket->thirdparty : NULL;
         $data['mandate_ref'] = $basket->mandate_ref;
         $data['mandate_contact'] = $basket->mandate_contact;

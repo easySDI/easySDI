@@ -137,7 +137,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                 layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
             }
             layer.redraw(true);
-            app.mapPanel.map.events.triggerEvent("layerredrawn", {layer:layer});
+            window.appname.mapPanel.map.events.triggerEvent("layerredrawn", {layer:layer});
         }
     },
     

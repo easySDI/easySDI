@@ -1,5 +1,6 @@
 var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap;
 
+//Init the recapitulation map (map without control)
 function initMiniMap() {
     minimap = new OpenLayers.Map({div: 'minimap', controls: []});
     var layer = app.mapPanel.map.layers[1].clone();
@@ -12,10 +13,12 @@ function initMiniMap() {
     miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
 }
 
+//
 var listenerMiniFeaturesAdded = function() {
     minimap.zoomToExtent(miniLayer.getDataExtent());
 };
 
+//Call after a feature was selected or drawn in the map
 var listenerFeatureAdded = function(e) {
     miniLayer.addFeatures([e.feature.clone()]);
 
@@ -41,6 +44,7 @@ var listenerFeatureAdded = function(e) {
     }
 };
 
+//Remove all geometries drawn
 function clearLayersVector() {
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
         if (app.mapPanel.map.layers[j].id.indexOf("Vector") != -1) {
@@ -54,6 +58,7 @@ function clearLayersVector() {
     }
 }
 
+//Clear temporary fields
 function clearTemporaryFields() {
     jQuery('#t-perimeter').val('');
     jQuery('#t-perimetern').val('');
@@ -64,22 +69,27 @@ function clearTemporaryFields() {
     
 }
 
+//Reset temporary fields with initial values
 function resetTemporaryFields() {
     jQuery('#t-perimeter').val(jQuery('#perimeter').val());
     jQuery('#t-perimetern').val(jQuery('#perimetern').val());
     jQuery('#t-surface').val(jQuery('#surface').val());
     jQuery('#t-features').val(jQuery('#features').val());
+    jQuery('#t-level').val(jQuery('#level').val());
     jQuery('#alert_template').fadeOut('slow');
     jQuery('#btn-saveperimeter').removeAttr("disabled");
 }
 
+//Push temporary fields to final fields 
 function saveTemporaryFields() {
     jQuery('#perimeter').val(jQuery('#t-perimeter').val());
     jQuery('#perimetern').val(jQuery('#t-perimetern').val());
     jQuery('#surface').val(jQuery('#t-surface').val());
     jQuery('#features').val(jQuery('#t-features').val());
+    jQuery('#level').val(jQuery('#t-level').val());
 }
 
+//
 function beforeFeatureAdded(event) {
     clearLayersVector();
 
@@ -87,6 +97,7 @@ function beforeFeatureAdded(event) {
     jQuery('#t-surface').val(JSON.stringify(event.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
 }
 
+//Reset all values to initial ones
 function resetAll() {
     resetTemporaryFields();
 
@@ -112,6 +123,7 @@ function resetAll() {
     }
 }
 
+//Toggle controls
 function toggleSelectControl(action) {
     if (action == 'selection') {
         if (typeof selectControl !== 'undefined') {
@@ -124,6 +136,7 @@ function toggleSelectControl(action) {
     }
 }
 
+//Reload initial extent selection
 function cancel() {
     resetAll();
     jQuery('#modal-perimeter [id^="btn-perimeter"]').removeClass('active');
@@ -132,59 +145,13 @@ function cancel() {
         eval('reloadFeatures' + jQuery('#perimeter').val() + '()');
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
+    if (jQuery('#level').val() !== '') {
+        app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider, JSON.parse(jQuery('#level').val()).code);
+    }
 }
 
+//
 var number_format = function(number, decimals, dec_point, thousands_sep) {
-    //  discuss at: http://phpjs.org/functions/number_format/
-    // original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // improved by: davook
-    // improved by: Brett Zamir (http://brett-zamir.me)
-    // improved by: Brett Zamir (http://brett-zamir.me)
-    // improved by: Theriault
-    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // bugfixed by: Michael White (http://getsprink.com)
-    // bugfixed by: Benjamin Lupton
-    // bugfixed by: Allan Jensen (http://www.winternet.no)
-    // bugfixed by: Howard Yeend
-    // bugfixed by: Diogo Resende
-    // bugfixed by: Rival
-    // bugfixed by: Brett Zamir (http://brett-zamir.me)
-    //  revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-    //  revised by: Luke Smith (http://lucassmith.name)
-    //    input by: Kheang Hok Chin (http://www.distantia.ca/)
-    //    input by: Jay Klehr
-    //    input by: Amir Habibi (http://www.residence-mixte.com/)
-    //    input by: Amirouche
-    //   example 1: number_format(1234.56);
-    //   returns 1: '1,235'
-    //   example 2: number_format(1234.56, 2, ',', ' ');
-    //   returns 2: '1 234,56'
-    //   example 3: number_format(1234.5678, 2, '.', '');
-    //   returns 3: '1234.57'
-    //   example 4: number_format(67, 2, ',', '.');
-    //   returns 4: '67,00'
-    //   example 5: number_format(1000);
-    //   returns 5: '1,000'
-    //   example 6: number_format(67.311, 2);
-    //   returns 6: '67.31'
-    //   example 7: number_format(1000.55, 1);
-    //   returns 7: '1,000.6'
-    //   example 8: number_format(67000, 5, ',', '.');
-    //   returns 8: '67.000,00000'
-    //   example 9: number_format(0.9, 0);
-    //   returns 9: '1'
-    //  example 10: number_format('1.20', 2);
-    //  returns 10: '1.20'
-    //  example 11: number_format('1.20', 4);
-    //  returns 11: '1.2000'
-    //  example 12: number_format('1.2000', 3);
-    //  returns 12: '1.200'
-    //  example 13: number_format('1 000,50', 2, '.', ' ');
-    //  returns 13: '100 050.00'
-    //  example 14: number_format(1e-8, 8, '.', '');
-    //  returns 14: '0.00000001'
-
     number = (number + '')
             .replace(/[^0-9+\-Ee.]/g, '');
     var n = !isFinite(+number) ? 0 : +number,
@@ -234,6 +201,7 @@ var priceFormatter = function(price, displayCurrency) {
     return price + c;
 };
 
+//
 var updatePricing = function(pricing) {
     if (!pricing.isActivated)
         return;
@@ -261,6 +229,7 @@ var updatePricing = function(pricing) {
     jQuery('#pricingTotal-table').show();
 };
 
+//Call after user validates his extent drawing
 function savePerimeter() {
     if (jQuery('#t-perimeter').val() == '')
     {
@@ -273,6 +242,7 @@ function savePerimeter() {
             "surface": jQuery('#t-surface').val(),
             "allowedbuffer": jQuery('#allowedbuffer').val(),
             "buffer": jQuery('#buffer').val(),
+            "level": jQuery('#t-level').val(),
             "features": JSON.parse(jQuery('#t-features').val())};
 
         jQuery.ajax({
@@ -282,10 +252,8 @@ function savePerimeter() {
         }).done(function(r) {
             if (r.MESSAGE && r.MESSAGE == 'OK') {
                 saveTemporaryFields();
-
                 try {
                     var features = JSON.parse(jQuery('#features').val());
-
                     if (jQuery.isArray(features)) {
                         jQuery('#perimeter-recap-details').empty();
                         jQuery.each(features, function() {
@@ -311,6 +279,13 @@ function savePerimeter() {
                 else {
                     jQuery('#perimeter-recap-details-title > h4').empty();
                 }
+                if (r.extent.level != '') {
+                    jQuery('#perimeter-recap > div:nth-child(2) > div').html(r.extent.level);
+                    jQuery('#perimeter-recap').show();
+                }
+                else {
+                    jQuery('#perimeter-recap > div:nth-child(2) > div').empty();
+                }
                 if (r.extent.surface != '') {
                     jQuery('#perimeter-recap > div:nth-child(1) > div').html(
                             (r.extent.surface > maxmetervalue)
@@ -332,6 +307,7 @@ function savePerimeter() {
     }
 }
 
+//Reproject in EPSG:4326
 function reprojectWKT(wkt) {
     var features = new OpenLayers.Format.WKT().read(wkt);
     var reprojfeatures = new Array();
