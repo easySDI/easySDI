@@ -25,7 +25,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER'); ?>
                                 </div>
-                                <div class="span6 order-edit-value" >
+                                <div class="span8 order-edit-value" >
                                     <?php echo $this->item->client->name; ?>
                                 </div>
                             </div>
@@ -33,7 +33,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER_ORGANISM'); ?>
                                 </div>
-                                <div class="span6 order-edit-value" >
+                                <div class="span8 order-edit-value" >
                                     <?php 
                                     $organisms = $this->item->client->getMemberOrganisms();
                                     echo $organisms[0]->name; ?>
@@ -43,7 +43,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_CREATED'); ?>
                                 </div>
-                                <div class="span6 order-edit-value" >
+                                <div class="span8 order-edit-value" >
                                     <?php echo $this->item->created; ?>
                                 </div>
                             </div>
@@ -51,7 +51,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
                                 </div>
-                                <div class="span6 order-edit-value" >
+                                <div class="span8 order-edit-value" >
                                     <?php echo JText::_($this->item->orderstate); ?>
                                 </div>
                             </div>
@@ -59,7 +59,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERTYPE_ID'); ?>
                                 </div>
-                                <div class="span6 order-edit-value" >
+                                <div class="span8 order-edit-value" >
                                     <?php echo JText::_($this->item->ordertype); ?>
                                 </div>
                             </div>
@@ -96,19 +96,29 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                     <?php
                                                                     foreach ($extraction->properties as $property):
                                                                         ?>
-                                                                        <div class="small"><?php echo $property->name; ?> : 
+                                                                        <div class="small">
+                                                                            <div class="order-property-label" >
+                                                                                <?php echo $property->name; ?> :
+                                                                            </div>
+                                    
                                                                             <?php
                                                                             foreach ($property->values as $value) :
+                                                                                ?>
+                                                                                <div class="order-property-value" >
+                                                                                <?php
                                                                                 if (!empty($value->value)) :
                                                                                     echo $value->value;
                                                                                 else :
                                                                                     echo $value->name;
                                                                                 endif;
                                                                                 if (next($property->values)==true) echo', ';
+                                                                                ?>
+                                                                                </div>
+                                                                                <?php
                                                                             endforeach;
                                                                             ?>
                                                                         </div>
-                                                                        <?php
+                                                                        <?php                                                                        
                                                                     endforeach;
                                                                     ?>
                                                                 </div>
