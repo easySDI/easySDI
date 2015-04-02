@@ -129,17 +129,7 @@
           
 	</fieldset>
 
-	<fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL" >
-
-		<field  name="rules" 
-                        type="rules"
-			component="com_easysdi_shop"
-                        class="inputbox"
-			filter="rules"
-			validate="rules"
-			label="JCONFIG_PERMISSIONS_LABEL"
-			section="component" />
-	</fieldset>
+	
         
         <fieldset name="pricing" description="COM_EASYSDI_SHOP_CONFIG_PRICING_DESC" label="COM_EASYSDI_SHOP_CONFIG_PRICING_LABEL" >
 
@@ -242,6 +232,18 @@
              </field> 
              
              <field name="pricing_by_category" type="note" class="alert alert-info" description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_BY_CATEGORY" />
+	</fieldset>
+        
+        <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL" >
+
+		<field  name="rules" 
+                        type="rules"
+			component="com_easysdi_shop"
+                        class="inputbox"
+			filter="rules"
+			validate="rules"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			section="component" />
 	</fieldset>
 
 </config>
