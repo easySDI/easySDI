@@ -2385,6 +2385,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `storage_id` INT(11) UNSIGNED NULL ,
 `file` VARCHAR(500)  NULL ,
 `size` DECIMAL(10)  NULL ,
+`displayName` VARCHAR(75) NULL,
 PRIMARY KEY (`id`),
   INDEX `#__sdi_order_diffusion_fk1` (`order_id` ASC) ,
   INDEX `#__sdi_order_diffusion_fk2` (`diffusion_id` ASC) ,
