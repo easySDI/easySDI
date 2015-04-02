@@ -35,3 +35,5 @@ UPDATE [#__sdi_language] SET [datatable]='Swedish' WHERE [code]='sv-SE';
 UPDATE [#__sdi_language] SET [datatable]='Turkish' WHERE [code]='tr-TR';
 UPDATE [#__sdi_language] SET [datatable]='Ukranian' WHERE [code]='uk-UA';
 UPDATE [#__sdi_language] SET [datatable]='Chinese' WHERE [code]='zh-CN';
+
+ALTER TABLE [#__sdi_relation] ALTER COLUMN [accessscope_limitation] [tinyint] NULL;

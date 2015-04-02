@@ -1700,6 +1700,7 @@ CREATE TABLE [#__sdi_relation] (
 	[editorrelationscope_id] [bigint] NULL,
 	[childresourcetype_id] [bigint] NULL,
 	[childtype_id] [bigint] NULL,
+        [accessscope_limitation] [tinyint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_relation_id] PRIMARY KEY CLUSTERED 

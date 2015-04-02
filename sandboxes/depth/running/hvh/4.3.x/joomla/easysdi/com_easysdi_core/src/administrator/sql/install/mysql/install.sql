@@ -1240,7 +1240,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
 `editorrelationscope_id` INT(11) UNSIGNED  ,
 `childresourcetype_id` INT(11)  UNSIGNED,
 `childtype_id` INT(11)  UNSIGNED,
-
+`accessscope_limitation` INT(1) DEFAULT 0,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,

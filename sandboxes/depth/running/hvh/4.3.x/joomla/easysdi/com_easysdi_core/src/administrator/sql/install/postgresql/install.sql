@@ -1123,6 +1123,7 @@ CREATE TABLE #__sdi_relation (
     editorrelationscope_id bigint,
     childresourcetype_id bigint,
     childtype_id bigint,
+    accessscope_limitation integer DEFAULT 0,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
