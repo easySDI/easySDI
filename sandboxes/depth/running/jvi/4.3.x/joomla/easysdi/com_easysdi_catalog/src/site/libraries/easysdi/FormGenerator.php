@@ -90,7 +90,7 @@ class FormGenerator {
      * @version 4.0.0
      */
     public function getForm() {
-        
+
         if (!isset($_GET['relid'])) {
             $query = $this->db->getQuery(true);
             $query->select('r.id, r.name, r.childtype_id');
@@ -253,12 +253,15 @@ class FormGenerator {
         foreach ($childs as $child) {
             $parent->appendChild($child);
 
+            /* @var $element DOMElement */
             foreach ($child->childNodes as $element) {
+
                 switch ($element->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                     case EnumChildtype::$CLASS:
+                        $this->getChildTree($element, $level + 1);
+                        break;
                     case EnumChildtype::$RELATIONTYPE:
                         $this->getChildTree($element, $level + 1);
-
                         break;
                 }
             }
@@ -298,7 +301,7 @@ class FormGenerator {
 
             if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
 
-                if ($parent->parentNode->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE || $lowerbound > 0 || $occurance > 0) {
+                if ($lowerbound > 0 || $occurance > 0) {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 } else {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
@@ -337,7 +340,7 @@ class FormGenerator {
 
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
-                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->isocode, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
 
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':level', $level);
@@ -395,12 +398,11 @@ class FormGenerator {
                     break;
                 case EnumChildtype::$RELATIONTYPE:
 
-                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->isocode, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '');
-                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':accessscopeLimitation', $result->accessscope_limitation);
@@ -477,23 +479,28 @@ class FormGenerator {
         for ($j = 0; $j < $coll->length; $j++) {
             /* @var $node DOMElement */
             $node = $coll->item($j);
-            
-            $childType = $node->getAttributeNs($this->catalog_uri,'childtypeId');
+
+            if ($node->nodeName == 'bee:scale') {
+                $breakpoint = true;
+            }
+
+            $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
-            
-            if($childType == EnumChildtype::$CLASS){
-               
+
+            if ($childType == EnumChildtype::$CLASS) {
+
                 $paths = explode('/', $nodePath);
-                $index = count($paths)-2;
+                $index = count($paths) - 2;
                 $index_node_name = $this->removeIndex($paths[$index]);
                 $paths[$index] = $index_node_name;
-                
+
                 $nodePath = implode('/', $paths);
             }
-            
+
             $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
             $occurance_clone = $domXpathClone->query($nodePath)->length;
 
+            // if occurance == 0 remove node from clone
             if ($occurance == 0) {
                 //look for the ancestor under which we can clean the structure
                 while (!isset($node->nextSibling) && !isset($node->previousSibling)) {
@@ -515,7 +522,7 @@ class FormGenerator {
             if ($childtype == EnumChildtype::$CLASS) {
                 $node = $node->parentNode;
             }
-            
+
             for ($i = $occurance_clone; $i < $occurance; $i++) {
                 $cloneNode = $node->cloneNode(true);
                 $cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
@@ -538,8 +545,8 @@ class FormGenerator {
     private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
         /* @var $node DOMElement */
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
-            if(strpos($node->getNodePath(), 'gmd:extent') > -1 ){
-                $breakpoint = true; 
+            if (strpos($node->getNodePath(), 'gmd:extent') > -1) {
+                $breakpoint = true;
             }
             if ($domXpathClone->query($node->getNodePath())->length == 0) {
                 do {
@@ -557,34 +564,36 @@ class FormGenerator {
 
                     //try to set the refNode, depending on the prevSibl existence
                     //$refNode = $coll->length > 0 ? $coll->item($coll->length - 1)->nextSibling : $target->firstChild;
-                    if($coll->length>0){
-                        $refNode =  $coll->item($coll->length - 1)->nextSibling;
+                    if ($coll->length > 0) {
+                        $refNode = $coll->item($coll->length - 1)->nextSibling;
                         $target = $targets->item($coll->length - 1);
-                    }
-                    else{
+                    } else {
                         $refNode = $target->firstChild;
                     }
                 } else {
                     $refNode = $target->firstChild;
                 }
 
+                if (empty($refNode)) {
+                    $breakpoint = true;
+                }
+
                 try {
                     //add the child to the parent, before the refNode if defined or as last parent's child
-                    if(isset($refNode)){ 
+                    if (isset($refNode)) {
                         $target->insertBefore($clone->importNode($childToImport, true), $refNode);
-                    }else{
+                    } else {
                         $target->appendChild($clone->importNode($childToImport, true));
                     }
                 } catch (Exception $exc) {
-                    echo $exc->getTraceAsString();
+                    $exc->getTraceAsString();
                 }
-
-                
             }
         }
 
         //replace the structure with the clone
         $this->structure->loadXML($clone->saveXML());
+        $breakpoint = true;
     }
 
     /**
@@ -814,6 +823,7 @@ class FormGenerator {
      * @return DOMElement
      */
     private function getFormTextBoxField(DOMElement $attribute) {
+
         $maxlength = $attribute->getAttributeNS($this->catalog_uri, 'maxlength');
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $relId = $attribute->getAttributeNS($this->catalog_uri, 'relid');
@@ -834,12 +844,12 @@ class FormGenerator {
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
         }
-        
+
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         if ($guid != '') {
             if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
                 $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
-                $field->setAttribute('default', $this->getDefaultValue($relId, $attribute->firstChild->nodeValue,FALSE,$this->ldao->getDefaultLanguage()->id));
+                $field->setAttribute('default', $this->getDefaultValue($relId, $attribute->firstChild->nodeValue, FALSE, $this->ldao->getDefaultLanguage()->id));
             } else {
                 $field->setAttribute('label', EText::_($guid));
                 $field->setAttribute('default', $this->getDefaultValue($relId, $attribute->firstChild->nodeValue));
@@ -912,12 +922,12 @@ class FormGenerator {
 
         if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
             $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
-            $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue,FALSE,$this->ldao->getDefaultLanguage()->id));
+            $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, FALSE, $this->ldao->getDefaultLanguage()->id));
         } else {
             $field->setAttribute('label', EText::_($guid));
             $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue));
         }
-        
+
         $field->setAttribute('description', EText::_($guid, 2));
 
         $fields[] = $field;
@@ -1384,7 +1394,7 @@ class FormGenerator {
         $hiddenField->setAttribute('type', 'hidden');
         $hiddenField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
         $hiddenField->setAttribute('default', $attribute->firstChild->nodeValue);
-        
+
         $hiddenDeleteField = $this->form->createElement('field');
         $hiddenDeleteField->setAttribute('type', 'hidden');
         $hiddenDeleteField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehiddendelete');
@@ -1403,7 +1413,7 @@ class FormGenerator {
 
         return $fields;
     }
-    
+
     /**
      * applyAccessScopeLimitation
      * 
@@ -1411,28 +1421,28 @@ class FormGenerator {
      * @param DOMElement|int $attribute
      * @return string - a where clause to add to the query
      */
-    private function applyAccessScopeLimitation(&$query, $attribute = 0){
+    private function applyAccessScopeLimitation(&$query, $attribute = 0) {
         $asl = is_int($attribute) ? $attribute : $attribute->getAttributeNS($this->catalog_uri, 'accessscopeLimitation');
-        switch($asl){
+        switch ($asl) {
             case 0: // no limitation = nothing to do
                 break;
-                
+
             case 1: // limit to resources of the current user's organism
                 //user's organism
                 $organisms = $this->user->getMemberOrganisms();
-                
-                return "r.organism_id = " . (int)$organisms[0]->id;
-            
+
+                return "r.organism_id = " . (int) $organisms[0]->id;
+
             case 2: // limit to resources of the current metadata's organism
-                
-                $query->innerJoin('#__sdi_version v2 ON v2.id='.(int)$this->item->version_id)
-                    ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
-                    ;
-                
+
+                $query->innerJoin('#__sdi_version v2 ON v2.id=' . (int) $this->item->version_id)
+                        ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
+                ;
+
                 return 'r.organism_id=r2.organism_id';
-            
+
             case 3: // both case 1 and case 2
-                return '('.$this->applyAccessScopeLimitation($query, 1).' OR '.$this->applyAccessScopeLimitation($query, 2).')';
+                return '(' . $this->applyAccessScopeLimitation($query, 1) . ' OR ' . $this->applyAccessScopeLimitation($query, 2) . ')';
         }
     }
 
@@ -1455,25 +1465,25 @@ class FormGenerator {
                 $query->innerJoin('#__sdi_organism o on o.id = r.organism_id');
                 $query->where('r.resourcetype_id = ' . (int) $attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
                 $query->order('r.name ASC');
-                
+
                 //user's organism's categories
                 $categories = $this->user->getMemberOrganismsCategoriesIds();
                 array_push($categories, 0);
-                
+
                 //user's organism
                 $organisms = $this->user->getMemberOrganisms();
-                
+
                 //apply resource's accessscope
                 $query->where("("
                         . "r.accessscope_id = 1 "
                         . "OR (r.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.category_id IN (" . implode(',', $categories) . ") AND a.entity_guid = r.guid ) > 0) "
-                        . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
-                        . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = r.guid ) = 1)"
+                        . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int) $organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
+                        . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int) $this->user->id . " AND a.entity_guid = r.guid ) = 1)"
                         . ")"
-                        );
-                
+                );
+
                 $asl = $this->applyAccessScopeLimitation($query, $attribute);
-                if(strlen($asl))
+                if (strlen($asl))
                     $query->where($asl);
 
                 $this->db->setQuery($query);
@@ -1556,8 +1566,8 @@ class FormGenerator {
                 $validator[] = 'validate-sdi' . $patterns[$guid]->stereotype_name;
             }
         }
-        
-        return implode(' ',$validator);
+
+        return implode(' ', $validator);
     }
 
     /**
@@ -1623,7 +1633,7 @@ class FormGenerator {
      */
     private function getRelationQuery() {
         $query = $this->db->getQuery(true);
-        $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id, r.accessscope_limitation');
+        $query->select('r.name, r.isocode, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id, r.accessscope_limitation');
         $query->select('c.id as class_id, c.name AS class_name, c.guid AS class_guid');
         $query->select('ca.id as classass_id, ca.name AS classass_name, ca.guid AS classass_guid');
         $query->select('a.id as attribute_id, a.name AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length');
@@ -1662,7 +1672,7 @@ class FormGenerator {
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
 
 
-        if (!empty($value)) {
+        if (!empty($value) || $value == 0) {
             return $value;
         }
 
@@ -1687,7 +1697,7 @@ class FormGenerator {
             $query->select('value');
             $query->from('#__sdi_relation_defaultvalue');
             $query->where('relation_id=' . (int) $relation_id);
-            if(isset($language_id)){
+            if (isset($language_id)) {
                 $query->where('language_id=' . (int) $language_id);
             }
         }
