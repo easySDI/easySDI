@@ -49,7 +49,7 @@ class cswmetadata {
     public $dom = null;
 
     /**
-     * 
+     * @var DOMDocument
      */
     public $extendeddom = null;
 
@@ -158,6 +158,13 @@ class cswmetadata {
 
     /**
      * Buils an extended Metadata containing EasySDI information fields for XSL transformation
+     * 
+     * @param type $catalog
+     * @param type $type
+     * @param type $preview
+     * @param type $callfromJoomla
+     * @param type $lang
+     * @return DOMDocument 
      */
     public function extend($catalog, $type, $preview, $callfromJoomla, $lang) {
 
@@ -524,17 +531,19 @@ class cswmetadata {
                 endif;
 
                 //Links
-                $query = $this->db->getQuery(true)
-                        ->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type, t.text1 as title')
-                        ->from('#__sdi_versionlink vl')
-                        ->innerJoin('#__sdi_version v ON v.id = vl.parent_id')
-                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                        ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = \'' . $lang . '\'')
-                        ->where('vl.child_id = ' . (int) $this->version->id)
-                ;
+                $query = $this->db->getQuery(true);
+                
+                $query->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type, t.text1 as title');
+                $query->from('#__sdi_versionlink vl');
+                $query->innerJoin('#__sdi_version v ON v.id = vl.parent_id');
+                $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+                $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
+                $query->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id');
+                $query->leftJoin('#__sdi_translation t on t.element_guid = m.guid');
+                $query->leftJoin('#__sdi_language l ON l.id = t.language_id');
+                $query->where('vl.child_id = ' . (int) $this->version->id);
+                $query->where('l.code = ' . $query->quote($lang));    
+                
                 $this->db->setQuery($query);
                 $parentsitem = $this->db->loadObjectList();
                 $links = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:links');
@@ -551,16 +560,19 @@ class cswmetadata {
                     $parents->appendChild($parent);
                 endforeach;
 
-                $query = $this->db->getQuery(true)
-                        ->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type,  t.text1 as title')
-                        ->from('#__sdi_versionlink vl')
-                        ->innerJoin('#__sdi_version v ON v.id = vl.child_id')
-                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                        ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = ' . $query->quote($lang))
-                        ->where('vl.parent_id = ' . (int) $this->version->id);
+                $query = $this->db->getQuery(true);
+                
+                $query->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type,  t.text1 as title');
+                $query->from('#__sdi_versionlink vl');
+                $query->innerJoin('#__sdi_version v ON v.id = vl.child_id');
+                $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+                $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
+                $query->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id');
+                $query->leftJoin('#__sdi_translation t on t.element_guid = m.guid');
+                $query->leftJoin('#__sdi_language l ON l.id = t.language_id');
+                $query->where('vl.parent_id = ' . (int) $this->version->id);
+                $query->where('l.code = ' . $query->quote($lang));
+                
                 $this->db->setQuery($query);
                 $childrenitem = $this->db->loadObjectList();
                 $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');

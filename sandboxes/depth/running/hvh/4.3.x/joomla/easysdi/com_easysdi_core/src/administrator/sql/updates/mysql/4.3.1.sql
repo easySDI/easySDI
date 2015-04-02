@@ -1,6 +1,8 @@
 ALTER TABLE `#__sdi_order_diffusion` ADD `storage_id` INT(11) UNSIGNED NULL AFTER completed;
 ALTER TABLE `#__sdi_order_diffusion` ADD CONSTRAINT `#__sdi_order_diffusion_fk4` FOREIGN KEY (`storage_id`) REFERENCES `#__sdi_sys_extractstorage` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+ALTER TABLE `#__sdi_order_diffusion` ADD `displayName` VARCHAR(75) NULL AFTER size;
+
 UPDATE  #__sdi_language SET datatable='Arabic' WHERE code='ar-DZ';
 UPDATE  #__sdi_language SET datatable='Bulgarian' WHERE code='bg-BG';
 UPDATE  #__sdi_language SET datatable='Catalan' WHERE code='ca-ES';
