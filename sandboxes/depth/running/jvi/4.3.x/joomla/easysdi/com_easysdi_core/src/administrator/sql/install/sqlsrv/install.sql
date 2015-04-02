@@ -1179,6 +1179,7 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[storage_id] [bigint] NULL,
 	[file] [nvarchar](500) NULL,
 	[size] [decimal](10, 0) NULL,
+        [displayName] [nvarchar](75) NULL
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
