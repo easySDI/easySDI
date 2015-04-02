@@ -5,3 +5,4 @@ ALTER TABLE [#__sdi_order_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order
 REFERENCES [#__sdi_sys_extractstorage] ([id])
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
+ALTER TABLE [#__sdi_order_diffusion] ADD [displayName] [nvarchar](75) NULL;
