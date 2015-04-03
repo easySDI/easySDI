@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset>
+
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+      
+        <field name="alias" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_ALIAS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_ALIAS" 
+               filter="safehtml" /> 
+        
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+               filter="ARRAY" />
+        
+        <field name="text2" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_VALUE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_VALUE" 
+               filter="ARRAY" />
+
+        <field name="created_by" type="createdby" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_CREATED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_CREATED_BY"  /> 
+
+        <field name="created" type="timecreated" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_CREATED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_CREATED"  /> 
+
+        <field name="modified_by" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_MODIFIED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_MODIFIED_BY" 
+               default="0" 
+               filter="safehtml" /> 
+
+        <field name="modified" type="timeupdated" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_MODIFIED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_MODIFIED"  /> 
+
+        <field name="name" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_NAME"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_NAME" 
+               filter="safehtml" /> 
+
+        <field name="value" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_VALUE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_VALUE" 
+               filter="safehtml" /> 
+
+        <field name="attributename" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_ATTRIBUTE_ID"
+               readonly="true" class="readonly"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_ATTRIBUTE_ID" />
+
+       
+        
+        <field
+            name="state"
+            type="list"
+            label="JSTATUS"
+            description="JFIELD_PUBLISHED_DESC"
+            class="inputbox"
+            size="1"
+            default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field> 
+
+        <field name="access"
+        type="accesslevel"
+        label="JFIELD_ACCESS_LABEL"
+        description="JFIELD_ACCESS_DESC"
+        class="inputbox span12 small"
+        size="1"
+        />
+        
+    </fieldset> 
+
+    <fieldset 
+        name="accesscontrol">
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="attributevalue"
+        />
+
+    </fieldset>
+    
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="attribute_id" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+    
+
+</form>
