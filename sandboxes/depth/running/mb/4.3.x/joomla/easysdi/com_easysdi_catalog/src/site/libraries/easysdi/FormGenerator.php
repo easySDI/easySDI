@@ -135,7 +135,7 @@ class FormGenerator {
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
 
-                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, 1, $result->upperbound);
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->isocode, $result->id, EnumChildtype::$RELATION, $result->guid, 1, $result->upperbound);
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
                     $relation->appendChild($class);
 
@@ -480,7 +480,7 @@ class FormGenerator {
             /* @var $node DOMElement */
             $node = $coll->item($j);
 
-            if ($node->nodeName == 'bee:scale') {
+            if ($node->nodeName == 'gva:GVA_MD_GCDIdentification') {
                 $breakpoint = true;
             }
 
