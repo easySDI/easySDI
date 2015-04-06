@@ -253,6 +253,10 @@ class FormGenerator {
         foreach ($childs as $child) {
             $parent->appendChild($child);
 
+            if($child->nodeName == 'gmd:contact'){
+                $breakpoint = true;
+            }
+            
             /* @var $element DOMElement */
             foreach ($child->childNodes as $element) {
 
@@ -279,6 +283,10 @@ class FormGenerator {
 
         $this->setDomXpathStr();
 
+        if($parent->nodeName == 'gmd:contact'){
+            $breakpoint = true;
+        }
+        
         if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
             $occurance = 0;
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
@@ -320,6 +328,10 @@ class FormGenerator {
             }
         }
 
+        if($parent->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
+            return $childs;
+        }
+        
         $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
 
         $formStereotype = new FormStereotype();
@@ -333,7 +345,7 @@ class FormGenerator {
         $this->db->setQuery($query);
 
         $results = $this->db->loadObjectList();
-
+        
         foreach ($results as $result) {
 
             $scope_id = $this->getFieldScope($this->item->id, $result->relationscope_id, $result->editorrelationscope_id);
@@ -407,12 +419,19 @@ class FormGenerator {
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':accessscopeLimitation', $result->accessscope_limitation);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
-
                     if (isset($result->classass_id)) {
                         $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->classass_name, $result->classass_id, EnumChildtype::$CLASS, $result->guid);
-
+                        $relation->appendChild($class);
+                    }else{
+                        $class = $this->structure->createElementNS($this->catalog_uri, $this->catalog_prefix . ':dummy');
+                        $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', 0);
+                        $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', 1);
+                        $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':dbid', 0);
                         $relation->appendChild($class);
                     }
+                    
+                    
+                    
                     $childs[] = $relation;
 
                     break;
@@ -480,7 +499,7 @@ class FormGenerator {
             /* @var $node DOMElement */
             $node = $coll->item($j);
 
-            if ($node->nodeName == 'gva:GVA_MD_GCDIdentification') {
+            if ($node->nodeName == 'catalog:dummy') {
                 $breakpoint = true;
             }
 
@@ -499,11 +518,13 @@ class FormGenerator {
 
             $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
             $occurance_clone = $domXpathClone->query($nodePath)->length;
-
+            
             // if occurance == 0 remove node from clone
             if ($occurance == 0) {
+                $parentChildType = $node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
+                
                 //look for the ancestor under which we can clean the structure
-                while (!isset($node->nextSibling) && !isset($node->previousSibling)) {
+                while (!isset($node->nextSibling) && !isset($node->previousSibling) && $parentChildType != EnumChildtype::$RELATIONTYPE) {
                     $node = $node->parentNode;
                 }
 
@@ -513,12 +534,12 @@ class FormGenerator {
                 $clone_structure->normalizeDocument();
 
                 //reset collection and loop
-                $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]');
+                $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$RELATIONTYPE . '"]');
                 $j = 0;
                 continue;
             }
 
-            $childtype = $node->getAttributeNS($this->catalog_uri, 'childtypeId');
+            
             if ($childtype == EnumChildtype::$CLASS) {
                 $node = $node->parentNode;
             }
