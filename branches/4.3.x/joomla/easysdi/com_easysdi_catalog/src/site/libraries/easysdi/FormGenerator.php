@@ -253,10 +253,10 @@ class FormGenerator {
         foreach ($childs as $child) {
             $parent->appendChild($child);
 
-            if($child->nodeName == 'gmd:contact'){
+            if ($child->nodeName == 'gmd:contact') {
                 $breakpoint = true;
             }
-            
+
             /* @var $element DOMElement */
             foreach ($child->childNodes as $element) {
 
@@ -283,10 +283,10 @@ class FormGenerator {
 
         $this->setDomXpathStr();
 
-        if($parent->nodeName == 'gmd:contact'){
+        if ($parent->nodeName == 'catalog:dummy') {
             $breakpoint = true;
         }
-        
+
         if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
             $occurance = 0;
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
@@ -302,7 +302,12 @@ class FormGenerator {
                     $relationExist = $parent->parentNode;
                     $lowerbound = $parent->parentNode->getAttributeNS($this->catalog_uri, 'lowerbound');
                     if (isset($this->domXpathCsw)) {
-                        $occurance = $this->domXpathCsw->query('/*' . $this->removeIndex($parent->getNodePath()))->length;
+                        if($parent->getAttributeNS($this->catalog_uri,'dbid')==0){
+                            $occurance = $this->domXpathCsw->query('/*' . $this->removeIndex($parent->parentNode->getNodePath()))->length;
+                        }else{
+                            $occurance = $this->domXpathCsw->query('/*' . $this->removeIndex($parent->getNodePath()))->length;
+                        }
+                        
                     }
                     break;
             }
@@ -317,6 +322,10 @@ class FormGenerator {
                 }
             }
 
+            if ($parent->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
+                return $childs;
+            }
+
             // Specific case for Stereotype boundary
             $stereotype_id = $parent->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
@@ -328,10 +337,8 @@ class FormGenerator {
             }
         }
 
-        if($parent->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
-            return $childs;
-        }
-        
+
+
         $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
 
         $formStereotype = new FormStereotype();
@@ -345,7 +352,7 @@ class FormGenerator {
         $this->db->setQuery($query);
 
         $results = $this->db->loadObjectList();
-        
+
         foreach ($results as $result) {
 
             $scope_id = $this->getFieldScope($this->item->id, $result->relationscope_id, $result->editorrelationscope_id);
@@ -422,16 +429,16 @@ class FormGenerator {
                     if (isset($result->classass_id)) {
                         $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->classass_name, $result->classass_id, EnumChildtype::$CLASS, $result->guid);
                         $relation->appendChild($class);
-                    }else{
+                    } else {
                         $class = $this->structure->createElementNS($this->catalog_uri, $this->catalog_prefix . ':dummy');
                         $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', 0);
                         $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', 1);
                         $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':dbid', 0);
                         $relation->appendChild($class);
                     }
-                    
-                    
-                    
+
+
+
                     $childs[] = $relation;
 
                     break;
@@ -518,11 +525,11 @@ class FormGenerator {
 
             $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
             $occurance_clone = $domXpathClone->query($nodePath)->length;
-            
+
             // if occurance == 0 remove node from clone
             if ($occurance == 0) {
                 $parentChildType = $node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
-                
+
                 //look for the ancestor under which we can clean the structure
                 while (!isset($node->nextSibling) && !isset($node->previousSibling) && $parentChildType != EnumChildtype::$RELATIONTYPE) {
                     $node = $node->parentNode;
@@ -539,7 +546,7 @@ class FormGenerator {
                 continue;
             }
 
-            
+
             if ($childtype == EnumChildtype::$CLASS) {
                 $node = $node->parentNode;
             }
