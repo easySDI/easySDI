@@ -253,10 +253,6 @@ class FormGenerator {
         foreach ($childs as $child) {
             $parent->appendChild($child);
 
-            if ($child->nodeName == 'gmd:contact') {
-                $breakpoint = true;
-            }
-
             /* @var $element DOMElement */
             foreach ($child->childNodes as $element) {
 
@@ -282,10 +278,6 @@ class FormGenerator {
         $childs = array();
 
         $this->setDomXpathStr();
-
-        if ($parent->nodeName == 'catalog:dummy') {
-            $breakpoint = true;
-        }
 
         if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
             $occurance = 0;
@@ -546,7 +538,7 @@ class FormGenerator {
                 continue;
             }
 
-
+            $childtype = $node->getAttributeNS($this->catalog_uri, 'childtypeId');
             if ($childtype == EnumChildtype::$CLASS) {
                 $node = $node->parentNode;
             }
