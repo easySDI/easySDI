@@ -6,14 +6,12 @@ package org.easysdi.proxy.hibernate;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import net.sf.ehcache.CacheManager;
-
+import net.sf.ehcache.Ehcache;
 import org.easysdi.proxy.domain.SdiCswSpatialpolicy;
 import org.easysdi.proxy.domain.SdiExcludedattribute;
 import org.easysdi.proxy.domain.SdiFeaturetypePolicy;
@@ -87,6 +85,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
                 cache.evictEntityRegions();
                 cache.evictQueryRegions();
                 cache.evictCollectionRegions();
+                cache.evictNaturalIdRegions();
 
                 jsonresponse = "{\"status\": \"OK\", \"message\": \"Complete cache invalidation done.\"}";
             } //Invalidate a specific entity
