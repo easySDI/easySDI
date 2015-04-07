@@ -33,7 +33,7 @@
         -->
         
         <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
-        <property name="url" value="jdbc:sqlserver://WDEV-GVASDI-HVH\SQLEXPRESS;databaseName=ESDIGVA1" />
+        <property name="url" value="jdbc:sqlserver://WDEV-GVASDI-HVH\SQLEXPRESS;databaseName=ESDI43" />
         <property name="username" value="sa" />
         <property name="password" value="JJ4864k99b" />
     </bean>
