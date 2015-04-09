@@ -485,7 +485,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $response['success'] = true;
         $response['guid'] = $_POST['jform']['guid'];
 
-        $this->session->set($_POST['jform']['guid'], '<div class="well">' . $cswm->applyXSL('', '', $_POST['preview'], null) . '</div>');
+        $this->session->set($_POST['jform']['guid'], '<div class="well">' . $cswm->applyXSL(array('preview' => $_POST['preview']), null) . '</div>');
 
         echo json_encode($response);
         die();
