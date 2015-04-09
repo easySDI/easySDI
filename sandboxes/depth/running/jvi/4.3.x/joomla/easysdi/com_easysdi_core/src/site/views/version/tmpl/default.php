@@ -86,6 +86,7 @@ if ($this->item) :
             <div class="row-fluid">
                 <?php if($this->item->resourcetypechild): ?>
                 <!-- Criteria -->
+                <div class="row-fluid">
                 <div class="span12">
                     <div class="well">
                         <div class="sdi-searchcriteria form-horizontal form-inline form-validate">
@@ -127,6 +128,7 @@ if ($this->item) :
                             </table>
                         </div>
                     </div>
+                </div>
                 </div>
                 
                 
