@@ -408,7 +408,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->where('l.code = ' . $query->quote($lang->getTag()));
         if (array_key_exists('version', $_POST)) {
             if ($_POST['version'] == 'last') {
-                $query->group('r.id');
+                $query->group('r.id, m.id, r.name, v.name, m.guid, t.text1, ms.value, m.created');
                 $query->order('m.created DESC');
             }
         }
@@ -429,7 +429,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $user = new sdiUser();
         //user's organism's categories
         $categories = $user->getMemberOrganismsCategoriesIds();
-        array_push($categories, 0);
+        if(is_null($caegories) || count($categories)==0){
+            $categories = array(0);
+        }
 
         //user's organism
         $organisms = $user->getMemberOrganisms();
