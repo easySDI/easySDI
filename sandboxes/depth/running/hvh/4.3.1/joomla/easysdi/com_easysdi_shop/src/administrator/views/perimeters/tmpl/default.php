@@ -20,6 +20,7 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_shop/assets/css/easysdi_shop.css');
 
 $user = JFactory::getUser();
+$params = JComponentHelper::getParams('com_easysdi_shop');
 $listOrder = $this->state->get('list.ordering');
 $listDirn = $this->state->get('list.direction');
 $archived = $this->state->get('filter.published') == 2 ? true : false;
@@ -137,12 +138,16 @@ if (!empty($this->extra_sidebar)) {
                 <tbody>
                     <?php
                     foreach ($this->items as $i => $item) :
+                        if ($params->get('userperimeteractivated') == 0 && $item->alias == 'myperimeter' ){
+                            continue;
+                        }
                         $ordering = ($listOrder == 'a.ordering');
                         $canCreate = $user->authorise('core.create', 'com_easysdi_shop');
                         $canEdit = $user->authorise('core.edit', 'com_easysdi_shop');
                         $canCheckin = $user->authorise('core.manage', 'com_easysdi_shop');
                         $canChange = $user->authorise('core.edit.state', 'com_easysdi_shop');
                         $islocked = ($item->alias == 'myperimeter' || $item->alias == 'freeperimeter' ) ? true : false;
+                        
                         ?>
                         <tr class="row<?php echo $i % 2; ?>">
 

@@ -174,7 +174,7 @@ var globdata;
     }
 
     function enableFreePerimeter() {
-        if (js('#jform_restrictedperimeter0').is(':checked') == true) {
+        if (js('#jform_restrictedperimeter0').length == 0 || js('#jform_restrictedperimeter0').is(':checked') == true) {
             js('#jform_perimeter1').removeAttr('disabled', 'disabled');
         } else {
             js('#jform_perimeter1').attr('disabled', 'disabled');
@@ -294,9 +294,20 @@ var globdata;
                                         <div class="controls"><?php echo $field->input; ?></div>
                                     </div>
                                 <?php endforeach; ?>
+                                
+                                <?php if($this->params->get('userperimeteractivated') == 1) : ?>
+                                <div class="control-group" id="<?php echo $this->form->getField('restrictedperimeter')->fieldname; ?>">
+                                    <div class="control-label"><?php echo $this->form->getField('restrictedperimeter')->label; ?></div>
+                                    <div class="controls"><?php echo $this->form->getField('restrictedperimeter')->input; ?></div>
+                                </div>
+                                <?php endif; ?>
+                                
                                 <fieldset id ="fieldset_perimeters" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
                                     <?php foreach ($this->orderperimeters as $orderperimeter): 
+                                            if($orderperimeter->id == 2 && $this->params->get('userperimeteractivated') == 0){
+                                                continue;
+                                            }
                                             if ($orderperimeter->id == 1){
                                                 $orderperimeterlabel = JText::_('FREEPERIMETER');
                                             }elseif ($orderperimeter->id == 2){
@@ -304,7 +315,7 @@ var globdata;
                                             }else {
                                                 $orderperimeterlabel = $orderperimeter->name;
                                             }
-?>
+                                        ?>
                                         <div class="control-group" >
                                             <div class="control-label">
                                                 <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeterlabel; ?></label>
