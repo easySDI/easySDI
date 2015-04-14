@@ -374,7 +374,7 @@ if ($this->item && $this->item->extractions) :
                                         <?php
                                         foreach ($item->perimeters as $perimeter):
                                             if ($perimeter->id == 1):
-                                                if (!$this->item->isrestrictedbyperimeter || $this->params->get('userperimeteractivated') == 0):
+                                                if (!$this->item->isrestrictedbyperimeter || $this->params->get('userperimeteractivated') != 1):
                                                     ?>
                                                     <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn btn-perimeter-selection" 
                                                        onClick="selectRectangle();
