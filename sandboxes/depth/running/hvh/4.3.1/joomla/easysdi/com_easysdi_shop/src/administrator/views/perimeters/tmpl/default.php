@@ -138,7 +138,7 @@ if (!empty($this->extra_sidebar)) {
                 <tbody>
                     <?php
                     foreach ($this->items as $i => $item) :
-                        if ($params->get('userperimeteractivated') == 0 && $item->alias == 'myperimeter' ){
+                        if ($params->get('userperimeteractivated') != 1 && $item->alias == 'myperimeter' ){
                             continue;
                         }
                         $ordering = ($listOrder == 'a.ordering');

@@ -305,7 +305,7 @@ var globdata;
                                 <fieldset id ="fieldset_perimeters" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
                                     <?php foreach ($this->orderperimeters as $orderperimeter): 
-                                            if($orderperimeter->id == 2 && $this->params->get('userperimeteractivated') == 0){
+                                            if($orderperimeter->id == 2 && $this->params->get('userperimeteractivated') != 1){
                                                 continue;
                                             }
                                             if ($orderperimeter->id == 1){
