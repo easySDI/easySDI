@@ -1244,14 +1244,14 @@ CREATE TABLE [#__sdi_organism] (
 	[name] [nvarchar](255) NOT NULL,
 	[website] [nvarchar](500) NULL,
 	[perimeter] [nvarchar](max) NULL,
-        [selectable_as_thirdparty] smallint DEFAULT 0,
+        [selectable_as_thirdparty] [smallint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
 	[username] [nvarchar](150) NULL,
 	[password] [nvarchar](65) NULL,
-        [internal_free] smallint DEFAULT 0,
-        [fixed_fee_ti] decimal(6,2) DEFAULT 0,
-        [data_free_fixed_fee] smallint DEFAULT 0,
+        [internal_free] [smallint] NULL,
+        [fixed_fee_ti] [decimal](6,2) NULL,
+        [data_free_fixed_fee] [smallint] NULL,
 
  CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
 (
@@ -1335,7 +1335,6 @@ CREATE TABLE [#__sdi_perimeter] (
 	[wmsservice_id] [bigint] NULL,
 	[wmsservicetype_id] [bigint] NULL,
 	[layername] [nvarchar](255) NULL,
-        [maplayer_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_perimeter_id] PRIMARY KEY CLUSTERED 
@@ -1701,7 +1700,6 @@ CREATE TABLE [#__sdi_relation] (
 	[editorrelationscope_id] [bigint] NULL,
 	[childresourcetype_id] [bigint] NULL,
 	[childtype_id] [bigint] NULL,
-        [accessscope_limitation] [tinyint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_relation_id] PRIMARY KEY CLUSTERED 

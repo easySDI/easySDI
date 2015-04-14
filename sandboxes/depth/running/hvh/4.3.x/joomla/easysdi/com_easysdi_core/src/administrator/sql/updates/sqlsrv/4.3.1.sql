@@ -1,8 +1,11 @@
+
+
 ALTER TABLE [#__sdi_order_diffusion] ADD [storage_id] [bigint] NULL;
 ALTER TABLE [#__sdi_order_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk4] FOREIGN KEY([storage_id])
 REFERENCES [#__sdi_sys_extractstorage] ([id])
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
+ALTER TABLE [#__sdi_order_diffusion] ADD [displayName] [nvarchar](75) NULL;
 
 UPDATE [#__sdi_language] SET [datatable]='Arabic' WHERE [code]='ar-DZ';
 UPDATE [#__sdi_language] SET [datatable]='Bulgarian' WHERE [code]='bg-BG';
@@ -37,3 +40,8 @@ UPDATE [#__sdi_language] SET [datatable]='Ukranian' WHERE [code]='uk-UA';
 UPDATE [#__sdi_language] SET [datatable]='Chinese' WHERE [code]='zh-CN';
 
 ALTER TABLE [#__sdi_relation] ALTER COLUMN [accessscope_limitation] [tinyint] NULL;
+
+ALTER TABLE [#__sdi_organism] ALTER COLUMN [internal_free] [smallint] NULL  ;
+ALTER TABLE [#__sdi_organism] ALTER COLUMN [fixed_fee_ti] [decimal](6,2) NULL  ;
+ALTER TABLE [#__sdi_organism] ALTER COLUMN [data_free_fixed_fee] [smallint] NULL  ;
+ALTER TABLE [#__sdi_organism] ALTER COLUMN [selectable_as_thirdparty] [smallint] NULL ;

@@ -961,7 +961,6 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
         if(!jQuery.isEmptyObject(record)){
 	 record.data.layer.attribution = config.attribution;
 	 }
-        record.data.layer.isindoor = config.isindoor;
         record.data.layer.levelfield = config.levelfield;
         record.data.layer.servertype = config.servertype;
         return record;
@@ -1034,15 +1033,7 @@ Ext.namespace("gxp");
 var sourceConfig;
 var layerConfig;
 
-/**
- * Add a source to the viewer and a layer config to the map configuration
- * the layer is not added to the map here.
- * @param {type} lsourceConfig
- * @param {type} llayerConfig
- * @returns {Ext@call;extend.prototype.addExtraLayer.queue|gxp.Viewer.prototype.addExtraLayer.queue|Array}
- */
 gxp.Viewer.prototype.addExtraLayer = function(lsourceConfig, llayerConfig) {
-    
     sourceConfig = lsourceConfig;
     layerConfig = llayerConfig;
     if(this.sources[sourceConfig.id] === undefined){
@@ -1052,55 +1043,57 @@ gxp.Viewer.prototype.addExtraLayer = function(lsourceConfig, llayerConfig) {
 
     var queue = [];
     queue.push(this.createSourceLoader(sourceConfig.id));
-    
-    return queue;
+
+//    gxp.util.dispatch(queue, this.reactivate, this);
 };
 
-/**
- * Create layer record and add layer to the map
- * Call after addExtraLayer
- * @returns {undefined}
- */
-gxp.Viewer.prototype.reactivate = function() {
-    // initialize tooltips
-    Ext.QuickTips.init();
-
-    var mapConfig = this.initialConfig.map;
-    if (mapConfig && mapConfig.layers) {
-        var conf, source, record, baseRecords = [], overlayRecords = [];
-        //Get the last layer
-        conf = mapConfig.layers[mapConfig.layers.length-1];
-        source = this.layerSources[conf.source];
-        if (source) {
-            if (source.id === sourceConfig.id) {
-                // source may not have loaded properly (failure handled elsewhere)
-                record = source.createLayerRecord(conf);
-                if (record) {
-                    if (record.get("group") === "background") {
-                        baseRecords.push(record);
-                    } else {
-                        overlayRecords.push(record);
-                    }
-                }
-            }
-        }
-  
-        var panel = this.mapPanel;
-        var map = panel.map;
-        extent = record.getLayer().maxExtent.clone();
+//gxp.Viewer.prototype.reactivate = function() {
+//    // initialize tooltips
+//    Ext.QuickTips.init();
+//
+//    var mapConfig = this.initialConfig.map;
+//    if (mapConfig && mapConfig.layers) {
+//        var conf, source, record, baseRecords = [], overlayRecords = [];
+//        //for (var i = 0; i < mapConfig.layers.length; ++i) {
+//           // conf = mapConfig.layers[i];
+//           //Get the last layer
+//           conf = mapConfig.layers[mapConfig.layers.length-1];
+//           // if(conf.name === layerConfig.name){
+//                source = this.layerSources[conf.source];
+//                if (source) {
+//                    if (source.id === sourceConfig.id) {
+//                        // source may not have loaded properly (failure handled elsewhere)
+//                        record = source.createLayerRecord(conf);
+//                        if (record) {
+//                            if (record.get("group") === "background") {
+//                                baseRecords.push(record);
+//                            } else {
+//                                overlayRecords.push(record);
+//                            }
+//                        }
+//                     //   break;
+//                    }
+//                }
+//            //}
+//        //}
+//
+//        var panel = this.mapPanel;
+//        var map = panel.map;
+//        extent = record.getLayer().maxExtent.clone();
 //        map.zoomToExtent(extent);
-
-        var records = baseRecords.concat(overlayRecords);
-        if (records.length) {
-            panel.layers.add(records);
-        }
-    }
-
-    // respond to any queued requests for layer records
-    this.checkLayerRecordQueue();
-};
-
-
+//
+//        var records = baseRecords.concat(overlayRecords);
+//        if (records.length) {
+//            panel.layers.add(records);
+//        }
+//    }
+//
+//    // respond to any queued requests for layer records
+//    this.checkLayerRecordQueue();
+//
+//    // broadcast ready state
+////   this.fireEvent("ready");
+//};
 
 
 
@@ -1743,7 +1736,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
     delay: 5,
     /** api: config[aggressive]
      *  ``Boolean``
-     *  If set to true, the level is changed as soon as the thumb is moved.
+     *  If set to true, the opacity is changed as soon as the thumb is moved.
      *  Otherwise when the thumb is released (default).
      */
     aggressive: false,
@@ -1760,28 +1753,24 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  The CSS class name for the slider elements.  Default is "sdi-indoorlevelslider".
      */
     baseCls: "sdi-indoorlevelslider",
-
+//    /** private: property[updating]
+//     *  ``Boolean``
+//     *  The slider position is being updated by itself .
+//     */
+//    updating: false,
     /**
      * 
      */
     levels: [],
-    
-    /**
-     * 
-     */
     style: "position: absolute; right: 50px; top: 20px; z-index: 100;",
-    
     /** private: method[constructor]
      *  Construct the component.
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
-        this.addEvents(
-            "layerredrawn"
-        );
+
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
-    
     /** private: method[initComponent]
      *  Initialize the component.
      */
@@ -1797,7 +1786,8 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             this.on('change', this.changeIndoorLevel, this);
         } else {
             this.on('changecomplete', this.changeIndoorLevel, this);
-        }  
+        }
+//         this.on("beforedestroy", this.unbind, this);        
     },
     
     /** private: method[onRender]
@@ -1808,69 +1798,38 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         this.el.addClass(this.baseCls);
     },
     
-    /** private: method[changeIndoorLevel]
-     *  :param slider: :class:`sdi.widgets.IndoorLevelSlider`
+    
+
+    /** private: method[changeLayerOpacity]
+     *  :param slider: :class:`GeoExt.LayerOpacitySlider`
      *  :param value: ``Number`` The slider value
      *
-     *  Updates the WMS filter on level and redraw the layers
+     *  Updates the ``OpenLayers.Layer`` opacity value.
      */
     changeIndoorLevel: function(slider, value) {
-        if(!value){
-            value = this.getValue();
-        }
         this.setValue(value);
         var layers = this.map.layers;
-    
+        var level = levels[value];
+
         for (var a = 0; a < layers.length; a++) {
-            this.redrawLayer(layers[a]);
-        }
-    },
-    
-    changeIndoorLevelByCode: function(slider, code){
-        if(!code)
-            return;
-        levels.forEach(function(level){
-            if(level.code == code)
-                slider.changeIndoorLevel(slider,levels.indexOf(level));
-        })
-    },
-    
-    /**
-     * Updates the WMS filter on level and redraw the layer
-     * Event "layerredrawn" is sent with the concerned layer as parameter.
-     * 
-     * @param {openlayers layer} layer
-     */
-    redrawLayer: function(layer){
-        var level = this.getLevel();
-        if (layer.isindoor && layer.isindoor == 1 && layer.levelfield) {
-            var servertype = layer.servertype;
-            if (servertype == 1) {
-                layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
-            } else if (servertype == 2) {
-                layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layer.levelfield + "='" + level.code + "'\"}"});
-            } else if (servertype == 3) {
-                layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
+            if (layers[a].levelfield) {
+                var servertype = layers[a].servertype;
+                if (servertype == 1 || servertype == 3) {
+                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
+                } else if (servertype == 2 || servertype == 3) {
+                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
+//                } else if (servertype == 3) {
+//                    //layers[a].mergeNewParams({'SDI_FILTER': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
+//                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
+//                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
+                }
+                layers[a].redraw(true);
             }
-            layer.redraw(true);
-            window.appname.mapPanel.map.events.triggerEvent("layerredrawn", {layer:layer});
         }
+        ;
+
+
     },
-    
-    /**
-     * Get the object level for a specific value
-     * or, if not specified, the current value
-     * @param {int} value
-     * @returns {object} selected level
-     */
-    getLevel : function(value){
-        if(!value){
-            value = this.getValue();
-        }
-        return levels[value];
-    },
-    
     /** private: method[addToMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
      *
@@ -1892,12 +1851,12 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             },
             afterrender: function() {
                 this.map = panel.map;
-                panel.map.indoorlevelslider = this;             
+                panel.map.indoorlevelslider = this;
+//                this.bind(panel.map);                
             },
             scope: this
         });
     },
-    
     /** private: method[removeFromMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
      *
@@ -1910,14 +1869,35 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             click: this.stopMouseEvents,
             scope: this
         });
+//        this.unbind();
     },
-    
     /** private: method[stopMouseEvents]
      *  :param e: ``Object``
      */
     stopMouseEvents: function(e) {
         e.stopEvent();
     },
+//    /** private: method[bind]
+//     *  :param map: ``OpenLayers.Map``
+//     */
+//    bind: function(map) {
+//        this.map = map;
+//        this.map.events.on({
+//            
+//            scope: this
+//        });
+//
+//    },
+//    /** private: method[unbind]
+//     */
+//    unbind: function() {
+//        if (this.map && this.map.events) {
+//            this.map.events.un({
+//                
+//                scope: this
+//            });
+//        }
+//    }
 });
 
 /** api: xtype = sdi_indoorlevelslider */

@@ -650,7 +650,7 @@ class cswmetadata {
      * @param DOMDocument $dom
      * @return boolean
      */
-    public function applyXSL($catalog, $type, $preview, $dom = null) {
+    public function applyXSL($params, $dom = null) {
         if (empty($dom)) {
             $dom = $this->extendeddom;
         }
@@ -663,9 +663,11 @@ class cswmetadata {
         endif;
         $processor = new xsltProcessor();
         $processor->importStylesheet($style);
-        $processor->setParameter("", 'catalog', $catalog);
-        $processor->setParameter("", 'type', $type);
-        $processor->setParameter("", 'preview', $preview);
+        
+        foreach ($params as $key => $value) {
+            $processor->setParameter("", $key, $value);
+        }
+        
         $html = $processor->transformToDoc($dom);
         $text = $html->saveHTML();
         //Workaround to avoid printf problem with text with a "%", must

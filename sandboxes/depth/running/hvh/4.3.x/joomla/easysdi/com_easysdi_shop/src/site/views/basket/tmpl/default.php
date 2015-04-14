@@ -115,7 +115,7 @@ if ($this->item && $this->item->extractions) :
                         <div class="span6" >
                             <?php
                             //If one of the products is restricted and the organism of the user doesn't have a perimeter, the selection can't be done
-                            if ($this->item->isrestrictedbyperimeter && ($this->user->perimeter == '')) {
+                            if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1 && ($this->user->perimeter == '')) {
                                 ?>
                                 <div id="help-perimeter" class="help-block"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER_ERROR'); ?></div>
                             <?php } else { ?>
@@ -383,7 +383,7 @@ if ($this->item && $this->item->extractions) :
                                         <?php
                                         foreach ($item->perimeters as $perimeter):
                                             if ($perimeter->id == 1):
-                                                if (!$this->item->isrestrictedbyperimeter):
+                                                if (!$this->item->isrestrictedbyperimeter || $this->params->get('userperimeteractivated') != 1):
                                                     ?>
                                                     <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn btn-perimeter-selection" 
                                                        onClick="selectRectangle();
@@ -413,7 +413,7 @@ if ($this->item && $this->item->extractions) :
                                                     <br>                                        
                                                     <?php
                                                 endif;
-                                            elseif ($perimeter->id == 2):
+                                            elseif ($perimeter->id == 2 && $this->params->get('userperimeteractivated') == 1):
                                                 if ($this->user->isEasySDI):
                                                     ?>
                                                     <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
@@ -452,16 +452,15 @@ if ($this->item && $this->item->extractions) :
                                                            return false;">
                                                     <i class="icon-grid-view"></i> <?php echo JText::_($perimeter->name); ?></a>
                                                 <script>
-                                                    <?php if ($this->item->isrestrictedbyperimeter): ?>
+            <?php if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1): ?>
                                                         //var userperimeter = '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>';
                                                         var userperimeter = '<?php echo $this->user->perimeter; ?>';
                                                     <?php endif; ?>
                                                     function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                        return selectPerimeter(<?php echo json_encode($perimeter); ?>,<?php
-                                                        if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI) : 
-                                                            echo 1;
-                                                        else : 
-                                                            echo 0;
+
+                                                        return selectPerimeter(<?php
+            if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI && $this->params->get('userperimeteractivated') == 1) : echo 1;
+            else : echo 0;
                                                         endif;
                                                         ?>);
                                                     }

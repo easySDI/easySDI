@@ -90,6 +90,9 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['fileurl'] = null;
             $array['perimeter_id'] = null;
         }
+        if(!isset($array['restrictedperimeter'])){
+            $array['restrictedperimeter'] = 0;
+        }
 
         $params = JFactory::getApplication()->getParams('com_easysdi_shop');
         $fileFolder = $params->get('fileFolder');
