@@ -268,14 +268,15 @@ var updatePricing = function(pricing) {
                         discount = profileDiscount;
                     }
                     title = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', 'As %s, you get a discount of %s%%').replace(/(.*)(?:%s)(.*)(?:%s%)(.*)/gi, '$1'+as+'$2'+discount+'$3');
-                    jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').attr('data-original-title', title).show();
+                    jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').attr('title', title).show();
                 }
                 else{
-                    jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').attr('data-original-title', title).hide();
+                    jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').attr('title', title).hide();
                 }
             }
             var i = jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info');
             jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column').html(displayedPrice+' ').append(i).show();
+            jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').tooltip({"html": true,"container": "body"});
         });
 
         //footer
