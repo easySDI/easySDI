@@ -32,10 +32,14 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
             $type = "";
             $preview = "search_list";
         }
+        //Specific parameter for PDF output
+        $out = JFactory::getApplication()->input->get('out', null, 'STRING');
+        
         $metadata = new cswmetadata($id);
         $metadata->load('complete');
         $metadata->extend($catalog, $type, $preview, 'true', $lang);
-        $file = $metadata->applyXSL($catalog, $preview, $type);
+        
+        $file = $metadata->applyXSL(array ('catalog' => $catalog, 'type' => $type, 'preview' => $preview, 'out' => $out));
 
         $tmp = uniqid();
         $tmpfile = JPATH_BASE . '/tmp/' . $tmp;

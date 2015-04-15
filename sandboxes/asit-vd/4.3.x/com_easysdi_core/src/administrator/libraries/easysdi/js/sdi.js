@@ -958,7 +958,9 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
      */
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.WMSSource.superclass.createLayerRecord.apply(this, arguments);
-        record.data.layer.attribution = config.attribution;
+        if(!jQuery.isEmptyObject(record)){
+	 record.data.layer.attribution = config.attribution;
+	 }
         record.data.layer.levelfield = config.levelfield;
         record.data.layer.servertype = config.servertype;
         return record;
@@ -1812,14 +1814,14 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         for (var a = 0; a < layers.length; a++) {
             if (layers[a].levelfield) {
                 var servertype = layers[a].servertype;
-                if (servertype == 1) {
+                if (servertype == 1 || servertype == 3) {
                     layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
-                } else if (servertype == 2) {
+                } else if (servertype == 2 || servertype == 3) {
                     layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                } else if (servertype == 3) {
-                    //layers[a].mergeNewParams({'SDI_FILTER': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
+//                } else if (servertype == 3) {
+//                    //layers[a].mergeNewParams({'SDI_FILTER': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
+//                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
+//                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
                 }
                 layers[a].redraw(true);
             }

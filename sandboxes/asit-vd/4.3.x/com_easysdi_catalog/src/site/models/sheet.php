@@ -103,7 +103,7 @@ class Easysdi_catalogModelSheet extends JModelForm {
             $metadata->extend($catalog, $type, $preview, $callfromjoomla, $langtag);
 
             //Apply XSL transformation 
-            $this->_item = $metadata->applyXSL($catalog, $type, $preview);
+            $this->_item = $metadata->applyXSL(array ('catalog' => $catalog, 'type' => $type, 'preview' => $preview));
         }
 
         return $this->_item;

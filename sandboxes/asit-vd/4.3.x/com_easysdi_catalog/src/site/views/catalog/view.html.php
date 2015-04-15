@@ -107,7 +107,7 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
                 $metadata = new cswmetadata();
                 $metadata->init($node);
                 $metadata->extend($this->item->alias, 'result', $this->preview, 'true', JFactory::getLanguage()->getTag());
-                $result = $metadata->applyXSL($this->item->alias, 'result', $this->preview);
+                $result = $metadata->applyXSL(array ('catalog' => $this->item->alias, 'type' => 'result', 'preview' => $this->preview));
                 
                 $results[] = $result;
             }

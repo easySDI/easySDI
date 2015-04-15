@@ -44,7 +44,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
         <?php if ($this->isAdvanced()): ?>
             toogleAdvanced();
         <?php endif; ?>
-            
+
         <?php if ($this->item->oninitrunsearch && JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'false' ): ?>
             //autosubmit search form
             submitForm();
