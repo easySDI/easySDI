@@ -19,6 +19,8 @@ JText::script('COM_EASYSDI_SHOP_BASKET_KILOMETER');
 JText::script('COM_EASYSDI_SHOP_BASKET_METER');
 JText::script('COM_EASYSDI_SHOP_BASKET_PROCESS_ENDING');
 JText::script('COM_EASYSDI_SHOP_BASKET_PROCESS_PROGRESSING');
+JText::script('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE');
+JText::script('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -214,12 +216,28 @@ if ($this->item && $this->item->extractions) :
                                                     $productPrice = isset($product->cal_total_amount_ti) ? $product->cal_total_amount_ti : '-';
 
                                                     echo Easysdi_shopHelper::priceFormatter($productPrice);
-
-                                                    if ($productPrice == '0 ' . JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF')):
-                                                        ?>
-                                                        <i class="icon-white icon-info" title="<?php echo JText::sprintf('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', $product->ind_lbl_category_profile_discount, $product->cfg_pct_category_profile_discount); ?>"></i>
-                                                        <?php
-                                                    endif;
+                                                    
+                                                    $rebate = false;
+                                                    $as = '';
+                                                    $discount = '';
+                                                    if($product->cfg_pct_category_profile_discount>0 || $product->cfg_pct_category_supplier_discount>0){
+                                                        $rebate = true;
+                                                        if($product->cfg_pct_category_supplier_discount>$product->cfg_pct_category_profile_discount){
+                                                            $as = $product->ind_lbl_category_supplier_discount;
+                                                            $discount = $product->cfg_pct_category_supplier_discount;
+                                                        }
+                                                        else{                                                            
+                                                            $as = $product->ind_lbl_category_profile_discount;
+                                                            $discount = $product->cfg_pct_category_profile_discount;
+                                                        }
+                                                    }
+                                                    
+                                                    ?>
+                                                    <i class="icon-white icon-info hasTooltip" 
+                                                       title="<?php echo JText::sprintf('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', $as, $discount); ?>"
+                                                       style="<?php if(!$rebate):?>display:none;<?php endif;?>">
+                                                    </i>
+                                                    <?php
                                                 endif;
                                                 ?>
                                             </td>

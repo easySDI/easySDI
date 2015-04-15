@@ -235,7 +235,6 @@ var priceFormatter = function(price, displayCurrency) {
 };
 
 var updatePricing = function(pricing) {
-    console.log(pricing);
     if (!pricing.isActivated)
         return;
 
@@ -247,7 +246,36 @@ var updatePricing = function(pricing) {
     jQuery.each(pricing.suppliers, function(supplierId, supplier) {
         //products
         jQuery.each(supplier.products, function(productId, product) {
-            jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column').html(priceFormatter(product.cal_total_amount_ti)).show();
+            var displayedPrice;
+            if(product.cfg_pricing_type === 1){
+                displayedPrice = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE', 'free');
+            }
+            else{
+                displayedPrice = priceFormatter(product.cal_total_amount_ti);
+                var as = '',
+                    discount = '',
+                    title = '',
+                    profileDiscount = parseFloat(product.cfg_pct_category_profile_discount),
+                    supplierDiscount = parseFloat(product.cfg_pct_category_supplier_discount);
+                    
+                if(profileDiscount>0 || supplierDiscount>0){
+                    if(supplierDiscount>profileDiscount){
+                        as = product.ind_lbl_category_supplier_discount;
+                        discount = supplierDiscount;
+                    }
+                    else{
+                        as = product.ind_lbl_category_profile_discount;
+                        discount = profileDiscount;
+                    }
+                    title = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', 'As %s, you get a discount of %s%%').replace(/(.*)(?:%s)(.*)(?:%s%)(.*)/gi, '$1'+as+'$2'+discount+'$3');
+                    jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').attr('title', title).show();
+                }
+                else{
+                    jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').attr('title', title).hide();
+                }
+            }
+            var i = jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info');
+            jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column').html(displayedPrice+' ').append(i).show();
         });
 
         //footer
