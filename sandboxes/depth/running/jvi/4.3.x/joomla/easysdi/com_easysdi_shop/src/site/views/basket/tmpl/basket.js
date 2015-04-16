@@ -244,6 +244,9 @@ var updatePricing = function(pricing) {
 
     //suppliers
     jQuery.each(pricing.suppliers, function(supplierId, supplier) {
+        //header
+        jQuery('table[rel=' + supplierId + ']>thead>tr>td.price_column').show();
+        
         //products
         jQuery.each(supplier.products, function(productId, product) {
             var displayedPrice;
@@ -280,9 +283,9 @@ var updatePricing = function(pricing) {
         });
 
         //footer
-        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td#supplier_cal_fee_ti').html(priceFormatter(supplier.cal_fee_ti));
-        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td#supplier_cal_total_amount_ti').html(priceFormatter(supplier.cal_total_amount_ti));
-        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td#supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_fee_ti').html(priceFormatter(supplier.cal_fee_ti));
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_amount_ti').html(priceFormatter(supplier.cal_total_amount_ti));
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
         jQuery('table[rel=' + supplierId + ']>tfoot').show();
     });
 
@@ -403,7 +406,7 @@ var actionRemove = function() {
 };
 
 var checkTouState = function() {
-    jQuery('#toolbar-edit>button, #toolbar-publish>button').attr('disabled', !jQuery('#termsofuse').prop('checked'));
+    jQuery('#toolbar-estimate>button, #toolbar-order>button').attr('disabled', !jQuery('#termsofuse').prop('checked'));
 };
 
 var processProgress = function(txt, rate) {
