@@ -36,3 +36,5 @@ UPDATE  #__sdi_language SET datatable='Swedish' WHERE code='sv-SE';
 UPDATE  #__sdi_language SET datatable='Turkish' WHERE code='tr-TR';
 UPDATE  #__sdi_language SET datatable='Ukranian' WHERE code='uk-UA';
 UPDATE  #__sdi_language SET datatable='Chinese' WHERE code='zh-CN';
+
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (11, 11, 1, 'organismmanager');

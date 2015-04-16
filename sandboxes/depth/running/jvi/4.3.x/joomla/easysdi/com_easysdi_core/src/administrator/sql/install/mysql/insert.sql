@@ -17,6 +17,7 @@ INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','previewmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('7','7','1','extractionresponsible' );
 INSERT INTO `#__sdi_sys_role` SET id=9, ordering=9, `state`=1, value='pricingmanager';
 INSERT INTO `#__sdi_sys_role` SET id=10, ordering=10, `state`=1, `value`='validationmanager';
+INSERT INTO `#__sdi_sys_role` SET id=11, ordering=11, `state`=1, `value`='organismmanager';
 
 INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
 VALUES 

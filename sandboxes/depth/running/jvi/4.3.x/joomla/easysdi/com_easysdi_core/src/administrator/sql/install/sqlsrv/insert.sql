@@ -44,6 +44,7 @@ INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'extractionresponsible');
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (9, 9, 1, N'pricingmanager');
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (10, 10, 1, N'validationmanager');
+INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (11, 11, 1, N'organismmanager');
 SET IDENTITY_INSERT [#__sdi_sys_role] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_criteriatype] ON;

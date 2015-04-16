@@ -521,15 +521,16 @@ INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALU
 INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (14, 5);
 INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (11, 8);
 
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (1, 1, 'member');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (2, 1, 'resourcemanager');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (3, 1, 'metadataresponsible');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (4, 1, 'metadataeditor');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (5, 1, 'diffusionmanager');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (6, 1, 'previewmanager');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (7, 1, 'extractionresponsible');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (9, 1, 'pricingmanager');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (10, 1, 'validationmanager');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (1, 1, 1, 'member');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (2, 2, 1, 'resourcemanager');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (3, 3, 1, 'metadataresponsible');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (4, 4, 1, 'metadataeditor');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (5, 5, 1, 'diffusionmanager');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (6, 6, 1, 'previewmanager');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (7, 7, 1, 'extractionresponsible');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (9, 9, 1, 'pricingmanager');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (10, 10, 1, 'validationmanager');
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (11, 11, 1, 'organismmanager');
 
 INSERT INTO #__sdi_sys_searchtab (ordering, state, value) VALUES (1, 1, 'simple');
 INSERT INTO #__sdi_sys_searchtab (ordering, state, value) VALUES (2, 1, 'advanced');
