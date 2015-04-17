@@ -93,7 +93,7 @@ if ($this->item && $this->item->extractions) :
                                 <div>
                                     <h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
                                     <div>
-                                        <div><?php if (!empty($this->item->extent->level)): ?><?php echo $this->item->extent->level; ?><?php endif; ?></div>
+                                        <div><?php if (!empty($this->item->extent->levelcode)): ?><?php echo $this->item->extent->levelcode; ?><?php endif; ?></div>
                                     </div>
                                 </div>
 
@@ -312,7 +312,7 @@ if ($this->item && $this->item->extractions) :
                             </label>
                         </div>
                         <div id="ordername-container">
-                            <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if (!empty($this->item->name)) echo $this->item->name; ?>">
+                            <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if (!empty($this->item->name)) : echo $this->item->name; endif;?>">
                         </div>
                         <div id="toolbar-container">
                             <div class="btn-toolbar" id="toolbar">
@@ -458,7 +458,7 @@ if ($this->item && $this->item->extractions) :
                                                     <?php endif; ?>
                                                     function selectPerimeter<?php echo $perimeter->id; ?>() {
 
-                                                        return selectPerimeter(<?php
+                                                        return selectPerimeter(<?php echo json_encode($perimeter); ?>,<?php
             if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI && $this->params->get('userperimeteractivated') == 1) : echo 1;
             else : echo 0;
                                                         endif;
@@ -537,10 +537,9 @@ if ($this->item && $this->item->extractions) :
 
         <script>
             Ext.onReady(function() {
-                if ('undefined' === typeof app) {
-                    app = window.appname;
-                }
+                if ('undefined' === typeof app) {app = window.appname;}
                 app.on("ready", function() {
+                    var slider = window.appname.mapPanel.map.indoorlevelslider;
                     jQuery('#modal-perimeter').show();
                     initMiniMap();
                     initDraw();
@@ -561,64 +560,35 @@ if ($this->item && $this->item->extractions) :
                         selectPerimeter<?php echo $this->item->extent->id; ?>();
                         reloadFeatures<?php echo $this->item->extent->id; ?>();
                     <?php endif; ?>
-                   // app.mapPanel.map.events.register("layerredrawn", this , function(obj) { jQuery('#t-level').val( JSON.stringify(window.appname.mapPanel.map.indoorlevelslider.getLevel()));});
-                    <?php if (isset($this->item->extent->level) && !empty($this->item->extent->level)): ?>
-                     //   app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider, "<?php echo json_decode($this->item->extent->level)->code; ?>");
+                    slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(this.getLevel().code);});                    
+                    <?php if (isset($this->item->extent->levelcode) && !empty($this->item->extent->levelcode)): ?>
+                        slider.changeIndoorLevelByCode("<?php echo $this->item->extent->levelcode; ?>");
+                    <?php else : ?>
+                        jQuery('#t-level').val( slider.getLevel().code);
                     <?php endif; ?>
                     jQuery('#modal-perimeter').hide();
                 });
             });
         </script>
-        <input type="hidden" name="perimeter" id="perimeter" value="<?php
-        if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id;
-        endif;
-        ?>" />
-        <input type="hidden" name="perimetern" id="perimetern" value="<?php
-        if (isset($this->item->extent->name) && !empty($this->item->extent->name)): echo $this->item->extent->name;
-        endif;
-        ?>" />
-        <input type="hidden" name="surface" id="surface" value="<?php
-        if (isset($this->item->extent->surface) && !empty($this->item->extent->surface)): echo $this->item->extent->surface;
-        endif;
-        ?>" />
+        <input type="hidden" name="perimeter" id="perimeter" value="<?php if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id; endif;?>" />
+        <input type="hidden" name="perimetern" id="perimetern" value="<?php if (isset($this->item->extent->name) && !empty($this->item->extent->name)): echo $this->item->extent->name; endif;?>" />
+        <input type="hidden" name="surface" id="surface" value="<?php if (isset($this->item->extent->surface) && !empty($this->item->extent->surface)): echo $this->item->extent->surface;endif;?>" />
         <input type="hidden" name="allowedbuffer" id="allowedbuffer" value="" />
-        <input type="hidden" name="features" id="features" value='<?php
-        if (isset($this->item->extent->features)) {
-            if (!is_array($this->item->extent->features)):
-                echo $this->item->extent->features;
-            else:
-                echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
-            endif;
-        }
-        ?>' />
-        <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php
-        if (isset($this->item->extent->id)): echo $this->item->extent->id;
-        endif;
-        ?>" />
-        <input type="hidden" name="t-perimetern" id="t-perimetern" value="<?php
-        if (isset($this->item->extent->name)): echo $this->item->extent->name;
-        endif;
-        ?>" />
-        <input type="hidden" name="t-features" id="t-features" value='<?php
-        if (isset($this->item->extent->features)) {
-            if (!is_array($this->item->extent->features)):
-                echo $this->item->extent->features;
-            else:
-                echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
-            endif;
-        }
-        ?>' />
-        <input type = "hidden" name = "t-surface" id="t-surface" value="<?php if (isset($this->item->extent->surface)): echo $this->item->extent->surface; endif;?>" />
-        <input type = "hidden" name = "surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin; ?>" />
-        <input type = "hidden" name = "surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax; ?>" />            
-        <input type = "hidden" name = "level" id="level" value='<?php if (isset($this->item->extent->level)) echo $this->item->extent->level; ?>' />
-        <input type = "hidden" name = "t-level" id="t-level" value='<?php if (isset($this->item->extent->level)) echo $this->item->extent->level; ?>' />
-        <input type = "hidden" name = "v-features" id="v-features" value="" />            
-        <input type = "hidden" name = "task" id = "task" value = "" />
-        <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-        <input type = "hidden" name = "id" id = "id" value = "" />
-        <input type = "hidden" name = "surfacedigit" id = "surfacedigit" value = "<?php echo $this->paramsarray['surfacedigit']; ?>" />
-        <input type = "hidden" name = "maxmetervalue" id = "maxmetervalue" value = "<?php echo $this->paramsarray['maxmetervalue']; ?>" />
+        <input type="hidden" name="features" id="features" value='<?php if (isset($this->item->extent->features)) { if (!is_array($this->item->extent->features)): echo $this->item->extent->features;else:echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');endif;}?>' />
+        <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php if (isset($this->item->extent->id)): echo $this->item->extent->id; endif;?>" />
+        <input type="hidden" name="t-perimetern" id="t-perimetern" value="<?php if (isset($this->item->extent->name)): echo $this->item->extent->name; endif; ?>" />
+        <input type="hidden" name="t-features" id="t-features" value='<?php if (isset($this->item->extent->features)) {if (!is_array($this->item->extent->features)):echo $this->item->extent->features;else: echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');endif;}?>' />
+        <input type="hidden" name="t-surface" id="t-surface" value="<?php if (isset($this->item->extent->surface)): echo $this->item->extent->surface; endif;?>" />
+        <input type="hidden" name="surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin; ?>" />
+        <input type="hidden" name="surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax; ?>" />            
+        <input type="hidden" name="level" id="level" value="<?php if (isset($this->item->extent->levelcode)) : echo $this->item->extent->levelcode; endif; ?>" />
+        <input type="hidden" name="t-level" id="t-level" value="<?php if (isset($this->item->extent->levelcode)) : echo $this->item->extent->levelcode; endif;?>" />
+        <input type="hidden" name="v-features" id="v-features" value="" />            
+        <input type="hidden" name="task" id = "task" value = "" />
+        <input type="hidden" name="option" value = "com_easysdi_shop" />
+        <input type="hidden" name="id" id = "id" value = "" />
+        <input type="hidden" name="surfacedigit" id = "surfacedigit" value = "<?php echo $this->paramsarray['surfacedigit']; ?>" />
+        <input type="hidden" name="maxmetervalue" id = "maxmetervalue" value = "<?php echo $this->paramsarray['maxmetervalue']; ?>" />
 
     <?php echo JHtml::_('form.token'); ?>
     </form>
@@ -640,4 +610,4 @@ else:
     endif;
 
 endif;
-?>
+

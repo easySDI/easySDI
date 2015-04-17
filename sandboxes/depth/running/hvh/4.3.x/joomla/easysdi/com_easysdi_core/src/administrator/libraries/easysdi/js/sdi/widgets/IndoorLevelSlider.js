@@ -58,7 +58,10 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
-
+        this.addEvents(
+            "indoorlevelsliderready",
+            "indoorlevelchanged"
+        );
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
     /** private: method[initComponent]
@@ -76,8 +79,9 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             this.on('change', this.changeIndoorLevel, this);
         } else {
             this.on('changecomplete', this.changeIndoorLevel, this);
-        }
-//         this.on("beforedestroy", this.unbind, this);        
+        }  
+       
+        
     },
     
     /** private: method[onRender]
@@ -85,7 +89,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     onRender: function() {
         sdi.widgets.IndoorLevelSlider.superclass.onRender.apply(this, arguments);
-        this.el.addClass(this.baseCls);
+        this.el.addClass(this.baseCls);       
     },
     
     
@@ -100,7 +104,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         this.setValue(value);
         var layers = this.map.layers;
         var level = levels[value];
-
+    
         for (var a = 0; a < layers.length; a++) {
             if (layers[a].levelfield) {
                 var servertype = layers[a].servertype;
@@ -112,12 +116,48 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
 //                    //layers[a].mergeNewParams({'SDI_FILTER': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
 //                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
 //                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
-                }
-                layers[a].redraw(true);
+        }
+        this.fireEvent("indoorlevelchanged", this);
+    },
+    
+    /**
+     * Change indoorlevel by the level code
+     * @param {type} slider
+     * @param {type} code
+     * @returns {undefined}
+     */
+    changeIndoorLevelByCode: function(slider, code){
+        if(!code)
+            return;
+        levels.forEach(function(level){
+            if(level.code === code)
+                slider.changeIndoorLevel(slider,levels.indexOf(level));
+        })
+    },
+    
+    /**
+     * Updates the WMS filter on level and redraw the layer
+     * Event "layerredrawn" is sent with the concerned layer as parameter.
+     * 
+     * @param {openlayers layer} layer
+     */
+    redrawLayer: function(layer){
+        var level = this.getLevel();
+        if (layer.isindoor && layer.isindoor == 1 && layer.levelfield) {
+            var servertype = layer.servertype;
+            if (servertype == 1 || servertype == 3) {
+                layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
+            } else if (servertype == 2 || servertype == 3) {
+                layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layer.levelfield + "='" + level.code + "'\"}"});
+//            } else if (servertype == 3) {
+//                layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
+//                layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
             }
+            layer.redraw(true);
+            this.map.events.triggerEvent("layerredrawn", {layer:layer});
         }
         ;
-
+    
 
     },
     /** private: method[addToMapPanel]
@@ -141,7 +181,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             },
             afterrender: function() {
                 this.map = panel.map;
-                panel.map.indoorlevelslider = this;
+                panel.map.indoorlevelslider = this;             
 //                this.bind(panel.map);                
             },
             scope: this
@@ -166,7 +206,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      */
     stopMouseEvents: function(e) {
         e.stopEvent();
-    },
+    }
 //    /** private: method[bind]
 //     *  :param map: ``OpenLayers.Map``
 //     */

@@ -146,7 +146,7 @@ function cancel() {
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
     if (jQuery('#level').val() !== '') {
-        app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider, JSON.parse(jQuery('#level').val()).code);
+        slider.changeIndoorLevelByCode(JSON.parse(jQuery('#level').val()));
     }
 }
 
@@ -242,15 +242,20 @@ function savePerimeter() {
             "surface": jQuery('#t-surface').val(),
             "allowedbuffer": jQuery('#allowedbuffer').val(),
             "buffer": jQuery('#buffer').val(),
-            "level": jQuery('#t-level').val(),
+            "levelcode": jQuery('#t-level').val(),
             "features": JSON.parse(jQuery('#t-features').val())};
 
         jQuery.ajax({
             type: "POST",
             url: "index.php?option=com_easysdi_shop&task=addExtentToBasket",
             data: "item=" + JSON.stringify(extent)
-        }).done(function(r) {
-            if (r.MESSAGE && r.MESSAGE == 'OK') {
+        }).done(updateDisplay);
+    }
+}
+
+//Manage display according to savePerimeter response
+function updateDisplay (response){
+    if (response.MESSAGE && response.MESSAGE == 'OK') {
                 saveTemporaryFields();
                 try {
                     var features = JSON.parse(jQuery('#features').val());
@@ -273,24 +278,24 @@ function savePerimeter() {
                     jQuery('#perimeter-recap-details').empty().hide();
                 }
 
-                if (r.extent.name != '') {
-                    jQuery('#perimeter-recap-details-title > h4').html(r.extent.name);
+                if (response.extent.name != '') {
+                    jQuery('#perimeter-recap-details-title > h4').html(response.extent.name);
                 }
                 else {
                     jQuery('#perimeter-recap-details-title > h4').empty();
                 }
-                if (r.extent.level != '') {
-                    jQuery('#perimeter-recap > div:nth-child(2) > div').html(r.extent.level);
+                if (response.extent.levelcode != '') {
+                    jQuery('#perimeter-recap > div:nth-child(2) > div').html(response.extent.levelcode);
                     jQuery('#perimeter-recap').show();
                 }
                 else {
                     jQuery('#perimeter-recap > div:nth-child(2) > div').empty();
                 }
-                if (r.extent.surface != '') {
+                if (response.extent.surface != '') {
                     jQuery('#perimeter-recap > div:nth-child(1) > div').html(
-                            (r.extent.surface > maxmetervalue)
-                            ? (r.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
-                            : parseFloat(r.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
+                            (response.extent.surface > maxmetervalue)
+                            ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
+                            : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
                             );
                     jQuery('#perimeter-recap').show();
                 }
@@ -299,12 +304,10 @@ function savePerimeter() {
                 }
 
                 //pricing
-                updatePricing(r.pricing);
+                updatePricing(response.pricing);
             }
 
             return false;
-        });
-    }
 }
 
 //Reproject in EPSG:4326

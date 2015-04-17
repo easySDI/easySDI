@@ -119,7 +119,7 @@ class sdiBasket {
             $extent->name = $perimeters[0]->perimeter_name;
             $extent->surface = $order->surface;
             $extent->buffer = $order->buffer;
-            $extent->level = $order->level;
+            $extent->levelcode = $order->level;
             $extent->features = array();
             foreach ($perimeters as $perimeter):
                 if (!strpos($perimeter->value, ',')):
