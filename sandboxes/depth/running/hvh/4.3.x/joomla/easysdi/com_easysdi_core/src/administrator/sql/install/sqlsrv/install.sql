@@ -1001,7 +1001,7 @@ SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [#__sdi_maplayer] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
-	[alias] [nvarchar](20) NOT NULL,
+	[alias] [nvarchar](255) NOT NULL,
 	[created_by] [int] NOT NULL,
 	[created] [datetime2](0) NOT NULL,
 	[modified_by] [int] NULL,

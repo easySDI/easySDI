@@ -639,7 +639,7 @@ CREATE TABLE #__sdi_map_virtualservice (
 CREATE TABLE #__sdi_maplayer (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
-    alias character varying(20) NOT NULL,
+    alias character varying(255) NOT NULL,
     created_by integer NOT NULL,
     created timestamp(3) without time zone NOT NULL,
     modified_by integer,
