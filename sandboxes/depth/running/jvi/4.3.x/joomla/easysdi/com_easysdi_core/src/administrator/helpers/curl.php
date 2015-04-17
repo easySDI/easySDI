@@ -139,9 +139,6 @@ class CurlHelper {
             case 'HEAD':
                 if($this->protocol === 'sftp'){
                     curl_setopt($this->ch, CURLOPT_WRITEFUNCTION, function($ch, $data){
-                        if(strlen($data)){
-                            return strlen($data);
-                        }
                         return -1;
                     });
                     curl_setopt($this->ch, CURLOPT_HEADER, false);
@@ -276,7 +273,11 @@ class CurlHelper {
                     }
                 }
             }
-            elseif(strpos($this->protocol, 'ftp') !== false){ // ftp case
+            elseif($this->protocol === 'sftp'){
+                $response['success'] = $data['download_content_length']==0 ? false : true;
+                $response['message'] = $content;
+            }
+            elseif(strpos($this->protocol, 'ftp') !== false){ // ftp/ftps cases
                 $response['success'] = ((int)$data['http_code']>=200 && (int)$data['http_code']<400 && $data['download_content_length']>-1) ? true : false;
                 $response['code'] = (int)$data['http_code'];
                 $response['message'] = $content;
