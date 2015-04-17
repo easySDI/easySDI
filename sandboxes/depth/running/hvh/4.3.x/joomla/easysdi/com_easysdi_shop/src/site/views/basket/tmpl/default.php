@@ -26,6 +26,10 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimete
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
+
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/pricing.js');
+//$document->addScript('components/com_easysdi_shop/views/basket/tmpl/projection.js');
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/requests.js');
 ?>
 
 
@@ -452,15 +456,13 @@ if ($this->item && $this->item->extractions) :
                                                            return false;">
                                                     <i class="icon-grid-view"></i> <?php echo JText::_($perimeter->name); ?></a>
                                                 <script>
-            <?php if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1): ?>
-                                                        //var userperimeter = '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>';
+                                                    <?php if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1): ?>
                                                         var userperimeter = '<?php echo $this->user->perimeter; ?>';
                                                     <?php endif; ?>
                                                     function selectPerimeter<?php echo $perimeter->id; ?>() {
-
                                                         return selectPerimeter(<?php echo json_encode($perimeter); ?>,<?php
-            if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI && $this->params->get('userperimeteractivated') == 1) : echo 1;
-            else : echo 0;
+                                                        if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI && $this->params->get('userperimeteractivated') == 1) : echo 1;
+                                                        else : echo 0;
                                                         endif;
                                                         ?>);
                                                     }
@@ -539,36 +541,41 @@ if ($this->item && $this->item->extractions) :
             Ext.onReady(function() {
                 if ('undefined' === typeof app) {app = window.appname;}
                 app.on("ready", function() {
-                    var slider = window.appname.mapPanel.map.indoorlevelslider;
+                   
                     jQuery('#modal-perimeter').show();
                     initMiniMap();
-                    initDraw();
-                    <?php if (!empty($this->item->extent)): ?>
-                        <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
-                            jQuery('#perimeter-buffer').show();
-                        <?php endif; ?>
-                        <?php if ($this->item->extent->id == 1):?>
-                            jQuery('#btn-perimeter1a').addClass('active');
-                        <?php else : ?>
-                            jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
-                        <?php endif; ?>
-                    <?php endif; ?>
-                    <?php if (!empty($this->item->extent) && isset($this->item->extent->features)):
-                        if (is_string(json_decode($this->item->extent->features))): ?>
-                            reprojectWKT('<?php echo $this->item->extent->features; ?>');
-                        <?php endif; ?>
-                        selectPerimeter<?php echo $this->item->extent->id; ?>();
-                        reloadFeatures<?php echo $this->item->extent->id; ?>();
-                    <?php endif; ?>
-                    slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(this.getLevel().code);});                    
-                    <?php if (isset($this->item->extent->levelcode) && !empty($this->item->extent->levelcode)): ?>
-                        slider.changeIndoorLevelByCode("<?php echo $this->item->extent->levelcode; ?>");
-                    <?php else : ?>
-                        jQuery('#t-level').val( slider.getLevel().code);
-                    <?php endif; ?>
-                    jQuery('#modal-perimeter').hide();
+                    
                 });
             });
+                
+            function initialization (){
+                miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
+                 var slider = window.appname.mapPanel.map.indoorlevelslider;
+                 slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(slider.getLevel().code);});  
+                 initDraw();
+                <?php if (!empty($this->item->extent)): ?>
+                    <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
+                        jQuery('#perimeter-buffer').show();
+                    <?php endif; ?>
+                    <?php if ($this->item->extent->id == 1):?>
+                        jQuery('#btn-perimeter1a').addClass('active');
+                    <?php else : ?>
+                        jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if (!empty($this->item->extent) && isset($this->item->extent->features)): ?>
+                    selectPerimeter<?php echo $this->item->extent->id; ?>();
+                    reloadFeatures<?php echo $this->item->extent->id; ?>();
+                <?php endif; ?>
+
+                <?php if (isset($this->item->extent->levelcode) && !empty($this->item->extent->levelcode)): ?>
+                    slider.changeIndoorLevelByCode(slider,"<?php echo $this->item->extent->levelcode; ?>");
+                <?php else : ?>
+                    jQuery('#t-level').val(slider.getLevel().code);
+                <?php endif; ?>
+
+                jQuery('#modal-perimeter').hide();
+            };
         </script>
         <input type="hidden" name="perimeter" id="perimeter" value="<?php if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id; endif;?>" />
         <input type="hidden" name="perimetern" id="perimetern" value="<?php if (isset($this->item->extent->name) && !empty($this->item->extent->name)): echo $this->item->extent->name; endif;?>" />

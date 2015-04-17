@@ -110,6 +110,10 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
       scope: this
     });
      */
+//    app.mapPanel.map.events.on({
+//      addlayer: this.raiseLayer,
+//      scope: this
+//    });
     
     //Select control
     selectControl.events.register("featureselected", this, listenerFeatureSelected);
@@ -236,12 +240,14 @@ function reloadFeatures(perimeter) {
     });
 
     app.mapPanel.map.addLayer(selectLayer);
+    app.mapPanel.map.events.on({
+      addlayer: this.raiseLayer,
+      scope: this
+    });
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
     fromreload = true;
-    
-       
-}
+};
 
 var listenerFeatureAddedToZoom = function(e) {
     app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
