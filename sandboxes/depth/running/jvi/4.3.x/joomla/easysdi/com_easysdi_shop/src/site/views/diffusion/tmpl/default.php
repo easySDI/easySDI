@@ -197,11 +197,10 @@ var globdata;
             console.log('todo');
         }).done(function(data){
             js('#result_testurlauthentication').removeClass('success error');
-            if(data == 1)
+            if(data && data.success)
                 js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_OK',true); ?>').addClass('success');
             else{
-                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE',true); ?>').addClass('error');
-                console.log(data);
+                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE',true); ?>').addClass('error');                console.log(data);
             }
         }).always(function(){
             js('#jform_testurlauthentication').blur();
