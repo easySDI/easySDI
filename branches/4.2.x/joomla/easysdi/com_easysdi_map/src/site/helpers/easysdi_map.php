@@ -94,6 +94,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
             $doc->addScript($base_url . '/gxp/script/loader.js');
+            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/easysdi/js/gxp/plugins/WMSSource.js');
             $doc->addScript($base_url . '/easysdi/js/gxp/plugins/OLSource.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/plugins/SearchCatalog.js');
@@ -112,9 +113,8 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/easysdi/js/geoext/data/PrintProvider.js');
             $doc->addScript($base_url . '/easysdi/js/geoext/ux/PrintPreview.js');
             $doc->addScript($base_url . '/easysdi/js/geoext/widgets/PrintMapPanel.js');
-            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
-            $doc->addScript($base_url . '/gxp/script/gxp.min.js');
-            $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
+            //$doc->addScript($base_url . '/gxp/script/gxp.min.js');
+            //$doc->addScript($base_url . '/easysdi/js/sdi.min.js');
 
             $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core.js');
             $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
