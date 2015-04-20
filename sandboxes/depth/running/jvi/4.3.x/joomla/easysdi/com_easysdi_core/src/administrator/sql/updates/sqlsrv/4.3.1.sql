@@ -45,5 +45,3 @@ ALTER TABLE [#__sdi_organism] ALTER COLUMN [internal_free] [smallint] NULL  ;
 ALTER TABLE [#__sdi_organism] ALTER COLUMN [fixed_fee_ti] [decimal](6,2) NULL  ;
 ALTER TABLE [#__sdi_organism] ALTER COLUMN [data_free_fixed_fee] [smallint] NULL  ;
 ALTER TABLE [#__sdi_organism] ALTER COLUMN [selectable_as_thirdparty] [smallint] NULL ;
-
-INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (11, 11, 1, N'organismmanager');
