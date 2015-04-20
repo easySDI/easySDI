@@ -33,22 +33,23 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
     <div class="well">
 
-        <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+        <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <?php foreach ($this->form->getFieldsets() as $fieldset): ?>
-                <?php if (isset($fieldset->label)): ?><h4><?php echo JText::_($fieldset->label); ?></h4><?php endif; ?>
-                <table>
-                    <?php if ($fieldset->name == 'free_categories'): ?>
+                <?php if (isset($fieldset->label)): ?><h2><?php echo JText::_($fieldset->label); ?></h2><?php endif; ?>
+
+                <?php if ($fieldset->name == 'free_categories'): ?>
+                    <table class="table table-striped shop-free-categories-table">
                         <thead>
                             <tr>
-                                <th><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_TH_CATEGORIES'); ?></th>
-                                <th><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_TH_IS_FREE'); ?></th>
+                                <th class="shop-pricing-category-name-col"><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_TH_CATEGORIES'); ?></th>
+                                <th class="shop-pricing-category-free-toggle"><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_TH_IS_FREE'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($this->item->categories as $category): ?>
                                 <tr>
-                                    <td><?php echo $category->name; ?></td>
-                                    <td>
+                                    <td class="shop-pricing-category-name-col"><?php echo $category->name; ?></td>
+                                    <td class="shop-pricing-category-free-toggle">
                                         <fieldset id="jform_categories_<?php echo $category->id; ?>_free" class="radio btn-group btn-group-yesno">
                                             <input type="radio" id="jform_categories_<?php echo $category->id; ?>_free0" name="jform[categories][<?php echo $category->id; ?>]" value="0" <?php if ($category->isFree == 0): ?>checked="checked"<?php endif; ?>>
                                             <label for="jform_categories_<?php echo $category->id; ?>_free0"><?php echo JText::_('JNO'); ?></label>                                            
@@ -58,26 +59,28 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        </tbody></table>
+                        </tbody>
+                    </table>
                     <?php
                     break;
                 endif;
                 ?>
 
-    <?php foreach ($this->form->getFieldset($fieldset->name) as $field): ?>
-                    <tr>
-                        <td><?php echo $field->label; ?></td>
-                        <td><?php echo $field->input; ?> <?php echo $field->name == "jform[name]" ? "" : ($field->name == "jform[surface_rate]" ? "km2" : $this->paramsarray["currency"]); ?></td>
-                    </tr>
+                <?php foreach ($this->form->getFieldset($fieldset->name) as $field): ?>
+                    <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                        <div class="control-label"><?php echo $field->label; ?></div>
+                        <div class="controls"><?php echo $field->input; ?>
+                            <?php echo $field->name == "jform[name]" ? "" : ($field->name == "jform[surface_rate]" ? " km2" : " ".$this->paramsarray["currency"]); ?>
+                        </div>
+                    </div>
                 <?php endforeach; ?>
-                </table>
-<?php endforeach; ?>
+            <?php endforeach; ?>
 
             <input type="hidden" name="task" id="task" value="" />
             <input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
             <input type="hidden" name="organism_id" value="<?php echo $this->state->get('pricingprofile.organism_id'); ?>" />
 
-<?php echo $this->getToolbar(); ?>
+            <?php echo $this->getToolbar(); ?>
         </form>
     </div>
 </div>

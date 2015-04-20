@@ -307,20 +307,20 @@ class cswmetadata {
                         if (!$sdiUser->isEasySDI):
                             $right = false;
                         else:
-                            if ($diffusion->accessscope_id == 2):
+                            if ($diffusion->accessscope_id == 3):
                                 $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
                                 $organism = $sdiUser->getMemberOrganisms();
                                 if (empty($organisms) || !in_array($organism[0]->id, $organisms)):
                                     $right = false;
                                 endif;
                             endif;
-                            if ($diffusion->accessscope_id == 3):
+                            if ($diffusion->accessscope_id == 4):
                                 $users = sdiModel::getAccessScopeUser($diffusion->guid);
                                 if (empty($users) || !in_array($sdiUser->id, $users)):
                                     $right = false;
                                 endif;
                             endif;
-                            if ($diffusion->accessscope_id == 4):
+                            if ($diffusion->accessscope_id == 2):
                                 $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                                 $allowedCategories = sdiModel::getAccessScopeCategory($diffusion->guid);
                                 if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
@@ -375,20 +375,20 @@ class cswmetadata {
                         if (!$sdiUser->isEasySDI):
                             $right = false;
                         else:
-                            if ($visualization->accessscope_id == 2):
+                            if ($visualization->accessscope_id == 3):
                                 $organisms = sdiModel::getAccessScopeOrganism($visualization->guid);
                                 $organism = $sdiUser->getMemberOrganisms();
                                 if (!in_array($organism[0]->id, $organisms)):
                                     $right = false;
                                 endif;
                             endif;
-                            if ($visualization->accessscope_id == 3):
+                            if ($visualization->accessscope_id == 4):
                                 $users = sdiModel::getAccessScopeUser($visualization->guid);
                                 if (!in_array($sdiUser->id, $users)):
                                     $right = false;
                                 endif;
                             endif;
-                            if ($visualization->accessscope_id == 4):
+                            if ($visualization->accessscope_id == 2):
                                 $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                                 $allowedCategories = sdiModel::getAccessScopeCategory($visualization->guid);
                                 if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
@@ -710,7 +710,7 @@ class cswmetadata {
             if (!$sdiUser->isEasySDI):
                 return null;
             endif;
-            if ($this->diffusion->accessscope_id == 2):
+            if ($this->diffusion->accessscope_id == 3):
                 $organisms = sdiModel::getAccessScopeOrganism($this->diffusion->guid);
                 $organism = $sdiUser->getMemberOrganisms();
                 if (empty($organism)):
@@ -720,13 +720,13 @@ class cswmetadata {
                     return null;
                 endif;
             endif;
-            if ($this->diffusion->accessscope_id == 3):
+            if ($this->diffusion->accessscope_id == 4):
                 $users = sdiModel::getAccessScopeUser($this->diffusion->guid);
                 if (!in_array($sdiUser->id, $users)):
                     return null;
                 endif;
             endif;
-            if ($this->diffusion->accessscope_id == 4):
+            if ($this->diffusion->accessscope_id == 2):
                 $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                 $allowedCategories = sdiModel::getAccessScopeCategory($this->diffusion->guid);
                 if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
