@@ -18,7 +18,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/mpdf/
  * Catalog controller class.
  */
 class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
-
+    
     public function exportPDF($id = null, $download = true) {
         if (empty($id)) {
             $id = JFactory::getApplication()->input->get('id', null, 'STRING');

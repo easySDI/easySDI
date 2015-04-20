@@ -20,6 +20,7 @@ class Easysdi_catalogController extends JControllerLegacy {
         // If view is sheet, we'll check access scope before 
         // doing anything (like getting CSW data etc...)
         $vName = $this->input->get('view', null);
+        $tName = $this->input->get('task', null);
         if ($vName == 'sheet'):
 
             //check if a guid is given
@@ -81,6 +82,54 @@ class Easysdi_catalogController extends JControllerLegacy {
                 endif;
             endif;
         endif;
+
+        /**
+         * Mapping easysdi v2 report URL
+         */
+        if ($tName == 'getReport') {
+            $jinput = JFactory::getApplication()->input;
+
+            $guid = $jinput->get('metadata_guid', array(), 'array');
+            $type = $jinput->get('reporttype', null, 'STRING');
+            $lang = $jinput->get('language', null, 'STRING');
+            $callfromjoomla = $jinput->get('callfromjoomla', true, 'BOOLEAN');
+            $catalog = $jinput->get('context', null, 'STRING');
+
+            if (!empty($lang)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('*');
+                $query->from('#__sdi_language');
+                $query->where('UPPER(datatable) LIKE UPPER(' . $query->quote($lang) . ')');
+                
+                $db->setQuery($query);
+                $language = $db->loadObject();
+            }
+
+            $jinput->set('format', null);
+
+            $jinput->set('guid', $guid);
+            $jinput->set('type', $type);
+            if(isset($language)){
+                $jinput->set('lang', $language->code);
+            }
+            $jinput->set('callfromjoomla', $callfromjoomla);
+            $jinput->set('catalog', $catalog);
+            $jinput->set('view', 'report');
+            $jinput->set('tmpl', 'component');
+        }
+
+        /**
+         * Require 
+         */
+        if ($vName == 'report') {
+            $guids = JFactory::getApplication()->input->get('guid', array(), 'array');
+            if (empty($guids)) {
+                JError::raiseWarning(400, JText::_('COM_EASYSDI_CATALOG_REPORT_MISSING_GUID'));
+                return;
+            }
+        }
 
         parent::display($cachable, $urlparams);
 
