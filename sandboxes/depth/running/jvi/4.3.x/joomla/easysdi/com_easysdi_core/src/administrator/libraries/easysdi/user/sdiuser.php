@@ -85,6 +85,7 @@ class sdiUser {
     const extractionresponsible = 7;
     const pricingmanager = 9;
     const validationmanager = 10;
+    const organismmanager = 11;
 
     /**
      * 
@@ -194,6 +195,21 @@ class sdiUser {
         }
         if (isset($this->role[2])) {
             return true;
+        }
+        return false;
+    }
+    
+    public function isOrganismManager($organismId){
+        if(!$this->isEasySDI){
+            return false;
+        }
+        
+        if(isset($this->role[self::organismmanager])){
+            foreach($this->role[self::organismmanager] as $organism){
+                if($organismId == $organism->id){
+                    return true;
+                }
+            }
         }
         return false;
     }
