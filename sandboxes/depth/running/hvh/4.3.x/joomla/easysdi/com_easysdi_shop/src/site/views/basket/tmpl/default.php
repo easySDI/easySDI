@@ -569,7 +569,7 @@ if ($this->item && $this->item->extractions) :
                 <?php if (isset($this->item->extent->levelcode) && !empty($this->item->extent->levelcode)): ?>
                     slider.changeIndoorLevelByCode(slider,"<?php echo $this->item->extent->levelcode; ?>");
                 <?php else : ?>
-                    jQuery('#t-level').val(slider.getLevel());
+                    jQuery('#t-level').val(slider.getLevel().code);
                 <?php endif; ?>
 
                 jQuery('#modal-perimeter').hide();
