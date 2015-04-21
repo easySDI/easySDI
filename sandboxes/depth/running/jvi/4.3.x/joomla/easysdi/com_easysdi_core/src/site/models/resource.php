@@ -232,20 +232,12 @@ class Easysdi_coreModelResource extends JModelForm {
         }
         
         if(!sdiFactory::getSdiUser()->authorize($form->getData()->get('id'), sdiUser::resourcemanager)){
-            foreach($form as $field){
-                if($field!==false){
-                    $toto = true;
-                }
-            }
             foreach($form->getFieldsets() as $fieldset){
                 foreach($form->getFieldset($fieldset->name) as $field){
-                    $toto = $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
                 }
             }
-            
-            
         }
-        
         
         return $form;
     }
