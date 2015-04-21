@@ -39,6 +39,7 @@ Ext.onReady(function() {
                 window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }
         }
+        //TODO: move to IndoorLevelSlider.js afterrender
         if (data.level && cleared === "false") {
             //Init the indoor layer with the default level value
             window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this);

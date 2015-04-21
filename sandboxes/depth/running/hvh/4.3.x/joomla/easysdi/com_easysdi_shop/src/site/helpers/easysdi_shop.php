@@ -275,12 +275,14 @@ abstract class Easysdi_shopHelper {
                                     ?></div>
                             </div>         
                         <?php endif; ?>
-                    </div>      
+                    </div> 
+                    <?php if (!empty($item->basket->extent->level)) :?>
                      <div id="indoor-level" class="row-fluid" >
                         <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
-                            <span><?php if (!empty($item->basket->buffer)) echo (float)$item->basket->buffer; ?></span>                            
+                            <span><?php echo json_decode($item->basket->extent->level)->label; ?></span>                            
                         </div>                                
                     </div>
+                    <?php endif; ?>
                 </div>
                 
             </div>

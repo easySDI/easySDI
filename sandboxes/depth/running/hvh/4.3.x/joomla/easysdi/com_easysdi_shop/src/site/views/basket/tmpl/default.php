@@ -27,14 +27,6 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
-//$document->addScript('components/com_easysdi_shop/views/basket/tmpl/pricing.js');
-//$document->addScript('components/com_easysdi_shop/views/basket/tmpl/projection.js');
-//$document->addScript('components/com_easysdi_shop/views/basket/tmpl/requests.js');
-?>
-
-
-
-<?php
 if ($this->item && $this->item->extractions) :
     $currency = $this->item->prices->cfg_currency;
     ?>
@@ -97,7 +89,7 @@ if ($this->item && $this->item->extractions) :
                                 <div>
                                     <h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
                                     <div>
-                                        <div><?php if (!empty($this->item->extent->levelcode)): ?><?php echo $this->item->extent->levelcode; ?><?php endif; ?></div>
+                                        <div><?php if (!empty($this->item->extent->level)): ?><?php echo json_decode($this->item->extent->level)->label; ?><?php endif; ?></div>
                                     </div>
                                 </div>
 
@@ -549,7 +541,7 @@ if ($this->item && $this->item->extractions) :
             function initialization (){
                 miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
                  var slider = window.appname.mapPanel.map.indoorlevelslider;
-                 slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(slider.getLevel().code);});  
+                 slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(JSON.stringify(slider.getLevel()));});  
                  initDraw();
                 <?php if (!empty($this->item->extent)): ?>
                     <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
@@ -566,10 +558,10 @@ if ($this->item && $this->item->extractions) :
                     reloadFeatures<?php echo $this->item->extent->id; ?>();
                 <?php endif; ?>
 
-                <?php if (isset($this->item->extent->levelcode) && !empty($this->item->extent->levelcode)): ?>
-                    slider.changeIndoorLevelByCode(slider,"<?php echo $this->item->extent->levelcode; ?>");
+                <?php if (isset($this->item->extent->level) && !empty($this->item->extent->level)): ?>
+                    slider.changeIndoorLevelByCode(slider,"<?php echo json_decode($this->item->extent->level)->code; ?>");
                 <?php else : ?>
-                    jQuery('#t-level').val(slider.getLevel().code);
+                    jQuery('#t-level').val(JSON.stringify(slider.getLevel()));
                 <?php endif; ?>
 
                 jQuery('#modal-perimeter').hide();
@@ -586,8 +578,8 @@ if ($this->item && $this->item->extractions) :
         <input type="hidden" name="t-surface" id="t-surface" value="<?php if (isset($this->item->extent->surface)): echo $this->item->extent->surface; endif;?>" />
         <input type="hidden" name="surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin; ?>" />
         <input type="hidden" name="surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax; ?>" />            
-        <input type="hidden" name="level" id="level" value="<?php if (isset($this->item->extent->levelcode)) : echo $this->item->extent->levelcode; endif; ?>" />
-        <input type="hidden" name="t-level" id="t-level" value="<?php if (isset($this->item->extent->levelcode)) : echo $this->item->extent->levelcode; endif;?>" />
+        <input type="hidden" name="level" id="level" value='<?php if (isset($this->item->extent->level)) : echo $this->item->extent->level; endif; ?>' />
+        <input type="hidden" name="t-level" id="t-level" value='<?php if (isset($this->item->extent->level)) : echo $this->item->extent->level; endif;?>' />
         <input type="hidden" name="v-features" id="v-features" value="" />            
         <input type="hidden" name="task" id = "task" value = "" />
         <input type="hidden" name="option" value = "com_easysdi_shop" />

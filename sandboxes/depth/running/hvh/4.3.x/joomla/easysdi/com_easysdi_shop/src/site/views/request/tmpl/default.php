@@ -189,12 +189,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 </tbody>
                             </table>
                         </div>
-
                         <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
-
-                        
-
-
                     </div>
                 </div>
             </div>
@@ -229,7 +224,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
     <script>
         Ext.onReady(function() {
             window.appname.on("ready", function() {
-                loadPerimeter(true);                
+                window.appname.mapPanel.map.baseLayer.events.register("loadend", window.appname.mapPanel.map.baseLayer, loadPerimeter(true));                
             })
         })
     </script>

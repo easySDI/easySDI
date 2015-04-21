@@ -148,7 +148,9 @@ function cancel() {
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
     if (jQuery('#level').val() !== '') {
-       app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider,jQuery('#level').val());
+        var level = JSON.parse(jQuery('#level').val());
+        var levelcode = level.code;
+       app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider,levelcode);
     }
 }
 
@@ -244,7 +246,7 @@ function savePerimeter() {
             "surface": jQuery('#t-surface').val(),
             "allowedbuffer": jQuery('#allowedbuffer').val(),
             "buffer": jQuery('#buffer').val(),
-            "levelcode": jQuery('#t-level').val(),
+            "level": jQuery('#t-level').val(),
             "features": jQuery('#t-features').val()};
 
         jQuery.ajax({
@@ -286,8 +288,8 @@ function updateDisplay (response){
                 else {
                     jQuery('#perimeter-recap-details-title > h4').empty();
                 }
-                if (response.extent.levelcode !== '') {
-                    jQuery('#perimeter-recap > div:nth-child(2) > div').html(response.extent.levelcode);
+                if (response.extent.level !== '') {
+                    jQuery('#perimeter-recap > div:nth-child(2) > div').html(JSON.parse(response.extent.level).label);
                     jQuery('#perimeter-recap').show();
                 }
                 else {

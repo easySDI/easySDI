@@ -43,29 +43,25 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  The CSS class name for the slider elements.  Default is "sdi-indoorlevelslider".
      */
     baseCls: "sdi-indoorlevelslider",
-
     /**
      * 
      */
     levels: [],
-    
     /**
      * 
      */
     style: "position: absolute; right: 50px; top: 20px; z-index: 100;",
-    
     /** private: method[constructor]
      *  Construct the component.
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
         this.addEvents(
-            "indoorlevelsliderready",
-            "indoorlevelchanged"
-        );
+                "indoorlevelsliderready",
+                "indoorlevelchanged"
+                );
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
-    
     /** private: method[initComponent]
      *  Initialize the component.
      */
@@ -75,25 +71,21 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         if (this.map) {
             if (this.map instanceof GeoExt.MapPanel) {
                 this.map = this.map.map;
-            }            
+            }
         }
         if (this.aggressive === true) {
             this.on('change', this.changeIndoorLevel, this);
         } else {
             this.on('changecomplete', this.changeIndoorLevel, this);
-        }  
-       
-        
+        }
     },
-    
     /** private: method[onRender]
      *  Override onRender to set base css class.
      */
     onRender: function() {
         sdi.widgets.IndoorLevelSlider.superclass.onRender.apply(this, arguments);
-        this.el.addClass(this.baseCls);       
+        this.el.addClass(this.baseCls);
     },
-    
     /** private: method[changeIndoorLevel]
      *  :param slider: :class:`sdi.widgets.IndoorLevelSlider`
      *  :param value: ``Number`` The slider value
@@ -101,40 +93,38 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  Updates the WMS filter on level and redraw the layers
      */
     changeIndoorLevel: function(slider, value) {
-        if(!value){
+        if (!value) {
             value = this.getValue();
         }
         this.setValue(value);
         var layers = this.map.layers;
-    
+
         for (var a = 0; a < layers.length; a++) {
             this.redrawLayer(layers[a]);
         }
         this.fireEvent("indoorlevelchanged", this);
     },
-    
     /**
      * Change indoorlevel by the level code
      * @param {type} slider
      * @param {type} code
      * @returns {undefined}
      */
-    changeIndoorLevelByCode: function(slider, code){
-        if(!code)
+    changeIndoorLevelByCode: function(slider, code) {
+        if (!code)
             return;
-        slider.levels.forEach(function(level){
-            if(level.code === code)
-                slider.changeIndoorLevel(slider,slider.levels.indexOf(level));
+        slider.levels.forEach(function(level) {
+            if (level.code === code)
+                slider.changeIndoorLevel(slider, slider.levels.indexOf(level));
         })
     },
-    
     /**
      * Updates the WMS filter on level and redraw the layer
      * Event "layerredrawn" is sent with the concerned layer as parameter.
      * 
      * @param {openlayers layer} layer
      */
-    redrawLayer: function(layer){
+    redrawLayer: function(layer) {
         var level = this.getLevel();
         if (layer.isindoor && layer.isindoor == 1 && layer.levelfield) {
             var servertype = layer.servertype;
@@ -144,23 +134,21 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                 layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layer.levelfield + "='" + level.code + "'\"}"});
             }
             layer.redraw(true);
-            this.map.events.triggerEvent("layerredrawn", {layer:layer});
+            this.map.events.triggerEvent("layerredrawn", {layer: layer});
         }
     },
-    
     /**
      * Get the object level for a specific value
      * or, if not specified, the current value
      * @param {int} value
      * @returns {object} selected level
      */
-    getLevel : function(value){
-        if(!value){
+    getLevel: function(value) {
+        if (!value) {
             value = this.getValue();
         }
         return levels[value];
     },
-
     /** private: method[addToMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
      *
@@ -182,12 +170,16 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             },
             afterrender: function() {
                 this.map = panel.map;
-                panel.map.indoorlevelslider = this;             
+                panel.map.indoorlevelslider = this;
+                //TODO : to activate after test and remove from map.js
+//                this.map.events.on({"addlayer": function(e) {
+//                        this.indoorlevelslider.redrawLayer(e.layer);
+//                    }});
+//                this.map.indoorlevelslider.changeIndoorLevel(this);
             },
             scope: this
         });
     },
-    
     /** private: method[removeFromMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
      *
@@ -201,7 +193,6 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             scope: this
         });
     },
-    
     /** private: method[stopMouseEvents]
      *  :param e: ``Object``
      */

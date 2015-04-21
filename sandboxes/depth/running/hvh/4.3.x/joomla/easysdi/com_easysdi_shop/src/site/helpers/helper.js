@@ -6,9 +6,11 @@ function loadPerimeter(withdisplay) {
     }
 }
 
+var dest, polygonLayer;
+
 function loadPolygonPerimeter(withdisplay) {
-    var polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
-    window.appname.mapPanel.map.addLayers([polygonLayer]);
+    polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
+
     var wkt = jQuery('#jform_perimeter').val();
     var features = new OpenLayers.Format.WKT().read(wkt);
     if (features instanceof Array) {
@@ -18,23 +20,38 @@ function loadPolygonPerimeter(withdisplay) {
                     new OpenLayers.Projection(window.appname.mapPanel.map.projection)
                     );
             var reprojfeature = new OpenLayers.Feature.Vector(geometry);
-            polygonLayer.addFeatures([reprojfeature]);  
+            polygonLayer.addFeatures([reprojfeature]);
         }
     }
     else {
-        var geometry = features.geometry.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection(window.appname.mapPanel.map.projection)
-                );
-        var reprojfeature = new OpenLayers.Feature.Vector(geometry);
-        polygonLayer.addFeatures([reprojfeature]);   
+        var source = new OpenLayers.Projection("EPSG:4326");
+        dest = new OpenLayers.Projection(window.appname.mapPanel.map.projection);
+        dest = getDestinationProjection(features, source) ;
+        
     }
+
+    window.appname.mapPanel.map.addLayers([polygonLayer]);
+
     window.appname.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
-    if(withdisplay === true){
+    if (withdisplay === true) {
         jQuery('#perimeter-recap').append('<div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;">');
         jQuery('#perimeter-recap-details').append("<div>" + wkt + "</div>");
         jQuery('#perimeter-recap').append('</div>');
     }
+}
+
+function getDestinationProjection(features, source) {
+    //var dest = new OpenLayers.Projection(window.appname.mapPanel.map.projection);
+    if (!dest.readyToUse) {
+        window.setTimeout(getDestinationProjection(features, source), 2000);
+    } else {
+        transformFeature(features, source);
+    }
+}
+
+function transformFeature(features, source){
+    features.geometry.transform(source, dest);
+    polygonLayer.addFeatures([features]);
 }
 
 var selectLayer;

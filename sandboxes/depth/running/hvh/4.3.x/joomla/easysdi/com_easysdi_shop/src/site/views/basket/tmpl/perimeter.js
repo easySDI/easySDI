@@ -247,6 +247,8 @@ function reloadFeatures(perimeter) {
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
     fromreload = true;
+    
+    alert("TODO : Features name in recap list!");
 };
 
 var listenerFeatureAddedToZoom = function(e) {
