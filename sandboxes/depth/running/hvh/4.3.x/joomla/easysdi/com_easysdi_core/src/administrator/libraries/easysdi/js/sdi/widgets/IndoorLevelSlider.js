@@ -92,7 +92,6 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
     onRender: function() {
         sdi.widgets.IndoorLevelSlider.superclass.onRender.apply(this, arguments);
         this.el.addClass(this.baseCls);       
-//        this.fireEvent("indoorlevelsliderready", this);
     },
     
     /** private: method[changeIndoorLevel]
@@ -143,9 +142,6 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                 layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
             } else if (servertype == 2 || servertype == 3) {
                 layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layer.levelfield + "='" + level.code + "'\"}"});
-//            } else if (servertype == 3) {
-//                layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-//                layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
             }
             layer.redraw(true);
             this.map.events.triggerEvent("layerredrawn", {layer:layer});

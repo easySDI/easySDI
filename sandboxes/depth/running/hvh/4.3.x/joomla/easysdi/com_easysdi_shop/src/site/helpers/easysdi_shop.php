@@ -258,7 +258,7 @@ abstract class Easysdi_shopHelper {
                         <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h4>
                             <span><?php if (!empty($item->basket->buffer)) echo (float)$item->basket->buffer; ?></span>                            
                         </div>                                
-                    </div>
+                    </div>                    
                     <div  class="row-fluid" >
                         <?php if (!empty($item->basket->extent)): ?>
                             <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h4>
@@ -273,10 +273,14 @@ abstract class Easysdi_shopHelper {
                                         endif;
                                     endif;
                                     ?></div>
-                            </div>                                
-                            
+                            </div>         
                         <?php endif; ?>
-                    </div>                           
+                    </div>      
+                     <div id="indoor-level" class="row-fluid" >
+                        <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
+                            <span><?php if (!empty($item->basket->buffer)) echo (float)$item->basket->buffer; ?></span>                            
+                        </div>                                
+                    </div>
                 </div>
                 
             </div>

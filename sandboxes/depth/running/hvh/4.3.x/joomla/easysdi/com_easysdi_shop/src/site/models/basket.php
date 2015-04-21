@@ -192,8 +192,9 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $session->set('basketData', $basketData);
 
             //Save perimeters
-            if (is_array($basket->extent->features)):
-                foreach ($basket->extent->features as $feature):
+            $features = json_decode($basket->extent->features);
+            if (is_array($features)):
+                foreach ($features as $feature):
                     $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');
                     $op = array();
                     $op['order_id']        = $table->id;

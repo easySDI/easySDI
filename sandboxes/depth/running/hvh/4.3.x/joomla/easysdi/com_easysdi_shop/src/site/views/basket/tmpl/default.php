@@ -27,9 +27,9 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/pricing.js');
+//$document->addScript('components/com_easysdi_shop/views/basket/tmpl/pricing.js');
 //$document->addScript('components/com_easysdi_shop/views/basket/tmpl/projection.js');
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/requests.js');
+//$document->addScript('components/com_easysdi_shop/views/basket/tmpl/requests.js');
 ?>
 
 
@@ -541,10 +541,8 @@ if ($this->item && $this->item->extractions) :
             Ext.onReady(function() {
                 if ('undefined' === typeof app) {app = window.appname;}
                 app.on("ready", function() {
-                   
                     jQuery('#modal-perimeter').show();
                     initMiniMap();
-                    
                 });
             });
                 
@@ -571,7 +569,7 @@ if ($this->item && $this->item->extractions) :
                 <?php if (isset($this->item->extent->levelcode) && !empty($this->item->extent->levelcode)): ?>
                     slider.changeIndoorLevelByCode(slider,"<?php echo $this->item->extent->levelcode; ?>");
                 <?php else : ?>
-                    jQuery('#t-level').val(slider.getLevel().code);
+                    jQuery('#t-level').val(slider.getLevel());
                 <?php endif; ?>
 
                 jQuery('#modal-perimeter').hide();
