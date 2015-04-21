@@ -199,10 +199,48 @@ class sdiUser {
         return false;
     }
     
-    public function isOrganismManager($organismId){
-        if(!$this->isEasySDI){
+    public function isOrganismManager($id, $type = 'organism'){
+        if(!$this->isEasySDI || !in_array($type, array('organism', 'resource', 'version', 'metadata'))){
             return false;
         }
+        
+        $db = JFactory::getDbo();
+        switch($type){
+            case 'metadata':
+                $query = $db->getQuery(true)
+                    ->select('r.organism_id')
+                    ->from('#__sdi_resource r')
+                    ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
+                    ->where('m.id='.(int)$id);
+                $db->setQuery($query);
+                $organismId = $db->loadResult();
+                break;
+                
+            case 'version':
+                $query = $db->getQuery(true)
+                    ->select('r.organism_id')
+                    ->from('#__sdi_resource r')
+                    ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                    ->where('v.id='.(int)$id);
+                $db->setQuery($query);
+                $organismId = $db->loadResult();
+                break;
+            
+            case 'resource':
+                $query = $db->getQuery(true)
+                    ->select('r.organism_id')
+                    ->from('#__sdi_resource r')
+                    ->where('r.id='.(int)$id);
+                $db->setQuery($query);
+                $organismId = $db->loadResult();
+                break;
+            
+            case 'organism':
+            default:
+                $organismId = $id;
+        }
+        
         
         if(isset($this->role[self::organismmanager])){
             foreach($this->role[self::organismmanager] as $organism){
