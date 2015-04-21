@@ -23,6 +23,7 @@ class Easysdi_shopModelOrders extends JModelList {
     const ORDERTYPE_DRAFT       = 3;
     
     const USERROLE_VALIDATIONMANAGER = 10;
+    const USERROLE_ORGANISMMANAGER = 11;
     
     /**
      * Constructor.
@@ -151,7 +152,7 @@ class Easysdi_shopModelOrders extends JModelList {
         if($this->getState('layout.validation')){
             $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
                     ->where('uro.user_id='.(int)  sdiFactory::getSdiUser()->id)
-                    ->where('uro.role_id='.self::USERROLE_VALIDATIONMANAGER);
+                    ->where('uro.role_id IN ('.self::USERROLE_VALIDATIONMANAGER.','.self::USERROLE_ORGANISMMANAGER.')');
             
             $tpOrganism = $this->getState('filter.organism');
             if($tpOrganism > 0)

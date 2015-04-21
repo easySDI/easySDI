@@ -199,6 +199,24 @@ class sdiUser {
         return false;
     }
     
+    public function getOrganisms(array $roles = array()){
+        $list = array();
+        foreach($roles as $role){
+            foreach($this->role[$role] as $organism){
+                $list[$organism->name] = $organism;
+            }
+        }
+        ksort($list);
+        return $list;
+    }
+    
+    public function getOrganismManagerOrganisms(){
+        if (!$this->isEasySDI) {
+            return null;
+        }
+        return $this->role[self::organismmanager];
+    }
+    
     public function isOrganismManager($id, $type = 'organism'){
         if(!$this->isEasySDI || !in_array($type, array('organism', 'resource', 'version', 'metadata'))){
             return false;
