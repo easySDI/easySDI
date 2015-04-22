@@ -40,29 +40,23 @@ class Easysdi_shopViewPricingProfile extends JViewLegacy {
         }
 
         $this->user = sdiFactory::getSdiUser();
+        
+        $this->isPricingManager = $this->user->isPricingManager($this->item->organism_id);
         if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php', false));
             return false;
         }
-        /*
-        if(!$this->hasRight()){
+        
+        if(!$this->isPricingManager && !$this->user->isOrganismManager($this->item->organism_id)){
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganisms', false));
             return false;
         }
-*/
+        
         $this->_prepareDocument();
 
         parent::display($tpl);
-    }
-    
-    private function hasRight(){
-        foreach($this->user->role[9] as $managedOrganism){
-            if($managedOrganism->id == $this->item->id)
-                return true;
-        }
-        return false;
     }
 
     /**
@@ -109,10 +103,12 @@ class Easysdi_shopViewPricingProfile extends JViewLegacy {
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'pricingprofile.apply', false);
-        $bar->appendButton('Separator');
-        $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'pricingprofile.save', false);
-        $bar->appendButton('Separator');
+        if($this->isPricingManager){
+            $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'pricingprofile.apply', false);
+            $bar->appendButton('Separator');
+            $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'pricingprofile.save', false);
+            $bar->appendButton('Separator');
+        }
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'pricingprofile.cancel', false);
         //generate the html and return
         return $bar->render();

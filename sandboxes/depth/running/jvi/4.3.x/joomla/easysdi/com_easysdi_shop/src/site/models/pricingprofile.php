@@ -102,6 +102,14 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
         if (empty($form)) {
             return false;
         }
+        
+        if(!sdiFactory::getSdiUser()->isPricingManager($form->getData()->get('organism_id'))){
+            foreach($form->getFieldsets() as $fieldset){
+                foreach($form->getFieldset($fieldset->name) as $field){
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                }
+            }
+        }
 
         return $form;
     }
