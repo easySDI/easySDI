@@ -51,7 +51,7 @@ class Easysdi_shopViewOrder extends JViewLegacy {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
         }
-        if($this->user->id != $this->item->user_id){
+        if($this->user->id != $this->item->user_id && !$this->user->isOrganismManager($this->item->user_id, 'user')){
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;

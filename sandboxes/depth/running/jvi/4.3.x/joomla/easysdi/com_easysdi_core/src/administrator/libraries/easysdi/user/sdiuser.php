@@ -201,11 +201,15 @@ class sdiUser {
     
     public function getOrganisms(array $roles = array(), $onlyIds = false){
         $list = array();
-        foreach($roles as $role){
-            foreach($this->role[$role] as $organism){
-                $list[$organism->name] = $organism;
+        
+        foreach($this->role as $role => $organisms){
+            if(in_array($role, $roles)){
+                foreach($organisms as $organism){
+                    $list[$organism->name] = $organism;
+                }
             }
         }
+        
         ksort($list);
         return !$onlyIds ? $list : array_map(function($o){return $o->id;}, $list);
     }
@@ -218,7 +222,7 @@ class sdiUser {
     }
     
     public function isOrganismManager($ids = array(-1), $type = 'organism'){
-        if(!$this->isEasySDI || !in_array($type, array('organism', 'resource', 'version', 'metadata', 'diffusion'))){
+        if(!$this->isEasySDI || !in_array($type, array('organism', 'resource', 'version', 'metadata', 'diffusion', 'user'))){
             return false;
         }
         
@@ -228,6 +232,15 @@ class sdiUser {
         
         $db = JFactory::getDbo();
         switch($type){
+            case 'user':
+                $query = $db->getQuery(true)
+                    ->select('uro.organism_id')
+                    ->from('#__sdi_user_role_organism uro')
+                    ->where('uro.user_id IN ('.implode(',',$ids).') AND uro.role_id='.self::member);
+                $db->setQuery($query);
+                $organismIds = $db->loadColumn();
+                break;
+            
             case 'diffusion':
                 $query = $db->getQuery(true)
                     ->select('r.organism_id')
