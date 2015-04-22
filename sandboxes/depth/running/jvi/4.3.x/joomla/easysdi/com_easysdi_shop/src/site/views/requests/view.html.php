@@ -32,7 +32,7 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 
         $this->user = sdiFactory::getSdiUser();
-        if (!$this->user->isEasySDI) {
+        if (!$this->user->isEasySDI || count($this->user->getOrganisms(array(sdiUser::extractionresponsible, sdiUser::organismmanager)))==0) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?', false));
             return false;

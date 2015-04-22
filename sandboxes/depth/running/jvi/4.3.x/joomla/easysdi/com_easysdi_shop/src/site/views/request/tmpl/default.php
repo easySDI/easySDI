@@ -79,7 +79,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 </tfoot>
                                 <tbody>
                                     <?php foreach ($this->item->basket->extractions as $extraction) : ?>
-                                        <?php if (in_array($extraction->id, $this->authorizeddiffusion)) : ?>
+                                        <?php if (($editMode = in_array($extraction->id, $this->authorizeddiffusion)) || in_array($extraction->organism, $this->managedOrganismsDiffusion)) : ?>
                                             <tr id="<?php echo $extraction->id; ?>">
                                                 <td>
                                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&preview=editor&guid=' . $extraction->metadataguid); ?>"><?php echo $extraction->name; ?></a>
@@ -125,7 +125,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                             </div>
                                                         </div>
                                                     </div>
-
+                                                    
                                                     <div class="row-fluid diffusion-order-result">
                                                         <div class="span2">
                                                             <span class="badge badge-info"><i class="icon-white icon-upload"></i></span>                                                                
@@ -134,7 +134,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                             <div class="row-fluid">
                                                                 <?php if ($extraction->productstate_id == 3) : ?>
                                                                     <div class="span8">
-                                                                        <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" >                                                                             
+                                                                        <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" <?php if(!$editMode):?>disabled="disabled"<?php endif;?>>                                                                             
                                                                     </div>
                                                                 <?php else : ?>
                                                                     <div class="span2 order-edit-label" >
@@ -154,7 +154,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                 </div>
                                                                 <div class="span6 order-edit-value" >
                                                                     <?php if ($extraction->productstate_id == 3) : ?>
-                                                                        <input type="text" id="fee_<?php echo $extraction->id; ?>" name="jform[fee][<?php echo $extraction->id; ?>]" placeholder="">
+                                                                        <input type="text" id="fee_<?php echo $extraction->id; ?>" name="jform[fee][<?php echo $extraction->id; ?>]" placeholder="" <?php if(!$editMode):?>readonly="readonly"<?php endif;?>>
                                                                     <?php else : ?>
                                                                         <?php echo $extraction->fee; ?>
                                                                     <?php endif; ?>
@@ -168,7 +168,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
                                                                 <div class="span6 order-edit-value" >
                                                                     <?php if ($extraction->productstate_id == 3) : ?>
-                                                                        <textarea id="remark_<?php echo $extraction->id; ?>" name="jform[remark][<?php echo $extraction->id; ?>]" rows="6" placeholder=""></textarea>
+                                                                        <textarea id="remark_<?php echo $extraction->id; ?>" name="jform[remark][<?php echo $extraction->id; ?>]" rows="6" placeholder="" <?php if(!$editMode):?>readonly="readonly"<?php endif;?>></textarea>
                                                                     <?php else : ?>
                                                                         <?php echo $extraction->remark; ?>
                                                                     <?php endif; ?>
@@ -177,7 +177,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                             </div>
                                                         </div>
                                                     </div>
-
+                                                    
                                                 </td>        
                                                 <td>
 

@@ -118,19 +118,27 @@ class Easysdi_shopModelRequests extends JModelList {
         }
 
         //Only order that the current user has something to do with
-        $diffusions = sdiFactory::getSdiUser()->getResponsibleExtraction();
-        if(count($diffusions) == 0) $diffusions[0] = -1;
-        $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id');
-        $query->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id');
-        if (sizeof($diffusions)>0)
-            $query->where('d.id IN (-1, ' . implode(',', $diffusions) . ')');
-        else
-            $query->where('d.id IN (-1)');
+        $user = sdiFactory::getSdiUser();
+        $diffusions = $user->getResponsibleExtraction();
+        if(!is_array($diffusions) || count($diffusions)==0){
+            $diffusions = array(-1);
+        }
+        $managedOrganisms = $user->getOrganisms(array(sdiUser::organismmanager), true);
+        if(!is_array($managedOrganisms) || count($managedOrganisms)==0){
+            $managedOrganisms = array(-1);
+        }
+        $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id')
+                ->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id')
+                ->innerJoin('#__sdi_version v ON v.id=d.version_id')
+                ->innerJoin('#__sdi_resource r ON r.id=v.resource_id')
+                ->where('(d.id IN (' . implode(',', $diffusions) . ') OR r.organism_id IN ('.  implode(',', $managedOrganisms).'))');
+        
         $query->where('od.productstate_id = 3');
         
         //And the product minig is manual
         $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
         $query->where('pm.value = '. $query->quote('manual') );
+        
 
 //        $query->group('a.id');
         $query->order('a.created DESC');
