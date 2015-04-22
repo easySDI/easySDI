@@ -199,7 +199,13 @@ class sdiUser {
         return false;
     }
     
-    public function getOrganisms(array $roles = array(), $onlyIds = false){
+    public function getOrganisms($roles = array(), $onlyIds = false){
+        if (!$this->isEasySDI) {
+            return array();
+        }
+        if(!is_array($roles)){
+            $roles = array($roles);
+        }
         $list = array();
         
         foreach($this->role as $role => $organisms){
@@ -288,7 +294,7 @@ class sdiUser {
         }
         
         if(isset($this->role[self::organismmanager])){
-            return (bool)(count(array_intersect($organismIds, array_map(function($o){return $o->id;}, $this->role[self::organismmanager])))>0);
+            return (bool)(count(array_intersect($organismIds, $this->getOrganisms(self::organismmanager, true)))>0);
         }
         return false;
     }
@@ -444,16 +450,7 @@ class sdiUser {
     }
     
     public function isPricingManager($id){
-        if (!$this->isEasySDI) {
-            return null;
-        }
-        
-        foreach($this->role[self::pricingmanager] as $organism){
-            if($organism->id == $id){
-                return true;
-            }
-        }
-        return false;
+        return in_array($id, $this->getOrganisms(self::pricingmanager, true));
     }
 
     /**
