@@ -92,7 +92,7 @@ JHtml::_('formbehavior.chosen', 'select.chosen');
                             <td class="ordercreatedby"><?php echo $item->created_by_name; ?></td>
                             <td><a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $item->id); ?>"><?php echo $item->name; ?></a></td>
                             <td class="ordercreated"><?php echo $item->created; ?></td>
-                            <?php if($item->orderstate_id == 8 && $this->user->isOrganismManager($item->thirdparty_id)):?>
+                            <?php if($item->orderstate_id == 8 && $this->isValidationManager):?>
                                 <td><a class="btn btn-success btn-small" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.validate&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_VALIDATE_ORDER'); ?></a></td>
                                 <td><a class="reject_lnk btn btn-danger btn-small" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.reject&id=' . $item->id); ?>" rel='<?php echo $item->id ?>'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_REJECT_ORDER'); ?></a></td>
                             <?php else:?>

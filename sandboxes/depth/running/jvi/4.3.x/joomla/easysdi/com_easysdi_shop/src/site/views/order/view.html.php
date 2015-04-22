@@ -51,7 +51,10 @@ class Easysdi_shopViewOrder extends JViewLegacy {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
         }
-        if($this->user->id != $this->item->user_id && !$this->user->isOrganismManager($this->item->user_id, 'user')){
+        
+        $this->isValidationManager = in_array($this->item->thirdparty_id, $this->user->getOrganisms(array(sdiUser::validationmanager), true));
+        
+        if($this->user->id != $this->item->user_id && !$this->user->isOrganismManager($this->item->user_id, 'user') && !$this->isValidationManager){
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
@@ -105,7 +108,7 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         $bar = new JToolBar('toolbar');
         
         if($this->state->get('layout.validation')){
-            if($this->item->orderstate_id == 8){
+            if($this->item->orderstate_id == 8 && $this->isValidationManager){
                 $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATE'), 'order.validate', false);
                 $bar->appendButton('Separator');
                 $bar->appendButton('Standard', 'delete', JText::_('COM_EASYSDI_SHOP_ORDER_REJECT'), 'order.reject', false);
