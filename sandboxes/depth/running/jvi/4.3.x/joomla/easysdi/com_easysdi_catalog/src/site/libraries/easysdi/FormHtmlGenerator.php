@@ -184,7 +184,7 @@ class FormHtmlGenerator {
 
             switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATION:
-                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1 && $this->$isNotOnlyOrganismManager) {
+                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1 && $this->isNotOnlyOrganismManager) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -209,7 +209,7 @@ class FormHtmlGenerator {
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1 && $this->$isNotOnlyOrganismManager) {
+                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1 && $this->isNotOnlyOrganismManager) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -327,7 +327,7 @@ class FormHtmlGenerator {
         $iCollapse = $this->formHtml->createElement('i');
         $iCollapse->setAttribute('class', 'icon-white icon-arrow-right');
         
-        if($this->$isNotOnlyOrganismManager){
+        if($this->isNotOnlyOrganismManager){
             $aRemove = $this->formHtml->createElement('a');
             $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
             $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn');
@@ -374,7 +374,7 @@ class FormHtmlGenerator {
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
             $legend->appendChild($spanLegend);
-            if($this->$isNotOnlyOrganismManager){
+            if($this->isNotOnlyOrganismManager){
                 $aRemove->appendChild($iRemove);
                 $legend->appendChild($aRemove);
             }
@@ -445,7 +445,7 @@ class FormHtmlGenerator {
 
         $attributeGroup->setAttribute('id', 'attribute-group' . FormUtils::serializeXpath($attribute->getNodePath()));
 
-        if ($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) && $this->$isNotOnlyOrganismManager) {
+        if ($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) && $this->isNotOnlyOrganismManager) {
             $attributeGroup->appendChild($this->getAttributeAction($attribute));
         }
 
