@@ -586,7 +586,7 @@ class FormGenerator {
                     //$refNode = $coll->length > 0 ? $coll->item($coll->length - 1)->nextSibling : $target->firstChild;
                     if ($coll->length > 0) {
                         $refNode = $coll->item($coll->length - 1)->nextSibling;
-                        $target = $targets->item($coll->length - 1);
+                        //$target = $targets->item($coll->length - 1);
                     } else {
                         $refNode = $target->firstChild;
                     }
