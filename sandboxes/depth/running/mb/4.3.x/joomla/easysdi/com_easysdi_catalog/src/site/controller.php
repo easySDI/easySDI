@@ -94,7 +94,9 @@ class Easysdi_catalogController extends JControllerLegacy {
             $lang = $jinput->get('language', null, 'STRING');
             $callfromjoomla = $jinput->get('callfromjoomla', true, 'BOOLEAN');
             $catalog = $jinput->get('context', null, 'STRING');
+            $lastVersion = $jinput->get('lastVersion',null, 'STRING');
 
+            // map language parameter
             if (!empty($lang)) {
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
@@ -105,6 +107,15 @@ class Easysdi_catalogController extends JControllerLegacy {
                 
                 $db->setQuery($query);
                 $language = $db->loadObject();
+            }
+            
+            // map lastVersion parameter
+            if(!empty($lastVersion)){
+                if($lastVersion == 'yes'){
+                    $jinput->set('lastVersion', 1);
+                }else{
+                    $jinput->set('lastVersion', 0);
+                }
             }
 
             $jinput->set('format', null);
