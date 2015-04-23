@@ -288,6 +288,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             foreach($form->getFieldsets() as $fieldset){
                 foreach($form->getFieldset($fieldset->name) as $field){
                     $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
                 }
             }
         }

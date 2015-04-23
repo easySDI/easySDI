@@ -311,10 +311,10 @@ class sdiUser {
 
         $cls = '(rt.accessscope_id = 1 
                             OR ((rt.accessscope_id = 3) AND (' . $this->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = rt.guid)))';
-
-        foreach ($this->role[2] as $organism):
+        
+        foreach ($this->getOrganisms(array(self::resourcemanager, self::organismmanager), true) as $organism):
             $cls .= 'OR ((rt.accessscope_id = 2) AND (';
-            $cls .= $organism->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = rt.guid)';
+            $cls .= $organism . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = rt.guid)';
             $cls .= '))';
         endforeach;
 

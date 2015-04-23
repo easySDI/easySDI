@@ -932,6 +932,9 @@ class FormHtmlGenerator {
         $aModal->setAttribute('data-toggle', 'modal');
         $aModal->setAttribute('href', '#myModal');
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
+        if(!$this->isNotOnlyOrganismManager){
+            $aModal->setAttribute('disabled', 'disabled');
+        }
 
         $divModal = $this->formHtml->createElement('div');
         $divModal->setAttribute('class', 'modal fade hide ext-strict');

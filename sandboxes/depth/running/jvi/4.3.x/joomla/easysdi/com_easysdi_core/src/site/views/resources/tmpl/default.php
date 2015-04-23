@@ -43,16 +43,16 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
         <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_RESOURCES'); ?></h1>
     <?php endif; ?>
 
-    <?php if (isset($this->user)):?>
+    <?php if (isset($this->user)):
+        $resourcetypes = $this->user->getResourceType();
+    ?>
         <div class="well sdi-searchcriteria">
             <div class="row-fluid">
                 <form id='criterias' class="form-search" action="" method="post">
                     <input type='hidden' id='filter_ordering' name='filter_ordering' value='ASC'/>
 
                     <div class="btn-group pull-left">
-                        <?php if (empty($this->parent) && $this->user->isResourceManager()) : 
-                            $resourcetypes = $this->user->getResourceType();
-                        ?>
+                        <?php if (empty($this->parent) && $this->user->isResourceManager()) : ?>
                             <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
                                 <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW'); ?>
                                 <span class="caret"></span>

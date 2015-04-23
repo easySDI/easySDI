@@ -226,7 +226,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
             $toolbar->append(JText::_('COM_EASYSDI_CATALOG_OPEN_ALL'), 'btn_toggle_all', 'btn-small');
         }
         
-        if($this->user->authorizeOnMetadata($metadata, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($metadata, sdiUser::metadataresponsible)){
+        if($this->user->authorizeOnMetadata($metadata->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($metadata->id, sdiUser::metadataresponsible)){
             if ($metadata->state == sdiMetadata::INPROGRESS) {
                 $toolbar->append(JText::_('COM_EASYSDI_CATALOG_IMPORT'), 'import', 'btn-small', $importrefactions, true);
             }
