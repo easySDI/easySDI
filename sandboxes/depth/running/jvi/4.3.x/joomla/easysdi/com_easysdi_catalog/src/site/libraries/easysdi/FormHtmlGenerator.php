@@ -73,6 +73,12 @@ class FormHtmlGenerator {
     private $ajaxXpath;
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
+    
+    /**
+     * Roles
+     * @var boolean
+     */
+    private $isNotOnlyOrganismManager = false;
 
     function __construct(JForm $form, DOMDocument $structure, $ajaxXpath = null) {
         $this->form = $form;
@@ -83,6 +89,15 @@ class FormHtmlGenerator {
         $this->formHtml = new DOMDocument(null, 'utf-8');
         $this->ajaxXpath = $ajaxXpath;
         $this->db = JFactory::getDbo();
+        
+        $this->user = new sdiUser();
+        $this->userParams = json_decode($this->user->juser->params);
+        
+        //roles
+        $metadata_id = $form->getData()->get('id');
+        $this->isNotOnlyOrganismManager = $this->user->authorizeOnMetadata($metadata_id, sdiUser::resourcemanager)
+                                        || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataresponsible)
+                                        || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataeditor);
     }
 
     /**
@@ -169,7 +184,7 @@ class FormHtmlGenerator {
 
             switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATION:
-                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1 && $this->$isNotOnlyOrganismManager) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -194,7 +209,7 @@ class FormHtmlGenerator {
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1 && $this->$isNotOnlyOrganismManager) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -311,16 +326,18 @@ class FormHtmlGenerator {
 
         $iCollapse = $this->formHtml->createElement('i');
         $iCollapse->setAttribute('class', 'icon-white icon-arrow-right');
+        
+        if($this->$isNotOnlyOrganismManager){
+            $aRemove = $this->formHtml->createElement('a');
+            $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
+            $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn');
+            $aRemove->setAttribute('data-lowerbound', $lowerbound);
+            $aRemove->setAttribute('data-upperbound', $upperbound);
+            $aRemove->setAttribute('data-xpath', FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid);
 
-        $aRemove = $this->formHtml->createElement('a');
-        $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
-        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn');
-        $aRemove->setAttribute('data-lowerbound', $lowerbound);
-        $aRemove->setAttribute('data-upperbound', $upperbound);
-        $aRemove->setAttribute('data-xpath', FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid);
-
-        $iRemove = $this->formHtml->createElement('i');
-        $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
+            $iRemove = $this->formHtml->createElement('i');
+            $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
+        }
 
         $fieldset = $this->formHtml->createElement('fieldset');
         $class = array();
@@ -357,8 +374,10 @@ class FormHtmlGenerator {
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
             $legend->appendChild($spanLegend);
-            $aRemove->appendChild($iRemove);
-            $legend->appendChild($aRemove);
+            if($this->$isNotOnlyOrganismManager){
+                $aRemove->appendChild($iRemove);
+                $legend->appendChild($aRemove);
+            }
 
             $fieldset->appendChild($legend);
             $fieldset->appendChild($divInner);
@@ -397,9 +416,6 @@ class FormHtmlGenerator {
     private function getAttribute(DOMElement $attribute) {
 
         $languages = $this->ldao->getSupported();
-        // retrieve user data
-        $user = new sdiUser();
-        $userParams = json_decode($user->juser->params);
         $userLanguageIndex = 0;
 
         if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
@@ -429,7 +445,7 @@ class FormHtmlGenerator {
 
         $attributeGroup->setAttribute('id', 'attribute-group' . FormUtils::serializeXpath($attribute->getNodePath()));
 
-        if ($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1)) {
+        if ($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) && $this->$isNotOnlyOrganismManager) {
             $attributeGroup->appendChild($this->getAttributeAction($attribute));
         }
 
@@ -464,7 +480,7 @@ class FormHtmlGenerator {
 
                     $cnt = 0;
                     foreach ($this->ldao->getAll() as $key => $value) {
-                        if (strpos($userParams->language, $key)) {
+                        if (strpos($this->userParams->language, $key)) {
                             $userLanguageIndex = $cnt;
                             break;
                         }
@@ -808,17 +824,13 @@ class FormHtmlGenerator {
         // predefine default language
         $default = $this->ldao->getDefaultLanguage()->gemet;
 
-        // retrieve user data
-        $user = new sdiUser();
-        $userParams = json_decode($user->juser->params);
-
         // build languages array
         $languages = array();
         foreach ($this->ldao->getAll() as $language) {
             $languages[] = "'{$language->gemet}'";
 
             // if match, override default language
-            if ($language->code == $userParams->language)
+            if ($language->code == $this->userParams->language)
                 $default = $language->gemet;
         }
 

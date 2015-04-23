@@ -163,7 +163,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
 
         <div>
 
-            <?php echo $this->getActionToolbar(); ?>
+            <?php if($this->user->isOrganismManager($this->item->id, 'metadata')):echo $this->getActionToolbar();endif; ?>
 
             <?php echo JHtml::_('form.token'); ?>
         </div>

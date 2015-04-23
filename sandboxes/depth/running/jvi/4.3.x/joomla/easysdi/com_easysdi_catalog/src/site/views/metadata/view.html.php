@@ -118,6 +118,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $structure = $this->structure = $this->get('Structure');
 
         $fhg = new FormHtmlGenerator($this->form, $structure);
+        
         $this->formHtml = $fhg->buildForm();
     }
 
@@ -224,17 +225,20 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         } else {
             $toolbar->append(JText::_('COM_EASYSDI_CATALOG_OPEN_ALL'), 'btn_toggle_all', 'btn-small');
         }
-        if ($metadata->state == sdiMetadata::INPROGRESS) {
-            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_IMPORT'), 'import', 'btn-small', $importrefactions, true);
-        }
-
-        $reset_url = array('root' => 'index.php',
-            'option' => 'com_easysdi_catalog',
-            'view' => 'metadata',
-            'layout' => 'edit',
-            'id'=>  $this->item->id);
         
-        $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_RESET'), JRoute::_(Easysdi_coreHelper::array2URL($reset_url),false), 'btn-small', 'btn-reset');
+        if($this->user->authorizeOnMetadata($metadata, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($metadata, sdiUser::metadataresponsible)){
+            if ($metadata->state == sdiMetadata::INPROGRESS) {
+                $toolbar->append(JText::_('COM_EASYSDI_CATALOG_IMPORT'), 'import', 'btn-small', $importrefactions, true);
+            }
+
+            $reset_url = array('root' => 'index.php',
+                'option' => 'com_easysdi_catalog',
+                'view' => 'metadata',
+                'layout' => 'edit',
+                'id'=>  $this->item->id);
+
+            $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_RESET'), JRoute::_(Easysdi_coreHelper::array2URL($reset_url),false), 'btn-small', 'btn-reset');
+        }
         
         $back_url = array('root' => 'index.php',
             'option' => 'com_easysdi_core',

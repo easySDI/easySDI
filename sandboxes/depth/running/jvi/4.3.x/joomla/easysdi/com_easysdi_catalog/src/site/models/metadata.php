@@ -124,7 +124,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         return false;
                     }
 
-                    if (!($user->authorizeOnMetadata($id, sdiUser::metadataeditor) || $user->authorizeOnMetadata($id, sdiUser::metadataresponsible))) {
+                    if (!($user->authorizeOnMetadata($id, sdiUser::metadataeditor) || $user->authorizeOnMetadata($id, sdiUser::metadataresponsible)
+                            || $user->isOrganismManager($id, 'metadata'))) {
                         //Try to update a resource but not its resource manager
                         JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                         JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -281,6 +282,14 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         if (empty($form)) {
             return false;
+        }
+        
+        if(!(sdiFactory::getSdiUser()->authorize($form->getData()->get('id'), sdiUser::metadataeditor) || sdiFactory::getSdiUser()->authorize($form->getData()->get('id'), sdiUser::metadataresponsible))){
+            foreach($form->getFieldsets() as $fieldset){
+                foreach($form->getFieldset($fieldset->name) as $field){
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                }
+            }
         }
         //print_r($form->getXml()->saveXML());die();
         return $form;
