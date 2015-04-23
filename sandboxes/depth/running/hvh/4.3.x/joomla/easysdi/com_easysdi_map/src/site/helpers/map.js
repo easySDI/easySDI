@@ -40,14 +40,14 @@ Ext.onReady(function() {
             }
         }
         //TODO: move to IndoorLevelSlider.js afterrender
-        if (data.level && cleared === "false") {
-            //Init the indoor layer with the default level value
-            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this);
-            //Event handling
-            window.appname.mapPanel.map.events.on({"addlayer" : function(e){
-                window.appname.mapPanel.map.indoorlevelslider.redrawLayer(e.layer);
-            }});
-        }
+//        if (data.level && cleared === "false") {
+//            //Init the indoor layer with the default level value
+//            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this);
+//            //Event handling
+//            window.appname.mapPanel.map.events.on({"addlayer" : function(e){
+//                window.appname.mapPanel.map.indoorlevelslider.redrawLayer(e.layer);
+//            }});
+//        }
         loadingMask.hide();
     });
 

@@ -553,16 +553,17 @@ if ($this->item && $this->item->extractions) :
                         jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
                     <?php endif; ?>
                 <?php endif; ?>
-                <?php if (!empty($this->item->extent) && isset($this->item->extent->features)): ?>
-                    selectPerimeter<?php echo $this->item->extent->id; ?>();
-                    reloadFeatures<?php echo $this->item->extent->id; ?>();
-                <?php endif; ?>
-
                 <?php if (isset($this->item->extent->level) && !empty($this->item->extent->level)): ?>
                     slider.changeIndoorLevelByCode(slider,"<?php echo json_decode($this->item->extent->level)->code; ?>");
                 <?php else : ?>
                     jQuery('#t-level').val(JSON.stringify(slider.getLevel()));
                 <?php endif; ?>
+                <?php if (!empty($this->item->extent) && isset($this->item->extent->features)): ?>
+                    selectPerimeter<?php echo $this->item->extent->id; ?>();
+                    reloadFeatures<?php echo $this->item->extent->id; ?>();
+                <?php endif; ?>
+
+                
 
                 jQuery('#modal-perimeter').hide();
             };

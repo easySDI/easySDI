@@ -13,7 +13,7 @@ function initMiniMap() {
     miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
 }
 
-//Call after a feature was selected or drawn in the mini map
+//Call after a feature was selected or drawn in the map
 var listenerMiniFeaturesAdded = function() {
     minimap.zoomToExtent(miniLayer.getDataExtent());
 };
@@ -23,6 +23,8 @@ var listenerFeatureAdded = function(e) {
     miniLayer.addFeatures([e.feature.clone()]);
     orderSurfaceChecking();
 };
+
+
 
 //Check if the surface of the selection is applicable
 function orderSurfaceChecking(){
@@ -59,6 +61,7 @@ function clearLayersVector() {
             minimap.layers[j].removeAllFeatures();
         }
     }
+    jQuery('#perimeter-recap-details').empty();
 }
 
 //Clear temporary fields
@@ -148,9 +151,8 @@ function cancel() {
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
     if (jQuery('#level').val() !== '') {
-        var level = JSON.parse(jQuery('#level').val());
-        var levelcode = level.code;
-       app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider,levelcode);
+       var level = JSON.parse(jQuery('#level').val());
+       app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider,level.code);
     }
 }
 

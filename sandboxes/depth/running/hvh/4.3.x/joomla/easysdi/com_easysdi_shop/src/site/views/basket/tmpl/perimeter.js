@@ -10,7 +10,7 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     jQuery('#t-perimetern').val(perimeter.name);
     jQuery('#t-features').val('');
     jQuery('#t-surface').val('');
-    
+
     //Current user is not subject to perimeter restriction
     if (isrestrictedbyperimeter === 0) {
         var layerconfig = {type: "OpenLayers.Layer.WMS",
@@ -53,7 +53,7 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
         });
 
     } else {
-        
+
         /** TODO : 
          * - User restricted perimeter is not compatible with arcGIS server :
          * param layerDefs must be used instead of CQL_FILTER.
@@ -96,40 +96,29 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
         });
         app.mapPanel.map.addLayer(perimeterLayer);
     }
- 
+
     //Selection  Layer
     selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     app.mapPanel.map.addLayer(selectLayer);
     //Selection layer on top
-    selectLayer.setZIndex(1001);
-    /* Try this to keep layer on top :
-     *
-     *map.events.on({
-      addlayer: this.raiseLayer,
-      scope: this
-    });
-     */
-//    app.mapPanel.map.events.on({
-//      addlayer: this.raiseLayer,
-//      scope: this
-//    });
-    
+    //selectLayer.setZIndex(1001);
+
     //Select control
     selectControl.events.register("featureselected", this, listenerFeatureSelected);
     selectControl.events.register("featureunselected", this, listenerFeatureUnselected);
     //Managing indoor navigation with predefined perimeter WFS
-    if(perimeter.featuretypefieldlevel){
+    if (perimeter.featuretypefieldlevel) {
         selectControl.fieldlevel = perimeter.prefix + ':' + perimeter.featuretypefieldlevel;
-        app.mapPanel.map.events.register("layerredrawn", this , function(obj) {
-                    selectLayer.removeAllFeatures();
-                    jQuery('#t-features').val('');
-                    selectControl.protocol.defaultFilter = new OpenLayers.Filter.Comparison({
-                                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
-                                    property: selectControl.fieldlevel,
-                                    value:app.mapPanel.map.indoorlevelslider.getLevel().code
-                                });
-                });
+        app.mapPanel.map.events.register("indoorlevelchanged", this, function(level) {
+            selectLayer.removeAllFeatures();
+            jQuery('#t-features').val('');
+            selectControl.protocol.defaultFilter = new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                property: selectControl.fieldlevel,
+                value: app.mapPanel.map.indoorlevelslider.getLevel().code
+            });
+        });
     }
     app.mapPanel.map.addControl(selectControl);
     toggleSelectControl('selection');
@@ -137,6 +126,18 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     return false;
 }
 ;
+
+var listenerWFSFeatureAdded = function(e) {
+    listenerFeatureAdded(e);
+
+    if (typeof e.feature.data[fieldname] === "undefined") {
+        jQuery('#perimeter-recap-details').append(jQuery('<div>' + e.feature + '</div>'));
+    } else {
+        jQuery('#perimeter-recap-details').append(jQuery('<div>' + e.feature.data[fieldname] + '</div>'));
+    }
+    jQuery('#perimeter-recap-details').show();
+
+}
 
 var listenerFeatureSelected = function(e) {
     if (fromreload === true) {
@@ -155,7 +156,7 @@ var listenerFeatureSelected = function(e) {
         var features = JSON.parse(features_text);
     else
         var features = new Array();
-    features.push({"id": e.feature.attributes[fieldid], "name": e.feature.attributes[fieldname], "level": e.feature.attributes[fieldlevel]});
+    features.push({"id": e.feature.attributes[fieldid], "name": e.feature.attributes[fieldname]});
     jQuery('#t-features').val(JSON.stringify(features));
     if (jQuery('#t-surface').val() !== '')
         var surface = parseInt(jQuery('#t-surface').val());
@@ -203,34 +204,37 @@ function reloadFeatures(perimeter) {
     var wfsurl = perimeter.wfsurl;
     var featuretypename = perimeter.prefix + ':' + perimeter.featuretypename;
     var featuretypefieldid = perimeter.prefix + ':' + perimeter.featuretypefieldid;
-    
+
     jQuery('#t-features').val(jQuery('#features').val());
     jQuery('#t-surface').val(jQuery('#surface').val());
     var wfsUrl = wfsurl + '?request=GetFeature&SERVICE=WFS&TYPENAME=' + featuretypename + '&VERSION=1.0.0';
     var wfsUrlWithFilter = wfsUrl + '&FILTER=';
     wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
-    
-    var features_text = jQuery('#features').val();    
+
+    var features_text = jQuery('#features').val();
     if (features_text !== "")
         var features = JSON.parse(features_text);
     else
         var features = new Array();
-    
+
     if (features.length > 1)
         wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
-    
-    
+
+
     for (var i = 0; i < features.length; i++)
     {
         wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + featuretypefieldid + '</ogc:PropertyName><ogc:Literal>' + features[i].id + '</ogc:Literal></ogc:PropertyIsEqualTo>');
-        
+
     }
     if (features.length > 1)
     {
         wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
     }
     wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
+
+    selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     app.mapPanel.map.removeLayer(selectLayer);
+
     selectLayer = new OpenLayers.Layer.Vector("Selection", {
         strategies: [new OpenLayers.Strategy.Fixed()],
         protocol: new OpenLayers.Protocol.HTTP({
@@ -238,18 +242,12 @@ function reloadFeatures(perimeter) {
             format: new OpenLayers.Format.GML()
         })
     });
-
-    app.mapPanel.map.addLayer(selectLayer);
-    app.mapPanel.map.events.on({
-      addlayer: this.raiseLayer,
-      scope: this
-    });
-    selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
+    selectLayer.events.register("featureadded", selectLayer, listenerWFSFeatureAdded);
     selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
+    app.mapPanel.map.addLayer(selectLayer);
     fromreload = true;
-    
-    alert("TODO : Features name in recap list!");
-};
+}
+;
 
 var listenerFeatureAddedToZoom = function(e) {
     app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());

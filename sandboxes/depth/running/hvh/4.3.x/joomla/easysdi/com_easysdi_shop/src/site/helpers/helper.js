@@ -26,8 +26,9 @@ function loadPolygonPerimeter(withdisplay) {
     else {
         var source = new OpenLayers.Projection("EPSG:4326");
         dest = new OpenLayers.Projection(window.appname.mapPanel.map.projection);
-        dest = getDestinationProjection(features, source) ;
-        
+        //dest = getDestinationProjection(features, source) ;
+        features.geometry.transform(source, dest);
+        polygonLayer.addFeatures([features]);        
     }
 
     window.appname.mapPanel.map.addLayers([polygonLayer]);
@@ -43,7 +44,9 @@ function loadPolygonPerimeter(withdisplay) {
 function getDestinationProjection(features, source) {
     //var dest = new OpenLayers.Projection(window.appname.mapPanel.map.projection);
     if (!dest.readyToUse) {
-        window.setTimeout(getDestinationProjection(features, source), 2000);
+        //window.setTimeout(getDestinationProjection(features, source), 100);
+        dest.readyToUse = true;
+        transformFeature(features, source);
     } else {
         transformFeature(features, source);
     }

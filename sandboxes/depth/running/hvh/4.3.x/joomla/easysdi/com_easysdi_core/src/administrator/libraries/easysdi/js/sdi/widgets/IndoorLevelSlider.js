@@ -103,6 +103,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             this.redrawLayer(layers[a]);
         }
         this.fireEvent("indoorlevelchanged", this);
+        this.map.events.triggerEvent("indoorlevelchanged", value);
     },
     /**
      * Change indoorlevel by the level code
@@ -172,10 +173,10 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
                 this.map = panel.map;
                 panel.map.indoorlevelslider = this;
                 //TODO : to activate after test and remove from map.js
-//                this.map.events.on({"addlayer": function(e) {
-//                        this.indoorlevelslider.redrawLayer(e.layer);
-//                    }});
-//                this.map.indoorlevelslider.changeIndoorLevel(this);
+                this.map.events.on({"addlayer": function(e) {
+                        this.indoorlevelslider.redrawLayer(e.layer);
+                    }});
+                this.map.indoorlevelslider.changeIndoorLevel(this);
             },
             scope: this
         });
