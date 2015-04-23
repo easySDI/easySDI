@@ -14,6 +14,9 @@ js = jQuery.noConflict();
         }
     });
     
+var now = new Date();
+now = now.toISOString().replace('T', ' ').substr(0, 10);
+    
 // #n# are used as placeholder
 var Links = {
     resource: {
@@ -358,7 +361,7 @@ var buildMetadataDropDown = function(resource){
     if(
         (resource.rights.metadataEditor && metadata.state===metadataState.INPROGRESS)
         ||
-        ((resource.rights.metadataResponsible || resource.rights.resourceManager) && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED]))
+        (resource.rights.metadataResponsible && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED]))
     )
         section.push(buildDropDownItem(resource, 'metadata.edit'));
     
@@ -487,9 +490,11 @@ var buildStatusCell = function(resource){
         js(versions).each(function(i, version){
             if('undefined' !== typeof version){
                 var metadata = version.metadata();
+                var d = metadata.publishDate.substr(0,10);
+                d = d>now ? '('+d+')' : '';
                 var option = js('<option></option>')
                         .val(version.id)
-                        .html(metadata.name+' : '+metadata.stateName);
+                        .html(metadata.name+' : '+metadata.stateName + ' ' + d);
 
                 select.append(option);
             }
