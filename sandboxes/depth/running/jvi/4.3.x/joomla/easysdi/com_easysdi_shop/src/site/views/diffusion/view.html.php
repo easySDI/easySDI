@@ -49,7 +49,7 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         }
         $this->isDiffusionManager = $this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager);
         if (!empty($this->item->id)) {
-            if (!$this->isDiffusionManager || !$this->user->isOrganismManager($this->item->id, 'metadata')) {
+            if (!$this->isDiffusionManager && !$this->user->isOrganismManager($this->item->id, 'metadata')) {
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                 JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
