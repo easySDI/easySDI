@@ -11,11 +11,7 @@ defined('_JEXEC') or die;
 
 abstract class Easysdi_catalogHelper {
 
-    public static function myFunction() {
-        $result = 'Something';
-        return $result;
-    }
-
+    
     /**
      * Get the preview version of a metadata
      * 
@@ -49,6 +45,35 @@ abstract class Easysdi_catalogHelper {
         $preview = $db->loadObject();
 
         return $preview;
+    }
+    
+    /**
+     * Get the last version of a metatdata
+     */
+    public static function getLastVersion($metadata_guid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        
+        $query->select('v.resource_id as id');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_version v ON v.id = m.version_id');
+        $query->where('m.guid = '.$query->quote($metadata_guid));
+        
+        $db->setQuery($query);
+        $resource = $db->loadObject();
+        
+        $query = $db->getQuery(true);
+        
+        $query->select('m.guid');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_version v ON v.id = m.version_id');
+        $query->where('v.resource_id = '.(int)$resource->id);
+        $query->where('m.endpublished = '.$query->quote('0000-00-00 00:00:00'));
+        
+        $db->setQuery($query);
+        $lastMetadata = $db->loadObject();
+        
+        return $lastMetadata->guid;
     }
 
 }
