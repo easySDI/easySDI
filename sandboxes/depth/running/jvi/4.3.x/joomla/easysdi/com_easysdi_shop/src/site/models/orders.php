@@ -53,6 +53,9 @@ class Easysdi_shopModelOrders extends JModelList {
         $app = JFactory::getApplication();
 
         // Load the filter state.
+        $search = $app->getUserStateFromRequest($this->context . '.filter.organism', 'filter_organism');
+        $this->setState('filter.organism', $search);
+        
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
         
@@ -160,7 +163,8 @@ class Easysdi_shopModelOrders extends JModelList {
         }
         else{
             //Only order which belong to the current user
-            $organisms = $user->getOrganisms(array(sdiUser::organismmanager), true);
+            $organism = $this->getState('filter.organism');
+            $organisms = $organism>0 ? array($organism) : $user->getOrganisms(array(sdiUser::organismmanager), true);
             if(count($organisms)==0){
                 $organisms = array(-1);
             }
