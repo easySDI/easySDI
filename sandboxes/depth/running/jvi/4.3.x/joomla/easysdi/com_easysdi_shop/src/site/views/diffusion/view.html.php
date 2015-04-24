@@ -143,7 +143,7 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        if($this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager)){
+        if($this->isDiffusionManager){
             $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'diffusion.apply', false);
             $bar->appendButton('Separator');
             $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'diffusion.save', false);
