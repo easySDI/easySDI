@@ -199,6 +199,14 @@ class sdiUser {
         return false;
     }
     
+    /**
+     * getOrganisms
+     * 
+     * @param mixed $roles - array|int
+     * @param boolean $onlyIds
+     * @return array - a list of organism or of organism's ids
+     * @since 4.3.2
+     */
     public function getOrganisms($roles = array(), $onlyIds = false){
         if (!$this->isEasySDI) {
             return array();
@@ -219,13 +227,6 @@ class sdiUser {
         
         ksort($list);
         return !$onlyIds ? $list : array_map(function($o){return $o->id;}, $list);
-    }
-    
-    public function getOrganismManagerOrganisms(){
-        if (!$this->isEasySDI) {
-            return null;
-        }
-        return $this->role[self::organismmanager];
     }
     
     public function isOrganismManager($ids = array(-1), $type = 'organism'){
