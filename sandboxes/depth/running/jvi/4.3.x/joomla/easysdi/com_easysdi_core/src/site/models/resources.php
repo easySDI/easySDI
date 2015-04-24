@@ -79,6 +79,9 @@ class Easysdi_coreModelResources extends JModelList {
         $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
         $this->setState('filter.status', $search);
 
+        $search = $app->getUserStateFromRequest($this->context . '.filter.userorganism', 'filter_userorganism');
+        $this->setState('filter.userorganism', $search);
+
         $search = $app->getUserStateFromRequest($this->context . '.filter.resourcetype', 'filter_resourcetype');
         $this->setState('filter.resourcetype', $search);
 
@@ -158,7 +161,13 @@ class Easysdi_coreModelResources extends JModelList {
             $query->innerJoin('#__sdi_versionlink vl on v.id = vl.child_id');
             $query->where('vl.parent_id = ' . (int) $parentId);
             $this->setState('parentid',$parentId);
-            
+                      
+           // Filter by user organism
+            $userOrganism = $this->getState('filter.userorganism.children');
+            if (is_numeric($userOrganism)) {
+                $query->where('a.organism_id = ' . (int)$userOrganism);
+            }
+
             // Filter by resource type
             $resourcetype = $this->getState('filter.resourcetype.children');
             if (is_numeric($resourcetype)) {
@@ -182,7 +191,13 @@ class Easysdi_coreModelResources extends JModelList {
                 $query->where('md.metadatastate_id = ' . $status);
             }
         }
-        else{            
+        else{           
+           // Filter by user organism
+            $userOrganism = $this->getState('filter.userorganism');
+            if (is_numeric($userOrganism)) {
+                $query->where('a.organism_id = ' . (int)$userOrganism);
+            }
+
            // Filter by resource type
             $resourcetype = $this->getState('filter.resourcetype');
             if (is_numeric($resourcetype)) {

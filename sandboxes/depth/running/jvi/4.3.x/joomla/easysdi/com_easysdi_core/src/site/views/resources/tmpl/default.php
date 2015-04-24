@@ -72,6 +72,20 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                         <?php endif; ?>
                     </div>
                     <div class="btn-group pull-right">
+                        <?php if(count($this->userOrganisms)>1):?>
+                        <div id="filterorganism" >
+                            <select id="filter_userorganism" name="filter_userorganism" onchange="this.form.submit();" class="inputbox">
+                                <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_USER_ORGANISM_FILTER'); ?></option>
+                                <?php foreach ($this->userOrganisms as $userOrganism): ?>
+                                    <option value="<?php echo $userOrganism->id; ?>" <?php
+                                    $filterName = (!empty($this->parent)) ? 'filter.userorganism.children' : 'filter.userorganism';
+                                    if ($this->state->get($filterName) == $userOrganism->id) : echo 'selected="selected"';
+                                    endif;
+                                    ?> ><?php echo $userOrganism->name; ?></option>
+                                        <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <?php endif;?>
 
                         <div id="filtertype" >
                             <select id="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif;?>" name="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif;?>" onchange="this.form.submit();" class="inputbox">

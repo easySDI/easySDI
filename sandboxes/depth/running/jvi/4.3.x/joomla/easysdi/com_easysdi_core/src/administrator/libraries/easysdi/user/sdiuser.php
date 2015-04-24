@@ -206,10 +206,11 @@ class sdiUser {
         if(!is_array($roles)){
             $roles = array($roles);
         }
+        $getAll = count(array_intersect(array('*', 'all'), $roles))>0;
         $list = array();
         
         foreach($this->role as $role => $organisms){
-            if(in_array($role, $roles)){
+            if($getAll || in_array($role, $roles)){
                 foreach($organisms as $organism){
                     $list[$organism->name] = $organism;
                 }
