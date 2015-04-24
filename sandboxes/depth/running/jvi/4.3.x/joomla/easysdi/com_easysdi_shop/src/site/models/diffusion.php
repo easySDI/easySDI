@@ -215,9 +215,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             foreach($form->getFieldsets() as $fieldset){
                 foreach($form->getFieldset($fieldset->name) as $field){
                     $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
-                    if(in_array($field->type, array('File', 'Radio', 'Checkbox'))){
-                        $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
-                    }
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
                 }
             }
         }
