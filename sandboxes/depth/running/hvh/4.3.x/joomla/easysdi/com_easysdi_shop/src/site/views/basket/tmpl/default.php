@@ -19,6 +19,8 @@ JText::script('COM_EASYSDI_SHOP_BASKET_KILOMETER');
 JText::script('COM_EASYSDI_SHOP_BASKET_METER');
 JText::script('COM_EASYSDI_SHOP_BASKET_PROCESS_ENDING');
 JText::script('COM_EASYSDI_SHOP_BASKET_PROCESS_PROGRESSING');
+JText::script('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE');
+JText::script('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -182,7 +184,7 @@ if ($this->item && $this->item->extractions) :
                                 <thead>
                                     <tr>
                                         <td class="product_column" ><h4><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER', count($supplier->items)) . ' : ' . $supplier->name; ?></h4></td>
-                                        <td class="price_column" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></td>
+                                        <td class="price_column" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>"><h4><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></h4></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
                                 </thead>
@@ -219,12 +221,28 @@ if ($this->item && $this->item->extractions) :
                                                     $productPrice = isset($product->cal_total_amount_ti) ? $product->cal_total_amount_ti : '-';
 
                                                     echo Easysdi_shopHelper::priceFormatter($productPrice);
-
-                                                    if ($productPrice == '0 ' . JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF')):
-                                                        ?>
-                                                        <i class="icon-white icon-info" title="<?php echo JText::sprintf('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', $product->ind_lbl_category_profile_discount, $product->cfg_pct_category_profile_discount); ?>"></i>
-                                                        <?php
-                                                    endif;
+                                                    
+                                                    $rebate = false;
+                                                    $as = '';
+                                                    $discount = '';
+                                                    if($product->cfg_pct_category_profile_discount>0 || $product->cfg_pct_category_supplier_discount>0){
+                                                        $rebate = true;
+                                                        if($product->cfg_pct_category_supplier_discount>$product->cfg_pct_category_profile_discount){
+                                                            $as = $product->ind_lbl_category_supplier_discount;
+                                                            $discount = $product->cfg_pct_category_supplier_discount;
+                                                        }
+                                                        else{                                                            
+                                                            $as = $product->ind_lbl_category_profile_discount;
+                                                            $discount = $product->cfg_pct_category_profile_discount;
+                                                        }
+                                                    }
+                                                    
+                                                    ?>
+                                                    <i class="icon-white icon-info hasTooltip" 
+                                                       title="<?php echo JText::sprintf('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', $as, $discount); ?>"
+                                                       style="<?php if(!$rebate):?>display:none;<?php endif;?>">
+                                                    </i>
+                                                    <?php
                                                 endif;
                                                 ?>
                                             </td>
@@ -237,17 +255,17 @@ if ($this->item && $this->item->extractions) :
                                 <tfoot style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>">
                                     <tr>
                                         <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
-                                        <td class="price_column" id="supplier_cal_fee_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) : '-'; ?></td>
+                                        <td class="price_column supplier_cal_fee_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
                                     <tr>
                                         <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
-                                        <td class="price_column" id="supplier_cal_total_amount_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) : '-'; ?></td>
+                                        <td class="price_column supplier_cal_total_amount_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
                                     <tr>
                                         <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
-                                        <td class="price_column" id="supplier_cal_total_rebate_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) : '-'; ?></td>
+                                        <td class="price_column supplier_cal_total_rebate_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
                                 </tfoot>
