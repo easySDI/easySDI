@@ -88,7 +88,7 @@ if ($this->item && $this->item->extractions) :
                                     </div>
                                 </div>
 
-                                <div>
+                                <div id="perimeter-level" style="<?php if (empty($this->item->extent->level)): ?>display: none;<?php endif; ?>">
                                     <h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
                                     <div>
                                         <div><?php if (!empty($this->item->extent->level)): ?><?php echo json_decode($this->item->extent->level)->label; ?><?php endif; ?></div>
@@ -395,7 +395,7 @@ if ($this->item && $this->item->extractions) :
                                         return false;"><i class="icon-move"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN'); ?></a><br>
                                         <br>
                                         <?php
-                                        foreach ($item->perimeters as $perimeter):
+                                        foreach ($this->item->perimeters as $perimeter):
                                             if ($perimeter->id == 1):
                                                 if (!$this->item->isrestrictedbyperimeter || $this->params->get('userperimeteractivated') != 1):
                                                     ?>
@@ -558,9 +558,17 @@ if ($this->item && $this->item->extractions) :
                 
             function initialization (){
                 miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
-                 var slider = window.appname.mapPanel.map.indoorlevelslider;
-                 slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(JSON.stringify(slider.getLevel()));});  
-                 initDraw();
+                initDraw();
+                var slider = window.appname.mapPanel.map.indoorlevelslider;
+                if(slider){
+                    slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(JSON.stringify(slider.getLevel()));}); 
+                    <?php if (isset($this->item->extent->level) && !empty($this->item->extent->level)): ?>
+                        slider.changeIndoorLevelByCode(slider,"<?php echo json_decode($this->item->extent->level)->code; ?>");
+                    <?php else : ?>
+                        jQuery('#t-level').val(JSON.stringify(slider.getLevel()));
+                        jQuery('#level').val(JSON.stringify(slider.getLevel()));
+                    <?php endif; ?>
+                }
                 <?php if (!empty($this->item->extent)): ?>
                     <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
                         jQuery('#perimeter-buffer').show();
@@ -571,18 +579,11 @@ if ($this->item && $this->item->extractions) :
                         jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
                     <?php endif; ?>
                 <?php endif; ?>
-                <?php if (isset($this->item->extent->level) && !empty($this->item->extent->level)): ?>
-                    slider.changeIndoorLevelByCode(slider,"<?php echo json_decode($this->item->extent->level)->code; ?>");
-                <?php else : ?>
-                    jQuery('#t-level').val(JSON.stringify(slider.getLevel()));
-                <?php endif; ?>
+               
                 <?php if (!empty($this->item->extent) && isset($this->item->extent->features)): ?>
                     selectPerimeter<?php echo $this->item->extent->id; ?>();
                     reloadFeatures<?php echo $this->item->extent->id; ?>();
                 <?php endif; ?>
-
-                
-
                 jQuery('#modal-perimeter').hide();
             };
         </script>

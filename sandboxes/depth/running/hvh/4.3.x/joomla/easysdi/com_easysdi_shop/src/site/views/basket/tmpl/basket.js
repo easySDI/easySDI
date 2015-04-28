@@ -24,8 +24,6 @@ var listenerFeatureAdded = function(e) {
     orderSurfaceChecking();
 };
 
-
-
 //Check if the surface of the selection is applicable
 function orderSurfaceChecking(){
     var toobig = false;
@@ -70,6 +68,7 @@ function clearTemporaryFields() {
     jQuery('#t-perimetern').val('');
     jQuery('#t-surface').val('');
     jQuery('#t-features').val('');
+    jQuery('#t-level').val('');
     jQuery('#alert_template').fadeOut('slow');
     jQuery('#btn-saveperimeter').removeAttr("disabled");
     
@@ -150,7 +149,7 @@ function cancel() {
         eval('reloadFeatures' + jQuery('#perimeter').val() + '()');
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
-    if (jQuery('#level').val() !== '') {
+    if (jQuery('#level').val() !== '' && slider) {
        var level = JSON.parse(jQuery('#level').val());
        app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider,level.code);
     }
@@ -270,8 +269,7 @@ var updatePricing = function(pricing) {
 
 //Call after user validates his extent drawing
 function savePerimeter() {
-    if (jQuery('#t-perimeter').val() == '')
-    {
+    if (jQuery('#t-perimeter').val() == ''){
         jQuery('#perimeter-recap').empty();
     } else {
         jQuery("#progress").css('visibility', 'visible');
@@ -325,10 +323,12 @@ function updateDisplay (response){
                 }
                 if (response.extent.level !== '') {
                     jQuery('#perimeter-recap > div:nth-child(2) > div').html(JSON.parse(response.extent.level).label);
+                    jQuery('#perimeter-level').show();        
                     jQuery('#perimeter-recap').show();
                 }
                 else {
-                    jQuery('#perimeter-recap > div:nth-child(2) > div').empty();
+                    jQuery('#perimeter-level >div:nth-child(1)').empty();
+                    jQuery('#perimeter-level').hide();
                 }
                 if (response.extent.surface !== '') {
                     jQuery('#perimeter-recap > div:nth-child(1) > div').html(

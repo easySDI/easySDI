@@ -131,7 +131,8 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             var servertype = layer.servertype;
             if (servertype == 1 || servertype == 3) {
                 layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
-            } else if (servertype == 2 || servertype == 3) {
+            } 
+            if (servertype == 2 || servertype == 3) {
                 layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layer.levelfield + "='" + level.code + "'\"}"});
             }
             layer.redraw(true);

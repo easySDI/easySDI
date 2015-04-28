@@ -87,7 +87,7 @@ class Easysdi_shopModelperimeter extends sdiModel {
     public function getItem($pk = null) {
         if ($item = parent::getItem($pk)) {
            ($item->wfsservicetype_id == 1) ? $item->wfsservice_id = 'physical_'.$item->wfsservice_id : $item->wfsservice_id = 'virtual_'.$item->wfsservice_id;
-           ($item->wmsservicetype_id == 1) ? $item->wmsservice_id = 'physical_'.$item->wmsservice_id : $item->wmsservice_id = 'virtual_'.$item->wmsservice_id;
+//           ($item->wmsservicetype_id == 1) ? $item->wmsservice_id = 'physical_'.$item->wmsservice_id : $item->wmsservice_id = 'virtual_'.$item->wmsservice_id;
         }
 
         return $item;
@@ -115,9 +115,9 @@ class Easysdi_shopModelperimeter extends sdiModel {
                 $table->ordering = $max + 1;
             }
         }
-        $poswms = strstr($_REQUEST['jform']['wmsservice_id'], 'physical_');
-        $table->wmsservice_id = substr($_REQUEST['jform']['wmsservice_id'], strrpos($_REQUEST['jform']['wmsservice_id'], '_') + 1);
-        if ($poswms) : $table->wmsservicetype_id = 1; else :$table->wmsservicetype_id = 2; endif;
+//        $poswms = strstr($_REQUEST['jform']['wmsservice_id'], 'physical_');
+//        $table->wmsservice_id = substr($_REQUEST['jform']['wmsservice_id'], strrpos($_REQUEST['jform']['wmsservice_id'], '_') + 1);
+//        if ($poswms) : $table->wmsservicetype_id = 1; else :$table->wmsservicetype_id = 2; endif;
         
         $poswfs = strstr($_REQUEST['jform']['wfsservice_id'], 'physical_');
         $table->wfsservice_id = substr($_REQUEST['jform']['wfsservice_id'], strrpos($_REQUEST['jform']['wfsservice_id'], '_') + 1);

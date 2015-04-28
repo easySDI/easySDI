@@ -95,7 +95,7 @@
         
     <fieldset name="wms" > 
              
-        <field 	name="wmsservice_id" 
+<!--        <field 	name="wmsservice_id" 
                         type="ServicegroupedList" 
                         onchange=""
                         multiple ="false"
@@ -110,7 +110,7 @@
         <field name="layername" type="text" size="40" class="inputbox"
                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_LAYERNAME"
                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYERNAME" 
-               filter="safehtml" /> 
+               filter="safehtml" /> -->
         
                <field
                    name="maplayer_id" 
