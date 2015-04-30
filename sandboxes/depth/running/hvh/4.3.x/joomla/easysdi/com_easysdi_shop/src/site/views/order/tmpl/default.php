@@ -16,6 +16,12 @@ JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
+$document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 
 
 ?>
@@ -227,7 +233,6 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
     <script>
             Ext.onReady(function() {
                 window.appname.on("ready", function() {
-                       window.appname.mapPanel.map.baseLayer.events.register("loadend", window.appname.mapPanel.map.baseLayer, function(){ console.log ("loadend");});                                
                        loadPerimeter(false);  
                 })
             })

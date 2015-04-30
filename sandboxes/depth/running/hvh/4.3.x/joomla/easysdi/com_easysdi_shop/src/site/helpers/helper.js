@@ -26,35 +26,18 @@ function loadPolygonPerimeter(withdisplay) {
     else {
         var source = new OpenLayers.Projection("EPSG:4326");
         dest = new OpenLayers.Projection(window.appname.mapPanel.map.projection);
-        //dest = getDestinationProjection(features, source) ;
         features.geometry.transform(source, dest);
         polygonLayer.addFeatures([features]);        
     }
 
     window.appname.mapPanel.map.addLayers([polygonLayer]);
-
     window.appname.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+
     if (withdisplay === true) {
         jQuery('#perimeter-recap').append('<div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;">');
         jQuery('#perimeter-recap-details').append("<div>" + wkt + "</div>");
         jQuery('#perimeter-recap').append('</div>');
     }
-}
-
-function getDestinationProjection(features, source) {
-    //var dest = new OpenLayers.Projection(window.appname.mapPanel.map.projection);
-    if (!dest.readyToUse) {
-        //window.setTimeout(getDestinationProjection(features, source), 100);
-        dest.readyToUse = true;
-        transformFeature(features, source);
-    } else {
-        transformFeature(features, source);
-    }
-}
-
-function transformFeature(features, source){
-    features.geometry.transform(source, dest);
-    polygonLayer.addFeatures([features]);
 }
 
 var selectLayer;
