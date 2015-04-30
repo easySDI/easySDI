@@ -86,12 +86,8 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             $mapparams = JComponentHelper::getParams('com_easysdi_map');
             $mwidth = $mapparams->get('iframewidth');
             $mheight = $mapparams->get('iframeheight');
-            
-            
-            
+
             $this->addscript .= 'sourceConfig' . $preview->id . ' = ' . Easysdi_mapHelper::getExtraServiceDescription($preview->service);
-            
-           
             
             $layerConfig = 'layerConfig' . $preview->id . ' = { group: "' . $defaultgroup->alias . '",';
             switch ($preview->service->serviceconnector_id) :
@@ -108,6 +104,9 @@ class Easysdi_mapViewPreview extends JViewLegacy {
                                     title: "' . $preview->maplayer->name . '",
                                     iwidth:"' . $mwidth . '",
                                     iheight:"' . $mheight . '",
+                                    isindoor:"' . $preview->maplayer->isindoor . '",
+                                    servertype:"' .  $preview->service->server_id . '",
+                                    levelfield:"' .  $preview->maplayer->levelfield . '",
                                     visibility: true};';
                     break;
                 case 3 :
@@ -128,7 +127,8 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             
             
             $this->addscript .= $layerConfig;
-            $this->addscript .= 'window.appname.addExtraLayer(sourceConfig' . $preview->id . ', layerConfig' . $preview->id . ');';        
+            $this->addscript .= ' var queue = window.appname.addExtraLayer(sourceConfig' . $preview->id . ', layerConfig' . $preview->id . ');';  
+            $this->addscript .= ' gxp.util.dispatch(queue, window.appname.reactivate, window.parent.app);';
                     
         endforeach;
         $this->addscript .= '});';

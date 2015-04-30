@@ -559,7 +559,7 @@ if ($this->item && $this->item->extractions) :
             function initialization (){
                 miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
                 initDraw();
-                var slider = window.appname.mapPanel.map.indoorlevelslider;
+                slider = window.appname.mapPanel.map.indoorlevelslider;
                 if(slider){
                     slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(JSON.stringify(slider.getLevel()));}); 
                     <?php if (isset($this->item->extent->level) && !empty($this->item->extent->level)): ?>
@@ -581,11 +581,15 @@ if ($this->item && $this->item->extractions) :
                 <?php endif; ?>
                
                 <?php if (!empty($this->item->extent) && isset($this->item->extent->features)): ?>
-                    selectPerimeter<?php echo $this->item->extent->id; ?>();
+                    selectPerimeter<?php echo $this->item->extent->id; ?>();   
                     reloadFeatures<?php echo $this->item->extent->id; ?>();
                 <?php endif; ?>
                 jQuery('#modal-perimeter').hide();
             };
+            
+//            function loadSelectLayerEnd(){
+//                reloadFeatures<?php echo $this->item->extent->id; ?>();
+//            }
         </script>
         <input type="hidden" name="perimeter" id="perimeter" value="<?php if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id; endif;?>" />
         <input type="hidden" name="perimetern" id="perimetern" value="<?php if (isset($this->item->extent->name) && !empty($this->item->extent->name)): echo $this->item->extent->name; endif;?>" />

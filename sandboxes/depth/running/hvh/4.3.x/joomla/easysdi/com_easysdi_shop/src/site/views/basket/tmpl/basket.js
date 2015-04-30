@@ -1,4 +1,4 @@
-var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer;
+var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider;
 
 //Init the recapitulation map (map without control)
 function initMiniMap() {
@@ -64,11 +64,9 @@ function clearLayersVector() {
 
 //Clear temporary fields
 function clearTemporaryFields() {
-    jQuery('#t-perimeter').val('');
-    jQuery('#t-perimetern').val('');
-    jQuery('#t-surface').val('');
-    jQuery('#t-features').val('');
-    jQuery('#t-level').val('');
+     jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+        jQuery('#t-'+value).val('');
+    })
     jQuery('#alert_template').fadeOut('slow');
     jQuery('#btn-saveperimeter').removeAttr("disabled");
     
@@ -76,22 +74,18 @@ function clearTemporaryFields() {
 
 //Reset temporary fields with initial values
 function resetTemporaryFields() {
-    jQuery('#t-perimeter').val(jQuery('#perimeter').val());
-    jQuery('#t-perimetern').val(jQuery('#perimetern').val());
-    jQuery('#t-surface').val(jQuery('#surface').val());
-    jQuery('#t-features').val(jQuery('#features').val());
-    jQuery('#t-level').val(jQuery('#level').val());
+    jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+        jQuery('#t-'+value).val(jQuery('#'+value).val());
+    })
     jQuery('#alert_template').fadeOut('slow');
     jQuery('#btn-saveperimeter').removeAttr("disabled");
 }
 
 //Push temporary fields to final fields 
 function saveTemporaryFields() {
-    jQuery('#perimeter').val(jQuery('#t-perimeter').val());
-    jQuery('#perimetern').val(jQuery('#t-perimetern').val());
-    jQuery('#surface').val(jQuery('#t-surface').val());
-    jQuery('#features').val(jQuery('#t-features').val());
-    jQuery('#level').val(jQuery('#t-level').val());
+    jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+        jQuery('#'+value).val(jQuery('#t-'+value).val());
+    })
 }
 
 //

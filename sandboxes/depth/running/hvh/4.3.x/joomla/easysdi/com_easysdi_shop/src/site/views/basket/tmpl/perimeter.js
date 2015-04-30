@@ -101,9 +101,12 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     app.mapPanel.map.addLayer(selectLayer);
-    //Selection layer on top
-    //selectLayer.setZIndex(1001);
-
+    
+    //Keep selection layer on top
+    app.mapPanel.map.events.register('addlayer', this, function(){
+        app.mapPanel.map.setLayerIndex(selectLayer, app.mapPanel.map.getNumLayers());
+    });
+    
     //Select control
     selectControl.events.register("featureselected", this, listenerFeatureSelected);
     selectControl.events.register("featureunselected", this, listenerFeatureUnselected);
@@ -126,6 +129,12 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     return false;
 }
 ;
+
+//var enddispatch = function (){
+//    window.parent.app.reactivate; 
+//     app.mapPanel.map.events.register("loadend", selectLayer, loadSelectLayerEnd);
+//    app.mapPanel.map.addLayer(selectLayer);
+//}
 
 var listenerWFSFeatureAdded = function(e) {
     listenerFeatureAdded(e);
