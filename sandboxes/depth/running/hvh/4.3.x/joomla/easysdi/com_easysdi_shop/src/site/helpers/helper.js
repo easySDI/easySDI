@@ -101,5 +101,5 @@ function loadWfsPerimeter() {
 }
 
 var listenerFeatureAddedToZoom = function(e) {
-    window.appname.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
+    window.appname.mapPanel.map.zoomToExtent(e.object.getDataExtent());
 };

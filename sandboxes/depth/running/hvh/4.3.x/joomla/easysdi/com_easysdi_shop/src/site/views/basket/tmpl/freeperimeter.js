@@ -45,13 +45,13 @@ function reloadFeatures1() {
             new OpenLayers.Projection("EPSG:4326"),
             new OpenLayers.Projection(app.mapPanel.map.projection)
             );
-    polygonLayer.addFeatures([feature]);
-    
-    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+    polygonLayer.events.register("featureadded", polygonLayer, listenerFeatureDrawToZoom);
+    polygonLayer.addFeatures([feature]);    
     putFeaturesVerticesInHiddenField(feature.clone());
 };
 
 var listenerFeatureDrawToZoom = function(e) {
+    polygonLayer.events.unregister("featureadded", polygonLayer, listenerFeatureDrawToZoom);
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
 };
 

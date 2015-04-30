@@ -27,7 +27,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
-$document->addScript('components/com_easysdi_shop/helpers/helper.js');
+//$document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
 if ($this->item && $this->item->extractions) :
     $currency = $this->item->prices->cfg_currency;
@@ -359,7 +359,7 @@ if ($this->item && $this->item->extractions) :
 
         <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" aria-hidden="true">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancel();">×</button>
                 <h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></h3>
             </div>
             <div class="modal-body" style="max-height: 500px;">
