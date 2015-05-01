@@ -72,7 +72,8 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             }
         endforeach;
 
-        $this->addscript .= 'Ext.onReady(function(){';
+        $this->addscript .= 'Ext.onReady(function(){'
+                . 'window.appname.on("ready", function() {';
         
         foreach ($this->item as $preview):
             //Build the link to the meatadata sheet view
@@ -105,7 +106,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
                                     iwidth:"' . $mwidth . '",
                                     iheight:"' . $mheight . '",
                                     isindoor:"' . $preview->maplayer->isindoor . '",
-                                    servertype:"' .  $preview->service->server_id . '",
+                                    servertype:"' .  $preview->service->server . '",
                                     levelfield:"' .  $preview->maplayer->levelfield . '",
                                     visibility: true};';
                     break;
@@ -128,10 +129,11 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             
             $this->addscript .= $layerConfig;
             $this->addscript .= ' var queue = window.appname.addExtraLayer(sourceConfig' . $preview->id . ', layerConfig' . $preview->id . ');';  
-            $this->addscript .= ' gxp.util.dispatch(queue, window.appname.reactivate, window.parent.app);';
+            $this->addscript .= ' gxp.util.dispatch(queue, window.appname.reactivate, window.appname);';            
                     
         endforeach;
-        $this->addscript .= '});';
+        $this->addscript .= '})'
+                . '});';
 
         $this->_prepareDocument();
 

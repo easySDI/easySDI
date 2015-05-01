@@ -231,11 +231,11 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
         </form>
     </div>
     <script>
-            Ext.onReady(function() {
-                window.appname.on("ready", function() {
-                       loadPerimeter(false);  
-                })
+        Ext.onReady(function() {
+            window.appname.on("ready", function() {
+                loadPerimeter(false);
             })
+        })
     </script>
     <script type="text/javascript">
         jQuery(document).ready(function(){
