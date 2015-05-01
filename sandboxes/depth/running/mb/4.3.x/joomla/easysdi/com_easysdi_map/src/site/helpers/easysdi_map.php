@@ -87,6 +87,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/easysdi/js/geoext/widgets/PrintMapPanel.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js');
+            $doc->addScript($base_url . '/easysdi/js/OpenLayers/FormatXML.js');
 //        } else {
 //            $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
 //            $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
