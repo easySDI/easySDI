@@ -60,6 +60,9 @@ INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (5, 5
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'date');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'datetime');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'gemet');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (9, 9, 1, N'upload');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (10, 10, 1, N'url');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (11, 11, 1, N'upload and url');
 SET IDENTITY_INSERT [#__sdi_sys_rendertype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (1, 3, 5);
@@ -154,8 +157,10 @@ INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (17, 10, 4);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (18, 12, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (19, 13, 5);
-INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (20, 14, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 8);
+INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (22, 14, 9);
+INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (23, 14, 10);
+INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (24, 14, 11);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_accessscope] ON;
 INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'public');
