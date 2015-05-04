@@ -124,6 +124,4 @@ class Easysdi_shopModelperimeter extends sdiModel {
         if ($poswfs) : $table->wfsservicetype_id = 1; else :$table->wfsservicetype_id = 2; endif;
         
     }
-
-  
 }

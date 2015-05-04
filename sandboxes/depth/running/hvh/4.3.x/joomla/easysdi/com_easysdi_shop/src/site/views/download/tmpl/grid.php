@@ -79,17 +79,17 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
             Ext.onReady(function() {
                 window.appname.on("ready", function() {
                     perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
-                            "<?php echo $this->item->perimeter->wmsservice->resourceurl; ?>",
-                            {layers: "<?php echo $this->item->perimeter->layername; ?>",
+                            "<?php echo $this->item->perimeter->_item->wmsurl; ?>",
+                            {layers: "<?php echo $this->item->perimeter->_item->maplayername; ?>",
                                 transparent: true});
                     selectControl = new OpenLayers.Control.GetFeature({
                         protocol: new OpenLayers.Protocol.WFS({
                             version: "1.0.0",
-                            url: "<?php echo $this->item->perimeter->wfsservice->resourceurl; ?>",
+                            url: "<?php echo $this->item->perimeter->_item->wfsurl; ?>",
                             srsName: window.appname.mapPanel.map.projection,
-                            featureType: "<?php echo $this->item->perimeter->featuretypename; ?>",
-                            featureNS: "<?php echo $this->item->perimeter->namespace; ?>",
-                            geometryName: "<?php echo $this->item->perimeter->featuretypefieldgeometry; ?>"
+                            featureType: "<?php echo $this->item->perimeter->_item->featuretypename; ?>",
+                            featureNS: "<?php echo $this->item->perimeter->_item->namespace; ?>",
+                            geometryName: "<?php echo $this->item->perimeter->_item->featuretypefieldgeometry; ?>"
                         }),
                         box: false,
                         toggleKey: "ctrlKey"
@@ -107,9 +107,9 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
             var listenerFeatureSelected = function(e) {
                 selectLayer.removeAllFeatures();
                 selectLayer.addFeatures([e.feature]);
-                js('#url').val(e.feature.attributes.<?php echo $this->item->perimeter->featuretypefieldresource; ?>);
-                js('.sdi-map-feature-selection-name span').text(e.feature.attributes.<?php echo $this->item->perimeter->featuretypefieldname; ?>);
-                js('.sdi-map-feature-selection-description span').text(e.feature.attributes.<?php echo $this->item->perimeter->featuretypefielddescription; ?>);
+                js('#url').val(e.feature.attributes.<?php echo $this->item->perimeter->_item->featuretypefieldresource; ?>);
+                js('.sdi-map-feature-selection-name span').text(e.feature.attributes.<?php echo $this->item->perimeter->_item->featuretypefieldname; ?>);
+                js('.sdi-map-feature-selection-description span').text(e.feature.attributes.<?php echo $this->item->perimeter->_item->featuretypefielddescription; ?>);
                 enableSave();
             }
             ;
