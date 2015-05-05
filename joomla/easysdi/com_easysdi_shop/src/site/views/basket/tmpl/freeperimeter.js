@@ -31,14 +31,12 @@ function putFeaturesVerticesInHiddenField(feature) {
 
     var wkt = new OpenLayers.Format.WKT();
     var featureAsString = wkt.write(feature);
-
-    //jQuery("#t-features").val(featureAsString);
-    jQuery('#t-features').val(JSON.stringify(featureAsString));
+    jQuery('#t-features').val(featureAsString);
 }
 
 function selectPerimeter1() {
     selectRectangle();
-}
+};
 
 function reloadFeatures1() {
     var wkt = jQuery('#features').val();
@@ -47,12 +45,13 @@ function reloadFeatures1() {
             new OpenLayers.Projection("EPSG:4326"),
             new OpenLayers.Projection(app.mapPanel.map.projection)
             );
-    polygonLayer.addFeatures([feature]);
-    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+    polygonLayer.events.register("featureadded", polygonLayer, listenerFeatureDrawToZoom);
+    polygonLayer.addFeatures([feature]);    
     putFeaturesVerticesInHiddenField(feature.clone());
-}
+};
 
 var listenerFeatureDrawToZoom = function(e) {
+    polygonLayer.events.unregister("featureadded", polygonLayer, listenerFeatureDrawToZoom);
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
 };
 
@@ -60,17 +59,17 @@ function selectPolygon() {
     resetAll();
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}});
     initSelectcontrol(selectControl);
-}
+};
 
 function selectRectangle() {
     resetAll();
     toggleRectangle();
-}
+};
 
 function toggleRectangle() {
    selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
    initSelectcontrol(selectControl);
-}
+};
 
 function initSelectcontrol(selectControl){
     app.mapPanel.map.addControl(selectControl);
@@ -78,5 +77,5 @@ function initSelectcontrol(selectControl){
     jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
     jQuery('#t-features').val('');
     toggleSelectControl('selection');
-}
+};
 

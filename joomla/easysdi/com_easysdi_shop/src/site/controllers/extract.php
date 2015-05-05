@@ -379,11 +379,11 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         /* DEFAULT INPUTS */
         $mode = 'sdi:getOrders';
 
-        $agg = 'o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, u.guid , us.name , o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') ;
+        $agg = 'o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, o.level, u.guid , us.name , o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') ;
         $agg .= ', po.id , po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee, po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee';
         // retrieve all orders
         $query = $this->db->getQuery(true)
-                ->select('o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, u.guid as user_guid, us.name as user_name, o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') . ' as ordertype')
+                ->select('o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, o.level, u.guid as user_guid, us.name as user_name, o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') . ' as ordertype')
                 ->select('po.id as pricing_order, po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee, po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee')
                 ->from('#__sdi_order o')
                 ->leftJoin('#__sdi_pricing_order po ON po.order_id=o.id')
@@ -1031,6 +1031,14 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $surface = $this->response->createElementNS(self::nsSdi, 'sdi:surface', $order->surface);
         $this->addAttribute($surface, 'unit', 'm2');
         $perimeter->appendChild($surface);
+        
+        if(!empty($order->level)){
+            $indoorlevel = $this->response->createElementNS(self::nsSdi, 'sdi:indoorlevel');
+            $level = json_decode($order->level);
+            $this->addAttribute($indoorlevel, 'code', $level->code);
+            $this->addAttribute($indoorlevel, 'label', $level->label);
+            $perimeter->appendChild($indoorlevel);
+        }
 
         $contentsnode = $this->response->createElementNS(self::nsSdi, 'sdi:contents');
         foreach($contents as $content){
