@@ -1332,6 +1332,8 @@ CREATE TABLE [#__sdi_perimeter] (
 	[featuretypefielddescription] [nvarchar](255) NULL,
 	[featuretypefieldgeometry] [nvarchar](255) NULL,
 	[featuretypefieldresource] [nvarchar](255) NULL,
+        [featuretypefieldlevel] [nvarchar](255) NULL,
+        [maplayer_id] [bigint] NULL,
 	[wmsservice_id] [bigint] NULL,
 	[wmsservicetype_id] [bigint] NULL,
 	[layername] [nvarchar](255) NULL,
