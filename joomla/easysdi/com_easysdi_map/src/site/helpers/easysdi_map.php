@@ -745,7 +745,7 @@ abstract class Easysdi_mapHelper {
         switch ($service->serviceconnector_id) :
             case 2 :
                 $config = ' 
-                    "' . $service->alias . '":
+                    "' . $service->name . '":
                     {
                     ptype: "sdi_gxp_wmssource",
                     url: "' . $url . '"
