@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+$document = JFactory::getDocument();
+$document->addScript('components/com_easysdi_shop/views/download/tmpl/grid.js');
 ?>
 <?php if ($this->item) : ?>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -62,9 +64,10 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
             </div>
         </div>
         <script>
+            var perimeter, perimeterLayer, selectControl, selectLayer;
             js = jQuery.noConflict();
             js(document).ready(function() {
-                js('#termsofuse').change(enableSave);
+                js('#termsofuse').change(enableSave);                
             });
             function enableSave() {
                 if (js('#termsofuse').is(':checked') == true && js('#url').val() != '' )
@@ -74,36 +77,38 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
             }
 
 
-            var perimeterLayer, selectControl, selectLayer;
+            perimeter = <?php echo json_encode($this->item->perimeter->_item);?>;
+            
+            
 
-            Ext.onReady(function() {
-                window.appname.on("ready", function() {
-                    perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
-                            "<?php echo $this->item->perimeter->_item->wmsurl; ?>",
-                            {layers: "<?php echo $this->item->perimeter->_item->maplayername; ?>",
-                                transparent: true});
-                    selectControl = new OpenLayers.Control.GetFeature({
-                        protocol: new OpenLayers.Protocol.WFS({
-                            version: "1.0.0",
-                            url: "<?php echo $this->item->perimeter->_item->wfsurl; ?>",
-                            srsName: window.appname.mapPanel.map.projection,
-                            featureType: "<?php echo $this->item->perimeter->_item->featuretypename; ?>",
-                            featureNS: "<?php echo $this->item->perimeter->_item->namespace; ?>",
-                            geometryName: "<?php echo $this->item->perimeter->_item->featuretypefieldgeometry; ?>"
-                        }),
-                        box: false,
-                        toggleKey: "ctrlKey"
-                    });
-                    window.appname.mapPanel.map.addLayer(perimeterLayer);
-                    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
-
-                    window.appname.mapPanel.map.addLayer(selectLayer);
-                    selectControl.events.register("featureselected", this, listenerFeatureSelected);
-                    window.appname.mapPanel.map.addControl(selectControl);
-                    selectControl.activate();
-                }
-                );
-            });
+//            Ext.onReady(function() {
+//                window.appname.on("ready", function() {
+//                    perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
+//                            "<?php echo $this->item->perimeter->_item->wmsurl; ?>",
+//                            {layers: "<?php echo $this->item->perimeter->_item->maplayername; ?>",
+//                                transparent: true});
+//                    selectControl = new OpenLayers.Control.GetFeature({
+//                        protocol: new OpenLayers.Protocol.WFS({
+//                            version: "1.0.0",
+//                            url: "<?php echo $this->item->perimeter->_item->wfsurl; ?>",
+//                            srsName: window.appname.mapPanel.map.projection,
+//                            featureType: "<?php echo $this->item->perimeter->_item->featuretypename; ?>",
+//                            featureNS: "<?php echo $this->item->perimeter->_item->namespace; ?>",
+//                            geometryName: "<?php echo $this->item->perimeter->_item->featuretypefieldgeometry; ?>"
+//                        }),
+//                        box: false,
+//                        toggleKey: "ctrlKey"
+//                    });
+//                    window.appname.mapPanel.map.addLayer(perimeterLayer);
+//                    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
+//
+//                    window.appname.mapPanel.map.addLayer(selectLayer);
+//                    selectControl.events.register("featureselected", this, listenerFeatureSelected);
+//                    window.appname.mapPanel.map.addControl(selectControl);
+//                    selectControl.activate();
+//                }
+//                );
+//            });
             var listenerFeatureSelected = function(e) {
                 selectLayer.removeAllFeatures();
                 selectLayer.addFeatures([e.feature]);
