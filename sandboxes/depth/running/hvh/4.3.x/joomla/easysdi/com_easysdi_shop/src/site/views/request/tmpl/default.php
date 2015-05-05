@@ -11,6 +11,11 @@ defined('_JEXEC') or die;
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 ?>
 <?php if ($this->item) : ?>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -224,7 +229,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
     <script>
         Ext.onReady(function() {
             window.appname.on("ready", function() {
-                window.appname.mapPanel.map.baseLayer.events.register("loadend", window.appname.mapPanel.map.baseLayer, loadPerimeter(true));                
+                loadPerimeter(false);
             })
         })
     </script>
