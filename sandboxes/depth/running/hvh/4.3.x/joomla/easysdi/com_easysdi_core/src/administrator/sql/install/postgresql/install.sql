@@ -878,9 +878,10 @@ CREATE TABLE #__sdi_perimeter (
     featuretypefielddescription character varying(255),
     featuretypefieldgeometry character varying(255),
     featuretypefieldresource character varying(255),
+    featuretypefieldlevel character varying(255),
+    maplayer_id bigint,
     wmsservice_id bigint,
     wmsservicetype_id bigint,
-    maplayer_id bigint,
     layername character varying(255),
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL

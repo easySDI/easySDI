@@ -34,3 +34,6 @@ UPDATE  #__sdi_language SET datatable='Swedish' WHERE code='sv-SE';
 UPDATE  #__sdi_language SET datatable='Turkish' WHERE code='tr-TR';
 UPDATE  #__sdi_language SET datatable='Ukranian' WHERE code='uk-UA';
 UPDATE  #__sdi_language SET datatable='Chinese' WHERE code='zh-CN';
+
+ALTER TABLE #__sdi_perimeter ADD COLUMN `maplayer_id` INT(11) NULL;
+ALTER TABLE #__sdi_perimeter ADD COLUMN `featuretypefieldlevel` VARCHAR(100) NULL;
