@@ -37,7 +37,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                 $this->setRedirect(JURI::base());
                 return false;
             endif;
-            if ($diffusion->accessscope_id == 2):
+            if ($diffusion->accessscope_id == 3):
                 $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
                 $organism = $sdiUser->getMemberOrganisms();
                 if (!in_array($organism[0]->id, $organisms)):
@@ -46,7 +46,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                     return false;
                 endif;
             endif;
-            if ($diffusion->accessscope_id == 3):
+            if ($diffusion->accessscope_id == 4):
                 $users = sdiModel::getAccessScopeUser($diffusion->guid);
                 if (!in_array($sdiUser->id, $users)):
                     $this->setMessage(JText::_('Not authorized to access this resource'), 'warning');
@@ -54,7 +54,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                     return false;
                 endif;
             endif;
-            if ($diffusion->accessscope_id == 4):
+            if ($diffusion->accessscope_id == 2):
                 $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                 $allowedCategories = sdiModel::getAccessScopeCategory($diffusion->guid);
                 if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
@@ -96,20 +96,20 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             if (!$sdiUser->isEasySDI):
                 return null;
             endif;
-            if ($diffusion->accessscope_id == 2):
+            if ($diffusion->accessscope_id == 3):
                 $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
                 $organism = $sdiUser->getMemberOrganisms();
                 if (!in_array($organism[0]->id, $organisms)):
                     return null;
                 endif;
             endif;
-            if ($diffusion->accessscope_id == 3):
+            if ($diffusion->accessscope_id == 4):
                 $users = sdiModel::getAccessScopeUser($diffusion->guid);
                 if (!in_array($sdiUser->id, $users)):
                     return null;
                 endif;
             endif;
-            if ($diffusion->accessscope_id == 4):
+            if ($diffusion->accessscope_id == 2):
                 $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                 if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
                     return null;
