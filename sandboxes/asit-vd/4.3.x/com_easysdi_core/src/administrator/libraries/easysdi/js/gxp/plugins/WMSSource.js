@@ -65,6 +65,7 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
         if(!jQuery.isEmptyObject(record)){
 	 record.data.layer.attribution = config.attribution;
 	 }
+        record.data.layer.isindoor = config.isindoor;
         record.data.layer.levelfield = config.levelfield;
         record.data.layer.servertype = config.servertype;
         return record;

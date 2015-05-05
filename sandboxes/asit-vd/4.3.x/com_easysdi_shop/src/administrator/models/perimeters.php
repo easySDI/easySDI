@@ -44,7 +44,6 @@ class Easysdi_shopModelperimeters extends JModelList {
                 'featuretypefieldsurface', 'a.featuretypefieldsurface',
                 'featuretypefielddisplay', 'a.featuretypefielddisplay',
                 'featuretypefieldsearch', 'a.featuretypefieldsearch',
-                'wmsservice_id', 'a.wmsservice_id',
                 'layername', 'a.layername',
                 'minscale', 'a.minscale',
                 'maxscale', 'a.maxscale',

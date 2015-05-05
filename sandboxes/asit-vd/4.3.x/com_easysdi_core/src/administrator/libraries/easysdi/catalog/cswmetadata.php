@@ -94,6 +94,7 @@ class cswmetadata {
         $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=" . $content . "&id=" . $this->guid;
 
         $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
+       
         if (!$response) {
             return false;
         }
@@ -648,7 +649,7 @@ class cswmetadata {
      * @param type $type
      * @param type $preview
      * @param DOMDocument $dom
-     * @return boolean
+     * @return string
      */
     public function applyXSL($params, $dom = null) {
         if (empty($dom)) {
@@ -752,7 +753,7 @@ class cswmetadata {
 
 
 //        $html = '<script src="' . JURI::root() . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>';
-        $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">';
+        $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm'.$this->diffusion->id.'" name="adminForm" enctype="multipart/form-data">';
         $html .= '<div class="sdi-shop-order well">';
         $html .= '<div class="sdi-shop-properties" >';
         $html .= '<div class="sdi-shop-properties-title" ></div>';
@@ -862,7 +863,7 @@ class cswmetadata {
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
         $html .= '
             <div class="sdi-shop-toolbar-add-basket pull-right">
-                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton(); return false;">' . JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET') . '</button>
+                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton('.$this->diffusion->id.'); return false;">' . JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET') . '</button>
                 <input type="hidden" name="diffusion_id" id="diffusion_id" value="' . $this->diffusion->id . '" />
             </div>
             ';
