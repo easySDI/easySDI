@@ -34,7 +34,7 @@ class sdiPerimeter {
             $query = $db->getQuery(true)
                     ->select('p.*, l.service_id, l.servicetype,l.layername as maplayername,l.istiled,l.opacity, l.isindoor,l.levelfield')
                     ->from('#__sdi_perimeter p')
-                    ->innerJoin('#__sdi_maplayer l ON l.id=p.maplayer_id')
+                    ->leftJoin('#__sdi_maplayer l ON l.id=p.maplayer_id')
                     ->where('p.id = ' . (int) $this->id);
 
             $db->setQuery($query);
