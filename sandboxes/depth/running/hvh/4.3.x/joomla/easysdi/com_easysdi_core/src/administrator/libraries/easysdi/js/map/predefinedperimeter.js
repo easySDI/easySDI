@@ -1,22 +1,43 @@
 /**
+ * @version     4.3.x
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
+
+/**
  * 
  * @param {type} item
  * @returns {predefinedPerimeter}
  */
-
 function predefinedPerimeter(item) {
-    this.item = item;    
-};
+    this.item = item;
+}
+;
 
 /**
  * Build and add to the given gxp viewer layer and corresponding service source.
  * Configure and add to the map a OpenLayers.Control.GetFeature.
- * @param {gxp.Viewer} application
  * @returns {undefined}
  */
-predefinedPerimeter.prototype.addPerimeterTo = function(application) {
-//    this.application = application;
-    
+predefinedPerimeter.prototype.init = function(userrestriction) {
+    this.userrestriction = userrestriction;
+    //Perimeter Layer WMS
+    this.initPerimeterLayer();
+
+    //Vector layer to handle selection
+    this.initSelectLayer();
+
+    //Map select control on WFS
+    this.initSelectControl();
+};
+
+/**
+ * 
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.initPerimeterLayer = function() {
     var layerconfig = {type: "OpenLayers.Layer.WMS",
         name: this.item.maplayername,
         transparent: true,
@@ -36,10 +57,52 @@ predefinedPerimeter.prototype.addPerimeterTo = function(application) {
         url: this.item.wmsurl
     };
 
+    //Handle restriction on user specific perimeter
+    if (typeof (this.userrestriction) !== 'undefined') {
+        var exp = new OpenLayers.Format.WKT().write(this.userrestriction);
+        //Geoserver
+        if (this.item.server === "1") {
+            layerconfig.cql_filter = "INTERSECTS(" + this.item.featuretypefieldgeometry + "," + exp + ")";
+        }
+        /**
+         * ArcGIS : geometry filter has to be sent in a specific parametre 'geometry'
+         * describe here : http://resources.arcgis.com/en/help/rest/apiref/
+         * TODO : find a way to send geometry parameter in the GetMap request
+         * WMSSource doesn't send it if we just set it on the layerconfig like below
+         * 
+         * NB : see note in myperimeter.js, ArcGIS server can't filter WFS requests
+         * as expected, so ArcGIS server can't support user perimeter filter functionnality.
+         */
+//        if (this.item.server === "2") {
+//            var polygon = "{\"rings\" : [ [ [6.101531982421875,46.23451309019769], [6.1052656173706055,46.237006565073216], [6.112003326416016,46.235641104770565], [6.109728813171387,46.232613223769555], [6.104021072387695,46.2313960872759] ,[6.101531982421875,46.23451309019769]],  ],\"spatialReference\" : {\"wkid\" : 4326}}";
+//            layerconfig.geometry = polygon;
+//        }
+    }
+
     var queue = app.addExtraLayer(sourceconfig, layerconfig);
     gxp.util.dispatch(queue, app.reactivate, app);
+};
 
-    //Select control
+/**
+ * 
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.initSelectLayer = function() {
+    //Selection  Layer
+    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+    app.mapPanel.map.addLayer(selectLayer);
+
+    //Keep selection layer on top
+    app.mapPanel.map.events.register('addlayer', this, function() {
+        app.mapPanel.map.setLayerIndex(selectLayer, app.mapPanel.map.getNumLayers());
+    });
+};
+
+/**
+ * 
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.initSelectControl = function() {
     selectControl = new OpenLayers.Control.GetFeature({
         protocol: new OpenLayers.Protocol.WFS({
             version: "1.0.0",
@@ -55,27 +118,18 @@ predefinedPerimeter.prototype.addPerimeterTo = function(application) {
         multipleKey: "ctrlKey",
         clickout: true
     });
-  
-    //Selection  Layer
-    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-    app.mapPanel.map.addLayer(selectLayer);
 
-    //Keep selection layer on top
-    app.mapPanel.map.events.register('addlayer', this, function() {
-        app.mapPanel.map.setLayerIndex(selectLayer, application.mapPanel.map.getNumLayers());
-    });
-    
+    //Build the default filter : merge existing filters on user perimeter and indoor level
+    selectControl.protocol.defaultFilter  = this.getSelectControlFilter();
+
     //In case indoor level navigation is active on the map
-    if (this.item.featuretypefieldlevel) {
-        //Manage indoor level filter on select control tool
-        selectControl.protocol.defaultFilter = this.getSelectControlLevelFilter();
-        
-        //Manage indoor navigation with predefined perimeter WFS
+    if (this.item.featuretypefieldlevel && typeof (app.mapPanel.map.indoorlevelslider) !== 'undefined') {
+        //Update indoor level filter at each IndoorLevelSlider event
         app.mapPanel.map.events.register("indoorlevelchanged", this, function() {
             if (selectLayer)
                 selectLayer.removeAllFeatures();
             if (selectControl && selectControl.protocol) {
-                selectControl.protocol.defaultFilter = this.getSelectControlLevelFilter();
+                selectControl.protocol.defaultFilter = this.getSelectControlFilter();
             }
         });
     }
@@ -87,7 +141,7 @@ predefinedPerimeter.prototype.addPerimeterTo = function(application) {
  * Return an OpenLayers Filter corresponding to indoor level value
  * @returns {OpenLayers.Filter.Comparison}
  */
-predefinedPerimeter.prototype.getSelectControlLevelFilter = function() {
+predefinedPerimeter.prototype.getIndoorLevelFilter = function() {
     selectControl.fieldlevel = this.item.prefix + ':' + this.item.featuretypefieldlevel;
     return new OpenLayers.Filter.Comparison({
         type: OpenLayers.Filter.Comparison.EQUAL_TO,
@@ -97,11 +151,53 @@ predefinedPerimeter.prototype.getSelectControlLevelFilter = function() {
 };
 
 /**
+ * 
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.getUserPerimeterFilter = function() {
+    var g = this.userrestriction.geometry;
+    return  new OpenLayers.Filter.Spatial({
+        type: OpenLayers.Filter.Spatial.INTERSECTS,
+        value: g
+    });
+};
+
+/**
+ * 
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.getSelectControlFilter = function() {
+    var merged,userfilter,levelfilter ;
+    
+    //If userperimeter activated, handle restriction with user specific perimeter
+    if (typeof (this.userrestriction) !== 'undefined') {
+        userfilter = this.getUserPerimeterFilter();
+    }
+        
+    //In case indoor level navigation is active on the map, handle filter on indoor level value
+    if (this.item.featuretypefieldlevel && typeof (app.mapPanel.map.indoorlevelslider) !== 'undefined') {       
+        levelfilter = this.getIndoorLevelFilter();
+    }
+    
+    //Merged, if needed, filters
+    if(levelfilter && userfilter){
+        merged = new OpenLayers.Filter.Logical({
+                type: OpenLayers.Filter.Logical.AND,
+                filters: [levelfilter, userfilter]
+            });
+    }else{
+        merged = levelfilter || userfilter || undefined;
+    }
+    
+    return merged;
+};
+
+/**
  * Defined the function to call when a feature is selected on the map
  * @param {type} f
  * @returns {undefined}
  */
-predefinedPerimeter.prototype.setListenerFeatureSelected = function(f){
+predefinedPerimeter.prototype.setListenerFeatureSelected = function(f) {
     selectControl.events.register("featureselected", this, f);
 };
 
@@ -110,7 +206,7 @@ predefinedPerimeter.prototype.setListenerFeatureSelected = function(f){
  * @param {type} f
  * @returns {undefined}
  */
-predefinedPerimeter.prototype.setListenerFeatureUnSelected = function(f){
+predefinedPerimeter.prototype.setListenerFeatureUnSelected = function(f) {
     selectControl.events.register("featureunselected", this, f);
 };
 
@@ -119,8 +215,8 @@ predefinedPerimeter.prototype.setListenerFeatureUnSelected = function(f){
  * @param {type} f
  * @returns {undefined}
  */
-predefinedPerimeter.prototype.setListenerIndoorLevelChanged = function(f){
-   app.mapPanel.map.events.register("indoorlevelchanged", this, f);
+predefinedPerimeter.prototype.setListenerIndoorLevelChanged = function(f) {
+    app.mapPanel.map.events.register("indoorlevelchanged", this, f);
 };
 
 /**
@@ -128,6 +224,6 @@ predefinedPerimeter.prototype.setListenerIndoorLevelChanged = function(f){
  * @param {type} f
  * @returns {undefined}
  */
-predefinedPerimeter.prototype.setListenerFeatureAdded = function(f){
-   selectLayer.events.register("featureadded", selectLayer, f);
+predefinedPerimeter.prototype.setListenerFeatureAdded = function(f) {
+    selectLayer.events.register("featureadded", selectLayer, f);
 };

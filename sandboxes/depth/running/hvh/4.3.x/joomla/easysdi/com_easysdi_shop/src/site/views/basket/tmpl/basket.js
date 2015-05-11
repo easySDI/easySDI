@@ -24,6 +24,11 @@ var listenerFeatureAdded = function(e) {
     orderSurfaceChecking();
 };
 
+//Zoom on the geometry added (drawn or user specific perimeter loaded)
+var listenerFeatureAddedToZoom = function(e) {
+    app.mapPanel.map.zoomToExtent(e.object.getDataExtent());
+};
+
 //Check if the surface of the selection is applicable
 function orderSurfaceChecking(){
     var toobig = false;

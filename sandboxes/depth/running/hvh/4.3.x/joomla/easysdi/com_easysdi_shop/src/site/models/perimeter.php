@@ -37,14 +37,14 @@ class Easysdi_shopModelPerimeter extends JModelLegacy {
                 $query = $db->getQuery(true)
                         ->select('p.*, l.service_id, l.servicetype,l.layername as maplayername,l.istiled,l.opacity, l.isindoor,l.levelfield')
                         ->from('#__sdi_perimeter p')
-                        ->innerJoin('#__sdi_maplayer l ON l.id=p.maplayer_id')
+                        ->leftJoin('#__sdi_maplayer l ON l.id=p.maplayer_id')
                         ->where('p.id = ' . (int) $id);
 
                 $db->setQuery($query);
                 $item = $db->loadObject();
-                
 
                 $params = get_object_vars($item);
+                $perimeter = new stdClass();
                 foreach ($params as $key => $value) {
                     $perimeter->$key = $value;
                 }
@@ -120,7 +120,7 @@ class Easysdi_shopModelPerimeter extends JModelLegacy {
             } catch (JDatabaseException $e) {
                 
             }
-            
+
             $this->_item = $perimeter;
         }
 

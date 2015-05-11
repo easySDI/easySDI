@@ -6,7 +6,7 @@ Ext.onReady(function() {
     }
     app.on("ready", function() {
             var grid = new predefinedPerimeter(perimeter);
-            grid.addPerimeterTo(app);
+            grid.init();
             grid.setListenerFeatureSelected(listenerFeatureSelected);
             grid.setListenerIndoorLevelChanged(cleanSelectionValues);
         }
