@@ -1,4 +1,4 @@
-var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider;
+var map, perimeterLayer, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider;
 
 //Init the recapitulation map (map without control)
 function initMiniMap() {

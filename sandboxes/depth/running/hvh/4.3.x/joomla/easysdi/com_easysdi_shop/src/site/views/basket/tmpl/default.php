@@ -27,6 +27,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
 //$document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
 if ($this->item && $this->item->extractions) :

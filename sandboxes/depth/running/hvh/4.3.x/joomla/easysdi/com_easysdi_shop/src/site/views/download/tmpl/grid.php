@@ -14,6 +14,7 @@ $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/download/tmpl/grid.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
 ?>
 <?php if ($this->item) : ?>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -64,60 +65,13 @@ $document->addScript('components/com_easysdi_shop/views/download/tmpl/grid.js');
             </div>
         </div>
         <script>
-            var perimeter, perimeterLayer, selectControl, selectLayer;
-            js = jQuery.noConflict();
-            js(document).ready(function() {
-                js('#termsofuse').change(enableSave);                
-            });
-            function enableSave() {
-                if (js('#termsofuse').is(':checked') == true && js('#url').val() != '' )
-                    js('#saveSubmit').removeAttr('disabled', 'disabled');
-                else
-                    js('#saveSubmit').attr('disabled', 'disabled');
-            }
-
-
+            var perimeter;
             perimeter = <?php echo json_encode($this->item->perimeter->_item);?>;
             
-            
-
-//            Ext.onReady(function() {
-//                window.appname.on("ready", function() {
-//                    perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
-//                            "<?php echo $this->item->perimeter->_item->wmsurl; ?>",
-//                            {layers: "<?php echo $this->item->perimeter->_item->maplayername; ?>",
-//                                transparent: true});
-//                    selectControl = new OpenLayers.Control.GetFeature({
-//                        protocol: new OpenLayers.Protocol.WFS({
-//                            version: "1.0.0",
-//                            url: "<?php echo $this->item->perimeter->_item->wfsurl; ?>",
-//                            srsName: window.appname.mapPanel.map.projection,
-//                            featureType: "<?php echo $this->item->perimeter->_item->featuretypename; ?>",
-//                            featureNS: "<?php echo $this->item->perimeter->_item->namespace; ?>",
-//                            geometryName: "<?php echo $this->item->perimeter->_item->featuretypefieldgeometry; ?>"
-//                        }),
-//                        box: false,
-//                        toggleKey: "ctrlKey"
-//                    });
-//                    window.appname.mapPanel.map.addLayer(perimeterLayer);
-//                    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
-//
-//                    window.appname.mapPanel.map.addLayer(selectLayer);
-//                    selectControl.events.register("featureselected", this, listenerFeatureSelected);
-//                    window.appname.mapPanel.map.addControl(selectControl);
-//                    selectControl.activate();
-//                }
-//                );
-//            });
-            var listenerFeatureSelected = function(e) {
-                selectLayer.removeAllFeatures();
-                selectLayer.addFeatures([e.feature]);
-                js('#url').val(e.feature.attributes.<?php echo $this->item->perimeter->_item->featuretypefieldresource; ?>);
-                js('.sdi-map-feature-selection-name span').text(e.feature.attributes.<?php echo $this->item->perimeter->_item->featuretypefieldname; ?>);
-                js('.sdi-map-feature-selection-description span').text(e.feature.attributes.<?php echo $this->item->perimeter->_item->featuretypefielddescription; ?>);
-                enableSave();
-            }
-            ;
+            js = jQuery.noConflict();
+            js(document).ready(function() {                
+                js('#termsofuse').change(enableSave);                
+            });            
         </script>
         <input type = "hidden" name = "task" value = "download.download" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
