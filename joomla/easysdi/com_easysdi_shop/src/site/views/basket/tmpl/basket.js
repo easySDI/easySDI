@@ -1,4 +1,4 @@
-var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider;
+var map, perimeterLayer, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider;
 
 //Init the recapitulation map (map without control)
 function initMiniMap() {
@@ -22,6 +22,11 @@ var listenerMiniFeaturesAdded = function() {
 var listenerFeatureAdded = function(e) {
     miniLayer.addFeatures([e.feature.clone()]);
     orderSurfaceChecking();
+};
+
+//Zoom on the geometry added (drawn or user specific perimeter loaded)
+var listenerFeatureAddedToZoom = function(e) {
+    app.mapPanel.map.zoomToExtent(e.object.getDataExtent());
 };
 
 //Check if the surface of the selection is applicable
@@ -109,7 +114,7 @@ function resetAll() {
         app.mapPanel.map.removeControl(selectControl);
     }
     if (app.mapPanel.map.getLayersByName("perimeterLayer").length > 0) {
-        app.mapPanel.map.removeLayer(app.mapPanel.map.getLayersByName("perimeterLayer")[0]);
+        app.mapPanel.map.removeLayer(app.mapPanel.map.getLayersByName("perimeterLayer")[0]); 
         app.mapPanel.map.removeLayer(selectLayer);
     }
     if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {

@@ -130,7 +130,14 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         if (layer.isindoor && layer.isindoor == 1 && layer.levelfield) {
             var servertype = layer.servertype;
             if (servertype == 1 || servertype == 3) {
-                layer.mergeNewParams({'CQL_FILTER': "\"" + layer.levelfield + "=" + level.code + "\""});
+                var cql_filter;
+                var new_filter =  layer.levelfield + "='" + level.code + "'";
+                if(typeof(layer.params.CQL_FILTER) != 'undefined'){
+                    cql_filter = layer.params.CQL_FILTER + " AND " + new_filter;                    
+                }else{
+                    cql_filter = new_filter;
+                }
+                layer.params.CQL_FILTER = cql_filter;
             } 
             if (servertype == 2 || servertype == 3) {
                 layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layer.levelfield + "='" + level.code + "'\"}"});
