@@ -53,8 +53,9 @@ class JFormFieldSqlwithaccessscope extends JFormFieldList {
             $user = sdiFactory::getSdiUser();
             $organisms = $user->getMemberOrganisms();
             $query .= ' AND (p.accessscope_id = 1 ';
-            $query .= 'OR (p.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = '. (int)$organisms[0]->id.' AND a.entity_guid = p.guid ) = 1)';
-            $query .= 'OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = '. (int)$user->id.' AND a.entity_guid = p.guid ) = 1)';
+            $query .= 'OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = '. (int)$organisms[0]->id.' AND a.entity_guid = p.guid ) = 1)';
+            $query .= 'OR (p.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = '. (int)$user->id.' AND a.entity_guid = p.guid ) = 1)';
+            //TODO add organism category accessscope
             $query .= ')';
         } catch (Exception $e) {
             //Can't handle accessscope restriction
