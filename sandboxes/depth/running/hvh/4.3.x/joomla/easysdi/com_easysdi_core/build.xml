@@ -221,6 +221,7 @@
             GeoExt/data/WMSDescribeLayerStore.js,
             GeoExt/data/WMCReader.js,
             GeoExt/data/CSWRecordsReader.js,
+            GeoExt/data/PrintProvider.js,
             GeoExt/widgets/Action.js,
             GeoExt/data/ProtocolProxy.js,
             GeoExt/widgets/FeatureRenderer.js,
@@ -265,12 +266,13 @@
             GeoExt/widgets/PrintMapPanel.js,
             GeoExt/state/PermalinkProvider.js,
             GeoExt/Lang.js" />
+            <filelist dir="${core.src.out.dir}/administrator/libraries/ux/geoext" 
+                      files="PrintPreview.js" />
         </concat>
     </target>
     
     <target name="geoext-minify">
-        <echo>Minify geoext</echo>
-        
+        <echo>Minify geoext</echo>        
         <jsmin srcfile="${core.src.out.dir}/administrator/libraries/geoext/lib/geoextcon.js" suffix="true"/>
     </target>
     
@@ -390,7 +392,8 @@
         plugins/Print.js,
         plugins/LoadingIndicator.js,
         plugins/Playback.js,
-        ColorManager.js"  />
+        ColorManager.js,
+        loader.js"  />
         </concat>
     </target>
 	
