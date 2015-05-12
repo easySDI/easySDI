@@ -65,6 +65,7 @@ gxp.Viewer.prototype.reactivate = function() {
 
     // respond to any queued requests for layer records
     this.checkLayerRecordQueue();
+    return record;
 };
 
 

@@ -52,7 +52,7 @@ function reloadFeatures1() {
 
 var listenerFeatureDrawToZoom = function(e) {
     polygonLayer.events.unregister("featureadded", polygonLayer, listenerFeatureDrawToZoom);
-    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+    listenerFeatureAddedToZoom(e);
 };
 
 function selectPolygon() {
