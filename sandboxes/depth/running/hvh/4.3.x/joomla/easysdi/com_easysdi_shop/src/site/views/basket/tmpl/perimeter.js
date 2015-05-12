@@ -18,10 +18,6 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     if (isrestrictedbyperimeter === 0) {
         grid.init();
     } else {
-        /** TODO : 
-         * - User restricted perimeter is not compatible with arcGIS server :
-         * param 'geometry' for apply a geometry filter must be used instead of CQL_FILTER.
-         */
         var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
         grid.init(featurerestriction);
     }
@@ -52,6 +48,11 @@ var listenerIndoorLevelChanged = function(e) {
     jQuery('#t-features').val('');
 };
 
+/**
+ * 
+ * @param {type} e
+ * @returns {undefined}
+ */
 var listenerWFSFeatureAdded = function(e) {
     listenerFeatureAdded(e);
 
@@ -63,6 +64,11 @@ var listenerWFSFeatureAdded = function(e) {
     jQuery('#perimeter-recap-details').show();
 }
 
+/**
+ * 
+ * @param {type} e
+ * @returns {undefined}
+ */
 var listenerFeatureSelected = function(e) {
     if (fromreload === true) {
         selectLayer.removeAllFeatures();
@@ -99,6 +105,11 @@ var listenerFeatureSelected = function(e) {
     selectLayer.addFeatures([e.feature]);
 };
 
+/**
+ * 
+ * @param {type} e
+ * @returns {undefined}
+ */
 var listenerFeatureUnselected = function(e) {
     selectLayer.removeFeatures([e.feature]);
     var features = miniLayer.features;
@@ -131,6 +142,11 @@ var listenerFeatureUnselected = function(e) {
     }
 };
 
+/**
+ * 
+ * @param {type} perimeter
+ * @returns {undefined}
+ */
 function reloadFeatures(perimeter) {
     var wfsurl = perimeter.wfsurl;
     var featuretypename = perimeter.prefix + ':' + perimeter.featuretypename;

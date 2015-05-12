@@ -13,6 +13,11 @@ Ext.onReady(function() {
     );
 });
 
+/**
+ * Update form elements displaying informations after a feature was selected
+ * @param {type} e
+ * @returns {undefined}
+ */
 var listenerFeatureSelected = function(e) {
     selectLayer.removeAllFeatures();
     selectLayer.addFeatures([e.feature]);
@@ -22,6 +27,10 @@ var listenerFeatureSelected = function(e) {
     enableSave();
 };
 
+/**
+ * Clean form when no feature is selected
+ * @returns {undefined}
+ */
 var cleanSelectionValues = function() {
     js('#url').val('');
     js('.sdi-map-feature-selection-name span').text('');
@@ -29,6 +38,10 @@ var cleanSelectionValues = function() {
     enableSave();
 };
 
+/**
+ * Check if download can be activated and update form element accordingly
+ * @returns {undefined}
+ */
 var enableSave = function() {
     if (js('#termsofuse').is(':checked') == true && js('#url').val() != '')
         js('#saveSubmit').removeAttr('disabled', 'disabled');

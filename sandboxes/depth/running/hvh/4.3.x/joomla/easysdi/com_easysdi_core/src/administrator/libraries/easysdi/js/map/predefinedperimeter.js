@@ -7,17 +7,25 @@
  */
 
 /**
- * 
+ * Define a couple WMS/WFS to allow features selection :
+ * - WMS displays features
+ * - WFS performs the selection
+ * Specific functionnalities "user perimeter" and "indoor level navigation" are
+ * handle by this class.
+ * Objects that have to be previously initialized in the calling context :
+ * - app : a gxp.viewer object
+ * Variables that have to be declared in the calling context :
+ * - selectLayer 
+ * - selectControl
  * @param {type} item
  * @returns {predefinedPerimeter}
  */
 function predefinedPerimeter(item) {
     this.item = item;
-}
-;
+};
 
 /**
- * Build and add to the given gxp viewer layer and corresponding service source.
+ * Build and add to the current gxp viewer (app) layer and corresponding service source.
  * Configure and add to the map a OpenLayers.Control.GetFeature.
  * @returns {undefined}
  */
@@ -84,7 +92,7 @@ predefinedPerimeter.prototype.initPerimeterLayer = function() {
 };
 
 /**
- * 
+ * Initialize the vector layer in which selected features will be drawn 
  * @returns {undefined}
  */
 predefinedPerimeter.prototype.initSelectLayer = function() {
@@ -99,7 +107,7 @@ predefinedPerimeter.prototype.initSelectLayer = function() {
 };
 
 /**
- * 
+ * Initialize the OpenLayers map control GetFeature with the WFS parameters
  * @returns {undefined}
  */
 predefinedPerimeter.prototype.initSelectControl = function() {
@@ -151,7 +159,7 @@ predefinedPerimeter.prototype.getIndoorLevelFilter = function() {
 };
 
 /**
- * 
+ * Return the specific user perimeter filter if restriction has to be applied
  * @returns {undefined}
  */
 predefinedPerimeter.prototype.getUserPerimeterFilter = function() {
@@ -163,7 +171,8 @@ predefinedPerimeter.prototype.getUserPerimeterFilter = function() {
 };
 
 /**
- * 
+ * Return a complete filter to apply on the GetFeature control.
+ * This feature merge user perimeter filter and indoor level navigation filter.
  * @returns {undefined}
  */
 predefinedPerimeter.prototype.getSelectControlFilter = function() {
@@ -193,7 +202,7 @@ predefinedPerimeter.prototype.getSelectControlFilter = function() {
 };
 
 /**
- * Defined the function to call when a feature is selected on the map
+ * Define the function to call when a feature is selected on the map
  * @param {type} f
  * @returns {undefined}
  */
@@ -202,7 +211,7 @@ predefinedPerimeter.prototype.setListenerFeatureSelected = function(f) {
 };
 
 /**
- * Defined the function to call when a feature is unselected from the map
+ * Define the function to call when a feature is unselected from the map
  * @param {type} f
  * @returns {undefined}
  */
@@ -211,7 +220,7 @@ predefinedPerimeter.prototype.setListenerFeatureUnSelected = function(f) {
 };
 
 /**
- * Defined the function to call when indoor level changed
+ * Define the function to call when indoor level changed
  * @param {type} f
  * @returns {undefined}
  */
@@ -220,7 +229,7 @@ predefinedPerimeter.prototype.setListenerIndoorLevelChanged = function(f) {
 };
 
 /**
- * 
+ * Define the function to call after a feature was added to the map.
  * @param {type} f
  * @returns {undefined}
  */
