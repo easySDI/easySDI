@@ -390,8 +390,7 @@
         plugins/Print.js,
         plugins/LoadingIndicator.js,
         plugins/Playback.js,
-        ColorManager.js,
-        loader.js"  />
+        ColorManager.js"  />
         </concat>
     </target>
 	
@@ -427,7 +426,8 @@
                         sdi/plugins/LayerOrder.js,
                         gxp/plugins/OLSource.js,
                         sdi/widgets/IndoorLevelSlider.js,
-                        sdi/widgets/IndoorLevelSliderTip.js" />
+                        sdi/widgets/IndoorLevelSliderTip.js,
+                        map/predefinedperimeter.js" />
         </concat>
     </target>
 	
