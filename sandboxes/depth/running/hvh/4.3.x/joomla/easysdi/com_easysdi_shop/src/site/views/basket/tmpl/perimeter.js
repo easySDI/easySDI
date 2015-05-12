@@ -30,14 +30,14 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
 }
 
 //Get the OpenLayers Filter to apply for features selection
-var getSelectControlLevelFilter = function() {
-    selectControl.fieldlevel = prefix + ':' + fieldlevel;
-    return new OpenLayers.Filter.Comparison({
-        type: OpenLayers.Filter.Comparison.EQUAL_TO,
-        property: selectControl.fieldlevel,
-        value: app.mapPanel.map.indoorlevelslider.getLevel().code
-    });
-};
+//var getSelectControlLevelFilter = function() {
+//    selectControl.fieldlevel = prefix + ':' + fieldlevel;
+//    return new OpenLayers.Filter.Comparison({
+//        type: OpenLayers.Filter.Comparison.EQUAL_TO,
+//        property: selectControl.fieldlevel,
+//        value: app.mapPanel.map.indoorlevelslider.getLevel().code
+//    });
+//};
 
 /**
  * 
@@ -177,7 +177,7 @@ function reloadFeatures(perimeter) {
     }
     wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
 
-    selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
+//    selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     app.mapPanel.map.removeLayer(selectLayer);
 
     selectLayer = new OpenLayers.Layer.Vector("Selection", {

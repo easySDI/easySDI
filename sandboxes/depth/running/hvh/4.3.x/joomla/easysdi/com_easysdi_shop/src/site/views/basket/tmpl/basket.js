@@ -114,7 +114,7 @@ function resetAll() {
         app.mapPanel.map.removeControl(selectControl);
     }
     if (app.mapPanel.map.getLayersByName("perimeterLayer").length > 0) {
-        app.mapPanel.map.removeLayer(app.mapPanel.map.getLayersByName("perimeterLayer")[0]);
+        app.mapPanel.map.removeLayer(app.mapPanel.map.getLayersByName("perimeterLayer")[0]); 
         app.mapPanel.map.removeLayer(selectLayer);
     }
     if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {

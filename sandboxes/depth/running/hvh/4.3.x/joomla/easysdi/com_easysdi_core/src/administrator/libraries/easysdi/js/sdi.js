@@ -2046,7 +2046,8 @@ sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
  */
 function predefinedPerimeter(item) {
     this.item = item;
-};
+}
+;
 
 /**
  * Build and add to the current gxp viewer (app) layer and corresponding service source.
@@ -2126,7 +2127,9 @@ predefinedPerimeter.prototype.initSelectLayer = function() {
 
     //Keep selection layer on top
     app.mapPanel.map.events.register('addlayer', this, function() {
-        app.mapPanel.map.setLayerIndex(selectLayer, app.mapPanel.map.getNumLayers());
+        if (app.mapPanel.map.getLayersByName("Selection").length > 0) {
+            app.mapPanel.map.setLayerIndex(selectLayer, app.mapPanel.map.getNumLayers());
+        }
     });
 };
 
@@ -2152,7 +2155,7 @@ predefinedPerimeter.prototype.initSelectControl = function() {
     });
 
     //Build the default filter : merge existing filters on user perimeter and indoor level
-    selectControl.protocol.defaultFilter  = this.getSelectControlFilter();
+    selectControl.protocol.defaultFilter = this.getSelectControlFilter();
 
     //In case indoor level navigation is active on the map
     if (this.item.featuretypefieldlevel && typeof (app.mapPanel.map.indoorlevelslider) !== 'undefined') {
@@ -2200,28 +2203,28 @@ predefinedPerimeter.prototype.getUserPerimeterFilter = function() {
  * @returns {undefined}
  */
 predefinedPerimeter.prototype.getSelectControlFilter = function() {
-    var merged,userfilter,levelfilter ;
-    
+    var merged, userfilter, levelfilter;
+
     //If userperimeter activated, handle restriction with user specific perimeter
     if (typeof (this.userrestriction) !== 'undefined') {
         userfilter = this.getUserPerimeterFilter();
     }
-        
+
     //In case indoor level navigation is active on the map, handle filter on indoor level value
-    if (this.item.featuretypefieldlevel && typeof (app.mapPanel.map.indoorlevelslider) !== 'undefined') {       
+    if (this.item.featuretypefieldlevel && typeof (app.mapPanel.map.indoorlevelslider) !== 'undefined') {
         levelfilter = this.getIndoorLevelFilter();
     }
-    
+
     //Merged, if needed, filters
-    if(levelfilter && userfilter){
+    if (levelfilter && userfilter) {
         merged = new OpenLayers.Filter.Logical({
-                type: OpenLayers.Filter.Logical.AND,
-                filters: [levelfilter, userfilter]
-            });
-    }else{
+            type: OpenLayers.Filter.Logical.AND,
+            filters: [levelfilter, userfilter]
+        });
+    } else {
         merged = levelfilter || userfilter || undefined;
     }
-    
+
     return merged;
 };
 
