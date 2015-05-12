@@ -794,15 +794,7 @@ class FormGenerator {
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
                     case EnumRendertype::$TEXTBOX:
-                        switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
-                            case EnumStereotype::$FILE:
-                                return $this->getFormFileField($attribute);
-                                break;
-
-                            default:
-                                return $this->getFormTextBoxField($attribute);
-                                break;
-                        }
+                        return $this->getFormTextBoxField($attribute);
                         break;
                     case EnumRendertype::$TEXTAREA:
                         return $this->getFormTextAreaField($attribute);
@@ -828,6 +820,12 @@ class FormGenerator {
                     case EnumRendertype::$HIDDEN:
                         return $this->getFormHiddenField($attribute);
                         break;
+                    case EnumRendertype::$UPLOAD:
+                    case EnumRendertype::$URL:
+                    case EnumRendertype::$UPLOADANDURL:
+                        return $this->getFormFileField($attribute);
+                        break;
+                    
                 }
                 break;
             default:
@@ -1431,41 +1429,19 @@ class FormGenerator {
 
         $field = $this->form->createElement('field');
 
-        $validator = $this->getValidatorClass($attribute);
-
-        $field->setAttribute('type', 'file');
+        $field->setAttribute('type', 'textreadonly');
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
-        $field->setAttribute('class', $validator);
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
         $description = $this->getDescription($attribute_guid, $guid);
             if (!empty($description)) {
                 $field->setAttribute('description', $description);
             }
+            
+        $field->setAttribute('readonly', 'true');
 
         $fields[] = $field;
-
-        $hiddenField = $this->form->createElement('field');
-        $hiddenField->setAttribute('type', 'hidden');
-        $hiddenField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
-        $hiddenField->setAttribute('default', $attribute->firstChild->nodeValue);
-
-        $hiddenDeleteField = $this->form->createElement('field');
-        $hiddenDeleteField->setAttribute('type', 'hidden');
-        $hiddenDeleteField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehiddendelete');
-        $hiddenDeleteField->setAttribute('default', $attribute->firstChild->nodeValue);
-
-
-        $textField = $this->form->createElement('field');
-        $textField->setAttribute('type', 'text');
-        $textField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
-        $textField->setAttribute('default', $attribute->firstChild->nodeValue);
-        $textField->setAttribute('readonly', 'true');
-
-        $fields[] = $textField;
-        $fields[] = $hiddenField;
-        $fields[] = $hiddenDeleteField;
-
+        
         return $fields;
     }
 
