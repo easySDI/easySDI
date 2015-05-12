@@ -54,9 +54,11 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ext/ext-all-debug.js');
             $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');            
+            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');    
             $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');            
             $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
+            $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
             $doc->addScript($base_url . '/gxp/script/gxp.js');
             $doc->addScript($base_url . '/easysdi/js/sdi.js');
             
@@ -70,9 +72,11 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ext/ext-all.js');
             $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
+            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');    
             $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
             $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
             $doc->addScript($base_url . '/geoext/lib/geoextcon.min.js');
+            $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
             $doc->addScript($base_url . '/gxp/script/gxp.min.js');
             $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
         }
