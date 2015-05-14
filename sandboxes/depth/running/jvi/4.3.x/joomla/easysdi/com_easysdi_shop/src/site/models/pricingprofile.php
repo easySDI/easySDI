@@ -103,7 +103,7 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
             return false;
         }
         
-        if(!sdiFactory::getSdiUser()->isPricingManager($form->getData()->get('organism_id'))){
+        if(!sdiFactory::getSdiUser()->isPricingManager($this->getState('pricingprofile.organism_id'))){
             foreach($form->getFieldsets() as $fieldset){
                 foreach($form->getFieldset($fieldset->name) as $field){
                     $form->setFieldAttribute($field->fieldname, 'readonly', 'true');

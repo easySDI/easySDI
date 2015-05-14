@@ -41,7 +41,7 @@ class Easysdi_shopViewPricingProfile extends JViewLegacy {
 
         $this->user = sdiFactory::getSdiUser();
         
-        $this->isPricingManager = $this->user->isPricingManager($this->item->organism_id);
+        $this->isPricingManager = $this->user->isPricingManager($this->state->get('pricingprofile.organism_id'));
         if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php', false));
