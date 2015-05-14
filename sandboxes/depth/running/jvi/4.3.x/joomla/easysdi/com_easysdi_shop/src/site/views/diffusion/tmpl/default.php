@@ -282,7 +282,7 @@ var globdata;
                                 <?php echo $this->form->getInput('hasextraction'); ?></legend>
                             <div id="div_extraction">
                                 <?php foreach ($this->form->getFieldset('extraction') as $field): 
-                                    if(in_array($field->fieldname, array('hasdownload','restrictedperimeter'))) continue;
+                                    if(in_array($field->fieldname, array('hasextraction','restrictedperimeter'))) continue;
                                     ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
