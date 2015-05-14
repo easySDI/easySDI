@@ -166,7 +166,7 @@ class Easysdi_shopModelOrders extends JModelList {
                 $organisms = array(-1);
             }
             $query->innerJoin('#__sdi_user_role_organism uro ON uro.user_id=a.user_id')
-                    ->where('(a.user_id='.(int)$user->id.' OR (uro.role_id='.sdiUser::member.' AND uro.organism_id IN ('.implode(',', $organisms).')))');
+                    ->where('uro.role_id='.sdiUser::member.' AND (a.user_id='.(int)$user->id.' OR uro.organism_id IN ('.implode(',', $organisms).'))');
         }
         
         
