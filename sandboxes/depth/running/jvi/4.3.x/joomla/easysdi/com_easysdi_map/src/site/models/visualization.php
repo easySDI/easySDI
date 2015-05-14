@@ -222,7 +222,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
             return false;
         }
         
-        if(!sdiFactory::getSdiUser()->authorizeOnMetadata($form->getData()->get('id'), sdiUser::viewmanager)){
+        if(!sdiFactory::getSdiUser()->authorizeOnVersion($this->_item->version_id, sdiUser::viewmanager)){
             foreach($form->getFieldsets() as $fieldset){
                 foreach($form->getFieldset($fieldset->name) as $field){
                     $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
