@@ -54,7 +54,11 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         
         $this->isValidationManager = in_array($this->item->thirdparty_id, $this->user->getOrganisms(array(sdiUser::validationmanager), true));
         
-        if($this->user->id != $this->item->user_id && !$this->user->isOrganismManager($this->item->user_id, 'user') && !$this->isValidationManager){
+        if($this->user->id != $this->item->user_id // current user is not the orderer
+                && !$this->isValidationManager // current user is not validation manager
+                && !$this->user->isOrganismManager($this->item->user_id, 'user') // current user is not organism manager for the orderer's user
+                && !$this->user->isOrganismManager($this->item->thirdparty_id, 'organism') // current user is not organism manager for the thirdparty organism
+                ){
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
