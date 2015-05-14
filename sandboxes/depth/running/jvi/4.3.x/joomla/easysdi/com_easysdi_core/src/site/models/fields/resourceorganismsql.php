@@ -44,18 +44,29 @@ class JFormFieldResourceOrganismSQL extends JFormFieldList {
         // Initialize some field attributes.
         $key = $this->element['key_field'] ? (string) $this->element['key_field'] : 'value';
         //Allowed resourcetype as children
-        $id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.version.id');
+        $id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.id');
         $user = sdiFactory::getSdiUser();
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('o.id, o.name')
                 ->from('#__sdi_organism o')
+                ->order('o.name')
+                ;
+        
+        if($user->authorize($id, sdiUser::resourcemanager)){
+            $query
                 ->innerJoin('#__sdi_user_role_organism uro ON uro.organism_id=o.id')
                 ->where('o.state=1')
                 ->where('uro.role_id='.(int)sdiUser::resourcemanager)
                 ->where('uro.user_id='.(int)$user->id)
-                ->order('o.name')
                 ;
+        }
+        else{
+            $query
+                ->innerJoin('#__sdi_resource r ON r.organism_id=o.id')
+                ->where('r.id='.(int)$id)
+                ;
+        }
 
         // Set the query and get the result list.
         $db->setQuery($query);
