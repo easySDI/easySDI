@@ -1,24 +1,36 @@
-var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap;
+var map, perimeterLayer, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider;
 
+//Init the recapitulation map (map without control)
 function initMiniMap() {
     minimap = new OpenLayers.Map({div: 'minimap', controls: []});
-    var layer = app.mapPanel.map.layers[1].clone();
-    minimap.addLayer(layer);
-    minimap.setBaseLayer(layer);
+    miniBaseLayer = app.mapPanel.map.layers[1].clone();  
+    miniBaseLayer.events.register("loadend", miniBaseLayer, initialization);
+    minimap.addLayer(miniBaseLayer);
+    minimap.setBaseLayer(miniBaseLayer);
     minimap.zoomToExtent(app.mapPanel.map.getExtent());
     miniLayer = new OpenLayers.Layer.Vector("miniLayer");
-
     minimap.addLayer(miniLayer);
     miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
 }
 
+//Call after a feature was selected or drawn in the map
 var listenerMiniFeaturesAdded = function() {
     minimap.zoomToExtent(miniLayer.getDataExtent());
 };
 
+//Call after a feature was selected or drawn in the map
 var listenerFeatureAdded = function(e) {
     miniLayer.addFeatures([e.feature.clone()]);
+    orderSurfaceChecking();
+};
 
+//Zoom on the geometry added (drawn or user specific perimeter loaded)
+var listenerFeatureAddedToZoom = function(e) {
+    app.mapPanel.map.zoomToExtent(e.object.getDataExtent());
+};
+
+//Check if the surface of the selection is applicable
+function orderSurfaceChecking(){
     var toobig = false;
     var toosmall = false;
     if (jQuery('#surfacemax').val() !== '') {
@@ -37,56 +49,58 @@ var listenerFeatureAdded = function(e) {
     } else {
         jQuery('#alert_template').fadeOut('slow');
         jQuery('#btn-saveperimeter').removeAttr("disabled");
-
     }
-};
+}
 
+//Remove all geometries drawn
 function clearLayersVector() {
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
-        if (app.mapPanel.map.layers[j].id.indexOf("Vector") != -1) {
+        if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
     for (var j = 0; j < minimap.layers.length; j++) {
-        if (minimap.layers[j].id.indexOf("Vector") != -1) {
+        if (minimap.layers[j].id.indexOf("Vector") !== -1) {
             minimap.layers[j].removeAllFeatures();
         }
     }
+    jQuery('#perimeter-recap-details').empty();
 }
 
+//Clear temporary fields
 function clearTemporaryFields() {
-    jQuery('#t-perimeter').val('');
-    jQuery('#t-perimetern').val('');
-    jQuery('#t-surface').val('');
-    jQuery('#t-features').val('');
+     jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+        jQuery('#t-'+value).val('');
+    })
     jQuery('#alert_template').fadeOut('slow');
     jQuery('#btn-saveperimeter').removeAttr("disabled");
     
 }
 
+//Reset temporary fields with initial values
 function resetTemporaryFields() {
-    jQuery('#t-perimeter').val(jQuery('#perimeter').val());
-    jQuery('#t-perimetern').val(jQuery('#perimetern').val());
-    jQuery('#t-surface').val(jQuery('#surface').val());
-    jQuery('#t-features').val(jQuery('#features').val());
+    jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+        jQuery('#t-'+value).val(jQuery('#'+value).val());
+    })
     jQuery('#alert_template').fadeOut('slow');
     jQuery('#btn-saveperimeter').removeAttr("disabled");
 }
 
+//Push temporary fields to final fields 
 function saveTemporaryFields() {
-    jQuery('#perimeter').val(jQuery('#t-perimeter').val());
-    jQuery('#perimetern').val(jQuery('#t-perimetern').val());
-    jQuery('#surface').val(jQuery('#t-surface').val());
-    jQuery('#features').val(jQuery('#t-features').val());
+    jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+        jQuery('#'+value).val(jQuery('#t-'+value).val());
+    })
 }
 
+//
 function beforeFeatureAdded(event) {
     clearLayersVector();
-
     jQuery('#t-features').val('');
     jQuery('#t-surface').val(JSON.stringify(event.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
 }
 
+//Reset all values to initial ones
 function resetAll() {
     resetTemporaryFields();
 
@@ -100,7 +114,7 @@ function resetAll() {
         app.mapPanel.map.removeControl(selectControl);
     }
     if (app.mapPanel.map.getLayersByName("perimeterLayer").length > 0) {
-        app.mapPanel.map.removeLayer(perimeterLayer);
+        app.mapPanel.map.removeLayer(app.mapPanel.map.getLayersByName("perimeterLayer")[0]); 
         app.mapPanel.map.removeLayer(selectLayer);
     }
     if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
@@ -112,18 +126,20 @@ function resetAll() {
     }
 }
 
+//Toggle controls
 function toggleSelectControl(action) {
-    if (action == 'selection') {
+    if (action === 'selection') {
         if (typeof selectControl !== 'undefined') {
             selectControl.activate();
         }
-    } else if (action == 'pan') {
+    } else if (action === 'pan') {
         selectControl.deactivate();
     } else {
         resetAll();
     }
 }
 
+//Reload initial extent selection
 function cancel() {
     resetAll();
     jQuery('#modal-perimeter [id^="btn-perimeter"]').removeClass('active');
@@ -132,59 +148,14 @@ function cancel() {
         eval('reloadFeatures' + jQuery('#perimeter').val() + '()');
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
+    if (jQuery('#level').val() !== '' && slider) {
+       var level = JSON.parse(jQuery('#level').val());
+       app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider,level.code);
+    }
 }
 
+//
 var number_format = function(number, decimals, dec_point, thousands_sep) {
-    //  discuss at: http://phpjs.org/functions/number_format/
-    // original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // improved by: davook
-    // improved by: Brett Zamir (http://brett-zamir.me)
-    // improved by: Brett Zamir (http://brett-zamir.me)
-    // improved by: Theriault
-    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // bugfixed by: Michael White (http://getsprink.com)
-    // bugfixed by: Benjamin Lupton
-    // bugfixed by: Allan Jensen (http://www.winternet.no)
-    // bugfixed by: Howard Yeend
-    // bugfixed by: Diogo Resende
-    // bugfixed by: Rival
-    // bugfixed by: Brett Zamir (http://brett-zamir.me)
-    //  revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-    //  revised by: Luke Smith (http://lucassmith.name)
-    //    input by: Kheang Hok Chin (http://www.distantia.ca/)
-    //    input by: Jay Klehr
-    //    input by: Amir Habibi (http://www.residence-mixte.com/)
-    //    input by: Amirouche
-    //   example 1: number_format(1234.56);
-    //   returns 1: '1,235'
-    //   example 2: number_format(1234.56, 2, ',', ' ');
-    //   returns 2: '1 234,56'
-    //   example 3: number_format(1234.5678, 2, '.', '');
-    //   returns 3: '1234.57'
-    //   example 4: number_format(67, 2, ',', '.');
-    //   returns 4: '67,00'
-    //   example 5: number_format(1000);
-    //   returns 5: '1,000'
-    //   example 6: number_format(67.311, 2);
-    //   returns 6: '67.31'
-    //   example 7: number_format(1000.55, 1);
-    //   returns 7: '1,000.6'
-    //   example 8: number_format(67000, 5, ',', '.');
-    //   returns 8: '67.000,00000'
-    //   example 9: number_format(0.9, 0);
-    //   returns 9: '1'
-    //  example 10: number_format('1.20', 2);
-    //  returns 10: '1.20'
-    //  example 11: number_format('1.20', 4);
-    //  returns 11: '1.2000'
-    //  example 12: number_format('1.2000', 3);
-    //  returns 12: '1.200'
-    //  example 13: number_format('1 000,50', 2, '.', ' ');
-    //  returns 13: '100 050.00'
-    //  example 14: number_format(1e-8, 8, '.', '');
-    //  returns 14: '0.00000001'
-
     number = (number + '')
             .replace(/[^0-9+\-Ee.]/g, '');
     var n = !isFinite(+number) ? 0 : +number,
@@ -234,6 +205,7 @@ var priceFormatter = function(price, displayCurrency) {
     return price + c;
 };
 
+//
 var updatePricing = function(pricing) {
     if (!pricing.isActivated)
         return;
@@ -294,9 +266,9 @@ var updatePricing = function(pricing) {
     jQuery('#pricingTotal-table').show();
 };
 
+//Call after user validates his extent drawing
 function savePerimeter() {
-    if (jQuery('#t-perimeter').val() == '')
-    {
+    if (jQuery('#t-perimeter').val() == ''){
         jQuery('#perimeter-recap').empty();
     } else {
         jQuery("#progress").css('visibility', 'visible');
@@ -306,19 +278,23 @@ function savePerimeter() {
             "surface": jQuery('#t-surface').val(),
             "allowedbuffer": jQuery('#allowedbuffer').val(),
             "buffer": jQuery('#buffer').val(),
-            "features": JSON.parse(jQuery('#t-features').val())};
+            "level": jQuery('#t-level').val(),
+            "features": jQuery('#t-features').val()};
 
         jQuery.ajax({
             type: "POST",
             url: "index.php?option=com_easysdi_shop&task=addExtentToBasket",
             data: "item=" + JSON.stringify(extent)
-        }).done(function(r) {
-            if (r.MESSAGE && r.MESSAGE == 'OK') {
-                saveTemporaryFields();
+        }).done(updateDisplay);
+    }
+}
 
+//Manage display according to savePerimeter response
+function updateDisplay (response){
+    if (response.MESSAGE && response.MESSAGE === 'OK') {
+                saveTemporaryFields();
                 try {
                     var features = JSON.parse(jQuery('#features').val());
-
                     if (jQuery.isArray(features)) {
                         jQuery('#perimeter-recap-details').empty();
                         jQuery.each(features, function() {
@@ -338,17 +314,26 @@ function savePerimeter() {
                     jQuery('#perimeter-recap-details').empty().hide();
                 }
 
-                if (r.extent.name != '') {
-                    jQuery('#perimeter-recap-details-title > h4').html(r.extent.name);
+                if (response.extent.name !== '') {
+                    jQuery('#perimeter-recap-details-title > h4').html(response.extent.name);
                 }
                 else {
                     jQuery('#perimeter-recap-details-title > h4').empty();
                 }
-                if (r.extent.surface != '') {
+                if (response.extent.level !== '') {
+                    jQuery('#perimeter-recap > div:nth-child(2) > div').html(JSON.parse(response.extent.level).label);
+                    jQuery('#perimeter-level').show();        
+                    jQuery('#perimeter-recap').show();
+                }
+                else {
+                    jQuery('#perimeter-level >div:nth-child(1)').empty();
+                    jQuery('#perimeter-level').hide();
+                }
+                if (response.extent.surface !== '') {
                     jQuery('#perimeter-recap > div:nth-child(1) > div').html(
-                            (r.extent.surface > maxmetervalue)
-                            ? (r.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
-                            : parseFloat(r.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
+                            (response.extent.surface > maxmetervalue)
+                            ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
+                            : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
                             );
                     jQuery('#perimeter-recap').show();
                 }
@@ -357,38 +342,10 @@ function savePerimeter() {
                 }
 
                 //pricing
-                updatePricing(r.pricing);
+                updatePricing(response.pricing);
             }
 
             return false;
-        });
-    }
-}
-
-function reprojectWKT(wkt) {
-    var features = new OpenLayers.Format.WKT().read(wkt);
-    var reprojfeatures = new Array();
-    if (features instanceof Array) {
-        for (var i = 0; i < features.length; i++) {
-            var geometry = features[i].geometry.transform(
-                    new OpenLayers.Projection("EPSG:4326"),
-                    new OpenLayers.Projection(app.mapPanel.map.projection)
-                    );
-            var reprojfeature = new OpenLayers.Feature.Vector(geometry);
-            reprojfeatures.push(reprojfeature);
-        }
-    }
-    else {
-        var geometry = features.geometry.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection(app.mapPanel.map.projection)
-                );
-        var reprojfeature = new OpenLayers.Feature.Vector(geometry);
-        reprojfeatures.push(reprojfeature);
-
-    }
-    var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
-    jQuery('#perimeter-recap-details').append("<div>" + reprojwkt + "</div>");
 }
 
 

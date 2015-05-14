@@ -294,12 +294,11 @@ class FormGenerator {
                     $relationExist = $parent->parentNode;
                     $lowerbound = $parent->parentNode->getAttributeNS($this->catalog_uri, 'lowerbound');
                     if (isset($this->domXpathCsw)) {
-                        if($parent->getAttributeNS($this->catalog_uri,'dbid')==0){
+                        if ($parent->getAttributeNS($this->catalog_uri, 'dbid') == 0) {
                             $occurance = $this->domXpathCsw->query('/*' . $this->removeIndex($parent->parentNode->getNodePath()))->length;
-                        }else{
+                        } else {
                             $occurance = $this->domXpathCsw->query('/*' . $this->removeIndex($parent->getNodePath()))->length;
                         }
-                        
                     }
                     break;
             }
@@ -850,6 +849,7 @@ class FormGenerator {
         $relId = $attribute->getAttributeNS($this->catalog_uri, 'relid');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
+        $attribute_guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
         $fields = array();
         $field = $this->form->createElement('field');
@@ -880,9 +880,10 @@ class FormGenerator {
             $field->setAttribute('default', $this->getDefaultValue($relId, $attribute->firstChild->nodeValue));
         }
 
-        $description = EText::_($guid, 2);
-        if (!empty($description))
+        $description = $this->getDescription($attribute_guid, $guid);
+        if (!empty($description)) {
             $field->setAttribute('description', $description);
+        }
 
         $fields[] = $field;
 
@@ -925,6 +926,7 @@ class FormGenerator {
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $validator = $this->getValidatorClass($attribute);
+        $attribute_guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
         $fields = array();
         $field = $this->form->createElement('field');
@@ -949,7 +951,11 @@ class FormGenerator {
             $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue));
         }
 
-        $field->setAttribute('description', EText::_($guid, 2));
+
+        $description = $this->getDescription($attribute_guid, $guid);
+        if (!empty($description)) {
+            $field->setAttribute('description', $description);
+        }
 
         $fields[] = $field;
 
@@ -969,7 +975,10 @@ class FormGenerator {
             $field->setAttribute('default', $this->getDefaultValue($relid, $i18nChild->nodeValue, FALSE, $this->ldao->getByIso3166($localeValue)->id));
             $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getByIso3166($localeValue)->value . ')');
-            $field->setAttribute('description', EText::_($guid, 2));
+            $description = $this->getDescription($attribute_guid, $guid);
+            if (!empty($description)) {
+                $field->setAttribute('description', $description);
+            }
 
             $fields[] = $field;
         }
@@ -990,6 +999,7 @@ class FormGenerator {
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
+        $attribute_guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
         $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
         $default = array();
@@ -1006,8 +1016,11 @@ class FormGenerator {
         }
 
         $field->setAttribute('label', EText::_($guid));
-        $field->setAttribute('description', EText::_($guid, 2));
         $field->setAttribute('multiple', 'true');
+        $description = $this->getDescription($attribute_guid, $guid);
+            if (!empty($description)) {
+                $field->setAttribute('description', $description);
+            }
 
         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
 
@@ -1037,6 +1050,7 @@ class FormGenerator {
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
+        $attribute_guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
         $field->setAttribute('type', 'radio');
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
@@ -1046,8 +1060,11 @@ class FormGenerator {
         }
 
         $field->setAttribute('label', EText::_($guid));
-        $field->setAttribute('description', EText::_($guid, 2));
         $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->getAttribute('codeListValue')));
+        $description = $this->getDescription($attribute_guid, $guid);
+            if (!empty($description)) {
+                $field->setAttribute('description', $description);
+            }
 
         foreach ($this->getAttributOptions($attribute) as $opt) {
             $option = $this->form->createElement('option', EText::_($opt->guid));
@@ -1074,6 +1091,7 @@ class FormGenerator {
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        $attribute_guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
 
         if ($upperbound > 1) {
@@ -1092,7 +1110,10 @@ class FormGenerator {
             $field->setAttribute('readonly', 'true');
         }
 
-        $field->setAttribute('description', EText::_($guid, 2));
+        $description = $this->getDescription($attribute_guid, $guid);
+            if (!empty($description)) {
+                $field->setAttribute('description', $description);
+            }
 
         foreach ($this->getAttributOptions($attribute) as $opt) {
             switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
@@ -1229,6 +1250,7 @@ class FormGenerator {
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
+        $attribute_guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
@@ -1241,7 +1263,10 @@ class FormGenerator {
         $field->setAttribute('class', $validator);
         //$field->setAttribute('format', '%Y-%m-%d');
         $field->setAttribute('label', EText::_($guid)); //
-        $field->setAttribute('description', EText::_($guid, 2)); //
+        $description = $this->getDescription($attribute_guid, $guid);
+            if (!empty($description)) {
+                $field->setAttribute('description', $description);
+            }
 
         $field->setAttribute('default', $this->getDefaultValue($relid, substr($attribute->firstChild->nodeValue, 0, 10)));
 
@@ -1262,6 +1287,7 @@ class FormGenerator {
     private function getFormGemetField(DOMElement $attribute) {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
+        $attribute_guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
         $fields = array();
 
@@ -1275,7 +1301,10 @@ class FormGenerator {
         } else {
             $field->setAttribute('label', JText::_($label));
         }
-        $field->setAttribute('description', EText::_($guid, 2));
+        $description = $this->getDescription($attribute_guid, $guid);
+            if (!empty($description)) {
+                $field->setAttribute('description', $description);
+            }
 
         $defaults = array();
         foreach ($this->domXpathStr->query('descendant::gco:CharacterString', $attribute->parentNode) as $element) {
@@ -1297,7 +1326,10 @@ class FormGenerator {
             $field->setAttribute('multiple', 'true');
             $field->setAttribute('name', FormUtils::serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
             $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($key)->value);
-            $field->setAttribute('description', EText::_($guid, 2));
+            $description = $this->getDescription($attribute_guid, $guid);
+            if (!empty($description)) {
+                $field->setAttribute('description', $description);
+            }
 
             $defaults = array();
             foreach ($this->domXpathStr->query('*/*/*/*[@locale="#FR"]', $attribute->parentNode) as $element) {
@@ -1326,7 +1358,6 @@ class FormGenerator {
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
         $stereotypeid = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
-        $attributename = $attribute->nodeName;
         $field = $this->form->createElement('field');
 
 
@@ -1397,6 +1428,7 @@ class FormGenerator {
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $style = $attribute->getAttributeNS($this->catalog_uri, 'style');
+        $attribute_guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
         $field = $this->form->createElement('field');
 
@@ -1406,8 +1438,11 @@ class FormGenerator {
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('class', $validator);
-        $field->setAttribute('description', EText::_($guid, 2));
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
+        $description = $this->getDescription($attribute_guid, $guid);
+            if (!empty($description)) {
+                $field->setAttribute('description', $description);
+            }
 
         $fields[] = $field;
 
@@ -1796,6 +1831,40 @@ class FormGenerator {
         }
 
         return min($rights);
+    }
+
+    /**
+     * 
+     * @param string $attribute_guid
+     * @param string $relation_guid
+     * @return string field description
+     */
+    private function getDescription($attribute_guid, $relation_guid) {
+        $description = '';
+
+        $description_attribute = EText::_($attribute_guid, 2);
+        $description_relation = EText::_($relation_guid, 2);
+
+        if (!empty($description_relation)) {
+            $description = $description_relation;
+        } elseif ($description_attribute) {
+            $description = $description_attribute;
+        }
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('*');
+        $query->from('#__sdi_attribute a');
+        $query->where('a.guid = ' . $query->quote($attribute_guid));
+
+        $this->db->setQuery($query);
+        $attribute = $this->db->loadObject();
+
+        if (!empty($attribute->pattern)) {
+            $description .= '<br/><span class="attribute-pattern">(' . $attribute->pattern . ')</span>';
+        }
+
+        return $description;
     }
 
     /**

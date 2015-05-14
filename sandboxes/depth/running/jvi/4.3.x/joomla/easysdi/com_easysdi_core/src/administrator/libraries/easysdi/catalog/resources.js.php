@@ -940,7 +940,7 @@ js(document).ready(function(){
     
     // Fix version's select style and event
     js('td[id$=_resource_versions] > select')
-            .chosen()
+            .chosen({width:'100%'})
             .on('change', function(){buildActionsCell(resources.get(getResourceId(this)));})
             ;
     

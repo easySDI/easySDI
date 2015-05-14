@@ -961,6 +961,7 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
         if(!jQuery.isEmptyObject(record)){
 	 record.data.layer.attribution = config.attribution;
 	 }
+        record.data.layer.isindoor = config.isindoor;
         record.data.layer.levelfield = config.levelfield;
         record.data.layer.servertype = config.servertype;
         return record;
@@ -1033,7 +1034,15 @@ Ext.namespace("gxp");
 var sourceConfig;
 var layerConfig;
 
+/**
+ * Add a source to the viewer and a layer config to the map configuration
+ * the layer is not added to the map here.
+ * @param {type} lsourceConfig
+ * @param {type} llayerConfig
+ * @returns {Ext@call;extend.prototype.addExtraLayer.queue|gxp.Viewer.prototype.addExtraLayer.queue|Array}
+ */
 gxp.Viewer.prototype.addExtraLayer = function(lsourceConfig, llayerConfig) {
+    
     sourceConfig = lsourceConfig;
     layerConfig = llayerConfig;
     if(this.sources[sourceConfig.id] === undefined){
@@ -1043,57 +1052,54 @@ gxp.Viewer.prototype.addExtraLayer = function(lsourceConfig, llayerConfig) {
 
     var queue = [];
     queue.push(this.createSourceLoader(sourceConfig.id));
-
-//    gxp.util.dispatch(queue, this.reactivate, this);
+    
+    return queue;
 };
 
-//gxp.Viewer.prototype.reactivate = function() {
-//    // initialize tooltips
-//    Ext.QuickTips.init();
-//
-//    var mapConfig = this.initialConfig.map;
-//    if (mapConfig && mapConfig.layers) {
-//        var conf, source, record, baseRecords = [], overlayRecords = [];
-//        //for (var i = 0; i < mapConfig.layers.length; ++i) {
-//           // conf = mapConfig.layers[i];
-//           //Get the last layer
-//           conf = mapConfig.layers[mapConfig.layers.length-1];
-//           // if(conf.name === layerConfig.name){
-//                source = this.layerSources[conf.source];
-//                if (source) {
-//                    if (source.id === sourceConfig.id) {
-//                        // source may not have loaded properly (failure handled elsewhere)
-//                        record = source.createLayerRecord(conf);
-//                        if (record) {
-//                            if (record.get("group") === "background") {
-//                                baseRecords.push(record);
-//                            } else {
-//                                overlayRecords.push(record);
-//                            }
-//                        }
-//                     //   break;
-//                    }
-//                }
-//            //}
-//        //}
-//
-//        var panel = this.mapPanel;
-//        var map = panel.map;
-//        extent = record.getLayer().maxExtent.clone();
-//        map.zoomToExtent(extent);
-//
-//        var records = baseRecords.concat(overlayRecords);
-//        if (records.length) {
-//            panel.layers.add(records);
-//        }
-//    }
-//
-//    // respond to any queued requests for layer records
-//    this.checkLayerRecordQueue();
-//
-//    // broadcast ready state
-////   this.fireEvent("ready");
-//};
+/**
+ * Create layer record and add layer to the map
+ * Call after addExtraLayer
+ * @returns {undefined}
+ */
+gxp.Viewer.prototype.reactivate = function() {
+    // initialize tooltips
+    Ext.QuickTips.init();
+
+    var mapConfig = this.initialConfig.map;
+    if (mapConfig && mapConfig.layers) {
+        var conf, source, record, baseRecords = [], overlayRecords = [];
+        //Get the last layer
+        conf = mapConfig.layers[mapConfig.layers.length-1];
+        source = this.layerSources[conf.source];
+        if (source) {
+            if (source.id === sourceConfig.id) {
+                // source may not have loaded properly (failure handled elsewhere)
+                record = source.createLayerRecord(conf);
+                if (record) {
+                    if (record.get("group") === "background") {
+                        baseRecords.push(record);
+                    } else {
+                        overlayRecords.push(record);
+                    }
+                }
+            }
+        }
+  
+        var panel = this.mapPanel;
+        extent = record.getLayer().maxExtent.clone();
+
+        var records = baseRecords.concat(overlayRecords);
+        if (records.length) {
+            panel.layers.add(records);
+        }
+    }
+
+    // respond to any queued requests for layer records
+    this.checkLayerRecordQueue();
+    return record;
+};
+
+
 
 
 
@@ -1736,7 +1742,7 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
     delay: 5,
     /** api: config[aggressive]
      *  ``Boolean``
-     *  If set to true, the opacity is changed as soon as the thumb is moved.
+     *  If set to true, the level is changed as soon as the thumb is moved.
      *  Otherwise when the thumb is released (default).
      */
     aggressive: false,
@@ -1753,22 +1759,23 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
      *  The CSS class name for the slider elements.  Default is "sdi-indoorlevelslider".
      */
     baseCls: "sdi-indoorlevelslider",
-//    /** private: property[updating]
-//     *  ``Boolean``
-//     *  The slider position is being updated by itself .
-//     */
-//    updating: false,
     /**
      * 
      */
     levels: [],
+    /**
+     * 
+     */
     style: "position: absolute; right: 50px; top: 20px; z-index: 100;",
     /** private: method[constructor]
      *  Construct the component.
      */
     constructor: function(config) {
         config.value = (config.value !== undefined) ? config.value : config.minValue;
-
+        this.addEvents(
+                "indoorlevelsliderready",
+                "indoorlevelchanged"
+                );
         sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
     },
     /** private: method[initComponent]
@@ -1780,16 +1787,14 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         if (this.map) {
             if (this.map instanceof GeoExt.MapPanel) {
                 this.map = this.map.map;
-            }            
+            }
         }
         if (this.aggressive === true) {
             this.on('change', this.changeIndoorLevel, this);
         } else {
             this.on('changecomplete', this.changeIndoorLevel, this);
         }
-//         this.on("beforedestroy", this.unbind, this);        
     },
-    
     /** private: method[onRender]
      *  Override onRender to set base css class.
      */
@@ -1797,38 +1802,77 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
         sdi.widgets.IndoorLevelSlider.superclass.onRender.apply(this, arguments);
         this.el.addClass(this.baseCls);
     },
-    
-    
-
-    /** private: method[changeLayerOpacity]
-     *  :param slider: :class:`GeoExt.LayerOpacitySlider`
+    /** private: method[changeIndoorLevel]
+     *  :param slider: :class:`sdi.widgets.IndoorLevelSlider`
      *  :param value: ``Number`` The slider value
      *
-     *  Updates the ``OpenLayers.Layer`` opacity value.
+     *  Updates the WMS filter on level and redraw the layers
      */
     changeIndoorLevel: function(slider, value) {
+        if (!value) {
+            value = this.getValue();
+        }
         this.setValue(value);
         var layers = this.map.layers;
-        var level = levels[value];
 
         for (var a = 0; a < layers.length; a++) {
-            if (layers[a].levelfield) {
-                var servertype = layers[a].servertype;
-                if (servertype == 1 || servertype == 3) {
-                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
-                } else if (servertype == 2 || servertype == 3) {
-                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-//                } else if (servertype == 3) {
-//                    //layers[a].mergeNewParams({'SDI_FILTER': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-//                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-//                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
-                }
-                layers[a].redraw(true);
-            }
+            this.redrawLayer(layers[a]);
         }
-        ;
-
-
+        this.fireEvent("indoorlevelchanged", this);
+        this.map.events.triggerEvent("indoorlevelchanged", value);
+    },
+    /**
+     * Change indoorlevel by the level code
+     * @param {type} slider
+     * @param {type} code
+     * @returns {undefined}
+     */
+    changeIndoorLevelByCode: function(slider, code) {
+        if (!code)
+            return;
+        slider.levels.forEach(function(level) {
+            if (level.code === code)
+                slider.changeIndoorLevel(slider, slider.levels.indexOf(level));
+        })
+    },
+    /**
+     * Updates the WMS filter on level and redraw the layer
+     * Event "layerredrawn" is sent with the concerned layer as parameter.
+     * 
+     * @param {openlayers layer} layer
+     */
+    redrawLayer: function(layer) {
+        var level = this.getLevel();
+        if (layer.isindoor && layer.isindoor == 1 && layer.levelfield) {
+            var servertype = layer.servertype;
+            if (servertype == 1 || servertype == 3) {
+                var cql_filter;
+                var new_filter =  layer.levelfield + "='" + level.code + "'";
+                if(typeof(layer.params.CQL_FILTER) != 'undefined'){
+                    cql_filter = layer.params.CQL_FILTER + " AND " + new_filter;                    
+                }else{
+                    cql_filter = new_filter;
+                }
+                layer.params.CQL_FILTER = cql_filter;
+            } 
+            if (servertype == 2 || servertype == 3) {
+                layer.mergeNewParams({'layerDefs': "{\"" + layer.params.LAYERS + "\":\"" + layer.levelfield + "='" + level.code + "'\"}"});
+            }
+            layer.redraw(true);
+            this.map.events.triggerEvent("layerredrawn", {layer: layer});
+        }
+    },
+    /**
+     * Get the object level for a specific value
+     * or, if not specified, the current value
+     * @param {int} value
+     * @returns {object} selected level
+     */
+    getLevel: function(value) {
+        if (!value) {
+            value = this.getValue();
+        }
+        return levels[value];
     },
     /** private: method[addToMapPanel]
      *  :param panel: :class:`GeoExt.MapPanel`
@@ -1852,7 +1896,11 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             afterrender: function() {
                 this.map = panel.map;
                 panel.map.indoorlevelslider = this;
-//                this.bind(panel.map);                
+                //TODO : to activate after test and remove from map.js
+                this.map.events.on({"addlayer": function(e) {
+                        this.indoorlevelslider.redrawLayer(e.layer);
+                    }});
+                this.map.indoorlevelslider.changeIndoorLevel(this);
             },
             scope: this
         });
@@ -1869,35 +1917,13 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             click: this.stopMouseEvents,
             scope: this
         });
-//        this.unbind();
     },
     /** private: method[stopMouseEvents]
      *  :param e: ``Object``
      */
     stopMouseEvents: function(e) {
         e.stopEvent();
-    },
-//    /** private: method[bind]
-//     *  :param map: ``OpenLayers.Map``
-//     */
-//    bind: function(map) {
-//        this.map = map;
-//        this.map.events.on({
-//            
-//            scope: this
-//        });
-//
-//    },
-//    /** private: method[unbind]
-//     */
-//    unbind: function() {
-//        if (this.map && this.map.events) {
-//            this.map.events.un({
-//                
-//                scope: this
-//            });
-//        }
-//    }
+    }
 });
 
 /** api: xtype = sdi_indoorlevelslider */
@@ -1995,4 +2021,246 @@ sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
         return this.compiledTemplate.apply(data);
     }
 });
+
+/**
+ * @version     4.3.x
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
+
+/**
+ * Define a couple WMS/WFS to allow features selection :
+ * - WMS displays features
+ * - WFS performs the selection
+ * Specific functionnalities "user perimeter" and "indoor level navigation" are
+ * handle by this class.
+ * Objects that have to be previously initialized in the calling context :
+ * - app : a gxp.viewer object
+ * Variables that have to be declared in the calling context :
+ * - selectLayer 
+ * - selectControl
+ * @param {type} item
+ * @returns {predefinedPerimeter}
+ */
+function predefinedPerimeter(item) {
+    this.item = item;
+}
+;
+
+/**
+ * Build and add to the current gxp viewer (app) layer and corresponding service source.
+ * Configure and add to the map a OpenLayers.Control.GetFeature.
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.init = function(userrestriction) {
+    this.userrestriction = userrestriction;
+    //Perimeter Layer WMS
+    this.initPerimeterLayer();
+
+    //Vector layer to handle selection
+    this.initSelectLayer();
+
+    //Map select control on WFS
+    this.initSelectControl();
+};
+
+/**
+ * 
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.initPerimeterLayer = function() {
+    var layerconfig = {type: "OpenLayers.Layer.WMS",
+        name: this.item.maplayername,
+        transparent: true,
+        isindoor: this.item.isindoor,
+        servertype: this.item.server,
+        levelfield: this.item.levelfield,
+        opacity: this.item.opacity,
+        source: this.item.source,
+        tiled: true,
+        title: "perimeterLayer",
+        iwidth: "360",
+        iheight: "360",
+        visibility: true};
+    var sourceconfig = {id: this.item.source,
+        ptype: "sdi_gxp_wmssource",
+        hidden: "true",
+        url: this.item.wmsurl
+    };
+
+    //Handle restriction on user specific perimeter
+    if (typeof (this.userrestriction) !== 'undefined') {
+        var exp = new OpenLayers.Format.WKT().write(this.userrestriction);
+        //Geoserver
+        if (this.item.server === "1") {
+            layerconfig.cql_filter = "INTERSECTS(" + this.item.featuretypefieldgeometry + "," + exp + ")";
+        }
+        /**
+         * ArcGIS : geometry filter has to be sent in a specific parametre 'geometry'
+         * describe here : http://resources.arcgis.com/en/help/rest/apiref/
+         * TODO : find a way to send geometry parameter in the GetMap request
+         * WMSSource doesn't send it if we just set it on the layerconfig like below
+         * 
+         * NB : see note in myperimeter.js, ArcGIS server can't filter WFS requests
+         * as expected, so ArcGIS server can't support user perimeter filter functionnality.
+         */
+//        if (this.item.server === "2") {
+//            var polygon = "{\"rings\" : [ [ [6.101531982421875,46.23451309019769], [6.1052656173706055,46.237006565073216], [6.112003326416016,46.235641104770565], [6.109728813171387,46.232613223769555], [6.104021072387695,46.2313960872759] ,[6.101531982421875,46.23451309019769]],  ],\"spatialReference\" : {\"wkid\" : 4326}}";
+//            layerconfig.geometry = polygon;
+//        }
+    }
+
+    var queue = app.addExtraLayer(sourceconfig, layerconfig);
+    gxp.util.dispatch(queue, app.reactivate, app);
+};
+
+/**
+ * Initialize the vector layer in which selected features will be drawn 
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.initSelectLayer = function() {
+    //Selection  Layer
+    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+    app.mapPanel.map.addLayer(selectLayer);
+
+    //Keep selection layer on top
+    app.mapPanel.map.events.register('addlayer', this, function() {
+        if (app.mapPanel.map.getLayersByName("Selection").length > 0) {
+            app.mapPanel.map.setLayerIndex(selectLayer, app.mapPanel.map.getNumLayers());
+        }
+    });
+};
+
+/**
+ * Initialize the OpenLayers map control GetFeature with the WFS parameters
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.initSelectControl = function() {
+    selectControl = new OpenLayers.Control.GetFeature({
+        protocol: new OpenLayers.Protocol.WFS({
+            version: "1.0.0",
+            url: this.item.wfsurl,
+            srsName: app.mapPanel.map.projection,
+            featureType: this.item.featuretypename,
+            featurePrefix: this.item.prefix,
+            featureNS: this.item.namespace,
+            geometryName: this.item.featuretypefieldgeometry
+        }),
+        box: true,
+        click: true,
+        multipleKey: "ctrlKey",
+        clickout: true
+    });
+
+    //Build the default filter : merge existing filters on user perimeter and indoor level
+    selectControl.protocol.defaultFilter = this.getSelectControlFilter();
+
+    //In case indoor level navigation is active on the map
+    if (this.item.featuretypefieldlevel && typeof (app.mapPanel.map.indoorlevelslider) !== 'undefined') {
+        //Update indoor level filter at each IndoorLevelSlider event
+        app.mapPanel.map.events.register("indoorlevelchanged", this, function() {
+            if (selectLayer)
+                selectLayer.removeAllFeatures();
+            if (selectControl && selectControl.protocol) {
+                selectControl.protocol.defaultFilter = this.getSelectControlFilter();
+            }
+        });
+    }
+    app.mapPanel.map.addControl(selectControl);
+    selectControl.activate();
+};
+
+/**
+ * Return an OpenLayers Filter corresponding to indoor level value
+ * @returns {OpenLayers.Filter.Comparison}
+ */
+predefinedPerimeter.prototype.getIndoorLevelFilter = function() {
+    selectControl.fieldlevel = this.item.prefix + ':' + this.item.featuretypefieldlevel;
+    return new OpenLayers.Filter.Comparison({
+        type: OpenLayers.Filter.Comparison.EQUAL_TO,
+        property: selectControl.fieldlevel,
+        value: app.mapPanel.map.indoorlevelslider.getLevel().code
+    });
+};
+
+/**
+ * Return the specific user perimeter filter if restriction has to be applied
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.getUserPerimeterFilter = function() {
+    var g = this.userrestriction.geometry;
+    return  new OpenLayers.Filter.Spatial({
+        type: OpenLayers.Filter.Spatial.INTERSECTS,
+        value: g
+    });
+};
+
+/**
+ * Return a complete filter to apply on the GetFeature control.
+ * This feature merge user perimeter filter and indoor level navigation filter.
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.getSelectControlFilter = function() {
+    var merged, userfilter, levelfilter;
+
+    //If userperimeter activated, handle restriction with user specific perimeter
+    if (typeof (this.userrestriction) !== 'undefined') {
+        userfilter = this.getUserPerimeterFilter();
+    }
+
+    //In case indoor level navigation is active on the map, handle filter on indoor level value
+    if (this.item.featuretypefieldlevel && typeof (app.mapPanel.map.indoorlevelslider) !== 'undefined') {
+        levelfilter = this.getIndoorLevelFilter();
+    }
+
+    //Merged, if needed, filters
+    if (levelfilter && userfilter) {
+        merged = new OpenLayers.Filter.Logical({
+            type: OpenLayers.Filter.Logical.AND,
+            filters: [levelfilter, userfilter]
+        });
+    } else {
+        merged = levelfilter || userfilter || undefined;
+    }
+
+    return merged;
+};
+
+/**
+ * Define the function to call when a feature is selected on the map
+ * @param {type} f
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.setListenerFeatureSelected = function(f) {
+    selectControl.events.register("featureselected", this, f);
+};
+
+/**
+ * Define the function to call when a feature is unselected from the map
+ * @param {type} f
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.setListenerFeatureUnSelected = function(f) {
+    selectControl.events.register("featureunselected", this, f);
+};
+
+/**
+ * Define the function to call when indoor level changed
+ * @param {type} f
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.setListenerIndoorLevelChanged = function(f) {
+    app.mapPanel.map.events.register("indoorlevelchanged", this, f);
+};
+
+/**
+ * Define the function to call after a feature was added to the map.
+ * @param {type} f
+ * @returns {undefined}
+ */
+predefinedPerimeter.prototype.setListenerFeatureAdded = function(f) {
+    selectLayer.events.register("featureadded", selectLayer, f);
+};
 

@@ -1,5 +1,3 @@
-
-
 ALTER TABLE [#__sdi_order_diffusion] ADD [storage_id] [bigint] NULL;
 ALTER TABLE [#__sdi_order_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk4] FOREIGN KEY([storage_id])
 REFERENCES [#__sdi_sys_extractstorage] ([id])
@@ -45,3 +43,8 @@ ALTER TABLE [#__sdi_organism] ALTER COLUMN [internal_free] [smallint] NULL  ;
 ALTER TABLE [#__sdi_organism] ALTER COLUMN [fixed_fee_ti] [decimal](6,2) NULL  ;
 ALTER TABLE [#__sdi_organism] ALTER COLUMN [data_free_fixed_fee] [smallint] NULL  ;
 ALTER TABLE [#__sdi_organism] ALTER COLUMN [selectable_as_thirdparty] [smallint] NULL ;
+
+ALTER TABLE [#__sdi_perimeter] ADD  [maplayer_id] [bigint] NULL;
+ALTER TABLE [#__sdi_perimeter] ADD  [featuretypefieldlevel] [nvarchar](255) NULL;
+
+ALTER TABLE [#__sdi_order] ADD [level] [nvarchar](100) NULL;
