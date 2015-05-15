@@ -73,7 +73,9 @@ if ($this->item && $this->item->extractions) :
                     <hr>
                     <div class="row-fluid" >
                         <div class="map-recap span6" >
-                            <div id="minimap" class="minimap" style="height:250px"></div>                   
+                            <a href="#modal-perimeter" style="margin-bottom: 10px;" data-toggle="modal" >
+                                <div id="minimap" class="minimap" style="height:250px"></div>      
+                            </a>
                         </div>
                         <div  class="value-recap span6" >
                             <div id="perimeter-buffer" class="row-fluid hide" >
