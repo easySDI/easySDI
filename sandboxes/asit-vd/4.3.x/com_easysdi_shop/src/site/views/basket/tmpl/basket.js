@@ -1,16 +1,81 @@
-var map, perimeterLayer, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider;
+var map, perimeterLayer, selectLayer, polygonLayer, rectangleLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider, freePerimeterTool,customStyleMap;
 
 //Init the recapitulation map (map without control)
 function initMiniMap() {
+    initStyleMap();
     minimap = new OpenLayers.Map({div: 'minimap', controls: []});
     miniBaseLayer = app.mapPanel.map.layers[1].clone();  
     miniBaseLayer.events.register("loadend", miniBaseLayer, initialization);
     minimap.addLayer(miniBaseLayer);
     minimap.setBaseLayer(miniBaseLayer);
     minimap.zoomToExtent(app.mapPanel.map.getExtent());
-    miniLayer = new OpenLayers.Layer.Vector("miniLayer");
+    miniLayer = new OpenLayers.Layer.Vector("miniLayer",{styleMap: customStyleMap});
     minimap.addLayer(miniLayer);
     miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
+}
+
+function initStyleMap(){
+  customStyleMap = new OpenLayers.StyleMap({
+            "default": new OpenLayers.Style({
+                fillColor: "${getFillColor}",
+                fillOpacity: "${getFillOpacity}",
+                pointRadius: mapPointRadius,
+                strokeColor: "${getStrokeColor}",
+                strokeDashstyle: "solid",
+                strokeLinecap: "round",
+                strokeOpacity: 1,
+                strokeWidth: "${getStrokeWidth}",
+                graphicName: "circle"
+            }, {
+                context: {
+                    getStrokeColor: function (feature) {
+                        if (feature.geometry != null)
+                            return feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point" ? mapStrokeColor : mapStrokeColor;
+                        return mapStrokeColor;
+                    },
+                    getStrokeWidth: function (feature) {
+                        if (feature.geometry != null)
+                            return feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point" ? mapPointStrokeWidth : mapStrokeWidth;
+                        return mapPointStrokeWidth;
+                    },
+                    getFillColor: function (feature) {
+                        if (feature.geometry != null)
+                            return feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point" ? "#FFFFFF" : mapFillColor;
+                        return "#FFFFFF";
+                    },
+                    getFillOpacity: function (feature) {
+                        if (feature.geometry != null)
+                            return feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point" ? 1 : mapFillOpacity;
+                        return mapFillOpacity;
+                    }
+                }
+            }),
+            "transform": new OpenLayers.Style({
+                cursor: "${role}",
+                pointRadius: mapPointRadius,
+                fillColor: "#FFFFFF",
+                fillOpacity: 1,
+                strokeWidth: mapPointStrokeWidth,
+                strokeColor: mapStrokeColor
+            }, {
+                context: {
+                    getDisplay: function (feature) {
+                        // hide the resize handle at the south-east corner
+                        return feature.attributes.role === "se-resize" ? "none" : "";
+                    }
+                }
+            }),
+            "temporary": {
+                strokeColor: mapStrokeColor,
+                fillColor: mapFillColor,
+                fillOpacity: mapFillOpacity,
+                strokeWidth: mapStrokeWidth},
+            "select": {
+                strokeColor: mapStrokeColor,
+                fillColor: mapFillColor,
+                fillOpacity: mapFillOpacity,
+                strokeWidth: mapStrokeWidth}
+        });  
 }
 
 //Call after a feature was selected or drawn in the map
