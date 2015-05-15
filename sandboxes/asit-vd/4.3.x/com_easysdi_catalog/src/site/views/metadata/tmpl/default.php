@@ -372,8 +372,8 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="button" class="btn btn-primary" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
                 </div>
             </div>
         </div>
