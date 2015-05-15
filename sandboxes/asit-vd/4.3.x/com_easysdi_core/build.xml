@@ -201,9 +201,9 @@
         
         <concat destfile="${core.src.out.dir}/administrator/libraries/geoext/lib/geoextcon.js" fixlastline="yes" overwrite="true">
             <filelist dir="${core.src.out.dir}/administrator/libraries/geoext/lib" 
-                      files="GeoExt/data/AttributeReader.js,
-            GeoExt/data/AttributeStore.js,
-            GeoExt/data/FeatureRecord.js,
+                      files="GeoExt/data/AttributeReader.js, 
+            GeoExt/data/AttributeStore.js, 
+            GeoExt/data/FeatureRecord.js, 
             GeoExt/data/FeatureReader.js,
             GeoExt/data/FeatureStore.js,
             GeoExt/data/LayerRecord.js,
@@ -220,7 +220,7 @@
             GeoExt/data/WMSDescribeLayerReader.js,
             GeoExt/data/WMSDescribeLayerStore.js,
             GeoExt/data/WMCReader.js,
-            GeoExt/data/CSWRecordsReader.js,
+            GeoExt/data/CSWRecordsReader.js,            
             GeoExt/widgets/Action.js,
             GeoExt/data/ProtocolProxy.js,
             GeoExt/widgets/FeatureRenderer.js,
@@ -269,7 +269,7 @@
     </target>
     
     <target name="geoext-minify">
-        <echo>Minify geoext</echo>
+        <echo>Minify geoext</echo>        
         
         <jsmin srcfile="${core.src.out.dir}/administrator/libraries/geoext/lib/geoextcon.js" suffix="true"/>
     </target>
@@ -426,7 +426,8 @@
                         sdi/plugins/LayerOrder.js,
                         gxp/plugins/OLSource.js,
                         sdi/widgets/IndoorLevelSlider.js,
-                        sdi/widgets/IndoorLevelSliderTip.js" />
+                        sdi/widgets/IndoorLevelSliderTip.js,
+                        map/predefinedperimeter.js" />
         </concat>
     </target>
 	

@@ -38,3 +38,5 @@ UPDATE  #__sdi_language SET datatable='Chinese' WHERE code='zh-CN';
 
 ALTER TABLE #__sdi_perimeter ADD COLUMN maplayer_id integer NULL;
 ALTER TABLE #__sdi_perimeter ADD COLUMN featuretypefieldlevel character varying(255) NULL;
+
+ALTER TABLE #__sdi_order ADD COLUMN "level" VARCHAR(100) NULL;
