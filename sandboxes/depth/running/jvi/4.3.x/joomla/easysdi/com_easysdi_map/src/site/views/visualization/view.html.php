@@ -51,7 +51,7 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
         }
 
         if (!empty($this->item->id)) {
-            if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::viewmanager) || !$this->user->isOrganismManager($this->item->version_id, 'version')) {
+            if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::viewmanager) && !$this->user->isOrganismManager($this->item->version_id, 'version')) {
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                 JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
