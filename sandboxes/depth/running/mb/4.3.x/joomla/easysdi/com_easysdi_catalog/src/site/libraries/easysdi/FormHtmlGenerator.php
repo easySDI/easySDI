@@ -1011,17 +1011,17 @@ class FormHtmlGenerator {
             $input_append = $this->formHtml->createElement('div');
             $input_append->setAttribute('class', 'input-append file-controls');
             
-            $attach_button = $this->formHtml->createElement('button', 'Attach file');
+            $attach_button = $this->formHtml->createElement('button', JText::_('COM_EASYSDI_CATALOG_FILE_ATTACH'));
             $attach_button->setAttribute('class', 'btn attach-btn');
             $attach_button->setAttribute('type', 'button');
             $attach_button->setAttribute('rendertypeId', $rendertypeId);
             
-            $preview_button = $this->formHtml->createElement('button','Preview');
+            $preview_button = $this->formHtml->createElement('button',  JText::_('COM_EASYSDI_CATALOG_FILE_PREVIEW'));
             $preview_button->setAttribute('class', 'btn btn-preview');
             $preview_button->setAttribute('type', 'button');
             $preview_button->setAttribute('data-target', $field->id);
             
-            $delete_button = $this->formHtml->createElement('button', 'Delete');
+            $delete_button = $this->formHtml->createElement('button', JText::_('COM_EASYSDI_CATALOG_FILE_DELETE'));
             $delete_button->setAttribute('class', 'btn btn-danger btn-delete');
             $delete_button->setAttribute('type', 'button');
             $delete_button->setAttribute('data-target', $field->id);

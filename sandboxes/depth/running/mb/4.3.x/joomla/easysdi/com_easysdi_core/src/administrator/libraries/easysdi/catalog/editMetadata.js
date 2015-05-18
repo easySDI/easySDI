@@ -427,15 +427,15 @@ js(document).on('blur', '#fileUrl', function () {
             cache: false
         }).done(function (data) {
             if(data.code === 200){
-                js('#fileUrlValidate').removeClass('alert alert-error').addClass('alert alert-success').html('Adresse valide!').show();
+                js('#fileUrlValidate').removeClass('alert alert-error').addClass('alert alert-success').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_VALIDATE_OK')).show();
                 js('#file_url').val(js('#fileUrl').val());
                 js('#fileModal .btn-success').prop( "disabled", false );
                 resetFileUploadTab();
             }else{
-                js('#fileUrlValidate').removeClass('alert alert-success').addClass('alert alert-error').html('Adresse invalide!').show();
+                js('#fileUrlValidate').removeClass('alert alert-success').addClass('alert alert-error').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_VALIDATE_KO')).show();
             }
         }).fail(function () {
-            js('#fileUrlValidate').removeClass('alert alert-success').addClass('alert alert-error').html('Impossible de vérifier l\'adresse.').show();
+            js('#fileUrlValidate').removeClass('alert alert-success').addClass('alert alert-error').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_VALIDATE_UNABLE')).show();
         });
     }
 });
@@ -455,7 +455,7 @@ js(function(){
         done: function(e, data){
             var result = data.result;
             if(result.status === 'success'){
-                js('#fileUploadValidate').removeClass('alert alert-error').addClass('alert alert-success').html('Upload succeed!').show();
+                js('#fileUploadValidate').removeClass('alert alert-error').addClass('alert alert-success').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_UPLOAD_SUCCES')).show();
                 js('#fileUploadPreview').show();
                 js('#fileUploadPreview a').attr('href',result.files.fileUpload.url);
                 js('#fileUploadPreview img').attr('src',result.files.fileUpload.thumbnail);
@@ -1010,7 +1010,7 @@ function removeHidden() {
 
 function disableVisible() {
 
-    js(':input[readonly], .scope-visible :input').prop('disabled', true).removeAttr('readonly').removeClass('validate-sdidate validate-sdidatetime');
+    js(':input[readonly][class*="validate-sdidate"], .scope-visible :input[class*="validate-sdidate"]').prop('disabled', true).removeAttr('readonly').removeClass('validate-sdidate validate-sdidatetime');
     js('fieldset.scope-visible').prev('.action a').remove();
     js('fieldset.scope-visible .remove-btn, fieldset.scope-visible .add-btn, fieldset.scope-visible .attribute-add-btn').remove();
     js('.scope-visible select').trigger("liszt:updated");

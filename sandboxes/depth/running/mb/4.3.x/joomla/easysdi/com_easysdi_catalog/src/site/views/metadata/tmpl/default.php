@@ -63,6 +63,11 @@ JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
 JText::script('COM_EASYSDI_CATALOG_OPEN_ALL');
 JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
 
+JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_OK');
+JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_KO');
+JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_UNABLE');
+JText::script('COM_EASYSDI_CATALOG_FILE_UPLOAD_SUCCES');
+
 /* bootbox language */
 $ldao = new SdiLanguageDao();
 $user = new sdiUser();
@@ -390,7 +395,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="fileModalLabel">Attach file</h4>
+                    <h4 class="modal-title" id="fileModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_TITLE') ; ?></h4>
                 </div>
                 <form class="form-inline">
                     <div class="modal-body">
@@ -398,15 +403,15 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                         <input type="hidden" id="file_url" value=""/>
                         <ul id="fileTabs" class="nav nav-tabs">
                             <li class="active upload">
-                                <a href="#upload" data-toggle="tab">Upload</a>
+                                <a href="#upload" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_UPLOAD_TAB') ; ?></a>
                             </li>
-                            <li class="url"><a href="#url" data-toggle="tab">Url</a></li>
+                            <li class="url"><a href="#url" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_URL_TAB') ; ?></a></li>
                         </ul>
                         <div id="fileTabsContent" class="tab-content">
                             <div class="tab-pane fade active in upload" id="upload">
                                 <div id="fileUploadPreview" style="display: none"><a href="#" target="_blank"><img src=""/></a></div>
                                 <div class="btn btn-info fileinput-button">
-                                    <span>Choisissez un fichier</span>
+                                    <span><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_CHOOSE_FILE') ; ?></span>
                                     <input type="file" name="fileUpload" id="fileUpload" data-url="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=ajax.uploadFile') ; ?>"/> 
                                 </div>
                                 
@@ -424,11 +429,11 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                 
                                     <div class="control-group">
                                         <div class="control-label">
-                                            <label id="fileUrl-lbl" for="fileUrl" class="">Indiquez l'adresse du fichier</label>
+                                            <label id="fileUrl-lbl" for="fileUrl" class=""><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_URL_LABEL') ; ?></label>
                                         </div>
                                         <div class="controls">
                                             <input type="text" name="fileUrl" id="fileUrl"/>
-                                            <button type="button" class="btn btn-info">Valider</button>
+                                            <button type="button" class="btn btn-info"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_VALIDATE') ; ?></button>
                                         </div>
                                     </div>
                                 <div id="fileUrlValidate">
@@ -440,7 +445,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                     </div>
                 </form>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Terminer</button>
+                    <button type="button" class="btn btn-success"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_FINISH') ; ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>

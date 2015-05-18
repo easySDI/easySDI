@@ -39,7 +39,7 @@ class Easysdi_filedHelper {
                 foreach ($files as $key => $file) {
                     if (!$this->isAllowedMime($file['type'], $allowed_mime, $exclude_mime)) {
                         $this->rollback($response);
-                        throw new Exception('Type de fichié non supporté. ' . $file['name']);
+                        throw new Exception(JText::sprintf('COM_EASYSDI_CATALOG_FILE_ERROR_NOT_SUPPORTED',$file['name']));
                     }
 
                     $full_name = $this->addPrefixSuffix($file['name'], $add_prefix, $prefix, $add_suffix, $suffix);
@@ -60,12 +60,12 @@ class Easysdi_filedHelper {
                     }
                 }
             } else {
-                throw new Exception('Aucun fichier à télécharger.');
+                throw new Exception(JText::_('COM_EASYSDI_CATALOG_FILE_ERROR_NO_FILE'));
             }
 
             return $response;
         } catch (Exception $exc) {
-            throw new Exception('Echec de l\'upload.', 0, $exc);
+            throw new Exception(JText::_('COM_EASYSDI_CATALOG_FILE_ERROR_FAIL'), 0, $exc);
         }
     }
 
@@ -78,7 +78,7 @@ class Easysdi_filedHelper {
     private function rollback($files) {
         foreach ($files as $file) {
             if (!unlink($file['target_name'])) {
-                throw new Exception('Impossible d\'effectuer un rollback sur le fichier ' . $file['target_name']);
+                throw new Exception(JText::sprintf('COM_EASYSDI_CATALOG_FILE_ERROR_ROLLBACK',$file['target_name']) );
             }
         }
     }
@@ -235,7 +235,7 @@ class Easysdi_filedHelper {
         if ($success) {
             return $thumb_root_url . '/' . $info['basename'];
         } else {
-            throw new Exception('Echec de la création de la mignature.');
+            throw new Exception(JText::_('COM_EASYSDI_CATALOG_FILE_ERROR_THUMB_CREATE'));
         }
     }
 
@@ -247,7 +247,7 @@ class Easysdi_filedHelper {
         if (copy($mime_icon_folder . '/' . $info['extension'] . '-icon-128x128.png', $thumb_path . '/' . $info['basename'])) {
             return $thumb_root_url . '/' . $info['basename'];
         } else {
-            throw new Exception('Impossible de copier la mignature.');
+            throw new Exception(JText::_('COM_EASYSDI_CATALOG_FILE_ERROR_THUMB_COPY'));
         }
     }
 

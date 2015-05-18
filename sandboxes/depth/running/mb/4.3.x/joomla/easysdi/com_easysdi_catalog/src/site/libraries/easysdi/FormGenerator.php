@@ -1429,7 +1429,10 @@ class FormGenerator {
 
         $field = $this->form->createElement('field');
 
-        $field->setAttribute('type', 'textreadonly');
+        $validator = $this->getValidatorClass($attribute);
+
+        $field->setAttribute('class', 'required ' . $validator);
+        $field->setAttribute('type', 'text');
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
