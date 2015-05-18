@@ -313,7 +313,8 @@ CREATE TABLE #__sdi_catalog (
     cswfilter text,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL,
-    scrolltoresults SMALLINT DEFAULT 1 NOT NULL 
+    scrolltoresults SMALLINT DEFAULT 1 NOT NULL,
+    contextualsearchresultpaginationnumber integer DEFAULT 0
 );
 
 
@@ -746,6 +747,10 @@ CREATE TABLE #__sdi_order (
     buffer double precision,
     surface double precision,
     remark character varying(500),
+    mandate_ref VARCHAR(75) NULL,
+    mandate_contact VARCHAR(75) NULL,
+    mandate_email VARCHAR(100) NULL,
+    "level" VARCHAR(100) NULL,
     sent timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     access integer DEFAULT 1 NOT NULL,
@@ -878,6 +883,8 @@ CREATE TABLE #__sdi_perimeter (
     featuretypefielddescription character varying(255),
     featuretypefieldgeometry character varying(255),
     featuretypefieldresource character varying(255),
+    featuretypefieldlevel character varying(255),
+    maplayer_id bigint,
     wmsservice_id bigint,
     wmsservicetype_id bigint,
     layername character varying(255),
@@ -1123,6 +1130,7 @@ CREATE TABLE #__sdi_relation (
     editorrelationscope_id bigint,
     childresourcetype_id bigint,
     childtype_id bigint,
+    accessscope_limitation integer DEFAULT 0,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );

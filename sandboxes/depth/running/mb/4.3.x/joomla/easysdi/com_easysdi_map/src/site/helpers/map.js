@@ -39,10 +39,6 @@ Ext.onReady(function() {
                 window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }
         }
-        if (data.level && cleared === "false") {
-            //Init the indoor layer with the default level value
-            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this, window.appname.mapPanel.map.indoorlevelslider.value);
-        }
         loadingMask.hide();
     });
 
@@ -62,6 +58,7 @@ Ext.onReady(function() {
     });
 
 });
+
 
 function getMapConfig() {
     var config = {};

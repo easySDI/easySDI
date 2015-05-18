@@ -106,12 +106,14 @@ class Easysdi_mapModelVisualization extends JModelForm {
         $db = JFactory::getDbo();
         $sdiUser = sdiFactory::getSdiUser();
 
-        $cls = '(ml.accessscope_id = 1 OR ((ml.accessscope_id = 3) AND (' . (int)$sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
+        $cls = '(ml.accessscope_id = 1 OR ((ml.accessscope_id = 4) AND (' . (int)$sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
         $organisms = $sdiUser->getMemberOrganisms();
-        $cls .= 'OR ((ml.accessscope_id = 2) AND (';
+        $cls .= 'OR ((ml.accessscope_id = 3) AND (';
         $cls .= $organisms[0]->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = ml.guid)';
         $cls .= '))';
         $cls .= ')';
+        
+        //TODO add accessscope for category organism
 
         if (!empty($visualization_id)):
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.id <> ' . (int)$visualization_id . ' AND v.maplayer_id IS NOT NULL)';

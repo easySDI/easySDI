@@ -1,8 +1,7 @@
-
-
 ALTER TABLE #__sdi_order_diffusion ADD storage_id bigint NULL AFTER completed;
 ALTER TABLE ONLY #__sdi_order_diffusion
     ADD CONSTRAINT #__sdi_order_diffusion_fk4 FOREIGN KEY (storage_id) REFERENCES #__sdi_sys_extractstorage(id) MATCH FULL;
+
 ALTER TABLE #__sdi_order_diffusion ADD displayName character varying(75) NULL AFTER size;
 
 UPDATE  #__sdi_language SET datatable='Arabic' WHERE code='ar-DZ';
@@ -36,3 +35,8 @@ UPDATE  #__sdi_language SET datatable='Swedish' WHERE code='sv-SE';
 UPDATE  #__sdi_language SET datatable='Turkish' WHERE code='tr-TR';
 UPDATE  #__sdi_language SET datatable='Ukranian' WHERE code='uk-UA';
 UPDATE  #__sdi_language SET datatable='Chinese' WHERE code='zh-CN';
+
+ALTER TABLE #__sdi_perimeter ADD COLUMN maplayer_id integer NULL;
+ALTER TABLE #__sdi_perimeter ADD COLUMN featuretypefieldlevel character varying(255) NULL;
+
+ALTER TABLE #__sdi_order ADD COLUMN "level" VARCHAR(100) NULL;

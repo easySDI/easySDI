@@ -16,6 +16,13 @@ JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
+$document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
+
 
 ?>
 <?php if ($this->item) : ?> 
@@ -186,12 +193,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                     </tbody>
                                 </table>
                             </div>
-
                             <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
-
-                            
-
-
                         </div>
                     </div>
                 </div>
@@ -229,11 +231,11 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
         </form>
     </div>
     <script>
-            Ext.onReady(function() {
-                window.appname.on("ready", function() {
-                    loadPerimeter(false);                    
-                })
+        Ext.onReady(function() {
+            window.appname.on("ready", function() {
+                loadPerimeter(false);
             })
+        })
     </script>
     <script type="text/javascript">
         jQuery(document).ready(function(){
