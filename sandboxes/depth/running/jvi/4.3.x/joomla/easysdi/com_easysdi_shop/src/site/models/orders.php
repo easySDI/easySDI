@@ -150,8 +150,7 @@ class Easysdi_shopModelOrders extends JModelList {
         }
         
         if($this->getState('layout.validation')){
-            $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
-                    ->where('uro.user_id='.(int)$user->id)
+            $query->innerJoin('#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
                     ->where('uro.role_id IN ('.sdiUser::validationmanager.','.sdiUser::organismmanager.')');
             
             $tpOrganism = $this->getState('filter.organism');
