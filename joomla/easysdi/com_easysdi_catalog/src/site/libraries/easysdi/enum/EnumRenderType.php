@@ -31,6 +31,15 @@ class EnumRendertype {
     /** Value: 8
      * @var int **/
     public static $GEMET = 8;
+     /** Value: 9
+     * @var int **/
+    public static $UPLOAD = 9;
+     /** Value: 10
+     * @var int **/
+    public static $URL = 10;
+     /** Value: 11
+     * @var int **/
+    public static $UPLOADANDURL = 11;
     /** Value: 1000
      * @var int **/
     public static $HIDDEN = 1000;
