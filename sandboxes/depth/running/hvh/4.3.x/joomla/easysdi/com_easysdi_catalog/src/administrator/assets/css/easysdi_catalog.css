@@ -209,4 +209,20 @@ svg {
     margin-left: 3px;
 }
 
+.bar {
+    height: 18px;
+    background-color: #428bca;
+    border-radius: 4px;
+}
 
+#fileUploadPreview{
+    float:right;
+}
+
+#fileUploadValidate{
+    margin-right: 125px;
+}
+
+.file-controls .btn-preview, .file-controls .btn-delete{
+    display: none;
+}
