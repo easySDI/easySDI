@@ -363,7 +363,7 @@ var buildMetadataDropDown = function(resource){
     if( 
         (resource.rights.metadataEditor && metadata.state===metadataState.INPROGRESS)
         ||
-        (resource.rights.metadataResponsible && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED])===true)
+        (resource.rights.metadataResponsible && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED])>-1)
         || resource.rights.organismManager
     ){
         section.push(buildDropDownItem(resource, 'metadata.edit'));
