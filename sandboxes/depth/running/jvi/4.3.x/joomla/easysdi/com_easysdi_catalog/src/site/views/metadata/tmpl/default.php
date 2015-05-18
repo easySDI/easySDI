@@ -163,7 +163,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
 
         <div>
 
-            <?php if($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor)):echo $this->getActionToolbar();endif; ?>
+            <?php if($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();endif; ?>
 
             <?php echo JHtml::_('form.token'); ?>
         </div>
