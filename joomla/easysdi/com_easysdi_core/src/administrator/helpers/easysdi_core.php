@@ -135,19 +135,5 @@ class Easysdi_coreHelper {
 
         return $all_versions;
     }
-    
-    public function getOrganisms(){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-                ->select('o.id, o.name')
-                ->from('#__sdi_organism o')
-                ->order('o.name');
-        $db->setQuery($query);
-        $organisms = $db->loadObjectList();
-        
-        array_unshift($organisms, (object)array('id' => '', 'name' => ''));
-        
-        return $organisms;
-    }
 
 }

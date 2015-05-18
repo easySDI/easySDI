@@ -104,7 +104,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                                 else :
                                                                                     echo $value->name;
                                                                                 endif;
-                                                                                if (next($property->values)==true) echo', ';
+                                                                                echo', ';
                                                                             endforeach;
                                                                             ?>
                                                                         </div>
@@ -218,7 +218,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
     <script>
         Ext.onReady(function() {
-            window.appname.on("ready", function() {
+            app.on("ready", function() {
                 loadPerimeter(true);                
             })
         })

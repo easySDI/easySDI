@@ -7,15 +7,15 @@ function loadPerimeter(withdisplay) {
 }
 
 function loadPolygonPerimeter(withdisplay) {
-    var polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
-    window.appname.mapPanel.map.addLayers([polygonLayer]);
+    var polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+    app.mapPanel.map.addLayers([polygonLayer]);
     var wkt = jQuery('#jform_perimeter').val();
     var features = new OpenLayers.Format.WKT().read(wkt);
     if (features instanceof Array) {
         for (var i = 0; i < features.length; i++) {
             var geometry = features[i].geometry.transform(
                     new OpenLayers.Projection("EPSG:4326"),
-                    new OpenLayers.Projection(window.appname.mapPanel.map.projection)
+                    new OpenLayers.Projection(app.mapPanel.map.projection)
                     );
             var reprojfeature = new OpenLayers.Feature.Vector(geometry);
             polygonLayer.addFeatures([reprojfeature]);  
@@ -24,12 +24,12 @@ function loadPolygonPerimeter(withdisplay) {
     else {
         var geometry = features.geometry.transform(
                 new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection(window.appname.mapPanel.map.projection)
+                new OpenLayers.Projection(app.mapPanel.map.projection)
                 );
         var reprojfeature = new OpenLayers.Feature.Vector(geometry);
         polygonLayer.addFeatures([reprojfeature]);   
     }
-    window.appname.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
     if(withdisplay === true){
         jQuery('#perimeter-recap').append('<div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;">');
         jQuery('#perimeter-recap-details').append("<div>" + wkt + "</div>");
@@ -76,10 +76,10 @@ function loadWfsPerimeter() {
     });
 
 
-    window.appname.mapPanel.map.addLayer(selectLayer);
+    app.mapPanel.map.addLayer(selectLayer);
     selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
 }
 
 var listenerFeatureAddedToZoom = function(e) {
-    window.appname.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
+    app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
 };

@@ -107,9 +107,6 @@ public interface OWSIExceptionReport {
     public static final String TEXT_EXCEPTION_ERROR							= "Error sending exception.";
 
     public static final String TEXT_ERROR_HHTP_401_UNAUTHORIZED				= "Error sending exception.";
-    
-    public static final String TEXT_NO_POLICY				= "No policy found for user.";
-    
 
     public void sendExceptionReport (HttpServletRequest request, HttpServletResponse response, String errorMessage, String code, String locator, int responseCode) throws IOException;
     public StringBuffer generateExceptionReport (HttpServletRequest request, HttpServletResponse response, String errorMessage, String code, String locator, int responseCode) throws IOException;

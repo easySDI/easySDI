@@ -1,3 +1,7 @@
+<?php
+ $iframewidth = JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth');
+ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight');
+?>
 <script type="text/javascript">
 js = jQuery.noConflict();
 
@@ -10,10 +14,10 @@ var Links = {
         metadata: {
             preview: {
                 class: 'modal',
-                href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
+                href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor&type=complete', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
                 property: 'metadata',
                 html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')?>",
-                rel: "{handler:'iframe',size:{x:600,y:700}}"
+                rel: "{handler:'iframe',size:{x:<?php echo $iframewidth ; ?>,y:<?php echo $iframeheight ; ?>}}"
             },
             edit: {
                 href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=#0#')?>',
@@ -181,14 +185,12 @@ var Version = (function(){
 
 var Resource = (function(){
     
-    function Resource(id, name, type, typeAlias, accessscope){
+    function Resource(id, name, type){
         var versions = [];
         
         this.id = id;
         this.name = name;
         this.type = type;
-        this.typeAlias = typeAlias;
-        this.accessscope = accessscope;
         this.rights = {
             metadataEditor:         false,
             metadataResponsible:    false,
@@ -249,7 +251,7 @@ var Resource = (function(){
     $synchronizeenabled = $params->get('synchronizeenabled',1);
     
     foreach ($this->items as $item) : ?>
-    var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>', '<?php echo $item->resourcetype_alias; ?>', '<?php echo $item->accessscope; ?>');
+    var resource = new Resource(<?php echo $item->id;?>, '<?php echo addslashes($item->name); ?>', '<?php echo $item->resourcetype_name; ?>');
     <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>resource.rights.metadataEditor = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>resource.rights.metadataResponsible = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>resource.rights.resourceManager = 1;<?php endif; ?>
@@ -420,8 +422,7 @@ var buildManagementDropDown = function(resource){
         if(resource.support.application)
             section.push(buildDropDownItem(resource, 'management.application'));
         
-        if(section.length)
-            dropdown.push(section);
+        dropdown.push(section);
     }
     
     /* SECOND SECTION */
@@ -884,31 +885,8 @@ js(document).ready(function(){
             buildStatusCell(resource);
             
             buildActionsCell(resource);
-            
-            js('#'+resource.id+'_resource').addClass('resourcetype_'+resource.typeAlias).addClass('accessscope_'+resource.accessscope).show();
         }
     });
-    
-    // Set events
-    js(document).on('click', '#search-reset', resetSearch);
-    
-    js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', function(){showDeleteModal(this);return false;});
-    
-    js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
-    
-    js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
-    
-    var ordering = js('#resources_ordering').html();
-    
-    js(document).on('click', 'th#resources_name', function(){
-        js('#filter_ordering').val( ordering === 'ASC' ? 'DESC' : 'ASC');
-        js('form#criterias').submit();
-    }).on('mouseover', 'th#resources_name', function(){js(this).css('cursor', 'pointer')});
-    
-    js('#resources_ordering').html('&nbsp;').css('background', js('#resources_ordering').css('background').replace(/_\w{3,4}\.png/, '_'+ordering.toLowerCase()+'.png'));
-    
-    // Fix action's link style
-    js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});
     
     // Fix version's select style and event
     js('td[id$=_resource_versions] > select')

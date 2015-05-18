@@ -68,7 +68,7 @@ class sdiUser {
     /**
      * Unique lang
      *
-     * @var    
+     * @var    object
      */
     public $lang = null;
 
@@ -83,8 +83,6 @@ class sdiUser {
     const diffusionmanager = 5;
     const viewmanager = 6;
     const extractionresponsible = 7;
-    const pricingmanager = 9;
-    const validationmanager = 10;
 
     /**
      * 
@@ -98,7 +96,7 @@ class sdiUser {
             $user = $this->getCurrentUser();
         endif;
 
-        $this->lang = JFactory::getLanguage()->getTag();
+        $this->lang = JFactory::getLanguage();
 
         if (!$user) {
             $this->isEasySDI = false;
@@ -169,6 +167,7 @@ class sdiUser {
     private function getCurrentUser() {
 
         $this->juser = JFactory::getUser();
+        ;
         $this->name = $this->juser->name;
 
         $db = JFactory::getDbo();
@@ -232,7 +231,7 @@ class sdiUser {
                 ->from('#__sdi_resourcetype rt')
                 ->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid')
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
-                ->where('l.code = ' . $db->quote($this->lang))
+                ->where('l.code = ' . $db->quote($this->lang->getTag()))
                 ->where('rt.predefined = 0')
                 ->where($cls)
         ;
@@ -335,28 +334,6 @@ class sdiUser {
             return null;
         }
         return $this->role[7];
-    }
-
-    /**
-     * Get the Organisms for which the user is pricing manager
-     * @return type
-     */
-    public function getPricingManagerOrganisms() {
-        if (!$this->isEasySDI) {
-            return null;
-        }
-        return $this->role[self::pricingmanager];
-    }
-
-    /**
-     * Get the Organisms for which the user is pricing manager
-     * @return type
-     */
-    public function getTPValidationManagerOrganisms() {
-        if (!$this->isEasySDI) {
-            return null;
-        }
-        return $this->role[self::validationmanager];
     }
 
     /**

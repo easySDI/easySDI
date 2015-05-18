@@ -148,25 +148,6 @@
         <option value="0">JUNPUBLISHED</option>
     </field> 
 	
-    <fieldset name="indoornavigation">
-         <field name="isindoor" type="radio" class="btn-group" default="0"
-               label="COM_EASYSDI_MAP_FORM_LBL_LAYER_INDOORNAVIGATION"
-               description="COM_EASYSDI_MAP_FORM_DESC_LAYER_INDOORNAVIGATION" 
-        > 
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>
-        <field 	name="levelfield" 
-                type="text" 
-                size="255" 
-                class="inputbox"
-                disabled = "false"
-                required="false" 
-                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_LEVEL_FIELD"
-                description="COM_EASYSDI_MAP_FORM_DESC_LEVEL_FIELD" 
-                filter="safehtml" />
-    </fieldset>
-    
     <fieldset name="openlayers">
         <field name="asOL" 
                         type="checkbox" 

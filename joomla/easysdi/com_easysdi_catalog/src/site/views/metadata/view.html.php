@@ -68,7 +68,6 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        $this->getCurrentResourceType();
         $this->buildForm();
         $this->_prepareDocument();
 
@@ -244,17 +243,6 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_BACK'), JRoute::_(Easysdi_coreHelper::array2URL($back_url)), 'btn-small btn-danger btn-back-ressources');
 
         return $toolbar->renderToolbar();
-    }
-    
-    private function getCurrentResourceType(){
-        $query = $this->db->getQuery(true)
-                ->select('rt.id')
-                ->from('#__sdi_resourcetype rt')
-                ->innerJoin('#__sdi_resource r ON r.resourcetype_id=rt.id')
-                ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
-                ->where('v.id='.(int)$this->item->version_id);
-        $this->db->setQuery($query);
-        $this->item->resourcetype_id = (int)$this->db->loadResult();
     }
 
     /**

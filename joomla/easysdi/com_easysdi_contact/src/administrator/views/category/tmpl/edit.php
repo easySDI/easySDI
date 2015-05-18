@@ -68,7 +68,7 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 						<?php foreach($this->form->getFieldset('details') as $field): ?>
 							<div class="control-group">
 								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input;?> <?php if($field->fieldname == 'overall_fee') echo $this->currency; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
 							</div>
 						<?php endforeach; ?>
 					</div>

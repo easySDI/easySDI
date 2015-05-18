@@ -153,28 +153,50 @@ class Easysdi_mapModelMap extends JModelForm {
                 if ($tools = $toolTable->loadByMapId($id)) {
                     $this->_item->tools = $tools;
                 }
-                //Load tools params
+                
+                //Load the scaleline parameters
                 $query = $db->getQuery(true);
-                $query->select('tool_id,params');
+                $query->select('params');
                 $query->from('#__sdi_map_tool');
-                $query->where('tool_id IN(14,16,21)');
+                $query->where('tool_id=14');
                 $query->where('map_id = ' . (int)$id);
-                $query->where('activated = 1');
+                
                 $db->setQuery($query);
-                $results = $db->loadObjectList();
-                foreach ($results as $result){
-                    if (!empty($result->params)) {           
-                        $param = stripslashes($result->params);
-                        if($result->tool_id == 21){                            
-                           $this->_item->level = json_decode(stripslashes($param));     
-                        }else{
-                            $params = json_decode(stripslashes($param));
-                            foreach ($params as $key => $value) {
-                                $this->_item->$key = $value;
-                            }
+                try {
+                    $scalelineparams = $db->loadResult();
+                    if(!empty($scalelineparams)){
+                        $params = json_decode(stripslashes($scalelineparams));
+                        foreach ($params as $key => $value) {
+                            $this->_item->$key = $value;
                         }
                     }
-                }             
+                } catch (JDatabaseException $e) {
+                    $je = new JException($e->getMessage());
+                    $this->setError($je);
+                    return false;
+                }
+                
+                //Load the wfs locator
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=16');
+                $query->where('map_id = ' . (int)$id);
+                
+                $db->setQuery($query);
+                try {
+                    $wfslocator = $db->loadResult();
+                    if(!empty($wfslocator)){
+                        $params = json_decode(stripslashes($wfslocator));
+                        foreach ($params as $key => $value) {
+                            $this->_item->$key = $value;
+                        }
+                    }
+                } catch (JDatabaseException $e) {
+                    $je = new JException($e->getMessage());
+                    $this->setError($je);
+                    return false;
+                }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }

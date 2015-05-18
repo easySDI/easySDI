@@ -156,18 +156,6 @@
             <option value="3">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_RESOURCETYPE</option>
         </field> 
         
-        <field  name="accessscope_limitation"
-                type="radio"
-                default="0"
-                label="Access's scope limitation"
-                description="descr"
-        >
-            <option value="0">None</option>
-            <option value="1">User's Organism</option>
-            <option value="2">Metadata's Organism</option>
-            <option value="3">Both</option>
-        </field>
-        
         <field
             name="state"
             type="list"

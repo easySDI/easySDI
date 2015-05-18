@@ -48,7 +48,6 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_MAP_TAB_NEW_LAYER') : JText::sprintf('COM_EASYSDI_MAP_TAB_EDIT_LAYER', $this->item->id); ?></a></li>
                 <li><a href="#asOL" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_ASOL'); ?></a></li>
-                <li><a href="#indoor" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_INDOOR_NAVIGATION'); ?></a></li>
                 <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_PUBLISHING'); ?></a></li>
                 <?php if ($this->canDo->get('core.admin')): ?>
                     <li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_RULES'); ?></a></li>
@@ -84,14 +83,6 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
                         <div class="control-label"><?php echo $this->form->getLabel('asOLoptions'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('asOLoptions'); ?></div>
                     </div>
-                </div>
-                <div class="tab-pane" id="indoor">
-                    <?php foreach ($this->form->getFieldset('indoornavigation') as $field): ?>
-                         <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                            <div class="control-label"><?php echo $field->label; ?></div>
-                            <div class="controls"><?php echo $field->input; ?></div>
-                        </div>
-                    <?php endforeach; ?>
                 </div>
                 <div class="tab-pane" id="publishing">
                     <div class="control-group">

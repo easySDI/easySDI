@@ -134,9 +134,9 @@ js('document').ready(function () {
 
                             var response = js.parseJSON(data);
                             if (response.success) {
-                                var options = {size: {x: 600, y: 700}};
+                                var options = {size: {x: iframewidth, y: iframeheight}};
                                 SqueezeBox.initialize(options);
-                                SqueezeBox.setContent('iframe', baseUrl + 'option=com_easysdi_catalog&tmpl=component&view=sheet&preview=public&guid=' + response.guid);
+                                SqueezeBox.setContent('iframe', baseUrl + 'option=com_easysdi_catalog&tmpl=component&view=sheet&preview=public&type=complete&guid=' + response.guid);
                             }
 
                         }
@@ -248,9 +248,9 @@ js('document').ready(function () {
     js('#search_table').dataTable({
         "bFilter": false,
         "oLanguage": {
-            sUrl: baseUrl + 'option=com_easysdi_core&task=proxy.run&url='+encodeURI('http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json')
+            sUrl: 'https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/' + dtLang + '.json'
         },
-	aaData: null,
+        aaData: null,
         aoColumnDefs: [
             {aTargets: [0], mData: function (item) {
                     return "<input type='radio' name='import[id]' id='import_id_" + item.id + "' value='" + item.id + "' checked=''>";
@@ -659,12 +659,14 @@ function toogleAll(button) {
     if (tabIsOpen) {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
         js('.inner-fds').hide();
-        js('.collapse-btn>i').removeClass('icon-arrow-down').addClass('icon-arrow-right');        
+        js('.collapse-btn>i').removeClass('icon-arrow-down');
+        js('.collapse-btn>i').addClass('icon-arrow-right');
         tabIsOpen = false;
     } else {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
-        js('.collapse-btn>i').removeClass('icon-arrow-right').addClass('icon-arrow-down');        
+        js('.collapse-btn>i').removeClass('icon-arrow-right');
+        js('.collapse-btn>i').addClass('icon-arrow-down');
         tabIsOpen = true;
     }
 }

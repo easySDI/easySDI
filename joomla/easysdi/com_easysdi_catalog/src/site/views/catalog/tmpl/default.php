@@ -11,8 +11,6 @@ defined('_JEXEC') or die;
 
 JHTML::_('behavior.modal');
 JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
@@ -38,21 +36,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
     js = jQuery.noConflict();
 
     js('document').ready(function() {
-        if (!js( '[name="advanced"]' ).length) {
-            js("#searchtype").hide();
-        }
+
         <?php if ($this->isAdvanced()): ?>
             toogleAdvanced();
         <?php endif; ?>
-            
+
         <?php if ($this->item->oninitrunsearch && JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'false' ): ?>
-            //autosubmit search form
             submitForm();
-        <?php endif; ?>
-        <?php if ($this->item->scrolltoresults && JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true' ): ?>
-            //autoscroll to results
-            var sdiSearchResults = jQuery('#sdi-search-results');
-            if(sdiSearchResults.length) jQuery(window).scrollTop(sdiSearchResults.offset().top);
         <?php endif; ?>
     });
 
@@ -90,7 +80,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
 $results = $this->getResults();
 if ($results):
     ?>
-    <div class="catalog-searchresults" id="sdi-search-results">
+    <a name="results"></a>
+    <div class="catalog-searchresults">
         <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') . ' ' . JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>
         <?php
         // Build of extendend XML for each result entry

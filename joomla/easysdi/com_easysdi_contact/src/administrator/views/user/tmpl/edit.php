@@ -95,7 +95,7 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 						<?php endforeach; ?>
 					</div>
 					<div class="tab-pane" id="roles">
-						<?php foreach($this->form->getFieldset('roles') as $field): ?>
+						<?php foreach($this->form->getFieldset('roles') as $field):?>
 							<div class="control-group">
 								<div class="control-label"><?php echo $field->label; ?></div>
 								<div class="controls"><?php echo $field->input; ?></div>

@@ -45,19 +45,8 @@ class Cswrecords extends SearchForm {
         $lang = JFactory::getLanguage()->getTag();
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $catalogurl = $params->get('catalogurl');
-        $srpn = $params->get('searchresultpaginationnumber');
+        $limit = $params->get('searchresultpaginationnumber');
         $startposition = JFactory::getApplication()->input->getInt('start',0 ) + 1;
-        
-        //Contextual search result pagination number
-        $q = $this->db->getQuery(true)
-                ->select('contextualsearchresultpaginationnumber')
-                ->from('#__sdi_catalog')
-                ->where('id = ' . (int) $this->item->id);
-        $this->db->setQuery($q);
-        $csrpn = $this->db->loadResult();
-        
-        // choose limit between global and contextual configuration
-        $limit = empty($csrpn) || $csrpn == 0 ? $srpn : $csrpn;
 
         //Csw sorting field
         $q = $this->db->getQuery(true)

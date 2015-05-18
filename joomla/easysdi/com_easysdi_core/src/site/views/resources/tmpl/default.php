@@ -21,7 +21,7 @@ JHtml::_('behavior.calendar');
 
 $document = JFactory::getDocument();
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js.php');
-$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
+//$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
 ?>
 <style> 
     .tooltip{
@@ -51,8 +51,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
             <?php // echo $this->itemmap->_item->text; ?>
             <div class="well">
                 <div class="row-fluid">
-                    <form id='criterias' class="form-search" action="" method="post">
-                        <input type='hidden' id='filter_ordering' name='filter_ordering' value='ASC'/>
+                    <form class="form-search" action="" method="post">
 
                         <div class="btn-group pull-left">
                             <?php if (empty($this->parent)) : ?>
@@ -61,7 +60,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                     <span class="caret"></span>
                                 </a>
                             <?php else: ?>
-                                 <a class="btn btn-success" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
+                                 <a class="btn btn-success dropdown-toggle" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
                                     <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_BACK'); ?>
                                 </a>
                             <?php endif; ?>
@@ -130,10 +129,10 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
         <div class="well">
             <div class="row-fluid">
                 <?php $show = count($this->items); ?>
-                <table id="resources" class="table table-striped">
+                <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th id="resources_name"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?><span id='resources_ordering'><?php echo $this->state->get('filter.ordering');?></span></th>
+                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?></th>
                             <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
                             <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
                             <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
@@ -174,13 +173,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
     </div>
     <?php if ($show): ?>
         <div class="pagination">
-            <p class="resources_counter">
-                <?php
-                $resourceFrom   = ($this->pagination->pagesCurrent-1)*$this->pagination->limit + 1;
-                $resourceTo     = min($resourceFrom + $this->pagination->limit - 1, $this->pagination->total);
-                
-                echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESULTS').' '.$resourceFrom.' '.JText::_('COM_EASYSDI_CORE_RESOURCES_TO').' '.$resourceTo.' '.JText::_('COM_EASYSDI_CORE_RESOURCES_OF').' '.$this->pagination->total; ?>
-            </p>
             <p class="counter">
                 <?php echo $this->pagination->getPagesCounter(); ?>
             </p>

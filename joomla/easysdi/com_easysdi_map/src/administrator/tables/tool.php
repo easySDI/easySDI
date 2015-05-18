@@ -91,7 +91,6 @@ class Easysdi_mapTabletool extends sdiTable {
 		$query->join('LEFT', '#__sdi_map_tool AS ct ON ct.tool_id=t.id');
 		$query->where('ct.map_id = ' . (int) $map_id);
 		$query->where('t.state = 1' );
-                $query->where('ct.activated = 1');
 		$query->order('t.ordering ASC' );
 		$this->_db->setQuery($query);
 	

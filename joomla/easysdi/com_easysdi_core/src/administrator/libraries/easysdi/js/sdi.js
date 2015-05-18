@@ -597,42 +597,42 @@ sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
         return tree;        
     },
     
-//    /** private: method[configureLayerNode] */
-//    configureLayerNode: function(loader, attr) {
-//        sdi.gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
-//        var legendXType;
-//        // add a WMS legend to each node created
-//        if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
-//            legendXType = "gx_wmslegend";
-//        } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
-//            legendXType = "gx_vectorlegend";
-//        }
-//        if (legendXType) {
-//            var baseParams;
-//            if (loader && loader.baseAttrs && loader.baseAttrs.baseParams) {
-//                baseParams = loader.baseAttrs.baseParams;
-//            }
-//            Ext.apply(attr, {
-//                component: {
-//                    xtype: legendXType,
-//                    // TODO these baseParams were only tested with GeoServer,
-//                    // so maybe they should be configurable - and they are
-//                    // only relevant for gx_wmslegend.
-//                    hidden: !attr.layer.getVisibility(),
-//                    baseParams: Ext.apply({
-//                        transparent: true,
-//                        format: "image/png",
-//                        legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
-//                    }, baseParams),
-//                    layerRecord: this.target.mapPanel.layers.getByLayer(attr.layer),
-//                    showTitle: false,
-//                    // custom class for css positioning
-//                    // see tree-legend.html
-//                    cls: "legend"
-//                }
-//            });
-//        }
-//    }
+    /** private: method[configureLayerNode] */
+    configureLayerNode: function(loader, attr) {
+        sdi.gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
+        var legendXType;
+        // add a WMS legend to each node created
+        if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
+            legendXType = "gx_wmslegend";
+        } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
+            legendXType = "gx_vectorlegend";
+        }
+        if (legendXType) {
+            var baseParams;
+            if (loader && loader.baseAttrs && loader.baseAttrs.baseParams) {
+                baseParams = loader.baseAttrs.baseParams;
+            }
+            Ext.apply(attr, {
+                component: {
+                    xtype: legendXType,
+                    // TODO these baseParams were only tested with GeoServer,
+                    // so maybe they should be configurable - and they are
+                    // only relevant for gx_wmslegend.
+                    hidden: !attr.layer.getVisibility(),
+                    baseParams: Ext.apply({
+                        transparent: true,
+                        format: "image/png",
+                        legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
+                    }, baseParams),
+                    layerRecord: this.target.mapPanel.layers.getByLayer(attr.layer),
+                    showTitle: false,
+                    // custom class for css positioning
+                    // see tree-legend.html
+                    cls: "legend"
+                }
+            });
+        }
+    }
     
 });
 
@@ -958,10 +958,127 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
      */
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.WMSSource.superclass.createLayerRecord.apply(this, arguments);
-        record.data.layer.attribution = config.attribution;
-        record.data.layer.levelfield = config.levelfield;
-        record.data.layer.servertype = config.servertype;
+        if(!jQuery.isEmptyObject(record)){
+	 record.data.layer.attribution = config.attribution;
+	 }
         return record;
+        
+//        var record, original;
+//        var index = this.store.findExact("name", config.name);
+//        if (index > -1) {
+//            original = this.store.getAt(index);
+//        } else if (Ext.isObject(config.capability)) {
+//            original = this.store.reader.readRecords({capability: {
+//                request: {getmap: {href: this.trimUrl(this.url, this.baseParams)}},
+//                layers: [config.capability]}
+//            }).records[0];
+//        } else if (this.layerConfigComplete(config)) {
+//            original = this.createLazyLayerRecord(config);
+//        }
+//        if (original) {
+//
+//            var layer = original.getLayer().clone();
+//
+//            /**
+//             * TODO: The WMSCapabilitiesReader should allow for creation
+//             * of layers in different SRS.
+//             */
+//            var projection = this.getMapProjection();
+//            
+//            // If the layer is not available in the map projection, find a
+//            // compatible projection that equals the map projection. This helps
+//            // us in dealing with the different EPSG codes for web mercator.
+//            var layerProjection = this.getProjection(original);
+//
+//            var projCode = (layerProjection || projection).getCode(),
+//                bbox = original.get("bbox"), maxExtent;
+//            if (bbox && bbox[projCode]){
+//                layer.addOptions({projection: layerProjection});
+//                maxExtent = OpenLayers.Bounds.fromArray(bbox[projCode].bbox, layer.reverseAxisOrder());
+//            } else {
+//                var llbbox = original.get("llbbox");
+//                if (llbbox) {
+//                    var extent = OpenLayers.Bounds.fromArray(llbbox).transform("EPSG:4326", projection);
+//                    // make sure maxExtent is valid (transform does not succeed for all llbbox)
+//                    if ((1 / extent.getHeight() > 0) && (1 / extent.getWidth() > 0)) {
+//                        // maxExtent has infinite or non-numeric width or height
+//                        // in this case, the map maxExtent must be specified in the config
+//                        maxExtent = extent;
+//                    }
+//                }
+//            }
+//            
+//            // update params from config
+//            layer.mergeNewParams({
+//                STYLES: config.styles,
+//                FORMAT: config.format,
+//                TRANSPARENT: config.transparent,
+//                CQL_FILTER: config.cql_filter
+//            });
+//            
+//            var singleTile = false;
+//            if ("tiled" in config) {
+//                singleTile = !config.tiled;
+//            } else {
+//                // for now, if layer has a time dimension, use single tile
+//                if (original.data.dimensions && original.data.dimensions.time) {
+//                    singleTile = true;
+//                }
+//            }
+//
+//            layer.setName(config.title || layer.name);
+//            layer.addOptions({
+//                attribution: config.attribution,
+//                maxExtent: maxExtent,
+//                restrictedExtent: maxExtent,
+//                singleTile: singleTile,
+//                ratio: config.ratio || 1,
+//                visibility: ("visibility" in config) ? config.visibility : true,
+//                opacity: ("opacity" in config) ? config.opacity : 1,
+//                buffer: ("buffer" in config) ? config.buffer : 1,
+//                dimensions: original.data.dimensions,
+//                transitionEffect: singleTile ? 'resize' : null,
+//                minScale: config.minscale,
+//                maxScale: config.maxscale
+//            });
+//            
+//            // data for the new record
+//            var data = Ext.applyIf({
+//                title: layer.name,
+//                group: config.group,
+//                infoFormat: config.infoFormat,
+//                source: config.source,
+//                properties: "gxp_wmslayerpanel",
+//                fixed: config.fixed,
+//                selected: "selected" in config ? config.selected : false,
+//                restUrl: this.restUrl,
+//                layer: layer
+//            }, original.data);
+//            
+//            // add additional fields
+//            var fields = [
+//                {name: "source", type: "string"}, 
+//                {name: "group", type: "string"},
+//                {name: "properties", type: "string"},
+//                {name: "fixed", type: "boolean"},
+//                {name: "selected", type: "boolean"},
+//                {name: "restUrl", type: "string"},
+//                {name: "infoFormat", type: "string"}
+//            ];
+//            original.fields.each(function(field) {
+//                fields.push(field);
+//            });
+//
+//            var Record = GeoExt.data.LayerRecord.create(fields);
+//            record = new Record(data, layer.id);
+//            record.json = config;
+//
+//        } else {
+//            if (window.console && this.store.getCount() > 0 && config.name !== undefined) {
+//                console.warn("Could not create layer record for layer '" + config.name + "'. Check if the layer is found in the WMS GetCapabilities response.");
+//            }
+//        }
+//        return record;
     }
     
     
@@ -1042,56 +1159,56 @@ gxp.Viewer.prototype.addExtraLayer = function(lsourceConfig, llayerConfig) {
     var queue = [];
     queue.push(this.createSourceLoader(sourceConfig.id));
 
-//    gxp.util.dispatch(queue, this.reactivate, this);
+    gxp.util.dispatch(queue, this.reactivate, this);
 };
 
-//gxp.Viewer.prototype.reactivate = function() {
-//    // initialize tooltips
-//    Ext.QuickTips.init();
-//
-//    var mapConfig = this.initialConfig.map;
-//    if (mapConfig && mapConfig.layers) {
-//        var conf, source, record, baseRecords = [], overlayRecords = [];
-//        //for (var i = 0; i < mapConfig.layers.length; ++i) {
-//           // conf = mapConfig.layers[i];
-//           //Get the last layer
-//           conf = mapConfig.layers[mapConfig.layers.length-1];
-//           // if(conf.name === layerConfig.name){
-//                source = this.layerSources[conf.source];
-//                if (source) {
-//                    if (source.id === sourceConfig.id) {
-//                        // source may not have loaded properly (failure handled elsewhere)
-//                        record = source.createLayerRecord(conf);
-//                        if (record) {
-//                            if (record.get("group") === "background") {
-//                                baseRecords.push(record);
-//                            } else {
-//                                overlayRecords.push(record);
-//                            }
-//                        }
-//                     //   break;
-//                    }
-//                }
-//            //}
-//        //}
-//
-//        var panel = this.mapPanel;
-//        var map = panel.map;
-//        extent = record.getLayer().maxExtent.clone();
-//        map.zoomToExtent(extent);
-//
-//        var records = baseRecords.concat(overlayRecords);
-//        if (records.length) {
-//            panel.layers.add(records);
-//        }
-//    }
-//
-//    // respond to any queued requests for layer records
-//    this.checkLayerRecordQueue();
-//
-//    // broadcast ready state
-////   this.fireEvent("ready");
-//};
+gxp.Viewer.prototype.reactivate = function() {
+    // initialize tooltips
+    Ext.QuickTips.init();
+
+    var mapConfig = this.initialConfig.map;
+    if (mapConfig && mapConfig.layers) {
+        var conf, source, record, baseRecords = [], overlayRecords = [];
+        //for (var i = 0; i < mapConfig.layers.length; ++i) {
+           // conf = mapConfig.layers[i];
+           //Get the last layer
+           conf = mapConfig.layers[mapConfig.layers.length-1];
+           // if(conf.name === layerConfig.name){
+                source = this.layerSources[conf.source];
+                if (source) {
+                    if (source.id === sourceConfig.id) {
+                        // source may not have loaded properly (failure handled elsewhere)
+                        record = source.createLayerRecord(conf);
+                        if (record) {
+                            if (record.get("group") === "background") {
+                                baseRecords.push(record);
+                            } else {
+                                overlayRecords.push(record);
+                            }
+                        }
+                     //   break;
+                    }
+                }
+            //}
+        //}
+
+        var panel = this.mapPanel;
+        var map = panel.map;
+        extent = record.getLayer().maxExtent.clone();
+        map.zoomToExtent(extent);
+
+        var records = baseRecords.concat(overlayRecords);
+        if (records.length) {
+            panel.layers.add(records);
+        }
+    }
+
+    // respond to any queued requests for layer records
+    this.checkLayerRecordQueue();
+
+    // broadcast ready state
+    this.fireEvent("ready");
+};
 
 
 
@@ -1698,299 +1815,11 @@ sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.OLSource, {
      */
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.OLSource.superclass.createLayerRecord.apply(this, arguments);
-
+        
         record.json = config;
         return record;
     }
 });
 
 Ext.preg(sdi.gxp.plugins.OLSource.prototype.ptype, sdi.gxp.plugins.OLSource);
-
-/** api: (define)
- *  module = sdi.widgets
- *  class = IndoorLevelSlider
- */
-Ext.namespace("sdi.widgets");
-
-/** api: constructor
- *  .. class:: IndoorLevelSlider(config)
- *
- *  Create a slider for controlling level in indoor navigation context.
- */
-sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
-    /** api: config[map]
-     *  ``OpenLayers.Map`` 
-     *  The map this slider changes the indoor level of. (required)
-     */
-    /** private: property[map]
-     *  ``OpenLayers.Map``
-     */
-    map: null,
-    /** api: config[delay]
-     *  ``Number`` Time in milliseconds before setting the level value to the
-     *  map. If the value change again within that time, the original value
-     *  is not set. Only applicable if aggressive is true.
-     */
-    delay: 5,
-    /** api: config[aggressive]
-     *  ``Boolean``
-     *  If set to true, the opacity is changed as soon as the thumb is moved.
-     *  Otherwise when the thumb is released (default).
-     */
-    aggressive: false,
-    /** api: config[value]
-     *  ``Number``
-     *  The value to initialize the slider with. 
-     *  If this value is not
-     *  defined in the config object then the slider initializes
-     *  it to the min value.
-     */
-    value: null,
-    /** api: config[baseCls]
-     *  ``String``
-     *  The CSS class name for the slider elements.  Default is "sdi-indoorlevelslider".
-     */
-    baseCls: "sdi-indoorlevelslider",
-//    /** private: property[updating]
-//     *  ``Boolean``
-//     *  The slider position is being updated by itself .
-//     */
-//    updating: false,
-    /**
-     * 
-     */
-    levels: [],
-    style: "position: absolute; right: 50px; top: 20px; z-index: 100;",
-    /** private: method[constructor]
-     *  Construct the component.
-     */
-    constructor: function(config) {
-        config.value = (config.value !== undefined) ? config.value : config.minValue;
-
-        sdi.widgets.IndoorLevelSlider.superclass.constructor.call(this, config);
-    },
-    /** private: method[initComponent]
-     *  Initialize the component.
-     */
-    initComponent: function() {
-        sdi.widgets.IndoorLevelSlider.superclass.initComponent.call(this);
-
-        if (this.map) {
-            if (this.map instanceof GeoExt.MapPanel) {
-                this.map = this.map.map;
-            }            
-        }
-        if (this.aggressive === true) {
-            this.on('change', this.changeIndoorLevel, this);
-        } else {
-            this.on('changecomplete', this.changeIndoorLevel, this);
-        }
-//         this.on("beforedestroy", this.unbind, this);        
-    },
-    
-    /** private: method[onRender]
-     *  Override onRender to set base css class.
-     */
-    onRender: function() {
-        sdi.widgets.IndoorLevelSlider.superclass.onRender.apply(this, arguments);
-        this.el.addClass(this.baseCls);
-    },
-    
-    
-
-    /** private: method[changeLayerOpacity]
-     *  :param slider: :class:`GeoExt.LayerOpacitySlider`
-     *  :param value: ``Number`` The slider value
-     *
-     *  Updates the ``OpenLayers.Layer`` opacity value.
-     */
-    changeIndoorLevel: function(slider, value) {
-        this.setValue(value);
-        var layers = this.map.layers;
-        var level = levels[value];
-
-        for (var a = 0; a < layers.length; a++) {
-            if (layers[a].levelfield) {
-                var servertype = layers[a].servertype;
-                if (servertype == 1) {
-                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
-                } else if (servertype == 2) {
-                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                } else if (servertype == 3) {
-                    //layers[a].mergeNewParams({'SDI_FILTER': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                    layers[a].mergeNewParams({'layerDefs': "{\"" + layers[a].params.LAYERS + "\":\"" + layers[a].levelfield + "='" + level.code + "'\"}"});
-                    layers[a].mergeNewParams({'CQL_FILTER': "\"" + layers[a].levelfield + "=" + level.code + "\""});
-                }
-                layers[a].redraw(true);
-            }
-        }
-        ;
-
-
-    },
-    /** private: method[addToMapPanel]
-     *  :param panel: :class:`GeoExt.MapPanel`
-     *
-     *  Called by a MapPanel if this component is one of the items in the panel.
-     */
-    addToMapPanel: function(panel) {
-        this.on({
-            render: function() {
-                var el = this.getEl();
-                el.setStyle({
-                    position: "absolute",
-                    zIndex: panel.map.Z_INDEX_BASE.Control
-                });
-                el.on({
-                    mousedown: this.stopMouseEvents,
-                    click: this.stopMouseEvents
-                });
-                this.el.addClass(this.baseCls);
-            },
-            afterrender: function() {
-                this.map = panel.map;
-                panel.map.indoorlevelslider = this;
-//                this.bind(panel.map);                
-            },
-            scope: this
-        });
-    },
-    /** private: method[removeFromMapPanel]
-     *  :param panel: :class:`GeoExt.MapPanel`
-     *
-     *  Called by a MapPanel if this component is one of the items in the panel.
-     */
-    removeFromMapPanel: function(panel) {
-        var el = this.getEl();
-        el.un({
-            mousedown: this.stopMouseEvents,
-            click: this.stopMouseEvents,
-            scope: this
-        });
-//        this.unbind();
-    },
-    /** private: method[stopMouseEvents]
-     *  :param e: ``Object``
-     */
-    stopMouseEvents: function(e) {
-        e.stopEvent();
-    },
-//    /** private: method[bind]
-//     *  :param map: ``OpenLayers.Map``
-//     */
-//    bind: function(map) {
-//        this.map = map;
-//        this.map.events.on({
-//            
-//            scope: this
-//        });
-//
-//    },
-//    /** private: method[unbind]
-//     */
-//    unbind: function() {
-//        if (this.map && this.map.events) {
-//            this.map.events.un({
-//                
-//                scope: this
-//            });
-//        }
-//    }
-});
-
-/** api: xtype = sdi_indoorlevelslider */
-Ext.reg('sdi_indoorlevelslider', sdi.widgets.IndoorLevelSlider);
-
-/** api: (define)
- *  module = GeoExt
- *  class = LayerOpacitySliderTip
- *  base_link = `Ext.Tip <http://dev.sencha.com/deploy/dev/docs/?class=Ext.Tip>`_
- */
-Ext.namespace("sdi.widgets");
-
-/** api: example
- *  Sample code to create a slider tip to display scale and resolution:
- *
- *  .. code-block:: javascript
- *
- *      var slider = new GeoExt.LayerOpacitySlider({
- *          renderTo: document.body,
- *          width: 200,
- *          layer: layer,
- *          plugins: new GeoExt.LayerOpacitySliderTip({
- *              template: "Opacity: {opacity}%"
- *          })
- *      });
- */
-
-/** api: constructor
- *  .. class:: LayerOpacitySliderTip(config)
- *
- *      Create a slider tip displaying :class:`GeoExt.LayerOpacitySlider` values.
- */
-sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
-
-    /** api: config[template]
-     *  ``String``
-     *  Template for the tip. Can be customized using the following keywords in
-     *  curly braces:
-     *
-     *  * ``opacity`` - the opacity value in percent.
-     */
-    template: '<div>{level}</div>',
-    
-    /**
-     * 
-     */
-    levels:[],
-
-    /** private: property[compiledTemplate]
-     *  ``Ext.Template``
-     *  The template compiled from the ``template`` string on init.
-     */
-    compiledTemplate: null,
-
-    /** private: method[constructor]
-     *  Construct the component.
-     */
-    constructor: function(config) {
-        levels = config.levels;        
-        sdi.widgets.IndoorLevelSliderTip.superclass.constructor.call(this, config);
-    },
-    /** private: method[init]
-     *  Called to initialize the plugin.
-     */
-    init: function(slider) {
-         var me = this;
-        this.compiledTemplate = new Ext.Template(this.template);
-        
-        sdi.widgets.IndoorLevelSliderTip.superclass.init.call(this, slider);
-        
-//        slider.on('afterRender', me.onSliderRender, me, {scope:me,delay:100, single:true});
-//        slider.un("dragend", me.hide, me);
-
-    },
-    
-//    onSliderRender : function(slider) {
-//        var thumbs  = slider.thumbs,
-//            t       = 0,
-//            tLen    = thumbs.length,
-//            onSlide = this.onSlide;
-//
-//        for (; t < tLen; t++) {
-//            this.onSlide(slider, null, thumbs[t]);
-//        }
-//    },
-
-    /** private: method[getText]
-     *  :param slider: ``Ext.slider.SingleSlider`` The slider this tip is attached to.
-     */
-    getText: function(thumb) {
-        var level = levels[thumb.value].label;
-        var data = {
-            level: level
-        };
-        return this.compiledTemplate.apply(data);
-    }
-});
 

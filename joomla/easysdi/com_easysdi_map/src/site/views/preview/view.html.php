@@ -128,7 +128,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             
             
             $this->addscript .= $layerConfig;
-            $this->addscript .= 'window.appname.addExtraLayer(sourceConfig' . $preview->id . ', layerConfig' . $preview->id . ');';        
+            $this->addscript .= 'app.addExtraLayer(sourceConfig' . $preview->id . ', layerConfig' . $preview->id . ');';        
                     
         endforeach;
         $this->addscript .= '});';

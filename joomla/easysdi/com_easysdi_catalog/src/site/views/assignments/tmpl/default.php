@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
     <div class="items">
         <div class="well">
             <div class="row-fluid">
-                <a class="btn btn-success" href="<?php echo $this->backUrl; ?>">
+                <a class="btn btn-success dropdown-toggle" href="<?php echo $this->backUrl; ?>">
                     <?php echo JText::_('COM_EASYSDI_CATALOG_BACK'); ?>
                 </a>
                 <table class="table table-striped">

@@ -39,7 +39,7 @@ class Easysdi_catalogController extends JControllerLegacy {
                 $this->setRedirect(JURI::base());
                 return false;
             endif;
-            //check if the user has the right to see the sheet
+            //check if the user has the right to see the sheet if the resource exists in database, else this could be an harvested metadata
             $db = JFactory::getDBO();
             $query = $db->getQuery(true)
                     ->select('r.*')
@@ -51,12 +51,12 @@ class Easysdi_catalogController extends JControllerLegacy {
             $resource = $db->loadObject();
             $app = JFactory::getApplication();
             $sdiUser = sdiFactory::getSdiUser();
-            if ($resource->accessscope_id != 1):
+            if (isset($resource) && ($resource->accessscope_id != 1)):
                 if (!$sdiUser->isEasySDI):
                     JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                     return;
                 endif;
-                if ($resource->accessscope_id == 2):
+                if ($resource->accessscope_id == 3):
                     $organisms = sdiModel::getAccessScopeOrganism($resource->guid);
                     $organism = $sdiUser->getMemberOrganisms();
                     if (!in_array($organism[0]->id, $organisms)):
@@ -64,14 +64,14 @@ class Easysdi_catalogController extends JControllerLegacy {
                         return;
                     endif;
                 endif;
-                if ($resource->accessscope_id == 3):
+                if ($resource->accessscope_id == 4):
                     $users = sdiModel::getAccessScopeUser($resource->guid);
                     if (!in_array($sdiUser->id, $users)):
                         JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                         return;
                     endif;
                 endif;
-                if ($resource->accessscope_id == 4):
+                if ($resource->accessscope_id == 2):
                     $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                     $allowedCategories = sdiModel::getAccessScopeCategory($resource->guid);
                     if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):

@@ -3,7 +3,7 @@ var request;
 Joomla.submitbutton = function(task)
 {
     if (document.formvalidator.isValid(document.id('adminForm'))) {
-        jQuery('#system-message-container').empty();
+        jQuery('#system-message-container').remove();
         addtobasket();
     }
 

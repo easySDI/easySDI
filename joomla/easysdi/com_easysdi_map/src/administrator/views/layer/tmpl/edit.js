@@ -7,8 +7,6 @@ function init()
 {
     if (jQuery('#jform_asOL').is(':checked'))
         jQuery('#asOL :input').removeAttr("disabled");
-    if (jQuery('#jform_isindoor').is(':checked'))
-        jQuery('#jform_levelfield').removeAttr("disabled");
 
     getLayers();
 	
@@ -129,18 +127,6 @@ function enableOlparams()
     {
         jQuery("#asOL :input").val("");
         jQuery("#asOL :input").attr("disabled", true);
-    }
-}
-
-function enableIndoorNavigation(){
-    if (jQuery('#jform_isindoor').is(':checked'))
-    {
-        jQuery('#jform_levelfield').removeAttr("disabled");
-    }
-    else
-    {
-        jQuery("#jform_levelfield").val("");
-        jQuery("#jform_levelfield").attr("disabled", true);
     }
 }
 

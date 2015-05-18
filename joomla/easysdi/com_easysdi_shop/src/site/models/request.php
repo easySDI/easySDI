@@ -220,10 +220,10 @@ class Easysdi_shopModelRequest extends JModelForm {
             endif;
             $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
             $keys = array();
-            $keys['order_id'] = (int)$id;
-            $keys['diffusion_id'] = (int)$diffusion_id;
+            $keys['order_id'] = $id;
+            $keys['diffusion_id'] = $diffusion_id;
             $orderdiffusion->load($keys);
-            $orderdiffusion->fee = (int)$data['fee'][$diffusion_id];
+            $orderdiffusion->fee = $data['fee'][$diffusion_id];
             $orderdiffusion->remark = $data['remark'][$diffusion_id];
             if (!empty($files['file'][$diffusion_id][0]['name'])):
                 //Save uploaded file 
@@ -246,7 +246,7 @@ class Easysdi_shopModelRequest extends JModelForm {
                 $orderdiffusion->completed = date('Y-m-d H:i:s');
                 $orderdiffusion->productstate_id = 1;
             endif;
-            $orderdiffusion->created_by = (int)sdiFactory::getSdiUser()->id;
+            $orderdiffusion->created_by = sdiFactory::getSdiUser()->id;
             $orderdiffusion->store();
         endforeach;
 

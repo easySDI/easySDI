@@ -61,19 +61,6 @@
                class="multiselect input-xxlarge"
                label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_CATEGORIES"
                description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_CATEGORIES"  /> 
-        
-        <field 	id="selectable_as_thirdparty" 
-                name="selectable_as_thirdparty" 
-                type="radio"
-                class="btn-group"
-                label="com_easysdi_contact_FORM_LBL_SELECTABLE_AS_THIRDPARTY"
-                description="com_easysdi_contact_FORM_DESC_SELECTABLE_AS_THIRDPARTY" 
-                default="0" 	
-        >
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        
         <field name="id" 
                type="text" 
                default="0" 

@@ -312,8 +312,7 @@ CREATE TABLE #__sdi_catalog (
     oninitrunsearch integer DEFAULT 0,
     cswfilter text,
     access integer DEFAULT 1 NOT NULL,
-    asset_id bigint DEFAULT 0::bigint NOT NULL,
-    scrolltoresults SMALLINT DEFAULT 1 NOT NULL 
+    asset_id bigint DEFAULT 0::bigint NOT NULL
 );
 
 
@@ -416,7 +415,6 @@ CREATE TABLE #__sdi_diffusion (
     description character varying(500),
     accessscope_id bigint NOT NULL,
     pricing_id bigint NOT NULL,
-    pricing_profile_id int(11) UNSIGNED,
     deposit character varying(255),
     productmining_id bigint,
     surfacemin character varying(50),
@@ -625,8 +623,7 @@ CREATE TABLE #__sdi_map_tool (
     id serial NOT NULL ,
     map_id bigint NOT NULL,
     tool_id bigint NOT NULL,
-    params character varying(4000),
-    activated integer DEFAULT 0
+    params character varying(500)
 );
 
 CREATE TABLE #__sdi_map_virtualservice (
@@ -639,7 +636,7 @@ CREATE TABLE #__sdi_map_virtualservice (
 CREATE TABLE #__sdi_maplayer (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
-    alias character varying(20) NOT NULL,
+    alias character varying(255) NOT NULL,
     created_by integer NOT NULL,
     created timestamp(3) without time zone NOT NULL,
     modified_by integer,
@@ -659,8 +656,6 @@ CREATE TABLE #__sdi_maplayer (
     "asOLstyle" text,
     "asOLmatrixset" text,
     "asOLoptions" text,
-    isindoor  integer,
-    levelfield  character varying(255),
     metadatalink text,
     attribution character varying(255),
     accessscope_id bigint DEFAULT 1::bigint NOT NULL,
@@ -740,9 +735,6 @@ CREATE TABLE #__sdi_order (
     orderstate_id bigint NOT NULL,
     user_id bigint NOT NULL,
     thirdparty_id bigint,
-    validated smallint DEFAULT NULL,
-    validated_date timestamp(3) without time zone DEFAULT NULL,
-    validated_reason character varying(255),
     buffer double precision,
     surface double precision,
     remark character varying(500),
@@ -755,15 +747,6 @@ CREATE TABLE #__sdi_order (
 
 CREATE TABLE #__sdi_order_diffusion (
     id serial NOT NULL ,
-    guid character varying(36) NOT NULL,
-    created_by integer NOT NULL,
-    created timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
-    modified_by integer,
-    modified timestamp(3) without time zone,
-    ordering integer,
-    state integer DEFAULT 1 NOT NULL,
-    checked_out integer DEFAULT 0 NOT NULL,
-    checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     order_id bigint NOT NULL,
     diffusion_id bigint NOT NULL,
     productstate_id bigint NOT NULL,
@@ -771,7 +754,8 @@ CREATE TABLE #__sdi_order_diffusion (
     fee numeric(10,0) ,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone ,
     file character varying(500) ,
-    size numeric(10,0)
+    size numeric(10,0) ,
+    created_by integer NOT NULL
 );
 
 
@@ -812,15 +796,10 @@ CREATE TABLE #__sdi_organism (
     name character varying(255) NOT NULL,
     website character varying(500),
     perimeter text,
-    selectable_as_thirdparty TINYINT(1) DEFAULT 0,
     access integer NOT NULL,
     asset_id integer NOT NULL,
     username character varying(150),
-    password character varying(65),
-    internal_free smallint DEFAULT 0,
-    fixed_fee_ti decimal(6,2) UNSIGNED DEFAULT 0,
-    data_free_fixed_fee smallint DEFAULT 0,
-
+    password character varying(65)
 );
 
 CREATE TABLE IF NOT EXISTS #__sdi_category (
@@ -838,14 +817,13 @@ CREATE TABLE IF NOT EXISTS #__sdi_category (
     description character varying(500),
     name character varying(255) NOT NULL,
     access integer NOT NULL,
-    asset_id integer NOT NULL,
-    overall_fee DECIMAL(6,2) UNSIGNED DEFAULT NULL
+    asset_id integer NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS #__sdi_organism_category (
     id serial NOT NULL ,
-    organism_id integer NOT NULL references #__sdi_organism(id),
-    category_id integer NOT NULL references #__sdi_category(id)
+    organism_id integer NOT NULL,
+    category_id integer NOT NULL
 );
 
 
@@ -910,8 +888,7 @@ CREATE TABLE #__sdi_physicalservice (
     catid integer NOT NULL,
     params character varying(1024),
     access integer DEFAULT 1 NOT NULL,
-    asset_id integer,
-    server_id INT(11) UNSIGNED
+    asset_id integer
 );
 
 
@@ -2345,23 +2322,6 @@ CREATE TABLE users (
     "LOCKED" integer DEFAULT 0 NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS #__sdi_sys_server (
-    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    ordering integer DEFAULT 1 NOT NULL,
-    state integer DEFAULT 1 NOT NULL,
-    value character varying(150) NOT NULL
-    PRIMARY KEY (id)  
-);
 
-CREATE TABLE IF NOT EXISTS #__sdi_sys_server_serviceconnector (
-    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    server_id INT(11) UNSIGNED,
-    serviceconnector_id INT(11) UNSIGNED,
-    PRIMARY KEY (id),
-  KEY #__sdi_sys_server_serviceconnector_fk1 (server_id),
-  KEY #__sdi_sys_server_serviceconnector_fk2 (serviceconnector_id),
-  CONSTRAINT #__sdi_sys_server_serviceconnector_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server (id) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT #__sdi_sys_server_serviceconnector_fk2 FOREIGN KEY (serviceconnector_id) REFERENCES #__sdi_sys_serviceconnector (id) ON DELETE CASCADE ON UPDATE NO ACTION
-);
 
 

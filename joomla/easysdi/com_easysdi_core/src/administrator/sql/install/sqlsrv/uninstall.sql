@@ -616,21 +616,3 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_orga
 DROP TABLE [#__sdi_organism_category];
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_policy_category]') AND type in (N'U'))
 DROP TABLE [#__sdi_policy_category];
-
-
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_organism_category_pricing_rebate]') AND TYPE IN (N'U'))
-DROP TABLE [#__sdi_organism_category_pricing_rebate];
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_pricing_profile]') AND TYPE IN (N'U'))
-DROP TABLE [#__sdi_pricing_profile];
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_pricing_profile_category_pricing_rebate]') AND TYPE IN (N'U'))
-DROP TABLE [#__sdi_pricing_profile_category_pricing_rebate];
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_pricing_order]') AND TYPE IN (N'U'))
-DROP TABLE [#__sdi_pricing_order];
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_pricing_order_supplier]') AND TYPE IN (N'U'))
-DROP TABLE [#__sdi_pricing_order_supplier];
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_pricing_order_supplier_product]') AND TYPE IN (N'U'))
-DROP TABLE [#__sdi_pricing_order_supplier_product];
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_pricing_order_supplier_product_profile]') AND TYPE IN (N'U'))
-DROP TABLE [#__sdi_pricing_order_supplier_product_profile];
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_sys_extractstorage]') AND TYPE IN (N'U'))
-DROP TABLE [#__sdi_sys_extractstorage];

@@ -31,7 +31,6 @@ import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilte
 
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
-import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -150,7 +149,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	}
 
 	@Override
-	protected String calculateKey(HttpServletRequest httpRequest){
+	protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException{
 		String servletName = httpRequest.getPathInfo().substring(1);
 		configCache = cm.getCache("virtualserviceCache");
 		String user = null;
@@ -214,13 +213,8 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 			} 
 		}
 
-                String key = null;
-                try{
-                    key = calculateKey(request);
-                }catch(PolicyNotFoundException ex){
-                    new OWS200ExceptionReport().sendHttpServletResponse(request, response, new StringBuffer("No Policy found for user."), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-                        return null;
-                }
+
+		final String key = calculateKey(request);
 		PageInfo pageInfo = null;
 		String originalThreadName = Thread.currentThread().getName();
 		try {

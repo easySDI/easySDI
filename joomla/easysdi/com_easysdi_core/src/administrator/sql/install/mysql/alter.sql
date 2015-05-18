@@ -347,12 +347,3 @@ ADD CONSTRAINT `FK_SERVICE_TYPES_METHODS_TYPE` FOREIGN KEY (`ID_SERVICE_TYPE`) R
 
 ALTER TABLE `users`
 ADD CONSTRAINT `FK_USERS_ROLE` FOREIGN KEY (`ID_ROLE`) REFERENCES `roles` (`ID_ROLE`) ON DELETE SET NULL;
-
-ALTER TABLE `#__sdi_sys_server_serviceconnector`
-ADD CONSTRAINT `#__sdi_sys_server_serviceconnector_fk1` FOREIGN KEY (`server_id`) REFERENCES `#__sdi_sys_server` (`id`);
-
-ALTER TABLE `#__sdi_sys_server_serviceconnector`
-ADD CONSTRAINT `#__sdi_sys_server_serviceconnector_fk2` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
-
-ALTER TABLE `#__sdi_physicalservice`
-ADD CONSTRAINT `#__sdi_physicalservice_server_fk1` FOREIGN KEY (`server_id`) REFERENCES `#__sdi_sys_server` (`id`);

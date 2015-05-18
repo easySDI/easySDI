@@ -889,8 +889,6 @@ ALTER TABLE ONLY #__sdi_diffusion
     ADD CONSTRAINT #__sdi_diffusion_fk4 FOREIGN KEY (perimeter_id) REFERENCES #__sdi_perimeter(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_diffusion
     ADD CONSTRAINT #__sdi_diffusion_fk5 FOREIGN KEY (version_id) REFERENCES #__sdi_version(id) MATCH FULL ON DELETE CASCADE;
-ALTER TABLE ONLY #__sdi_diffusion
-    ADD CONSTRAINT #__sdi_diffusion_fk6 FOREIGN KEY (pricing_profile_id) REFERENCES #__sdi_pricing_profile(id) MATCH FULL ON DELETE SET NULL;
 ALTER TABLE ONLY #__sdi_diffusion_notifieduser
     ADD CONSTRAINT #__sdi_diffusion_notifieduser_fk1 FOREIGN KEY (diffusion_id) REFERENCES #__sdi_diffusion(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_diffusion_notifieduser
@@ -1218,5 +1216,3 @@ ALTER TABLE ONLY #__sdi_organism_category
 ALTER TABLE ONLY #__sdi_organism_category
     ADD CONSTRAINT #__sdi_organism_category_fk2 FOREIGN KEY (category_id) REFERENCES #__sdi_category(id) MATCH FULL ON DELETE CASCADE;
 
-ALTER TABLE ONLY #__sdi_physicalservice
-    ADD CONSTRAINT #__sdi_physicalservice_server_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server(id) MATCH FULL;

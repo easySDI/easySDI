@@ -112,8 +112,8 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query->select('group_id');
                 $query->from('#__sdi_map_layergroup');
                 $query->where('isbackground = 0');
-                $query->where('map_id = ' . (int) $item->id);
-
+                $query->where('map_id = ' . (int)$item->id);
+                
                 $db->setQuery($query);
                 $item->groups = $db->loadColumn();
 
@@ -121,7 +121,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query->select('group_id');
                 $query->from('#__sdi_map_layergroup');
                 $query->where('isbackground = 1');
-                $query->where('map_id = ' . (int) $item->id);
+                $query->where('map_id = ' . (int)$item->id);
                 $db->setQuery($query);
                 $item->background = $db->loadResult();
 
@@ -129,80 +129,92 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query->select('group_id');
                 $query->from('#__sdi_map_layergroup');
                 $query->where('isdefault = 1');
-                $query->where('map_id = ' . (int) $item->id);
-
+                $query->where('map_id = ' . (int)$item->id);
+                
                 $db->setQuery($query);
                 $item->default = $db->loadResult();
 
                 //Tools activation
                 $query = $db->getQuery(true);
-                $query->select('tool_id, params, activated');
+                $query->select('tool_id, params');
                 $query->from('#__sdi_map_tool');
-                $query->where('map_id = ' . $item->id);                
-
+                $query->where('map_id = ' . $item->id);
+                
                 $db->setQuery($query);
                 $tools = $db->loadObjectList();
                 foreach ($tools as $tool):
-                    $n = 'tool' . $tool->tool_id;                    
-                    ($tool->tool_id == 12) ? $item->$n = $tool->params : $item->$n = $tool->activated;
+                    $n = 'tool' . $tool->tool_id;
+                    (empty($tool->params) || $tool->params == 'NULL')?$item->$n = "1" : $item->$n = $tool->params;
                 endforeach;
-
+                
                 //Search Catalog
                 $query = $db->getQuery(true);
                 $query->select('params');
                 $query->from('#__sdi_map_tool');
                 $query->where('tool_id=17');
-                $query->where('map_id = ' . (int) $item->id);
-
+                $query->where('map_id = ' . (int)$item->id);
+                
                 $db->setQuery($query);
                 $catalogsearch = $db->loadResult();
-                if (!empty($catalogsearch)) {
+                if(!empty($catalogsearch)){
                     $item->tool17 = "1";
                     $item->catalog_id = $catalogsearch;
                 }
 
                 //Scale line parameters
                 $query = $db->getQuery(true);
-                $query->select('tool_id, params');
+                $query->select('params');
                 $query->from('#__sdi_map_tool');
-                $query->where('tool_id IN (14,16,21)');
-                $query->where('map_id = ' . (int) $item->id);
+                $query->where('tool_id=14');
+                $query->where('map_id = ' . (int)$item->id);
+                
                 $db->setQuery($query);
-                $results = $db->loadObjectList();
-                foreach ($results as $result){
-                    if (!empty($result->params)) {           
-                        $param = stripslashes($result->params);
-                        if($result->tool_id == 21){                            
-                            $item->level = stripslashes($param);
-                        }else{
-                            $params = json_decode(stripslashes($param));
-                            foreach ($params as $key => $value) {
-                                $item->$key = $value;
-                            }
-                        }
-                    }
-                }                    
-
+                $scalelineparams = $db->loadResult();
+                if(!empty($scalelineparams)){
+                    $params = json_decode(stripslashes($scalelineparams));
+                    foreach ($params as $key => $value) {
+                        $item->$key = $value;
+                    } 
+                }
+                
+                //Wfs locator
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=16');
+                $query->where('map_id = ' . $item->id);
+                
+                $db->setQuery($query);
+                $wfslocator = $db->loadResult();
+                if(!empty($wfslocator)){
+                    $params = json_decode(stripslashes($wfslocator));
+                    foreach ($params as $key => $value) {
+                        $item->$key = $value;
+                    }                    
+                }
+                
                 $item->services = array();
+                
                 $query = $db->getQuery(true);
                 $query->select('ps.physicalservice_id');
                 $query->from('#__sdi_map_physicalservice ps');
                 $query->where('map_id = ' . $item->id);
                 $db->setQuery($query);
                 $physicalservices = $db->loadColumn();
-                foreach ($physicalservices as $physicalservice) {
-                    array_push($item->services, "physical_" . $physicalservice);
+                foreach($physicalservices as $physicalservice){
+                    array_push ($item->services, "physical_" . $physicalservice);
                 }
-
+                
                 $query2 = $db->getQuery(true);
                 $query2->select('vs.virtualservice_id');
                 $query2->from('#__sdi_map_virtualservice vs');
                 $query2->where('map_id = ' . $item->id);
                 $db->setQuery($query2);
                 $virtualservices = $db->loadColumn();
-                foreach ($virtualservices as $virtualservice) {
-                    array_push($item->services, "virtual_" . $virtualservice);
+                foreach($virtualservices as $virtualservice){
+                    array_push ($item->services, "virtual_" . $virtualservice);                    
                 }
+                
             }
         }
 
@@ -229,7 +241,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query = $db->getQuery(true);
                 $query->select('MAX(ordering)');
                 $query->from('#__sdi_map');
-
+                
                 $db->setQuery($query);
                 $max = $db->loadResult();
                 $table->ordering = $max + 1;
@@ -254,124 +266,126 @@ class Easysdi_mapModelmap extends JModelAdmin {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
             $query->delete('#__sdi_map_tool');
-            $query->where('map_id = ' . (int) $this->getItem()->get('id'));
-
+            $query->where('map_id = ' . (int)$this->getItem()->get('id'));
+            
             $db->setQuery($query);
             $db->query();
-
+            
             $query = $db->getQuery(true);
             $query->delete('#__sdi_map_physicalservice');
-            $query->where('map_id = ' . (int) $this->getItem()->get('id'));
+            $query->where('map_id = ' . (int)$this->getItem()->get('id'));
             $db->setQuery($query);
             $db->query();
-
+            
             $query = $db->getQuery(true);
             $query->delete('#__sdi_map_virtualservice');
-            $query->where('map_id = ' . (int) $this->getItem()->get('id'));
+            $query->where('map_id = ' . (int)$this->getItem()->get('id'));
             $db->setQuery($query);
             $db->query();
 
             //Tools
             foreach ($data as $key => $value) {
                 if (substr($key, 0, 4) == "tool") {
-                    switch ($value) {
-                        case '1':
-                        case '0':
-                            $tool = substr($key, 4);
-                            $columns = array('map_id', 'tool_id', 'params', 'activated');
-
-                            switch ($tool) {
-                                case '17':
-                                    //Search catalog
-                                    $params = $data['catalog_id'];
-                                    $values = array($this->getItem()->get('id'), $query->quote($tool), $query->quote($params), $value);
-                                    break;
-                                case '14':
-                                    //Scale line params
-                                    $scaleparamsparams = '{\"bottomInUnits\" :\"' . $data["bottomInUnits"] . '\",\"bottomOutUnits\" :\"' . $data["bottomOutUnits"] . '\",\"topInUnits\" :\"' . $data["topInUnits"] . '\",\"topOutUnits\" :\"' . $data["topOutUnits"] . '\"}';
-                                    $values = array($this->getItem()->get('id'), 14, $query->quote($scaleparamsparams), $value);
-                                    break;
-                                case '16':
-                                    //Wfs locator
-                                    $locatorparamsparams = '{\"urlwfslocator\" :\"' . $data["urlwfslocator"] . '\",\"fieldname\" :\"' . $data["fieldname"] . '\",\"featuretype\" :\"' . $data["featuretype"] . '\",\"featureprefix\" :\"' . $data["featureprefix"] . '\",\"geometryname\" :\"' . $data["geometryname"] . '\"}';
-                                    $values = array($this->getItem()->get('id'), 16, $query->quote($locatorparamsparams), $value);
-                                    break;
-                                case '21':
-                                    //Indoor navigation
-                                    $i = 1;
-                                    $indoornavigation = '';
-                                    $codes = $_POST['jform']["code"];
-                                    if (isset($codes)) {
-                                        foreach ($codes as $key => $v) {
-                                            $indoornavigation = (strlen($indoornavigation) > 0 ) ? $indoornavigation . ',' : $indoornavigation;
-                                            $indoornavigation .= '{\"code\": \"' . $v . '\", \"label\":\"' . $_POST['jform']["label"][$key] . '\",\"defaultlevel\":\"' . $_POST['jform']["defaultlevel"][$key] . '\"}';
-                                        }
-                                    }
-                                    $indoornavigation = (strlen($indoornavigation) > 0 ) ? '[' . $indoornavigation . ']' : '';
-                                    $values = array($this->getItem()->get('id'), 21, $query->quote($indoornavigation), $value);
-                                    break;
-                                default :
-                                    $values = array($this->getItem()->get('id'), $query->quote($tool), 'NULL', $value);
-                                    break;
-                            }
-
-                            $query = $db->getQuery(true);
-                            $query->insert('#__sdi_map_tool');
-                            $query->columns($query->quoteName($columns));
-                            $query->values(implode(',', $values));
-
-                            $db->setQuery($query);
-                            if (!$db->query()) {
-                                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
-                                return false;
-                            }
-                            break;
-                        case 'html':
-                        case 'grid':
-                            $tool = substr($key, 4);
-                            $columns = array('map_id', 'tool_id', 'params', 'activated');
-                            $values = array($this->getItem()->get('id'), $query->quote($tool), $query->quote($value), 1);
-                            $query = $db->getQuery(true);
-                            $query->insert('#__sdi_map_tool');
-                            $query->columns($query->quoteName($columns));
-                            $query->values(implode(',', $values));
-
-                            $db->setQuery($query);
-                            if (!$db->query()) {
-                                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
-                                return false;
-                            }
-                            break;
+                    if ($value == 1) {
+                        $tool = substr($key, 4);
+                        $columns = array('map_id', 'tool_id', 'params');
+                        
+//                        ($tool == '17')? $params = $data['catalog_id']: $params = 'NULL';   
+//                        $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
+                        if($tool == '17'){
+                            $params = $data['catalog_id'];
+                            $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
+                        }else{
+                            $values = array($this->getItem()->get('id'),$query->quote($tool), 'NULL');
+                        }                            
+                        
+                        $query = $db->getQuery(true);
+                        $query->insert('#__sdi_map_tool');
+                        $query->columns($query->quoteName($columns));
+                        $query->values(implode(',', $values));
+                        
+                        $db->setQuery($query);
+                        if (!$db->query()) {
+                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                            return false;
+                        }
+                    } else if ($value == "html" || $value == "grid") {
+                        $tool = substr($key, 4);
+                        
+                        $columns = array('map_id', 'tool_id', 'params');
+                        $values = array($this->getItem()->get('id'),$query->quote($tool),$query->quote($value));
+                        $query = $db->getQuery(true);
+                        $query->insert('#__sdi_map_tool');
+                        $query->columns($query->quoteName($columns));
+                        $query->values(implode(',', $values));
+                        
+                        $db->setQuery($query);
+                        if (!$db->query()) {
+                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                            return false;
+                        }                        
                     }
                 }
             }
 
-
+            //Scale line params
+            $scaleparamsparams = '{\"bottomInUnits\" :\"'.$data["bottomInUnits"].'\",\"bottomOutUnits\" :\"'.$data["bottomOutUnits"].'\",\"topInUnits\" :\"'.$data["topInUnits"].'\",\"topOutUnits\" :\"'.$data["topOutUnits"].'\"}';
+            
+            $columns = array('map_id', 'tool_id', 'params');
+            $values = array($this->getItem()->get('id'), 14, $query->quote($scaleparamsparams));
+            $query = $db->getQuery(true);
+            $query->insert('#__sdi_map_tool');
+            $query->columns($query->quoteName($columns));
+            $query->values(implode(',', $values));
+            
+            $db->setQuery($query);
+                        if (!$db->query()) {
+                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                            return false;
+                        }
+                        
+            //Wfs locator
+            $locatorparamsparams = '{\"urlwfslocator\" :\"'.$data["urlwfslocator"].'\",\"fieldname\" :\"'.$data["fieldname"].'\",\"featuretype\" :\"'.$data["featuretype"].'\",\"featureprefix\" :\"'.$data["featureprefix"].'\",\"geometryname\" :\"'.$data["geometryname"].'\"}';
+            
+            $columns = array('map_id', 'tool_id', 'params');
+            $values = array($this->getItem()->get('id'), 16, $query->quote($locatorparamsparams));
+            $query = $db->getQuery(true);
+            $query->insert('#__sdi_map_tool');
+            $query->columns($query->quoteName($columns));
+            $query->values(implode(',', $values));
+            
+            
+            $db->setQuery($query);
+                        if (!$db->query()) {
+                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                            return false;
+                        }
+                        
             //Service
             $services = $data['services'];
             foreach ($services as $service) {
                 $pos = strstr($service, 'physical_');
                 if ($pos) {
                     $service_id = substr($service, strrpos($service, '_') + 1);
-
+                    
                     $columns = array('map_id', 'physicalservice_id');
                     $values = array($this->getItem()->get('id'), $service_id);
                     $query = $db->getQuery(true);
                     $query->insert('#__sdi_map_physicalservice');
                     $query->columns($query->quoteName($columns));
                     $query->values(implode(',', $values));
-
+                    
                     $db->setQuery($query);
                 } else {
                     $service_id = substr($service, strrpos($service, '_') + 1);
-
+                    
                     $columns = array('map_id', 'virtualservice_id');
                     $values = array($this->getItem()->get('id'), $service_id);
                     $query = $db->getQuery(true);
                     $query->insert('#__sdi_map_virtualservice');
                     $query->columns($query->quoteName($columns));
                     $query->values(implode(',', $values));
-
+                    
                     $db->setQuery($query);
                 }
                 if (!$db->query()) {
@@ -401,7 +415,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query
                         ->select('group_id')
                         ->from('#__sdi_map_layergroup ')
-                        ->where('map_id= ' . (int) $this->getItem()->get('id'));
+                        ->where('map_id= ' . (int)$this->getItem()->get('id'));
                 $db->setQuery($query);
                 $pks = $db->loadColumn();
             } catch (Exception $e) {
@@ -420,8 +434,8 @@ class Easysdi_mapModelmap extends JModelAdmin {
                     $query = $db->getQuery(true);
                     $query
                             ->delete('#__sdi_map_layergroup')
-                            ->where('map_id= ' . (int) $this->getItem()->get('id'))
-                            ->where('group_id =' . (int) $pk);
+                            ->where('map_id= ' . (int)$this->getItem()->get('id'))
+                            ->where('group_id =' . (int)$pk);
                     $db->setQuery($query);
                     try {
                         // Execute the query in Joomla 3.0.
@@ -439,7 +453,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query
                         ->select('MAX(ordering)')
                         ->from('#__sdi_map_layergroup ')
-                        ->where('map_id= ' . (int) $this->getItem()->get('id'));
+                        ->where('map_id= ' . (int)$this->getItem()->get('id'));
                 $db->setQuery($query);
                 $ordering = $db->loadResult();
             } catch (Exception $e) {
@@ -477,7 +491,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
             $query
                     ->update($db->quoteName('#__sdi_map_layergroup'))
                     ->set('isbackground=0')
-                    ->where('map_id= ' . (int) $this->getItem()->get('id'));
+                    ->where('map_id= ' . (int)$this->getItem()->get('id'));
             $db->setQuery($query);
             try {
                 $result = $db->execute();
@@ -491,7 +505,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
             $query
                     ->update($db->quoteName('#__sdi_map_layergroup'))
                     ->set('isdefault=0')
-                    ->where('map_id= ' . (int) $this->getItem()->get('id'));
+                    ->where('map_id= ' . (int)$this->getItem()->get('id'));
             $db->setQuery($query);
             try {
                 $result = $db->execute();
@@ -507,8 +521,8 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query
                         ->update($db->quoteName('#__sdi_map_layergroup'))
                         ->set('isbackground=1')
-                        ->where('map_id= ' . (int) $this->getItem()->get('id'))
-                        ->where('group_id= ' . (int) $background);
+                        ->where('map_id= ' . (int)$this->getItem()->get('id'))
+                        ->where('group_id= ' . (int)$background);
                 $db->setQuery($query);
                 try {
                     $result = $db->execute();
@@ -524,8 +538,8 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query
                         ->update($db->quoteName('#__sdi_map_layergroup'))
                         ->set('isdefault=1')
-                        ->where('map_id= ' . (int) $this->getItem()->get('id'))
-                        ->where('group_id= ' . (int) $default);
+                        ->where('map_id= ' . (int)$this->getItem()->get('id'))
+                        ->where('group_id= ' . (int)$default);
                 $db->setQuery($query);
                 try {
                     $result = $db->execute();
@@ -557,38 +571,38 @@ class Easysdi_mapModelmap extends JModelAdmin {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
             $query->delete('#__sdi_map_tool');
-            $query->where('map_id = ' . (int) $pk);
-
+            $query->where('map_id = ' . (int)$pk);
+            
             $db->setQuery($query);
             if (!$db->query()) {
                 $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_TOOL_ERROR"));
                 return false;
             }
-
+            
             $query = $db->getQuery(true);
             $query->delete('#__sdi_map_layergroup');
-            $query->where('map_id = ' . (int) $pk);
-
+            $query->where('map_id = ' . (int)$pk);
+            
             $db->setQuery($query);
             if (!$db->query()) {
                 $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_GROUP_ERROR"));
                 return false;
             }
-
+            
             $query = $db->getQuery(true);
             $query->delete('#__sdi_map_physicalservice');
-            $query->where('map_id = ' . (int) $pk);
-
+            $query->where('map_id = ' . (int)$pk);
+            
             $db->setQuery($query);
             if (!$db->query()) {
                 $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_SERVICE_ERROR"));
                 return false;
             }
-
+            
             $query = $db->getQuery(true);
             $query->delete('#__sdi_map_virtualservice');
-            $query->where('map_id = ' . (int) $pk);
-
+            $query->where('map_id = ' . (int)$pk);
+            
             $db->setQuery($query);
             if (!$db->query()) {
                 $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_SERVICE_ERROR"));

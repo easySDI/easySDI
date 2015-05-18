@@ -231,18 +231,6 @@ ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_diffusion] CHECK CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk5];
 
-ALTER TABLE [#__sdi_diffusion]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion#__sdi_diffusion_fk6] FOREIGN KEY([pricing_profile_id])
-REFERENCES [#__sdi_pricing_profile] ([id])
-ON DELETE SET NULL;
-
-ALTER TABLE [#__sdi_diffusion] CHECK CONSTRAINT [#__sdi_diffusion#__sdi_diffusion_fk6];
-
-ALTER TABLE [#__sdi_pricing_order]  WITH CHECK ADD  CONSTRAINT [#__sdi_pricing_order#__sdi_pricing_order_fk1] FOREIGN KEY([order_id])
-REFERENCES [#__sdi_order] ([id])
-ON DELETE CASCADE;
-
-ALTER TABLE [#__sdi_pricing_order] CHECK CONSTRAINT [#__sdi_pricing_order#__sdi_pricing_order_fk1];
-
 ALTER TABLE [#__sdi_diffusion_download]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk1] FOREIGN KEY([diffusion_id])
 REFERENCES [#__sdi_diffusion] ([id])
 ON DELETE CASCADE;
@@ -394,14 +382,6 @@ REFERENCES [#__sdi_version] ([id]);
 
 ALTER TABLE [#__sdi_metadata] CHECK CONSTRAINT [#__sdi_metadata$#__sdi_metadata_fk3];
 
-ALTER TABLE [#__sdi_virtualmetadata] WITH CHECK ADD CONSTRAINT [#__sdi_virtualmetadata$#__sdi_virtualmetadata_fk1] FOREIGN KEY ([virtualservice_id])
-REFERENCES [#__sdi_virtualservice] ([id]);
-ALTER TABLE [#__sdi_virtualmetadata] CHECK CONSTRAINT [#__sdi_virtualmetadata$#__sdi_virtualmetadata_fk1];
-
-ALTER TABLE [#__sdi_virtualmetadata] WITH CHECK ADD CONSTRAINT [#__sdi_virtualmetadata$#__sdi_virtualmetadata_fk2] FOREIGN KEY ([country_id])
-REFERENCES [#__sdi_sys_country] ([id]);
-ALTER TABLE [#__sdi_virtualmetadata] CHECK CONSTRAINT [#__sdi_virtualmetadata$#__sdi_virtualmetadata_fk2];
-
 ALTER TABLE [#__sdi_order]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order$#__sdi_order_fk1] FOREIGN KEY([ordertype_id])
 REFERENCES [#__sdi_sys_ordertype] ([id]);
 
@@ -457,18 +437,6 @@ ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_perimeter] CHECK CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk2];
 
-ALTER TABLE [#__sdi_organism_category_pricing_rebate]  WITH CHECK ADD  CONSTRAINT [#__sdi_organism_category_pricing_rebate#__sdi_organism_category_pricing_rebate_fk1] FOREIGN KEY([organism_id])
-REFERENCES [#__sdi_organism] ([id])
-ON DELETE CASCADE;
-
-ALTER TABLE [#__sdi_organism_category_pricing_rebate] CHECK CONSTRAINT [#__sdi_organism_category_pricing_rebate#__sdi_organism_category_pricing_rebate_fk1];
-
-ALTER TABLE [#__sdi_organism_category_pricing_rebate]  WITH CHECK ADD  CONSTRAINT [#__sdi_organism_category_pricing_rebate#__sdi_organism_category_pricing_rebate_fk2] FOREIGN KEY([category_id])
-REFERENCES [#__sdi_category] ([id])
-ON DELETE CASCADE;
-
-ALTER TABLE [#__sdi_organism_category_pricing_rebate] CHECK CONSTRAINT [#__sdi_organism_category_pricing_rebate#__sdi_organism_category_pricing_rebate_fk2];
-
 ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk1] FOREIGN KEY([orderdiffusion_id])
 REFERENCES [#__sdi_order_diffusion] ([id])
 ON DELETE CASCADE
@@ -485,7 +453,7 @@ ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_property
 
 ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3] FOREIGN KEY([propertyvalue_id])
 REFERENCES [#__sdi_propertyvalue] ([id])
-ON DELETE NO ACTION
+ON DELETE CASCADE
 ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3];
@@ -515,24 +483,6 @@ ALTER TABLE [#__sdi_property]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_property$#__
 REFERENCES [#__sdi_sys_propertytype] ([id]);
 
 ALTER TABLE [#__sdi_property] CHECK CONSTRAINT [#__sdi_property$#__sdi_property_fk2];
-
-ALTER TABLE [#__sdi_pricing_profile]  WITH CHECK ADD  CONSTRAINT [#__sdi_pricing_profile#__sdi_pricing_profile_fk1] FOREIGN KEY([organism_id])
-REFERENCES [#__sdi_organism] ([id])
-ON DELETE CASCADE;
-
-ALTER TABLE [#__sdi_pricing_profile] CHECK CONSTRAINT [#__sdi_pricing_profile#__sdi_pricing_profile_fk1];
-
-ALTER TABLE [#__sdi_pricing_profile_category_pricing_rebate]  WITH CHECK ADD  CONSTRAINT [#__sdi_pricing_profile_category_pricing_rebate#__sdi_pricing_profile_category_pricing_rebate_fk1] FOREIGN KEY([pricing_profile_id])
-REFERENCES [#__sdi_pricing_profile] ([id])
-ON DELETE CASCADE;
-
-ALTER TABLE [#__sdi_pricing_profile_category_pricing_rebate] CHECK CONSTRAINT [#__sdi_pricing_profile_category_pricing_rebate#__sdi_pricing_profile_category_pricing_rebate_fk1];
-
-ALTER TABLE [#__sdi_pricing_profile_category_pricing_rebate]  WITH CHECK ADD  CONSTRAINT [#__sdi_pricing_profile_category_pricing_rebate#__sdi_pricing_profile_category_pricing_rebate_fk2] FOREIGN KEY([category_id])
-REFERENCES [#__sdi_category] ([id])
-ON DELETE CASCADE;
-
-ALTER TABLE [#__sdi_pricing_profile_category_pricing_rebate] CHECK CONSTRAINT [#__sdi_pricing_profile_category_pricing_rebate#__sdi_pricing_profile_category_pricing_rebate_fk2];
 
 ALTER TABLE [#__sdi_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_propertyvalue$#__sdi_propertyvalue_fk1] FOREIGN KEY([property_id])
 REFERENCES [#__sdi_property] ([id]);
@@ -912,11 +862,6 @@ ON DELETE SET NULL;
 
 ALTER TABLE [users] CHECK CONSTRAINT [users$FK_USERS_ROLE];
 
-
-
-ALTER TABLE [#__sdi_wmts_spatialpolicy] WITH CHECK ADD CONSTRAINT [#__sdi_wmts_spatialpolicy#__sdi_wmts_spatialpolicy_fk1] FOREIGN KEY ([spatialoperator_id])
-REFERENCES [#__sdi_sys_spatialoperator] ([id]);
-ALTER TABLE [#__sdi_wmts_spatialpolicy] CHECK CONSTRAINT [#__sdi_wmts_spatialpolicy#__sdi_wmts_spatialpolicy_fk1];
 ALTER TABLE [#__sdi_virtualmetadata] WITH NOCHECK ADD CONSTRAINT [#__sdi_virtualmetadata$#__sdi_virtualservice_fk1] FOREIGN KEY ([virtualservice_id])
 REFERENCES [#__sdi_virtualservice] ([id])
 ON DELETE CASCADE;
@@ -935,17 +880,3 @@ ON DELETE NO ACTION;
 
 ALTER TABLE [#__sdi_wmts_spatialpolicy] CHECK CONSTRAINT [#__sdi_wmts_spatialpolicy$#__sdi_sys_spatialoperator_fk1];
 
-ALTER TABLE [#__sdi_sys_server_serviceconnector] WITH CHECK ADD CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_server_fk1] FOREIGN KEY ([server_id])
-REFERENCES [#__sdi_sys_server] ([id])
-ON DELETE NO ACTION;
-ALTER TABLE [#__sdi_sys_server_serviceconnector] CHECK CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_server_fk1];
-
-ALTER TABLE [#__sdi_sys_server_serviceconnector] WITH CHECK ADD CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_serviceconnector_fk2] FOREIGN KEY ([serviceconnector_id])
-REFERENCES [#__sdi_sys_serviceconnector] ([id])
-ON DELETE NO ACTION;
-ALTER TABLE [#__sdi_sys_server_serviceconnector] CHECK CONSTRAINT [#__sdi_sys_server_serviceconnector$#__sdi_sys_serviceconnector_fk2];
-
-ALTER TABLE [#__sdi_physicalservice] WITH CHECK ADD CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1] FOREIGN KEY ([server_id])
-REFERENCES [#__sdi_sys_server] ([id])
-ON DELETE NO ACTION;
-ALTER TABLE [#__sdi_physicalservice] CHECK CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1];

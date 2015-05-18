@@ -260,7 +260,6 @@ class Easysdi_serviceHelper {
             $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
             $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
             $query->where('ssc.service_id =' . (int)$id);
-            $query->order('sv.ordering DESC');
             
             $db->setQuery($query,0,1);
             $compliance = $db->loadObject();
@@ -284,7 +283,6 @@ class Easysdi_serviceHelper {
             $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = pssc.servicecompliance_id');
             $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
             $query->where('pssc.service_id =' . $resource->physicalservice_id);
-            $query->order('sv.ordering DESC');
 
             $db->setQuery($query,0,1);
             $compliance = $db->loadObject();
