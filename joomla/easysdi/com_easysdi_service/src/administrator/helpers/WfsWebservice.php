@@ -334,7 +334,7 @@ class WfsWebservice {
 	public static function saveAllFeatureTypes($virtualServiceID, $policyID) {
 		$db = JFactory::getDbo();
                 $query = $db->getQuery(true);
-                $query->select('ps.id, ps.resourceurl AS url, psp.id AS psp_id');
+                $query->select('ps.id, ps.resourceurl AS url, psp.id AS psp_id, ps.resourceusername, ps.resourcepassword');
                 $query->from('#__sdi_virtualservice vs');
                 $query->innerJoin('#__sdi_virtual_physical vp ON vs.id = vp.virtualservice_id');
                 $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vp.physicalservice_id');
@@ -356,7 +356,7 @@ class WfsWebservice {
 		
 		foreach ($resultset as $result) {
 			$physicalServiceID = $result->id;
-			$wfsObj = new WfsPhysicalService($result->id, $result->url);
+			$wfsObj = new WfsPhysicalService($result->id, $result->url, $result->resourceusername, $result->resourcepassword);
 			$wfsObj->getCapabilities();
 			$wfsObj->populate();
 			$layerList = $wfsObj->getLayerList();

@@ -83,7 +83,9 @@ function getSupportedVersions()
         }
         var arrcompliance = new Array();
         document.getElementById('div-supportedversions').innerHTML = '';
-        var JSONobject = JSON.parse(JSONtext, function(key, value) {
+        var JSONobject = JSON.parse(JSONtext);
+        for(key in JSONobject){
+            var value = JSONobject[key];
             var type;
 
             if (key && typeof key === 'string' && key == 'ERROR') {
@@ -104,7 +106,7 @@ function getSupportedVersions()
 
                 arrcompliance.push(key);
             }
-        });
+        };
         if (arrcompliance.length > 0)
             document.getElementById('jform_compliance').value = JSON.stringify(arrcompliance);
         else

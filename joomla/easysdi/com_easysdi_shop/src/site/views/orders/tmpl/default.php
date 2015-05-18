@@ -16,7 +16,7 @@ JHtml::_('formbehavior.chosen', 'select');
 ?>
 <div class="shop front-end-edit">
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'); ?></h1>
-    <div class="well">
+    <div class="well sdi-searchcriteria">
         <div class="row-fluid">
             <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=orders'); ?>" method="post">
                 <div class="btn-toolbar">
@@ -112,7 +112,9 @@ JHtml::_('formbehavior.chosen', 'select');
                                         $basket = new sdiBasket();
                                         $basket->loadOrder($item->id);
                                         foreach ($basket->extractions as $extraction) {
-                                           echo '<li><a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id='.$extraction->id.'&order='.$item->id.'">'.$extraction->name.'</a></li>';
+                                            if($extraction->productstate_id == 1):
+                                                echo '<li><a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id='.$extraction->id.'&order='.$item->id.'">'.$extraction->name.'</a></li>';
+                                            endif;
                                         }
                                     ?>                                        
                                     </ul>

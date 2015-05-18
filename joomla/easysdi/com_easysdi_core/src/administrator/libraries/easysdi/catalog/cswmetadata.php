@@ -13,7 +13,9 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusion.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+require_once JPATH_SITE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 class cswmetadata {
 
@@ -47,7 +49,7 @@ class cswmetadata {
     public $dom = null;
 
     /**
-     * 
+     * @var DOMDocument
      */
     public $extendeddom = null;
 
@@ -92,6 +94,7 @@ class cswmetadata {
         $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=" . $content . "&id=" . $this->guid;
 
         $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
+       
         if (!$response) {
             return false;
         }
@@ -156,6 +159,13 @@ class cswmetadata {
 
     /**
      * Buils an extended Metadata containing EasySDI information fields for XSL transformation
+     * 
+     * @param type $catalog
+     * @param type $type
+     * @param type $preview
+     * @param type $callfromJoomla
+     * @param type $lang
+     * @return DOMDocument 
      */
     public function extend($catalog, $type, $preview, $callfromJoomla, $lang) {
 
@@ -257,8 +267,8 @@ class cswmetadata {
                     $exdiffusion->setAttribute('isfree', $isfree);
                     $exdiffusion->setAttribute('isDownladable', $isDownladable);
                     $exdiffusion->setAttribute('isOrderable', $isOrderable);
-                    $exdiffusion->setAttribute('surfacemin', is_null($diffusion->surfacemin )?'':$diffusion->surfacemin);
-                    $exdiffusion->setAttribute('surfacemax', is_null($diffusion->surfacemax )?'':$diffusion->surfacemax);                    
+                    $exdiffusion->setAttribute('surfacemin', is_null($diffusion->surfacemin) ? '' : $diffusion->surfacemin);
+                    $exdiffusion->setAttribute('surfacemax', is_null($diffusion->surfacemax) ? '' : $diffusion->surfacemax);
                     $exdiffusion->setAttribute('file_size', '');
                     $exdiffusion->setAttribute('size_unit', '');
                     $exdiffusion->setAttribute('file_type', '');
@@ -297,20 +307,20 @@ class cswmetadata {
                         if (!$sdiUser->isEasySDI):
                             $right = false;
                         else:
-                            if ($diffusion->accessscope_id == 2):
+                            if ($diffusion->accessscope_id == 3):
                                 $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
                                 $organism = $sdiUser->getMemberOrganisms();
                                 if (empty($organisms) || !in_array($organism[0]->id, $organisms)):
                                     $right = false;
                                 endif;
                             endif;
-                            if ($diffusion->accessscope_id == 3):
+                            if ($diffusion->accessscope_id == 4):
                                 $users = sdiModel::getAccessScopeUser($diffusion->guid);
                                 if (empty($users) || !in_array($sdiUser->id, $users)):
                                     $right = false;
                                 endif;
                             endif;
-                            if ($diffusion->accessscope_id == 4):
+                            if ($diffusion->accessscope_id == 2):
                                 $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                                 $allowedCategories = sdiModel::getAccessScopeCategory($diffusion->guid);
                                 if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
@@ -365,20 +375,20 @@ class cswmetadata {
                         if (!$sdiUser->isEasySDI):
                             $right = false;
                         else:
-                            if ($visualization->accessscope_id == 2):
+                            if ($visualization->accessscope_id == 3):
                                 $organisms = sdiModel::getAccessScopeOrganism($visualization->guid);
                                 $organism = $sdiUser->getMemberOrganisms();
                                 if (!in_array($organism[0]->id, $organisms)):
                                     $right = false;
                                 endif;
                             endif;
-                            if ($visualization->accessscope_id == 3):
+                            if ($visualization->accessscope_id == 4):
                                 $users = sdiModel::getAccessScopeUser($visualization->guid);
                                 if (!in_array($sdiUser->id, $users)):
                                     $right = false;
                                 endif;
                             endif;
-                            if ($visualization->accessscope_id == 4):
+                            if ($visualization->accessscope_id == 2):
                                 $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                                 $allowedCategories = sdiModel::getAccessScopeCategory($visualization->guid);
                                 if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
@@ -522,17 +532,19 @@ class cswmetadata {
                 endif;
 
                 //Links
-                $query = $this->db->getQuery(true)
-                        ->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type, t.text1 as title')
-                        ->from('#__sdi_versionlink vl')
-                        ->innerJoin('#__sdi_version v ON v.id = vl.parent_id')
-                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                        ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = \'' . $lang . '\'')
-                        ->where('vl.child_id = ' . (int) $this->version->id)
-                ;
+                $query = $this->db->getQuery(true);
+                
+                $query->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type, t.text1 as title');
+                $query->from('#__sdi_versionlink vl');
+                $query->innerJoin('#__sdi_version v ON v.id = vl.parent_id');
+                $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+                $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
+                $query->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id');
+                $query->leftJoin('#__sdi_translation t on t.element_guid = m.guid');
+                $query->leftJoin('#__sdi_language l ON l.id = t.language_id');
+                $query->where('vl.child_id = ' . (int) $this->version->id);
+                $query->where('l.code = ' . $query->quote($lang));    
+                
                 $this->db->setQuery($query);
                 $parentsitem = $this->db->loadObjectList();
                 $links = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:links');
@@ -549,16 +561,19 @@ class cswmetadata {
                     $parents->appendChild($parent);
                 endforeach;
 
-                $query = $this->db->getQuery(true)
-                        ->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type,  t.text1 as title')
-                        ->from('#__sdi_versionlink vl')
-                        ->innerJoin('#__sdi_version v ON v.id = vl.child_id')
-                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                        ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = ' . $query->quote($lang))
-                        ->where('vl.parent_id = ' . (int) $this->version->id);
+                $query = $this->db->getQuery(true);
+                
+                $query->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type,  t.text1 as title');
+                $query->from('#__sdi_versionlink vl');
+                $query->innerJoin('#__sdi_version v ON v.id = vl.child_id');
+                $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+                $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
+                $query->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id');
+                $query->leftJoin('#__sdi_translation t on t.element_guid = m.guid');
+                $query->leftJoin('#__sdi_language l ON l.id = t.language_id');
+                $query->where('vl.parent_id = ' . (int) $this->version->id);
+                $query->where('l.code = ' . $query->quote($lang));
+                
                 $this->db->setQuery($query);
                 $childrenitem = $this->db->loadObjectList();
                 $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
@@ -634,9 +649,9 @@ class cswmetadata {
      * @param type $type
      * @param type $preview
      * @param DOMDocument $dom
-     * @return boolean
+     * @return string
      */
-    public function applyXSL($catalog, $type, $preview, $dom = null) {
+    public function applyXSL($params, $dom = null) {
         if (empty($dom)) {
             $dom = $this->extendeddom;
         }
@@ -649,9 +664,11 @@ class cswmetadata {
         endif;
         $processor = new xsltProcessor();
         $processor->importStylesheet($style);
-        $processor->setParameter("", 'catalog', $catalog);
-        $processor->setParameter("", 'type', $type);
-        $processor->setParameter("", 'preview', $preview);
+        
+        foreach ($params as $key => $value) {
+            $processor->setParameter("", $key, $value);
+        }
+        
         $html = $processor->transformToDoc($dom);
         $text = $html->saveHTML();
         //Workaround to avoid printf problem with text with a "%", must
@@ -693,7 +710,7 @@ class cswmetadata {
             if (!$sdiUser->isEasySDI):
                 return null;
             endif;
-            if ($this->diffusion->accessscope_id == 2):
+            if ($this->diffusion->accessscope_id == 3):
                 $organisms = sdiModel::getAccessScopeOrganism($this->diffusion->guid);
                 $organism = $sdiUser->getMemberOrganisms();
                 if (empty($organism)):
@@ -703,13 +720,13 @@ class cswmetadata {
                     return null;
                 endif;
             endif;
-            if ($this->diffusion->accessscope_id == 3):
+            if ($this->diffusion->accessscope_id == 4):
                 $users = sdiModel::getAccessScopeUser($this->diffusion->guid);
                 if (!in_array($sdiUser->id, $users)):
                     return null;
                 endif;
             endif;
-            if ($this->diffusion->accessscope_id == 4):
+            if ($this->diffusion->accessscope_id == 2):
                 $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                 $allowedCategories = sdiModel::getAccessScopeCategory($this->diffusion->guid);
                 if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
@@ -736,7 +753,7 @@ class cswmetadata {
 
 
 //        $html = '<script src="' . JURI::root() . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>';
-        $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">';
+        $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm'.$this->diffusion->id.'" name="adminForm" enctype="multipart/form-data">';
         $html .= '<div class="sdi-shop-order well">';
         $html .= '<div class="sdi-shop-properties" >';
         $html .= '<div class="sdi-shop-properties-title" ></div>';
@@ -846,7 +863,7 @@ class cswmetadata {
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
         $html .= '
             <div class="sdi-shop-toolbar-add-basket pull-right">
-                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton(); return false;">' . JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET') . '</button>
+                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton('.$this->diffusion->id.'); return false;">' . JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET') . '</button>
                 <input type="hidden" name="diffusion_id" id="diffusion_id" value="' . $this->diffusion->id . '" />
             </div>
             ';
@@ -998,7 +1015,7 @@ class cswmetadata {
         // cURL sends a 'Expect: 100-continue' header. The server acknowledges and sends back the '100' status code.
         // cuRL then sends the request body. This is proper behaviour. Nginx supports this header.
         // This allows to work around servers that do not support that header.
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"','Expect:'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"', 'Expect:'));
         // We're emptying the 'Expect' header, saying to the server: please accept the body right now.        
         curl_setopt($ch, CURLOPT_COOKIE, $cookies);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1022,7 +1039,7 @@ class cswmetadata {
 
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
- 
+
         $output = curl_exec($ch);
         curl_close($ch);
 
