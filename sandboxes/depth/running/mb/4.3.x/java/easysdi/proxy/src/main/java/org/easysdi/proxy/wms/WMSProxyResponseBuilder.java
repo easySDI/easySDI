@@ -224,15 +224,19 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                 if (endatt.contains("&")) {
                     int endlayername = att.indexOf("&", startlayername);
                     String oldlayername = att.substring(startlayername, endlayername);
-                    att = att.replace(oldlayername, prefixedName);
+                    att = att.replace("layer="+oldlayername, "layer="+prefixedName);
                 } else {
                     String oldlayername = att.substring(startlayername);
-                    att = att.replace(oldlayername, prefixedName);
+                    att = att.replace("layer="+oldlayername, "layer="+prefixedName);
                 }
             }
 
             if (!att.contains("version=")) {
                 att += "&version=" + version;
+            }
+            
+            if (!att.contains("service=")) {
+                att += "&service=WMS";
             }
 
             toUpdate.setAttribute("href", att, nsXLINK);
