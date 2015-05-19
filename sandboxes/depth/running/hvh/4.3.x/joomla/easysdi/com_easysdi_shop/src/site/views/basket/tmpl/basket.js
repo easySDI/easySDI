@@ -477,6 +477,7 @@ jQuery(document).ready(function() {
         var t = jQuery('#features').val();
         if (jQuery('#features').val() === '') {
             jQuery('#modal-error').modal('show');
+            return false;
         } else {
             if (jQuery('#allowedbuffer').val() == 0) {
                 jQuery('#perimeter-buffer').val('');
