@@ -97,6 +97,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
             $version->load($this->_item->version_id);
             $resource->load($version->resource_id);
             $this->_item->name = $resource->name;
+            $this->_item->alias = $resource->alias;
         }
 
         return $this->_item;
