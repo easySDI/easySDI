@@ -85,6 +85,7 @@ class sdiUser {
     const extractionresponsible = 7;
     const pricingmanager = 9;
     const validationmanager = 10;
+    const organismmanager = 11;
 
     /**
      * 
@@ -197,6 +198,108 @@ class sdiUser {
         }
         return false;
     }
+    
+    /**
+     * getOrganisms
+     * 
+     * @param mixed $roles - array|int
+     * @param boolean $onlyIds
+     * @return array - a list of organism or of organism's ids
+     * @since 4.3.2
+     */
+    public function getOrganisms($roles = array(), $onlyIds = false){
+        if (!$this->isEasySDI) {
+            return array();
+        }
+        if(!is_array($roles)){
+            $roles = array($roles);
+        }
+        $getAll = count(array_intersect(array('*', 'all'), $roles))>0;
+        $list = array();
+        
+        foreach($this->role as $role => $organisms){
+            if($getAll || in_array($role, $roles)){
+                foreach($organisms as $organism){
+                    $list[$organism->name] = $organism;
+                }
+            }
+        }
+        
+        ksort($list);
+        return !$onlyIds ? $list : array_map(function($o){return $o->id;}, $list);
+    }
+    
+    public function isOrganismManager($ids = array(-1), $type = 'organism'){
+        if(!$this->isEasySDI || !in_array($type, array('organism', 'resource', 'version', 'metadata', 'diffusion', 'user'))){
+            return false;
+        }
+        
+        if(!is_array($ids)){
+            $ids = array($ids);
+        }
+        
+        $db = JFactory::getDbo();
+        switch($type){
+            case 'user':
+                $query = $db->getQuery(true)
+                    ->select('uro.organism_id')
+                    ->from('#__sdi_user_role_organism uro')
+                    ->where('uro.user_id IN ('.implode(',',$ids).') AND uro.role_id='.self::member);
+                $db->setQuery($query);
+                $organismIds = $db->loadColumn();
+                break;
+            
+            case 'diffusion':
+                $query = $db->getQuery(true)
+                    ->select('r.organism_id')
+                    ->from('#__sdi_resource r')
+                    ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                    ->innerJoin('#__sdi_diffusion d ON d.version_id=v.id')
+                    ->where('d.id IN ('.implode(',',$ids).')');
+                $db->setQuery($query);
+                $organismIds = $db->loadColumn();
+                break;
+            
+            case 'metadata':
+                $query = $db->getQuery(true)
+                    ->select('r.organism_id')
+                    ->from('#__sdi_resource r')
+                    ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
+                    ->where('m.id IN ('.implode(',',$ids).')');
+                $db->setQuery($query);
+                $organismIds = $db->loadColumn();
+                break;
+                
+            case 'version':
+                $query = $db->getQuery(true)
+                    ->select('r.organism_id')
+                    ->from('#__sdi_resource r')
+                    ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                    ->where('v.id IN ('.implode(',',$ids).')');
+                $db->setQuery($query);
+                $organismIds = $db->loadColumn();
+                break;
+            
+            case 'resource':
+                $query = $db->getQuery(true)
+                    ->select('r.organism_id')
+                    ->from('#__sdi_resource r')
+                    ->where('r.id IN ('.implode(',',$ids).')');
+                $db->setQuery($query);
+                $organismIds = $db->loadColumn();
+                break;
+            
+            case 'organism':
+            default:
+                $organismIds = $ids;
+        }
+        
+        if(isset($this->role[self::organismmanager])){
+            return (bool)(count(array_intersect($organismIds, $this->getOrganisms(self::organismmanager, true)))>0);
+        }
+        return false;
+    }
 
     /**
      * Get the resource type the user can manage
@@ -210,10 +313,10 @@ class sdiUser {
 
         $cls = '(rt.accessscope_id = 1 
                             OR ((rt.accessscope_id = 3) AND (' . $this->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = rt.guid)))';
-
-        foreach ($this->role[2] as $organism):
+        
+        foreach ($this->getOrganisms(array(self::resourcemanager, self::organismmanager), true) as $organism):
             $cls .= 'OR ((rt.accessscope_id = 2) AND (';
-            $cls .= $organism->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = rt.guid)';
+            $cls .= $organism . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = rt.guid)';
             $cls .= '))';
         endforeach;
 
@@ -346,6 +449,10 @@ class sdiUser {
             return null;
         }
         return $this->role[self::pricingmanager];
+    }
+    
+    public function isPricingManager($id){
+        return in_array($id, $this->getOrganisms(self::pricingmanager, true));
     }
 
     /**
@@ -555,7 +662,7 @@ class sdiUser {
                 ->innerJoin('#__sdi_version v ON v.resource_id = urr.resource_id')
                 ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
                 ->where('urr.user_id = ' . (int) $this->id)
-                ->where('urr.role_id = 7');
+                ->where('urr.role_id = '.(int)self::extractionresponsible);
         $db->setQuery($query);
 
         return $db->loadColumn();

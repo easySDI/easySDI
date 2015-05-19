@@ -47,8 +47,9 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
+        $this->isDiffusionManager = $this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager);
         if (!empty($this->item->id)) {
-            if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager)) {
+            if (!$this->isDiffusionManager && !$this->user->isOrganismManager($this->item->id, 'metadata')) {
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                 JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
@@ -86,8 +87,6 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $db->setQuery($query);
         $this->orderperimeters = $db->loadObjectList();
 
-
-
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
@@ -96,7 +95,7 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $pathway = $app->getPathway();
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BREADCRUMBS_RESOURCES"), JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BREADCRUMBS_DIFFUSION"), '');
-
+        
         $this->_prepareDocument();
 
         parent::display($tpl);
@@ -146,12 +145,14 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'diffusion.apply', false);
-        $bar->appendButton('Separator');
-        $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'diffusion.save', false);
-        $bar->appendButton('Separator');
-        /*$bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'diffusion.remove', false);
-        $bar->appendButton('Separator');*/
+        if($this->isDiffusionManager){
+            $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'diffusion.apply', false);
+            $bar->appendButton('Separator');
+            $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'diffusion.save', false);
+            $bar->appendButton('Separator');
+            /*$bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'diffusion.remove', false);
+            $bar->appendButton('Separator');*/
+        }
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'diffusion.cancel', false);
         //generate the html and return
         return $bar->render();

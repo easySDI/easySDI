@@ -202,7 +202,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                 <?php if($this->state->get('layout.validation') && $this->item->orderstate_id == 8): ?>
                 <p id="validation_remark">
                     <label for="reason"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK'); ?>:</label>
-                    <textarea id="reason" name="reason"></textarea>
+                    <textarea id="reason" name="reason" <?php if(!$this->isValidationManager):?>disabled="disabled"<?php endif;?>></textarea>
                 </p>
                 <?php endif;
                 echo $this->getToolbar(); ?>

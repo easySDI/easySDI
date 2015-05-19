@@ -712,6 +712,7 @@ class FormGenerator {
         $form->appendChild($this->getHiddenFields());
 
         $fieldset = $this->form->createElement('fieldset');
+        $fieldset->setAttribute('name', 'nonhidden');
 
         switch ($root->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$ATTRIBUT:
@@ -1794,13 +1795,15 @@ class FormGenerator {
     private function getFieldScope($metadata_id, $relationscope_id, $editorrelationscope_id) {
         $rights = array(EnumRelationScope::HIDDEN);
 
-        if ($this->user->authorizeOnMetadata($metadata_id, sdiUser::resourcemanager) || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataresponsible)) {
+        if ($this->user->authorizeOnMetadata($metadata_id, sdiUser::resourcemanager) || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataresponsible)
+                || $this->user->isOrganismManager($metadata_id, 'metadata')) {
             if (!empty($relationscope_id)) {
                 $rights[] = $relationscope_id;
             }
         }
 
-        if ($this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataeditor)) {
+        if ($this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataeditor)
+                || $this->user->isOrganismManager($metadata_id, 'metadata')) {
             if (!empty($editorrelationscope_id)) {
                 $rights[] = $editorrelationscope_id;
             }

@@ -174,48 +174,21 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
                         <?php endforeach; ?>
-
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $this->form->getLabel('organism_id'); ?></div>
-                            <div class="controls">
-                                <select id="jform_organism_id" name="jform[organism_id]" class="inputbox" size="1" onchange="onChangeOrganism()">
-                                    <option value="" ></option>
-                                    <?php foreach ($this->user->getResourceManagerOrganisms() as $organism) : ?>
-                                        <option value="<?php echo $organism->id; ?>" <?php
-                                        if ( (isset($this->item->organism_id) && $this->item->organism_id == $organism->id) || count($this->user->getResourceManagerOrganisms()) == 1) : echo 'selected="selected"';
-                                        endif;
-                                        ?>>
-                                                    <?php echo $organism->name; ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
                         <div class='divider'></div>
                         <h2><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ROLE_MANAGEMENT_TITLE'); ?></h2>
                         <div class="control-group">
                             <div class="control-label"></div>
                             <div class="controls">
-                                <button type="button" id="addAllUsersBtn" class="btn btn-mini"><?php echo JText::_('COM_EASYSDI_CORE_ADD_ALL_USERS_BTN'); ?></button>
-                                <button type="button" id="removeAllUsersBtn" class="btn btn-mini"><?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?></button>
+                                <button type="button" id="addAllUsersBtn" class="btn btn-mini" <?php if(!$this->user->authorize($this->item->id, sdiUser::resourcemanager)):?>disabled="disabled"<?php endif;?>><?php echo JText::_('COM_EASYSDI_CORE_ADD_ALL_USERS_BTN'); ?></button>
+                                <button type="button" id="removeAllUsersBtn" class="btn btn-mini" <?php if(!$this->user->authorize($this->item->id, sdiUser::resourcemanager)):?>disabled="disabled"<?php endif;?>><?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?></button>
                             </div>
                         </div>
-                        <?php for($index = 2; $index < 8; $index++): 
-                            $sessionData = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']');
-                        ?>
-                            <div class="control-group" <?php if(isset($this->item->resourcerights[$index]) && !$this->item->resourcerights[$index]): ?>style="display:none"<?php endif; ?>>
-                                <div class="control-label">
-                                    <label id="jform_<?php echo $index ?>-lbl" for="jform_<?php echo $index ?>">
-                                        <?php echo JText::_('COM_EASYSDI_CORE_FORM_DESC_RESOURCE_' . $index .'_LABEL'); ?><?php if($index==2):?><span class="star">&nbsp;*</span><?php endif;?>
-                                    </label>
-                                </div>
-                                <div class="controls">
-                                    <select id="jform_<?php echo $index ?>" name="jform[<?php echo $index ?>][]" class="multiselect input-xxlarge" multiple="multiple" 
-                                        <?php if($sessionData !== null):?> data-orig="<?php echo implode(',',$sessionData); ?>"<?php endif;?>
-                                    ></select>
-                                </div>
+                        <?php foreach($this->form->getFieldset('rolesManagement') as $field): ?>
+                            <div class="control-group" id="<?php echo $field->fieldname; ?>" <?php if(isset($this->item->resourcerights[$field->name]) && !$this->item->resourcerights[$field->name]): ?>style="display:none"<?php endif; ?>>
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
                             </div>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                     </div>
 
                     <div class="tab-pane" id="publishing">

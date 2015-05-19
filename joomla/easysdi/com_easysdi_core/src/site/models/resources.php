@@ -22,6 +22,21 @@ class Easysdi_coreModelResources extends JModelList {
     private $user;
 
     /**
+     * EasySDI user roles
+     * 
+     */
+    const member = 1;
+    const resourcemanager = 2;
+    const metadataresponsible = 3;
+    const metadataeditor = 4;
+    const diffusionmanager = 5;
+    const viewmanager = 6;
+    const extractionresponsible = 7;
+    const pricingmanager = 9;
+    const validationmanager = 10;
+    const organismmanager = 11;
+
+    /**
      * Constructor.
      *
      * @param    array    An optional associative array of configuration settings.
@@ -64,6 +79,9 @@ class Easysdi_coreModelResources extends JModelList {
         $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
         $this->setState('filter.status', $search);
 
+        $search = $app->getUserStateFromRequest($this->context . '.filter.userorganism', 'filter_userorganism');
+        $this->setState('filter.userorganism', $search);
+
         $search = $app->getUserStateFromRequest($this->context . '.filter.resourcetype', 'filter_resourcetype');
         $this->setState('filter.resourcetype', $search);
 
@@ -95,7 +113,7 @@ class Easysdi_coreModelResources extends JModelList {
         $parentId = JFactory::getApplication()->input->getInt('parentid', null);
 
         // Select the required fields from the table.
-        $query->select('a.id, a.guid, a.alias, a.name');
+        $query->select('a.id, a.guid, a.alias, a.name, a.organism_id');
         $query->from('#__sdi_resource AS a');
         
         // Join over the foreign key 'accessscope_id'
@@ -117,13 +135,15 @@ class Easysdi_coreModelResources extends JModelList {
         $query->join('LEFT', '(SELECT child_id, state FROM #__sdi_resourcetypelink GROUP BY child_id, state) rtl2 ON rtl2.child_id=rt.id');
 
         //join over rights table, check if user have any right on resource
+        $query->innerJoin('#__sdi_user_role_organism AS uro ON uro.organism_id=a.organism_id');
         $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id');
-        $query->where('urr.user_id = ' . $this->user->id);
+        $query->where('(urr.user_id='.(int)$this->user->id.' OR (uro.user_id='.(int)$this->user->id.' AND uro.role_id='.(int)self::organismmanager.'))');
 
         $query->group('a.id');
 	$query->group('a.guid');
         $query->group('a.alias');
         $query->group('a.name');
+        $query->group('a.organism_id');
         $query->group('trans.text1');
         $query->group('rt.versioning');
         $query->group('rt.diffusion');
@@ -141,7 +161,13 @@ class Easysdi_coreModelResources extends JModelList {
             $query->innerJoin('#__sdi_versionlink vl on v.id = vl.child_id');
             $query->where('vl.parent_id = ' . (int) $parentId);
             $this->setState('parentid',$parentId);
-            
+                      
+           // Filter by user organism
+            $userOrganism = $this->getState('filter.userorganism.children');
+            if (is_numeric($userOrganism)) {
+                $query->where('a.organism_id = ' . (int)$userOrganism);
+            }
+
             // Filter by resource type
             $resourcetype = $this->getState('filter.resourcetype.children');
             if (is_numeric($resourcetype)) {
@@ -165,7 +191,13 @@ class Easysdi_coreModelResources extends JModelList {
                 $query->where('md.metadatastate_id = ' . $status);
             }
         }
-        else{            
+        else{           
+           // Filter by user organism
+            $userOrganism = $this->getState('filter.userorganism');
+            if (is_numeric($userOrganism)) {
+                $query->where('a.organism_id = ' . (int)$userOrganism);
+            }
+
            // Filter by resource type
             $resourcetype = $this->getState('filter.resourcetype');
             if (is_numeric($resourcetype)) {

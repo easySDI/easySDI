@@ -210,6 +210,15 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         if (empty($form)) {
             return false;
         }
+        
+        if(!sdiFactory::getSdiUser()->authorizeOnVersion($form->getData()->get('version_id'), sdiUser::diffusionmanager)){
+            foreach($form->getFieldsets() as $fieldset){
+                foreach($form->getFieldset($fieldset->name) as $field){
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
+                }
+            }
+        }
 
         return $form;
     }

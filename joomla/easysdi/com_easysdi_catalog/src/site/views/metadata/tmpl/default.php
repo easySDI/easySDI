@@ -173,7 +173,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
         <div>
 
-            <?php echo $this->getActionToolbar(); ?>
+            <?php if($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();endif; ?>
 
             <?php echo JHtml::_('form.token'); ?>
         </div>
