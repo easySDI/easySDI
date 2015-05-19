@@ -999,7 +999,7 @@ class FormHtmlGenerator {
      * @param boolean $addButton Defines whether the "Add" button must be created.
      * @return DOMElement[]
      */
-    private function buildField(DOMElement $attribute, $field) {
+    private function buildField(DOMElement $attribute, JFormField $field) {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
@@ -1022,27 +1022,39 @@ class FormHtmlGenerator {
             $controlLabel->appendChild($this->getLabel($field));
         }
 
-        $control->appendChild($this->getInput($field));
+        if ($stereotypeId == EnumStereotype::$FILE) {
+            $input_append = $this->formHtml->createElement('div');
+            $input_append->setAttribute('class', 'input-append file-controls');
+            
+            $attach_button = $this->formHtml->createElement('button', JText::_('COM_EASYSDI_CATALOG_FILE_ATTACH'));
+            $attach_button->setAttribute('class', 'btn attach-btn');
+            $attach_button->setAttribute('type', 'button');
+            $attach_button->setAttribute('rendertypeId', $rendertypeId);
+            
+            $preview_button = $this->formHtml->createElement('button',  JText::_('COM_EASYSDI_CATALOG_FILE_PREVIEW'));
+            $preview_button->setAttribute('class', 'btn btn-preview');
+            $preview_button->setAttribute('type', 'button');
+            $preview_button->setAttribute('data-target', $field->id);
+            
+            $delete_button = $this->formHtml->createElement('button', JText::_('COM_EASYSDI_CATALOG_FILE_DELETE'));
+            $delete_button->setAttribute('class', 'btn btn-danger btn-delete');
+            $delete_button->setAttribute('type', 'button');
+            $delete_button->setAttribute('data-target', $field->id);
+            
+            $input_append->appendChild($this->getInput($field));
+            $input_append->appendChild($attach_button);
+            $input_append->appendChild($preview_button);
+            $input_append->appendChild($delete_button);
+            $control->appendChild($input_append);
+        }else{
+            $control->appendChild($this->getInput($field));
+        }
 
         $controlGroup->appendChild($controlLabel);
         $controlGroup->appendChild($control);
 
         if ($occurance < $lowerbound) {
             $controlGroup->appendChild($this->getAttributeRemoveAction($attribute));
-        }
-
-        if ($stereotypeId == EnumStereotype::$FILE) {
-            $jfieldhiddendelete = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehiddendelete');
-            $jfieldhidden = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
-            $jfieldtext = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
-
-            $br = $this->formHtml->createElement('br');
-            $control->appendChild($br);
-            $control->appendChild($this->getInput($jfieldtext));
-            $control->appendChild($this->getInput($jfieldhidden));
-            $control->appendChild($this->getInput($jfieldhiddendelete));
-            $control->appendChild($this->getPreviewAction($attribute));
-            $control->appendChild($this->getEmptyFileAction($attribute));
         }
 
         $elements[] = $controlGroup;

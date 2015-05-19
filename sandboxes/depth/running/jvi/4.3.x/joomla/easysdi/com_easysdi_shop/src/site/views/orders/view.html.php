@@ -35,7 +35,7 @@ class Easysdi_shopViewOrders extends JViewLegacy {
         $this->user = sdiFactory::getSdiUser();
         if (!$this->user->isEasySDI) {
             $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-            $app->redirect(JRoute::_('index.php?', false));
+            $app->redirect("index.php");            
             return false;
         }
         

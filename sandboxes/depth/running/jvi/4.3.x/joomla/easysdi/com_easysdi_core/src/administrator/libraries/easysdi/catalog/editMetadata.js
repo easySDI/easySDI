@@ -3,9 +3,23 @@ js = jQuery.noConflict();
 var tabIsOpen;
 var resourcetypes;
 
+var enumRendertype = {
+    TEXTAREA:1,
+    CHECKBOX:2,
+    RADIOBUTTON:3,
+    LIST:4,
+    TEXTBOX:5,
+    DATE:6,
+    DATETIME:7,
+    GEMET:8,
+    UPLOAD:9,
+    URL:10,
+    UPLOADANDURL:11
+}
+
 js('document').ready(function () {
-    
-    var options = { handler: 'iframe',size: {x: iframewidth, y: iframeheight}};
+
+    var options = {handler: 'iframe', size: {x: iframewidth, y: iframeheight}};
     SqueezeBox.initialize(options);
 
     // Remove scope-hidden field
@@ -27,7 +41,7 @@ js('document').ready(function () {
     js('.attribute-action').each(function () {
         setAttributeAction(js(this));
     });
-
+    
     /**
      * Retrieves resource types and displays or not the checkboxes versions. 
      */
@@ -138,7 +152,7 @@ js('document').ready(function () {
 
                             var response = js.parseJSON(data);
                             if (response.success) {
-                                SqueezeBox.open('index.php?option=com_easysdi_catalog&tmpl=component&view=sheet&preview='+preview+'&type=complete&guid=' + response.guid);
+                                SqueezeBox.open('index.php?option=com_easysdi_catalog&tmpl=component&view=sheet&preview=' + preview + '&type=complete&guid=' + response.guid);
                             }
 
                         }
@@ -177,22 +191,22 @@ js('document').ready(function () {
                                     cache: false
                                 }).done(function (data_version) {
                                     var response = js.parseJSON(data_version);
-                                    
+
                                     var children = response.versions[rel.version].children;
                                     delete response.versions[rel.version].children;
                                     js('#publishModalCurrentMetadata').html(buildVersionsTree(response.versions));
 
-                                    if(js(children).length){
+                                    if (js(children).length) {
                                         js('#publishModalChildrenList').html(buildVersionsTree(children));
                                         js('#publishModalViralPublication').attr('checked', true).trigger('change');
                                         js('#publishModalChildrenDiv').show();
                                     }
-                                    else{
+                                    else {
                                         js('#publishModalViralPublication').attr('checked', false).trigger('change');
                                     }
-                                    
+
                                     var publish_date = js('#jform_published').val();
-                                    if('undefined' !== typeof publish_date && '0000-00-00 00:00:00' !== publish_date){
+                                    if ('undefined' !== typeof publish_date && '0000-00-00 00:00:00' !== publish_date) {
                                         var datetime = publish_date.split(' ');
                                         js('#publish_date').val(datetime[0]);
                                     }
@@ -250,9 +264,9 @@ js('document').ready(function () {
     js('#search_table').dataTable({
         "bFilter": false,
         "oLanguage": {
-            sUrl: baseUrl + 'option=com_easysdi_core&task=proxy.run&url='+encodeURI('http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/'+dtLang+'.json')
+            sUrl: baseUrl + 'option=com_easysdi_core&task=proxy.run&url=' + encodeURI('http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/' + dtLang + '.json')
         },
-	aaData: null,
+        aaData: null,
         aoColumnDefs: [
             {aTargets: [0], mData: function (item) {
                     return "<input type='radio' name='import[id]' id='import_id_" + item.id + "' value='" + item.id + "' checked=''>";
@@ -267,12 +281,13 @@ js('document').ready(function () {
         ]
     });
     js('#search_table_wrapper').hide();
-}
-);
+});
 
 
 
-js(document).on('change', '#publishModalViralPublication', function(){js('#publishModal #viral').val(js(this).attr('checked')==='checked'?1:0)});
+js(document).on('change', '#publishModalViralPublication', function () {
+    js('#publishModal #viral').val(js(this).attr('checked') === 'checked' ? 1 : 0)
+});
 
 /**
  * When the preview modal is visible, we colorize the XML.
@@ -330,6 +345,145 @@ js(document).on('change', '#resourcetype_id', function () {
     });
 });
 
+
+// File input section
+//==============================
+js('document').ready(function () {
+    js('.file-controls').each(function () {
+        if(js(this).children('input').val().length>0){
+            js(this).children('.btn-preview, .btn-delete').show();
+        }
+    });
+});
+
+/**
+ * Lisener on file preview btn
+ */
+js(document).on('click', '.file-controls .btn-preview', function(){
+    var url = js(this).parent().children('input').val();
+    window.open(url,'_blank');
+});
+
+/**
+ * Lisener on fle delete btn
+ */
+js(document).on('click', '.file-controls .btn-delete', function(){
+    var parent = js(this).parent();
+    parent.children('input').val('');
+    parent.children('.btn-preview').hide();
+    js(this).hide();
+});
+
+/**
+ * Load url value in file field
+ */
+js(document).on('click','#fileModal .btn-success',function(){
+    js('#'+js('#file_source_field').val()).val(js('#file_url').val());
+    js('#fileModal').modal('hide');
+    console.log(js('#'+js('#file_source_field').val()).parent());
+    js('#'+js('#file_source_field').val()).parent().children('.btn-preview, .btn-delete').show();
+});
+
+
+/**
+ * Show file popup
+ */
+js(document).on('click', '.attach-btn', function () {
+    resetFileUploadTab();
+    resetFileUrlTab();
+    js('#fileModal .btn-success').prop( "disabled", true );
+    var rendertype = parseInt(js(this).attr('rendertypeId'));
+    switch(rendertype){
+        case enumRendertype.UPLOAD:
+            js('#fileModal .url').removeClass('active in').hide();
+            js('#fileModal .upload').addClass('active in').show();
+            break;
+        case enumRendertype.URL:
+            js('#fileModal .upload').removeClass('active in').hide();
+            js('#fileModal .url').addClass('active in').show();
+            break;
+        case enumRendertype.UPLOADANDURL:
+            js('#fileModal .url').removeClass('active in').show();
+            js('#fileModal .upload').addClass('active in').show();
+            break;
+    }
+    
+    js('#file_source_field').val(js(this).prev().attr('id'));
+    js('#fileModal').modal('show');
+});
+
+/**
+ * check file url on lost focus
+ */
+js(document).on('blur', '#fileUrl', function () {
+    
+    var url = js('#fileUrl').val();
+    js('#fileUrlValidate').hide();
+    
+    if(url.length>0){
+        js.ajax({
+            url: baseUrl + 'option=com_easysdi_catalog&task=ajax.checkFileUrl&url=' + url,
+            type: "GET",
+            cache: false
+        }).done(function (data) {
+            if(data.code === 200){
+                js('#fileUrlValidate').removeClass('alert alert-error').addClass('alert alert-success').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_VALIDATE_OK')).show();
+                js('#file_url').val(js('#fileUrl').val());
+                js('#fileModal .btn-success').prop( "disabled", false );
+                resetFileUploadTab();
+            }else{
+                js('#fileUrlValidate').removeClass('alert alert-success').addClass('alert alert-error').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_VALIDATE_KO')).show();
+            }
+        }).fail(function () {
+            js('#fileUrlValidate').removeClass('alert alert-success').addClass('alert alert-error').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_VALIDATE_UNABLE')).show();
+        });
+    }
+});
+
+js(function(){
+    js('#fileUpload').fileupload({
+        dataType: 'json',
+        add: function(e, data){
+            js('#fileUploadValidate').hide();
+            js('.progress').show();
+            data.submit();
+        },
+        progressall: function(e, data){
+          var progress = parseInt(data.loaded / data.total * 100, 10);
+            js('.progress .bar').css('width',progress + '%');
+        },
+        done: function(e, data){
+            var result = data.result;
+            if(result.status === 'success'){
+                js('#fileUploadValidate').removeClass('alert alert-error').addClass('alert alert-success').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_UPLOAD_SUCCES')).show();
+                js('#fileUploadPreview').show();
+                js('#fileUploadPreview a').attr('href',result.files.fileUpload.url);
+                js('#fileUploadPreview img').attr('src',result.files.fileUpload.thumbnail);
+                js('#file_url').val(result.files.fileUpload.url);
+                js('#fileModal .btn-success').prop( "disabled", false );
+                resetFileUrlTab();
+            }else{
+                console.log('fail');
+                js('#fileUploadValidate').removeClass('alert alert-success').addClass('alert alert-error').html(result.error);
+            }
+            
+        }
+    });
+});
+
+function resetFileUploadTab(){
+    js('.progress, #fileUploadPreview, #fileUploadValidate').hide();
+}
+
+function resetFileUrlTab(){
+    js('#fileUrlValidate').hide();
+    js('#fileUrl').val('');
+}
+
+// ENd file input section
+//==============================
+
+
 /**
  * Add field
  */
@@ -361,7 +515,7 @@ js(document).on('click', '.attribute-add-btn', function () {
         // change field into readonly
         disableVisible();
     }).fail(function () {
-       bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION'));
+        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_ADD_ATTRIBUTE_RELATION'));
     });
 
 });
@@ -410,7 +564,7 @@ js(document).on('click', '.add-btn', function () {
             button.attr('disabled', true);
         }
     }).done(function (data) {
-        
+
         var elmt = (js('.fds' + uuid).length > 0) ? js('.fds' + uuid).last() : button.parent();
         elmt.after(data);
 
@@ -510,7 +664,7 @@ js(document).on('click', '#btn_toggle_all', function () {
  * @returns {String}
  * @deprecated use buildVersionsTree instead
  */
-var buildDeletedTree = function(versions){
+var buildDeletedTree = function (versions) {
     return buildVersionsTree(versions);
 }
 
@@ -661,12 +815,12 @@ function toogleAll(button) {
     if (tabIsOpen) {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
         js('.inner-fds').hide();
-        js('.collapse-btn>i').removeClass('icon-arrow-down').addClass('icon-arrow-right');        
+        js('.collapse-btn>i').removeClass('icon-arrow-down').addClass('icon-arrow-right');
         tabIsOpen = false;
     } else {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
-        js('.collapse-btn>i').removeClass('icon-arrow-right').addClass('icon-arrow-down');        
+        js('.collapse-btn>i').removeClass('icon-arrow-right').addClass('icon-arrow-down');
         tabIsOpen = true;
     }
 }
@@ -713,7 +867,7 @@ function confirmReplicate() {
 }
 
 function confirmReset() {
-    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE","COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
+    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", "COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
         if (result) {
 
         }
@@ -737,7 +891,7 @@ function removeFromStructure(id) {
 }
 
 function confirmEmptyFile(id) {
-    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE","COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
+    bootbox.confirm(Joomla.JText._("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", "COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE"), function (result) {
         if (result) {
             emptyFile(id);
         }
@@ -792,7 +946,7 @@ function setBoundary(parentPath, value) {
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response.southbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
-   
+
         var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
@@ -856,7 +1010,7 @@ function removeHidden() {
 
 function disableVisible() {
 
-    js(':input[readonly], .scope-visible :input').prop('disabled', true).removeAttr('readonly').removeClass('validate-sdidate validate-sdidatetime');
+    js(':input[readonly][class*="validate-sdidate"], .scope-visible :input[class*="validate-sdidate"]').prop('disabled', true).removeAttr('readonly').removeClass('validate-sdidate validate-sdidatetime');
     js('fieldset.scope-visible').prev('.action a').remove();
     js('fieldset.scope-visible .remove-btn, fieldset.scope-visible .add-btn, fieldset.scope-visible .attribute-add-btn').remove();
     js('.scope-visible select').trigger("liszt:updated");

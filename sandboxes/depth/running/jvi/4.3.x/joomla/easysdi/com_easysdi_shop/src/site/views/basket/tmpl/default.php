@@ -526,9 +526,9 @@ if ($this->item && $this->item->extractions) :
                     <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
                     <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING'); ?>
                 </div>                
-                <!--<div class="modal-footer">
-                    <button type="button" class="btn btn-primary"><?php echo JText::_('OK'); ?></button>
-                </div>              -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ><?php echo JText::_('OK'); ?></button>
+                </div>              
             </div>
         </div>
 

@@ -600,6 +600,9 @@ INSERT INTO `#__sdi_sys_rendertype` VALUES ('5', '5', '1', 'textbox');
 INSERT INTO `#__sdi_sys_rendertype` VALUES ('6', '6', '1', 'date');
 INSERT INTO `#__sdi_sys_rendertype` VALUES ('7', '7', '1', 'datetime');
 INSERT INTO `#__sdi_sys_rendertype` VALUES ('8', '8', '1', 'gemet');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('9', '9', '1', 'upload');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('10', '10', '1', 'url');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('11', '11', '1', 'upload and url');
 
 INSERT INTO `#__sdi_searchcriteria` VALUES ('1', '58dfe161-60c3-4b72-b768-e4a09bae8cdb', 'fulltext', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'fulltext', '1', '1', '5', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('2', '05b0fb40-459c-4ed2-a985-ce1611593969', 'resourcetype', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'resourcetype', '1', '1', '2', null, '0', '0');
@@ -650,13 +653,14 @@ INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('11', '6', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('12', '7', '1');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('13', '7', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('14', '8', '6');
-
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('16', '9', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('17', '10', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('18', '12', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('19', '13', '5');
-INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('20', '14', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('21', '11', '8');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('22', '14', '9');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('23', '14', '10');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('24', '14', '11');
 
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('1', '3', '5');
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('2', '3', '6');
