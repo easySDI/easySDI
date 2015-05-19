@@ -7,3 +7,5 @@ INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALU
 INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (14, 11);
 
 DELETE FROM #__sdi_sys_rendertype_stereotype WHERE id=20;
+
+ALTER TABLE #__sdi_visualization MODIFY alias VARCHAR(50) NOT NULL;

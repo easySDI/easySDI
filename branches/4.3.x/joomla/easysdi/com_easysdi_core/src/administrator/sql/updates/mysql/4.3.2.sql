@@ -7,3 +7,5 @@ INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('23', '14', '10');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('24', '14', '11');
 
 DELETE FROM `#__sdi_sys_rendertype_stereotype` WHERE id=20;
+
+ALTER TABLE `#__sdi_visualization` MODIFY `alias` VARCHAR(50) NOT NULL;
