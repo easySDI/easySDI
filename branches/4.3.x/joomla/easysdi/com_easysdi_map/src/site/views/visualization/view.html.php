@@ -51,7 +51,7 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
         }
 
         if (!empty($this->item->id)) {
-            if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::viewmanager)) {
+            if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::viewmanager) && !$this->user->isOrganismManager($this->item->version_id, 'version')) {
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                 JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
@@ -112,12 +112,14 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        /*$bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'visualization.apply', false);
-        $bar->appendButton('Separator');*/
-        $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'visualization.save', false);
-        $bar->appendButton('Separator');
-        /*$bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'visualization.remove', false);
-        $bar->appendButton('Separator');*/
+        if($this->user->authorizeOnVersion($this->item->version_id, sdiUser::viewmanager)){
+            /*$bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'visualization.apply', false);
+            $bar->appendButton('Separator');*/
+            $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'visualization.save', false);
+            $bar->appendButton('Separator');
+            /*$bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'visualization.remove', false);
+            $bar->appendButton('Separator');*/
+        }
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'visualization.cancel', false);
         //generate the html and return
         return $bar->render();

@@ -75,24 +75,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
                         <fieldset id ="fieldset_view">
                             <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_VIEW'); ?></legend>
-                            <div class="control-group" id="maplayer_id">
-                                <div class="control-label">
-                                    <label id="jform_maplayer_id-lbl" for="jform_maplayer_id" class="hasTip" title="<?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID'); ?>::<?php echo JText::_('COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_MAPLAYER_ID'); ?>"><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID'); ?></label>
+                            <?php foreach ($this->form->getFieldset('view') as $field): ?>
+                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                    <div class="control-label"><?php echo $field->label; ?></div>
+                                    <div class="controls"><?php echo $field->input; ?></div>
                                 </div>
-                                <div class="controls">
-                                    <select id="jform_maplayer_id" name="jform[maplayer_id]" class="inputbox" size="1" >
-                                        <option value="" ></option>
-                                        <?php foreach ($this->authorizedLayers as $maplayer) : ?>
-                                            <option value="<?php echo $maplayer->id; ?>" <?php
-                                            if (isset($this->item->maplayer_id) && $this->item->maplayer_id == $maplayer->id) : echo 'selected="selected"';
-                                            endif;
-                                            ?>>
-                                            <?php echo $maplayer->name; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
+                            <?php endforeach; ?>
                         </fieldset>
                     </div>
 

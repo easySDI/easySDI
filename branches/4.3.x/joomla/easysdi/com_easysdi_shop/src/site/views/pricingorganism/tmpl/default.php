@@ -25,6 +25,9 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             jQuery('input[name=action]').val(taskArray[1]);
             Joomla.submitform(task, document.getElementById('adminForm'));
         };
+        jQuery('input[type=radio]:disabled').each(function(){
+            jQuery('label[for="'+jQuery(this).attr('id')+'"]').attr('disabled', 'disabled');
+        });
     });
 </script>
 
@@ -58,7 +61,8 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                         <?php foreach ($this->item->categories as $category): ?>
                             <tr>
                                 <td><label><?php echo $category->name; ?></label></td>
-                                <td><input type="text" name="jform[categories][<?php echo $category->id; ?>]" value="<?php echo $category->rebate; ?>"></td>
+                                <td><input type="text" name="jform[categories][<?php echo $category->id; ?>]" value="<?php echo $category->rebate; ?>"
+                                           <?php if(!$this->isPricingManager):?>readonly="readonly"<?php endif;?>></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -77,13 +81,13 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
     <div class="well">
         <h2><?php echo JText::_('COM_EASYSDI_SHOP_FORM_PRICINGORGANISM_FIELDSET_PRICING_PROFILE'); ?></h2>
-
+        <?php if($this->isPricingManager):?>
         <div class="btn-group">
             <a class="btn btn-success" data-toggle="dropdown" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=pricingprofile.edit&id=0&organism=' . $this->item->id); ?>">
                 <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_PRICING_PROFILE_NEW'); ?>
             </a>
         </div>
-
+<?php endif;?>
         <?php if (count($this->item->profiles)): ?>
             <table class="table table-striped">
                 <thead>

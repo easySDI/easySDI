@@ -19,8 +19,22 @@ JHtml::_('formbehavior.chosen', 'select');
     <div class="well sdi-searchcriteria">
         <div class="row-fluid">
             <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=requests'); ?>" method="post">
-                <div class="btn-toolbar">
-                    <div class="btn-group pull-left">                        
+                <div class="btn-group pull-right">
+                    <?php if(count($this->organisms)>1):?>
+                    <div id="filterorganism" >
+                        <select id="filter_userorganism" name="filter_userorganism" onchange="this.form.submit();" class="inputbox">
+                            <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_ORGANISM_FILTER'); ?></option>
+                            <?php foreach ($this->organisms as $organism): ?>
+                                <option value="<?php echo $organism->id; ?>" <?php
+                                if ($this->state->get('filter.organism') == $organism->id) : echo 'selected="selected"';
+                                endif;
+                                ?> ><?php echo $organism->name; ?></option>
+                                    <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <?php endif;?>
+                    
+                    <div id="filterstatus">                        
                         <select id="filter_status" name="filter_type" onchange="this.form.submit();" class="inputbox">
                             <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_TYPE_FILTER'); ?></option>
                             <?php foreach ($this->ordertype as $ordertype): ?>
@@ -31,8 +45,8 @@ JHtml::_('formbehavior.chosen', 'select');
                                     <?php echo JText::_($ordertype->value); ?></option>
                             <?php endforeach; ?>
                         </select>
-                        </div>
-                    <div id="filtersearch" class="btn-group pull-left">
+                    </div>
+                    <div id="filtersearch">
                             <label for="filter_search" class="element-invisible">Rechercher</label>
                             <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_SEARCH_FILTER'); ?>" value="<?php echo $this->state->get('filter.search'); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
                             <button class="btn hasTooltip" type="submit" title="Rechercher"><i class="icon-search"></i></button>
