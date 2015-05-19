@@ -113,7 +113,7 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
             // Redirect back to the edit screen.
             $app->setUserState('com_easysdi_shop.edit.pricingprofile.data', null);
             $app->setUserState('com_easysdi_shop.edit.pricingprofile.id', $pricingProfile->id);
-            $app->setUserState('com_easysdi_shop.edit.pricingprofile.organism_id', $organism_id);
+            $app->setUserState('com_easysdi_shop.edit.pricingprofile.organism_id', $pricingProfile->organism_id);
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingprofile&layout=edit', false));
         } else {
@@ -122,7 +122,7 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
 
             // Redirect to the pricingorganism screen.
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism&layout=edit&id=' . $organism_id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism&layout=edit&id=' . $pricingProfile->organism_id, false));
         }
     }
     
