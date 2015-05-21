@@ -94,6 +94,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                         <th><?php echo JText::_('COM_EASYSDI_SHOP_FOR_LBL_PRICING_PROFILE_MIN_PRICE'); ?></th>
                         <th><?php echo JText::_('COM_EASYSDI_SHOP_FOR_LBL_PRICING_PROFILE_MAX_PRICE'); ?></th>
                         <th><?php echo JText::_('COM_EASYSDI_SHOP_FOR_LBL_PRICING_PROFILE_CATEGORIES_FREE'); ?></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,6 +108,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             <td><?php echo $profile->min_fee; ?></td>
                             <td><?php echo $profile->max_fee; ?></td>
                             <td><?php echo (bool) $profile->free_category ? JText::_('YES') : JText::_('NO'); ?></td>
+                            <td><button type="button" class="btn btn-danger delete" data-id="<?php echo $profile->id ; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_DELETE_ITEM') ;?></button></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -115,4 +117,23 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
     </div>
 </div>
 
+<!-- Delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></h4>
+            </div>
+            <div id="deleteModalBody" class="modal-body">
+                <?php echo JText::_('COM_EAYSDI_CORE_DELETE_CONFIRM'); ?>
+                <span id="deleteModalChildrenList"></span>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
+                <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
 
