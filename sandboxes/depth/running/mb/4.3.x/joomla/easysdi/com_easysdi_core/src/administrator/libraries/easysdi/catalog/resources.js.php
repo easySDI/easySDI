@@ -209,7 +209,8 @@ var Resource = (function(){
             metadataResponsible:    false,
             resourceManager:        false,
             diffusionManager:       false,
-            viewManager:            false
+            viewManager:            false,
+            organismManager:        false
         };
         this.versioning = false;
         this.assignment = false;
@@ -270,6 +271,7 @@ var Resource = (function(){
     <?php if($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>resource.rights.resourceManager = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::diffusionmanager)): ?>resource.rights.diffusionManager = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::viewmanager)): ?>resource.rights.viewManager = 1;<?php endif; ?>
+    <?php if($this->user->isOrganismManager($item->organism_id)): ?>resource.rights.organismManager = 1;<?php endif; ?>
     <?php if($item->supportapplication): ?>resource.support.application = 1;<?php endif; ?>
     <?php if($item->supportdiffusion): ?>resource.support.diffusion = 1;<?php endif; ?>
     <?php if($item->supportrelation): ?>resource.support.relation = 1;<?php endif; ?>
@@ -358,14 +360,16 @@ var buildMetadataDropDown = function(resource){
     var section = [];
     section.push(buildDropDownItem(resource, 'metadata.preview'));
     
-    if(
+    if( 
         (resource.rights.metadataEditor && metadata.state===metadataState.INPROGRESS)
         ||
-        (resource.rights.metadataResponsible && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED]))
-    )
+        (resource.rights.metadataResponsible && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED])>-1)
+        || resource.rights.organismManager
+    ){
         section.push(buildDropDownItem(resource, 'metadata.edit'));
+    }
     
-    if(resource.rights.metadataResponsible)
+    if(resource.rights.metadataResponsible){
         switch(metadata.state){
             case metadataState.VALIDATED:
                 section.push(buildDropDownItem(resource, 'metadata.inprogress'));
@@ -382,6 +386,7 @@ var buildMetadataDropDown = function(resource){
                 section.push(buildDropDownItem(resource, 'metadata.inprogress'));
                 break;
         }
+    }
     
     dropdown.push(section);
     
@@ -420,27 +425,32 @@ var buildManagementDropDown = function(resource){
     var dropdown = [];
     
     /* FIRST SECTION */
-    if(resource.rights.resourceManager){
-        var section = [];
+    var section = [];
+    
+    if(resource.rights.resourceManager || resource.rights.organismManager){
+        if(resource.support.relation || resource.canBeChild){
+            section.push(buildDropDownItem(resource, 'management.relation'))
+        }
         
-        if(resource.versioning)
-            section.push(buildDropDownItem(resource, 'management.new_version'));
-        
-        if(resource.support.relation || resource.canBeChild)
-            section.push(buildDropDownItem(resource, 'management.relation'));
-        
-        if(resource.support.relation)
+        if(resource.support.relation){
             section.push(buildDropDownItem(resource, 'management.child_list'));
-        
-        if(resource.support.application)
-            section.push(buildDropDownItem(resource, 'management.application'));
-        
-        if(section.length)
-            dropdown.push(section);
+        }
     }
     
+    if(resource.rights.resourceManager){
+        if(resource.versioning){
+            section.unshift(buildDropDownItem(resource, 'management.new_version'));
+        }
+        
+        if(resource.support.application){
+            section.push(buildDropDownItem(resource, 'management.application'));
+        }
+    }
+    
+    section.length ? dropdown.push(section) : delete section;
+    
     /* SECOND SECTION */
-    if(resource.rights.diffusionManager && resource.support.diffusion){
+    if((resource.rights.diffusionManager || resource.rights.organismManager) && resource.support.diffusion){
         var section = [];
         
         section.push(buildDropDownItem(resource, 'management.diffusion'));
@@ -449,7 +459,7 @@ var buildManagementDropDown = function(resource){
     }
     
     /* THIRD SECTION */
-    if(resource.rights.viewManager && resource.support.view){
+    if((resource.rights.viewManager || resource.rights.organismManager) && resource.support.view){
         var section = [];
         
         section.push(buildDropDownItem(resource, 'management.view'));
@@ -467,7 +477,7 @@ var buildManagementDropDown = function(resource){
     }
     
     /* FIFTH SECTION */
-    if(resource.rights.metadataEditor  && resource.assignment == 1){
+    if((resource.rights.metadataEditor || resource.rights.organismManager) && resource.assignment == 1){
         var section = [];
         
         section.push(buildDropDownItem(resource, 'management.assignment_history'));
@@ -522,7 +532,7 @@ var buildStatusCell = function(resource){
 };
 
 var enableResourceLink = function(resource){
-    if(resource.rights.resourceManager){
+    if(resource.rights.resourceManager || resource.rights.organismManager){
         var a = js('<a></a>')
                 .html(resource.name)
                 .attr('href', Links.resource.edit.replace('#0#', resource.id));

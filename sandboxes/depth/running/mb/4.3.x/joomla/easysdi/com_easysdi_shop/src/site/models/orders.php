@@ -23,6 +23,7 @@ class Easysdi_shopModelOrders extends JModelList {
     const ORDERTYPE_DRAFT       = 3;
     
     const USERROLE_VALIDATIONMANAGER = 10;
+    const USERROLE_ORGANISMMANAGER = 11;
     
     /**
      * Constructor.
@@ -52,6 +53,9 @@ class Easysdi_shopModelOrders extends JModelList {
         $app = JFactory::getApplication();
 
         // Load the filter state.
+        $search = $app->getUserStateFromRequest($this->context . '.filter.organism', 'filter_organism');
+        $this->setState('filter.organism', $search);
+        
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
         
@@ -89,7 +93,7 @@ class Easysdi_shopModelOrders extends JModelList {
      * @since	1.6
      */
     protected function getListQuery() {
-        
+        $user = sdiFactory::getSdiUser();
         // Create a new query object.
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -97,7 +101,7 @@ class Easysdi_shopModelOrders extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.*'
+                        'list.select', 'DISTINCT a.*'
                 )
         );
         
@@ -147,8 +151,8 @@ class Easysdi_shopModelOrders extends JModelList {
         
         if($this->getState('layout.validation')){
             $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
-                    ->where('uro.user_id='.(int)  sdiFactory::getSdiUser()->id)
-                    ->where('uro.role_id='.self::USERROLE_VALIDATIONMANAGER);
+                    ->where('uro.user_id='.(int)$user->id)
+                    ->where('uro.role_id IN ('.sdiUser::validationmanager.','.sdiUser::organismmanager.')');
             
             $tpOrganism = $this->getState('filter.organism');
             if($tpOrganism > 0)
@@ -156,7 +160,13 @@ class Easysdi_shopModelOrders extends JModelList {
         }
         else{
             //Only order which belong to the current user
-            $query->where('a.user_id = ' . (int) sdiFactory::getSdiUser()->id);
+            $organism = $this->getState('filter.organism');
+            $organisms = $organism>0 ? array($organism) : $user->getOrganisms(array(sdiUser::organismmanager), true);
+            if(count($organisms)==0){
+                $organisms = array(-1);
+            }
+            $query->innerJoin('#__sdi_user_role_organism uro ON uro.user_id=a.user_id')
+                    ->where('uro.role_id='.sdiUser::member.' AND (a.user_id='.(int)$user->id.' OR uro.organism_id IN ('.implode(',', $organisms).'))');
         }
         
         
