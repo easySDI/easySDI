@@ -38,6 +38,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     const ORDERSTATE_REJECTED_TP = 9; //order rejected by third party
     const ORDERSTATE_REJECTED_SUPPLIER = 10; //order rejected by supplier
     
+    const ORDERTYPE_ORDER = 1;
+    const ORDERTYPE_ESTIMATE = 2;
+    const ORDERTYPE_DRAFT = 3;
+    
     // Order productmining
     const PRODUCTMININGAUTO = 1;
     const PRODUCTMININGMANUAL = 2;
@@ -409,6 +413,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
         $query->where('od.productstate_id IN ('.implode(',', $this->states).')')
                 ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
+                ->where('o.ordertype_id IN ('.self::ORDERTYPE_ORDER.','.self::ORDERTYPE_ESTIMATE.')')
                 ->group($agg);
         
         $this->db->setQuery($query);
