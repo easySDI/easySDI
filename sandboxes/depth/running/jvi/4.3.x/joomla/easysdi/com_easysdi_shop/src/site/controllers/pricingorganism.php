@@ -135,5 +135,5 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
         // Flush the data from the session.
         $app->setUserState('com_easysdi_shop.edit.pricingorganism.data', null);
     }
-
+    
 }
