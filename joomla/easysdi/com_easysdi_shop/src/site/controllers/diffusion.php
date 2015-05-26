@@ -275,6 +275,8 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         $curlHelper->URLChecker(JFactory::getApplication()->input);
     }
     
+    
+    
     public function getAvailableProfiles(){
         $data = JFactory::getApplication()->input->getArray();
         
