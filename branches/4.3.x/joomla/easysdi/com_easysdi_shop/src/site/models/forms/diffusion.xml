@@ -156,13 +156,23 @@
                value_field="value"
                translate="true" />
         
-        <field name="notifieduser_id" 
+        <!--<field name="notifieduser_id" 
                type="sql" 
                class="inputbox input-xlarge"
                multiple="true"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NOTIFIEDUSER_ID"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NOTIFIEDUSER_ID" 
                query="SELECT sdi.id as id, u.name as value FROM #__sdi_user sdi INNER JOIN #__users u ON u.id = sdi.user_id WHERE sdi.state=1 ORDER BY sdi.ordering" 
+               key_field="id" 
+               value_field="value"
+               translate="false" />-->
+               
+            <field name="notifieduser_id" 
+               type="sql" 
+               class="inputbox input-xlarge"
+               multiple="true"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NOTIFIEDUSER_ID"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NOTIFIEDUSER_ID" 
                key_field="id" 
                value_field="value"
                translate="false" />
