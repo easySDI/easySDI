@@ -76,7 +76,7 @@ class Easysdi_shopModelPricingOrganisms extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.*'
+                        'list.select', 'DISTINCT a.*'
                 )
         );
 
@@ -98,7 +98,9 @@ class Easysdi_shopModelPricingOrganisms extends JModelList {
         
         //Only order which belong to the current user
         $query->where('uro.user_id = ' . (int) sdiFactory::getSdiUser()->id)
-                ->where('uro.role_id=9');
+                ->where('uro.role_id IN ('.sdiUser::pricingmanager.','.sdiUser::organismmanager.')');
+        
+        $query->order('a.name');
 
         return $query;
     }

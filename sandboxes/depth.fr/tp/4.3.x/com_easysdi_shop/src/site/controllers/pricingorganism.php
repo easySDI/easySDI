@@ -36,51 +36,56 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism&layout=edit', false));
     }
-    
-    public function save($andclose = true){
+
+    public function save($andclose = true) {
         $app = JFactory::getApplication();
         $inputs = $app->input;
-        
+
         $id = $inputs->get('id', 0, 'int');
         $data = $inputs->get('jform', array(), 'array');
-        
+
         $dataOrganism = $data;
         unset($dataOrganism['categories']);
         $dataCategories = $data['categories'];
-        
+
         $ex = false;
         $db = JFactory::getDbo();
-        try{
+        try {
             $db->transactionStart();
-            
+
             //save organism's pricing
             $query = $db->getQuery(true)
-                        ->update($db->quoteName('#__sdi_organism').' as o');
-            foreach($dataOrganism as $prop => $val)
+                    ->update($db->quoteName('#__sdi_organism') . ' as o');
+            foreach ($dataOrganism as $prop => $val)
                 $query->set($db->quoteName($prop) . "='{$val}'");
 
-            $query->where('o.id='.(int)$id);
+            $query->where('o.id=' . (int) $id);
             $db->setQuery($query);
             $update = $db->execute();
 
             //save organism category pricing rebate
             $query = $db->getQuery(true)
-                        ->delete($db->quoteName('#__sdi_organism_category_pricing_rebate'))
-                        ->where('organism_id='.(int)$id);
+                    ->delete($db->quoteName('#__sdi_organism_category_pricing_rebate'))
+                    ->where('organism_id=' . (int) $id);
             $db->setQuery($query);
             $delete = $db->execute();
 
-            $query = $db->getQuery(true)
+            
+            $concatCategories = implode('', $dataCategories);
+            if (!empty($concatCategories)) {
+                $query = $db->getQuery(true)
                         ->insert($db->quoteName('#__sdi_organism_category_pricing_rebate'))
-                        ->columns($db->quoteName('organism_id'). ', ' .$db->quoteName('category_id') . ', ' .$db->quoteName('rebate'));
-            foreach($dataCategories as $category_id => $rebate){
-                if("" === $rebate) continue;
-                $query->values("{$id}, {$category_id}, {$rebate}");
+                        ->columns($db->quoteName('organism_id') . ', ' . $db->quoteName('category_id') . ', ' . $db->quoteName('rebate'));
+                foreach ($dataCategories as $category_id => $rebate) {
+                    if ("" === $rebate)
+                        continue;
+                    $query->values("{$id}, {$category_id}, {$rebate}");
+                }
+
+                $db->setQuery($query);
+                $insert = $db->execute();
             }
 
-            $db->setQuery($query);
-            $insert = $db->execute();
-            
             $db->transactionCommit();
         } catch (Exception $ex) {
             $db->transactionRollback();
@@ -112,12 +117,12 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganisms', false));
         }
     }
-    
-    public function apply(){
+
+    public function apply() {
         $this->save(false);
     }
-    
-    public function cancel(){
+
+    public function cancel() {
         // Flush the data from the session.
         $this->clearSession();
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganisms', false));
@@ -130,5 +135,5 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
         // Flush the data from the session.
         $app->setUserState('com_easysdi_shop.edit.pricingorganism.data', null);
     }
-
+    
 }

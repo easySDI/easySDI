@@ -44,6 +44,8 @@ class Easysdi_coreViewResources extends JViewLegacy {
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_core');
+        
+        $this->userOrganisms = $this->user->getOrganisms('all');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

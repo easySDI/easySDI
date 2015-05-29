@@ -230,6 +230,16 @@ class Easysdi_coreModelResource extends JModelForm {
         if (empty($form)) {
             return false;
         }
+        
+        if(!sdiFactory::getSdiUser()->authorize($form->getData()->get('id'), sdiUser::resourcemanager)){
+            foreach($form->getFieldsets() as $fieldset){
+                foreach($form->getFieldset($fieldset->name) as $field){
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
+                }
+            }
+        }
+        
         return $form;
     }
 

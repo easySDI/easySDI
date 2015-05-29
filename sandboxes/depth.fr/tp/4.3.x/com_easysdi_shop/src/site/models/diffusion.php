@@ -207,10 +207,22 @@ class Easysdi_shopModelDiffusion extends JModelForm {
     public function getForm($data = array(), $loadData = true) {
         // Get the form.
         $form = $this->loadForm('com_easysdi_shop.diffusion', 'diffusion', array('control' => 'jform', 'load_data' => $loadData));
+       
         if (empty($form)) {
             return false;
         }
-
+        
+        if(!sdiFactory::getSdiUser()->authorizeOnVersion($form->getData()->get('version_id'), sdiUser::diffusionmanager)){
+            foreach($form->getFieldsets() as $fieldset){
+                foreach($form->getFieldset($fieldset->name) as $field){
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
+                }
+            }
+        }
+        
+        $form->setFieldAttribute('notifieduser_id', 'query', $this->getNotifieduserListQuery());
+        
         return $form;
     }
 
@@ -420,6 +432,61 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         }
 
         return true;
+    }
+    
+    /**
+     * 
+     * Get the sql query for Notifieduser_id field
+     * 
+     * @return string
+     */
+    private function getNotifieduserListQuery(){
+        $user = sdiFactory::getSdiUser();
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('o.organism_id');
+        $query->from('#__sdi_user AS u');
+        $query->innerJoin('#__sdi_user_role_organism AS o ON u.id = o.user_id');
+        $query->where('u.id='.(int)$user->id);
+        $query->group('o.organism_id');
+
+        $db->setQuery($query);
+        $user_organisms = $db->loadColumn();
+        
+        
+        $query_resource = $db->getQuery(true);
+        $query_resource->select('uro.user_id AS id');
+        $query_resource->from('#__sdi_version AS v');
+        $query_resource->innerJoin('#__sdi_resource AS r ON v.resource_id = r.id');
+        $query_resource->innerJoin('#__sdi_user_role_organism AS uro ON r.organism_id = uro.organism_id');
+        $query_resource->innerJoin('#__sdi_metadata AS m ON m.version_id = v.id');
+        $query_resource->where('m.id = '.$this->_item->version_id);
+        $query_resource->group('id');
+        
+        $db->setQuery($query_resource);
+        $users_resource = $db->loadColumn();
+        
+        $query_user = $db->getQuery(true);
+        $query_user->select('u.id');
+        $query_user->from('#__users AS ju');
+        $query_user->innerJoin('#__sdi_user AS u ON u.user_id = ju.id');
+        $query_user->innerJoin('#__sdi_user_role_organism AS o ON u.id = o.user_id');
+        $query_user->where('o.organism_id IN ('.  $query->quote(implode(",", $user_organisms)).')');
+        $query_user->group('id');
+        
+        $db->setQuery($query_user);
+        $users_user = $db->loadColumn();
+        
+        $query_all = $db->getQuery(true);
+        $query_all->select('u.id, ju.name as value');
+        $query_all->from('#__sdi_user u');
+        $query_all->innerJoin('#__users ju ON ju.id=u.user_id');
+        $query_all->where('u.id IN ('.implode(',',array_unique(array_merge($users_user,$users_resource))).')');
+        $query_all->order('value');
+        
+        return $query_all->__toString();
+        
     }
 
 }

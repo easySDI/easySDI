@@ -43,3 +43,5 @@ ALTER TABLE #__sdi_perimeter ADD COLUMN `maplayer_id` INT(11) NULL;
 CALL drop_column('sdi_perimeter', 'featuretypefieldlevel');
 ALTER TABLE #__sdi_perimeter ADD COLUMN `featuretypefieldlevel` VARCHAR(100) NULL;
 
+CALL drop_column('sdi_order', 'level');
+ALTER TABLE #__sdi_order ADD COLUMN `level` VARCHAR(100) NULL AFTER mandate_email;

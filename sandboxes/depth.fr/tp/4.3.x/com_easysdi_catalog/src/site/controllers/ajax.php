@@ -15,6 +15,9 @@ JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/ta
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_file.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_errorHelper.php';
 
 class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
@@ -58,7 +61,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
         parent::__construct();
     }
-    
+
     public function removeNode() {
         $this->domXpathStr = new DOMXPath($this->structure);
 
@@ -66,12 +69,12 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
         $query = FormUtils::unSerializeXpath($_GET['uuid']);
-        
-        $elements = $this->domXpathStr->query($query);//->item(0);
-        
-        if($elements->length)
+
+        $elements = $this->domXpathStr->query($query); //->item(0);
+
+        if ($elements->length)
             $element = $elements->item(0);
-        else{ // HACK TO ALLOW FIRST KEYWORD REMOVAL
+        else { // HACK TO ALLOW FIRST KEYWORD REMOVAL
             $tabQuery = explode('/', $query);
             array_pop($tabQuery);
             $query = implode('/', $tabQuery);
@@ -107,9 +110,9 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_boundarycategory as bc ON b.category_id = bc.id');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid');
         $query->innerJoin('#__sdi_language as l ON l.id = t.language_id');
-        $query->where($this->db->quoteName('bc.name') . ' = ' . $this->db->quote($name) );
-        $query->where('l.code = ' . $this->db->quote($default_lang) );
-        
+        $query->where($this->db->quoteName('bc.name') . ' = ' . $this->db->quote($name));
+        $query->where('l.code = ' . $this->db->quote($default_lang));
+
 
         $this->db->setQuery($query);
         $results = $this->db->loadObjectList();
@@ -117,12 +120,12 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         echo json_encode($results);
         die();
     }
-    
+
     /**
      * Get defined boundary, boundary name
      */
-    public function getBoundaryByName(){
-        if(empty($_GET['value'])){
+    public function getBoundaryByName() {
+        if (empty($_GET['value'])) {
             return null;
             die();
         }
@@ -131,11 +134,11 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $query->select('t.text1, b.alias, b.northbound, b.southbound, b.westbound, b.eastbound');
         $query->from('#__sdi_boundary AS b');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid ');
-        $query->where('t.text1 = ' . $this->db->quote($name) );
-        
+        $query->where('t.text1 = ' . $this->db->quote($name));
+
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
-        
+
         echo json_encode($result);
         die();
     }
@@ -158,7 +161,40 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         echo json_encode($resourcetype);
         die();
     }
-    
+
+    /**
+     * Check Url from file popup
+     */
+    public function checkFileUrl() {
+        $curlHelper = new CurlHelper();
+        $curlHelper->URLChecker(JFactory::getApplication()->input);
+        die();
+    }
+
+    public function uploadFile() {
+
+        $target_folder = JPATH_BASE . '/media/easysdi/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
+        $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
+
+        
+        
+        $fu = new Easysdi_filedHelper();
+        try {
+            $result['files'] = $fu->upload($_FILES, $target_folder, JUri::base().'media/easysdi', true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', JUri::base() . 'media/easysdi/thumbnails',120);
+            $result['status'] = 'success';
+            header('Content-type: application/json');
+            echo json_encode($result);
+            die();
+        } catch (Exception $exc) {
+            header('Content-type: application/json');
+            $result = array();
+            $result['error'] = Easysdi_errorHelper::getAncestors($exc, true);
+            $result['status'] = 'fail';
+            echo json_encode($result);
+            die();
+        }
+    }
+
     private function unSerializeXpath($xpath) {
         $xpath = str_replace('-la-', '[', $xpath);
         $xpath = str_replace('-ra-', ']', $xpath);

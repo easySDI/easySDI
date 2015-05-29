@@ -70,29 +70,76 @@
             value_field="name"
             translate="true"
         />
-        
-    </fieldset> 
     
-    <field 	name="resourceManager" 
-                        type="sql" 
-                        class="input-xxlarge"
-                        multiple="false"
-                        label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_MEMBER"
-                        description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_MEMBER" 
-                        translate="true" 
-                        query="SELECT id, name as value FROM #__sdi_organism WHERE state=1 ORDER BY name" key_field="id" value_field="value"
-        />
-    
-    <field  name="organism_id" 
+        <field  
+            name="organism_id" 
             required="true"
-            type="sql" 
+            type="resourceorganismsql" 
             class="inputbox"
-            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
             key_field="id" 
             value_field="name"
             label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ORGANISM_ID"
             description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ORGANISM_ID" 
-    />
+        />
+        
+    </fieldset> 
+    
+    <fieldset name="rolesManagement">
+        <field 
+            name="2"
+            type="resourceright"
+            required="true"
+            multiple="true"
+            class="multiselect input-xxlarge"
+            label="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_2_LABEL"
+            description=""
+            />
+        
+        <field 
+            name="3"
+            type="resourceright"
+            multiple="true"
+            class="multiselect input-xxlarge"
+            label="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_3_LABEL"
+            description=""
+            />
+        
+        <field 
+            name="4"
+            type="resourceright"
+            multiple="true"
+            class="multiselect input-xxlarge"
+            label="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_4_LABEL"
+            description=""
+            />
+        
+        <field 
+            name="5"
+            type="resourceright"
+            multiple="true"
+            class="multiselect input-xxlarge"
+            label="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_5_LABEL"
+            description=""
+            />
+        
+        <field 
+            name="6"
+            type="resourceright"
+            multiple="true"
+            class="multiselect input-xxlarge"
+            label="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_6_LABEL"
+            description=""
+            />
+        
+        <field 
+            name="7"
+            type="resourceright"
+            multiple="true"
+            class="multiselect input-xxlarge"
+            label="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_7_LABEL"
+            description=""
+            />
+    </fieldset>
     
     <fieldset name="hidden">
         <field name="id" type="hidden" filter="safehtml" />

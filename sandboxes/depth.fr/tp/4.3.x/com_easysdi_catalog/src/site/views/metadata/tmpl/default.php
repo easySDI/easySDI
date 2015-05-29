@@ -63,6 +63,11 @@ JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
 JText::script('COM_EASYSDI_CATALOG_OPEN_ALL');
 JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
 
+JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_OK');
+JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_KO');
+JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_UNABLE');
+JText::script('COM_EASYSDI_CATALOG_FILE_UPLOAD_SUCCES');
+
 /* bootbox language */
 $ldao = new SdiLanguageDao();
 $user = new sdiUser();
@@ -70,9 +75,9 @@ $userParams = json_decode($user->juser->params);
 $defaultLanguage = $ldao->getDefaultLanguage();
 $bbLanguage = $defaultLanguage->gemet;
 $dtLanguage = $defaultLanguage->datatable;
-if(isset($ldao) && isset($userParams)){
-    foreach($ldao->getAll() as $bbLang){
-        if($bbLang->code === $userParams->language){
+if (isset($ldao) && isset($userParams)) {
+    foreach ($ldao->getAll() as $bbLang) {
+        if ($bbLang->code === $userParams->language) {
             $bbLanguage = $bbLang->gemet;
             $dtLanguage = $bbLang->datatable;
         }
@@ -82,8 +87,8 @@ if(isset($ldao) && isset($userParams)){
 if (JDEBUG) {
     $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
     $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
-    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');    
-}else{
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
+} else {
     $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js');
     $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
     $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all.js');
@@ -101,36 +106,41 @@ $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
 $document->addScript('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/scripts/shCore.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/scripts/shBrushXml.js');
 
+$document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/vendor/jquery.ui.widget.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/jquery.iframe-transport.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/jquery.fileupload.js');
+
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js');
 
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shCore.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shThemeDefault.css');
 $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/css/jquery.fileupload.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/css/jquery.fileupload-ui.css');
 ?>
 
 <script type="text/javascript">
-    var dtLang = "<?php  echo ucfirst(strtolower($dtLanguage));?>";
-    var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
+    var dtLang = "<?php echo ucfirst(strtolower($dtLanguage)); ?>";
+    var baseUrl = "<?php echo JUri::base(); ?>index.php?";
     var iframewidth = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth'); ?>";
     var iframeheight = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight'); ?>";
     js = jQuery.noConflict();
-    js('document').ready(function() {
-        bootbox.setLocale("<?php echo $bbLanguage;?>");
-<?php
-if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
+    js('document').ready(function () {
+        bootbox.setLocale("<?php echo $bbLanguage; ?>");
+<?php if ($this->params->get('editmetadatafieldsetstate') == "allopen") { ?>
             toogleAll(js('#btn_toggle_all'));
             tabIsOpen = true;
-<?php }else{ ?>
+<?php } else { ?>
             tabIsOpen = false;
-<?php
+    <?php
 }
 ?>
     });
 </script>
 
 <?php
-    require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/validators.js.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/validators.js.php';
 ?>
 
 <div class="metadata-edit front-end-edit">
@@ -163,7 +173,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
 
         <div>
 
-            <?php echo $this->getActionToolbar(); ?>
+            <?php if($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();endif; ?>
 
             <?php echo JHtml::_('form.token'); ?>
         </div>
@@ -193,24 +203,24 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="searchModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_IMPORT_METADATA') ; ?></h4>
+                    <h4 class="modal-title" id="searchModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_IMPORT_METADATA'); ?></h4>
                 </div>
                 <div class="modal-body">
                     <div>
                         <form id="form_search_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
                             <input type="hidden" name="task" value="">
                             <div class="control-group">
-                                <label class="control-label" for="resourcetype_id"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></label>
+                                <label class="control-label" for="resourcetype_id"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE'); ?></label>
                                 <div class="controls">
                                     <select id="resourcetype_id" name="resourcetype_id">
                                         <?php foreach ($this->getResourceType() as $resource) { ?>
-                                        <option value="<?php echo $resource->id; ?>"<?php if($this->item->resourcetype_id == $resource->id):?> selected="selected"<?php endif;?>><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
+                                            <option value="<?php echo $resource->id; ?>"<?php if ($this->item->resourcetype_id == $resource->id): ?> selected="selected"<?php endif; ?>><?php echo EText::_($resource->guid, 1, JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
                             </div>
                             <div id="resource_name_group" class="control-group">
-                                <label class="control-label" for="resource_name"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></label>
+                                <label class="control-label" for="resource_name"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME'); ?></label>
                                 <div class="controls">
                                     <input id="resource_name" name="resource_name" type="text" value="">
                                 </div>
@@ -229,31 +239,31 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                                 <label class="control-label" for="version">Version</label>
                                 <div class="controls">
                                     <select id="version" name="version">
-                                       <option value="all"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_ALL') ; ?></option>
-                                       <option value="last" selected="selected"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_LAST') ; ?></option>
+                                        <option value="all"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_ALL'); ?></option>
+                                        <option value="last" selected="selected"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_LAST'); ?></option>
                                     </select>
                                 </div>
                             </div>
                             <div id="resource_organism_group" class="control-group">
-                                <label class="control-label" for="organism_id"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_ORGANISM') ; ?></label>
+                                <label class="control-label" for="organism_id"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_ORGANISM'); ?></label>
                                 <div class="controls">
                                     <select id="organism_id" name="organism_id">
                                         <?php
-                                            $userOrganism = $user->getMemberOrganisms();
-                                            $coreHelper = new Easysdi_coreHelper();
-                                            $organisms = $coreHelper->getOrganisms();
-                                            
-                                            foreach($organisms as $organism):
-                                        ?>
-                                            <option value="<?php echo $organism->id;?>"
-                                                <?php if($organism->id === $userOrganism[0]->id): ?>selected="selected"<?php endif;?>
-                                            ><?php echo $organism->name; ?></option>
-                                        <?php endforeach; ?>
-                                        
+                                        $userOrganism = $user->getMemberOrganisms();
+                                        $coreHelper = new Easysdi_coreHelper();
+                                        $organisms = $coreHelper->getOrganisms();
+
+                                        foreach ($organisms as $organism):
+                                            ?>
+                                            <option value="<?php echo $organism->id; ?>"
+                                                    <?php if ($organism->id === $userOrganism[0]->id): ?>selected="selected"<?php endif; ?>
+                                                    ><?php echo $organism->name; ?></option>
+                                                <?php endforeach; ?>
+
                                     </select>
                                 </div>
                             </div>
-                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_SEARCH') ; ?></button>
+                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_SEARCH'); ?></button>
                         </form>
 
                         <!-- Select replicate form -->
@@ -263,7 +273,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
 
                             <table id="search_table" class="table table-bordered">
                                 <thead>
-                                    <tr><th></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_GUID') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_STATUS') ; ?></th></tr>
+                                    <tr><th></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME'); ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION'); ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_GUID'); ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE'); ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_STATUS'); ?></th></tr>
                                 </thead>
                                 <tbody id="search_result">
 
@@ -273,8 +283,8 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_CLOSE') ; ?></button>
+                    <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_CLOSE'); ?></button>
                 </div>
             </div>
         </div>
@@ -295,7 +305,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
 
                         <div class="control-group">
-                            <div class="control-label"><label id="xml_file-lbl" for="xml_file" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_XML_FILE') ; ?></label></div>
+                            <div class="control-label"><label id="xml_file-lbl" for="xml_file" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_XML_FILE'); ?></label></div>
                             <div class="controls">
                                 <div class="input-append">
                                     <input type="file" name="xml_file" id="xml_file"/>
@@ -305,7 +315,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importxml')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importxml')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>
@@ -327,7 +337,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
 
                         <div class="control-group">
-                            <div class="control-label"><label id="import_fileidentifier-lbl" for="import_fileidentifier" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_FILEIDENTIFIER') ; ?></label></div>
+                            <div class="control-label"><label id="import_fileidentifier-lbl" for="import_fileidentifier" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_FILEIDENTIFIER'); ?></label></div>
                             <div class="controls">
                                 <div class="input-append">
                                     <input class="required" type="text" name="import[fileidentifier]" id="import_fileidentifier"/>
@@ -337,7 +347,7 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importcsw')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importcsw')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>
@@ -348,13 +358,13 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
     <div class="modal fade hide" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
         <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
             <input type="hidden" id="viral" name="viral" value="0"/>
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="publishModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></h4>
-                </div>
-                <div class="modal-body">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="publishModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></h4>
+                    </div>
+                    <div class="modal-body">
 
                         <div class="control-group">
                             <div class="control-label"><label id="publish_date-lbl" for="publish_date" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></label></div>
@@ -363,21 +373,84 @@ if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
                                 </div>
                             </div>
                         </div>
-                    <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
-                    <span id="publishModalCurrentMetadata"></span>
-                    <div id="publishModalChildrenDiv" style="display:none">
-                        <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?>
-                        <span id="publishModalChildrenList"></span>
-                    </div>
+                        <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
+                        <span id="publishModalCurrentMetadata"></span>
+                        <div id="publishModalChildrenDiv" style="display:none">
+                            <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?>
+                            <span id="publishModalChildrenList"></span>
+                        </div>
 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    </div>
                 </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade hide" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="fileModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_TITLE') ; ?></h4>
+                </div>
+                <form class="form-inline">
+                    <div class="modal-body">
+                        <input type="hidden" id="file_source_field" value=""/>
+                        <input type="hidden" id="file_url" value=""/>
+                        <ul id="fileTabs" class="nav nav-tabs">
+                            <li class="active upload">
+                                <a href="#upload" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_UPLOAD_TAB') ; ?></a>
+                            </li>
+                            <li class="url"><a href="#url" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_URL_TAB') ; ?></a></li>
+                        </ul>
+                        <div id="fileTabsContent" class="tab-content">
+                            <div class="tab-pane fade active in upload" id="upload">
+                                <div id="fileUploadPreview" style="display: none"><a href="#" target="_blank"><img src=""/></a></div>
+                                <div class="btn btn-info fileinput-button">
+                                    <span><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_CHOOSE_FILE') ; ?></span>
+                                    <input type="file" name="fileUpload" id="fileUpload" data-url="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=ajax.uploadFile') ; ?>"/> 
+                                </div>
+                                
+                                <br/><br/>
+                                <div class="progress" style="display: none">
+                                    <div class="bar" style="width: 0%;"></div>
+                                </div>
+                                
+                                <div id="fileUploadValidate">
+                                    
+                                </div>
+                            </div>
+                            <div class="tab-pane fade url" id="url">
+                                
+                                
+                                    <div class="control-group">
+                                        <div class="control-label">
+                                            <label id="fileUrl-lbl" for="fileUrl" class=""><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_URL_LABEL') ; ?></label>
+                                        </div>
+                                        <div class="controls">
+                                            <input type="text" name="fileUrl" id="fileUrl"/>
+                                            <button type="button" class="btn btn-info"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_VALIDATE') ; ?></button>
+                                        </div>
+                                    </div>
+                                <div id="fileUrlValidate">
+                                    
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </form>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
+                    <button type="button" class="btn btn-success"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_FINISH') ; ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>
         </div>
-            </form>
+        </form>
     </div>
 
 </div>

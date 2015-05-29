@@ -35,7 +35,7 @@ class Easysdi_shopViewOrders extends JViewLegacy {
         $this->user = sdiFactory::getSdiUser();
         if (!$this->user->isEasySDI) {
             $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-            $app->redirect(JRoute::_('index.php?', false));
+            $app->redirect("index.php");            
             return false;
         }
         
@@ -46,8 +46,8 @@ class Easysdi_shopViewOrders extends JViewLegacy {
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
         
-        $this->tpOrganisms = $this->user->getTPValidationManagerOrganisms();
-
+        $this->organisms = $this->user->getOrganisms(array(sdiUser::validationmanager, sdiUser::organismmanager));
+        
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
