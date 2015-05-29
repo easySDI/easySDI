@@ -3186,3 +3186,5 @@ CREATE TABLE IF NOT EXISTS `#__sdi_monitor_exports` (
                   PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
+
+

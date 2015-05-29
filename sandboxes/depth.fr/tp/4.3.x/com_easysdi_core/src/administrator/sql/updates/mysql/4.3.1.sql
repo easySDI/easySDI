@@ -1,6 +1,9 @@
+CALL drop_foreign_key('sdi_order_diffusion', 'sdi_order_diffusion_fk4');
+CALL drop_column('sdi_order_diffusion', 'storage_id');
 ALTER TABLE `#__sdi_order_diffusion` ADD `storage_id` INT(11) UNSIGNED NULL AFTER completed;
 ALTER TABLE `#__sdi_order_diffusion` ADD CONSTRAINT `#__sdi_order_diffusion_fk4` FOREIGN KEY (`storage_id`) REFERENCES `#__sdi_sys_extractstorage` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+CALL drop_column('sdi_order_diffusion', 'displayName');
 ALTER TABLE `#__sdi_order_diffusion` ADD `displayName` VARCHAR(75) NULL AFTER size;
 
 UPDATE  #__sdi_language SET datatable='Arabic' WHERE code='ar-DZ';
@@ -35,5 +38,8 @@ UPDATE  #__sdi_language SET datatable='Turkish' WHERE code='tr-TR';
 UPDATE  #__sdi_language SET datatable='Ukranian' WHERE code='uk-UA';
 UPDATE  #__sdi_language SET datatable='Chinese' WHERE code='zh-CN';
 
+CALL drop_column('sdi_perimeter', 'maplayer_id');
 ALTER TABLE #__sdi_perimeter ADD COLUMN `maplayer_id` INT(11) NULL;
+CALL drop_column('sdi_perimeter', 'featuretypefieldlevel');
 ALTER TABLE #__sdi_perimeter ADD COLUMN `featuretypefieldlevel` VARCHAR(100) NULL;
+
