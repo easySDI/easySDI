@@ -1,5 +1,9 @@
 <?php
 /**
+ * Form Field class for the Joomla Platform.
+ * Displays options as a list of check boxes.
+ * Multiselect may be forced to be true.
+ * 
  * @version     4.3.2
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013-2015. All rights reserved.
@@ -11,16 +15,6 @@ defined('JPATH_BASE') or die;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
-
-/**
- * Form Field class for the Joomla Platform.
- * Displays options as a list of check boxes.
- * Multiselect may be forced to be true.
- * 
- * @package     EasySDI
- * @subpackage  EasySDI Map
- * @since       3.0.0
- */
 
 class JFormFieldSdidatabasecheckboxes extends JFormField
 {

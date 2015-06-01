@@ -16,9 +16,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
-/**
- * Version controller class.
- */
 class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     private $versions = array();
