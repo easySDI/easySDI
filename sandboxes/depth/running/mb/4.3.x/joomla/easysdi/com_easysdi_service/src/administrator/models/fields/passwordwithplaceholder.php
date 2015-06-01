@@ -13,12 +13,6 @@ defined('JPATH_PLATFORM') or die;
  * EasySDI Extension of :
  * Form Field class for the Joomla Platform.
  * Text field for passwords
- *
- * @package     Joomla.Platform
- * @subpackage  Form
- * @link        http://www.w3.org/TR/html-markup/input.password.html#input.password
- * @note        Two password fields may be validated as matching using JFormRuleEquals
- * @since       11.1
  */
 class JFormFieldPasswordWithPlaceHolder extends JFormField
 {

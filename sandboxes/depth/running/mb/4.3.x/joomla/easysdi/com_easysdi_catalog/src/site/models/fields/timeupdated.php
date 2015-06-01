@@ -11,9 +11,6 @@ defined('JPATH_BASE') or die;
 
 jimport('joomla.form.formfield');
 
-/**
- * Supports an HTML select list of categories
- */
 class JFormFieldTimeupdated extends JFormField
 {
 	/**

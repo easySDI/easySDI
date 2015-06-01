@@ -13,11 +13,6 @@ defined('JPATH_PLATFORM') or die;
  * EasySDI Extension of :
  * Form Field class for the Joomla Platform.
  * Supports a one line text field.
- *
- * @package     Joomla.Platform
- * @subpackage  Form
- * @link        http://www.w3.org/TR/html-markup/input.text.html#input.text
- * @since       11.1
  */
 class JFormFieldUsernameWithPlaceHolder extends JFormField
 {
