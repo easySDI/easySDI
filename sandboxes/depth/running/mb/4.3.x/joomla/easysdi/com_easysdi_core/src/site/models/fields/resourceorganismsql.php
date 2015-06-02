@@ -50,7 +50,7 @@ class JFormFieldResourceOrganismSQL extends JFormFieldList {
                 ->order('o.name')
                 ;
         
-        if($user->authorize($id, sdiUser::resourcemanager)){
+        if($user->authorize($id, sdiUser::resourcemanager) || ($id==0 && $user->isResourceManager())){
             $query
                 ->innerJoin('#__sdi_user_role_organism uro ON uro.organism_id=o.id')
                 ->where('o.state=1')
@@ -68,6 +68,8 @@ class JFormFieldResourceOrganismSQL extends JFormFieldList {
         // Set the query and get the result list.
         $db->setQuery($query);
         $items = $db->loadObjectlist();
+        
+        $options[] = JHtml::_('select.option', '', null);
 
         // Build the field options.
         if (!empty($items)) {
