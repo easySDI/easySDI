@@ -1,9 +1,9 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
@@ -55,7 +55,7 @@ JHtml::_('formbehavior.chosen', 'select.chosen');
                     <label><?php echo JText::_('COM_EASYSDI_SHOP_ORDERSVALIDATION_CHOOSE_ORGANISM'); ?></label>
                     <select id='tporganism' name='filter_organism' data-placeholder='<?php echo JText::_('COM_EASYSDI_SHOP_ORDERSVALIDATION_CHOOSE_ORGANISM_PLACEHOLDER'); ?>'>
                         <option></option>
-                        <?php foreach($this->tpOrganisms as $organism):?>
+                        <?php foreach($this->organisms as $organism):?>
                         <option value="<?php echo $organism->id;?>"<?php if($this->state->get('filter.organism')==$organism->id):?> selected='selected'<?php endif;?>><?php echo $organism->name;?></option>
                         <?php endforeach; ?>
                     </select>
@@ -92,7 +92,7 @@ JHtml::_('formbehavior.chosen', 'select.chosen');
                             <td class="ordercreatedby"><?php echo $item->created_by_name; ?></td>
                             <td><a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $item->id); ?>"><?php echo $item->name; ?></a></td>
                             <td class="ordercreated"><?php echo $item->created; ?></td>
-                            <?php if($item->orderstate_id == 8):?>
+                            <?php if($item->orderstate_id == 8 && $this->isValidationManager):?>
                                 <td><a class="btn btn-success btn-small" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.validate&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_VALIDATE_ORDER'); ?></a></td>
                                 <td><a class="reject_lnk btn btn-danger btn-small" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.reject&id=' . $item->id); ?>" rel='<?php echo $item->id ?>'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_REJECT_ORDER'); ?></a></td>
                             <?php else:?>

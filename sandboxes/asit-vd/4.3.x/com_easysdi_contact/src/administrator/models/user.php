@@ -3,7 +3,7 @@
 /**
  * ** @version     4.0.0
  * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -140,6 +140,7 @@ class Easysdi_contactModeluser extends JModelAdmin {
             /* $item->organismsOE = $role->loadByUserID($item->id, 8); // role removed */
             $item->organismsPM = $role->loadByUserID($item->id, 9);
             $item->organismsTM = $role->loadByUserID($item->id, 10);
+            $item->organismsManager = $role->loadByUserID($item->id, 11);
             $item->organismsMember = $role->loadByUserID($item->id, 1);
         }
 
@@ -189,7 +190,8 @@ class Easysdi_contactModeluser extends JModelAdmin {
             7   => 'organismsER',
             /* 8   => 'organismsOE', // role removed */
             9   => 'organismsPM',
-            10  => 'organismsTM'
+            10  => 'organismsTM',
+            11  => 'organismsManager'
         );
         
         // Trigger the onEasysdiUserBeforeDeleteRoleAttribution event.

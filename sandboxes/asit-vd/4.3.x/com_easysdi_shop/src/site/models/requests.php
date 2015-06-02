@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 defined('_JEXEC') or die;
@@ -40,6 +40,9 @@ class Easysdi_shopModelRequests extends JModelList {
         $app = JFactory::getApplication();
 
         // Load the filter state.
+        $search = $app->getUserStateFromRequest($this->context . '.filter.organism', 'filter_organism');
+        $this->setState('filter.organism', $search);
+
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
@@ -118,19 +121,35 @@ class Easysdi_shopModelRequests extends JModelList {
         }
 
         //Only order that the current user has something to do with
-        $diffusions = sdiFactory::getSdiUser()->getResponsibleExtraction();
-        if(count($diffusions) == 0) $diffusions[0] = -1;
-        $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id');
-        $query->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id');
-        if (sizeof($diffusions)>0)
-            $query->where('d.id IN (-1, ' . implode(',', $diffusions) . ')');
-        else
-            $query->where('d.id IN (-1)');
+        $user = sdiFactory::getSdiUser();
+        $diffusions = $user->getResponsibleExtraction();
+        if(!is_array($diffusions) || count($diffusions)==0){
+            $diffusions = array(-1);
+        }
+        $managedOrganisms = $user->getOrganisms(array(sdiUser::organismmanager), true);
+        if(count($managedOrganisms)==0){
+            $managedOrganisms = array(-1);
+        }
+        $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id')
+                ->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id')
+                ->innerJoin('#__sdi_version v ON v.id=d.version_id')
+                ->innerJoin('#__sdi_resource r ON r.id=v.resource_id')
+                ->where('(d.id IN (' . implode(',', $diffusions) . ') OR r.organism_id IN ('.  implode(',', $managedOrganisms).'))');
+
+        // Filter by organism
+        $organism = $this->getState('filter.organism');
+        if ($organism>0) {
+            $query->where('r.organism_id = ' . (int)$organism);
+        } else {
+            $query->where('a.ordertype_id <> 3 ');
+        }
+        
         $query->where('od.productstate_id = 3');
         
         //And the product minig is manual
         $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
         $query->where('pm.value = '. $query->quote('manual') );
+        
 
 //        $query->group('a.id');
         $query->order('a.created DESC');

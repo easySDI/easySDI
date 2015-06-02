@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access.
@@ -107,6 +107,15 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
         $form = $this->loadForm('com_easysdi_shop.pricingorganism', 'pricingorganism', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) {
             return false;
+        }
+        
+        if(!sdiFactory::getSdiUser()->isPricingManager($this->_item->id)){
+            foreach($form->getFieldsets() as $fieldset){
+                foreach($form->getFieldset($fieldset->name) as $field){
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
+                }
+            }
         }
 
         return $form;

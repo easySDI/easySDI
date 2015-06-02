@@ -10,7 +10,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 /**
  * This Class will browse the xml structure in session and create the tree fielset.
  *
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -73,6 +73,12 @@ class FormHtmlGenerator {
     private $ajaxXpath;
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
+    
+    /**
+     * Roles
+     * @var boolean
+     */
+    private $isNotOnlyOrganismManager = false;
 
     function __construct(JForm $form, DOMDocument $structure, $ajaxXpath = null) {
         $this->form = $form;
@@ -83,6 +89,15 @@ class FormHtmlGenerator {
         $this->formHtml = new DOMDocument(null, 'utf-8');
         $this->ajaxXpath = $ajaxXpath;
         $this->db = JFactory::getDbo();
+        
+        $this->user = new sdiUser();
+        $this->userParams = json_decode($this->user->juser->params);
+        
+        //roles
+        $metadata_id = $form->getData()->get('id');
+        $this->isNotOnlyOrganismManager = $this->user->authorizeOnMetadata($metadata_id, sdiUser::resourcemanager)
+                                        || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataresponsible)
+                                        || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataeditor);
     }
 
     /**
@@ -169,7 +184,7 @@ class FormHtmlGenerator {
 
             switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATION:
-                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1 && $this->isNotOnlyOrganismManager) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -194,7 +209,7 @@ class FormHtmlGenerator {
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1 && $this->isNotOnlyOrganismManager) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -311,16 +326,18 @@ class FormHtmlGenerator {
 
         $iCollapse = $this->formHtml->createElement('i');
         $iCollapse->setAttribute('class', 'icon-white icon-arrow-right');
+        
+        if($this->isNotOnlyOrganismManager){
+            $aRemove = $this->formHtml->createElement('a');
+            $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
+            $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn');
+            $aRemove->setAttribute('data-lowerbound', $lowerbound);
+            $aRemove->setAttribute('data-upperbound', $upperbound);
+            $aRemove->setAttribute('data-xpath', FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid);
 
-        $aRemove = $this->formHtml->createElement('a');
-        $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
-        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn');
-        $aRemove->setAttribute('data-lowerbound', $lowerbound);
-        $aRemove->setAttribute('data-upperbound', $upperbound);
-        $aRemove->setAttribute('data-xpath', FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid);
-
-        $iRemove = $this->formHtml->createElement('i');
-        $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
+            $iRemove = $this->formHtml->createElement('i');
+            $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
+        }
 
         $fieldset = $this->formHtml->createElement('fieldset');
         $class = array();
@@ -357,8 +374,10 @@ class FormHtmlGenerator {
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
             $legend->appendChild($spanLegend);
-            $aRemove->appendChild($iRemove);
-            $legend->appendChild($aRemove);
+            if($this->isNotOnlyOrganismManager){
+                $aRemove->appendChild($iRemove);
+                $legend->appendChild($aRemove);
+            }
 
             $fieldset->appendChild($legend);
             $fieldset->appendChild($divInner);
@@ -397,9 +416,6 @@ class FormHtmlGenerator {
     private function getAttribute(DOMElement $attribute) {
 
         $languages = $this->ldao->getSupported();
-        // retrieve user data
-        $user = new sdiUser();
-        $userParams = json_decode($user->juser->params);
         $userLanguageIndex = 0;
 
         if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
@@ -429,7 +445,7 @@ class FormHtmlGenerator {
 
         $attributeGroup->setAttribute('id', 'attribute-group' . FormUtils::serializeXpath($attribute->getNodePath()));
 
-        if ($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1)) {
+        if ($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) && $this->isNotOnlyOrganismManager) {
             $attributeGroup->appendChild($this->getAttributeAction($attribute));
         }
 
@@ -464,7 +480,7 @@ class FormHtmlGenerator {
 
                     $cnt = 0;
                     foreach ($this->ldao->getAll() as $key => $value) {
-                        if (strpos($userParams->language, $key)) {
+                        if (strpos($this->userParams->language, $key)) {
                             $userLanguageIndex = $cnt;
                             break;
                         }
@@ -808,17 +824,13 @@ class FormHtmlGenerator {
         // predefine default language
         $default = $this->ldao->getDefaultLanguage()->gemet;
 
-        // retrieve user data
-        $user = new sdiUser();
-        $userParams = json_decode($user->juser->params);
-
         // build languages array
         $languages = array();
         foreach ($this->ldao->getAll() as $language) {
             $languages[] = "'{$language->gemet}'";
 
             // if match, override default language
-            if ($language->code == $userParams->language)
+            if ($language->code == $this->userParams->language)
                 $default = $language->gemet;
         }
 
@@ -920,6 +932,9 @@ class FormHtmlGenerator {
         $aModal->setAttribute('data-toggle', 'modal');
         $aModal->setAttribute('href', '#myModal');
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
+        if(!$this->isNotOnlyOrganismManager){
+            $aModal->setAttribute('disabled', 'disabled');
+        }
 
         $divModal = $this->formHtml->createElement('div');
         $divModal->setAttribute('class', 'modal fade hide ext-strict');
@@ -984,7 +999,7 @@ class FormHtmlGenerator {
      * @param boolean $addButton Defines whether the "Add" button must be created.
      * @return DOMElement[]
      */
-    private function buildField(DOMElement $attribute, $field) {
+    private function buildField(DOMElement $attribute, JFormField $field) {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
@@ -1007,27 +1022,39 @@ class FormHtmlGenerator {
             $controlLabel->appendChild($this->getLabel($field));
         }
 
-        $control->appendChild($this->getInput($field));
+        if ($stereotypeId == EnumStereotype::$FILE) {
+            $input_append = $this->formHtml->createElement('div');
+            $input_append->setAttribute('class', 'input-append file-controls');
+            
+            $attach_button = $this->formHtml->createElement('button', JText::_('COM_EASYSDI_CATALOG_FILE_ATTACH'));
+            $attach_button->setAttribute('class', 'btn attach-btn');
+            $attach_button->setAttribute('type', 'button');
+            $attach_button->setAttribute('rendertypeId', $rendertypeId);
+            
+            $preview_button = $this->formHtml->createElement('button',  JText::_('COM_EASYSDI_CATALOG_FILE_PREVIEW'));
+            $preview_button->setAttribute('class', 'btn btn-preview');
+            $preview_button->setAttribute('type', 'button');
+            $preview_button->setAttribute('data-target', $field->id);
+            
+            $delete_button = $this->formHtml->createElement('button', JText::_('COM_EASYSDI_CATALOG_FILE_DELETE'));
+            $delete_button->setAttribute('class', 'btn btn-danger btn-delete');
+            $delete_button->setAttribute('type', 'button');
+            $delete_button->setAttribute('data-target', $field->id);
+            
+            $input_append->appendChild($this->getInput($field));
+            $input_append->appendChild($attach_button);
+            $input_append->appendChild($preview_button);
+            $input_append->appendChild($delete_button);
+            $control->appendChild($input_append);
+        }else{
+            $control->appendChild($this->getInput($field));
+        }
 
         $controlGroup->appendChild($controlLabel);
         $controlGroup->appendChild($control);
 
         if ($occurance < $lowerbound) {
             $controlGroup->appendChild($this->getAttributeRemoveAction($attribute));
-        }
-
-        if ($stereotypeId == EnumStereotype::$FILE) {
-            $jfieldhiddendelete = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehiddendelete');
-            $jfieldhidden = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
-            $jfieldtext = $this->form->getField(FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
-
-            $br = $this->formHtml->createElement('br');
-            $control->appendChild($br);
-            $control->appendChild($this->getInput($jfieldtext));
-            $control->appendChild($this->getInput($jfieldhidden));
-            $control->appendChild($this->getInput($jfieldhiddendelete));
-            $control->appendChild($this->getPreviewAction($attribute));
-            $control->appendChild($this->getEmptyFileAction($attribute));
         }
 
         $elements[] = $controlGroup;

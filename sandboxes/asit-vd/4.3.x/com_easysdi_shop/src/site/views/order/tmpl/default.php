@@ -1,9 +1,9 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
@@ -202,7 +202,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                 <?php if($this->state->get('layout.validation') && $this->item->orderstate_id == 8): ?>
                 <p id="validation_remark">
                     <label for="reason"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK'); ?>:</label>
-                    <textarea id="reason" name="reason"></textarea>
+                    <textarea id="reason" name="reason" <?php if(!$this->isValidationManager):?>disabled="disabled"<?php endif;?>></textarea>
                 </p>
                 <?php endif;
                 echo $this->getToolbar(); ?>

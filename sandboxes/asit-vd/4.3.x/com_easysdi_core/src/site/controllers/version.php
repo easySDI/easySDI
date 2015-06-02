@@ -1,11 +1,12 @@
 ﻿<?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 // No direct access
 defined('_JEXEC') or die;
 
@@ -15,9 +16,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
-/**
- * Version controller class.
- */
 class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     private $versions = array();

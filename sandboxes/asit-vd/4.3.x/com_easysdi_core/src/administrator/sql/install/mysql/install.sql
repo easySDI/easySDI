@@ -2054,7 +2054,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_visualization` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
-`alias` VARCHAR(20)  NOT NULL ,
+`alias` VARCHAR(50)  NOT NULL ,
 `created` DATETIME NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `modified_by` INT(11)  ,

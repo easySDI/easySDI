@@ -1,9 +1,9 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
@@ -530,9 +530,9 @@ if ($this->item && $this->item->extractions) :
                     <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
                     <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING'); ?>
                 </div>                
-                <!--<div class="modal-footer">
-                    <button type="button" class="btn btn-primary"><?php echo JText::_('OK'); ?></button>
-                </div>              -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ><?php echo JText::_('OK'); ?></button>
+                </div>              
             </div>
         </div>
 

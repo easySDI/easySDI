@@ -1,9 +1,9 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
@@ -174,6 +174,8 @@ var globdata;
     }
 
     function enableFreePerimeter() {
+        <?php if(!$this->isDiffusionManager):?>return;<?php endif;?>
+        
         if (js('#jform_restrictedperimeter0').length == 0 || js('#jform_restrictedperimeter0').is(':checked') == true) {
             js('#jform_perimeter1').removeAttr('disabled', 'disabled');
         } else {
@@ -257,40 +259,42 @@ var globdata;
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_DOWNLOAD'); ?>
                                 <?php echo $this->form->getInput('hasdownload'); ?></legend>
                             <div id="div_download">
-                                <?php foreach ($this->form->getFieldset('download') as $field): ?>
+                                <?php foreach ($this->form->getFieldset('download') as $field): 
+                                    if($field->fieldname == 'hasdownload') continue;
+                                    ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
-                                        <div class="controls"><?php echo $field->input; ?></div>
+                                        <div class="controls">
+                                            <?php echo $field->input; ?>
+                                            <?php if($field->fieldname == 'file'):?>
+                                                <?php if(!empty($this->item->file)):?>
+                                                    <a id="jform_file_hidden_href" href="<?php echo JRoute::_($this->params->get('fileFolder') . '/' . $this->item->file, false); ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
+                                                <?php endif;?>
+                                                <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />
+                                            <?php endif;?>
+                                        </div>
                                     </div>
                                 <?php endforeach; ?>
-                                <div class="control-group" id="file">
-                                    <div class="control-label"><?php echo $this->form->getLabel('file'); ?></div>
-                                    <div class="controls"><?php echo $this->form->getInput('file'); ?>
-                                        <?php if (!empty($this->item->file)) : ?>
-                                            <a id="jform_file_hidden_href" href="<?php echo JRoute::_($this->params->get('fileFolder') . '/' . $this->item->file, false); ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />	
                             </div>
                         </fieldset>
                         <fieldset id ="fieldset_extraction">
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?>
                                 <?php echo $this->form->getInput('hasextraction'); ?></legend>
                             <div id="div_extraction">
-                                <div class="control-group" id="deposit">
-                                    <div class="control-label"><?php echo $this->form->getLabel('deposit'); ?></div>
-                                    <div class="controls"><?php echo $this->form->getInput('deposit'); ?>
-                                        <?php if (!empty($this->item->deposit)) : ?>
-                                            <a id="jform_deposit_hidden_href" href="<?php echo JRoute::_($this->params->get('depositFolder') . '/' . $this->item->deposit, false); ?>"><?php echo '[' . substr($this->item->deposit, 33) . ']'; ?></a>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="jform[deposit]" id="jform_deposit_hidden" value="<?php echo $this->item->deposit ?>" />	
-                                <?php foreach ($this->form->getFieldset('extraction') as $field): ?>
+                                <?php foreach ($this->form->getFieldset('extraction') as $field): 
+                                    if(in_array($field->fieldname, array('hasextraction','restrictedperimeter'))) continue;
+                                    ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
-                                        <div class="controls"><?php echo $field->input; ?></div>
+                                        <div class="controls">
+                                            <?php echo $field->input; ?>
+                                            <?php if($field->fieldname == 'deposit'):?>
+                                                <?php if(!empty($this->item->deposit)):?>
+                                                    <a id="jform_deposit_hidden_href" href="<?php echo JRoute::_($this->params->get('depositFolder') . '/' . $this->item->deposit, false); ?>"><?php echo '[' . substr($this->item->deposit, 33) . ']'; ?></a>
+                                                <?php endif;?>
+                                                <input type="hidden" name="jform[deposit]" id="jform_deposit_hidden" value="<?php echo $this->item->deposit ?>" />
+                                            <?php endif;?>
+                                        </div>
                                     </div>
                                 <?php endforeach; ?>
                                 
@@ -320,7 +324,7 @@ var globdata;
                                                 <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeterlabel; ?></label>
                                             </div>
                                             <div class="controls">
-                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge perimeterselect"  >
+                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge perimeterselect" <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?>>
                                                     <option value="-1" ><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
                                                     <option value="1" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected'; ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
                                                     <option value="0" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected'; ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
@@ -344,7 +348,7 @@ var globdata;
                                                     case 2:
                                                     case 3:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge" multiple="multiple" >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge" multiple="multiple"  <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?>>
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
@@ -361,7 +365,7 @@ var globdata;
                                                     case 5:
                                                     case 6 :
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge"  >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge"  <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?> >
                                                             <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):

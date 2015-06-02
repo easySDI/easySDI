@@ -1,3 +1,5 @@
+js = jQuery.noConflict();
+
 function loadPerimeter(withdisplay) {
     if (jQuery('#jform_perimeter').length > 0) {
         loadPolygonPerimeter(withdisplay);
@@ -86,3 +88,11 @@ function loadWfsPerimeter() {
 var listenerFeatureAddedToZoom = function(e) {
     window.appname.mapPanel.map.zoomToExtent(e.object.getDataExtent());
 };
+
+
+js(document).on('click', 'button.delete', function () {
+    var delete_url = 'index.php?option=com_easysdi_shop&task=pricingprofile.delete&id=';
+    var profile_id = js(this).attr('data-id');
+    js('#btn_delete').attr('href',delete_url+profile_id);
+    js('#deleteModal').modal('show');
+});

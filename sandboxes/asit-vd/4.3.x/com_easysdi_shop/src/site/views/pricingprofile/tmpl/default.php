@@ -1,9 +1,9 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
@@ -51,10 +51,10 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                     <td class="shop-pricing-category-name-col"><?php echo $category->name; ?></td>
                                     <td class="shop-pricing-category-free-toggle">
                                         <fieldset id="jform_categories_<?php echo $category->id; ?>_free" class="radio btn-group btn-group-yesno">
-                                            <input type="radio" id="jform_categories_<?php echo $category->id; ?>_free0" name="jform[categories][<?php echo $category->id; ?>]" value="0" <?php if ($category->isFree == 0): ?>checked="checked"<?php endif; ?>>
-                                            <label for="jform_categories_<?php echo $category->id; ?>_free0"><?php echo JText::_('JNO'); ?></label>                                            
-                                            <input type="radio" id="jform_categories_<?php echo $category->id; ?>_free1" name="jform[categories][<?php echo $category->id; ?>]" value="1" <?php if ($category->isFree > 0): ?>checked="checked"<?php endif; ?>>
-                                            <label for="jform_categories_<?php echo $category->id; ?>_free1"><?php echo JText::_('JYES'); ?></label>
+                                            <input type="radio" id="jform_categories_<?php echo $category->id; ?>_free0" name="jform[categories][<?php echo $category->id; ?>]" value="0" <?php if ($category->isFree == 0): ?>checked="checked"<?php endif; ?> <?php if (!$this->isPricingManager): ?>disabled="disabled"<?php endif; ?>>
+                                            <label for="jform_categories_<?php echo $category->id; ?>_free0" <?php if (!$this->isPricingManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JNO'); ?></label>                                            
+                                            <input type="radio" id="jform_categories_<?php echo $category->id; ?>_free1" name="jform[categories][<?php echo $category->id; ?>]" value="1" <?php if ($category->isFree > 0): ?>checked="checked"<?php endif; ?> <?php if (!$this->isPricingManager): ?>disabled="disabled"<?php endif; ?>>
+                                            <label for="jform_categories_<?php echo $category->id; ?>_free1" <?php if (!$this->isPricingManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JYES'); ?></label>
                                         </fieldset>
                                     </td>
                                 </tr>

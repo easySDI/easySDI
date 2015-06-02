@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
 defined('_JEXEC') or die;
@@ -511,38 +511,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $data = $this->data;
         }
 
-        $fileRepository = JPATH_BASE . '/media/easysdi/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
-        $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
-
-        //Upload file
-        if (isset($_FILES['jform'])) {
-            foreach ($_FILES['jform']['name'] as $key => $value) {
-                if ($_FILES['jform']['name'][$key] != '') {
-
-                    $file_guid = $this->getGUID();
-                    if (move_uploaded_file($_FILES['jform']['tmp_name'][$key], $fileRepository . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key])) {
-
-                        if ($data[$key . '_filehidden'] != '') {
-                            unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
-                        }
-                        $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
-                    }
-                } else {
-                    if ($data[$key . '_filehiddendelete'] == '') {
-                        if ($data[$key . '_filehidden'] != '') {
-                            unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
-                        }
-                        $data[$key] = '';
-                    }
-                }
-            }
-        }
-
         foreach ($this->nsdao->getAll() as $ns) {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
-
-
 
         // Multiple list decomposer
         $dataWithoutArray = array();

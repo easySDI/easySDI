@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -49,7 +49,7 @@ class Easysdi_coreViewVersion extends JViewLegacy {
             return;
         }
 
-        if (!$this->user->authorize($this->item->resource_id, sdiUser::resourcemanager)) {
+        if (!$this->user->authorize($this->item->resource_id, sdiUser::resourcemanager) && !$this->user->isOrganismManager($this->item->resource_id, 'resource')) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return;
@@ -108,10 +108,12 @@ class Easysdi_coreViewVersion extends JViewLegacy {
     function getToolbar() {
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'version.apply', false);
-        $bar->appendButton('Separator');
-        $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'version.save', false);
-        $bar->appendButton('Separator');
+        if($this->user->authorize($this->item->resource_id, sdiUser::resourcemanager)){
+            $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'version.apply', false);
+            $bar->appendButton('Separator');
+            $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'version.save', false);
+            $bar->appendButton('Separator');
+        }
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'version.cancel', false);
         //generate the html and return
         return $bar->render();
