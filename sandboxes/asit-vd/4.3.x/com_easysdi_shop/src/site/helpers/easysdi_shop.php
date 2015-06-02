@@ -216,6 +216,7 @@ abstract class Easysdi_shopHelper {
         //add extent if defined
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         $basket->extent = empty($item) ? null : json_decode($item);
+        $basket->freeperimetertool = empty($item) ? '' : json_decode($item)->freeperimetertool;
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
         $return = array(
             'MESSAGE'   => 'OK',

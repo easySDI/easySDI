@@ -29,18 +29,14 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
 //$document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
 
 if ($this->item && $this->item->extractions) :
     $currency = $this->item->prices->cfg_currency;
     ?>
 
     <style type="text/css">
-        div#thirdparty-info{margin-top: 1em;}
-        div.shop-product .table td{ width: 75%; word-break: break-all}
-        div.shop-product .table td.price_column{ width: auto; min-width: 132px; text-align: right}
-        div.shop-product .table td.action_column{ width: 5%}
-        div.shop-product .table tfoot td{ text-align: right}
-        div.modal.fade {-webkit-transition: initial;-moz-transition: initial;-o-transition: initial;transition: initial}
+
     </style>
     <script>
         var request, current_id,
@@ -61,6 +57,8 @@ if ($this->item && $this->item->extractions) :
                 mapRotateIconURL = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png'); ?>",
                 mapMinSurfaceRectangle = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0); ?>,
                 mapMinSurfaceRectangleBorder = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100); ?>;        
+                //todo save in session
+                freePerimeterTool = '<?php if (isset($this->item->freeperimetertool)): echo $this->item->freeperimetertool; endif;?>';
     </script>
 
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -378,12 +376,6 @@ if ($this->item && $this->item->extractions) :
             <div class="modal-body" style="max-height: 500px;">
                 <div class="container-fluid" >
                     <div class="row-fluid">
-                        <div class="span8" >
-                            <div class="alert alert-info" id="alert_template" style="display: none;">                      
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row-fluid">
                         <div class="span8">
                             <div  >
                                 <?php
@@ -399,14 +391,14 @@ if ($this->item && $this->item->extractions) :
                             <div class="row-fluid">
                                 <div class="span3 offset1">
                                     <div class="btn-group" data-toggle="buttons-radio">
-                                        <a href="#" id="btn-pan" class="btn btn-perimeter-selection <?php
+                                        <!--<a href="#" id="btn-pan" class="btn btn-perimeter-selection <?php
                                         if (!isset($this->item->extent->id) || $this->item->extent->id === '') :
                                             echo "active";
                                         endif;
                                         ?>"  onClick="toggleSelectControl('pan');
                                         jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN_HELP'); ?>');
                                         return false;"><i class="icon-move"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN'); ?></a><br>
-                                        <br>
+                                        <br>-->
                                         <?php
                                         foreach ($this->item->perimeters as $perimeter):
                                             if ($perimeter->id == 1):
@@ -572,6 +564,7 @@ if ($this->item && $this->item->extractions) :
             function initialization (){
                 miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
                 initDraw();
+                addAlertControl(window.appname.mapPanel.map);
                 slider = window.appname.mapPanel.map.indoorlevelslider;
                 if(slider){
                     slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(JSON.stringify(slider.getLevel()));}); 
@@ -623,6 +616,9 @@ if ($this->item && $this->item->extractions) :
         <input type="hidden" name="id" id = "id" value = "" />
         <input type="hidden" name="surfacedigit" id = "surfacedigit" value = "<?php echo $this->paramsarray['surfacedigit']; ?>" />
         <input type="hidden" name="maxmetervalue" id = "maxmetervalue" value = "<?php echo $this->paramsarray['maxmetervalue']; ?>" />
+        <input type="hidden" name="freeperimetertool" id="freeperimetertool" value='<?php if (isset($this->item->freeperimetertool)): echo $this->item->freeperimetertool; endif;?>' />
+        <input type="hidden" name="t-freeperimetertool" id="t-freeperimetertool" value='<?php if (isset($this->item->freeperimetertool)): echo $this->item->freeperimetertool; endif;?>' />
+
 
     <?php echo JHtml::_('form.token'); ?>
     </form>
