@@ -69,7 +69,9 @@ class JFormFieldResourceOrganismSQL extends JFormFieldList {
         $db->setQuery($query);
         $items = $db->loadObjectlist();
         
-        $options[] = JHtml::_('select.option', '', null);
+        if(count($items)>1){
+            $options[] = JHtml::_('select.option', '', null);
+        }
 
         // Build the field options.
         if (!empty($items)) {
