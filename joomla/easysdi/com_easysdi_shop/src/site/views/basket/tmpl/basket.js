@@ -280,11 +280,11 @@ function savePerimeter() {
             "buffer": jQuery('#buffer').val(),
             "level": jQuery('#t-level').val(),
             "features": jQuery('#t-features').val()};
-
+        
         jQuery.ajax({
             type: "POST",
             url: "index.php?option=com_easysdi_shop&task=addExtentToBasket",
-            data: "item=" + JSON.stringify(extent)
+            data: "item=" + encodeURIComponent(JSON.stringify(extent))
         }).done(updateDisplay);
     }
 }
@@ -302,8 +302,9 @@ function updateDisplay (response){
                                 return;
                             if (typeof this.name === "undefined") {
                                 jQuery('#perimeter-recap-details').append(jQuery('<div>' + features + '</div>'));
+                            }else{
+                                jQuery('#perimeter-recap-details').append(jQuery('<div>' + this.name + '</div>'));
                             }
-                            jQuery('#perimeter-recap-details').append(jQuery('<div>' + this.name + '</div>'));
                         });
                         jQuery('#perimeter-recap-details').show();
 
