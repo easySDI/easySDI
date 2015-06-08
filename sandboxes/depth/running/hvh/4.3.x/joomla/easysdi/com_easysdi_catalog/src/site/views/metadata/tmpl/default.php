@@ -1,10 +1,10 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
 defined('_JEXEC') or die;
@@ -173,7 +173,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
         <div>
 
-            <?php echo $this->getActionToolbar(); ?>
+            <?php if($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();endif; ?>
 
             <?php echo JHtml::_('form.token'); ?>
         </div>

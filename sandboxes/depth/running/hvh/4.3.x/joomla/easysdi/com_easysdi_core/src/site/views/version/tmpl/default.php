@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -52,8 +52,8 @@ if ($this->item) :
     
     $versioning = ($this->item->versioning == 1) ? 'true' : 'false';
     $document->addScriptDeclaration('var versioning=' . $versioning . ';');
-    $isReadonly = !in_array($this->item->metadatastate, array($METADATASTATE_INPROGRESS, $METADATASTATE_VALIDATED));
-    $document->addScriptDeclaration("var isReadonly = '{$isReadonly}';");
+    $isReadonly = !in_array($this->item->metadatastate, array($METADATASTATE_INPROGRESS, $METADATASTATE_VALIDATED)) || !$this->user->authorizeOnMetadata($this->item, sdiUser::resourcemanager) ? 'true' : 'false';
+    $document->addScriptDeclaration("var isReadonly = ".$isReadonly.";");
     ?>
 
 <style type="text/css">
@@ -62,12 +62,11 @@ if ($this->item) :
 </style>
 
     <div class="version-edit front-end-edit">
-        <?php if (!empty($this->item->id)): ?>
-            <script type="text/javascript">
-                var version = <?php echo $this->item->id?>,
-                    resourcetypechild = "<?php echo $this->item->resourcetypechild;?>",
-                    baseUrl = "<?php echo JUri::base(); ?>index.php?";
-            </script>
+        <?php if (!empty($this->item->id)): 
+            $document->addScriptDeclaration("var version = ".$this->item->id."");
+            $document->addScriptDeclaration("var resourcetypechild = '".$this->item->resourcetypechild."';");
+            $document->addScriptDeclaration("var baseUrl = '".JUri::base()."/index.php?';");
+            ?>
             <?php if ($this->item->versioning): ?>
                 <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->resourcename . ' - ' . $this->item->name; ?></h1>
             <?php else: ?>

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 defined('_JEXEC') or die;
@@ -76,7 +76,7 @@ class Easysdi_shopModelPricingOrganisms extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.*'
+                        'list.select', 'DISTINCT a.*'
                 )
         );
 
@@ -98,7 +98,9 @@ class Easysdi_shopModelPricingOrganisms extends JModelList {
         
         //Only order which belong to the current user
         $query->where('uro.user_id = ' . (int) sdiFactory::getSdiUser()->id)
-                ->where('uro.role_id=9');
+                ->where('uro.role_id IN ('.sdiUser::pricingmanager.','.sdiUser::organismmanager.')');
+        
+        $query->order('a.name');
 
         return $query;
     }

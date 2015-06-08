@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -43,28 +43,20 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
         <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_RESOURCES'); ?></h1>
     <?php endif; ?>
 
-    <?php
-    if (isset($this->user)):
-        if ($this->user->isResourceManager()):
-            $resourcetypes = $this->user->getResourceType();
-            ?>
-            <?php // echo $this->itemmap->_item->text; ?>
-            <div class="well sdi-searchcriteria">
-                <div class="row-fluid">
-                    <form id='criterias' class="form-search" action="" method="post">
-                        <input type='hidden' id='filter_ordering' name='filter_ordering' value='ASC'/>
+    <?php if (isset($this->user)):
+        $resourcetypes = $this->user->getResourceType();
+    ?>
+        <div class="well sdi-searchcriteria">
+            <div class="row-fluid">
+                <form id='criterias' class="form-search" action="" method="post">
+                    <input type='hidden' id='filter_ordering' name='filter_ordering' value='ASC'/>
 
-                        <div class="btn-group pull-left">
-                            <?php if (empty($this->parent)) : ?>
-                                <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-                                    <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW'); ?>
-                                    <span class="caret"></span>
-                                </a>
-                            <?php else: ?>
-                                 <a class="btn btn-success" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
-                                    <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_BACK'); ?>
-                                </a>
-                            <?php endif; ?>
+                    <div class="btn-group pull-left">
+                        <?php if (empty($this->parent) && $this->user->isResourceManager()) : ?>
+                            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW'); ?>
+                                <span class="caret"></span>
+                            </a>
                             <ul class="dropdown-menu">
                                 <?php foreach ($resourcetypes as $resourcetype): ?>
                                     <li>
@@ -73,56 +65,74 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
+                        <?php elseif(!empty($this->parent)): ?>
+                             <a class="btn btn-success" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
+                                <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_BACK'); ?>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                    <div class="btn-group pull-right">
+                        <?php if(count($this->userOrganisms)>1):?>
+                        <div id="filterorganism" >
+                            <select id="filter_userorganism" name="filter_userorganism" onchange="this.form.submit();" class="inputbox">
+                                <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_USER_ORGANISM_FILTER'); ?></option>
+                                <?php foreach ($this->userOrganisms as $userOrganism): ?>
+                                    <option value="<?php echo $userOrganism->id; ?>" <?php
+                                    $filterName = (!empty($this->parent)) ? 'filter.userorganism.children' : 'filter.userorganism';
+                                    if ($this->state->get($filterName) == $userOrganism->id) : echo 'selected="selected"';
+                                    endif;
+                                    ?> ><?php echo $userOrganism->name; ?></option>
+                                        <?php endforeach; ?>
+                            </select>
                         </div>
-                        <div class="btn-group pull-right">
+                        <?php endif;?>
 
-                            <div id="filtertype" >
-                                <select id="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif;?>" name="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif;?>" onchange="this.form.submit();" class="inputbox">
-                                    <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCE_TYPE_FILTER'); ?></option>
-                                    <?php foreach ($resourcetypes as $resourcetype): ?>
-                                        <option value="<?php echo $resourcetype->id; ?>" <?php
-                                        $filterName = (!empty($this->parent)) ? 'filter.resourcetype.children' : 'filter.resourcetype';
-                                        if ($this->state->get($filterName) == $resourcetype->id) : echo 'selected="selected"';
-                                        endif;
-                                        ?> ><?php echo $resourcetype->label; ?></option>
-                                            <?php endforeach; ?>
-                                </select>
+                        <div id="filtertype" >
+                            <select id="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif;?>" name="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif;?>" onchange="this.form.submit();" class="inputbox">
+                                <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCE_TYPE_FILTER'); ?></option>
+                                <?php foreach ($resourcetypes as $resourcetype): ?>
+                                    <option value="<?php echo $resourcetype->id; ?>" <?php
+                                    $filterName = (!empty($this->parent)) ? 'filter.resourcetype.children' : 'filter.resourcetype';
+                                    if ($this->state->get($filterName) == $resourcetype->id) : echo 'selected="selected"';
+                                    endif;
+                                    ?> ><?php echo $resourcetype->label; ?></option>
+                                        <?php endforeach; ?>
+                            </select>
 
-
-                            </div>
-                            <div id="filterstatus">
-
-                                <select id="filter_status<?php if (!empty($this->parent)): ?>_children<?php endif;?>" name="filter_status<?php if (!empty($this->parent)): ?>_children<?php endif;?>" onchange="this.form.submit();" class="inputbox">
-                                    <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA_STATE_FILTER'); ?></option>
-                                    <?php foreach ($this->metadatastates as $status): ?>
-                                        <option value="<?php echo $status->id; ?>" <?php
-                                        $filterName = (!empty($this->parent)) ? 'filter.status.children' : 'filter.status';
-                                        if ($this->state->get($filterName) == $status->id) : echo 'selected="selected"';
-                                        endif;
-                                        ?> >
-                                            <?php echo JText::_($status->value); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div id="filtersearch" >
-                                <div class="filter-search">
-                                    <label for="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" class="element-invisible">Rechercher</label>
-                                    <input type="text" name="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" id="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php $filterName = (!empty($this->parent)) ? 'filter.search.children' : 'filter.search'; echo $this->state->get($filterName); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
-
-                                    <button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-                                    <button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" id="search-reset"><i class="icon-remove"></i></button>
-                                </div>
-                            </div>
 
                         </div>
-                    </form>
+                        <div id="filterstatus">
 
-                </div>
+                            <select id="filter_status<?php if (!empty($this->parent)): ?>_children<?php endif;?>" name="filter_status<?php if (!empty($this->parent)): ?>_children<?php endif;?>" onchange="this.form.submit();" class="inputbox">
+                                <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA_STATE_FILTER'); ?></option>
+                                <?php foreach ($this->metadatastates as $status): ?>
+                                    <option value="<?php echo $status->id; ?>" <?php
+                                    $filterName = (!empty($this->parent)) ? 'filter.status.children' : 'filter.status';
+                                    if ($this->state->get($filterName) == $status->id) : echo 'selected="selected"';
+                                    endif;
+                                    ?> >
+                                        <?php echo JText::_($status->value); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div id="filtersearch" >
+                            <div class="filter-search">
+                                <label for="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" class="element-invisible">Rechercher</label>
+                                <input type="text" name="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" id="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php $filterName = (!empty($this->parent)) ? 'filter.search.children' : 'filter.search'; echo $this->state->get($filterName); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
 
+                                <button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+                                <button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" id="search-reset"><i class="icon-remove"></i></button>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
 
             </div>
-            <?php
-        endif;
+
+
+        </div>
+        <?php
     endif;
     ?>
 

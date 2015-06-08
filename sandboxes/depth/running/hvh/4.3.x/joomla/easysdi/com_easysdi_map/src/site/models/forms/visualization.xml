@@ -82,7 +82,16 @@
     </fieldset> 
 
     <fieldset name="view">
-        <field name="maplayer_id" type="text" size="40" class="inputbox"  filter="safehtml" /> 
+        <field
+            name="maplayer_id"
+            type="maplayersql"
+            class="inputbox"
+            label="COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID"
+            description="COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_MAPLAYER_ID"
+        >
+            <option value=""></option>
+        </field>
+        
     </fieldset>
     
     

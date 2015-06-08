@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
@@ -34,7 +34,8 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         $app = JFactory::getApplication();
 
         $this->user = sdiFactory::getSdiUser();
-        if (!$this->user->isEasySDI) {
+        $this->organisms = $this->user->getOrganisms(array(sdiUser::extractionresponsible, sdiUser::organismmanager));
+        if (!$this->user->isEasySDI || count($this->organisms)==0) {
             $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             $app->redirect("index.php");            
             return false;
@@ -45,6 +46,7 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
+
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

@@ -41,7 +41,7 @@ js(document).ready(function() {
             }, bSearchable: false},
             { aTargets: [8], mData: function(child){
                     return "<button type='button' id='sdi-availablechildbutton-"+child.id+"' class='btn btn-success btn-mini' onclick='addChild("+JSON.stringify(child)+");'><i class='icon-white icon-new'></i></button>";
-                }, sClass: 'center', bSearchable: false }
+                }, sClass: 'center', bSearchable: false, bVisible: !isReadonly }
         ],
         aaSorting: [[3, 'desc']]
     }));
@@ -107,7 +107,7 @@ js(document).ready(function() {
             }, bSearchable: false},
             { aTargets: [8], mData: function(child){
                     return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
-                }, sClass: 'center', bSearchable: false }
+                }, sClass: 'center', bSearchable: false, bVisible: !isReadonly }
         ]
     }));
     

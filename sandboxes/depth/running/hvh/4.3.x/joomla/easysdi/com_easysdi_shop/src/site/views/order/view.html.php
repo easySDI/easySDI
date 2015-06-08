@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
@@ -51,7 +51,14 @@ class Easysdi_shopViewOrder extends JViewLegacy {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
         }
-        if($this->user->id != $this->item->user_id){
+        
+        $this->isValidationManager = in_array($this->item->thirdparty_id, $this->user->getOrganisms(array(sdiUser::validationmanager), true));
+        
+        if($this->user->id != $this->item->user_id // current user is not the orderer
+                && !$this->isValidationManager // current user is not validation manager
+                && !$this->user->isOrganismManager($this->item->user_id, 'user') // current user is not organism manager for the orderer's user
+                && !$this->user->isOrganismManager($this->item->thirdparty_id, 'organism') // current user is not organism manager for the thirdparty organism
+                ){
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
@@ -105,7 +112,7 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         $bar = new JToolBar('toolbar');
         
         if($this->state->get('layout.validation')){
-            if($this->item->orderstate_id == 8){
+            if($this->item->orderstate_id == 8 && $this->isValidationManager){
                 $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATE'), 'order.validate', false);
                 $bar->appendButton('Separator');
                 $bar->appendButton('Standard', 'delete', JText::_('COM_EASYSDI_SHOP_ORDER_REJECT'), 'order.reject', false);

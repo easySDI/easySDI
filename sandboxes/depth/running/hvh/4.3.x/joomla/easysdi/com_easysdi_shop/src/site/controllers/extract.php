@@ -1,16 +1,18 @@
 <?php
+/**
+ * Extract - WebService designed to getOrders and setProduct
+ * based on the old webservice (rest)
+ * 
+ * @version     4.3.2
+ * @package     com_easysdi_shop
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
-
-/**
- * Extract - WebService designed to getOrders and setProduct
- * based on the old webservice (rest)
- *
- * @author Jérôme VILLEMAGNE <jerome.villemagne@depth.ch>
- * @since 4.3.0
- */
 class Easysdi_shopControllerExtract extends Easysdi_shopController {
     
     // Address type
@@ -37,6 +39,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     const ORDERSTATE_VALIDATION = 8;
     const ORDERSTATE_REJECTED_TP = 9; //order rejected by third party
     const ORDERSTATE_REJECTED_SUPPLIER = 10; //order rejected by supplier
+    
+    const ORDERTYPE_ORDER = 1;
+    const ORDERTYPE_ESTIMATE = 2;
+    const ORDERTYPE_DRAFT = 3;
     
     // Order productmining
     const PRODUCTMININGAUTO = 1;
@@ -409,6 +415,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
         $query->where('od.productstate_id IN ('.implode(',', $this->states).')')
                 ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
+                ->where('o.ordertype_id IN ('.self::ORDERTYPE_ORDER.','.self::ORDERTYPE_ESTIMATE.')')
                 ->group($agg);
         
         $this->db->setQuery($query);

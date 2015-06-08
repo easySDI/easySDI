@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 defined('_JEXEC') or die;
@@ -23,6 +23,7 @@ class Easysdi_shopModelOrders extends JModelList {
     const ORDERTYPE_DRAFT       = 3;
     
     const USERROLE_VALIDATIONMANAGER = 10;
+    const USERROLE_ORGANISMMANAGER = 11;
     
     /**
      * Constructor.
@@ -50,16 +51,19 @@ class Easysdi_shopModelOrders extends JModelList {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-
+        
+        $filter_ctx= (JFactory::getApplication()->input->get('layout') == 'validation') ? 'validation' : 'order';
+        $this->context .= '.'.$filter_ctx;
+        
         // Load the filter state.
+        $search = $app->getUserStateFromRequest($this->context . '.filter.organism', 'filter_organism');
+        $this->setState('filter.organism', $search);
+        
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
         
-        $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
+        $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status', (JFactory::getApplication()->input->get('layout') == 'validation') ? 1 : null);
         $this->setState('filter.status', $search);
-        
-        $search = $app->getUserStateFromRequest($this->context.'.filter_organism', 'filter_organism');
-        $this->setState('filter.organism', $search);
         
         $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
         $this->setState('filter.type', $search);
@@ -89,7 +93,7 @@ class Easysdi_shopModelOrders extends JModelList {
      * @since	1.6
      */
     protected function getListQuery() {
-        
+        $user = sdiFactory::getSdiUser();
         // Create a new query object.
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -97,7 +101,7 @@ class Easysdi_shopModelOrders extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.*'
+                        'list.select', 'DISTINCT a.*'
                 )
         );
         
@@ -119,14 +123,7 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->select('type.value AS ordertype');
         $query->innerjoin('#__sdi_sys_ordertype AS type ON type.id = a.ordertype_id');
         
-        // Filter by state
-        $status = $this->getState('filter.status');
-        if (is_numeric($status)) {
-            if($status == 1) // get orders to check
-        	$query->where('a.orderstate_id = 8');
-            else // get orders checked
-                $query->where('a.orderstate_id IN (1, 2, 3, 4, 5, 6, 9, 10)');
-        }
+        
         
         // Filter by type
         $type = $this->getState('layout.validation') ? self::ORDERTYPE_ORDER : $this->getState('filter.type');
@@ -147,16 +144,38 @@ class Easysdi_shopModelOrders extends JModelList {
         
         if($this->getState('layout.validation')){
             $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
-                    ->where('uro.user_id='.(int)  sdiFactory::getSdiUser()->id)
-                    ->where('uro.role_id='.self::USERROLE_VALIDATIONMANAGER);
+                    ->where('uro.user_id='.(int)$user->id)
+                    ->where('uro.role_id IN ('.sdiUser::validationmanager.','.sdiUser::organismmanager.')');
             
             $tpOrganism = $this->getState('filter.organism');
             if($tpOrganism > 0)
                 $query->where('a.thirdparty_id='.(int)$tpOrganism);
+            
+            // Filter by state
+            $status = $this->getState('filter.status');
+            if (is_numeric($status)) {
+                if($status == 1) // get orders to check
+                    $query->where('a.orderstate_id = 8');
+                else // get orders checked
+                    $query->where('a.orderstate_id IN (1, 2, 3, 4, 5, 6, 9, 10)');
+            }
         }
         else{
             //Only order which belong to the current user
-            $query->where('a.user_id = ' . (int) sdiFactory::getSdiUser()->id);
+            $organism = $this->getState('filter.organism');
+            $organisms = $organism>0 ? array($organism) : $user->getOrganisms(array(sdiUser::organismmanager), true);
+            if(count($organisms)==0){
+                $organisms = array(-1);
+            }
+            $query->innerJoin('#__sdi_user_role_organism uro ON uro.user_id=a.user_id')
+                    ->where('uro.role_id='.sdiUser::member.' AND (a.user_id='.(int)$user->id.' OR uro.organism_id IN ('.implode(',', $organisms).'))');
+            
+            
+            // Filter by state
+            $status = $this->getState('filter.status');
+            if (is_numeric($status)) {
+                $query->where('a.orderstate_id = '.$status);
+            }
         }
         
         
