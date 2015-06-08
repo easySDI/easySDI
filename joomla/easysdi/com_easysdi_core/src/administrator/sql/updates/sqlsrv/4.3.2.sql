@@ -17,3 +17,5 @@ ALTER TABLE [#__sdi_visualization] ALTER COLUMN [alias] [nvarchar](255) NOT NULL
 SET IDENTITY_INSERT [#__sdi_sys_role] ON;
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (11, 11, 1, N'organismmanager');
 SET IDENTITY_INSERT [#__sdi_sys_role] OFF;
+
+ALTER TABLE [#__sdi_relation] ALTER COLUMN [accessscope_limitation] [tinyint] ;
