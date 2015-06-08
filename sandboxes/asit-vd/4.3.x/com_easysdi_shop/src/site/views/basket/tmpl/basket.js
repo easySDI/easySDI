@@ -472,7 +472,7 @@ function savePerimeter() {
         jQuery.ajax({
             type: "POST",
             url: "index.php?option=com_easysdi_shop&task=addExtentToBasket",
-            data: "item=" + JSON.stringify(extent)
+            data: "item=" + encodeURIComponent(JSON.stringify(extent))
         }).done(updateDisplay);
     }
 }
@@ -490,8 +490,9 @@ function updateDisplay(response) {
                         return;
                     if (typeof this.name === "undefined") {
                         jQuery('#perimeter-recap-details').append(jQuery('<div>' + features + '</div>'));
+                    } else {
+                        jQuery('#perimeter-recap-details').append(jQuery('<div>' + this.name + '</div>'));
                     }
-                    jQuery('#perimeter-recap-details').append(jQuery('<div>' + this.name + '</div>'));
                 });
                 jQuery('#perimeter-recap-details').show();
 
@@ -519,16 +520,16 @@ function updateDisplay(response) {
         }
         if (response.extent.surface !== '') {
             jQuery('#shop-perimeter-title-surface').html(
-                    " (" + 
+                    " (" +
                     ((response.extent.surface > maxmetervalue)
-                    ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km²')
-                    : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m²')) +
-                    ")" )
+                            ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km�')
+                            : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m�')) +
+                    ")")
             /*jQuery('#perimeter-recap > div:nth-child(1) > div').html(
-                    (response.extent.surface > maxmetervalue)
-                    ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
-                    : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
-                    );*/
+             (response.extent.surface > maxmetervalue)
+             ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
+             : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
+             );*/
             jQuery('#perimeter-recap').show();
         }
         else {
