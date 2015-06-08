@@ -1,5 +1,3 @@
-var fromreload = false;
-
 function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     resetAll();
     selectPredefinedPerimeter(perimeter, isrestrictedbyperimeter);
@@ -31,6 +29,7 @@ function selectPredefinedPerimeter(perimeter, isrestrictedbyperimeter) {
     grid.setListenerIndoorLevelChanged(listenerIndoorLevelChanged);
     toggleSelectControl('selection');
     selectLayer.styleMap = customStyleMap;
+    addSelectCounter(perimeter.id)
     return grid;
 }
 
@@ -65,12 +64,6 @@ var listenerWFSFeatureAdded = function (e) {
  * @returns {undefined}
  */
 var listenerFeatureSelected = function (e) {
-    //TODO
-    /*if (fromreload === true) {
-     selectLayer.removeAllFeatures();
-     miniLayer.removeAllFeatures();
-     fromreload = false;
-     }*/
     var alreadySelected = selectLayer.features;
     for (var i = 0; i < alreadySelected.length; i++) {
         if (alreadySelected[i].attributes[fieldid] === e.feature.attributes[fieldid])
@@ -91,17 +84,10 @@ var listenerFeatureSelected = function (e) {
     }
     features.push({"id": e.feature.attributes[fieldid], "name": e.feature.attributes[fieldname]});
     jQuery('#t-features').val(JSON.stringify(features));
-    
-    
-    /*if (jQuery('#t-surface').val() !== '')
-        var surface = parseInt(jQuery('#t-surface').val());
-    else
-        var surface = 0;
 
-    jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));*/
     orderSurfaceChecking();
-
     selectLayer.addFeatures([e.feature]);
+    updateSelectCounter(selectLayer.features);
 };
 
 /**
@@ -111,18 +97,19 @@ var listenerFeatureSelected = function (e) {
  */
 var listenerFeatureUnselected = function (e) {
     selectLayer.removeFeatures([e.feature]);
-    var features = miniLayer.features;
-    for (var i = 0; i < features.length; i++) {
-        if (features[i].attributes['id'] === e.feature.attributes['id']) {
-            miniLayer.removeFeatures([features[i]]);
-            break;
-        }
-    }
+    /*var features = miniLayer.features;
+     for (var i = 0; i < features.length; i++) {
+     if (features[i].attributes['id'] === e.feature.attributes['id']) {
+     miniLayer.removeFeatures([features[i]]);
+     break;
+     }
+     }*/
     var features_text = jQuery('#t-features').val();
     if (features_text !== "")
         var features = JSON.parse(features_text);
     else
         return;
+
     jQuery.each(features, function (index, value) {
         if (typeof value === "undefined")
             return true;
@@ -140,6 +127,7 @@ var listenerFeatureUnselected = function (e) {
      jQuery('#t-surface').val(JSON.stringify(surface - e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
      }*/
     orderSurfaceChecking();
+    updateSelectCounter(selectLayer.features);
 };
 
 /**
@@ -208,9 +196,14 @@ function reloadFeatures(perimeter) {
                 multiple: selectControl.multiple,
                 toggle: selectControl.toggle
             };
+            
             selectControl.select(resp.features);
             protoWFS.defaultFilter = null;
-
+            updateSelectCounter(selectLayer.features);
+            for (var i = 0; i < resp.features.length; i++) {
+                miniLayer.addFeatures([resp.features[i].clone()]);
+            }
+            app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
         }
     });
 }

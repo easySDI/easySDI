@@ -1,4 +1,4 @@
-var map, perimeterLayer, selectLayer, polygonLayer, boxLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider, customStyleMap, alertControl;
+var map, perimeterLayer, selectLayer, polygonLayer, boxLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider, customStyleMap, alertControl, userperimeter;
 
 //Init the recapitulation map (map without control)
 function initMiniMap() {
@@ -125,14 +125,11 @@ function orderSurfaceChecking() {
     var tmpSurface = 0;
 
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
-        
+
         if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
             var layer = app.mapPanel.map.layers[j];
-            //console.log(layer.name+':');
-            //console.log(layer);
             for (var f = 0; f < layer.features.length; f++) {
                 if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
-                    //console.log(layer.name + '-' + f + ': ' + layer.features[f].geometry.getGeodesicArea(app.mapPanel.map.projection));
                     tmpSurface += layer.features[f].geometry.getGeodesicArea(app.mapPanel.map.projection);
                 }
             }
@@ -172,11 +169,12 @@ function clearLayersVector() {
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
-    for (var j = 0; j < minimap.layers.length; j++) {
-        if (minimap.layers[j].id.indexOf("Vector") !== -1) {
-            minimap.layers[j].removeAllFeatures();
-        }
-    }
+    miniLayer.removeAllFeatures();
+    /*for (var j = 0; j < minimap.layers.length; j++) {
+     if (minimap.layers[j].id.indexOf("Vector") !== -1) {
+     minimap.layers[j].removeAllFeatures();
+     }
+     }*/
     jQuery('#perimeter-recap-details').empty();
 }
 
@@ -216,6 +214,7 @@ function beforeFeatureAdded(event) {
 function resetAll() {
     resetTemporaryFields();
     freePerimeterTool = '';
+    removeSelectCounter();
 
     clearLayersVector();
     jQuery('#btns-selection').show();
@@ -236,9 +235,9 @@ function disableDrawControls() {
         app.mapPanel.map.removeLayer(app.mapPanel.map.getLayersByName("perimeterLayer")[0]);
         app.mapPanel.map.removeLayer(selectLayer);
     }
-    if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
-        app.mapPanel.map.removeLayer(myLayer);
-    }
+    /*if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
+     app.mapPanel.map.removeLayer(myLayer);
+     }*/
     for (key in drawControls) {
         var control = drawControls[key];
         control.deactivate();
@@ -252,8 +251,6 @@ function toggleSelectControl(action) {
         if (typeof selectControl !== 'undefined') {
             selectControl.activate();
         }
-    } else if (action === 'pan') {
-        selectControl.deactivate();
     } else {
         resetAll();
     }
@@ -297,6 +294,37 @@ function cancel() {
         var level = JSON.parse(jQuery('#level').val());
         app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider, level.code);
     }
+
+    setFreePerimeterTool(jQuery('#freeperimetertool').val());
+}
+
+//Add counter next to selection tool
+function addSelectCounter(perimeterId) {
+    removeSelectCounter();
+    var counterHTML = '<button onclick="return false;" id="perimeter-select-counter" data-perimeter-id="' + perimeterId + '" class="btn btn-primary disabled">0</button>';
+    jQuery('#btn-perimeter' + perimeterId).after(counterHTML);
+    jQuery("#perimeter-select-counter").popover({
+        container: '#btn-perimeter' + perimeterId,
+        trigger: 'hover ',
+        placement: 'bottom',
+        title: Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PERIMETER_YOUR_SELECTION', 'Your selection:'),
+        content: function () {
+            var selectCounterPopover = "";
+            for (var i = 0; i < selectLayer.features.length; i++) {
+                selectCounterPopover += (selectLayer.features[i].attributes[fieldname] + '<br/>');
+            }
+            return selectCounterPopover;
+        }});
+}
+
+//Update select counter
+function updateSelectCounter(features) {
+    jQuery("#perimeter-select-counter").text(features.length);
+}
+
+//Removes all select counters
+function removeSelectCounter() {
+    jQuery("#perimeter-select-counter").remove();
 }
 
 //
@@ -413,7 +441,7 @@ var updatePricing = function (pricing) {
 
 //Call after user validates his extent drawing
 function savePerimeter() {
-    
+
     //clean mini layer then copy all features from vector layers
     miniLayer.removeAllFeatures();
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
@@ -427,15 +455,6 @@ function savePerimeter() {
         }
     }
 
-
-
-
-
-
-
-
-
-    
     if (jQuery('#t-perimeter').val() == '') {
         jQuery('#perimeter-recap').empty();
     } else {
@@ -499,11 +518,17 @@ function updateDisplay(response) {
             jQuery('#perimeter-level').hide();
         }
         if (response.extent.surface !== '') {
-            jQuery('#perimeter-recap > div:nth-child(1) > div').html(
+            jQuery('#shop-perimeter-title-surface').html(
+                    " (" + 
+                    ((response.extent.surface > maxmetervalue)
+                    ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km²')
+                    : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m²')) +
+                    ")" )
+            /*jQuery('#perimeter-recap > div:nth-child(1) > div').html(
                     (response.extent.surface > maxmetervalue)
                     ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
                     : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
-                    );
+                    );*/
             jQuery('#perimeter-recap').show();
         }
         else {

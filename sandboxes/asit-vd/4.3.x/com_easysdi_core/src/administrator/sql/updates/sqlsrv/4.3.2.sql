@@ -11,3 +11,5 @@ DELETE FROM [#__sdi_sys_rendertype_stereotype] WHERE id=20;
 ALTER TABLE [#__sdi_visualization] ALTER COLUMN [alias] [nvarchar](255) NOT NULL;
 
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (11, 11, 1, N'organismmanager');
+
+ALTER TABLE [#__sdi_order] ADD [freeperimetertool] [nvarchar](100) NULL;
