@@ -132,7 +132,7 @@ if ($this->item && $this->item->extractions) :
                                 $extentFeaturesObject = json_decode($this->item->extent->features);
                                 ?>
                                 <div id="perimeter-recap-details-title"><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
-                                <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;<?php if (!is_array($extentFeaturesObject)): ?>display:none;<?php endif; ?>">
+                                <div id="perimeter-recap-details" style="overflow-y:auto; height:100px;<?php if (!is_array($extentFeaturesObject)): ?>display:none;<?php endif; ?>">
                                     <?php
                                     if (is_array($extentFeaturesObject)): foreach ($extentFeaturesObject as $feature):
                                             ?>
