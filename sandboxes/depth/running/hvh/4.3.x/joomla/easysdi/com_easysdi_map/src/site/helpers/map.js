@@ -289,7 +289,7 @@ function getMapConfig() {
                     ptype: "gxp_wmsgetfeatureinfo",
                     popupTitle: "Feature Info",
                     toggleGroup: "interaction",
-                    format: "' . $tool->params . '",
+                    format: data.tools[index].params,
                     actionTarget: "hiddentbar",
                     defaultAction: 0
                 };
