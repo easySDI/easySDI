@@ -9,3 +9,5 @@ INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALU
 DELETE FROM #__sdi_sys_rendertype_stereotype WHERE id=20;
 
 ALTER TABLE #__sdi_visualization MODIFY alias VARCHAR(50) NOT NULL;
+
+INSERT INTO #__sdi_sys_role (id, ordering, state, value) VALUES (11, 11, 1, 'organismmanager');
