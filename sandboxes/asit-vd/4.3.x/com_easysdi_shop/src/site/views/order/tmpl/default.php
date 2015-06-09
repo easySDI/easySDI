@@ -24,8 +24,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
-
-
+Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
 <?php if ($this->item) : ?> 
     <div class="order-edit front-end-edit">
@@ -53,18 +52,18 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                         <?php echo JText::_($this->item->orderstate); ?>
                                     </div>
                                 </div>
-                                
-                                <?php if(!is_null($this->item->validated)): ?>
-                                <div class="row-fluid">
-                                    <div class="span4 order-edit-label" >
-                                        <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_VALIDATED_REASON'); ?>
+
+                                <?php if (!is_null($this->item->validated)): ?>
+                                    <div class="row-fluid">
+                                        <div class="span4 order-edit-label" >
+                                            <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_VALIDATED_REASON'); ?>
+                                        </div>
+                                        <div class="span8 order-edit-value" >
+                                            <?php echo nl2br($this->item->validated_reason); ?>
+                                        </div>
                                     </div>
-                                    <div class="span8 order-edit-value" >
-                                        <?php echo nl2br($this->item->validated_reason); ?>
-                                    </div>
-                                </div>
-                                <?php endif;?>
-                                
+                                <?php endif; ?>
+
                                 <div class="row-fluid">
                                     <div class="span4 order-edit-label" >
                                         <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERTYPE_ID'); ?>
@@ -74,14 +73,14 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <?php if (!empty($this->item->basket->thirdparty)): ?>
                                 <div class="row-fluid" >
                                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>                                   
                                     <span ><?php echo $this->item->basket->thirdorganism; ?></span>                                    
                                 </div>
                             <?php endif; ?>
-                            
+
                             <div class="row-fluid ">
                                 <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
                                 <table class="table table-striped">
@@ -109,19 +108,20 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                                                             <div class="order-property-label" >
                                                                                 <?php echo $property->name; ?> :
                                                                             </div>
-                                    
+
                                                                             <?php
                                                                             foreach ($property->values as $value) :
                                                                                 ?>
                                                                                 <div class="order-property-value" >
-                                                                                <?php
-                                                                                if (!empty($value->value)) :
-                                                                                    echo $value->value;
-                                                                                else :
-                                                                                    echo $value->name;
-                                                                                endif;
-                                                                                if (next($property->values)==true) echo', ';
-                                                                                ?>
+                                                                                    <?php
+                                                                                    if (!empty($value->value)) :
+                                                                                        echo $value->value;
+                                                                                    else :
+                                                                                        echo $value->name;
+                                                                                    endif;
+                                                                                    if (next($property->values) == true)
+                                                                                        echo', ';
+                                                                                    ?>
                                                                                 </div>
                                                                                 <?php
                                                                             endforeach;
@@ -201,27 +201,30 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                 </div>
             </div>
             <div>
-                <?php if($this->state->get('layout.validation') && $this->item->orderstate_id == 8): ?>
-                <p id="validation_remark">
-                    <label for="reason"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK'); ?>:</label>
-                    <textarea id="reason" name="reason" <?php if(!$this->isValidationManager):?>disabled="disabled"<?php endif;?>></textarea>
-                </p>
-                <?php endif;
-                echo $this->getToolbar(); ?>
+                <?php if ($this->state->get('layout.validation') && $this->item->orderstate_id == 8): ?>
+                    <p id="validation_remark">
+                        <label for="reason"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK'); ?>:</label>
+                        <textarea id="reason" name="reason" <?php if (!$this->isValidationManager): ?>disabled="disabled"<?php endif; ?>></textarea>
+                    </p>
+                    <?php
+                endif;
+                echo $this->getToolbar();
+                ?>
             </div>
-            <?php if($this->item->basket->extent->id == 1 || $this->item->basket->extent->id == 2  ):?>
+            <?php if ($this->item->basket->extent->id == 1 || $this->item->basket->extent->id == 2): ?>
                 <?php echo $this->form->getInput('perimeter', null, $this->item->basket->extent->features); ?>
-            <?php else : 
-                foreach($this->item->basket->perimeters as $perimeter):
-                     if($perimeter->id == $this->item->basket->extent->id):
-                         echo $this->form->getInput('wfsfeaturetypefieldid', null, $perimeter->featuretypefieldid);
+                <?php
+            else :
+                foreach ($this->item->basket->perimeters as $perimeter):
+                    if ($perimeter->id == $this->item->basket->extent->id):
+                        echo $this->form->getInput('wfsfeaturetypefieldid', null, $perimeter->featuretypefieldid);
                         echo $this->form->getInput('wfsfeaturetypename', null, $perimeter->featuretypename);
                         echo $this->form->getInput('wfsurl', null, $perimeter->wfsurl);
                         echo $this->form->getInput('wfsnamespace', null, $perimeter->namespace);
                         echo $this->form->getInput('wfsprefix', null, $perimeter->prefix);
                         echo $this->form->getInput('wfsfeaturetypefieldgeometry', null, $perimeter->featuretypefieldgeometry);
                         break;
-                     endif;
+                    endif;
                 endforeach;
                 ?>
                 <?php echo $this->form->getInput('wfsperimeter', null, json_encode($this->item->basket->extent->features)); ?>
@@ -236,20 +239,20 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
         </form>
     </div>
     <script>
-        Ext.onReady(function() {
-            window.appname.on("ready", function() {
+        Ext.onReady(function () {
+            window.appname.on("ready", function () {
                 loadPerimeter(false);
             })
         })
     </script>
     <script type="text/javascript">
-        jQuery(document).ready(function(){
-           if(jQuery('textarea#reason').length){
-               jQuery('div#toolbar-delete>button').prop('disabled', true);
-               jQuery('textarea#reason').on('input propertychange', function(){
-                   jQuery('div#toolbar-delete>button').prop('disabled', !(this.value.length>20));
-               });
-           }
+        jQuery(document).ready(function () {
+            if (jQuery('textarea#reason').length) {
+                jQuery('div#toolbar-delete>button').prop('disabled', true);
+                jQuery('textarea#reason').on('input propertychange', function () {
+                    jQuery('div#toolbar-delete>button').prop('disabled', !(this.value.length > 20));
+                });
+            }
         });
     </script>
     <?php

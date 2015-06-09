@@ -77,7 +77,6 @@ function initStyleMap() {
             strokeWidth: mapStrokeWidth},
         "rotate": new OpenLayers.Style({
             externalGraphic: mapRotateIconURL,
-            //externalGraphic: "data:image/gif;base64,R0lGODlhUAAPANUAAAAAAAoKChQUFBoaGiQkJCwsLD4+PkJCQk1NTVNTU15eXmJiYmxsbHJycnt7e4ODg4iIiJZsbJqamqKioqqqqqxERLS0tL+/v8PDw8zMzNTU1Nvb2+Tk5O3t7fPz8/7+/v8AAP8ICP8WFv8cHP8jI/8yMv86Ov9CQv9KSv9VVf9lZf9ycv97e/+Dg/+Jif+Wlv+bm/+rq/+ysv+5uf/IyP/Q0P/f3//j4//19QAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAADkALAAAAABQAA8AAAb/wENjSCwaj8ikcskcVpSHx2dKrVqv2Kx2y52eZtmHtEsum8klEg4rnnI8007nI6/PPXDOnD7XxzlngVQkICxUNjA1H20cAApTBQMZAJSVGAMFHgAIUwYBHwMBcKFwgmciICAvKoQpU4yUCx2RkwQItwgamJqOHZ4fDQAWkwmmZjgzqcogJWuLUo2UAgGSAA4dF9keu5UB0x8YAAwPABTGXDQtJyHLqSI3VLAJDpTVDhaW3AgPAQCfoJREndsSA0U7ZTGqwFrwYYMAexscHABwKROAYhsIfOoAYAABABsGcrnBYkQ7V/GgAWD4gZa1VxS5FfvwSwIACBMAjBG5hcZBcBkpPzRi6bISpYqaZv4yAEAPAAI8uSQDYaKFyRHO2viCMGVBgg0GworVkGCBBwMOpjBA4OEASwYGAEXNEgPECHgfZKBY8Wrn3L9cYICgYQXvA66AE2txAUMLhAMQIkuWLKay5cuYM2vezNlyBM4HggAAOw==",
             fillOpacity: 1,
             graphicXOffset: 8,
             graphicYOffset: 8,

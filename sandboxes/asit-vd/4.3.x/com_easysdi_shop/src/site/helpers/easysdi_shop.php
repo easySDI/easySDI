@@ -19,21 +19,20 @@ require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
 jimport('joomla.application.component.helper');
 
 abstract class Easysdi_shopHelper {
-    
+
     // PRICING
-    const PRICING_FREE                  = 1;
-    const PRICING_FEE_WITHOUT_PROFILE   = 2;
-    const PRICING_FEE_WITH_PROFILE      = 3;
-    
-    const ROLE_MEMBER                   = 1;
-    const ROLE_RESOURCEMANAGER          = 2;
-    const ROLE_METADATARESPONSIBLE      = 3;
-    const ROLE_METADATAEDITOR           = 4;
-    const ROLE_DIFFUSIONMANAGER         = 5;
-    const ROLE_PREVIEWMANAGER           = 6;
-    const ROLE_EXTRACTIONRESPONSIBLE    = 7;
-    const ROLE_PRICINGMANAGER           = 9;
-    const ROLE_VALIDATIONMANAGER        = 10;
+    const PRICING_FREE = 1;
+    const PRICING_FEE_WITHOUT_PROFILE = 2;
+    const PRICING_FEE_WITH_PROFILE = 3;
+    const ROLE_MEMBER = 1;
+    const ROLE_RESOURCEMANAGER = 2;
+    const ROLE_METADATARESPONSIBLE = 3;
+    const ROLE_METADATAEDITOR = 4;
+    const ROLE_DIFFUSIONMANAGER = 5;
+    const ROLE_PREVIEWMANAGER = 6;
+    const ROLE_EXTRACTIONRESPONSIBLE = 7;
+    const ROLE_PRICINGMANAGER = 9;
+    const ROLE_VALIDATIONMANAGER = 10;
 
     /**
      * 
@@ -219,10 +218,10 @@ abstract class Easysdi_shopHelper {
         $basket->freeperimetertool = empty($item) ? '' : json_decode($item)->freeperimetertool;
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
         $return = array(
-            'MESSAGE'   => 'OK',
-            'extent'    => $basket->extent
+            'MESSAGE' => 'OK',
+            'extent' => $basket->extent
         );
-        
+
         //recalculate pricing if enable
         // rebuild extractions array to allow by supplier grouping
         self::extractionsBySupplierGrouping($basket);
@@ -231,7 +230,7 @@ abstract class Easysdi_shopHelper {
         self::basketPriceCalculation($basket);
 
         $return['pricing'] = $basket->pricing;
-        
+
         header('content-type: application/json');
         echo json_encode($return);
         die();
@@ -242,85 +241,87 @@ abstract class Easysdi_shopHelper {
         $paramsarray = $params->toArray();
 
         $mapscript = Easysdi_mapHelper::getMapScript($paramsarray['ordermap'], true);
-        
         ?> <div class="row-fluid" >
             <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
-            
+
             <div class="row-fluid" >
                 <div class="map-recap span8" >
-                   <div >
-                        <?php
-                        echo $mapscript;
-                        ?>
+                    <div >
+        <?php
+        echo $mapscript;
+        ?>
                     </div>                
                 </div>
                 <div  class="value-recap span4" >
                     <!--<div id="perimeter-buffer" class="row-fluid" >
                         <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h4>
-                            <span><?php if (!empty($item->basket->buffer)) echo (float)$item->basket->buffer; ?></span>                            
+                            <span><?php if (!empty($item->basket->buffer)) echo (float) $item->basket->buffer; ?></span>                            
                         </div>                                
                     </div>   -->                 
                     <div  class="row-fluid" >
-                        <?php if (!empty($item->basket->extent)): ?>
+        <?php if (!empty($item->basket->extent)): ?>
                             <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h4>
                                 <div><?php
-                                    if (!empty($item->basket->extent->surface)) :
-                                        if (floatval($item->basket->extent->surface) > intval($paramsarray['maxmetervalue'])):
-                                            echo round(floatval($item->basket->extent->surface) / 1000000, intval($paramsarray['surfacedigit']));
-                                            echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
-                                        else:
-                                            echo round(floatval($item->basket->extent->surface), intval($paramsarray['surfacedigit']));
-                                            echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
-                                        endif;
-                                    endif;
-                                    ?></div>
+            if (!empty($item->basket->extent->surface)) :
+                if (floatval($item->basket->extent->surface) > intval($paramsarray['maxmetervalue'])):
+                    echo round(floatval($item->basket->extent->surface) / 1000000, intval($paramsarray['surfacedigit']));
+                    echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
+                else:
+                    echo round(floatval($item->basket->extent->surface), intval($paramsarray['surfacedigit']));
+                    echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
+                endif;
+            endif;
+            ?></div>
                             </div>         
-                        <?php endif; ?>
+                                <?php endif; ?>
                     </div> 
-                    <?php if (!empty($item->basket->extent->level)) :?>
-                     <div id="indoor-level" class="row-fluid" >
-                        <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
-                            <span><?php echo json_decode($item->basket->extent->level)->label; ?></span>                            
-                        </div>                                
-                    </div>
-                    <?php endif; ?>
+                        <?php if (!empty($item->basket->extent->level)) : ?>
+                        <div id="indoor-level" class="row-fluid" >
+                            <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
+                                <span><?php echo json_decode($item->basket->extent->level)->label; ?></span>                            
+                            </div>                                
+                        </div>
+        <?php endif; ?>
                 </div>
-                
+
             </div>
             <div class="row-fluid" >
                 <div id="perimeter-recap" class="span12" >
-                   <div><h4><?php echo JText::_($item->basket->extent->name); ?></h4></div>                        
-                        <?php
-                        if (is_array($item->basket->extent->features)):  
-                            ?> <div id="perimeter-recap-details" style="overflow-y:auto; height:100px;"> <?php
-                            foreach ($item->basket->extent->features as $feature):
-                                ?>
+                    <div><h4><?php echo JText::_($item->basket->extent->name); ?></h4></div>                        
+        <?php
+        if (is_array($item->basket->extent->features)):
+            ?> <div id="perimeter-recap-details" style="overflow-y:auto; height:100px;"> <?php
+                        foreach ($item->basket->extent->features as $feature):
+                            ?>
                                 <div><?php echo $feature->name; ?></div>
                                 <?php
-                            endforeach; 
+                            endforeach;
                             ?> </div>   <?php
                         endif;
                         ?>
-                                      
+
                 </div>
             </div>
         </div>
         <?php
     }
-    
-    function rrmdir($dir) { 
-        if (is_dir($dir)) { 
-          $objects = scandir($dir); 
-          foreach ($objects as $object) { 
-            if ($object != "." && $object != "..") { 
-              if (filetype($dir."/".$object) == "dir") Easysdi_shopHelper::rrmdir($dir."/".$object); else unlink($dir."/".$object); 
-            } 
-          } 
-          reset($objects); 
-          rmdir($dir); 
-        } 
-      }
-    
+
+    function rrmdir($dir) {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (filetype($dir . "/" . $object) == "dir")
+                        Easysdi_shopHelper::rrmdir($dir . "/" . $object);
+                    else
+                        unlink($dir . "/" . $object);
+                }
+            }
+            reset($objects);
+            rmdir($dir);
+        }
+    }
+
     /**
      * 
      * Rebuild url from its different parts - check http_build_url() PHP Manual
@@ -332,23 +333,23 @@ abstract class Easysdi_shopHelper {
      * @return string
      */
     public static function unparse_url($url, $parts = array()) {
-        if(function_exists('http_build_url'))
+        if (function_exists('http_build_url'))
             return http_build_url($url, $parts);
-        
+
         $parsed_url = array_merge($url, $parts);
-        
-        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : ''; 
-        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : ''; 
-        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : ''; 
-        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : ''; 
-        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : ''; 
-        $pass     = ($user || $pass) ? "$pass@" : ''; 
-        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : ''; 
-        $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : ''; 
-        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : ''; 
+
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
-    
+
     /**
      * rounding - round a value
      * 
@@ -357,10 +358,10 @@ abstract class Easysdi_shopHelper {
      * @return float
      * @since 4.3.0
      */
-    private static function rounding($value, $rounding = 0.01){
-        return round($value/$rounding, 0)*$rounding;
+    private static function rounding($value, $rounding = 0.01) {
+        return round($value / $rounding, 0) * $rounding;
     }
-    
+
     /**
      * extractionsBySupplierGrouping - reword extractions array grouping products by suppliers
      * 
@@ -368,13 +369,13 @@ abstract class Easysdi_shopHelper {
      * @return voide
      * @since 4.3.0
      */
-    public static function extractionsBySupplierGrouping(&$basket){
+    public static function extractionsBySupplierGrouping(&$basket) {
         $myItems = $basket->extractions;
         $basket->extractionsNb = count($myItems);
         $basket->extractions = array();
-        if($basket->extractionsNb){
-            foreach($myItems as $myItem){
-                if(!isset($basket->extractions[$myItem->organism_id])){
+        if ($basket->extractionsNb) {
+            foreach ($myItems as $myItem) {
+                if (!isset($basket->extractions[$myItem->organism_id])) {
                     $basket->extractions[$myItem->organism_id] = new stdClass();
                     $basket->extractions[$myItem->organism_id]->id = $myItem->organism_id;
                     $basket->extractions[$myItem->organism_id]->name = $myItem->organism;
@@ -385,7 +386,7 @@ abstract class Easysdi_shopHelper {
             }
         }
     }
-    
+
     /**
      * basketPriceCalculation - calculate pricing for a basket
      * 
@@ -393,20 +394,19 @@ abstract class Easysdi_shopHelper {
      * @return void
      * @since 4.3.0
      */
-    public static function basketPriceCalculation(&$basket){
-        
+    public static function basketPriceCalculation(&$basket) {
+
         // init prices object
         $prices = new stdClass();
-        $prices->isActivated = (bool)JComponentHelper::getParams('com_easysdi_shop')->get('is_activated');
-        
+        $prices->isActivated = (bool) JComponentHelper::getParams('com_easysdi_shop')->get('is_activated');
+
         // test if pricing is activated
-        if($prices->isActivated){
+        if ($prices->isActivated) {
             // set the invoiced user (based on current user and third-party)
             $prices->debtor = new stdClass();
-            if(isset($basket->thirdparty)){
+            if (isset($basket->thirdparty)) {
                 $prices->debtor->id = $basket->thirdparty;
-            }
-            else{
+            } else {
                 $prices->debtor->id = $basket->sdiUser->role[self::ROLE_MEMBER][0]->id;
                 $prices->debtor->name = $basket->sdiUser->role[self::ROLE_MEMBER][0]->name;
             }
@@ -416,68 +416,68 @@ abstract class Easysdi_shopHelper {
                     ->select('c.id')
                     ->from('#__sdi_organism_category oc')
                     ->join('LEFT', '#__sdi_category c ON c.id=oc.category_id')
-                    ->where('oc.organism_id='.(int)$prices->debtor->id);
+                    ->where('oc.organism_id=' . (int) $prices->debtor->id);
             $db->setQuery($query);
             $prices->debtor->categories = $db->loadColumn();
-            
+
             // get easysdishop config
-            $prices->cfg_vat = (float)JComponentHelper::getParams('com_easysdi_shop')->get('vat', 0);
+            $prices->cfg_vat = (float) JComponentHelper::getParams('com_easysdi_shop')->get('vat', 0);
             $prices->cfg_currency = JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF');
-            $prices->cfg_rounding = (float)JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
-            $prices->cfg_overall_default_fee = (float)JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_fee', 0);
-            $prices->cfg_free_data_fee = (bool)JComponentHelper::getParams('com_easysdi_shop')->get('free_data_fee', false);
-            
+            $prices->cfg_rounding = (float) JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
+            $prices->cfg_overall_default_fee = (float) JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_fee', 0);
+            $prices->cfg_free_data_fee = (bool) JComponentHelper::getParams('com_easysdi_shop')->get('free_data_fee', false);
+
             // get the surface ordered - default to 0
-            $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface/1000000 : 0;
+            $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface / 1000000 : 0;
 
             // calculate prices by supplier
             $prices->suppliers = array();
             $prices->cal_total_amount_ti = 0;
             $prices->hasFeeWithoutPricingProfileProduct = false;
-            foreach($basket->extractions as $supplier_id => $supplier){
+            foreach ($basket->extractions as $supplier_id => $supplier) {
                 $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
-                if($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct)
+                if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct)
                     $prices->hasFeeWithoutPricingProfileProduct = true;
                 else
                     $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
             }
-            
+
             // set the platform tax
-            if($prices->cal_total_amount_ti==0 && !$prices->cfg_free_data_fee)
+            if ($prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee)
                 $prices->cal_fee_ti = 0;
-            else{
+            else {
                 $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
-                
-                if(count($prices->debtor->categories)){
+
+                if (count($prices->debtor->categories)) {
                     $db = JFactory::getDbo();
                     $query = $db->getQuery(true)
                             ->select('c.overall_fee, c.name')
                             ->from('#__sdi_category c')
                             ->where('c.overall_fee IS NOT NULL')
-                            ->where('c.id IN ('.implode(',', $prices->debtor->categories).')')
+                            ->where('c.id IN (' . implode(',', $prices->debtor->categories) . ')')
                             ->order('overall_fee');
                     $db->setQuery($query, 0, 1);
                     $category = $db->loadObject();
 
-                    if($category !== null){
+                    if ($category !== null) {
                         $prices->cal_fee_ti = $category->overall_fee;
                         $prices->ind_lbl_category_order_fee = $category->name;
                     }
                 }
             }
-            
+
             $prices->cal_fee_ti = self::rounding($prices->cal_fee_ti, $prices->cfg_rounding);
-            
+
             // total amount for the platform
-            if($prices->hasFeeWithoutPricingProfileProduct)
+            if ($prices->hasFeeWithoutPricingProfileProduct)
                 $prices->cal_total_amount_ti = '-';
             else
                 $prices->cal_total_amount_ti += $prices->cal_fee_ti;
         }
-        
+
         $basket->pricing = $prices;
     }
-    
+
     /**
      * basketPriceCalculationBySupplier - calculate pricing by supplier
      * 
@@ -486,82 +486,79 @@ abstract class Easysdi_shopHelper {
      * @return \stdClass
      * @since 4.3.0
      */
-    private static function basketPriceCalculationBySupplier($supplier, $prices){
-        
+    private static function basketPriceCalculationBySupplier($supplier, $prices) {
+
         // init provider sub-object
         $provider = new stdClass();
-        $provider->id = (int)$supplier->id;
-        
+        $provider->id = (int) $supplier->id;
+
         // get organism pricing params
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
                 ->from('#__sdi_organism o')
-                ->where('o.id='.$provider->id);
+                ->where('o.id=' . $provider->id);
         $db->setQuery($query);
         $organism = $db->loadObject();
-        
+
         $provider->name = $organism->name;
-        $provider->cfg_internal_free = (bool)$organism->internal_free;
+        $provider->cfg_internal_free = (bool) $organism->internal_free;
         $provider->cfg_fixed_fee_ti = $organism->fixed_fee_ti;
-        $provider->cfg_data_free_fixed_fee = (bool)$organism->data_free_fixed_fee;
-        
+        $provider->cfg_data_free_fixed_fee = (bool) $organism->data_free_fixed_fee;
+
         // calculate supplier rebate
-	$internalFreeOrder = false;
+        $internalFreeOrder = false;
         $prices->supplierRebate = new stdClass();
-        if($provider->cfg_internal_free==true && $prices->debtor->id==$provider->id){
-	    $internalFreeOrder = true;
+        if ($provider->cfg_internal_free == true && $prices->debtor->id == $provider->id) {
+            $internalFreeOrder = true;
             $prices->supplierRebate->pct = 100;
             $prices->supplierRebate->name = $organism->name;
-        }
-        elseif(count($prices->debtor->categories)){
+        } elseif (count($prices->debtor->categories)) {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->select('ocpr.rebate, c.name')
                     ->from('#__sdi_organism_category_pricing_rebate ocpr')
                     ->join('LEFT', '#__sdi_category c ON c.id=ocpr.category_id')
-                    ->where('ocpr.organism_id='.$provider->id.' AND ocpr.category_id IN ('.implode(',', $prices->debtor->categories).')')
+                    ->where('ocpr.organism_id=' . $provider->id . ' AND ocpr.category_id IN (' . implode(',', $prices->debtor->categories) . ')')
                     ->order('rebate DESC')
-                    ;
+            ;
             $db->setQuery($query, 0, 1);
             $supplierRebate = $db->loadAssoc();
             $prices->supplierRebate->pct = $supplierRebate['rebate'];
             $prices->supplierRebate->name = $supplierRebate['name'];
-        }
-        else{
+        } else {
             $prices->supplierRebate->pct = 0;
             $prices->supplierRebate->name = '';
         }
-        
+
         // calculate price for each product and increment the provider sub-total
         $provider->products = array();
         $provider->cal_total_amount_ti = 0;
         $provider->cal_total_rebate_ti = 0;
         $provider->hasFeeWithoutPricingProfileProduct = false;
-        foreach($supplier->items as $product){
+        foreach ($supplier->items as $product) {
             $provider->products[$product->id] = self::basketPriceCalculationByProduct($product, $prices);
-            if($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder)
+            if ($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder)
                 $provider->hasFeeWithoutPricingProfileProduct = true;
-            elseif($product->pricing == self::PRICING_FEE_WITH_PROFILE){
+            elseif ($product->pricing == self::PRICING_FEE_WITH_PROFILE) {
                 $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
                 $provider->cal_total_rebate_ti += $provider->products[$product->id]->cal_total_rebate_ti;
             }
         }
-        
+
         // set the provider tax
-        $provider->cal_fee_ti = ($provider->cal_total_amount_ti>0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
-        
+        $provider->cal_fee_ti = ($provider->cal_total_amount_ti > 0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
+
         // total amount for this provider
-        if($provider->hasFeeWithoutPricingProfileProduct){
+        if ($provider->hasFeeWithoutPricingProfileProduct) {
             unset($provider->cal_total_amount_ti);
             unset($provider->cal_total_rebate_ti);
-        }
-        else
+        } else
             $provider->cal_total_amount_ti += $provider->cal_fee_ti;
-        
+
         return $provider;
     }
-    
+
     /**
      * basketPriceCalculationByProduct - calculate pricing by product
      * 
@@ -570,16 +567,16 @@ abstract class Easysdi_shopHelper {
      * @return \stdClass
      * @since 4.3.0
      */
-    private static function basketPriceCalculationByProduct($product, $prices){
-        
+    private static function basketPriceCalculationByProduct($product, $prices) {
+
         // init product sub-object
         $price = new stdClass();
-        
+
         $price->cfg_pricing_type = $product->pricing;
-        
-        if($price->cfg_pricing_type != self::PRICING_FEE_WITH_PROFILE)
+
+        if ($price->cfg_pricing_type != self::PRICING_FEE_WITH_PROFILE)
             return $price;
-        
+
         // get base parameters to calculate product price
         $pricingProfile = new sdiPricingProfile($product->pricing_profile);
         $price->cfg_profile_id = $pricingProfile->id;
@@ -589,54 +586,53 @@ abstract class Easysdi_shopHelper {
         $price->cfg_surface_rate = $pricingProfile->surface_rate;
         $price->cfg_min_fee = $pricingProfile->min_fee;
         $price->cfg_max_fee = $pricingProfile->max_fee;
-        
+
         // calculate product price
         $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
-        
+
         // limit price according to min and max price
-        if($price->cfg_max_fee>0 && $price->cal_amount_data_te > $price->cfg_max_fee){
+        if ($price->cfg_max_fee > 0 && $price->cal_amount_data_te > $price->cfg_max_fee) {
             $price->cal_amount_data_te = $price->cfg_max_fee;
-        }
-        elseif($price->cfg_min_fee>0 && $price->cal_amount_data_te < $price->cfg_min_fee){
+        } elseif ($price->cfg_min_fee > 0 && $price->cal_amount_data_te < $price->cfg_min_fee) {
             $price->cal_amount_data_te = $price->cfg_min_fee;
         }
-        
+
         // rebate based on category and profile
         $price->cfg_pct_category_profile_discount = 0;
         $price->ind_lbl_category_profile_discount = '';
-        
-        if(count($prices->debtor->categories)){
+
+        if (count($prices->debtor->categories)) {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->select('ppcpr.category_id, c.name')
                     ->from('#__sdi_pricing_profile_category_pricing_rebate ppcpr')
                     ->join('LEFT', '#__sdi_category c ON c.id=ppcpr.category_id')
-                    ->where('ppcpr.pricing_profile_id='.(int)$pricingProfile->id)
-                    ->where('ppcpr.category_id IN ('.  implode(',', $prices->debtor->categories).')');
+                    ->where('ppcpr.pricing_profile_id=' . (int) $pricingProfile->id)
+                    ->where('ppcpr.category_id IN (' . implode(',', $prices->debtor->categories) . ')');
             $db->setQuery($query);
             $category_free = $db->loadAssoc();
-            
-            if($category_free !== null){
+
+            if ($category_free !== null) {
                 $price->cfg_pct_category_profile_discount = 100;
                 $price->ind_lbl_category_profile_discount = $category_free['name'];
             }
         }
-        
+
         // rebate based on category and supplier
         $price->cfg_pct_category_supplier_discount = $prices->supplierRebate->pct;
         $price->ind_lbl_category_supplier_discount = $prices->supplierRebate->name;
-        
+
         // final price TE
-        $price->cal_total_amount_te = self::rounding($price->cal_amount_data_te * (1 - $price->cfg_pct_category_profile_discount/100) * (1 - $price->cfg_pct_category_supplier_discount/100));
+        $price->cal_total_amount_te = self::rounding($price->cal_amount_data_te * (1 - $price->cfg_pct_category_profile_discount / 100) * (1 - $price->cfg_pct_category_supplier_discount / 100));
         $cal_total_rebate_te = self::rounding($price->cal_amount_data_te - $price->cal_total_amount_te);
-        
+
         // final price TI
-        $price->cal_total_amount_ti = self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat/100), $prices->cfg_rounding);
-        $price->cal_total_rebate_ti = self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat/100), $prices->cfg_rounding);
-        
+        $price->cal_total_amount_ti = self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding);
+        $price->cal_total_rebate_ti = self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding);
+
         return $price;
     }
-    
+
     /**
      * priceFormatter - format price according to the shop configuration
      * a js implementation is located in basket.js
@@ -646,24 +642,21 @@ abstract class Easysdi_shopHelper {
      * @return string
      * @since 4.3.0
      */
-    public static function priceFormatter($price, $displayCurrency = true){
-        $c = $displayCurrency ? ' '.JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '';
-        
-        if($price != '-' && $price != 0)
-            $price =    number_format(
-                            $price, 
-                            JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), 
-                            JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), 
-                            JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'")
-                        );
-        
-        return $price.$c;
+    public static function priceFormatter($price, $displayCurrency = true) {
+        $c = $displayCurrency ? ' ' . JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '';
+
+        if ($price != '-' && $price != 0)
+            $price = number_format(
+                    $price, JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'")
+            );
+
+        return $price . $c;
     }
-    
-    /**************************/
-    /** NOTIFICATION METHODS **/
-    /**************************/
-    
+
+    /*     * *********************** */
+    /** NOTIFICATION METHODS * */
+    /*     * *********************** */
+
     /**
      * notifyCustomer - notify the customer of its order
      * 
@@ -671,12 +664,12 @@ abstract class Easysdi_shopHelper {
      * @return void
      * @since 4.3.0
      */
-    public static function notifyCustomer($orderName){
+    public static function notifyCustomer($orderName) {
         $user = sdiFactory::getSdiUser();
-        if(!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_BODY', $orderName)))
+        if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_BODY', $orderName)))
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
     }
-    
+
     /**
      * notifyNotifiedUsers - notify the defined notified users for a diffusion
      * 
@@ -684,13 +677,13 @@ abstract class Easysdi_shopHelper {
      * @return void
      * @since 4.3.0
      */
-    public static function notifyNotifiedUsers($diffusionId){
+    public static function notifyNotifiedUsers($diffusionId) {
         //Get the user to notified when the order is saved
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('user_id')
                 ->from('#__sdi_diffusion_notifieduser')
-                ->where('diffusion_id = ' . (int)$diffusionId);
+                ->where('diffusion_id = ' . (int) $diffusionId);
         $db->setQuery($query);
         $notifiedusers = $db->loadColumn();
 
@@ -698,13 +691,13 @@ abstract class Easysdi_shopHelper {
         $diffusiontable->load($diffusionId);
 
         //Send mail to notifieduser
-        foreach ($notifiedusers as $notifieduser){
+        foreach ($notifiedusers as $notifieduser) {
             $user = sdiFactory::getSdiUser($notifieduser);
             if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_BODY', $diffusiontable->name)))
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
         }
     }
-    
+
     /**
      * notifyExtractionResponsible - notify the extraction responsible
      * 
@@ -712,30 +705,36 @@ abstract class Easysdi_shopHelper {
      * @return void
      * @since 4.3.0
      */
-    public static function notifyExtractionResponsible($diffusionId){
+    public static function notifyExtractionResponsible($diffusionId) {
         $diffusiontable = JTable::getInstance('diffusion', 'Easysdi_shopTable');
         $diffusiontable->load($diffusionId);
-        
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('rr.user_id')
                 ->from('#__sdi_user_role_resource rr')
                 ->where('rr.role_id = 7')
-                ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . (int)$diffusiontable->version_id . ')');
+                ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . (int) $diffusiontable->version_id . ')');
         $db->setQuery($query);
         $responsible = $db->loadResult();
-        
+
         $user = sdiFactory::getSdiUser($responsible);
         if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusiontable->name)))
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
     }
 
+    public static function addMapShopConfigToDoc() {
+        $document = JFactory::getDocument();
+        $document->addScriptDeclaration('var mapFillColor = "'.JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_color', '#EE9900') . '",
+                mapFillOpacity = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_opacity', 0.4). ',
+                mapStrokeColor = "'. JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_color', '#EE9900'). '",
+                mapStrokeOpacity = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_opacity', 1.0). ',
+                mapStrokeWidth = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_width', 2). ',
+                mapPointStrokeWidth = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_point_stroke_width', 2). ',
+                mapPointRadius = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5). ',
+                mapRotateIconURL = "'. JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png'). '",
+                mapMinSurfaceRectangle = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0). ',
+                mapMinSurfaceRectangleBorder = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100). ';');
+    }
+
 }
-
-
-
-
-
-
-
-
