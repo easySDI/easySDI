@@ -109,7 +109,6 @@ var listenerMiniFeaturesAdded = function () {
 
 //Call after a feature was selected or drawn in the map
 var listenerFeatureAdded = function (e) {
-    //miniLayer.addFeatures([e.feature.clone()]);
     orderSurfaceChecking();
 };
 
@@ -122,21 +121,22 @@ var listenerFeatureAddedToZoom = function (e) {
 function orderSurfaceChecking() {
 
     var tmpSurface = 0;
+    var isSelfIntersect = false;
 
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
-
         if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
             var layer = app.mapPanel.map.layers[j];
             for (var f = 0; f < layer.features.length; f++) {
                 if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
                     tmpSurface += layer.features[f].geometry.getGeodesicArea(app.mapPanel.map.projection);
                 }
+                if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon) {
+                    isSelfIntersect = checkSelfIntersect(layer.features[f]);
+                }
             }
         }
     }
-    console.log('total:' + tmpSurface);
     jQuery('#t-surface').val(tmpSurface);
-
 
     var toobig = false;
     var toosmall = false;
@@ -148,7 +148,12 @@ function orderSurfaceChecking() {
         if (parseFloat(jQuery('#t-surface').val()) < parseFloat(jQuery('#surfacemin').val()))
             toosmall = true;
     }
-    if (toobig || toosmall) {
+
+    if (isSelfIntersect) {
+        //More than 2 intersectios for a line, mean that a line intersects another one.
+        var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT', 'Self-intersecting perimeter is not allowed');
+        alertControl.raiseAlert('<span>' + message + '</span>');
+    } else if (toobig || toosmall) {
         var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_AREA', 'Your current selection of %SURFACE is not in the allowed surface range [%SURFACEMIN,%SURFACEMAX].')
                 .replace('%SURFACE', jQuery('#t-surface').val())
                 .replace('%SURFACEMIN', jQuery('#surfacemin').val())
@@ -157,8 +162,45 @@ function orderSurfaceChecking() {
 
     } else {
         alertControl.clearAlert();
-
     }
+}
+
+//check if a feature is selfintersecting
+function checkSelfIntersect(feature) {
+    var lines = new Array();
+    var isSelfIntersect = false;
+
+    // do not test non-polygons
+    if (feature.geometry instanceof OpenLayers.Geometry.Polygon) {
+        var polygonSize = feature.geometry.components[0].components.length;
+        var components = feature.geometry.components[0].components;
+        var i = 0;
+        while (i < polygonSize - 1) {
+            lines.push(new OpenLayers.Geometry.LineString([
+                new OpenLayers.Geometry.Point(components [i].x, components [i].y),
+                new OpenLayers.Geometry.Point(components [i + 1].x, components [i + 1].y)
+            ]));
+
+            i++;
+        }
+        for (i = 0; i < lines.length; i++) {
+            count = 0;
+            for (j = 0; j < lines.length; j++) {
+                //Do not compare a line with itslf
+                if (i != j) {
+                    if (lines[i].intersects(lines[j])) {
+                        count++;
+                    }
+                }
+                if (count > 2) {
+                    //More than 2 intersectios for a line, mean that a line intersects another one.
+                    isSelfIntersect = true;
+                    break;
+                }
+            }
+        }
+    }
+    return isSelfIntersect;
 }
 
 //Remove all geometries drawn
@@ -666,6 +708,13 @@ jQuery(document).ready(function () {
     checkTouState();
 
     thirdpartyInfoVisibility();
+
+    //disbale 'return' key submit
+    jQuery('form input').bind('keydown', function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+        }
+    });
 
     jQuery('#toolbar button').on('click', function () {
         var task = jQuery(this).attr('rel');

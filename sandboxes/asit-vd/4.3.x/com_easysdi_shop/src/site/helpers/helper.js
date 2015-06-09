@@ -11,7 +11,6 @@ function loadPerimeter(withdisplay) {
 }
 
 function loadPolygonPerimeter(withdisplay) {
-    console.log('loadPolygonPerimeter');
     polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection, styleMap: customStyleMap});
 
     var wkt = jQuery('#jform_perimeter').val();
