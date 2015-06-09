@@ -176,11 +176,6 @@ class Easysdi_filedHelper {
         $info = pathinfo($img_path);
 
         try {
-            // Create thumb folder if not exist
-            if (!file_exists($thumb_path)) {
-                mkdir($thumb_path);
-            }
-            
             if (!extension_loaded('gd')) {
                 return $this->getDefaultThumbnail($img_path, $thumb_path, $thumb_root_url);
             }
@@ -219,8 +214,6 @@ class Easysdi_filedHelper {
         imagecopyresized($tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 
         // Create thumbnail
-        
-        
         switch (strtolower($info['extension'])) {
             case 'jpg':
             case 'jpeg';

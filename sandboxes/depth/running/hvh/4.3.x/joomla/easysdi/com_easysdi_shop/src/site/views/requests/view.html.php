@@ -46,7 +46,7 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
-
+        
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

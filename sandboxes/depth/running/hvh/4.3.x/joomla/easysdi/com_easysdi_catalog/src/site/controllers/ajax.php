@@ -180,7 +180,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         
         $fu = new Easysdi_filedHelper();
         try {
-            $result['files'] = $fu->upload($_FILES, $target_folder, $fileBaseUrl, true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', $fileBaseUrl . '/thumbnails',120);
+            $result['files'] = $fu->upload($_FILES, $target_folder, JUri::base().'media/easysdi', true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', JUri::base() . 'media/easysdi/thumbnails',120);
             $result['status'] = 'success';
             header('Content-type: application/json');
             echo json_encode($result);
