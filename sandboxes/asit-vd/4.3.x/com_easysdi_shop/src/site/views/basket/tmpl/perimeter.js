@@ -138,7 +138,6 @@ var listenerFeatureUnselected = function (e) {
 function reloadFeatures(perimeter) {
     selectPredefinedPerimeter(perimeter, 0);
     var wfsurl = perimeter.wfsurl;
-    var featuretypename = perimeter.prefix + ':' + perimeter.featuretypename;
     var featuretypefieldid = perimeter.prefix + ':' + perimeter.featuretypefieldid;
 
     jQuery('#t-features').val(jQuery('#features').val());

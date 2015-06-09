@@ -255,11 +255,11 @@ abstract class Easysdi_shopHelper {
                     </div>                
                 </div>
                 <div  class="value-recap span4" >
-                    <div id="perimeter-buffer" class="row-fluid" >
+                    <!--<div id="perimeter-buffer" class="row-fluid" >
                         <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h4>
                             <span><?php if (!empty($item->basket->buffer)) echo (float)$item->basket->buffer; ?></span>                            
                         </div>                                
-                    </div>                    
+                    </div>   -->                 
                     <div  class="row-fluid" >
                         <?php if (!empty($item->basket->extent)): ?>
                             <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h4>
@@ -292,7 +292,7 @@ abstract class Easysdi_shopHelper {
                    <div><h4><?php echo JText::_($item->basket->extent->name); ?></h4></div>                        
                         <?php
                         if (is_array($item->basket->extent->features)):  
-                            ?> <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;"> <?php
+                            ?> <div id="perimeter-recap-details" style="overflow-y:auto; height:100px;"> <?php
                             foreach ($item->basket->extent->features as $feature):
                                 ?>
                                 <div><?php echo $feature->name; ?></div>
