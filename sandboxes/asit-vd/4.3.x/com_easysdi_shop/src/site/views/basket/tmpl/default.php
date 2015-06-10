@@ -22,6 +22,11 @@ JText::script('COM_EASYSDI_SHOP_BASKET_PROCESS_PROGRESSING');
 JText::script('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE');
 JText::script('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO');
 JText::script('COM_EASYSDI_SHOP_BASKET_PERIMETER_YOUR_SELECTION');
+JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_NOT_EN_POINTS');
+JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_LIST_FORMAT');
+JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_EMPTY_POINT_LIST');
+JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CLOSE');
+JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CREATE_F');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -51,7 +56,6 @@ if ($this->item && $this->item->extractions) :
                 decimal_symbol = '<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'); ?>',
                 digit_grouping_symbol = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'"); ?>",
                 currency = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF'); ?>";
-        //todo save in session
         freePerimeterTool = '<?php
     if (isset($this->item->freeperimetertool)):
         echo $this->item->freeperimetertool;
@@ -63,7 +67,7 @@ if ($this->item && $this->item->extractions) :
 
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="basket-edit front-end-edit">
-            <h1><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_TITLE',$this->item->extractionsNb); ?></h1>
+            <h1><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_TITLE', $this->item->extractionsNb); ?></h1>
             <div class="well">
                 <!-- PERIMETER -->
                 <div class="row-fluid shop-perimeter" >
@@ -148,7 +152,7 @@ if ($this->item && $this->item->extractions) :
                             //If one of the products is restricted and the organism of the user doesn't have a perimeter, the selection can't be done
                             if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1 && ($this->user->perimeter == '')) {
                                 ?>
-                                <div id="help-perimeter" class="help-block"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER_ERROR'); ?></div>
+                                <div id="help-perimeter" class="help-block"><?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER_ERROR')); ?></div>
                             <?php } else { ?>
                                 <a href="#modal-perimeter" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" >
                                     <i class="icon-white icon-location"></i>
@@ -407,13 +411,21 @@ if ($this->item && $this->item->extractions) :
                             </div>
                         </div>
                         <div class="span3">
-                            <br>
-                            <br>
-                            <div class="row-fluid">
-                            </div>
-                            <div class="row-fluid">
-                                <div class="span3">
-                                    <!--<div class="btn-group" data-toggle="buttons-radio">-->
+                            <?php if ($this->importEnabled): ?>
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#basket-tab-select-tools" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAB_SELECT_TOOLS'); ?></a>
+                                    </li>
+                                    <li class="pull-right">
+                                        <a href="#basket-tab-import-polygon" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAB_IMPORT_POLY'); ?></a>
+                                    </li>
+                                </ul>
+                            <?php else: ?>
+                                <br/>
+                            <?php endif; ?>
+                            <div class="tab-content">
+                                <!-- Begin Tabs -->
+                                <div class="tab-pane active" id="basket-tab-select-tools">
                                     <div class="btn-group" data-toggle="buttons-radio">
                                         <?php
                                         foreach ($this->item->perimeters as $perimeter):
@@ -423,7 +435,7 @@ if ($this->item && $this->item->extractions) :
                                                     <div class="btn-group btn-group-perimeter-selection">
                                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn btn-perimeter-selection" 
                                                            onClick="selectRectangle();
-                                                                                   jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE_HELP'); ?>');
+                                                                                   jQuery('#help-perimeter').html('<?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE_HELP')); ?>');
                                                                                    jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                                                    jQuery('#perimeter-buffer').<?php
                                                            if ($perimeter->allowedbuffer == 1): echo 'show';
@@ -436,7 +448,7 @@ if ($this->item && $this->item->extractions) :
                                                     <div class="btn-group btn-group-perimeter-selection">
                                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>b"  class="btn btn-perimeter-selection" 
                                                            onClick="selectPolygon();
-                                                                                   jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON_HELP'); ?>');
+                                                                                   jQuery('#help-perimeter').html('<?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON_HELP')); ?>');
                                                                                    jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                                                    jQuery('#perimeter-buffer').<?php
                                                            if ($perimeter->allowedbuffer == 1): echo 'show';
@@ -454,7 +466,7 @@ if ($this->item && $this->item->extractions) :
                                                     <div class="btn-group btn-group-perimeter-selection">
                                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
                                                            onClick="selectPerimeter<?php echo $perimeter->id; ?>();
-                                                                                   jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MY_PERIMETER_HELP'); ?>');
+                                                                                   jQuery('#help-perimeter').html('<?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_MY_PERIMETER_HELP')); ?>');
                                                                                    jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                                                    jQuery('#perimeter-buffer').<?php
                                                            if ($perimeter->allowedbuffer == 1): echo 'show';
@@ -483,7 +495,7 @@ if ($this->item && $this->item->extractions) :
                                                 <div class="btn-group btn-group-perimeter-selection">
                                                     <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
                                                        onClick="selectPerimeter<?php echo $perimeter->id; ?>();
-                                                                           jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER_HELP'); ?>');
+                                                                           jQuery('#help-perimeter').html('<?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER_HELP')); ?>');
                                                                            jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                                            jQuery('#perimeter-buffer').<?php
                                                        if ($perimeter->allowedbuffer == 1): echo 'show';
@@ -514,14 +526,23 @@ if ($this->item && $this->item->extractions) :
                                         endforeach;
                                         ?>
                                     </div>
+                                    <div id="help-perimeter" class="help-block"><?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_PAN_HELP')); ?></div>
                                 </div>
+                                <?php if ($this->importEnabled): ?>
+                                    <div class="tab-pane" id="basket-tab-import-polygon">
+                                        <p id="#basket-impot-poly-help"><?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_HELP')); ?></p>
+                                        <textarea id="basket-import-polygon-textarea" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_PLACEHOLDER'); ?>"></textarea>
+                                        <br/>
+                                        <br/>
+                                        <a href="#" class="btn btn-success pull-right" onclick="importPolygonFromText();" ><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_BTN_LABEL'); ?></a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <script>
     <?php
     echo($perimeterScript);
     ?>
                             </script>
-                            <div id="help-perimeter" class="help-block"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN_HELP'); ?></div>
                         </div>
                     </div>
                 </div>

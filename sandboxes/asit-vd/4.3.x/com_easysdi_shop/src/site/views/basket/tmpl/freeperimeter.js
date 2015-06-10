@@ -92,7 +92,7 @@ function selectPolygonEdit() {
     jQuery('#btn-perimeter1b').removeClass('active');
     jQuery('#btn-perimeter1b').blur();
     var theFeature = polygonLayer.features[polygonLayer.features.length - 1];
-    selectControl = new OpenLayers.Control.ModifyFeature(polygonLayer);
+    selectControl = new OpenLayers.Control.ModifyFeature(polygonLayer, {clickout: false, toggle: false});
     //app.mapPanel.map.addControl(selectControl);
     //selectControl.activate();
     selectControl.selectFeature(theFeature);
@@ -231,3 +231,114 @@ function setFreePerimeterTool(tool) {
     jQuery('#t-freeperimetertool').val(tool);
 }
 
+function importPolygonFromText() {
+
+    var text = jQuery('#basket-import-polygon-textarea').val();
+    var feature = getPolygonFromText(text);
+    if (feature) {
+        if (feature.attributes['importGeom'] == "rectangle") {
+            resetAll();
+            boxLayer.addFeatures([feature.clone()]);
+            selectRectangleEdit(boxLayer.features[boxLayer.features.length - 1]);
+        } else {
+            resetAll();
+            polygonLayer.addFeatures([feature.clone()]);
+            selectPolygonEdit();
+        }
+    }
+}
+
+function getPolygonFromText(text) {
+    //clean text :
+    //replace any separator by a space
+    text = text.replace(/,|;|\t/g, " ");
+    //replace double spaces by one
+    text = text.replace(/  +/g, " ");
+    //replace all by tabs
+    text = text.replace(/ /g, "\t");
+
+    //splint in points lines
+    var lines = text.split("\n");
+
+    //add lon/lat at beginning of the array
+    if (lines[0].trim() != "lon\tlat") {
+        lines.unshift("lon\tlat");
+    }
+
+    //add first point to the end if needed
+    if (lines[1].trim() != lines[lines.length - 1].trim())
+        lines.push(lines[1]);
+
+    //2 points  + 1 header line
+    if (lines.length < 3) {
+        alert(Joomla.JText._("COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_NOT_EN_POINTS"));
+        return false;
+    }
+
+    //Emptyline to end string
+    lines.push("");
+
+    //group in a string
+    featureText = lines.join("\n");
+
+    //read the string and build collection
+    var reader = new OpenLayers.Format.Text();
+    var points = reader.read(featureText);
+    var pointsGeom = [];
+
+    if (!points) {
+        alert(Joomla.JText._("COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_LIST_FORMAT"));
+        return false;
+    } else if (!points.length || points.length == 0) {
+        alert(Joomla.JText._("COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_EMPTY_POINT_LIST"));
+        return false;
+    }
+
+    //extract geometries from features
+    for (var j = 0; j < points.length; j++) {
+        pointsGeom.push(points[j].geometry.clone());
+    }
+
+    var feature;
+    var attribs;
+
+    //is a polygon
+    if (pointsGeom.length > 3) {
+        //build polygon
+        var polygon = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(pointsGeom)]);
+        if (!polygon) {
+            alert(Joomla.JText._("COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CLOSE"));
+            return false;
+        }
+        attribs = {importGeom: "polygon"};
+        feature = new OpenLayers.Feature.Vector(polygon, attribs);
+    } else { // is a box (2 points)
+        // reorder points, to have the rotate handle in the right place (bottom right)
+        var xMin = pointsGeom[1].x < pointsGeom[0].x ? pointsGeom[1].x : pointsGeom[0].x;
+        var xMax = pointsGeom[1].x < pointsGeom[0].x ? pointsGeom[0].x : pointsGeom[1].x;
+        var yMin = pointsGeom[1].y < pointsGeom[0].y ? pointsGeom[1].y : pointsGeom[0].y;
+        var yMax = pointsGeom[1].y < pointsGeom[0].y ? pointsGeom[0].y : pointsGeom[1].y;
+
+        var newPoints = [
+            new OpenLayers.Geometry.Point(xMax, yMin),
+            new OpenLayers.Geometry.Point(xMax, yMax),
+            new OpenLayers.Geometry.Point(xMin, yMax),
+            new OpenLayers.Geometry.Point(xMin, yMin),
+            new OpenLayers.Geometry.Point(xMax, yMin)
+        ];
+        var rectangle = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(newPoints)]);
+        if (!rectangle) {
+            alert(Joomla.JText._("COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CLOSE"));
+            return false;
+        }
+        attribs = {importGeom: "rectangle"};
+        feature = new OpenLayers.Feature.Vector(rectangle, attribs);
+    }
+
+    if (feature) {
+        return feature;
+    } else {
+        alert(Joomla.JText._("COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CREATE_F"));
+        return false;
+    }
+}
