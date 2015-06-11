@@ -54,7 +54,7 @@ Ext.onReady(function() {
     Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000});
     Ext.EventManager.onWindowResize(function() {
         window.appname.portal.setWidth(Ext.get(renderto).getWidth());
-        window.appname.portal.setHeight(Ext.get(renderto).getWidth() * 1 / 2);
+        window.appname.portal.setHeight(Ext.get(renderto).getHeight());        
     });
 
 });
