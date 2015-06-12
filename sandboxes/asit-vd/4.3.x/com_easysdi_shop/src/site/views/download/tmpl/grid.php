@@ -14,7 +14,9 @@ $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/download/tmpl/grid.js');
+$document->addScript('components/com_easysdi_shop/helpers/helper.js');
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
+Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
 <?php if ($this->item) : ?>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
