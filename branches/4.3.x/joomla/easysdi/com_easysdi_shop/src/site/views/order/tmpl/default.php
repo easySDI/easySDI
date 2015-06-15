@@ -17,6 +17,8 @@ JHtml::_('behavior.formvalidation');
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
+//TODO : do not include proj here !!
+$document->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
@@ -215,6 +217,9 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                          echo $this->form->getInput('wfsfeaturetypefieldid', null, $perimeter->featuretypefieldid);
                         echo $this->form->getInput('wfsfeaturetypename', null, $perimeter->featuretypename);
                         echo $this->form->getInput('wfsurl', null, $perimeter->wfsurl);
+                        echo $this->form->getInput('wfsnamespace', null, $perimeter->namespace);
+                        echo $this->form->getInput('wfsprefix', null, $perimeter->prefix);
+                        echo $this->form->getInput('wfsfeaturetypefieldgeometry', null, $perimeter->featuretypefieldgeometry);
                         break;
                      endif;
                 endforeach;
