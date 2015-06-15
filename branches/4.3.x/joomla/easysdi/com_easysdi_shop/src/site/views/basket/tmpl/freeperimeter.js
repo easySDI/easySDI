@@ -1,5 +1,8 @@
 function initDraw() {
-    polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+    polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {
+        srsName: app.mapPanel.map.projection,
+        projection: app.mapPanel.map.projection,
+        styleMap: customStyleMap   });
     polygonLayer.events.on({
         featuresadded: onFeaturesAdded,
         beforefeatureadded: beforeFeatureAdded

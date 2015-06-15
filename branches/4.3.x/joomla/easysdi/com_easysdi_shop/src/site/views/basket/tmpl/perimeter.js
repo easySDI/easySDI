@@ -26,6 +26,7 @@ function selectPerimeter(perimeter, isrestrictedbyperimeter) {
     grid.setListenerFeatureUnSelected(listenerFeatureUnselected);
     grid.setListenerIndoorLevelChanged(listenerIndoorLevelChanged);
     toggleSelectControl('selection');
+    selectLayer.styleMap = customStyleMap;
     return false;
 }
 
@@ -180,12 +181,15 @@ function reloadFeatures(perimeter) {
 //    selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     app.mapPanel.map.removeLayer(selectLayer);
 
+    initStyleMap();
     selectLayer = new OpenLayers.Layer.Vector("Selection", {
         strategies: [new OpenLayers.Strategy.Fixed()],
+        styleMap: customStyleMap,
         protocol: new OpenLayers.Protocol.HTTP({
             url: wfsUrlWithFilter,
             format: new OpenLayers.Format.GML()
         })
+        
     });
     selectLayer.events.register("featureadded", selectLayer, listenerWFSFeatureAdded);
     selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
