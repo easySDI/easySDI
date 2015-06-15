@@ -119,9 +119,7 @@ if ($this->item && $this->item->extractions) :
 
                                 <div id="perimeter-level" style="<?php if (empty($this->item->extent->level)): ?>display: none;<?php endif; ?>">
                                     <h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
-                                    <div>
-                                        <div><?php if (!empty($this->item->extent->level)): ?><?php echo json_decode($this->item->extent->level)->label; ?><?php endif; ?></div>
-                                    </div>
+                                    <div id="perimeter-level-value"><?php if (!empty($this->item->extent->level)): ?><?php echo json_decode($this->item->extent->level)->label; ?><?php endif; ?></div>
                                 </div>
                                 <?php
                                 if (is_array($this->item->extent->features)):
@@ -132,14 +130,6 @@ if ($this->item && $this->item->extractions) :
                                 ?>
                                 <div id="perimeter-recap-details-title"><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
                                 <div id="perimeter-recap-details" style="overflow-y:auto; height:100px;<?php if (!is_array($extentFeaturesObject)): ?>display:none;<?php endif; ?>">
-                                    <?php
-                                    if (is_array($extentFeaturesObject)): foreach ($extentFeaturesObject as $feature):
-                                            ?>
-                                            <div><?php echo $feature->name; ?></div>
-                                            <?php
-                                        endforeach;
-                                    endif;
-                                    ?>
                                 </div>
 
                             </div>

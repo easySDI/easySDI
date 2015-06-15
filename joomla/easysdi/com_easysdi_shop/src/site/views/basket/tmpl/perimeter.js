@@ -40,6 +40,7 @@ function selectPredefinedPerimeter(perimeter, isrestrictedbyperimeter) {
  */
 var listenerIndoorLevelChanged = function (e) {
     jQuery('#t-features').val('');
+    updateSelectCounter(selectLayer.features);
 };
 
 /**
@@ -195,12 +196,18 @@ function reloadFeatures(perimeter) {
                 multiple: selectControl.multiple,
                 toggle: selectControl.toggle
             };
-            
+
             selectControl.select(resp.features);
             protoWFS.defaultFilter = null;
             updateSelectCounter(selectLayer.features);
             for (var i = 0; i < resp.features.length; i++) {
                 miniLayer.addFeatures([resp.features[i].clone()]);
+                if (typeof resp.features[i].data[fieldname] === "undefined") {
+                    jQuery('#perimeter-recap-details').append(jQuery('<div>' + resp.features[i] + '</div>'));
+                } else {
+                    jQuery('#perimeter-recap-details').append(jQuery('<div>' + resp.features[i].data[fieldname] + '</div>'));
+                }
+                jQuery('#perimeter-recap-details').show();
             }
             app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
         }

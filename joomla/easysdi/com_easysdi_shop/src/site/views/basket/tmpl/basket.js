@@ -258,6 +258,7 @@ function resetAll() {
     removeSelectCounter();
 
     clearLayersVector();
+    jQuery('#perimeter-level').hide();
     jQuery('#btns-selection').show();
 
     disableDrawControls();
@@ -328,13 +329,14 @@ function cancel() {
     resetAll();
     jQuery('#modal-perimeter [id^="btn-perimeter"]').removeClass('active');
     if (jQuery('#perimeter').val() !== '') {
-        //eval('selectPerimeter' + jQuery('#perimeter').val() + '()');
         eval('reloadFeatures' + jQuery('#perimeter').val() + '()');
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
     if (jQuery('#level').val() !== '' && slider) {
        var level = JSON.parse(jQuery('#level').val());
        app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider,level.code);
+        jQuery('#perimeter-level-value').val(app.mapPanel.map.indoorlevelslider.getLevel().label);
+        jQuery('#perimeter-level').show();
     }
 
     setFreePerimeterTool(jQuery('#freeperimetertool').val());
@@ -352,11 +354,16 @@ function addSelectCounter(perimeterId) {
         title: Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PERIMETER_YOUR_SELECTION', 'Your selection:'),
         content: function () {
             var selectCounterPopover = "";
+            if (selectLayer.features.length > 0) {
             for (var i = 0; i < selectLayer.features.length; i++) {
                 selectCounterPopover += (selectLayer.features[i].attributes[fieldname] + '<br/>');
             }
+            } else {
+                selectCounterPopover += Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PERIMETER_NO_PERIMETER_SELECTED', 'No perimeter selected');
+            }
             return selectCounterPopover;
-        }});
+}
+    });
 }
 
 //Update select counter
@@ -552,12 +559,12 @@ function updateDisplay (response){
                     jQuery('#perimeter-recap-details-title > h4').empty();
                 }
                 if (response.extent.level !== '') {
-                    jQuery('#perimeter-recap > div:nth-child(2) > div').html(JSON.parse(response.extent.level).label);
+            jQuery('#perimeter-level-value').html(JSON.parse(response.extent.level).label);
                     jQuery('#perimeter-level').show();        
                     jQuery('#perimeter-recap').show();
                 }
                 else {
-                    jQuery('#perimeter-level >div:nth-child(1)').empty();
+            jQuery('#perimeter-level-value').empty();
                     jQuery('#perimeter-level').hide();
                 }
                 if (response.extent.surface !== '') {
@@ -566,22 +573,15 @@ function updateDisplay (response){
                     ((response.extent.surface > maxmetervalue)
                     ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km²')
                     : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m²')) +
-                    ")" )
-            /*jQuery('#perimeter-recap > div:nth-child(1) > div').html(
-                            (response.extent.surface > maxmetervalue)
-                            ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
-                            : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
-                    );*/
+                    ")");
                     jQuery('#perimeter-recap').show();
                 }
                 else {
-                    jQuery('#perimeter-recap > div:nth-child(1) > div').empty();
+            jQuery('#shop-perimeter-title-surface').empty();
                 }
-
                 //pricing
                 updatePricing(response.pricing);
             }
-
             return false;
 }
 
