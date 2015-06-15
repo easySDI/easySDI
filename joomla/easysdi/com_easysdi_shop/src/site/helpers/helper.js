@@ -1,6 +1,8 @@
 js = jQuery.noConflict();
+var dest, polygonLayer,selectLayer,customStyleMap;
 
 function loadPerimeter(withdisplay) {
+    initStyleMap();
     if (jQuery('#jform_perimeter').length > 0) {
         loadPolygonPerimeter(withdisplay);
     } else {
@@ -8,10 +10,9 @@ function loadPerimeter(withdisplay) {
     }
 }
 
-var dest, polygonLayer;
-
 function loadPolygonPerimeter(withdisplay) {
-    polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
+    console.log('loadPolygonPerimeter');
+    polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection, styleMap: customStyleMap});
 
     var wkt = jQuery('#jform_perimeter').val();
     var features = new OpenLayers.Format.WKT().read(wkt);
@@ -42,8 +43,6 @@ function loadPolygonPerimeter(withdisplay) {
     }
 }
 
-var selectLayer;
-
 function loadWfsPerimeter() {
     var url = jQuery('#jform_wfsurl').val();
     var featuretypename = jQuery('#jform_wfsfeaturetypename').val();
@@ -54,7 +53,7 @@ function loadWfsPerimeter() {
 
     var features_object = jQuery('#jform_wfsperimeter').val();
 
-    selectLayer = new OpenLayers.Layer.Vector("Selection");
+    selectLayer = new OpenLayers.Layer.Vector("Selection", {styleMap: customStyleMap});
     window.appname.mapPanel.map.addLayer(selectLayer);
 
     if (features_object !== "")
@@ -74,8 +73,6 @@ function loadWfsPerimeter() {
                     value: features[i].id
                 }));
     }
-
-    //initStyleMap();
 
     if (features.length > 1) {
         tempWFSfilter = new OpenLayers.Filter.Logical({
@@ -110,10 +107,24 @@ function loadWfsPerimeter() {
     });
 }
 
-
 js(document).on('click', 'button.delete', function () {
     var delete_url = 'index.php?option=com_easysdi_shop&task=pricingprofile.delete&id=';
     var profile_id = js(this).attr('data-id');
     js('#btn_delete').attr('href', delete_url + profile_id);
     js('#deleteModal').modal('show');
 });
+
+function initStyleMap() {
+    customStyleMap = new OpenLayers.StyleMap({
+        "default": new OpenLayers.Style({
+            fillColor: mapFillColor,
+            fillOpacity: mapFillOpacity,
+            strokeColor: mapStrokeColor,
+            strokeDashstyle: "solid",
+            strokeLinecap: "round",
+            strokeOpacity: 1,
+            strokeWidth: mapStrokeWidth,
+            graphicName: "circle"
+        })
+    });
+}

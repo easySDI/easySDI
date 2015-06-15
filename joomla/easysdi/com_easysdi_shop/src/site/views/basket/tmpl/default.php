@@ -31,6 +31,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
 //$document->addScript('components/com_easysdi_shop/helpers/helper.js');
 $document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
+Easysdi_shopHelper::addMapShopConfigToDoc();
 
 $perimeterScript = "";
 
@@ -49,17 +50,7 @@ if ($this->item && $this->item->extractions) :
                 digit_after_decimal = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2); ?>,
                 decimal_symbol = '<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'); ?>',
                 digit_grouping_symbol = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'"); ?>",
-                currency = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF'); ?>",
-                mapFillColor = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_color', '#EE9900'); ?>",
-                mapFillOpacity = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_opacity', 0.4); ?>,
-                mapStrokeColor = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_color', '#EE9900'); ?>",
-                mapStrokeOpacity = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_opacity', 1.0); ?>,
-                mapStrokeWidth = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_width', 2); ?>,
-                mapPointStrokeWidth = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_point_stroke_width', 2); ?>,
-                mapPointRadius = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5); ?>,
-                mapRotateIconURL = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png'); ?>",
-                mapMinSurfaceRectangle = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0); ?>,
-                mapMinSurfaceRectangleBorder = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100); ?>;
+                currency = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF'); ?>";
         //todo save in session
         freePerimeterTool = '<?php
     if (isset($this->item->freeperimetertool)):
