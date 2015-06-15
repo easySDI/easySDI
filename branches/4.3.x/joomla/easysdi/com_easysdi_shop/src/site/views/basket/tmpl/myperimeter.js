@@ -10,7 +10,7 @@ function selectMyPerimeter(perimeterid, perimetername, userextent) {
 
     jQuery('#t-surface').val(JSON.stringify(transformedFeature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
 
-    myLayer = new OpenLayers.Layer.Vector("myLayer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+    myLayer = new OpenLayers.Layer.Vector("myLayer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection,styleMap: customStyleMap});
     myLayer.events.register("featureadded", myLayer, listenerFeatureAdded);
     myLayer.events.register("featureadded", myLayer, listenerFeatureAddedToZoom);
     myLayer.addFeatures([transformedFeature]);
