@@ -48,3 +48,10 @@
       padding-left:60px!important;
 }
 
+#user-roles-table tfoot th.role-col select{
+    width:60px;
+}
+
+#user-roles-table .role-no{
+    color: transparent;
+}
