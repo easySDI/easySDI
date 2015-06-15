@@ -232,8 +232,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-success" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="submit" class="btn btn-primary" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></button>
                 </div>
             </div>
         </div>
@@ -272,8 +272,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                 <span id="deleteModalChildrenList"></span>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
-                <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
             </div>
         </div>
     </div>
