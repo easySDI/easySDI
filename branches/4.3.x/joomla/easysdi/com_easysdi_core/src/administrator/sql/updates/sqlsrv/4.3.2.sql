@@ -19,3 +19,5 @@ INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (11, 11, 1,
 SET IDENTITY_INSERT [#__sdi_sys_role] OFF;
 
 ALTER TABLE [#__sdi_relation] ALTER COLUMN [accessscope_limitation] [tinyint] ;
+
+ALTER TABLE [#__sdi_order] ADD [freeperimetertool] [nvarchar](100) NULL;

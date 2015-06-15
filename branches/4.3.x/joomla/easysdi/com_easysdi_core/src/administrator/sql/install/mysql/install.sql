@@ -2333,6 +2333,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `mandate_contact` VARCHAR(75),
 `mandate_email` VARCHAR(100),
 `level` VARCHAR(100),
+`freeperimetertool` VARCHAR(100),
 `sent` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `completed` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `access` INT(10)  NOT NULL DEFAULT '1',
