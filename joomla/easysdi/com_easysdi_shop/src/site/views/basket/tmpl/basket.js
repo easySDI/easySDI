@@ -1,4 +1,4 @@
-var map, perimeterLayer, selectLayer, polygonLayer, rectangleLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider, freePerimeterTool,customStyleMap;
+var map, perimeterLayer, selectLayer, polygonLayer, boxLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider, customStyleMap, alertControl;
 
 //Init the recapitulation map (map without control)
 function initMiniMap() {
@@ -74,7 +74,32 @@ function initStyleMap(){
                 strokeColor: mapStrokeColor,
                 fillColor: mapFillColor,
                 fillOpacity: mapFillOpacity,
-                strokeWidth: mapStrokeWidth}
+            strokeWidth: mapStrokeWidth},
+        "rotate": new OpenLayers.Style({
+            externalGraphic: mapRotateIconURL,
+            //externalGraphic: "data:image/gif;base64,R0lGODlhUAAPANUAAAAAAAoKChQUFBoaGiQkJCwsLD4+PkJCQk1NTVNTU15eXmJiYmxsbHJycnt7e4ODg4iIiJZsbJqamqKioqqqqqxERLS0tL+/v8PDw8zMzNTU1Nvb2+Tk5O3t7fPz8/7+/v8AAP8ICP8WFv8cHP8jI/8yMv86Ov9CQv9KSv9VVf9lZf9ycv97e/+Dg/+Jif+Wlv+bm/+rq/+ysv+5uf/IyP/Q0P/f3//j4//19QAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAADkALAAAAABQAA8AAAb/wENjSCwaj8ikcskcVpSHx2dKrVqv2Kx2y52eZtmHtEsum8klEg4rnnI8007nI6/PPXDOnD7XxzlngVQkICxUNjA1H20cAApTBQMZAJSVGAMFHgAIUwYBHwMBcKFwgmciICAvKoQpU4yUCx2RkwQItwgamJqOHZ4fDQAWkwmmZjgzqcogJWuLUo2UAgGSAA4dF9keu5UB0x8YAAwPABTGXDQtJyHLqSI3VLAJDpTVDhaW3AgPAQCfoJREndsSA0U7ZTGqwFrwYYMAexscHABwKROAYhsIfOoAYAABABsGcrnBYkQ7V/GgAWD4gZa1VxS5FfvwSwIACBMAjBG5hcZBcBkpPzRi6bISpYqaZv4yAEAPAAI8uSQDYaKFyRHO2viCMGVBgg0GworVkGCBBwMOpjBA4OEASwYGAEXNEgPECHgfZKBY8Wrn3L9cYICgYQXvA66AE2txAUMLhAMQIkuWLKay5cuYM2vezNlyBM4HggAAOw==",
+            fillOpacity: 1,
+            graphicXOffset: 8,
+            graphicYOffset: 8,
+            graphicWidth: 20,
+            graphicHeight: 20,
+            display: "${getDisplay}",
+            pointRadius: 20,
+            fillColor: "#ddd",
+            strokeColor: mapStrokeColor,
+            rotation: "${getRotation}"
+        }, {
+            context: {
+                getDisplay: function (feature) {
+                    // only display the rotate handle at the south-east corner
+                    return feature.attributes.role === "se-rotate" ? "" : "none";
+                },
+                getRotation: function (feature) {
+                    // rotation of transformbox
+                    return -1 * selectControl.rotation;
+                }
+            }
+        })
         });  
 }
 
@@ -85,7 +110,7 @@ var listenerMiniFeaturesAdded = function() {
 
 //Call after a feature was selected or drawn in the map
 var listenerFeatureAdded = function(e) {
-    miniLayer.addFeatures([e.feature.clone()]);
+    //miniLayer.addFeatures([e.feature.clone()]);
     orderSurfaceChecking();
 };
 
@@ -96,6 +121,27 @@ var listenerFeatureAddedToZoom = function(e) {
 
 //Check if the surface of the selection is applicable
 function orderSurfaceChecking(){
+
+    var tmpSurface = 0;
+
+    for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
+        
+        if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
+            var layer = app.mapPanel.map.layers[j];
+            //console.log(layer.name+':');
+            //console.log(layer);
+            for (var f = 0; f < layer.features.length; f++) {
+                if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
+                    //console.log(layer.name + '-' + f + ': ' + layer.features[f].geometry.getGeodesicArea(app.mapPanel.map.projection));
+                    tmpSurface += layer.features[f].geometry.getGeodesicArea(app.mapPanel.map.projection);
+                }
+            }
+        }
+    }
+    console.log('total:' + tmpSurface);
+    jQuery('#t-surface').val(tmpSurface);
+
+
     var toobig = false;
     var toosmall = false;
     if (jQuery('#surfacemax').val() !== '') {
@@ -107,13 +153,15 @@ function orderSurfaceChecking(){
             toosmall = true;
     }
     if (toobig || toosmall) {
-        jQuery("#alert_template").empty();
-        jQuery("#alert_template").append('<span>Your current selection of ' + jQuery('#t-surface').val() + ' is not in the allowed surface range [' + jQuery('#surfacemin').val() + ',' + jQuery('#surfacemax').val() + '].</span>');
-        jQuery('#alert_template').fadeIn('slow');
-        jQuery('#btn-saveperimeter').attr("disabled", "disabled");
+        var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_AREA', 'Your current selection of %SURFACE is not in the allowed surface range [%SURFACEMIN,%SURFACEMAX].')
+                .replace('%SURFACE', jQuery('#t-surface').val())
+                .replace('%SURFACEMIN', jQuery('#surfacemin').val())
+                .replace('%SURFACEMAX', jQuery('#surfacemax').val());
+        alertControl.raiseAlert('<span>' + message + '</span>');
+
     } else {
-        jQuery('#alert_template').fadeOut('slow');
-        jQuery('#btn-saveperimeter').removeAttr("disabled");
+        alertControl.clearAlert();
+
     }
 }
 
@@ -137,23 +185,22 @@ function clearTemporaryFields() {
      jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
         jQuery('#t-'+value).val('');
     })
-    jQuery('#alert_template').fadeOut('slow');
-    jQuery('#btn-saveperimeter').removeAttr("disabled");
+    alertControl.clearAlert();
     
 }
 
 //Reset temporary fields with initial values
 function resetTemporaryFields() {
-    jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+    jQuery.each(['perimeter', 'perimetern', 'surface', 'features', 'level', 'freeperimetertool'], function (index, value) {
         jQuery('#t-'+value).val(jQuery('#'+value).val());
     })
-    jQuery('#alert_template').fadeOut('slow');
-    jQuery('#btn-saveperimeter').removeAttr("disabled");
+    freePerimeterTool = jQuery('#t-freeperimetertool').val();
+    alertControl.clearAlert();
 }
 
 //Push temporary fields to final fields 
 function saveTemporaryFields() {
-    jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+    jQuery.each(['perimeter', 'perimetern', 'surface', 'features', 'level', 'freeperimetertool'], function (index, value) {
         jQuery('#'+value).val(jQuery('#t-'+value).val());
     })
 }
@@ -168,10 +215,17 @@ function beforeFeatureAdded(event) {
 //Reset all values to initial ones
 function resetAll() {
     resetTemporaryFields();
+    freePerimeterTool = '';
 
     clearLayersVector();
     jQuery('#btns-selection').show();
 
+    disableDrawControls();
+
+
+}
+
+function disableDrawControls() {
     if (typeof selectControl !== 'undefined') {
         selectControl.deactivate();
         selectControl.events.unregister("featureselected", this, listenerFeatureSelected);
@@ -189,6 +243,7 @@ function resetAll() {
         var control = drawControls[key];
         control.deactivate();
     }
+
 }
 
 //Toggle controls
@@ -202,6 +257,31 @@ function toggleSelectControl(action) {
     } else {
         resetAll();
     }
+}
+
+function addAlertControl(map) {
+    alertControl = new OpenLayers.Control.Panel({
+        displayClass: "sdiMapAlertControl hide",
+    });
+    OpenLayers.Util.extend(alertControl, {
+        raiseAlert: function (message) {
+            jQuery('#btn-saveperimeter').attr("disabled", "disabled");
+            if (message)
+                jQuery('.sdiMapAlertControl').html('<p style="vertical-align: middle">' + message + '</p>');
+            else
+                jQuery('.sdiMapAlertControl').empty();
+            jQuery('.sdiMapAlertControl').show();
+        },
+        clearAlert: function () {
+            jQuery('.sdiMapAlertControl').hide();
+            jQuery('.sdiMapAlertControl').empty();
+            jQuery('#btn-saveperimeter').removeAttr("disabled");
+
+        }
+    });
+
+    map.addControl(alertControl);
+    alertControl.deactivate();
 }
 
 //Reload initial extent selection
@@ -333,6 +413,29 @@ var updatePricing = function(pricing) {
 
 //Call after user validates his extent drawing
 function savePerimeter() {
+    
+    //clean mini layer then copy all features from vector layers
+    miniLayer.removeAllFeatures();
+    for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
+        if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
+            var layer = app.mapPanel.map.layers[j];
+            for (var f = 0; f < layer.features.length; f++) {
+                if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
+                    miniLayer.addFeatures([layer.features[f].clone()]);
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+    
     if (jQuery('#t-perimeter').val() == ''){
         jQuery('#perimeter-recap').empty();
     } else {
@@ -344,7 +447,8 @@ function savePerimeter() {
             "allowedbuffer": jQuery('#allowedbuffer').val(),
             "buffer": jQuery('#buffer').val(),
             "level": jQuery('#t-level').val(),
-            "features": jQuery('#t-features').val()};
+            "features": jQuery('#t-features').val(),
+            "freeperimetertool": jQuery('#t-freeperimetertool').val()};
         
         jQuery.ajax({
             type: "POST",

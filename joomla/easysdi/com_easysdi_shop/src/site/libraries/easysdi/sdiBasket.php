@@ -30,6 +30,7 @@ class sdiBasket {
     public $created;
     public $created_by;
     public $thirdorganism;
+    public $freeperimetertool = '';
 
     function __construct() {
         $this->sdiUser = sdiFactory::getSdiUser();

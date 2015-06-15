@@ -2079,7 +2079,7 @@ predefinedPerimeter.prototype.initPerimeterLayer = function() {
         levelfield: this.item.levelfield,
         opacity: this.item.opacity,
         source: this.item.source,
-        tiled: true,
+        tiled: false,
         title: "perimeterLayer",
         iwidth: "360",
         iheight: "360",
@@ -2148,10 +2148,11 @@ predefinedPerimeter.prototype.initSelectControl = function() {
             featureNS: this.item.namespace,
             geometryName: this.item.featuretypefieldgeometry
         }),
-        box: true,
+        box: false,
         click: true,
+        toggle: true,
         multipleKey: "ctrlKey",
-        clickout: true
+        clickout: false
     });
 
     //Build the default filter : merge existing filters on user perimeter and indoor level
