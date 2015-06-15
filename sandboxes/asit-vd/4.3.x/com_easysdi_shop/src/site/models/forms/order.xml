@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="hidden">
+        <field name="id" type="hidden" filter="safehtml" />         
+    </fieldset>
+    
+    <field name="perimeter" type="hidden" filter="safehtml" /> 
+    <field name="wfsperimeter" type="hidden" filter="safehtml" /> 
+    <field name="wfsurl" type="hidden" filter="safehtml" /> 
+    <field name="wfsfeaturetypefieldid" type="hidden" filter="safehtml" /> 
+    <field name="wfsfeaturetypename" type="hidden" filter="safehtml" /> 
+    <field name="wfsnamespace" type="hidden" filter="safehtml" /> 
+    <field name="wfsprefix" type="hidden" filter="safehtml" /> 
+    <field name="wfsfeaturetypefieldgeometry" type="hidden" filter="safehtml" /> 
+</form>

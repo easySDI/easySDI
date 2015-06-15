@@ -1,0 +1,57 @@
+.icon-48-users {
+      background-image: url(../images/l_users.png);
+      padding-left:60px!important;
+}
+
+.icon-48-user {
+      background-image: url(../images/l_users.png);
+      padding-left:60px!important;
+}
+
+.icon-48-addresss {
+      background-image: url(../images/l_addresss.png);
+      padding-left:60px!important;
+}
+
+.icon-48-address {
+      background-image: url(../images/l_addresss.png);
+      padding-left:60px!important;
+}
+
+.icon-48-addresstypes {
+      background-image: url(../images/l_addresstypes.png);
+      padding-left:60px!important;
+}
+
+.icon-48-addresstype {
+      background-image: url(../images/l_addresstypes.png);
+      padding-left:60px!important;
+}
+
+.icon-48-civilitys {
+      background-image: url(../images/l_civilitys.png);
+      padding-left:60px!important;
+}
+
+.icon-48-civility {
+      background-image: url(../images/l_civilitys.png);
+      padding-left:60px!important;
+}
+
+.icon-48-organisms {
+      background-image: url(../images/l_organisms.png);
+      padding-left:60px!important;
+}
+
+.icon-48-organism {
+      background-image: url(../images/l_organisms.png);
+      padding-left:60px!important;
+}
+
+#user-roles-table tfoot th.role-col select{
+    width:60px;
+}
+
+#user-roles-table .role-no{
+    color: transparent;
+}
