@@ -79,6 +79,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
             $doc->addScript($base_url . '/gxp/script/gxp.min.js');
             $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
+            //$doc->addScript($base_url . '/easysdi/js/sdi.js');
         }
 
         foreach (glob(JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
