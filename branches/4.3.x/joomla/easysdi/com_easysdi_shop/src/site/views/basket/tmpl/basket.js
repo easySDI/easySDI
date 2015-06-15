@@ -235,6 +235,7 @@ function disableDrawControls() {
         app.mapPanel.map.removeLayer(app.mapPanel.map.getLayersByName("perimeterLayer")[0]); 
         app.mapPanel.map.removeLayer(selectLayer);
     }
+
     /*if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
         app.mapPanel.map.removeLayer(myLayer);
      }*/
@@ -286,7 +287,7 @@ function cancel() {
     resetAll();
     jQuery('#modal-perimeter [id^="btn-perimeter"]').removeClass('active');
     if (jQuery('#perimeter').val() !== '') {
-        eval('selectPerimeter' + jQuery('#perimeter').val() + '()');
+        //eval('selectPerimeter' + jQuery('#perimeter').val() + '()');
         eval('reloadFeatures' + jQuery('#perimeter').val() + '()');
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
