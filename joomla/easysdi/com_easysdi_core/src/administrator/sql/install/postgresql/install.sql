@@ -751,6 +751,7 @@ CREATE TABLE #__sdi_order (
     mandate_contact VARCHAR(75) NULL,
     mandate_email VARCHAR(100) NULL,
     "level" VARCHAR(100) NULL,
+    freeperimetertool VARCHAR(100) NULL,
     sent timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     access integer DEFAULT 1 NOT NULL,

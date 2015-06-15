@@ -3,17 +3,17 @@ function initDraw() {
         srsName: app.mapPanel.map.projection,
         projection: app.mapPanel.map.projection,
         styleMap: customStyleMap});
+
     /*polygonLayer.events.on({
-     featuresadded: onFeaturesAdded,
-     beforefeatureadded: beforeFeatureAdded
+     featuresadded: onPolygonAdded,
+     beforefeatureadded: beforeFeatureAdded,
+     featuremodified: onPolygonModified,
+     beforefeaturemodified: beforeFeatureAdded
      });*/
 
-    //polygonLayer.events.register("featureadded", polygonLayer, listenerFeatureAdded);
     polygonLayer.events.on({
         featuresadded: onPolygonAdded,
-        beforefeatureadded: beforeFeatureAdded,
-        featuremodified: onPolygonModified,
-        beforefeaturemodified: beforeFeatureAdded
+        featuremodified: onPolygonModified
     });
 
 
@@ -37,17 +37,17 @@ function initDraw() {
 
 function onPolygonAdded(event) {
     putFeaturesVerticesInHiddenField(event.features[0].clone());
-    miniLayer.removeAllFeatures();
-    miniLayer.addFeatures([event.features[0].clone()]);
+    //miniLayer.removeAllFeatures();
+    //miniLayer.addFeatures([event.features[0].clone()]);
     orderSurfaceChecking();
     checkSelfIntersect(event.features[0]);
-    selectEditTool(event);
+    selectPolygonEdit();
 }
 
 function onPolygonModified(event) {
     putFeaturesVerticesInHiddenField(event.feature.clone());
-    miniLayer.removeAllFeatures();
-    miniLayer.addFeatures([event.feature.clone()]);
+    //miniLayer.removeAllFeatures();
+    //miniLayer.addFeatures([event.feature.clone()]);
     orderSurfaceChecking();
     checkSelfIntersect(event.feature);
 }
@@ -55,19 +55,19 @@ function onPolygonModified(event) {
 function onBoxAdded(event) {
     //only for the Box, not the edit handles...
     if (event.features[0].state == 'Insert') {
-        miniLayer.removeAllFeatures();
-        miniLayer.addFeatures([event.features[0].clone()]);
+        //miniLayer.removeAllFeatures();
+        //miniLayer.addFeatures([event.features[0].clone()]);
         putFeaturesVerticesInHiddenField(event.features[0].clone());
         checkMinimumRectangle(event);
         orderSurfaceChecking();
-        selectEditTool(event);
+        selectRectangleEdit(event.features[0]);
     }
 
 }
 
 function onBoxModified(event) {
-    miniLayer.removeAllFeatures();
-    miniLayer.addFeatures([event.feature.clone()]);
+    //miniLayer.removeAllFeatures();
+    //miniLayer.addFeatures([event.feature.clone()]);
     putFeaturesVerticesInHiddenField(event.feature.clone());
     orderSurfaceChecking();
 }
@@ -84,24 +84,22 @@ function onFeaturesAdded(event) {
     putFeaturesVerticesInHiddenField(event.features[0].clone());
 }
 
-function selectEditTool(event) {
-    if (event.features[0].state == 'Insert') {
-        if (freePerimeterTool == 'polygon') {
-            selectPolygonEdit();
-        }
-        else if (freePerimeterTool == 'rectangle') {
-            selectRectangleEdit(event.features[0]);
-        }
-    }
-}
 
 function selectPolygonEdit() {
-    //resetAll();
+
     setFreePerimeterTool('polygon');
     disableDrawControls();
     jQuery('#btn-perimeter1b').removeClass('active');
+    jQuery('#btn-perimeter1b').blur();
+    var theFeature = polygonLayer.features[polygonLayer.features.length - 1];
     selectControl = new OpenLayers.Control.ModifyFeature(polygonLayer);
-    selectControl.selectFeature(polygonLayer.features[polygonLayer.features.length - 1]);
+    //app.mapPanel.map.addControl(selectControl);
+    //selectControl.activate();
+    selectControl.selectFeature(theFeature);
+
+    //selectControl.activate();
+
+
     initSelectcontrol(selectControl);
 }
 
@@ -110,6 +108,7 @@ function selectRectangleEdit(feature) {
     setFreePerimeterTool('rectangle');
     disableDrawControls();
     jQuery('#btn-perimeter1a').removeClass('active');
+    jQuery('#btn-perimeter1a').blur();
     selectControl = new OpenLayers.Control.TransformFeature(boxLayer, {
         renderIntent: "transform",
         rotationHandleSymbolizer: "rotate",
@@ -122,7 +121,7 @@ function selectRectangleEdit(feature) {
     });
 
     app.mapPanel.map.addControl(selectControl);
-    selectControl.setFeature(feature,{rotation: getRectangleRotation(feature)});
+    selectControl.setFeature(feature, {rotation: getRectangleRotation(feature)});
     selectControl.activate();
     initSelectcontrol(selectControl);
 }
@@ -135,7 +134,6 @@ function getRectangleRotation(feature) {
 }
 
 function putFeaturesVerticesInHiddenField(feature) {
-    //jQuery('#t-surface').val(JSON.stringify(feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
     orderSurfaceChecking();
 
     var geometry = feature.geometry.transform(
@@ -205,13 +203,13 @@ function checkSelfIntersect(feature) {
 function reloadFeatures1() {
     var wkt = jQuery('#features').val();
     var feature = new OpenLayers.Format.WKT().read(wkt);
-
-    if (freePerimeterTool == 'polygon') {
+    if (freePerimeterTool == 'rectangle') {
+        reloadRectangle(feature);
+    } else {
+        setFreePerimeterTool('polygon'); //if undefined tool, default is polygon
         reloadPolygon(feature);
     }
-    else if (freePerimeterTool == 'rectangle') {
-        reloadRectangle(feature);
-    }
+    miniLayer.addFeatures([feature.clone()]);
 }
 
 
@@ -220,23 +218,30 @@ function reloadRectangle(feature) {
             new OpenLayers.Projection("EPSG:4326"),
             new OpenLayers.Projection(app.mapPanel.map.projection)
             );
+    boxLayer.events.register("featureadded", boxLayer, listenerRectangleDrawToZoom);
     boxLayer.addFeatures([feature]);
     putFeaturesVerticesInHiddenField(feature.clone());
     selectRectangleEdit(feature);
 }
+
+var listenerRectangleDrawToZoom = function (e) {
+    boxLayer.events.unregister("featureadded", boxLayer, listenerRectangleDrawToZoom);
+    listenerFeatureAddedToZoom(e);
+};
+
 function reloadPolygon(feature) {
     var geometry = feature.geometry.transform(
             new OpenLayers.Projection("EPSG:4326"),
             new OpenLayers.Projection(app.mapPanel.map.projection)
             );
-    polygonLayer.events.register("featureadded", polygonLayer, listenerFeatureDrawToZoom);
+    polygonLayer.events.register("featureadded", polygonLayer, listenerPolygonDrawToZoom);
     polygonLayer.addFeatures([feature]);
     putFeaturesVerticesInHiddenField(feature.clone());
     selectPolygonEdit();
 }
 
-var listenerFeatureDrawToZoom = function (e) {
-    polygonLayer.events.unregister("featureadded", polygonLayer, listenerFeatureDrawToZoom);
+var listenerPolygonDrawToZoom = function (e) {
+    polygonLayer.events.unregister("featureadded", polygonLayer, listenerPolygonDrawToZoom);
     listenerFeatureAddedToZoom(e);
 };
 
@@ -244,14 +249,15 @@ function selectPolygon() {
     resetAll();
     setFreePerimeterTool('polygon');
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}});
+    jQuery('#t-features').val('');
     initSelectcontrol(selectControl);
 }
-;
 
 function selectRectangle() {
     resetAll();
     setFreePerimeterTool('rectangle');
     selectControl = new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
+    jQuery('#t-features').val('');
     initSelectcontrol(selectControl);
 }
 
@@ -259,7 +265,6 @@ function initSelectcontrol(selectControl) {
     app.mapPanel.map.addControl(selectControl);
     jQuery('#t-perimeter').val('1');
     jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
-    jQuery('#t-features').val('');
     toggleSelectControl('selection');
 }
 

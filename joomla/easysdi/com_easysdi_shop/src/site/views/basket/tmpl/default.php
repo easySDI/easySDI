@@ -21,6 +21,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_PROCESS_ENDING');
 JText::script('COM_EASYSDI_SHOP_BASKET_PROCESS_PROGRESSING');
 JText::script('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE');
 JText::script('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO');
+JText::script('COM_EASYSDI_SHOP_BASKET_PERIMETER_YOUR_SELECTION');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -30,6 +31,8 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
 //$document->addScript('components/com_easysdi_shop/helpers/helper.js');
 $document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
+
+$perimeterScript = "";
 
 if ($this->item && $this->item->extractions) :
     $currency = $this->item->prices->cfg_currency;
@@ -46,7 +49,7 @@ if ($this->item && $this->item->extractions) :
                 digit_after_decimal = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2); ?>,
                 decimal_symbol = '<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'); ?>',
                 digit_grouping_symbol = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'"); ?>",
-                currency = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF'); ?>";
+                currency = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF'); ?>",
                 mapFillColor = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_color', '#EE9900'); ?>",
                 mapFillOpacity = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_opacity', 0.4); ?>,
                 mapStrokeColor = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_color', '#EE9900'); ?>",
@@ -56,9 +59,15 @@ if ($this->item && $this->item->extractions) :
                 mapPointRadius = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5); ?>,
                 mapRotateIconURL = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png'); ?>",
                 mapMinSurfaceRectangle = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0); ?>,
-                mapMinSurfaceRectangleBorder = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100); ?>;        
-                //todo save in session
-                freePerimeterTool = '<?php if (isset($this->item->freeperimetertool)): echo $this->item->freeperimetertool; endif;?>';
+                mapMinSurfaceRectangleBorder = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100); ?>;
+        //todo save in session
+        freePerimeterTool = '<?php
+    if (isset($this->item->freeperimetertool)):
+        echo $this->item->freeperimetertool;
+    else:
+        echo('polygon');
+    endif;
+    ?>';
     </script>
 
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -67,9 +76,21 @@ if ($this->item && $this->item->extractions) :
             <div class="well">
                 <!-- PERIMETER -->
                 <div class="row-fluid shop-perimeter" >
-                    <div class="row-fluid" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h2></div>
+                    <div class="row-fluid shop-perimeter-title-row" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?><span id="shop-perimeter-title-surface"><?php
+                                if (!empty($this->item->extent->surface)):
+                                    echo " (";
+                                    if (floatval($this->item->extent->surface) > intval($this->paramsarray['maxmetervalue'])):
+                                        echo round(floatval($this->item->extent->surface) / 1000000, intval($this->paramsarray['surfacedigit']));
+                                        echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
+                                    else:
+                                        echo round(floatval($this->item->extent->surface), intval($this->paramsarray['surfacedigit']));
+                                        echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
+                                    endif;
+                                    echo ")";
+                                endif;
+                                ?></span></h2></div>
                     <hr>
-                    <div class="row-fluid" >
+                    <div class="row-fluid shop-perimeter-map-row" >
                         <div class="map-recap span6" >
                             <a href="#modal-perimeter" style="margin-bottom: 10px;" data-toggle="modal" >
                                 <div id="minimap" class="minimap" style="height:250px"></div>      
@@ -82,22 +103,24 @@ if ($this->item && $this->item->extractions) :
                                 </div>                                
                             </div>
                             <div id="perimeter-recap" class="row-fluid" style="<?php if (empty($this->item->extent)): ?>display: none;<?php endif; ?>" >
-                                <div>
+                                <!--<div>
                                     <h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h4>
                                     <div>
-                                        <?php
-                                        if (!empty($this->item->extent->surface)):
-                                            if (floatval($this->item->extent->surface) > intval($this->paramsarray['maxmetervalue'])):
-                                                echo round(floatval($this->item->extent->surface) / 1000000, intval($this->paramsarray['surfacedigit']));
-                                                echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
-                                            else:
-                                                echo round(floatval($this->item->extent->surface), intval($this->paramsarray['surfacedigit']));
-                                                echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
-                                            endif;
-                                        endif;
-                                        ?>
+                                <?php
+                                /*
+                                  if (!empty($this->item->extent->surface)):
+                                  if (floatval($this->item->extent->surface) > intval($this->paramsarray['maxmetervalue'])):
+                                  echo round(floatval($this->item->extent->surface) / 1000000, intval($this->paramsarray['surfacedigit']));
+                                  echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
+                                  else:
+                                  echo round(floatval($this->item->extent->surface), intval($this->paramsarray['surfacedigit']));
+                                  echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
+                                  endif;
+                                  endif;
+                                 */
+                                ?>
                                     </div>
-                                </div>
+                                </div>-->
 
                                 <div id="perimeter-level" style="<?php if (empty($this->item->extent->level)): ?>display: none;<?php endif; ?>">
                                     <h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
@@ -105,10 +128,14 @@ if ($this->item && $this->item->extractions) :
                                         <div><?php if (!empty($this->item->extent->level)): ?><?php echo json_decode($this->item->extent->level)->label; ?><?php endif; ?></div>
                                     </div>
                                 </div>
-
+                                <?php
+                                $extentFeaturesObject = json_decode($this->item->extent->features);
+                                ?>
                                 <div id="perimeter-recap-details-title"><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
-                                <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;<?php if (!is_array($this->item->extent->features)): ?>display:none;<?php endif; ?>">
-                                    <?php if (is_array($this->item->extent->features)): foreach ($this->item->extent->features as $feature): ?>
+                                <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;<?php if (!is_array($extentFeaturesObject)): ?>display:none;<?php endif; ?>">
+                                    <?php
+                                    if (is_array($extentFeaturesObject)): foreach ($extentFeaturesObject as $feature):
+                                            ?>
                                             <div><?php echo $feature->name; ?></div>
                                             <?php
                                         endforeach;
@@ -120,7 +147,7 @@ if ($this->item && $this->item->extractions) :
                         </div>
                     </div>
 
-                    <div class="row-fluid" >                        
+                    <div class="row-fluid shop-perimeter-btn-row" >                        
                         <div class="span6" >
                             <?php
                             //If one of the products is restricted and the organism of the user doesn't have a perimeter, the selection can't be done
@@ -232,28 +259,26 @@ if ($this->item && $this->item->extractions) :
                                                     $productPrice = isset($product->cal_total_amount_ti) ? $product->cal_total_amount_ti : '-';
 
                                                     echo Easysdi_shopHelper::priceFormatter($productPrice);
-                                                    
+
                                                     $rebate = false;
                                                     $as = '';
                                                     $discount = '';
-                                                    if($product->cfg_pct_category_profile_discount>0 || $product->cfg_pct_category_supplier_discount>0){
+                                                    if ($product->cfg_pct_category_profile_discount > 0 || $product->cfg_pct_category_supplier_discount > 0) {
                                                         $rebate = true;
-                                                        if($product->cfg_pct_category_supplier_discount>$product->cfg_pct_category_profile_discount){
+                                                        if ($product->cfg_pct_category_supplier_discount > $product->cfg_pct_category_profile_discount) {
                                                             $as = $product->ind_lbl_category_supplier_discount;
                                                             $discount = $product->cfg_pct_category_supplier_discount;
-                                                        }
-                                                        else{                                                            
+                                                        } else {
                                                             $as = $product->ind_lbl_category_profile_discount;
                                                             $discount = $product->cfg_pct_category_profile_discount;
                                                         }
                                                     }
-                                                    
                                                     ?>
                                                     <i class="icon-white icon-info hasTooltip" 
                                                        title="<?php echo JText::sprintf('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', $as, $discount); ?>"
-                                                       style="<?php if(!$rebate):?>display:none;<?php endif;?>">
+                                                       style="<?php if (!$rebate): ?>display:none;<?php endif; ?>">
                                                     </i>
-                                                    <?php
+                                                <?php
                                                 endif;
                                                 ?>
                                             </td>
@@ -337,7 +362,10 @@ if ($this->item && $this->item->extractions) :
                             </label>
                         </div>
                         <div id="ordername-container">
-                            <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if (!empty($this->item->name)) : echo $this->item->name; endif;?>">
+                            <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php
+                            if (!empty($this->item->name)) : echo $this->item->name;
+                            endif;
+                            ?>">
                         </div>
                         <div id="toolbar-container">
                             <div class="btn-toolbar" id="toolbar">
@@ -368,7 +396,7 @@ if ($this->item && $this->item->extractions) :
             </div>
         </div>
 
-        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" aria-hidden="true">
+        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancel();">×</button>
                 <h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></h3>
@@ -376,117 +404,116 @@ if ($this->item && $this->item->extractions) :
             <div class="modal-body" style="max-height: 500px;">
                 <div class="container-fluid" >
                     <div class="row-fluid">
-                        <div class="span8">
+                        <div class="span9">
                             <div  >
                                 <?php
                                 echo $this->mapscript;
                                 ?>
                             </div>
                         </div>
-                        <div class="span4">
+                        <div class="span3">
                             <br>
                             <br>
                             <div class="row-fluid">
                             </div>
                             <div class="row-fluid">
-                                <div class="span3 offset1">
+                                <div class="span3">
+                                    <!--<div class="btn-group" data-toggle="buttons-radio">-->
                                     <div class="btn-group" data-toggle="buttons-radio">
-                                        <!--<a href="#" id="btn-pan" class="btn btn-perimeter-selection <?php
-                                        if (!isset($this->item->extent->id) || $this->item->extent->id === '') :
-                                            echo "active";
-                                        endif;
-                                        ?>"  onClick="toggleSelectControl('pan');
-                                        jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN_HELP'); ?>');
-                                        return false;"><i class="icon-move"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN'); ?></a><br>
-                                        <br>-->
                                         <?php
                                         foreach ($this->item->perimeters as $perimeter):
                                             if ($perimeter->id == 1):
                                                 if (!$this->item->isrestrictedbyperimeter || $this->params->get('userperimeteractivated') != 1):
                                                     ?>
-                                                    <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn btn-perimeter-selection" 
-                                                       onClick="selectRectangle();
-                                                               jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE_HELP'); ?>');
-                                                               jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
-                                                               jQuery('#perimeter-buffer').<?php
-                                                       if ($perimeter->allowedbuffer == 1): echo 'show';
-                                                       else: echo 'hide';
-                                                       endif;
-                                                       ?>();
-                                                               return false;">
-                                                        <i class=" icon-checkbox-unchecked"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
-                                                    <br>
-                                                    <br>
-                                                    <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>b"  class="btn btn-perimeter-selection" 
-                                                       onClick="selectPolygon();
-                                                               jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON_HELP'); ?>');
-                                                               jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
-                                                               jQuery('#perimeter-buffer').<?php
-                                                       if ($perimeter->allowedbuffer == 1): echo 'show';
-                                                       else: echo 'hide';
-                                                       endif;
-                                                       ?>();
-                                                               return false;">
-                                                        <i class="icon-star-empty"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
-                                                    <br>
-                                                    <br>                                        
+                                                    <div class="btn-group btn-group-perimeter-selection">
+                                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn btn-perimeter-selection" 
+                                                           onClick="selectRectangle();
+                                                                                   jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE_HELP'); ?>');
+                                                                                   jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
+                                                                                   jQuery('#perimeter-buffer').<?php
+                                                           if ($perimeter->allowedbuffer == 1): echo 'show';
+                                                           else: echo 'hide';
+                                                           endif;
+                                                           ?>();
+                                                                                   return false;">
+                                                            <i class=" icon-checkbox-unchecked"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
+                                                    </div>        
+                                                    <div class="btn-group btn-group-perimeter-selection">
+                                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>b"  class="btn btn-perimeter-selection" 
+                                                           onClick="selectPolygon();
+                                                                                   jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON_HELP'); ?>');
+                                                                                   jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
+                                                                                   jQuery('#perimeter-buffer').<?php
+                                                           if ($perimeter->allowedbuffer == 1): echo 'show';
+                                                           else: echo 'hide';
+                                                           endif;
+                                                           ?>();
+                                                                                   return false;">
+                                                            <i class="icon-star-empty"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
+                                                    </div>                                       
                                                     <?php
                                                 endif;
                                             elseif ($perimeter->id == 2 && $this->params->get('userperimeteractivated') == 1):
                                                 if ($this->user->isEasySDI):
                                                     ?>
+                                                    <div class="btn-group btn-group-perimeter-selection">
+                                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
+                                                           onClick="selectPerimeter<?php echo $perimeter->id; ?>();
+                                                                                   jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MY_PERIMETER_HELP'); ?>');
+                                                                                   jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
+                                                                                   jQuery('#perimeter-buffer').<?php
+                                                           if ($perimeter->allowedbuffer == 1): echo 'show';
+                                                           else: echo 'hide';
+                                                           endif;
+                                                           ?>();
+                                                                                   return false;">
+                                                            <i class="icon-user"></i> <?php echo JText::_($perimeter->name); ?></a>
+
+
+                                                        <?php
+                                                        $perimeterScript.="function selectPerimeter" . $perimeter->id . "() {\n" .
+                                                                "   selectMyPerimeter('" . $perimeter->id . "', '" . JText::_('MYPERIMETER') . "', '" . addslashes(preg_replace('/\r\n/', '', $this->user->perimeter)) . "');\n" .
+                                                                "}\n" .
+                                                                "function reloadFeatures" . $perimeter->id . "() {\n" .
+                                                                "   reloadMyPerimeter('" . $perimeter->id . "', '" . JText::_('MYPERIMETER') . "', '" . addslashes(preg_replace('/\r\n/', '', $this->user->perimeter)) . "');\n" .
+                                                                "}\n";
+                                                        echo($perimeterScript);
+                                                        ?>
+
+                                                    </div>
+                                                    <?php
+                                                endif;
+                                            else:
+                                                ?>
+                                                <div class="btn-group btn-group-perimeter-selection">
                                                     <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
                                                        onClick="selectPerimeter<?php echo $perimeter->id; ?>();
-                                                               jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MY_PERIMETER_HELP'); ?>');
-                                                               jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
-                                                               jQuery('#perimeter-buffer').<?php
+                                                                           jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER_HELP'); ?>');
+                                                                           jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
+                                                                           jQuery('#perimeter-buffer').<?php
                                                        if ($perimeter->allowedbuffer == 1): echo 'show';
                                                        else: echo 'hide';
                                                        endif;
                                                        ?>();
-                                                               return false;">
-                                                        <i class="icon-user"></i> <?php echo JText::_($perimeter->name); ?></a>
-                                                    <script>
-                                                        function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo JText::_('MYPERIMETER'); ?>', '<?php echo addslashes(preg_replace('/\r\n/', '', $this->user->perimeter)); ?>');
-                                                        }
-                                                        function reloadFeatures<?php echo $perimeter->id; ?>() {
-                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo JText::_('MYPERIMETER'); ?>', '<?php echo addslashes(preg_replace('/\r\n/', '', $this->user->perimeter)); ?>');
-                                                        }
-                                                    </script>
-                                                    <br>
-                                                    <br>
+                                                                           return false;">
+                                                        <i class="icon-grid-view"></i> <?php echo JText::_($perimeter->name); ?></a>
+                                                    <!-- test ybi -->
+
+
+
                                                     <?php
-                                                endif;
-                                            else: ?>
-                                                <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
-                                                   onClick="selectPerimeter<?php echo $perimeter->id; ?>();
-                                                           jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER_HELP'); ?>');
-                                                           jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
-                                                           jQuery('#perimeter-buffer').<?php
-                                                   if ($perimeter->allowedbuffer == 1): echo 'show';
-                                                   else: echo 'hide';
-                                                   endif;
-                                                   ?>();
-                                                           return false;">
-                                                    <i class="icon-grid-view"></i> <?php echo JText::_($perimeter->name); ?></a>
-                                                <script>
-                                                    <?php if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1): ?>
-                                                        var userperimeter = '<?php echo $this->user->perimeter; ?>';
-                                                    <?php endif; ?>
-                                                    function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                        return selectPerimeter(<?php echo json_encode($perimeter); ?>,<?php
-                                                        if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI && $this->params->get('userperimeteractivated') == 1) : echo 1;
-                                                        else : echo 0;
-                                                        endif;
-                                                        ?>);
-                                                    }
-                                                    function reloadFeatures<?php echo $perimeter->id; ?>() {
-                                                        reloadFeatures(<?php echo json_encode($perimeter); ?>);
-                                                    }
-                                                </script>
-                                                <br>
-                                                <br>
+                                                    if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1):
+                                                        $perimeterScript.="var userperimeter = '" . $this->user->perimeter;
+                                                        ".';\n";
+                                                    endif;
+                                                    $perimeterScript.="function selectPerimeter" . $perimeter->id . "() {\n" .
+                                                            "    return selectPerimeter(" . json_encode($perimeter) . "," . (($this->item->isrestrictedbyperimeter && $this->user->isEasySDI && $this->params->get('userperimeteractivated') == 1) ? "1" : "0") . ");\n" .
+                                                            "}\n" .
+                                                            "function reloadFeatures" . $perimeter->id . "() {\n" .
+                                                            "reloadFeatures(" . json_encode($perimeter) . ");\n" .
+                                                            "}\n";
+                                                    ?>
+                                                </div>
                                             <?php
                                             endif;
                                         endforeach;
@@ -494,6 +521,11 @@ if ($this->item && $this->item->extractions) :
                                     </div>
                                 </div>
                             </div>
+                            <script>
+    <?php
+    echo($perimeterScript);
+    ?>
+                            </script>
                             <div id="help-perimeter" class="help-block"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN_HELP'); ?></div>
                         </div>
                     </div>
@@ -506,7 +538,7 @@ if ($this->item && $this->item->extractions) :
             </div>
         </div>
 
-        <div id="modal-dialog-remove" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="modal-dialog-remove" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_DIALOG_HEADER") ?></h3>
@@ -520,7 +552,7 @@ if ($this->item && $this->item->extractions) :
             </div>
         </div>
 
-        <div id="modal-error" class="modal fade">
+        <div id="modal-error" class="modal fade" data-backdrop="static" data-keyboard="false" >
             <div class="modal-dialog">
                 <div class="modal-header">
                     <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
@@ -536,7 +568,7 @@ if ($this->item && $this->item->extractions) :
             </div>
         </div>
 
-        <div id="myModalProcess" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelProcess" aria-hidden="true">
+        <div id="myModalProcess" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelProcess" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
             <div class="modal-header">
                 <h3 id="myModalLabelProcess"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESSING'); ?></h3>
             </div>
@@ -553,74 +585,122 @@ if ($this->item && $this->item->extractions) :
         </div>
 
         <script>
-            Ext.onReady(function() {
-                if ('undefined' === typeof app) {app = window.appname;}
-                app.on("ready", function() {
+            Ext.onReady(function () {
+                if ('undefined' === typeof app) {
+                    app = window.appname;
+                }
+                app.on("ready", function () {
                     jQuery('#modal-perimeter').show();
                     initMiniMap();
                 });
             });
-                
-            function initialization (){
+
+            function initialization() {
                 miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
                 initDraw();
+                initMyPerimeter();
                 addAlertControl(window.appname.mapPanel.map);
                 slider = window.appname.mapPanel.map.indoorlevelslider;
-                if(slider){
-                    slider.on("indoorlevelchanged",  function() {jQuery('#t-level').val(JSON.stringify(slider.getLevel()));}); 
-                    <?php if (isset($this->item->extent->level) && !empty($this->item->extent->level)): ?>
-                        slider.changeIndoorLevelByCode(slider,"<?php echo json_decode($this->item->extent->level)->code; ?>");
-                    <?php else : ?>
+                if (slider) {
+                    slider.on("indoorlevelchanged", function () {
+                        jQuery('#t-level').val(JSON.stringify(slider.getLevel()));
+                    });
+    <?php if (isset($this->item->extent->level) && !empty($this->item->extent->level)): ?>
+                        slider.changeIndoorLevelByCode(slider, "<?php echo json_decode($this->item->extent->level)->code; ?>");
+    <?php else : ?>
                         jQuery('#t-level').val(JSON.stringify(slider.getLevel()));
                         jQuery('#level').val(JSON.stringify(slider.getLevel()));
-                    <?php endif; ?>
+    <?php endif; ?>
                 }
-                <?php if (!empty($this->item->extent)): ?>
-                    <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
+    <?php if (!empty($this->item->extent)): ?>
+        <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
                         jQuery('#perimeter-buffer').show();
-                    <?php endif; ?>
-                    <?php if ($this->item->extent->id == 1):?>
+        <?php endif; ?>
+        <?php if ($this->item->extent->id == 1): ?>
                         jQuery('#btn-perimeter1a').addClass('active');
-                    <?php else : ?>
+        <?php else : ?>
                         jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
-                    <?php endif; ?>
-                <?php endif; ?>
-               
-                <?php if (!empty($this->item->extent) && isset($this->item->extent->features)): ?>
-                    selectPerimeter<?php echo $this->item->extent->id; ?>();   
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if (!empty($this->item->extent) && isset($this->item->extent->features)): ?>
+                    //selectPerimeter<?php echo $this->item->extent->id; ?>();
                     reloadFeatures<?php echo $this->item->extent->id; ?>();
-                <?php endif; ?>
+    <?php endif; ?>
                 jQuery('#modal-perimeter').hide();
-            };
-            
-//            function loadSelectLayerEnd(){
-//                reloadFeatures<?php echo $this->item->extent->id; ?>();
-//            }
+            }
+            ;
+
+            //            function loadSelectLayerEnd(){
+            //                reloadFeatures<?php echo $this->item->extent->id; ?>();
+            //            }
         </script>
-        <input type="hidden" name="perimeter" id="perimeter" value="<?php if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id; endif;?>" />
-        <input type="hidden" name="perimetern" id="perimetern" value="<?php if (isset($this->item->extent->name) && !empty($this->item->extent->name)): echo $this->item->extent->name; endif;?>" />
-        <input type="hidden" name="surface" id="surface" value="<?php if (isset($this->item->extent->surface) && !empty($this->item->extent->surface)): echo $this->item->extent->surface;endif;?>" />
+        <input type="hidden" name="perimeter" id="perimeter" value="<?php
+        if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id;
+        endif;
+        ?>" />
+        <input type="hidden" name="perimetern" id="perimetern" value="<?php
+        if (isset($this->item->extent->name) && !empty($this->item->extent->name)): echo $this->item->extent->name;
+        endif;
+        ?>" />
+        <input type="hidden" name="surface" id="surface" value="<?php
+        if (isset($this->item->extent->surface) && !empty($this->item->extent->surface)): echo $this->item->extent->surface;
+        endif;
+        ?>" />
         <input type="hidden" name="allowedbuffer" id="allowedbuffer" value="" />
-        <input type="hidden" name="features" id="features" value='<?php if (isset($this->item->extent->features)) { if (!is_array($this->item->extent->features)): echo $this->item->extent->features;else:echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');endif;}?>' />
-        <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php if (isset($this->item->extent->id)): echo $this->item->extent->id; endif;?>" />
-        <input type="hidden" name="t-perimetern" id="t-perimetern" value="<?php if (isset($this->item->extent->name)): echo $this->item->extent->name; endif; ?>" />
-        <input type="hidden" name="t-features" id="t-features" value='<?php if (isset($this->item->extent->features)) {if (!is_array($this->item->extent->features)):echo $this->item->extent->features;else: echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');endif;}?>' />
-        <input type="hidden" name="t-surface" id="t-surface" value="<?php if (isset($this->item->extent->surface)): echo $this->item->extent->surface; endif;?>" />
+        <input type="hidden" name="features" id="features" value='<?php
+        if (isset($this->item->extent->features)) {
+            if (!is_array($this->item->extent->features)): echo $this->item->extent->features;
+            else:echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
+            endif;
+        }
+        ?>' />
+        <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php
+        if (isset($this->item->extent->id)): echo $this->item->extent->id;
+        endif;
+        ?>" />
+        <input type="hidden" name="t-perimetern" id="t-perimetern" value="<?php
+        if (isset($this->item->extent->name)): echo $this->item->extent->name;
+        endif;
+        ?>" />
+        <input type="hidden" name="t-features" id="t-features" value='<?php
+        if (isset($this->item->extent->features)) {
+            if (!is_array($this->item->extent->features)):echo $this->item->extent->features;
+            else: echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
+            endif;
+        }
+        ?>' />
+        <input type="hidden" name="t-surface" id="t-surface" value="<?php
+        if (isset($this->item->extent->surface)): echo $this->item->extent->surface;
+        endif;
+        ?>" />
         <input type="hidden" name="surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin; ?>" />
         <input type="hidden" name="surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax; ?>" />            
-        <input type="hidden" name="level" id="level" value='<?php if (isset($this->item->extent->level)) : echo $this->item->extent->level; endif; ?>' />
-        <input type="hidden" name="t-level" id="t-level" value='<?php if (isset($this->item->extent->level)) : echo $this->item->extent->level; endif;?>' />
+        <input type="hidden" name="level" id="level" value='<?php
+        if (isset($this->item->extent->level)) : echo $this->item->extent->level;
+        endif;
+        ?>' />
+        <input type="hidden" name="t-level" id="t-level" value='<?php
+        if (isset($this->item->extent->level)) : echo $this->item->extent->level;
+        endif;
+        ?>' />
         <input type="hidden" name="v-features" id="v-features" value="" />            
         <input type="hidden" name="task" id = "task" value = "" />
         <input type="hidden" name="option" value = "com_easysdi_shop" />
         <input type="hidden" name="id" id = "id" value = "" />
         <input type="hidden" name="surfacedigit" id = "surfacedigit" value = "<?php echo $this->paramsarray['surfacedigit']; ?>" />
         <input type="hidden" name="maxmetervalue" id = "maxmetervalue" value = "<?php echo $this->paramsarray['maxmetervalue']; ?>" />
-        <input type="hidden" name="freeperimetertool" id="freeperimetertool" value='<?php if (isset($this->item->freeperimetertool)): echo $this->item->freeperimetertool; endif;?>' />
-        <input type="hidden" name="t-freeperimetertool" id="t-freeperimetertool" value='<?php if (isset($this->item->freeperimetertool)): echo $this->item->freeperimetertool; endif;?>' />
+        <input type="hidden" name="freeperimetertool" id="freeperimetertool" value='<?php
+        if (isset($this->item->freeperimetertool)): echo $this->item->freeperimetertool;
+        endif;
+        ?>' />
+        <input type="hidden" name="t-freeperimetertool" id="t-freeperimetertool" value='<?php
+               if (isset($this->item->freeperimetertool)): echo $this->item->freeperimetertool;
+               endif;
+               ?>' />
 
 
-    <?php echo JHtml::_('form.token'); ?>
+        <?php echo JHtml::_('form.token'); ?>
     </form>
 
     <?php

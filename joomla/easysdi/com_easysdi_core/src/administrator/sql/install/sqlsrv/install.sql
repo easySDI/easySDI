@@ -1149,6 +1149,7 @@ CREATE TABLE [#__sdi_order] (
         [mandate_contact] [nvarchar](75) NULL,
         [mandate_email] [nvarchar](100) NULL,
         [level] [nvarchar](100) NULL,
+        [freeperimetertool] [nvarchar](100) NULL,
 	[sent] [datetime2](0) NOT NULL,
 	[completed] [datetime2](0) NOT NULL,
 	[access] [int] NOT NULL,
