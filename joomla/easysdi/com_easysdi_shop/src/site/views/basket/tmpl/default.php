@@ -51,6 +51,16 @@ if ($this->item && $this->item->extractions) :
                 decimal_symbol = '<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'); ?>',
                 digit_grouping_symbol = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'"); ?>",
                 currency = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF'); ?>";
+                mapFillColor = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_color', '#EE9900'); ?>",
+                mapFillOpacity = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_opacity', 0.4); ?>,
+                mapStrokeColor = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_color', '#EE9900'); ?>",
+                mapStrokeOpacity = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_opacity', 1.0); ?>,
+                mapStrokeWidth = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_width', 2); ?>,
+                mapPointStrokeWidth = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_point_stroke_width', 2); ?>,
+                mapPointRadius = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5); ?>,
+                mapRotateIconURL = "<?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png'); ?>",
+                mapMinSurfaceRectangle = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0); ?>,
+                mapMinSurfaceRectangleBorder = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100); ?>;        
     </script>
 
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
