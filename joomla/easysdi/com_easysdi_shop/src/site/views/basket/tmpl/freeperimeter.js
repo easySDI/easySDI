@@ -40,7 +40,7 @@ function onPolygonAdded(event) {
     //miniLayer.removeAllFeatures();
     //miniLayer.addFeatures([event.features[0].clone()]);
     orderSurfaceChecking();
-    checkSelfIntersect(event.features[0]);
+    //checkSelfIntersect(event.features[0]);
     selectPolygonEdit();
 }
 
@@ -49,7 +49,7 @@ function onPolygonModified(event) {
     //miniLayer.removeAllFeatures();
     //miniLayer.addFeatures([event.feature.clone()]);
     orderSurfaceChecking();
-    checkSelfIntersect(event.feature);
+    //checkSelfIntersect(event.feature);
 }
 
 function onBoxAdded(event) {
@@ -156,48 +156,6 @@ function selectPerimeter1() {
 }
 
 
-function checkSelfIntersect(feature) {
-    var lines = new Array();
-    var isSelfIntersect = false;
-
-    // do not test non-polygons
-    if (feature.geometry instanceof OpenLayers.Geometry.Polygon) {
-        var polygonSize = feature.geometry.components[0].components.length;
-        var components = feature.geometry.components[0].components;
-        var i = 0;
-        while (i < polygonSize - 1) {
-            lines.push(new OpenLayers.Geometry.LineString([
-                new OpenLayers.Geometry.Point(components [i].x, components [i].y),
-                new OpenLayers.Geometry.Point(components [i + 1].x, components [i + 1].y)
-            ]));
-
-            i++;
-        }
-        for (i = 0; i < lines.length; i++) {
-            count = 0;
-            for (j = 0; j < lines.length; j++) {
-                //Do not compare a line with itslf
-                if (i != j) {
-                    if (lines[i].intersects(lines[j])) {
-                        count++;
-                    }
-                }
-                if (count > 2) {
-                    //More than 2 intersectios for a line, mean that a line intersects another one.
-                    isSelfIntersect = true;
-                    break;
-                }
-            }
-        }
-        if (isSelfIntersect) {
-            //More than 2 intersectios for a line, mean that a line intersects another one.
-            var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT', 'Self-intersecting perimeter is not allowed');
-            alertControl.raiseAlert('<span>' + message + '</span>');
-        } else {
-            alertControl.clearAlert();
-        }
-    }
-}
 
 
 function reloadFeatures1() {

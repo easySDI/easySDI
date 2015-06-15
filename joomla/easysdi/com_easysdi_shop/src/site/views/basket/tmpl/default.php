@@ -63,7 +63,7 @@ if ($this->item && $this->item->extractions) :
 
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="basket-edit front-end-edit">
-            <h1><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TITLE'); ?></h1>
+            <h1><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_TITLE',$this->item->extractionsNb); ?></h1>
             <div class="well">
                 <!-- PERIMETER -->
                 <div class="row-fluid shop-perimeter" >
@@ -120,7 +120,11 @@ if ($this->item && $this->item->extractions) :
                                     </div>
                                 </div>
                                 <?php
-                                $extentFeaturesObject = json_decode($this->item->extent->features);
+                                if (is_array($this->item->extent->features)):
+                                    $extentFeaturesObject = $this->item->extent->features;
+                                else:
+                                    $extentFeaturesObject = json_decode($this->item->extent->features);
+                                endif;
                                 ?>
                                 <div id="perimeter-recap-details-title"><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
                                 <div id="perimeter-recap-details" style="overflow-y:auto; height:100px;<?php if (!is_array($extentFeaturesObject)): ?>display:none;<?php endif; ?>">
@@ -190,14 +194,14 @@ if ($this->item && $this->item->extractions) :
                 <div class="row-fluid shop-product">
                     <div class="row-fluid" >
                         <hr>
-                        <div class="span6" >
+                        <div class="span10" >
                             <h2><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_N_SELECTED_DATA', $this->item->extractionsNb); ?>
                                 <span id="pricingTotalAmountTI-container" style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti)): ?>display: none;<?php endif; ?>">
                                     ( <span class="pricingTotalAmountTI"><?php echo!isset($this->item->pricing) || !$this->item->pricing->isActivated || !isset($this->item->pricing->cal_total_amount_ti) ? '' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span> )
                                 </span>
                             </h2>
                         </div>
-                        <div class="span6" >
+                        <div class="span2" >
                             <?php if (!empty($this->item->visualization)): ?>
                                 <div class="pull-right">
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview') . '&id=' . $this->item->visualization; ?>" target="_blank"
@@ -607,11 +611,7 @@ if ($this->item && $this->item->extractions) :
         <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
                         jQuery('#perimeter-buffer').show();
         <?php endif; ?>
-        <?php if ($this->item->extent->id == 1): ?>
-                        jQuery('#btn-perimeter1a').addClass('active');
-        <?php else : ?>
-                        jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
-        <?php endif; ?>
+                    jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
     <?php endif; ?>
 
     <?php if (!empty($this->item->extent) && isset($this->item->extent->features)): ?>
@@ -641,8 +641,10 @@ if ($this->item && $this->item->extractions) :
         <input type="hidden" name="allowedbuffer" id="allowedbuffer" value="" />
         <input type="hidden" name="features" id="features" value='<?php
         if (isset($this->item->extent->features)) {
-            if (!is_array($this->item->extent->features)): echo $this->item->extent->features;
-            else:echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
+            if (!is_array($this->item->extent->features)):
+                echo $this->item->extent->features;
+            else:
+                echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
             endif;
         }
         ?>' />
@@ -656,8 +658,10 @@ if ($this->item && $this->item->extractions) :
         ?>" />
         <input type="hidden" name="t-features" id="t-features" value='<?php
         if (isset($this->item->extent->features)) {
-            if (!is_array($this->item->extent->features)):echo $this->item->extent->features;
-            else: echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
+            if (!is_array($this->item->extent->features)):
+                echo $this->item->extent->features;
+            else:
+                echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8');
             endif;
         }
         ?>' />
