@@ -79,7 +79,7 @@ class Easysdi_coreHelper {
             return $root . '?' . implode('&', $params);
         }
     }
-    
+
     /**
      * Check recursively if version has viral versionning child
      * 
@@ -90,7 +90,7 @@ class Easysdi_coreHelper {
     public function getViralVersionnedChild($version) {
         return $this->getChildrenVersion($version, true);
     }
-    
+
     /**
      * getChildrenVersion - retrieves the children metadata's version of the given metadata's version
      * 
@@ -98,7 +98,7 @@ class Easysdi_coreHelper {
      * @param bool $viralVersioning - limit or not to the viral versionned child
      * @return array
      */
-    public function getChildrenVersion($version, $viralVersioning = false, $unpublished = false){
+    public function getChildrenVersion($version, $viralVersioning = false, $unpublished = false) {
         $all_versions = array();
         $all_versions[$version->id] = $version;
 
@@ -112,10 +112,10 @@ class Easysdi_coreHelper {
         $query->innerJoin('#__sdi_version cv ON vl.child_id = cv.id');
         $query->innerJoin('#__sdi_metadata cm ON cm.version_id = cv.id');
         $query->innerJoin('#__sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
-        if($viralVersioning){
+        if ($viralVersioning) {
             $query->where('rtl.viralversioning = 1');
         }
-        if($unpublished){
+        if ($unpublished) {
             $query->where('cm.metadatastate_id NOT IN (3, 4)'); // @TODO: should be replaced by sdiMetadata::PUBLISHED/ARCHIVED
         }
         $query->where('vl.parent_id = ' . (int) $version->id);
@@ -130,23 +130,27 @@ class Easysdi_coreHelper {
             foreach ($childs as $key => $child) {
                 $this->getChildrenVersion($child, $viralVersioning, $unpublished);
             }
-        }
-        else $version->children = array();
+        } else
+            $version->children = array();
 
         return $all_versions;
     }
-    
-    public function getOrganisms(){
+
+    public function getOrganisms($onlyOrganismsWithResources = false) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('o.id, o.name')
-                ->from('#__sdi_organism o')
-                ->order('o.name');
+                ->select($db->qn(array('o.id', 'o.name')))
+                ->from($db->qn('#__sdi_organism', 'o'))
+                ->order($db->qn('o.name'));
+        if ($onlyOrganismsWithResources) {
+            $query->innerJoin($db->qn('#__sdi_resource', 'r') . ' ON (' . $db->qn('r.organism_id') . ' = ' . $db->qn('o.id') . ')');
+        }
+        $query->group($db->qn(array('o.id', 'o.name')));
         $db->setQuery($query);
         $organisms = $db->loadObjectList();
-        
-        array_unshift($organisms, (object)array('id' => '', 'name' => ''));
-        
+
+        array_unshift($organisms, (object) array('id' => '', 'name' => ''));
+
         return $organisms;
     }
 
