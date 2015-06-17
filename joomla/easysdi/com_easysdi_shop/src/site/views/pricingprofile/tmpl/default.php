@@ -29,13 +29,13 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 </script>
 
 <div class="shop front-end-edit">
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGORGANISM_TITLE') . ' : ' . $this->item->name; ?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_TITLE') . ' : ' . $this->item->name; ?></h1>
 
     <div class="well">
 
         <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <?php foreach ($this->form->getFieldsets() as $fieldset): ?>
-                <?php if (isset($fieldset->label)): ?><h2><?php echo JText::_($fieldset->label); ?></h2><?php endif; ?>
+                <?php if (isset($fieldset->label) && $fieldset->label != ''): ?><h2><?php echo JText::_($fieldset->label); ?></h2><?php endif; ?>
 
                 <?php if ($fieldset->name == 'free_categories'): ?>
                     <table class="table table-striped shop-free-categories-table">
