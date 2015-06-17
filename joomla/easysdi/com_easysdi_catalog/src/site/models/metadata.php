@@ -284,7 +284,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             return false;
         }
         
-        if(!(sdiFactory::getSdiUser()->authorize($form->getData()->get('id'), sdiUser::metadataeditor) || sdiFactory::getSdiUser()->authorize($form->getData()->get('id'), sdiUser::metadataresponsible))){
+        if(!(sdiFactory::getSdiUser()->authorizeOnMetadata($form->getData()->get('id'), sdiUser::metadataeditor) || sdiFactory::getSdiUser()->authorizeOnMetadata($form->getData()->get('id'), sdiUser::metadataresponsible))){
             foreach($form->getFieldsets() as $fieldset){
                 foreach($form->getFieldset($fieldset->name) as $field){
                     $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
