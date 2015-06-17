@@ -143,11 +143,11 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                 <table id="resources" class="table table-striped">
                     <thead>
                         <tr>
-                            <th id="resources_name"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?><span id='resources_ordering'><?php echo $this->state->get('filter.ordering');?></span></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
-                            <th></th>
+                            <th id="resources_name"  class="resource_name"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?><span id='resources_ordering'><?php echo $this->state->get('filter.ordering');?></span></th>
+                            <th class="resource_type"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
+                            <th class="resource_versions"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
+                            <th class="resource_metadata_actions"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
+                            <th class="resource_management_actions"></th>
                         </tr>
                     </thead>
                     <tfoot>
