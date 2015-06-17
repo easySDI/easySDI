@@ -252,7 +252,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                         <?php
                                         $userOrganism = $user->getMemberOrganisms();
                                         $coreHelper = new Easysdi_coreHelper();
-                                        $organisms = $coreHelper->getOrganisms();
+                                        $organisms = $coreHelper->getOrganisms(true);
 
                                         foreach ($organisms as $organism):
                                             ?>
