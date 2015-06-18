@@ -173,9 +173,10 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
         <div>
 
-            <?php if($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();endif; ?>
+            <?php if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();
+            endif; ?>
 
-            <?php echo JHtml::_('form.token'); ?>
+<?php echo JHtml::_('form.token'); ?>
         </div>
     </form>
 
@@ -215,7 +216,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                     <select id="resourcetype_id" name="resourcetype_id">
                                         <?php foreach ($this->getResourceType() as $resource) { ?>
                                             <option value="<?php echo $resource->id; ?>"<?php if ($this->item->resourcetype_id == $resource->id): ?> selected="selected"<?php endif; ?>><?php echo EText::_($resource->guid, 1, JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
-                                        <?php } ?>
+<?php } ?>
                                     </select>
                                 </div>
                             </div>
@@ -231,7 +232,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                     <select id="status_id" name="status_id">
                                         <?php foreach ($this->getStatusList() as $status) { ?>
                                             <option value="<?php echo $status->id; ?>"><?php echo JText::_($status->value); ?></option>
-                                        <?php } ?>
+<?php } ?>
                                     </select>
                                 </div>
                             </div>
@@ -251,14 +252,14 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                         <?php
                                         $userOrganism = $user->getMemberOrganisms();
                                         $coreHelper = new Easysdi_coreHelper();
-                                        $organisms = $coreHelper->getOrganisms();
+                                        $organisms = $coreHelper->getOrganisms(true);
 
                                         foreach ($organisms as $organism):
                                             ?>
                                             <option value="<?php echo $organism->id; ?>"
                                                     <?php if ($organism->id === $userOrganism[0]->id): ?>selected="selected"<?php endif; ?>
                                                     ><?php echo $organism->name; ?></option>
-                                                <?php endforeach; ?>
+<?php endforeach; ?>
 
                                     </select>
                                 </div>
@@ -283,8 +284,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_CLOSE'); ?></button>
+                    <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_CLOSE'); ?></button>
+                    <button id="import-btn" style="display: none" type="button" class="btn btn-primary" onclick="Joomla.submitbutton('metadata.edit')"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
                 </div>
             </div>
         </div>
@@ -315,8 +316,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importxml')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="button" class="btn btn-primary" onclick="Joomla.submitbutton('metadata.importxml')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
                 </div>
             </div>
         </div>
@@ -347,8 +348,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importcsw')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="button" class="btn btn-primary" onclick="Joomla.submitbutton('metadata.importcsw')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT'); ?></button>
                 </div>
             </div>
         </div>
@@ -373,7 +374,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                 </div>
                             </div>
                         </div>
-                        <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
+<?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
                         <span id="publishModalCurrentMetadata"></span>
                         <div id="publishModalChildrenDiv" style="display:none">
                             <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?>
@@ -382,8 +383,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                        <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                        <button type="button" class="btn btn-primary" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
                     </div>
                 </div>
             </div>
@@ -395,7 +396,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="fileModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_TITLE') ; ?></h4>
+                    <h4 class="modal-title" id="fileModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_TITLE'); ?></h4>
                 </div>
                 <form class="form-inline">
                     <div class="modal-body">
@@ -403,49 +404,49 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                         <input type="hidden" id="file_url" value=""/>
                         <ul id="fileTabs" class="nav nav-tabs">
                             <li class="active upload">
-                                <a href="#upload" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_UPLOAD_TAB') ; ?></a>
+                                <a href="#upload" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_UPLOAD_TAB'); ?></a>
                             </li>
-                            <li class="url"><a href="#url" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_URL_TAB') ; ?></a></li>
+                            <li class="url"><a href="#url" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_URL_TAB'); ?></a></li>
                         </ul>
                         <div id="fileTabsContent" class="tab-content">
                             <div class="tab-pane fade active in upload" id="upload">
                                 <div id="fileUploadPreview" style="display: none"><a href="#" target="_blank"><img src=""/></a></div>
                                 <div class="btn btn-info fileinput-button">
-                                    <span><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_CHOOSE_FILE') ; ?></span>
-                                    <input type="file" name="fileUpload" id="fileUpload" data-url="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=ajax.uploadFile') ; ?>"/> 
+                                    <span><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_CHOOSE_FILE'); ?></span>
+                                    <input type="file" name="fileUpload" id="fileUpload" data-url="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=ajax.uploadFile'); ?>"/> 
                                 </div>
-                                
+
                                 <br/><br/>
                                 <div class="progress" style="display: none">
                                     <div class="bar" style="width: 0%;"></div>
                                 </div>
-                                
+
                                 <div id="fileUploadValidate">
-                                    
+
                                 </div>
                             </div>
                             <div class="tab-pane fade url" id="url">
-                                
-                                
-                                    <div class="control-group">
-                                        <div class="control-label">
-                                            <label id="fileUrl-lbl" for="fileUrl" class=""><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_URL_LABEL') ; ?></label>
-                                        </div>
-                                        <div class="controls">
-                                            <input type="text" name="fileUrl" id="fileUrl"/>
-                                            <button type="button" class="btn btn-info"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_VALIDATE') ; ?></button>
-                                        </div>
+
+
+                                <div class="control-group">
+                                    <div class="control-label">
+                                        <label id="fileUrl-lbl" for="fileUrl" class=""><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_URL_LABEL'); ?></label>
                                     </div>
-                                <div id="fileUrlValidate">
-                                    
+                                    <div class="controls">
+                                        <input type="text" name="fileUrl" id="fileUrl"/>
+                                        <button type="button" class="btn btn-info"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_VALIDATE'); ?></button>
+                                    </div>
                                 </div>
-                                
+                                <div id="fileUrlValidate">
+
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </form>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_FINISH') ; ?></button>
+                    <button type="button" class="btn btn-success"><?php echo JText::_('COM_EASYSDI_CATALOG_FILE_FINISH'); ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>

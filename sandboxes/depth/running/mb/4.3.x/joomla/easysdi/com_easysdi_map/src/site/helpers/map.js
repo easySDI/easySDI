@@ -54,7 +54,7 @@ Ext.onReady(function() {
     Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000});
     Ext.EventManager.onWindowResize(function() {
         window.appname.portal.setWidth(Ext.get(renderto).getWidth());
-        window.appname.portal.setHeight(Ext.get(renderto).getWidth() * 1 / 2);
+        window.appname.portal.setHeight(Ext.get(renderto).getHeight());        
     });
 
 });
@@ -233,7 +233,7 @@ function getMapConfig() {
                     var tool = {
                         ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar",
-                        url: "index.php?option=com_easysdi_catalog&view=catalog&id=",
+                        url: "index.php?preview=map&tmpl=component&option=com_easysdi_catalog&view=catalog&id="+data.tools[index].params,
                         iwidth: mwidth,
                         iheight: mheight
                     };
@@ -289,7 +289,7 @@ function getMapConfig() {
                     ptype: "gxp_wmsgetfeatureinfo",
                     popupTitle: "Feature Info",
                     toggleGroup: "interaction",
-                    format: "' . $tool->params . '",
+                    format: data.tools[index].params,
                     actionTarget: "hiddentbar",
                     defaultAction: 0
                 };

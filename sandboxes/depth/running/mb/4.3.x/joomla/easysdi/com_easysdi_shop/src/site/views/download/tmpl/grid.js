@@ -1,15 +1,17 @@
 var app;
 
-Ext.onReady(function() {
+Ext.onReady(function () {
     if ('undefined' === typeof app) {
         app = window.appname;
     }
-    app.on("ready", function() {
-            var grid = new predefinedPerimeter(perimeter);
-            grid.init();
-            grid.setListenerFeatureSelected(listenerFeatureSelected);
-            grid.setListenerIndoorLevelChanged(cleanSelectionValues);
-        }
+    app.on("ready", function () {
+        var grid = new predefinedPerimeter(perimeter);
+        grid.init();
+        grid.setListenerFeatureSelected(listenerFeatureSelected);
+        grid.setListenerIndoorLevelChanged(cleanSelectionValues);
+        initStyleMap();
+        selectLayer.styleMap = customStyleMap;
+    }
     );
 });
 
@@ -18,7 +20,7 @@ Ext.onReady(function() {
  * @param {type} e
  * @returns {undefined}
  */
-var listenerFeatureSelected = function(e) {
+var listenerFeatureSelected = function (e) {
     selectLayer.removeAllFeatures();
     selectLayer.addFeatures([e.feature]);
     js('#url').val(e.feature.attributes[perimeter.featuretypefieldresource]);
@@ -31,7 +33,7 @@ var listenerFeatureSelected = function(e) {
  * Clean form when no feature is selected
  * @returns {undefined}
  */
-var cleanSelectionValues = function() {
+var cleanSelectionValues = function () {
     js('#url').val('');
     js('.sdi-map-feature-selection-name span').text('');
     js('.sdi-map-feature-selection-description span').text('');
@@ -42,7 +44,7 @@ var cleanSelectionValues = function() {
  * Check if download can be activated and update form element accordingly
  * @returns {undefined}
  */
-var enableSave = function() {
+var enableSave = function () {
     if (js('#termsofuse').is(':checked') == true && js('#url').val() != '')
         js('#saveSubmit').removeAttr('disabled', 'disabled');
     else
