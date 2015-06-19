@@ -452,7 +452,6 @@ ALTER TABLE [#__sdi_order_perimeter]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_p
 REFERENCES [#__sdi_order] ([id])
 ON DELETE CASCADE
 ON UPDATE NO ACTION;
-
 ALTER TABLE [#__sdi_order_perimeter] CHECK CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk1];
 
 ALTER TABLE [#__sdi_order_perimeter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk2] FOREIGN KEY([perimeter_id])
