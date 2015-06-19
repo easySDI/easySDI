@@ -171,7 +171,7 @@ class Easysdi_filedHelper {
      * @throws Exception
      */
     public function getThumbnail($img_path, $thumb_path, $thumb_root_url, $thumb_width) {
-        $mime_icon_folder = JPATH_ADMINISTRATOR . '/components/com_easysdi_core/images/mime';
+        $mime_icon_folder = JPATH_ADMINISTRATOR . '/components/com_easysdi_core/assets/images/mime';
 
         $info = pathinfo($img_path);
 
@@ -215,12 +215,13 @@ class Easysdi_filedHelper {
         $new_height = floor($height * ( $thumb_width / $width ));
 
         $tmp_img = imagecreatetruecolor($new_width, $new_height);
-
+        $black = imagecolorallocate($tmp_img, 0, 0, 0);
+        imagecolortransparent($tmp_img,$black);
+        
         imagecopyresized($tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-
+        
+        
         // Create thumbnail
-        
-        
         switch (strtolower($info['extension'])) {
             case 'jpg':
             case 'jpeg';
@@ -236,11 +237,17 @@ class Easysdi_filedHelper {
                 break;
             default :
                 $success = imagepng($tmp_img, $thumb_path . '/' . $info['extension'] . '-icon-128x128.png');
+                $none_image = true;
                 break;
         }
 
         if ($success) {
-            return $thumb_root_url . '/' . $info['basename'];
+            if($none_image){
+                return $thumb_root_url . '/' . $info['extension'] . '-icon-128x128.png';
+            }  else {
+                return $thumb_root_url . '/' . $info['basename'];
+            }
+            
         } else {
             throw new Exception(JText::_('COM_EASYSDI_CATALOG_FILE_ERROR_THUMB_CREATE'));
         }
