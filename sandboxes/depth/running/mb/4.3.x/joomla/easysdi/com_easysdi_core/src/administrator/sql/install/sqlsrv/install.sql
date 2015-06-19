@@ -2276,10 +2276,10 @@ CREATE TABLE [#__sdi_pricing_profile](
     [checked_out_time] [datetime2](0) NOT NULL,
     [organism_id] [bigint] NOT NULL,
     [name] [nvarchar](75) NOT NULL,
-    [fixed_fee] [decimal](6,2),
-    [surface_rate] [decimal](6,2),
-    [min_fee] [decimal](6,2),
-    [max_fee] [decimal](6,2),
+    [fixed_fee] [decimal](19,2),
+    [surface_rate] [decimal](19,2),
+    [min_fee] [decimal](19,2),
+    [max_fee] [decimal](19,2),
 CONSTRAINT [PK_#__sdi_pricing_profile] PRIMARY KEY CLUSTERED
 (
     [id] ASC
@@ -2303,15 +2303,108 @@ CREATE TABLE [#__sdi_pricing_order] (
     [checked_out] [int] NOT NULL,
     [checked_out_time] [datetime2](0) NOT NULL,
     [order_id] [bigint] NOT NULL,
-    [cfg_vat] [decimal](6,2) NOT NULL DEFAULT 0,
+    [cfg_vat] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_currency] [char](3) NOT NULL DEFAULT 'CHF',
     [cfg_rounding] [decimal](3,2) NOT NULL DEFAULT '0.05',
-    [cfg_overall_default_fee] [decimal](6,2) NOT NULL DEFAULT 0,
+    [cfg_overall_default_fee] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_free_data_fee] [smallint] DEFAULT 0,
     [cal_total_amount_ti] [decimal],
-    [cal_fee_ti] [decimal](6,2) NOT NULL DEFAULT 0,
+    [cal_fee_ti] [decimal](19,2) NOT NULL DEFAULT 0,
     [ind_lbl_category_order_fee] [nvarchar](255),
 CONSTRAINT [PK_#__sdi_pricing_order] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_order_supplier] (
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [guid] [nvarchar](36) NOT NULL,
+    [alias] [nvarchar](50) NOT NULL,
+    [created_by] [int] NOT NULL,
+    [created] [datetime2](0) NOT NULL,
+    [modified_by] [int] NULL,
+    [modified] [datetime2](0) NULL,
+    [ordering] [int] NOT NULL,
+    [state] [int] NOT NULL,
+    [checked_out] [int] NOT NULL,
+    [checked_out_time] [datetime2](0) NOT NULL,
+    [pricing_order_id] [int] NOT NULL,
+    [supplier_id] [int] NOT NULL,
+    [supplier_name] [nvarchar](255) NOT NULL,
+    [cfg_internal_free] [smallint] NOT NULL DEFAULT 1,
+    [cfg_fixed_fee_ti] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_data_free_fixed_fee] [smallint] NOT NULL DEFAULT 0,
+    [cal_total_rebate_ti] [float] NOT NULL DEFAULT 0,
+    [cal_fee_ti] decimal(19,2) NOT NULL DEFAULT 0,
+    [cal_total_amount_ti] [float],
+CONSTRAINT [PK_#__sdi_pricing_order_supplier] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_order_supplier_product] (
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [guid] [nvarchar](36) NOT NULL,
+    [alias] [nvarchar](50) NOT NULL,
+    [created_by] [int] NOT NULL,
+    [created] [datetime2](0) NOT NULL,
+    [modified_by] [int] NULL,
+    [modified] [datetime2](0) NULL,
+    [ordering] [int] NOT NULL,
+    [state] [int] NOT NULL,
+    [checked_out] [int] NOT NULL,
+    [checked_out_time] [datetime2](0) NOT NULL,
+    [pricing_order_supplier_id] [int] not null,
+    [product_id] [int] not null,
+    [pricing_id] [int] not null,
+    [cfg_pct_category_supplier_discount] [decimal](19,2) NOT NULL DEFAULT 0,
+    [ind_lbl_category_supplier_discount] [nvarchar](255),
+    [cal_amount_data_te] [float],
+    [cal_total_amount_te] [float],
+    [cal_total_amount_ti] [float],
+    [cal_total_rebate_ti] [float],
+CONSTRAINT [PK_#__sdi_pricing_order_supplier_product] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_order_supplier_product_profile] (
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [guid] [nvarchar](36) NOT NULL,
+    [alias] [nvarchar](50) NOT NULL,
+    [created_by] [int] NOT NULL,
+    [created] [datetime2](0) NOT NULL,
+    [modified_by] [int] NULL,
+    [modified] [datetime2](0) NULL,
+    [ordering] [int] NOT NULL,
+    [state] [int] NOT NULL,
+    [checked_out] [int] NOT NULL,
+    [checked_out_time] [datetime2](0) NOT NULL,
+    [pricing_order_supplier_product_id] [int](11) not null,
+    [pricing_profile_id] [int](11) not null,
+    [pricing_profile_name] [nvarchar](255) not null,
+    [cfg_fixed_fee] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_surface_rate] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_min_fee] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_max_fee] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_pct_category_profile_discount] [decimal](19,2) NOT NULL DEFAULT 0,
+    [ind_lbl_category_profile_discount] [nvarchar](255),
+CONSTRAINT [PK_#__sdi_pricing_order_supplier_product_profile] PRIMARY KEY CLUSTERED
 (
     [id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2325,7 +2418,7 @@ CREATE TABLE [#__sdi_pricing_profile_category_pricing_rebate] (
     [id] [bigint] IDENTITY(1,1) NOT NULL,
     [pricing_profile_id] [bigint] NOT NULL,
     [category_id] [bigint] NOT NULL,
-    [rebate] [decimal](6,2) default 100,
+    [rebate] [decimal](19,2) default 100,
 CONSTRAINT [PK_#__sdi_pricing_profile_category_pricing_rebate] PRIMARY KEY CLUSTERED
 (
     [id] ASC
@@ -3175,7 +3268,7 @@ CREATE TABLE [#__sdi_organism_category_pricing_rebate] (
     [id] [bigint] IDENTITY(1,1) NOT NULL,
     [organism_id] [bigint],
     [category_id] [bigint],
-    [rebate] [decimal](6,2),
+    [rebate] [decimal](19,2),
 CONSTRAINT [PK_#__sdi_organism_category_pricing_rebate] PRIMARY KEY CLUSTERED
 (
     [id] ASC
