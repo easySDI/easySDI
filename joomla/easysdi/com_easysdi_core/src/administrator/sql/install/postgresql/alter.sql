@@ -1222,3 +1222,57 @@ ALTER TABLE ONLY #__sdi_organism_category
 
 ALTER TABLE ONLY #__sdi_physicalservice
     ADD CONSTRAINT #__sdi_physicalservice_server_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server(id) MATCH FULL;
+
+
+CREATE INDEX #__sdi_organism_category_pricing_rebate_fk1 ON #__sdi_organism_category_pricing_rebate USING btree (organism_id);
+CREATE INDEX #__sdi_organism_category_pricing_rebate_fk2 ON #__sdi_organism_category_pricing_rebate USING btree (category_id);
+
+CREATE INDEX #__sdi_pricing_profile_fk1 ON #__sdi_pricing_profile USING btree (organism_id);
+
+CREATE INDEX #__sdi_pricing_profile_category_pricing_rebate_fk1 ON #__sdi_pricing_profile_category_pricing_rebate USING btree (pricing_profile_id);
+CREATE INDEX #__sdi_pricing_profile_category_pricing_rebate_fk2 ON #__sdi_pricing_profile_category_pricing_rebate USING btree (category_id);
+
+CREATE INDEX #__sdi_pricing_order_fk1 ON #__sdi_pricing_order USING btree (order_id);
+
+CREATE INDEX #__sdi_pricing_order_supplier_fk1 ON #__sdi_pricing_order_supplier USING btree (pricing_order_id);
+CREATE INDEX #__sdi_pricing_order_supplier_fk2 ON #__sdi_pricing_order_supplier USING btree (supplier_id);
+
+CREATE INDEX #__sdi_pricing_order_supplier_product_fk1 ON #__sdi_pricing_order_supplier_product USING btree (pricing_order_supplier_id);
+CREATE INDEX #__sdi_pricing_order_supplier_product_fk2 ON #__sdi_pricing_order_supplier_product USING btree (product_id);
+CREATE INDEX #__sdi_pricing_order_supplier_product_fk3 ON #__sdi_pricing_order_supplier_product USING btree (pricing_id);
+
+CREATE INDEX #__sdi_pricing_order_supplier_product_profile_fk1 ON #__sdi_pricing_order_supplier_product_profile USING btree (pricing_order_supplier_product_id);
+CREATE INDEX #__sdi_pricing_order_supplier_product_profile_fk2 ON #__sdi_pricing_order_supplier_product_profile USING btree (pricing_profile_id);
+
+ALTER TABLE ONLY #__sdi_organism_category_pricing_rebate
+    ADD CONSTRAINT #__sdi_organism_category_pricing_rebate_fk1 FOREIGN KEY (organism_id) REFERENCES #__sdi_organism (id) ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_organism_category_pricing_rebate
+    ADD CONSTRAINT #__sdi_organism_category_pricing_rebate_fk2 FOREIGN KEY (category_id) REFERENCES #__sdi_category (id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY #__sdi_pricing_profile
+    ADD CONSTRAINT #__sdi_pricing_profile_fk1 FOREIGN KEY (organism_id) REFERENCES #__sdi_organism (id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY #__sdi_pricing_profile_category_pricing_rebate
+    ADD CONSTRAINT #__sdi_pricing_profile_category_pricing_rebate_fk1 FOREIGN KEY (pricing_profile_id) REFERENCES #__sdi_pricing_profile (id) ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_pricing_profile_category_pricing_rebate
+    ADD CONSTRAINT #__sdi_pricing_profile_category_pricing_rebate_fk1 FOREIGN KEY (category_id) REFERENCES #__sdi_category (id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY #__sdi_pricing_order
+    ADD CONSTRAINT #__sdi_pricing_order_fk1 FOREIGN KEY (order_id) REFERENCES #__sdi_order (id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY #__sdi_pricing_order_supplier
+    ADD CONSTRAINT #__sdi_pricing_order_supplier_fk1 FOREIGN KEY (pricing_order_id) REFERENCES #__sdi_pricing_order (id) ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_pricing_order_supplier
+    ADD CONSTRAINT #__sdi_pricing_order_supplier_fk2 FOREIGN KEY (supplier_id) REFERENCES #__sdi_organism (id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY #__sdi_pricing_order_supplier_product
+    ADD CONSTRAINT #__sdi_pricing_order_supplier_product_fk1 FOREIGN KEY (pricing_order_supplier_id) REFERENCES #__sdi_pricing_order_supplier (id) ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_pricing_order_supplier_product
+    ADD CONSTRAINT #__sdi_pricing_order_supplier_product_fk2 FOREIGN KEY (product_id) REFERENCES #__sdi_diffusion (id) ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_pricing_order_supplier_product
+    ADD CONSTRAINT #__sdi_pricing_order_supplier_product_fk3 FOREIGN KEY (pricing_id) REFERENCES #__sdi_sys_pricing (id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY #__sdi_pricing_order_supplier_product_profile
+    ADD CONSTRAINT #__sdi_pricing_order_supplier_product_profile_fk1 FOREIGN KEY (pricing_order_supplier_product_id) REFERENCES #__sdi_pricing_order_supplier_product (id) ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_pricing_order_supplier_product_profile
+    ADD CONSTRAINT #__sdi_pricing_order_supplier_product_profile_fk2 FOREIGN KEY (pricing_profile_id) REFERENCES #__sdi_pricing_profile (id) ON DELETE CASCADE;
