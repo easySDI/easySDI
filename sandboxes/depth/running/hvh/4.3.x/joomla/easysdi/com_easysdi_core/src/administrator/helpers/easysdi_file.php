@@ -219,9 +219,9 @@ class Easysdi_filedHelper {
         imagecolortransparent($tmp_img,$black);
         
         imagecopyresized($tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+        
+        
         // Create thumbnail
-        
-        
         switch (strtolower($info['extension'])) {
             case 'jpg':
             case 'jpeg';
