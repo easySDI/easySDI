@@ -452,7 +452,6 @@ ALTER TABLE [#__sdi_order_perimeter]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_p
 REFERENCES [#__sdi_order] ([id])
 ON DELETE CASCADE
 ON UPDATE NO ACTION;
-
 ALTER TABLE [#__sdi_order_perimeter] CHECK CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk1];
 
 ALTER TABLE [#__sdi_order_perimeter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk2] FOREIGN KEY([perimeter_id])
@@ -954,3 +953,38 @@ ALTER TABLE [#__sdi_physicalservice] WITH CHECK ADD CONSTRAINT [#__sdi_physicals
 REFERENCES [#__sdi_sys_server] ([id])
 ON DELETE NO ACTION;
 ALTER TABLE [#__sdi_physicalservice] CHECK CONSTRAINT [#__sdi_physicalservice$#__sdi_sys_server_fk1];
+
+
+ALTER TABLE [#__sdi_pricing_order_supplier] WITH CHECK ADD CONSTRAINT [#__sdi_pricing_order_supplier#__sdi_pricing_order_supplier_fk1] FOREIGN KEY ([pricing_order_id])
+REFERENCES [#__sdi_pricing_order] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_pricing_order_supplier] CHECK CONSTRAINT [#__sdi_pricing_order_supplier#__sdi_pricing_order_supplier_fk1];
+ALTER TABLE [#__sdi_pricing_order_supplier] WITH CHECK ADD CONSTRAINT [#__sdi_pricing_order_supplier#__sdi_pricing_order_supplier_fk2] FOREIGN KEY ([supplier_id])
+REFERENCES [#__sdi_organism] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_pricing_order_supplier] CHECK CONSTRAINT [#__sdi_pricing_order_supplier#__sdi_pricing_order_supplier_fk2];
+
+
+ALTER TABLE [#__sdi_pricing_order_supplier_product] WITH CHECK ADD CONSTRAINT [#__sdi_pricing_order_supplier_product#__sdi_pricing_order_supplier_product_fk1] FOREIGN KEY ([pricing_order_supplier_id])
+REFERENCES [#__sdi_pricing_order_supplier] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_pricing_order_supplier_product] CHECK CONSTRAINT [#__sdi_pricing_order_supplier_product#__sdi_pricing_order_supplier_product_fk1];
+ALTER TABLE [#__sdi_pricing_order_supplier_product] WITH CHECK ADD CONSTRAINT [#__sdi_pricing_order_supplier_product#__sdi_pricing_order_supplier_product_fk2] FOREIGN KEY ([product_id])
+REFERENCES [#__sdi_diffusion] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_pricing_order_supplier_product] CHECK CONSTRAINT [#__sdi_pricing_order_supplier_product#__sdi_pricing_order_supplier_product_fk2];
+ALTER TABLE [#__sdi_pricing_order_supplier_product] WITH CHECK ADD CONSTRAINT [#__sdi_pricing_order_supplier_product#__sdi_pricing_order_supplier_product_fk3] FOREIGN KEY ([pricing_id])
+REFERENCES [#__sdi_sys_pricing] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_pricing_order_supplier_product] CHECK CONSTRAINT [#__sdi_pricing_order_supplier_product#__sdi_pricing_order_supplier_product_fk3];
+
+
+ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] WITH CHECK ADD CONSTRAINT [#__sdi_pricing_order_supplier_product_profile#__sdi_pricing_order_supplier_product_profile_fk1] FOREIGN KEY ([pricing_order_supplier_product_id])
+REFERENCES [#__sdi_pricing_order_supplier_product] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] CHECK CONSTRAINT [#__sdi_pricing_order_supplier_product_profile#__sdi_pricing_order_supplier_product_profile_fk1];
+ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] WITH CHECK ADD CONSTRAINT [#__sdi_pricing_order_supplier_product_profile#__sdi_pricing_order_supplier_product_profile_fk2] FOREIGN KEY ([pricing_profile_id])
+REFERENCES [#__sdi_pricing_profile] ([id])
+ON DELETE NO ACTION;
+ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] CHECK CONSTRAINT [#__sdi_pricing_order_supplier_product_profile#__sdi_pricing_order_supplier_product_profile_fk2];
+

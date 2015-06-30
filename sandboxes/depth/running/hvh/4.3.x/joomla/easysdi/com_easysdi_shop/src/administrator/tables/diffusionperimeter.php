@@ -30,8 +30,10 @@ class Easysdi_shopTablediffusionperimeter extends JTable {
         // Initialise the query.
         $query = $this->_db->getQuery(true);
         $query->select('perimeter_id, buffer ');
-        $query->from($this->_tbl.' as p');        
+        $query->from($this->_tbl.' as p');
+        $query->innerjoin('#__sdi_perimeter per ON per.id = p.perimeter_id');
         $query->where($this->_db->quoteName('p.diffusion_id') . ' = ' . (int) $id);
+        $query->order('per.ordering');
         
         $params = JComponentHelper::getParams('com_easysdi_shop');
         if ($params->get('userperimeteractivated') != 1){

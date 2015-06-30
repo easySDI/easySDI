@@ -25,6 +25,7 @@ class Easysdi_shopViewBasket extends JViewLegacy {
     protected $form;
     protected $params;
     protected $paramsarray;
+    protected $importEnabled;
 
     /**
      * Display the view
@@ -34,30 +35,38 @@ class Easysdi_shopViewBasket extends JViewLegacy {
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
-        
+
         $this->params = $app->getParams('com_easysdi_shop');
         $this->paramsarray = $this->params->toArray();
         $this->user = sdiFactory::getSdiUser();
 
-        if($this->_layout != 'confirm' && $this->item && $this->item->extractions){            
-            if(isset($this->paramsarray['ordermap'])){
+        if ($this->_layout != 'confirm' && $this->item && $this->item->extractions) {
+            if (isset($this->paramsarray['ordermap'])) {
                 $this->mapscript = Easysdi_mapHelper::getMapScript($this->paramsarray['ordermap']);
-            }
-            else{
+            } else {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_MAP_PREVIEW_NOT_FOUND'), 'error');
                 return;
             }
         }
-        
+
         $this->thirdParties = $this->getAvailableThirdParties();
-        
+
+        //check if free perimeter import is enabled and free perimeter is availlable in this basket
+        $this->importEnabled = false;
+        foreach ($this->item->perimeters as $perimeter):
+            if ($perimeter->id == 1) {
+                $this->importEnabled = true;
+            }
+        endforeach;
+        $this->importEnabled &= JComponentHelper::getParams('com_easysdi_shop')->get('perimeterimportactivated', false);
+
         // rebuild extractions array to allow by supplier grouping
         Easysdi_shopHelper::extractionsBySupplierGrouping($this->item);
-        
+
         // calculate price for the current basket (only if surface is defined)
-        if(isset($this->item->extent) && isset($this->item->extent->surface))
+        if (isset($this->item->extent) && isset($this->item->extent->surface))
             Easysdi_shopHelper::basketPriceCalculation($this->item);
-        
+
         $pathway = $app->getPathway();
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BASKET_TITLE"), JRoute::_('index.php?option=com_easysdi_shop&view=basket', false));
 
@@ -109,25 +118,25 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         //load the JToolBar library and create a toolbar
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
-        
+
         $bar->appendButton('Standard', 'archive', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE'), 'basket.draft', false);
         $bar->appendButton('Separator');
-        if(!$this->item->free){
+        if (!$this->item->free) {
             $bar->appendButton('Standard', 'edit', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE'), 'basket.estimate', false);
             $bar->appendButton('Separator');
         }
         $bar->appendButton('Standard', 'publish', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER'), 'basket.order', false);
-        
+
         //generate the html and return
         return $bar->render();
     }
-    
-    private function getAvailableThirdParties(){
+
+    private function getAvailableThirdParties() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('id, name')
                 ->from('#__sdi_organism')
-                ->where('selectable_as_thirdparty = ' . (int)1);
+                ->where('selectable_as_thirdparty = ' . (int) 1);
         $db->setQuery($query);
         $thirdparties = $db->loadObjectList();
         return $thirdparties;

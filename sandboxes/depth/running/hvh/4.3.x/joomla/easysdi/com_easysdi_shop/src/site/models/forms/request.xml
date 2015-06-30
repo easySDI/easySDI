@@ -30,4 +30,7 @@
     <field name="wfsurl" type="hidden" filter="safehtml" /> 
     <field name="wfsfeaturetypefieldid" type="hidden" filter="safehtml" /> 
     <field name="wfsfeaturetypename" type="hidden" filter="safehtml" /> 
+    <field name="wfsnamespace" type="hidden" filter="safehtml" /> 
+    <field name="wfsprefix" type="hidden" filter="safehtml" /> 
+    <field name="wfsfeaturetypefieldgeometry" type="hidden" filter="safehtml" />     
 </form>

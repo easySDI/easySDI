@@ -11,13 +11,18 @@ defined('_JEXEC') or die;
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
+//TODO : do not include proj here !!
+$document->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
+Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
 <?php if ($this->item) : ?>
+
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="order-edit front-end-edit">
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
@@ -39,9 +44,10 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER_ORGANISM'); ?>
                                 </div>
                                 <div class="span8 order-edit-value" >
-                                    <?php 
+                                    <?php
                                     $organisms = $this->item->client->getMemberOrganisms();
-                                    echo $organisms[0]->name; ?>
+                                    echo $organisms[0]->name;
+                                    ?>
                                 </div>
                             </div>
                             <div class="row-fluid" >
@@ -69,14 +75,14 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                 </div>
                             </div>
                         </div>
-                        
+
                         <?php if (!empty($this->item->basket->thirdparty)): ?>
                             <div class="row-fluid" >
                                 <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>                                
                                 <span ><?php echo $this->item->basket->thirdorganism; ?></span>
                             </div>
                         <?php endif; ?>
-                        
+
                         <div class="row-fluid ">
                             <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
                             <table class="table table-striped">
@@ -105,32 +111,33 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                                                             <div class="order-property-label" >
                                                                                 <?php echo $property->name; ?> :
                                                                             </div>
-                                    
+
                                                                             <?php
                                                                             foreach ($property->values as $value) :
                                                                                 ?>
                                                                                 <div class="order-property-value" >
-                                                                                <?php
-                                                                                if (!empty($value->value)) :
-                                                                                    echo $value->value;
-                                                                                else :
-                                                                                    echo $value->name;
-                                                                                endif;
-                                                                                if (next($property->values)==true) echo', ';
-                                                                                ?>
+                                                                                    <?php
+                                                                                    if (!empty($value->value)) :
+                                                                                        echo $value->value;
+                                                                                    else :
+                                                                                        echo $value->name;
+                                                                                    endif;
+                                                                                    if (next($property->values) == true)
+                                                                                        echo', ';
+                                                                                    ?>
                                                                                 </div>
                                                                                 <?php
                                                                             endforeach;
                                                                             ?>
                                                                         </div>
-                                                                        <?php                                                                        
+                                                                        <?php
                                                                     endforeach;
                                                                     ?>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div class="row-fluid diffusion-order-result">
                                                         <div class="span2">
                                                             <span class="badge badge-info"><i class="icon-white icon-upload"></i></span>                                                                
@@ -139,7 +146,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                                             <div class="row-fluid">
                                                                 <?php if ($extraction->productstate_id == 3) : ?>
                                                                     <div class="span8">
-                                                                        <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" <?php if(!$editMode):?>disabled="disabled"<?php endif;?>>                                                                             
+                                                                        <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>                                                                             
                                                                     </div>
                                                                 <?php else : ?>
                                                                     <div class="span2 order-edit-label" >
@@ -159,7 +166,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                                                 </div>
                                                                 <div class="span6 order-edit-value" >
                                                                     <?php if ($extraction->productstate_id == 3) : ?>
-                                                                        <input type="text" id="fee_<?php echo $extraction->id; ?>" name="jform[fee][<?php echo $extraction->id; ?>]" placeholder="" <?php if(!$editMode):?>readonly="readonly"<?php endif;?>>
+                                                                        <input type="text" id="fee_<?php echo $extraction->id; ?>" name="jform[fee][<?php echo $extraction->id; ?>]" placeholder="" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>>
                                                                     <?php else : ?>
                                                                         <?php echo $extraction->fee; ?>
                                                                     <?php endif; ?>
@@ -173,7 +180,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 
                                                                 <div class="span6 order-edit-value" >
                                                                     <?php if ($extraction->productstate_id == 3) : ?>
-                                                                        <textarea id="remark_<?php echo $extraction->id; ?>" name="jform[remark][<?php echo $extraction->id; ?>]" rows="6" placeholder="" <?php if(!$editMode):?>readonly="readonly"<?php endif;?>></textarea>
+                                                                        <textarea id="remark_<?php echo $extraction->id; ?>" name="jform[remark][<?php echo $extraction->id; ?>]" rows="6" placeholder="" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>></textarea>
                                                                     <?php else : ?>
                                                                         <?php echo $extraction->remark; ?>
                                                                     <?php endif; ?>
@@ -182,7 +189,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                 </td>        
                                                 <td>
 
@@ -204,13 +211,16 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
         </div>
         <?php if ($this->item->basket->extent->id == 1 || $this->item->basket->extent->id == 2): ?>
             <?php echo $this->form->getInput('perimeter', null, $this->item->basket->extent->features); ?>
-        <?php
+            <?php
         else :
             foreach ($this->item->basket->perimeters as $perimeter):
                 if ($perimeter->id == $this->item->basket->extent->id):
                     echo $this->form->getInput('wfsfeaturetypefieldid', null, $perimeter->featuretypefieldid);
                     echo $this->form->getInput('wfsfeaturetypename', null, $perimeter->featuretypename);
                     echo $this->form->getInput('wfsurl', null, $perimeter->wfsurl);
+                    echo $this->form->getInput('wfsnamespace', null, $perimeter->namespace);
+                    echo $this->form->getInput('wfsprefix', null, $perimeter->prefix);
+                    echo $this->form->getInput('wfsfeaturetypefieldgeometry', null, $perimeter->featuretypefieldgeometry);
                     break;
                 endif;
             endforeach;
@@ -227,8 +237,8 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 
 
     <script>
-        Ext.onReady(function() {
-            window.appname.on("ready", function() {
+        Ext.onReady(function () {
+            window.appname.on("ready", function () {
                 loadPerimeter(false);
             })
         })
