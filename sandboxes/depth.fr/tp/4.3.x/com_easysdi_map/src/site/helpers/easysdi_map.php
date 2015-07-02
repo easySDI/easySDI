@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -79,6 +79,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
             $doc->addScript($base_url . '/gxp/script/gxp.min.js');
             $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
+            //$doc->addScript($base_url . '/easysdi/js/sdi.js');
         }
 
         foreach (glob(JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {

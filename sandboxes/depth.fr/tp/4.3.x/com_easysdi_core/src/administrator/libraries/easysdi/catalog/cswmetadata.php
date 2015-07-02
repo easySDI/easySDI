@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -525,7 +525,7 @@ class cswmetadata {
                           $layerconfig .='}'; */
 
                         $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');
-                        $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer(' . $sourceconfig . ', ' . $layerConfig . ')');
+                        $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' var queue = window.parent.appname.addExtraLayer(' . $sourceconfig . ', ' . $layerConfig . '); window.parent.gxp.util.dispatch(queue, window.parent.appname.reactivate, window.parent.appname);');
                         $addtomap->appendChild($addtomaponclick);
                         $action->appendChild($addtomap);
                     endif;

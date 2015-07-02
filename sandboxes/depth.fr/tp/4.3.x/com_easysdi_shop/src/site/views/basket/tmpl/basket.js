@@ -1,16 +1,105 @@
-var map, perimeterLayer, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider;
+var map, perimeterLayer, selectLayer, polygonLayer, boxLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, miniBaseLayer, slider, customStyleMap, alertControl, userperimeter;
 
 //Init the recapitulation map (map without control)
 function initMiniMap() {
+    initStyleMap();
     minimap = new OpenLayers.Map({div: 'minimap', controls: []});
     miniBaseLayer = app.mapPanel.map.layers[1].clone();  
     miniBaseLayer.events.register("loadend", miniBaseLayer, initialization);
     minimap.addLayer(miniBaseLayer);
     minimap.setBaseLayer(miniBaseLayer);
     minimap.zoomToExtent(app.mapPanel.map.getExtent());
-    miniLayer = new OpenLayers.Layer.Vector("miniLayer");
+    miniLayer = new OpenLayers.Layer.Vector("miniLayer",{styleMap: customStyleMap});
     minimap.addLayer(miniLayer);
     miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
+}
+
+function initStyleMap(){
+  customStyleMap = new OpenLayers.StyleMap({
+            "default": new OpenLayers.Style({
+                fillColor: "${getFillColor}",
+                fillOpacity: "${getFillOpacity}",
+                pointRadius: mapPointRadius,
+                strokeColor: "${getStrokeColor}",
+                strokeDashstyle: "solid",
+                strokeLinecap: "round",
+                strokeOpacity: 1,
+                strokeWidth: "${getStrokeWidth}",
+                graphicName: "circle"
+            }, {
+                context: {
+                    getStrokeColor: function (feature) {
+                        if (feature.geometry != null)
+                            return feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point" ? mapStrokeColor : mapStrokeColor;
+                        return mapStrokeColor;
+                    },
+                    getStrokeWidth: function (feature) {
+                        if (feature.geometry != null)
+                            return feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point" ? mapPointStrokeWidth : mapStrokeWidth;
+                        return mapPointStrokeWidth;
+                    },
+                    getFillColor: function (feature) {
+                        if (feature.geometry != null)
+                            return feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point" ? "#FFFFFF" : mapFillColor;
+                        return "#FFFFFF";
+                    },
+                    getFillOpacity: function (feature) {
+                        if (feature.geometry != null)
+                            return feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point" ? 1 : mapFillOpacity;
+                        return mapFillOpacity;
+                    }
+                }
+            }),
+            "transform": new OpenLayers.Style({
+                cursor: "${role}",
+                pointRadius: mapPointRadius,
+                fillColor: "#FFFFFF",
+                fillOpacity: 1,
+                strokeWidth: mapPointStrokeWidth,
+                strokeColor: mapStrokeColor
+            }, {
+                context: {
+                    getDisplay: function (feature) {
+                        // hide the resize handle at the south-east corner
+                        return feature.attributes.role === "se-resize" ? "none" : "";
+                    }
+                }
+            }),
+            "temporary": {
+                strokeColor: mapStrokeColor,
+                fillColor: mapFillColor,
+                fillOpacity: mapFillOpacity,
+                strokeWidth: mapStrokeWidth},
+            "select": {
+                strokeColor: mapStrokeColor,
+                fillColor: mapFillColor,
+                fillOpacity: mapFillOpacity,
+            strokeWidth: mapStrokeWidth},
+        "rotate": new OpenLayers.Style({
+            externalGraphic: mapRotateIconURL,
+            fillOpacity: 1,
+            graphicXOffset: 8,
+            graphicYOffset: 8,
+            graphicWidth: 20,
+            graphicHeight: 20,
+            display: "${getDisplay}",
+            pointRadius: 20,
+            fillColor: "#ddd",
+            strokeColor: mapStrokeColor,
+            rotation: "${getRotation}"
+        }, {
+            context: {
+                getDisplay: function (feature) {
+                    // only display the rotate handle at the south-east corner
+                    return feature.attributes.role === "se-rotate" ? "" : "none";
+                },
+                getRotation: function (feature) {
+                    // rotation of transformbox
+                    return -1 * selectControl.rotation;
+                }
+            }
+        })
+        });  
 }
 
 //Call after a feature was selected or drawn in the map
@@ -20,7 +109,6 @@ var listenerMiniFeaturesAdded = function() {
 
 //Call after a feature was selected or drawn in the map
 var listenerFeatureAdded = function(e) {
-    miniLayer.addFeatures([e.feature.clone()]);
     orderSurfaceChecking();
 };
 
@@ -31,6 +119,25 @@ var listenerFeatureAddedToZoom = function(e) {
 
 //Check if the surface of the selection is applicable
 function orderSurfaceChecking(){
+
+    var tmpSurface = 0;
+    var isSelfIntersect = false;
+
+    for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
+        if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
+            var layer = app.mapPanel.map.layers[j];
+            for (var f = 0; f < layer.features.length; f++) {
+                if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
+                    tmpSurface += layer.features[f].geometry.getGeodesicArea(app.mapPanel.map.projection);
+                }
+                if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon) {
+                    isSelfIntersect = checkSelfIntersect(layer.features[f]);
+            }
+        }
+    }
+    }
+    jQuery('#t-surface').val(tmpSurface);
+
     var toobig = false;
     var toosmall = false;
     if (jQuery('#surfacemax').val() !== '') {
@@ -41,15 +148,59 @@ function orderSurfaceChecking(){
         if (parseFloat(jQuery('#t-surface').val()) < parseFloat(jQuery('#surfacemin').val()))
             toosmall = true;
     }
-    if (toobig || toosmall) {
-        jQuery("#alert_template").empty();
-        jQuery("#alert_template").append('<span>Your current selection of ' + jQuery('#t-surface').val() + ' is not in the allowed surface range [' + jQuery('#surfacemin').val() + ',' + jQuery('#surfacemax').val() + '].</span>');
-        jQuery('#alert_template').fadeIn('slow');
-        jQuery('#btn-saveperimeter').attr("disabled", "disabled");
+
+    if (isSelfIntersect) {
+        //More than 2 intersectios for a line, mean that a line intersects another one.
+        var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT', 'Self-intersecting perimeter is not allowed');
+        alertControl.raiseAlert('<span>' + message + '</span>');
+    } else if (toobig || toosmall) {
+        var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_AREA', 'Your current selection of %SURFACE is not in the allowed surface range [%SURFACEMIN,%SURFACEMAX].')
+                .replace('%SURFACE', jQuery('#t-surface').val())
+                .replace('%SURFACEMIN', jQuery('#surfacemin').val())
+                .replace('%SURFACEMAX', jQuery('#surfacemax').val());
+        alertControl.raiseAlert('<span>' + message + '</span>');
+
     } else {
-        jQuery('#alert_template').fadeOut('slow');
-        jQuery('#btn-saveperimeter').removeAttr("disabled");
+        alertControl.clearAlert();
     }
+}
+
+//check if a feature is selfintersecting
+function checkSelfIntersect(feature) {
+    var lines = new Array();
+    var isSelfIntersect = false;
+
+    // do not test non-polygons
+    if (feature.geometry instanceof OpenLayers.Geometry.Polygon) {
+        var polygonSize = feature.geometry.components[0].components.length;
+        var components = feature.geometry.components[0].components;
+        var i = 0;
+        while (i < polygonSize - 1) {
+            lines.push(new OpenLayers.Geometry.LineString([
+                new OpenLayers.Geometry.Point(components [i].x, components [i].y),
+                new OpenLayers.Geometry.Point(components [i + 1].x, components [i + 1].y)
+            ]));
+
+            i++;
+    }
+        for (i = 0; i < lines.length; i++) {
+            count = 0;
+            for (j = 0; j < lines.length; j++) {
+                //Do not compare a line with itslf
+                if (i != j) {
+                    if (lines[i].intersects(lines[j])) {
+                        count++;
+}
+                }
+                if (count > 2) {
+                    //More than 2 intersectios for a line, mean that a line intersects another one.
+                    isSelfIntersect = true;
+                    break;
+                }
+            }
+        }
+    }
+    return isSelfIntersect;
 }
 
 //Remove all geometries drawn
@@ -59,11 +210,12 @@ function clearLayersVector() {
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
-    for (var j = 0; j < minimap.layers.length; j++) {
+    miniLayer.removeAllFeatures();
+    /*for (var j = 0; j < minimap.layers.length; j++) {
         if (minimap.layers[j].id.indexOf("Vector") !== -1) {
             minimap.layers[j].removeAllFeatures();
         }
-    }
+     }*/
     jQuery('#perimeter-recap-details').empty();
 }
 
@@ -72,23 +224,22 @@ function clearTemporaryFields() {
      jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
         jQuery('#t-'+value).val('');
     })
-    jQuery('#alert_template').fadeOut('slow');
-    jQuery('#btn-saveperimeter').removeAttr("disabled");
+    alertControl.clearAlert();
     
 }
 
 //Reset temporary fields with initial values
 function resetTemporaryFields() {
-    jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+    jQuery.each(['perimeter', 'perimetern', 'surface', 'features', 'level', 'freeperimetertool'], function (index, value) {
         jQuery('#t-'+value).val(jQuery('#'+value).val());
     })
-    jQuery('#alert_template').fadeOut('slow');
-    jQuery('#btn-saveperimeter').removeAttr("disabled");
+    freePerimeterTool = jQuery('#t-freeperimetertool').val();
+    alertControl.clearAlert();
 }
 
 //Push temporary fields to final fields 
 function saveTemporaryFields() {
-    jQuery.each(['perimeter','perimetern','surface','features','level'], function(index, value){
+    jQuery.each(['perimeter', 'perimetern', 'surface', 'features', 'level', 'freeperimetertool'], function (index, value) {
         jQuery('#'+value).val(jQuery('#t-'+value).val());
     })
 }
@@ -103,10 +254,19 @@ function beforeFeatureAdded(event) {
 //Reset all values to initial ones
 function resetAll() {
     resetTemporaryFields();
+    freePerimeterTool = '';
+    removeSelectCounter();
 
     clearLayersVector();
+    jQuery('#perimeter-level').hide();
     jQuery('#btns-selection').show();
 
+    disableDrawControls();
+
+
+}
+
+function disableDrawControls() {
     if (typeof selectControl !== 'undefined') {
         selectControl.deactivate();
         selectControl.events.unregister("featureselected", this, listenerFeatureSelected);
@@ -117,13 +277,15 @@ function resetAll() {
         app.mapPanel.map.removeLayer(app.mapPanel.map.getLayersByName("perimeterLayer")[0]); 
         app.mapPanel.map.removeLayer(selectLayer);
     }
-    if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
+
+    /*if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
         app.mapPanel.map.removeLayer(myLayer);
-    }
+     }*/
     for (key in drawControls) {
         var control = drawControls[key];
         control.deactivate();
     }
+
 }
 
 //Toggle controls
@@ -132,11 +294,34 @@ function toggleSelectControl(action) {
         if (typeof selectControl !== 'undefined') {
             selectControl.activate();
         }
-    } else if (action === 'pan') {
-        selectControl.deactivate();
     } else {
         resetAll();
     }
+}
+
+function addAlertControl(map) {
+    alertControl = new OpenLayers.Control.Panel({
+        displayClass: "sdiMapAlertControl hide",
+    });
+    OpenLayers.Util.extend(alertControl, {
+        raiseAlert: function (message) {
+            jQuery('#btn-saveperimeter').attr("disabled", "disabled");
+            if (message)
+                jQuery('.sdiMapAlertControl').html('<p style="vertical-align: middle">' + message + '</p>');
+            else
+                jQuery('.sdiMapAlertControl').empty();
+            jQuery('.sdiMapAlertControl').show();
+        },
+        clearAlert: function () {
+            jQuery('.sdiMapAlertControl').hide();
+            jQuery('.sdiMapAlertControl').empty();
+            jQuery('#btn-saveperimeter').removeAttr("disabled");
+
+        }
+    });
+
+    map.addControl(alertControl);
+    alertControl.deactivate();
 }
 
 //Reload initial extent selection
@@ -144,14 +329,51 @@ function cancel() {
     resetAll();
     jQuery('#modal-perimeter [id^="btn-perimeter"]').removeClass('active');
     if (jQuery('#perimeter').val() !== '') {
-        eval('selectPerimeter' + jQuery('#perimeter').val() + '()');
         eval('reloadFeatures' + jQuery('#perimeter').val() + '()');
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
     }
     if (jQuery('#level').val() !== '' && slider) {
        var level = JSON.parse(jQuery('#level').val());
        app.mapPanel.map.indoorlevelslider.changeIndoorLevelByCode(app.mapPanel.map.indoorlevelslider,level.code);
+        jQuery('#perimeter-level-value').val(app.mapPanel.map.indoorlevelslider.getLevel().label);
+        jQuery('#perimeter-level').show();
     }
+
+    setFreePerimeterTool(jQuery('#freeperimetertool').val());
+}
+
+//Add counter next to selection tool
+function addSelectCounter(perimeterId) {
+    removeSelectCounter();
+    var counterHTML = '<button onclick="return false;" id="perimeter-select-counter" data-perimeter-id="' + perimeterId + '" class="btn btn-primary disabled">0</button>';
+    jQuery('#btn-perimeter' + perimeterId).after(counterHTML);
+    jQuery("#perimeter-select-counter").popover({
+        container: '#btn-perimeter' + perimeterId,
+        trigger: 'hover ',
+        placement: 'bottom',
+        title: Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PERIMETER_YOUR_SELECTION', 'Your selection:'),
+        content: function () {
+            var selectCounterPopover = "";
+            if (selectLayer.features.length > 0) {
+            for (var i = 0; i < selectLayer.features.length; i++) {
+                selectCounterPopover += (selectLayer.features[i].attributes[fieldname] + '<br/>');
+            }
+            } else {
+                selectCounterPopover += Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PERIMETER_NO_PERIMETER_SELECTED', 'No perimeter selected');
+            }
+            return selectCounterPopover;
+}
+    });
+}
+
+//Update select counter
+function updateSelectCounter(features) {
+    jQuery("#perimeter-select-counter").text(features.length);
+}
+
+//Removes all select counters
+function removeSelectCounter() {
+    jQuery("#perimeter-select-counter").remove();
 }
 
 //
@@ -268,6 +490,20 @@ var updatePricing = function(pricing) {
 
 //Call after user validates his extent drawing
 function savePerimeter() {
+    
+    //clean mini layer then copy all features from vector layers
+    miniLayer.removeAllFeatures();
+    for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
+        if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
+            var layer = app.mapPanel.map.layers[j];
+            for (var f = 0; f < layer.features.length; f++) {
+                if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
+                    miniLayer.addFeatures([layer.features[f].clone()]);
+                }
+            }
+        }
+    }
+
     if (jQuery('#t-perimeter').val() == ''){
         jQuery('#perimeter-recap').empty();
     } else {
@@ -279,12 +515,13 @@ function savePerimeter() {
             "allowedbuffer": jQuery('#allowedbuffer').val(),
             "buffer": jQuery('#buffer').val(),
             "level": jQuery('#t-level').val(),
-            "features": jQuery('#t-features').val()};
-
+            "features": jQuery('#t-features').val(),
+            "freeperimetertool": jQuery('#t-freeperimetertool').val()};
+        
         jQuery.ajax({
             type: "POST",
             url: "index.php?option=com_easysdi_shop&task=addExtentToBasket",
-            data: "item=" + JSON.stringify(extent)
+            data: "item=" + encodeURIComponent(JSON.stringify(extent))
         }).done(updateDisplay);
     }
 }
@@ -302,8 +539,9 @@ function updateDisplay (response){
                                 return;
                             if (typeof this.name === "undefined") {
                                 jQuery('#perimeter-recap-details').append(jQuery('<div>' + features + '</div>'));
+                            }else{
+                                jQuery('#perimeter-recap-details').append(jQuery('<div>' + this.name + '</div>'));
                             }
-                            jQuery('#perimeter-recap-details').append(jQuery('<div>' + this.name + '</div>'));
                         });
                         jQuery('#perimeter-recap-details').show();
 
@@ -321,30 +559,29 @@ function updateDisplay (response){
                     jQuery('#perimeter-recap-details-title > h4').empty();
                 }
                 if (response.extent.level !== '') {
-                    jQuery('#perimeter-recap > div:nth-child(2) > div').html(JSON.parse(response.extent.level).label);
+            jQuery('#perimeter-level-value').html(JSON.parse(response.extent.level).label);
                     jQuery('#perimeter-level').show();        
                     jQuery('#perimeter-recap').show();
                 }
                 else {
-                    jQuery('#perimeter-level >div:nth-child(1)').empty();
+            jQuery('#perimeter-level-value').empty();
                     jQuery('#perimeter-level').hide();
                 }
                 if (response.extent.surface !== '') {
-                    jQuery('#perimeter-recap > div:nth-child(1) > div').html(
-                            (response.extent.surface > maxmetervalue)
-                            ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2')
-                            : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2')
-                            );
+            jQuery('#shop-perimeter-title-surface').html(
+                    " (" + 
+                    ((response.extent.surface > maxmetervalue)
+                    ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km²')
+                    : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m²')) +
+                    ")");
                     jQuery('#perimeter-recap').show();
                 }
                 else {
-                    jQuery('#perimeter-recap > div:nth-child(1) > div').empty();
+            jQuery('#shop-perimeter-title-surface').empty();
                 }
-
                 //pricing
                 updatePricing(response.pricing);
             }
-
             return false;
 }
 
@@ -471,6 +708,13 @@ jQuery(document).ready(function() {
     checkTouState();
 
     thirdpartyInfoVisibility();
+
+    //disbale 'return' key submit
+    jQuery('form input').bind('keydown', function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+        }
+    });
 
     jQuery('#toolbar button').on('click', function() {
         var task = jQuery(this).attr('rel');

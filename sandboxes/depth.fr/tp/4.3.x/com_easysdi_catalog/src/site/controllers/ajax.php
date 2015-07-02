@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
 defined('_JEXEC') or die;
@@ -180,7 +180,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         
         $fu = new Easysdi_filedHelper();
         try {
-            $result['files'] = $fu->upload($_FILES, $target_folder, JUri::base().'media/easysdi', true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', JUri::base() . 'media/easysdi/thumbnails',120);
+            $result['files'] = $fu->upload($_FILES, $target_folder, $fileBaseUrl, true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', $fileBaseUrl . '/thumbnails',120);
             $result['status'] = 'success';
             header('Content-type: application/json');
             echo json_encode($result);

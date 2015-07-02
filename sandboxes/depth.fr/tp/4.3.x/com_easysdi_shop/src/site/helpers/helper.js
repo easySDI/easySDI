@@ -1,6 +1,8 @@
 js = jQuery.noConflict();
+var dest, polygonLayer,selectLayer,customStyleMap;
 
 function loadPerimeter(withdisplay) {
+    initStyleMap();
     if (jQuery('#jform_perimeter').length > 0) {
         loadPolygonPerimeter(withdisplay);
     } else {
@@ -8,10 +10,8 @@ function loadPerimeter(withdisplay) {
     }
 }
 
-var dest, polygonLayer;
-
 function loadPolygonPerimeter(withdisplay) {
-    polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection});
+    polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: window.appname.mapPanel.map.projection, projection: window.appname.mapPanel.map.projection, styleMap: customStyleMap});
 
     var wkt = jQuery('#jform_perimeter').val();
     var features = new OpenLayers.Format.WKT().read(wkt);
@@ -29,7 +29,7 @@ function loadPolygonPerimeter(withdisplay) {
         var source = new OpenLayers.Projection("EPSG:4326");
         dest = new OpenLayers.Projection(window.appname.mapPanel.map.projection);
         features.geometry.transform(source, dest);
-        polygonLayer.addFeatures([features]);        
+        polygonLayer.addFeatures([features]);
     }
 
     window.appname.mapPanel.map.addLayers([polygonLayer]);
@@ -42,57 +42,88 @@ function loadPolygonPerimeter(withdisplay) {
     }
 }
 
-var selectLayer;
-
 function loadWfsPerimeter() {
     var url = jQuery('#jform_wfsurl').val();
     var featuretypename = jQuery('#jform_wfsfeaturetypename').val();
     var featuretypefieldid = jQuery('#jform_wfsfeaturetypefieldid').val();
-    var wfsUrl = url + '?request=GetFeature&SERVICE=WFS&TYPENAME=' + featuretypename + '&VERSION=1.0.0';
-    var wfsUrlWithFilter = wfsUrl + '&FILTER=';
-    wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
+    var namespace = jQuery('#jform_wfsnamespace').val();
+    var prefix = jQuery('#jform_wfsprefix').val();
+    var featuretypefieldgeometry = jQuery('#jform_wfsfeaturetypefieldgeometry').val();
+
     var features_object = jQuery('#jform_wfsperimeter').val();
 
+    selectLayer = new OpenLayers.Layer.Vector("Selection", {styleMap: customStyleMap});
+    window.appname.mapPanel.map.addLayer(selectLayer);
 
     if (features_object !== "")
         var features = JSON.parse(features_object);
     else
         var features = new Array();
-    if (features.length > 1)
-    {
-        wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
+
+
+    var tempWFSfilterList = [];
+    var tempWFSfilter;
+
+    for (var i = 0; i < features.length; i++) {
+        tempWFSfilterList.push(
+                new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                    property: featuretypefieldid,
+                    value: features[i].id
+                }));
     }
 
-    for (var i = 0; i < features.length; i++)
-    {
-        wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + featuretypefieldid + '</ogc:PropertyName><ogc:Literal>' + features[i].id + '</ogc:Literal></ogc:PropertyIsEqualTo>');
+    if (features.length > 1) {
+        tempWFSfilter = new OpenLayers.Filter.Logical({
+            type: OpenLayers.Filter.Logical.OR,
+            filters: tempWFSfilterList
+        });
     }
-    if (features.length > 1)
-    {
-        wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
+    else {
+        tempWFSfilter = tempWFSfilterList[0];
     }
-    wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
-    selectLayer = new OpenLayers.Layer.Vector("Selection", {
-        strategies: [new OpenLayers.Strategy.Fixed()],
-        protocol: new OpenLayers.Protocol.HTTP({
-            url: wfsUrlWithFilter,
-            format: new OpenLayers.Format.GML()
-        })
+
+    var protoWFS = new OpenLayers.Protocol.WFS(
+            {
+                version: "1.0.0",
+                url: url,
+                featureType: featuretypename,
+                featureNS: namespace,
+                featurePrefix: prefix,
+                geometryName: featuretypefieldgeometry,
+                defaultFilter: tempWFSfilter
+            }
+    );
+
+    protoWFS.read({
+        readOptions: {output: "object"},
+        resultType: "hits",
+        maxFeatures: null,
+        callback: function (resp) {
+            selectLayer.addFeatures(resp.features);
+            window.appname.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
+        }
     });
-
-
-    window.appname.mapPanel.map.addLayer(selectLayer);
-    selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
 }
-
-var listenerFeatureAddedToZoom = function(e) {
-    window.appname.mapPanel.map.zoomToExtent(e.object.getDataExtent());
-};
-
 
 js(document).on('click', 'button.delete', function () {
     var delete_url = 'index.php?option=com_easysdi_shop&task=pricingprofile.delete&id=';
     var profile_id = js(this).attr('data-id');
-    js('#btn_delete').attr('href',delete_url+profile_id);
+    js('#btn_delete').attr('href', delete_url + profile_id);
     js('#deleteModal').modal('show');
 });
+
+function initStyleMap() {
+    customStyleMap = new OpenLayers.StyleMap({
+        "default": new OpenLayers.Style({
+            fillColor: mapFillColor,
+            fillOpacity: mapFillOpacity,
+            strokeColor: mapStrokeColor,
+            strokeDashstyle: "solid",
+            strokeLinecap: "round",
+            strokeOpacity: 1,
+            strokeWidth: mapStrokeWidth,
+            graphicName: "circle"
+        })
+    });
+}

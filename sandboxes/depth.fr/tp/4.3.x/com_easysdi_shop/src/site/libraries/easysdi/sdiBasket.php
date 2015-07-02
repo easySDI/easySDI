@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access.
@@ -30,6 +30,7 @@ class sdiBasket {
     public $created;
     public $created_by;
     public $thirdorganism;
+    public $freeperimetertool = '';
 
     function __construct() {
         $this->sdiUser = sdiFactory::getSdiUser();
@@ -41,7 +42,7 @@ class sdiBasket {
 
             //Load order object
             $query = $db->getQuery(true)
-                    ->select('o.id as id, o.name as name, o.thirdparty_id as thirdparty, org.name as thirdorganism, o.buffer as buffer , o.surface,o.level as level, o.created, o.created_by')
+                    ->select('o.id as id, o.name as name, o.thirdparty_id as thirdparty, org.name as thirdorganism, o.buffer as buffer , o.surface,o.level as level, o.freeperimetertool as freeperimetertool, o.created, o.created_by')
                     ->from('#__sdi_order o')
                     ->leftJoin('#__sdi_organism org ON org.id = o.thirdparty_id')
                     ->where('o.id = ' . (int)$orderId);

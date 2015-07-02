@@ -1,5 +1,5 @@
 /**
- * @version     4.0.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -146,7 +146,7 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
 Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype,sdi.gxp.plugins.LayerTree);
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -512,7 +512,7 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
 Ext.preg(sdi.gxp.plugins.Print.prototype.ptype, sdi.gxp.plugins.Print);
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -697,7 +697,7 @@ sdi.gxp.plugins.BingSource = Ext.extend(gxp.plugins.BingSource, {
 
 Ext.preg(sdi.gxp.plugins.BingSource.prototype.ptype, sdi.gxp.plugins.BingSource);
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -755,7 +755,7 @@ sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
 
 Ext.preg(sdi.gxp.plugins.GoogleSource.prototype.ptype, sdi.gxp.plugins.GoogleSource);
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -810,7 +810,7 @@ sdi.gxp.plugins.OSMSource = Ext.extend(gxp.plugins.OSMSource, {
 
 Ext.preg(sdi.gxp.plugins.OSMSource.prototype.ptype, sdi.gxp.plugins.OSMSource);
 /**
- * @version     4.0.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -1106,7 +1106,7 @@ gxp.Viewer.prototype.reactivate = function() {
 
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -1172,7 +1172,7 @@ sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
 });
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -1259,7 +1259,7 @@ sdi.geoext.ux.PrintPreview = Ext.extend(GeoExt.ux.PrintPreview, {
 
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -1848,8 +1848,21 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             if (servertype == 1 || servertype == 3) {
                 var cql_filter;
                 var new_filter =  layer.levelfield + "='" + level.code + "'";
+                
+                //existing CQL_FILTER 
                 if(typeof(layer.params.CQL_FILTER) != 'undefined'){
-                    cql_filter = layer.params.CQL_FILTER + " AND " + new_filter;                    
+                    //if the perimeter is restricted by user
+                    if(layer.params.CQL_FILTER.match(/INTERSECTS/g)){
+                        //remove level filter
+                        var re = new RegExp(" AND "+layer.levelfield+"='.+'","g");
+                        cql_filter = layer.params.CQL_FILTER.replace(re, "");
+                        //add new level
+                        cql_filter = cql_filter + " AND " + new_filter;
+                    }else{
+                        //should only contain a level, let's overwrite it
+                        cql_filter = new_filter;
+                    }  
+                //no CQL_FILTER yet
                 }else{
                     cql_filter = new_filter;
                 }
@@ -2079,7 +2092,7 @@ predefinedPerimeter.prototype.initPerimeterLayer = function() {
         levelfield: this.item.levelfield,
         opacity: this.item.opacity,
         source: this.item.source,
-        tiled: true,
+        tiled: false,
         title: "perimeterLayer",
         iwidth: "360",
         iheight: "360",
@@ -2148,10 +2161,11 @@ predefinedPerimeter.prototype.initSelectControl = function() {
             featureNS: this.item.namespace,
             geometryName: this.item.featuretypefieldgeometry
         }),
-        box: true,
+        box: false,
         click: true,
+        toggle: true,
         multipleKey: "ctrlKey",
-        clickout: true
+        clickout: false
     });
 
     //Build the default filter : merge existing filters on user perimeter and indoor level

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access.
 defined('_JEXEC') or die;
@@ -284,7 +284,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             return false;
         }
         
-        if(!(sdiFactory::getSdiUser()->authorize($form->getData()->get('id'), sdiUser::metadataeditor) || sdiFactory::getSdiUser()->authorize($form->getData()->get('id'), sdiUser::metadataresponsible))){
+        if(!(sdiFactory::getSdiUser()->authorizeOnMetadata($form->getData()->get('id'), sdiUser::metadataeditor) || sdiFactory::getSdiUser()->authorizeOnMetadata($form->getData()->get('id'), sdiUser::metadataresponsible))){
             foreach($form->getFieldsets() as $fieldset){
                 foreach($form->getFieldset($fieldset->name) as $field){
                     $form->setFieldAttribute($field->fieldname, 'readonly', 'true');

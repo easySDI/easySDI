@@ -751,6 +751,7 @@ CREATE TABLE #__sdi_order (
     mandate_contact VARCHAR(75) NULL,
     mandate_email VARCHAR(100) NULL,
     "level" VARCHAR(100) NULL,
+    freeperimetertool VARCHAR(100) NULL,
     sent timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     access integer DEFAULT 1 NOT NULL,
@@ -2317,11 +2318,6 @@ CREATE TABLE service_types_methods (
 );
 
 
-
-
-
-
-
 CREATE TABLE sla (
     "ID_SLA" serial NOT NULL,
     "NAME" character varying(45) NOT NULL,
@@ -2330,21 +2326,10 @@ CREATE TABLE sla (
 );
 
 
-
-
-
-
-
 CREATE TABLE statuses (
     "ID_STATUS" serial NOT NULL,
     "NAME" character varying(45) NOT NULL
 );
-
-
-
-
-
-
 
 CREATE TABLE users (
     "LOGIN" character varying(45) NOT NULL,
@@ -2355,7 +2340,7 @@ CREATE TABLE users (
     "LOCKED" integer DEFAULT 0 NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS #__sdi_sys_server (
+CREATE TABLE #__sdi_sys_server (
     id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -2363,15 +2348,149 @@ CREATE TABLE IF NOT EXISTS #__sdi_sys_server (
     PRIMARY KEY (id)  
 );
 
-CREATE TABLE IF NOT EXISTS #__sdi_sys_server_serviceconnector (
+CREATE TABLE #__sdi_sys_server_serviceconnector (
     id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     server_id INT(11) UNSIGNED,
     serviceconnector_id INT(11) UNSIGNED,
-    PRIMARY KEY (id),
-  KEY #__sdi_sys_server_serviceconnector_fk1 (server_id),
-  KEY #__sdi_sys_server_serviceconnector_fk2 (serviceconnector_id),
-  CONSTRAINT #__sdi_sys_server_serviceconnector_fk1 FOREIGN KEY (server_id) REFERENCES #__sdi_sys_server (id) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT #__sdi_sys_server_serviceconnector_fk2 FOREIGN KEY (serviceconnector_id) REFERENCES #__sdi_sys_serviceconnector (id) ON DELETE CASCADE ON UPDATE NO ACTION
+    PRIMARY KEY (id)
 );
 
 
+
+CREATE TABLE IF NOT EXISTS #__sdi_organism_category_pricing_rebate (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    organism_id INT(11) UNSIGNED,
+    category_id INT(11) UNSIGNED,
+    rebate decimal(19,2),
+    PRIMARY KEY (id)
+);
+
+
+CREATE TABLE IF NOT EXISTS #__sdi_pricing_profile (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    guid VARCHAR(36)  NOT NULL ,
+    alias VARCHAR(50)   ,
+    created_by INT(11)  NOT NULL ,
+    created DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_by INT(11),
+    modified DATETIME ,
+    ordering INT(11)  ,
+    state int(11)  NOT NULL DEFAULT '1',
+    checked_out INT(11) NOT NULL DEFAULT '0'  ,
+    checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    organism_id int(11) UNSIGNED NOT NULL,
+    name varchar(75) NOT NULL,
+    fixed_fee decimal(19,2),
+    surface_rate decimal(19,2),
+    min_fee decimal(19,2),
+    max_fee decimal(19,2),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_pricing_profile_category_pricing_rebate (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    pricing_profile_id int(11) UNSIGNED NOT NULL,
+    category_id int(11) UNSIGNED NOT NULL,
+    rebate FLOAT(6,2) UNSIGNED DEFAULT 100,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_pricing_order (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    guid VARCHAR(36)  NOT NULL ,
+    created_by INT(11)  NOT NULL ,
+    created DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_by INT(11)   ,
+    modified DATETIME ,
+    ordering INT(11)  ,
+    state int(11)  NOT NULL DEFAULT '1',
+    checked_out INT(11) NOT NULL DEFAULT '0'  ,
+    checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    order_id int(11) UNSIGNED NOT NULL,
+    cfg_vat decimal(19,2) NOT NULL DEFAULT 0,
+    cfg_currency char(3) NOT NULL DEFAULT 'CHF',
+    cfg_rounding decimal(3,2) NOT NULL DEFAULT '0.05',
+    cfg_overall_default_fee decimal(19,2) NOT NULL DEFAULT 0,
+    cfg_free_data_fee TINYINT DEFAULT 0,
+    cal_total_amount_ti float,
+    cal_fee_ti decimal(19,2) NOT NULL DEFAULT 0,
+    ind_lbl_category_order_fee varchar(255),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_pricing_order_supplier (
+    id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    guid VARCHAR(36)  NOT NULL ,
+    created_by INT(11)  NOT NULL ,
+    created DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_by INT(11)   ,
+    modified DATETIME ,
+    ordering INT(11)  ,
+    state int(11)  NOT NULL DEFAULT '1',
+    checked_out INT(11) NOT NULL DEFAULT '0'  ,
+    checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    pricing_order_id int(11) UNSIGNED NOT NULL,
+    supplier_id int(11) UNSIGNED NOT NULL,
+    supplier_name varchar(255) NOT NULL,
+    cfg_internal_free TINYINT NOT NULL DEFAULT 1,
+    cfg_fixed_fee_ti decimal(19,2) NOT NULL DEFAULT 0,
+    cfg_data_free_fixed_fee TINYINT NOT NULL DEFAULT 0,
+    cal_total_rebate_ti float NOT NULL DEFAULT 0,
+    cal_fee_ti decimal(19,2) NOT NULL DEFAULT 0,
+    cal_total_amount_ti float,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_pricing_order_supplier_product (
+    id int(11) unsigned not null auto_increment,
+    guid VARCHAR(36)  NOT NULL ,
+    created_by INT(11)  NOT NULL ,
+    created DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_by INT(11)   ,
+    modified DATETIME ,
+    ordering INT(11)  ,
+    state int(11)  NOT NULL DEFAULT '1',
+    checked_out INT(11) NOT NULL DEFAULT '0'  ,
+    checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    pricing_order_supplier_id int(11) unsigned not null,
+    product_id int(11) unsigned not null,
+    pricing_id int(11) unsigned not null,
+    cfg_pct_category_supplier_discount decimal(19,2) NOT NULL DEFAULT 0,
+    ind_lbl_category_supplier_discount varchar(255),
+    cal_amount_data_te float,
+    cal_total_amount_te float,
+    cal_total_amount_ti float,
+    cal_total_rebate_ti float,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_pricing_order_supplier_product_profile (
+    id int(11) unsigned not null auto_increment,
+    guid VARCHAR(36)  NOT NULL ,
+    created_by INT(11)  NOT NULL ,
+    created DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    modified_by INT(11)   ,
+    modified DATETIME ,
+    ordering INT(11)  ,
+    state int(11)  NOT NULL DEFAULT '1',
+    checked_out INT(11) NOT NULL DEFAULT '0'  ,
+    checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    pricing_order_supplier_product_id int(11) unsigned not null,
+    pricing_profile_id int(11) unsigned not null,
+    pricing_profile_name varchar(255) not null,
+    cfg_fixed_fee decimal(19,2) NOT NULL DEFAULT 0,
+    cfg_surface_rate decimal(19,2) NOT NULL DEFAULT 0,
+    cfg_min_fee decimal(19,2) NOT NULL DEFAULT 0,
+    cfg_max_fee decimal(19,2) NOT NULL DEFAULT 0,
+    cfg_pct_category_profile_discount decimal(19,2) NOT NULL DEFAULT 0,
+    ind_lbl_category_profile_discount varchar(255),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS #__sdi_sys_extractstorage (
+    id int(11) unsigned not null auto_increment,
+    ordering int(11),
+    state int(11) not null default '1',
+    value varchar(255) not null,
+    PRIMARY KEY (id)
+);

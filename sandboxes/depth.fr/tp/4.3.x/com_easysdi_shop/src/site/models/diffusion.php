@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access.
@@ -462,7 +462,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $query_resource->innerJoin('#__sdi_user_role_organism AS uro ON r.organism_id = uro.organism_id');
         $query_resource->innerJoin('#__sdi_metadata AS m ON m.version_id = v.id');
         $query_resource->where('m.id = '.$this->_item->version_id);
-        $query_resource->group('id');
+        $query_resource->group('uro.user_id');
         
         $db->setQuery($query_resource);
         $users_resource = $db->loadColumn();
@@ -472,8 +472,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $query_user->from('#__users AS ju');
         $query_user->innerJoin('#__sdi_user AS u ON u.user_id = ju.id');
         $query_user->innerJoin('#__sdi_user_role_organism AS o ON u.id = o.user_id');
-        $query_user->where('o.organism_id IN ('.  $query->quote(implode(",", $user_organisms)).')');
-        $query_user->group('id');
+        $query_user->where('o.organism_id IN ('.  implode(",", $user_organisms).')');
+        $query_user->group('u.id');
         
         $db->setQuery($query_user);
         $users_user = $db->loadColumn();

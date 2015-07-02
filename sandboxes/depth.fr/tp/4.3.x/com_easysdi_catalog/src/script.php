@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -21,7 +21,7 @@ class com_easysdi_catalogInstallerScript {
     function preflight($type, $parent) {
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
-	
+
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Catalog [com_easysdi_catalog]';
         echo '<br />' . JText::_('COM_EASYSDI_CATALOG_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
@@ -92,22 +92,29 @@ class com_easysdi_catalogInstallerScript {
                 $catalogsearchcriteria->save($array);
             endforeach;
         }
-        
-        // set default params
-        $params = array('iframewidth'=>400,'iframeheight'=>600);
-        $this->setParams($params);
-        
+
+        // set default params (only if unset)
+        if (!$this->getConfVal('iframewidth')) {
+            $params = array('iframewidth' => 400);
+            $this->setParams($params);
+        }
+        if (!$this->getConfVal('iframeheight')) {
+            $params = array('iframeheight' => 600);
+            $this->setParams($params);
+        }
+
+
         // Apply pagination patch
         $jversion = new JVersion();
-        if($jversion->getShortVersion() == '3.3.6'){
-            copy(JPATH_ROOT.'/administrator/components/com_easysdi_catalog/assets/patch/libraries/cms/router/site.php', JPATH_ROOT.'/libraries/cms/router/site.php');
+        if ($jversion->getShortVersion() == '3.3.6') {
+            copy(JPATH_ROOT . '/administrator/components/com_easysdi_catalog/assets/patch/libraries/cms/router/site.php', JPATH_ROOT . '/libraries/cms/router/site.php');
         }
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->delete('#__menu');
-        $query->where('title ='.$db->quote('com_easysdi_catalog'));
-        
+        $query->where('title =' . $db->quote('com_easysdi_catalog'));
+
         $db->setQuery($query);
         $db->query();
     }
@@ -130,11 +137,26 @@ class com_easysdi_catalogInstallerScript {
         $query = $db->getQuery(true);
         $query->select('manifest_cache');
         $query->from('#__extensions');
-        $query->where('name ='.$db->quote('com_easysdi_catalog'));
+        $query->where('name =' . $db->quote('com_easysdi_catalog'));
         $db->setQuery($query);
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
     }
+    
+    /*
+     * get a parameter from existing component config.
+     */
+
+    function getConfVal($name) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('params');
+        $query->from('#__extensions');
+        $query->where('name =' . $db->quote('com_easysdi_catalog'));
+        $db->setQuery($query);
+        $params = json_decode($db->loadResult(), true);
+        return isset($params[$name])?$params[$name]:null;
+    }    
 
     /*
      * sets parameter values in the component's row of the extension table
@@ -147,7 +169,7 @@ class com_easysdi_catalogInstallerScript {
             $query = $db->getQuery(true);
             $query->select('params');
             $query->from('#__extensions');
-            $query->where('name ='.$db->quote('com_easysdi_catalog'));
+            $query->where('name =' . $db->quote('com_easysdi_catalog'));
             $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
@@ -158,9 +180,9 @@ class com_easysdi_catalogInstallerScript {
             $paramsString = json_encode($params);
             $query = $db->getQuery(true);
             $query->update('#__extensions');
-            $query->set('params = ' .$db->quote($paramsString));
-            $query->where('name = '.$db->quote('com_easysdi_catalog'));
-            
+            $query->set('params = ' . $db->quote($paramsString));
+            $query->where('name = ' . $db->quote('com_easysdi_catalog'));
+
             $db->setQuery($query);
             $db->query();
         }

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -143,11 +143,11 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                 <table id="resources" class="table table-striped">
                     <thead>
                         <tr>
-                            <th id="resources_name"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?><span id='resources_ordering'><?php echo $this->state->get('filter.ordering');?></span></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
-                            <th></th>
+                            <th id="resources_name"  class="resource_name"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?><span id='resources_ordering'><?php echo $this->state->get('filter.ordering');?></span></th>
+                            <th class="resource_type"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
+                            <th class="resource_versions"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
+                            <th class="resource_metadata_actions"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
+                            <th class="resource_management_actions"></th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -232,8 +232,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-success" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                    <button type="submit" class="btn btn-primary" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></button>
                 </div>
             </div>
         </div>
@@ -272,8 +272,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                 <span id="deleteModalChildrenList"></span>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
-                <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
             </div>
         </div>
     </div>
