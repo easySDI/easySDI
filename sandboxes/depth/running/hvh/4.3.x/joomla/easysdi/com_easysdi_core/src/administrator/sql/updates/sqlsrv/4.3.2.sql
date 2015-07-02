@@ -54,3 +54,7 @@ ALTER TABLE [#__sdi_pricing_order] ALTER COLUMN [cal_fee_ti]  decimal(19,2) NOT 
 ALTER TABLE [#__sdi_pricing_order] ADD CONSTRAINT DF_cal_fee_ti_po DEFAULT 0.00 FOR [cal_fee_ti];
 
 ALTER TABLE [#__sdi_organism_category_pricing_rebate] ALTER COLUMN [rebate]  decimal(19,2) NULL;
+
+ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_state DEFAULT 1 FOR [state];
+ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_checkedout  DEFAULT '0'  FOR [checked_out];
+ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_checkedouttime DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
