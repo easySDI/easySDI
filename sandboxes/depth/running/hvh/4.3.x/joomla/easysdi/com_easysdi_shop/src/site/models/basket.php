@@ -149,6 +149,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         if ($table->save($data) === true) {
             $basketData = array(
                 'orderstate_id' => $table->orderstate_id,
+                'ordertype_id' => $table->ordertype_id,
                 'diffusions' => array(),
                 'order_id' => $table->id,
                 'thirdparty_id' => $table->thirdparty_id,
