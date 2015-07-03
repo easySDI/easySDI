@@ -55,11 +55,15 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
     const PRODUCT_REJECTED          = 5; // rejected by thirdparty
     const PRODUCT_REJECTED_SUPPLIER = 6; // rejected by supplier
     
-    public function load() {
+    public function copy() {
+        $this->load(true);
+    }
+    
+    public function load($copy = false) {
         $jinput = JFactory::getApplication()->input;
         $id = $jinput->get('id', '', 'int');
         $basket = new sdiBasket();
-        $basket->loadOrder($id);
+        $basket->loadOrder($id, $copy);
         
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=edit', false));
@@ -112,8 +116,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         $this->saveBasketToSession(false);
-        $app = JFactory::getApplication();
-
+        
         // Initialise variables.
         $model = $this->getModel('Basket', 'Easysdi_shopModel');
 

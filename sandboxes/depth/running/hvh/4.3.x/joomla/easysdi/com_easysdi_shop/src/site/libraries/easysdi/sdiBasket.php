@@ -36,7 +36,7 @@ class sdiBasket {
         $this->sdiUser = sdiFactory::getSdiUser();
     }
 
-    function loadOrder($orderId) {
+    function loadOrder($orderId, $copy = false) {
         try {
             $db = JFactory::getDbo();
 
@@ -51,6 +51,12 @@ class sdiBasket {
             $params = get_object_vars($order);
             foreach ($params as $key => $value) {
                 $this->$key = $value;
+            }
+            
+            //Copy order
+            if($copy){
+                $this->id = null;
+                $this->name = 're-'.$this->name;
             }
 
             //Load diffusion

@@ -13,6 +13,7 @@ JHtml::_('behavior.keepalive');
 JHTML::_('behavior.modal');
 JHtml::_('behavior.tooltip');
 JHtml::_('formbehavior.chosen', 'select');
+
 ?>
 <div class="shop front-end-edit">
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'); ?></h1>
@@ -92,7 +93,7 @@ JHtml::_('formbehavior.chosen', 'select');
                 </thead>
 
                 <tbody>
-    <?php foreach ($this->items as $item) : ?>
+                <?php foreach ($this->items as $item) : ?>
                         <tr class="order-line order-line-new">
                             <td><i><a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.edit&id=' . $item->id); ?>"><?php echo $item->name; ?></a></i></td>
                             <td class="ordertype">
@@ -118,7 +119,7 @@ JHtml::_('formbehavior.chosen', 'select');
                                         case 6: echo 'label-inverse'; break;
                                     }
                                     ?>"><?php echo JText::_($item->orderstate); ?></span>
-        <?php endif; ?>
+                                <?php endif; ?>
                             </td>
                             <td >
                                 <?php if ($item->orderstate_id == 5 || $item->orderstate_id == 3): ?>
@@ -138,35 +139,37 @@ JHtml::_('formbehavior.chosen', 'select');
                                     ?>                                        
                                     </ul>
                                     </div>                                   
-        <?php endif; ?>
+                                <?php endif; ?>
                             </td>
                             <td>
-        <?php if ($item->ordertype_id == 3 || $item->orderstate_id == 3): ?>
-                                    <div class="btn-group pull-right">
-                                        <a class="btn btn-success btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-            <?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ACTIONS'); ?>
-                                            <span class="caret"></span>
-                                        </a>
-                                        <ul class="dropdown-menu">
-            <?php if ($item->ordertype_id == 3): ?>
-                                                <li>
-                                                    <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.load&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'); ?></a>
-                                                </li>
-                                                <li>
-                                                    <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.remove&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_REMOVE_DRAFT'); ?></a>
-                                                </li>
-                                            <?php endif; ?>
-            <?php if ($item->orderstate_id == 3): ?>
-                                                <li>
-                                                    <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.archive&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ARCHIVE_ORDER'); ?></a>
-                                                </li>
-            <?php endif; ?>
-                                        </ul>                                    
-                                    </div>
-        <?php endif; ?>
+                                <div class="btn-group pull-right">
+                                    <a class="btn btn-success btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ACTIONS'); ?>
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                            <li>
+                                                <?php if ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER || $item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ESTIMATE ): ?>
+                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.copy&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET'); ?></a>
+                                                <?php else : ?>
+                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.load&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'); ?></a>
+                                                <?php endif; ?>
+                                            </li>
+                                        <?php if ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_DRAFT): ?>
+                                            <li>
+                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.remove&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_REMOVE_DRAFT'); ?></a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH): ?>
+                                            <li>
+                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.archive&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ARCHIVE_ORDER'); ?></a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>                                    
+                                </div>
                             </td>
                         </tr>
-    <?php endforeach; ?>
+                <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
