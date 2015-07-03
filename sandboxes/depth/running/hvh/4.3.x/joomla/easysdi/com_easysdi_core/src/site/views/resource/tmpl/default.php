@@ -73,6 +73,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     
     js = jQuery.noConflict();
     js(document).ready(function() {
+        if(js('#jform_id').val())
+            js('#jform_organism_id').attr('disabled', true).trigger("liszt:updated");
         enableAccessScope();
         onChangeOrganism();
         js('#addAllUsersBtn').on('click', function(mEvt){toggleAllUsers(false);mEvt.srcElement.blur();});
