@@ -16,6 +16,7 @@ Ext.onReady(function() {
     }
     var locator = null;
     window.appname.on("ready", function() {
+//        window.appname.mapPanel.map.setCenter(JSON.parse("[" + data.centercoordinates + "]"),window.appname.mapPanel.map.getZoom(), false, false);
         window.appname.portalConfig.renderTo = "sdiNewContainer";
         if (data.urlwfslocator) {
             if (locator === null) {
@@ -357,6 +358,8 @@ function getMapConfig() {
         maxResolution: data.maxresolution,
         units: data.units
     };
+    
+   //config.map["resolutions"] = JSON.parse("[4000.0,3750.0,3500.0,3250.0,3000.0,2750.0,2500.0,2250.0,2000.0,1750.0,1500.0,1250.0,1000.0,750.0,650.0,500.0,250.0,100.0,50.0,20.0,10.0,5.0,2.5,2.0,1.5,1.0,0.5,0.25,0.1,0.05]");
     if (data.centercoordinates)
         config.map["center"] = JSON.parse("[" + data.centercoordinates + "]");
     if (data.restrictedextent)

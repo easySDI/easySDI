@@ -44,7 +44,7 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css');
 
         //Loadind js files
-        if (JDEBUG) {
+        if (!JDEBUG) {
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
             $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.js');

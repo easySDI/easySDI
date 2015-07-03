@@ -101,7 +101,7 @@ class Easysdi_shopModelPricingOrganisms extends JModelList {
                 ->where('uro.role_id IN ('.sdiUser::pricingmanager.','.sdiUser::organismmanager.')');
         
         $query->order('a.name');
-
+       
         return $query;
     }
 }
