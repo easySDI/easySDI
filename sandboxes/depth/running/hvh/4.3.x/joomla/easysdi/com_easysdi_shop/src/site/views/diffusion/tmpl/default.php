@@ -78,18 +78,18 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         switch (storage) {
             case "1":
                 js('#file').show();
-                js('#fileurl, #userurl, #passurl, #testurlauthentication').hide();
-                js('#perimeter_id').hide();
+                js('#fileurl,#userurl, #passurl, #testurlauthentication').hide();
+                js('#perimeter_id,#packageurl').hide();
                 break;
             case "2":
                 js('#file').hide();
                 js('#fileurl, #userurl, #passurl, #testurlauthentication').show();
-                js('#perimeter_id').hide();
+                js('#perimeter_id,#packageurl').hide();
                 break;
             case "3":
                 js('#file').hide();
                 js('#fileurl, #userurl, #passurl, #testurlauthentication').hide();
-                js('#perimeter_id').show();
+                js('#perimeter_id,#packageurl').show();
                 break;
         }
     }
@@ -154,6 +154,7 @@ var globdata;
         js('#jform_productstorage_id').find("option").attr("selected", false);
         js('#jform_fileurl').val('');
         js('#jform_perimeter_id').find("option").attr("selected", false);
+        js('#jform_packageurl').val('');
         cleanFile();
     }
 

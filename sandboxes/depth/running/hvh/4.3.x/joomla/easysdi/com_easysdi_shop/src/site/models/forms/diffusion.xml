@@ -135,6 +135,11 @@
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILE" class="inputbox input-xlarge"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILE" 
                filter="raw" />
+        
+        <field name="packageurl" type="text" size="40" class="inputbox input-xlarge"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PACKAGEURL"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PACKAGEURL" 
+              filter="safehtml" /> 
  
     </fieldset>
     

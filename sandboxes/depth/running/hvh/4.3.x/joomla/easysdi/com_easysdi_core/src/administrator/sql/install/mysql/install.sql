@@ -2261,6 +2261,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `productstorage_id` INT(11) UNSIGNED ,
 `file` VARCHAR(255)   ,
 `fileurl` VARCHAR(500)   ,
+`packageurl` VARCHAR(500)   ,
 `perimeter_id` INT(11) UNSIGNED  ,
 `hasdownload` TINYINT(1)  NOT NULL DEFAULT 0 ,
 `hasextraction` TINYINT(1)  NOT NULL DEFAULT 0 ,

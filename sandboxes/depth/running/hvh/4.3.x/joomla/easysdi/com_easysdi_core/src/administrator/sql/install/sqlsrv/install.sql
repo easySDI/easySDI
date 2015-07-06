@@ -631,6 +631,7 @@ CREATE TABLE [#__sdi_diffusion] (
 	[productstorage_id] [bigint] NULL,
 	[file] [nvarchar](255) NULL,
 	[fileurl] [nvarchar](500) NULL,
+        [packageurl] [nvarchar](500) ,
 	[perimeter_id] [bigint] NULL,
 	[hasdownload] [smallint] NOT NULL,
 	[hasextraction] [smallint] NOT NULL,

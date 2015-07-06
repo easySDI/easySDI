@@ -138,8 +138,9 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             
             $pos = strrpos($diffusion->fileurl, '.');
             $extension = substr($diffusion->fileurl, $pos);
-        }elseif (!empty($diffusion->perimeter_id) && null !== $url = $jinput->getHtml('url', null) ){
-            $file = file_get_contents($url);
+        }elseif (!empty($diffusion->perimeter_id) && null !== $featurecode = $jinput->getHtml('featurecode', null) ){
+            $url = str_replace('{CODE}', $featurecode,  $diffusion->packageurl);
+            $file = @file_get_contents($url);
             
             //@TODO: retrieve why file_get_contents returns false
             if($file === false)
