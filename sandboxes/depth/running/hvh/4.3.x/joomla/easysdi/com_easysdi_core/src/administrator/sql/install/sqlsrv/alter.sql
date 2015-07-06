@@ -749,6 +749,9 @@ ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_translation] CHECK CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1];
 
+CREATE NONCLUSTERED INDEX IX_NC_text1 ON [#__sdi_translation] (text1);
+CREATE NONCLUSTERED INDEX IX_NC_text2 ON [#__sdi_translation] (text2);
+
 ALTER TABLE [#__sdi_user]  WITH CHECK ADD  CONSTRAINT [#__sdi_user$#__sdi_user_fk1] FOREIGN KEY([user_id])
 REFERENCES [#__users] ([id]);
 

@@ -381,6 +381,8 @@ CREATE INDEX "IX_LOG_ENTRIES_ID_QUERY_REQUEST_TIME" ON log_entries USING btree (
 CREATE INDEX alias1 ON #__sdi_sys_unit USING btree (alias);
  
 CREATE INDEX element_guid ON #__sdi_translation USING btree (element_guid);
+CREATE INDEX text1 ON #__sdi_translation USING btree (text1);
+CREATE INDEX text2 ON #__sdi_translation USING btree (text2);
  
 CREATE INDEX "fk_log_entries_statuses_STATUS1" ON log_entries USING btree ("ID_STATUS");
  
