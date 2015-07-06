@@ -20,30 +20,6 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     const BILLING = '2';
     const DELIVERY = '3';
     
-    // Product state
-    const PRODUCTSTATE_AVAILABLE = 1;
-    const PRODUCTSTATE_AWAIT = 2;
-    const PRODUCTSTATE_SENT = 3;
-    const PRODUCTSTATE_VALIDATION = 4;
-    const PRODUCTSTATE_REJECTED_TP = 5; //product rejected by third party
-    const PRODUCTSTATE_REJECTED_SUPPLIER = 6; // product rejected by supplier
-    
-    // Order state
-    const ORDERSTATE_ARCHIVED = 1;
-    const ORDERSTATE_HISTORIZED = 2;
-    const ORDERSTATE_FINISH = 3;
-    const ORDERSTATE_AWAIT = 4;
-    const ORDERSTATE_PROGRESS = 5;
-    const ORDERSTATE_SENT = 6;
-    const ORDERSTATE_SAVED = 7;
-    const ORDERSTATE_VALIDATION = 8;
-    const ORDERSTATE_REJECTED_TP = 9; //order rejected by third party
-    const ORDERSTATE_REJECTED_SUPPLIER = 10; //order rejected by supplier
-    
-    const ORDERTYPE_ORDER = 1;
-    const ORDERTYPE_ESTIMATE = 2;
-    const ORDERTYPE_DRAFT = 3;
-    
     // Order productmining
     const PRODUCTMININGAUTO = 1;
     const PRODUCTMININGMANUAL = 2;
@@ -88,7 +64,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     /** @var DOMElement **/
     private $product;
     
-    private $states = array(self::PRODUCTSTATE_SENT);
+    private $states = array(Easysdi_shopHelper::PRODUCTSTATE_SENT);
     
     /**
      * __construct
@@ -415,11 +391,11 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
         $query->where('od.productstate_id IN ('.implode(',', $this->states).')')
                 ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
-                ->where('o.ordertype_id IN ('.self::ORDERTYPE_ORDER.','.self::ORDERTYPE_ESTIMATE.')')
+                ->where('o.ordertype_id IN ('.Easysdi_shopHelper::ORDERTYPE_ORDER.','.Easysdi_shopHelper::ORDERTYPE_ESTIMATE.')')
                 ->group($agg);
         
         $this->db->setQuery($query);
-        
+       
         return $this->db->loadObjectList();
     }
 
@@ -881,7 +857,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $query = $this->db->getQuery(true);
 
         $query->update('#__sdi_order_diffusion ');
-        $query->set('productstate_id = ' . (int)self::PRODUCTSTATE_AWAIT);
+        $query->set('productstate_id = ' . (int)Easysdi_shopHelper::PRODUCTSTATE_AWAIT);
         $query->where('id = ' . (int)$orderProduct->od_id);
 
         $this->db->setQuery($query);
@@ -1105,7 +1081,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
 
         // check the state of the order_diffusion (should be equals to AWAIT to be updatable)
-        if($orderDiffusion->productstate_id != self::PRODUCTSTATE_AWAIT){
+        if($orderDiffusion->productstate_id != Easysdi_shopHelper::PRODUCTSTATE_AWAIT){
             //throw a resource conflict exception
             $this->getException(409, 'The product you are trying to update has already been updated');
         }
@@ -1454,11 +1430,11 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     private function setProductState(&$query, &$posp, &$updatePricing){
         switch($this->product->getElementsByTagNameNS(self::nsSdi, 'state')->item(0)->nodeValue){
             case 'available':
-                $query->set('productstate_id='.(int)self::PRODUCTSTATE_AVAILABLE);
+                $query->set('productstate_id='.(int)Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE);
                 break;
             
             case 'rejected':
-                $query->set('productstate_id='.(int)self::PRODUCTSTATE_REJECTED_SUPPLIER);
+                $query->set('productstate_id='.(int)Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER);
                 
                 // update pricing data if exist
                 if($posp !== null){
@@ -1589,15 +1565,15 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $total = $this->db->getNumRows($this->db->execute());
         
         $this->db->setQuery($this->db->getQuery(true)
-                ->select('id')->from('#__sdi_order_diffusion')->where('order_id='.(int)$orderId)->where('productstate_id='.self::PRODUCTSTATE_AWAIT));
+                ->select('id')->from('#__sdi_order_diffusion')->where('order_id='.(int)$orderId)->where('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_AWAIT));
         $await = $this->db->getNumRows($this->db->execute());
 
         $this->db->setQuery($this->db->getQuery(true)
-                ->select('id')->from('#__sdi_order_diffusion')->where('order_id='.(int)$orderId)->where('productstate_id='.self::PRODUCTSTATE_AVAILABLE));
+                ->select('id')->from('#__sdi_order_diffusion')->where('order_id='.(int)$orderId)->where('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE));
         $available = $this->db->getNumRows($this->db->execute());
 
         $this->db->setQuery($this->db->getQuery(true)
-                ->select('id')->from('#__sdi_order_diffusion')->where('order_id='.(int)$orderId)->where('productstate_id='.self::PRODUCTSTATE_REJECTED_SUPPLIER));
+                ->select('id')->from('#__sdi_order_diffusion')->where('order_id='.(int)$orderId)->where('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER));
         $rejected = $this->db->getNumRows($this->db->execute());
 
         $orderstate = $this->chooseOrderState($total, $await, $available, $rejected);
@@ -1605,7 +1581,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         if($orderstate > 0){
             $query = $this->db->getQuery(true)
                     ->update('#__sdi_order')->set('orderstate_id='.$orderstate);
-            if($orderstate == self::ORDERSTATE_FINISH){
+            if($orderstate == Easysdi_shopHelper::ORDERSTATE_FINISH){
                 $query->set('completed='.$query->quote(date("Y-m-d H:i:s")));
             }
             $query->where('id='.(int)$orderId);
@@ -1628,19 +1604,19 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      */
     private function chooseOrderState($total, $await, $available, $rejected){
         if($total == $rejected){
-            return self::ORDERSTATE_REJECTED_SUPPLIER;
+            return Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER;
         }
         
         if($available == $total || $available+$rejected==$total){
-            return self::ORDERSTATE_FINISH;
+            return Easysdi_shopHelper::ORDERSTATE_FINISH;
         }
         
         if($available>0 || $rejected>0){
-            return self::ORDERSTATE_PROGRESS;
+            return Easysdi_shopHelper::ORDERSTATE_PROGRESS;
         }
         
         if($await>0){
-            return self::ORDERSTATE_AWAIT;
+            return Easysdi_shopHelper::ORDERSTATE_AWAIT;
         }
         
         return 0;

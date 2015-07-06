@@ -24,6 +24,8 @@ abstract class Easysdi_shopHelper {
     const PRICING_FREE = 1;
     const PRICING_FEE_WITHOUT_PROFILE = 2;
     const PRICING_FEE_WITH_PROFILE = 3;
+    
+    //ROLE
     const ROLE_MEMBER = 1;
     const ROLE_RESOURCEMANAGER = 2;
     const ROLE_METADATARESPONSIBLE = 3;
