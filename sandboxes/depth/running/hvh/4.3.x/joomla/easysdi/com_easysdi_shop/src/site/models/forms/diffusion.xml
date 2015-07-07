@@ -136,10 +136,15 @@
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILE" 
                filter="raw" />
         
-        <field name="packageurl" type="text" size="40" class="inputbox input-xlarge"
-              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PACKAGEURL"
-              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PACKAGEURL" 
-              filter="safehtml" /> 
+        <field name="packageurl" 
+               type="text" 
+               size="40" 
+               hint="http://www.example.com/path/{CODE}.zip"
+               class="inputbox input-xlarge"
+               required="true"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PACKAGEURL"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PACKAGEURL" 
+               filter="safehtml" /> 
  
     </fieldset>
     
