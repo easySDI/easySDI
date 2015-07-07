@@ -18,18 +18,53 @@ class com_easysdi_coreInstallerScript {
      * If preflight returns false, Joomla will abort the update and undo everything already done.
      */
 
-    /*function preflight($type, $parent) {
-        // Installing component manifest file version
-        $this->release = $parent->get("manifest")->version;
-        
-        // Alter joomla 3.1.1 schema to reflect the MySql version
+    function preflight($type, $parent) {
+                
+        // Create stored procedure drop_foreign_key 
         $db = JFactory::getDbo();
-        if($db->name == 'sqlsrv'){
+        if(($db->name == 'mysqli') || ($db->name == 'mysql')){
             $sqls = array();
-            $sqls[] = "ALTER TABLE [#__extensions] ADD  DEFAULT ('') FOR [custom_data];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [path];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [img];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [params];";
+            $sqls[] = "DROP PROCEDURE IF EXISTS drop_foreign_key;";
+            $sqls[] = "CREATE PROCEDURE drop_foreign_key(IN tableName VARCHAR(64), IN constraintName VARCHAR(64))
+                BEGIN
+                    IF EXISTS(
+                        SELECT * FROM information_schema.table_constraints
+                        WHERE 
+                            table_schema    = DATABASE()     AND
+                            table_name      = CONCAT('".$db->getPrefix()."',tableName) AND
+                            constraint_name = CONCAT('".$db->getPrefix()."',constraintName) AND
+                            constraint_type = 'FOREIGN KEY')
+                    THEN
+                        SET @query = CONCAT('ALTER TABLE ','".$db->getPrefix()."',tableName, ' DROP FOREIGN KEY ','".$db->getPrefix()."',constraintName, ';');
+                        PREPARE stmt FROM @query; 
+                        EXECUTE stmt; 
+                        DEALLOCATE PREPARE stmt; 
+                    END IF; 
+                END";
+            
+            foreach ($sqls as $sql) {
+                $query = $db->getQuery(true);
+                $db->setQuery($sql);
+                $db->execute();
+            }
+            
+            $sqls = array();
+            $sqls[] = "DROP PROCEDURE IF EXISTS drop_column;";
+            $sqls[] = "CREATE PROCEDURE drop_column(IN tableName VARCHAR(64), IN columnName VARCHAR(64))
+                BEGIN
+                    IF EXISTS(
+                        SELECT * FROM information_schema.COLUMNS
+                        WHERE 
+                            table_schema    = DATABASE()     AND
+                            table_name      = CONCAT('".$db->getPrefix()."',tableName) AND
+                            column_name = columnName)
+                    THEN
+                        SET @query = CONCAT('ALTER TABLE ','".$db->getPrefix()."',tableName, ' DROP COLUMN ',columnName, ';');
+                        PREPARE stmt FROM @query; 
+                        EXECUTE stmt; 
+                        DEALLOCATE PREPARE stmt; 
+                    END IF; 
+                END";
             
             foreach ($sqls as $sql) {
                 $query = $db->getQuery(true);
@@ -39,9 +74,9 @@ class com_easysdi_coreInstallerScript {
         }
         
         // Show the essential information at the install/update back-end
-        echo '<p>EasySDI component Core [com_easysdi_core]';
-        echo '<br />' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
-    }*/
+        //echo '<p>EasySDI component Core [com_easysdi_core]';
+        //echo '<br />' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
+    }
 
     /*
      * $parent is the class calling this method.
