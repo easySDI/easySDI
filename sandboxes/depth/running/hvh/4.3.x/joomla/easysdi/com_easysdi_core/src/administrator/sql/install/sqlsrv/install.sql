@@ -1140,7 +1140,7 @@ CREATE TABLE [#__sdi_order] (
 	[orderstate_id] [bigint] NOT NULL,
 	[user_id] [bigint] NOT NULL,
 	[thirdparty_id] [bigint] NULL,
-        [validate] [smallint] ,
+        [validated] [smallint] ,
         [validated_date] [datetime2](0) ,
         [validated_reason] [nvarchar](500) ,
 	[buffer] [numeric](38, 18) NULL,
