@@ -19,12 +19,18 @@ class Easysdi_monitorHelper {
      * Configure the Linkbar.
      */
     public static function addSubmenu($vName = '') {
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_core');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_user');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');
         JHtmlSidebar::addEntry(
-                '<i class="icon-home"></i> ' . JText::_('COM_EASYSDI_MONITOR_TITLE_HOME'), 'index.php?option=com_easysdi_core&view=easysdi', $vName == 'easysdi'
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_MONITOR_TITLE_MAINS'), 'index.php?option=com_easysdi_monitor&view=mains', $vName == 'mains'
         );
-        JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_MONITOR_TITLE_MAINS'), 'index.php?option=com_easysdi_monitor&view=mains', $vName == 'mains'
-        );
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_dashboard');
     }
 
     /**
