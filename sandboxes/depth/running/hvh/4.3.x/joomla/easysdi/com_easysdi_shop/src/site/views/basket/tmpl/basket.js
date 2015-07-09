@@ -673,11 +673,18 @@ var thirdpartyInfoVisibility = function() {
 
 jQuery(document).on('change', 'select#thirdparty', function(e) {
     var tp = jQuery(e.target).val();
-
+    var on = jQuery('#ordername').val();
+    var rf = jQuery('#mandate_ref').val();
+    var ct = jQuery('#mandate_contact').val();
+    var em = jQuery('#mandate_email').val();
     jQuery.ajax({
         type: "POST",
         url: "index.php?option=com_easysdi_shop&task=basket.saveBasketToSession",
-        data: "thirdparty=" + tp
+        data: { ordername :  on, 
+                thirdparty : tp, 
+                mandate_ref : rf, 
+                mandate_contact : ct, 
+                mandate_email : em}
     }).done(function(r) {
         thirdpartyInfoVisibility();
         //pricing
@@ -685,6 +692,30 @@ jQuery(document).on('change', 'select#thirdparty', function(e) {
         return false;
     });
 });
+
+jQuery(document).on('change','#ordername' , function(e) {savebasket();});
+jQuery(document).on('change','#mandate_ref' , function(e) {savebasket();});
+jQuery(document).on('change','#mandate_contact' , function(e) {savebasket();});
+jQuery(document).on('change','#mandate_email' , function(e) {savebasket();});
+
+var savebasket = function() {    
+    var tp = jQuery('select#thirdparty').val();
+    var on = jQuery('#ordername').val();
+    var rf = jQuery('#mandate_ref').val();
+    var ct = jQuery('#mandate_contact').val();
+    var em = jQuery('#mandate_email').val();
+    jQuery.ajax({
+        type: "POST",
+        url: "index.php?option=com_easysdi_shop&task=basket.saveBasketToSession",
+        data: { ordername :  on, 
+                thirdparty : tp, 
+                mandate_ref : rf, 
+                mandate_contact : ct, 
+                mandate_email : em}
+    }).done(function(r) {
+        return false;
+    });
+};
 
 jQuery(document).on('click', '#btn-login', function() {
     document.location.href = 'index.php?option=com_users&view=login&return=' + btoa(document.location.href);

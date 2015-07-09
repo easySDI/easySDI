@@ -140,8 +140,7 @@
                type="text" 
                size="40" 
                hint="http://www.example.com/path/{CODE}.zip"
-               class="inputbox input-xlarge"
-               required="true"
+               class="inputbox input-xlarge"               
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PACKAGEURL"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PACKAGEURL" 
                filter="safehtml" /> 

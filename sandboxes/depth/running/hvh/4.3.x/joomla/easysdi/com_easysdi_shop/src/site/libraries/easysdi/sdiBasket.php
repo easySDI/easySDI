@@ -42,7 +42,17 @@ class sdiBasket {
 
             //Load order object
             $query = $db->getQuery(true)
-                    ->select('o.id as id, o.name as name, o.thirdparty_id as thirdparty, org.name as thirdorganism, o.buffer as buffer , o.surface,o.level as level, o.freeperimetertool as freeperimetertool, o.created, o.created_by')
+                    ->select('o.id as id, '
+                            . 'o.name as name, '
+                            . 'o.thirdparty_id as thirdparty, '
+                            . 'o.mandate_ref as mandate_ref, '
+                            . 'o.mandate_contact as mandate_contact, '
+                            . 'o.mandate_email as mandate_email, '
+                            . 'org.name as thirdorganism, '
+                            . 'o.buffer as buffer , '
+                            . 'o.surface,o.level as level, '
+                            . 'o.freeperimetertool as freeperimetertool, '
+                            . 'o.created, o.created_by')
                     ->from('#__sdi_order o')
                     ->leftJoin('#__sdi_organism org ON org.id = o.thirdparty_id')
                     ->where('o.id = ' . (int)$orderId);
@@ -56,7 +66,7 @@ class sdiBasket {
             //Copy order
             if($copy){
                 $this->id = null;
-                $this->name = 're-'.$this->name;
+                $this->name = $this->name.JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_NAME_SUFFIX');
             }
 
             //Load diffusion

@@ -79,17 +79,20 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             case "1":
                 js('#file').show();
                 js('#fileurl,#userurl, #passurl, #testurlauthentication').hide();
-                js('#perimeter_id,#packageurl').hide();
+                js('#packageurl').removeAttr('required');
+                js('#perimeter_id,#packageurl').hide();                
                 break;
             case "2":
                 js('#file').hide();
                 js('#fileurl, #userurl, #passurl, #testurlauthentication').show();
-                js('#perimeter_id,#packageurl').hide();
+                js('#packageurl').removeAttr('required');
+                js('#perimeter_id,#packageurl').hide();                
                 break;
             case "3":
                 js('#file').hide();
                 js('#fileurl, #userurl, #passurl, #testurlauthentication').hide();
                 js('#perimeter_id,#packageurl').show();
+                js('#packageurl').attr('required');
                 break;
         }
     }

@@ -161,7 +161,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
             //Save perimeters
             //unserialize if necessary
-            if(!is_array($features)){
+            if(!is_array($basket->extent->features)){
                 $features = json_decode($basket->extent->features);
             }else{
                 $features = $basket->extent->features;
