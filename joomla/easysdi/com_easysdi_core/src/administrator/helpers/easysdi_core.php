@@ -19,7 +19,92 @@ class Easysdi_coreHelper {
      * Configure the Linkbar.
      */
     public static function addSubmenu($vName = '') {
-        
+        self::addComponentSubmeu('com_easysdi_core', true);
+        self::addComponentSubmeu('com_easysdi_user');
+        self::addComponentSubmeu('com_easysdi_catalog');
+        self::addComponentSubmeu('com_easysdi_shop');
+        self::addComponentSubmeu('com_easysdi_service');
+        self::addComponentSubmeu('com_easysdi_map');
+        self::addComponentSubmeu('com_easysdi_monitor');
+        self::addComponentSubmeu('com_easysdi_dashboard');
+    }
+    
+    public static function getMenuSpacer($level = 2) {
+        return '<span class="sdi-submenu-backend-spacer" style="display:inline-block;width:'. (10*$level) .'px;"> </span> ';
+    }
+
+    public static function addComponentSubmeu($componentName, $active = false) {
+
+        //To check if others easysdi components are installed
+        $app = JFactory::getApplication();
+        // Get the user object to verify permissions
+        $user = JFactory::getUser();
+        // Load language for external compnents using this helper 
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
+
+        switch ($componentName) {
+            case 'com_easysdi_core':
+                JHtmlSidebar::addEntry(
+                        '<i class="icon-home"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_HOME'), 'index.php?option=com_easysdi_core&view=easysdi', $active
+                );
+                break;
+            case 'com_easysdi_user':
+                if ($app->getUserState('com_easysdi_contact-installed') && $user->authorise('core.manage', 'com_easysdi_contact')) {
+                    JHtmlSidebar::addEntry(
+                            '<i class="icon-user"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_CONTACT'), 'index.php?option=com_easysdi_contact', $active
+                    );
+                }
+                break;
+
+            case 'com_easysdi_catalog':
+                if ($app->getUserState('com_easysdi_catalog-installed') && $user->authorise('core.manage', 'com_easysdi_catalog')) {
+                    JHtmlSidebar::addEntry(
+                            '<i class="icon-grid-view"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_CATALOG'), 'index.php?option=com_easysdi_catalog'
+                    );
+                }
+                break;
+
+            case 'com_easysdi_shop':
+                if ($app->getUserState('com_easysdi_shop-installed') && $user->authorise('core.manage', 'com_easysdi_shop')) {
+                    JHtmlSidebar::addEntry(
+                            '<i class="icon-basket"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_SHOP'), 'index.php?option=com_easysdi_shop'
+                    );
+                }
+                break;
+
+            case 'com_easysdi_service':
+                if ($app->getUserState('com_easysdi_service-installed') && $user->authorise('core.manage', 'com_easysdi_service')) {
+                    JHtmlSidebar::addEntry(
+                            '<i class="icon-wrench"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_SERVICE'), 'index.php?option=com_easysdi_service'
+                    );
+                }
+                break;
+
+            case 'com_easysdi_map':
+                if ($app->getUserState('com_easysdi_map-installed') && $user->authorise('core.manage', 'com_easysdi_map')) {
+                    JHtmlSidebar::addEntry(
+                            '<i class="icon-location"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_MAP'), 'index.php?option=com_easysdi_map'
+                    );
+                }
+                break;
+
+            case 'com_easysdi_monitor':
+                if ($app->getUserState('com_easysdi_monitor-installed') && $user->authorise('core.manage', 'com_easysdi_monitor')) {
+                    JHtmlSidebar::addEntry(
+                            '<i class="icon-health"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_MONITOR'), 'index.php?option=com_easysdi_monitor'
+                    );
+                }
+                break;
+
+            case 'com_easysdi_dashboard':
+                if ($app->getUserState('com_easysdi_dashboard-installed') && $user->authorise('core.manage', 'com_easysdi_dashboard')) {
+                    JHtmlSidebar::addEntry(
+                            '<i class="icon-dashboard"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_DASHBOARD'), 'index.php?option=com_easysdi_dashboard'
+                    );
+                }
+                break;
+        }
     }
 
     /**

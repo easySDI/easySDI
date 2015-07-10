@@ -276,6 +276,7 @@ class Easysdi_shopModelOrders extends JModelList {
                $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
                $requestDir = JPATH_BASE. '/' .$folder . '/' . $ordertohistorize->order_id; 
                //recursieve delete
+               require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
                Easysdi_shopHelper::rrmdir($requestDir);
             }
                         
