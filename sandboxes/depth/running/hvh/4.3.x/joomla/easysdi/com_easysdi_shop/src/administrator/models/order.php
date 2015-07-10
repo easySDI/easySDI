@@ -151,13 +151,14 @@ class Easysdi_shopModelorder extends JModelAdmin {
         $query->group('a.completed');
         $query->group('a.access');
         $query->group('a.asset_id');
-        $query->group('a.validate');
+        $query->group('a.validated');
         $query->group('a.validated_date');
         $query->group('a.validated_reason');
         $query->group('a.mandate_ref');
         $query->group('a.mandate_contact');
         $query->group('a.mandate_email');
         $query->group('a.level');
+        $query->group('a.freeperimetertool');
         $query->group('uc.name');
         $query->group('orderstate.value');
         $query->group('ordertype.value');
