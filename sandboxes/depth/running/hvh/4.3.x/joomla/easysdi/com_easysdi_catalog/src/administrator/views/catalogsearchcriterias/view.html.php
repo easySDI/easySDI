@@ -28,13 +28,14 @@ class Easysdi_catalogViewcatalogSearchcriterias extends JViewLegacy {
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
+        $this->catalogname = $this->get('CatalogName');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
 
-        Easysdi_catalogHelper::addSubmenu('searchcriterias');
+        Easysdi_catalogHelper::addSubmenu('searchcriterias', $this->catalogname);
 
         $this->addToolbar();
 
@@ -53,7 +54,7 @@ class Easysdi_catalogViewcatalogSearchcriterias extends JViewLegacy {
         $state = $this->get('State');
         $canDo = Easysdi_catalogHelper::getActions($state->get('filter.category_id'));
 
-        JToolBarHelper::title(JText::_('COM_EASYSDI_CATALOG_TITLE_SEARCH_CRITERIAS'), 'searchcriterias.png');
+        JToolBarHelper::title(JText::_('COM_EASYSDI_CATALOG_TITLE_SEARCH_CRITERIAS') . $this->catalogname, 'searchcriterias.png');
 
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/searchcriteria';

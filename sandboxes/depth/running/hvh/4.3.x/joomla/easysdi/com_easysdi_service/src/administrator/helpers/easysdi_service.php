@@ -19,29 +19,31 @@ class Easysdi_serviceHelper {
      * Configure the Linkbar.
      */
     public static function addSubmenu($vName = '') {
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_core');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_user');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
         JHtmlSidebar::addEntry(
-            '<i class="icon-home"></i> '.JText::_('COM_EASYSDI_SERVICE_TITLE_HOME'),
-            'index.php?option=com_easysdi_core&view=easysdi',
-            $vName == 'easysdi'
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'), 'index.php?option=com_easysdi_service&view=physicalservices', $vName == 'physicalservices'
         );
         JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'), 'index.php?option=com_easysdi_service&view=physicalservices', $vName == 'physicalservices'
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'), "index.php?option=com_categories&extension=com_easysdi_service", $vName == 'categories'
         );
         JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'), "index.php?option=com_categories&extension=com_easysdi_service", $vName == 'categories'
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'), 'index.php?option=com_easysdi_service&view=virtualservices', $vName == 'virtualservices'
         );
+        JHtmlSidebar::addEntry(
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES'), 'index.php?option=com_easysdi_service&view=policies', $vName == 'policies'
+        );
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_dashboard');
 
         if ($vName == 'categories.catid') {
             JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'));
         }
-
-        JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'), 'index.php?option=com_easysdi_service&view=virtualservices', $vName == 'virtualservices'
-        );
-
-        JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES'), 'index.php?option=com_easysdi_service&view=policies', $vName == 'policies'
-        );
     }
 
     /**
@@ -179,7 +181,7 @@ class Easysdi_serviceHelper {
 
         //Get the implemented version of the requested ServiceConnector
         $db = JFactory::getDBO();
-        
+
         $query = $db->getQuery(true);
         $query->select('c.id as id, sv.value as value');
         $query->from('#__sdi_sys_serviceconnector sc');
@@ -187,7 +189,7 @@ class Easysdi_serviceHelper {
         $query->innerJoin('#__sdi_sys_serviceversion sv ON c.serviceversion_id = sv.id');
         $query->where('c.implemented = 1');
         $query->where('sc.value = ' . $query->quote($service));
-        
+
         $db->setQuery($query);
         $implemented_versions = $db->loadObjectList();
 
@@ -196,7 +198,7 @@ class Easysdi_serviceHelper {
             $service = $service == 'WMSC' ? 'WMS' : $service;
             $completeurl = $url . $separator . "REQUEST=GetCapabilities&SERVICE=" . $service . "&VERSION=" . $version->value;
             $session = curl_init($completeurl);
-            $httpHeader[]='Expect:';
+            $httpHeader[] = 'Expect:';
             if (!empty($user) && !empty($password)) {
                 $httpHeader[] = 'Authorization: Basic ' . base64_encode($user . ':' . $password);
             }
@@ -249,35 +251,35 @@ class Easysdi_serviceHelper {
             $query->select('s.resourceurl as url, sc.value as connector');
             $query->from('#__sdi_physicalservice s');
             $query->innerJoin('#__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id');
-            $query->where('s.id=' . (int)$id);
-            
+            $query->where('s.id=' . (int) $id);
+
             $db->setQuery($query);
             $resource = $db->loadObject();
-            
+
             $query = $db->getQuery(true);
             $query->select('sv.value as value, sc.id as id');
             $query->from('#__sdi_physicalservice_servicecompliance ssc');
             $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
             $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
-            $query->where('ssc.service_id =' . (int)$id);
+            $query->where('ssc.service_id =' . (int) $id);
             $query->order('sv.ordering DESC');
-            
-            $db->setQuery($query,0,1);
+
+            $db->setQuery($query, 0, 1);
             $compliance = $db->loadObject();
             $physical_id = $id;
         } else {
             $id = substr($service, strrpos($service, '_') + 1);
-            
+
             $query = $db->getQuery(true);
             $query->select('ps.id as physicalservice_id, ps.resourceurl as url, sc.value as connector');
             $query->from('#__sdi_virtualservice vs');
             $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vs.physicalservice_id');
             $query->innerJoin('#__sdi_sys_serviceconnector sc  ON sc.id = ps.serviceconnector_id');
-            $query->where('vs.id=' . (int)$id);
-            
+            $query->where('vs.id=' . (int) $id);
+
             $db->setQuery($query);
             $resource = $db->loadObject();
-            
+
             $query = $db->getQuery(true);
             $query->select('sv.value as value, sc.id as id');
             $query->from('#__sdi_physicalservice_servicecompliance pssc');
@@ -286,7 +288,7 @@ class Easysdi_serviceHelper {
             $query->where('pssc.service_id =' . $resource->physicalservice_id);
             $query->order('sv.ordering DESC');
 
-            $db->setQuery($query,0,1);
+            $db->setQuery($query, 0, 1);
             $compliance = $db->loadObject();
             $physical_id = $resource->physicalservice_id;
         }
@@ -306,7 +308,7 @@ class Easysdi_serviceHelper {
 
         $session = curl_init($completeurl);
         $httpHeader = array();
-        $httpHeader[]='Expect:';
+        $httpHeader[] = 'Expect:';
         if (!empty($user) && !empty($password)) {
             $httpHeader[] = 'Authorization: Basic ' . base64_encode($user . ':' . $password);
         }
@@ -314,7 +316,7 @@ class Easysdi_serviceHelper {
         curl_setopt($session, CURLOPT_HEADER, false);
         curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
-        
+
         $response = curl_exec($session);
         $http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
         curl_close($session);
