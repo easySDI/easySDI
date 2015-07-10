@@ -121,8 +121,6 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
         // Join over the user field 'created_by'
 //        $query->select('created_by.name AS created_by');
 //        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-
-
         // Filter by published state
         $published = $this->getState('filter.state');
         if (is_numeric($published)) {
@@ -164,6 +162,13 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
         $items = parent::getItems();
 
         return $items;
+    }
+
+    public function getPropertyName() {
+        $property = $this->getState('filter.property');
+        $propertytable = JTable::getInstance('property', 'Easysdi_shopTable');
+        $propertytable->load($property);
+        return $propertytable->name;
     }
 
 }

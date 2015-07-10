@@ -37,7 +37,7 @@ class Easysdi_catalogModelcatalogsearchcriterias extends JModelList {
                 'state', 'a.state',
                 'name', 'sc.name',
                 'issystem', 'sc.issystem',
-                'criteriatype_id', 'a.criteriatype_id','criteriatypename', 'searchtabname',
+                'criteriatype_id', 'a.criteriatype_id', 'criteriatypename', 'searchtabname',
                 'rendertype_id', 'a.rendertype_id',
             );
         }
@@ -118,18 +118,16 @@ class Easysdi_catalogModelcatalogsearchcriterias extends JModelList {
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=sc.checked_out');
-        
+
         // Join over the criteria type.
         $query->select('ct.value AS criteriatypename');
         $query->join('LEFT', '#__sdi_sys_criteriatype AS ct ON ct.id=sc.criteriatype_id');
-        
-        
+
+
 
         // Join over the user field 'created_by'
 //        $query->select('created_by.name AS created_by_name');
 //        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-
-
         // Filter by published state
         $published = $this->getState('filter.state');
         if (is_numeric($published)) {
@@ -146,7 +144,7 @@ class Easysdi_catalogModelcatalogsearchcriterias extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE '.$search.' ) ');
+                $query->where('( a.name LIKE ' . $search . ' ) ');
             }
         }
 
@@ -155,7 +153,7 @@ class Easysdi_catalogModelcatalogsearchcriterias extends JModelList {
         if (is_numeric($catalog)) {
             $query->where('a.catalog_id = ' . (int) $catalog);
         }
-        
+
         // Join over the search tab.
         $query->select('st.value AS searchtabname, st.id AS st_id');
         $query->join('LEFT', '#__sdi_sys_searchtab AS st ON st.id=a.searchtab_id');
@@ -169,6 +167,13 @@ class Easysdi_catalogModelcatalogsearchcriterias extends JModelList {
         }
 
         return $query;
+    }
+
+    public function getCatalogName() {
+        $catalog = $this->getState('filter.catalog');
+        $catalogtable = JTable::getInstance('catalog', 'Easysdi_catalogTable');
+        $catalogtable->load($catalog);
+        return $catalogtable->name;
     }
 
 }
