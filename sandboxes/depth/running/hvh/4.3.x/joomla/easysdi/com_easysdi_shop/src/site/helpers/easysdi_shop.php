@@ -224,7 +224,9 @@ abstract class Easysdi_shopHelper {
 //        $return['COUNT'] = count($basket->extractions);
 //        echo json_encode($return);
 //        die();
-    }
+    }    
+    
+    
 
     public static function abortAdd() {
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null);
@@ -762,6 +764,22 @@ abstract class Easysdi_shopHelper {
                 mapRotateIconURL = "'. JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png'). '",
                 mapMinSurfaceRectangle = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0). ',
                 mapMinSurfaceRectangleBorder = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100). ';');
+    }
+    
+    public static function getAddToBasketModal(){
+        return '<div id="modal-dialog" class="modal hide fade" style="z-index: 1000000" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="modalLabel">'. JText::_("COM_EASYSDI_SHOP_ORDER_DIALOG_HEADER") .'</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p><div id="modal-dialog-body-text">'. JText::_("COM_EASYSDI_SHOP_ORDER_CONFIRM_LOAD_IN_BASKET") .'</div></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">'. JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_ABORT") .'</button>
+                        <button onClick="confirmAdd();" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">'. JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_CONFIRM") .'</button>
+                    </div>
+                </div>';
     }
 
 }

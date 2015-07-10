@@ -124,9 +124,18 @@ class Easysdi_shopViewOrder extends JViewLegacy {
             $this->item = $this->get('Data');
             if (($this->item->orderstate_id == 7))
             {
-                $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'), 'basket.load', false);
+                $loadbutton = '<a onclick="acturl=\''. JRoute::_('index.php?option=com_easysdi_shop&task=basket.load&id='.$this->item->id).'\';getBasketContent(\'addOrderToBasket\');" class="btn btn-small btn-success" aria-invalid="false">
+                               <span class="icon-apply icon-white"></span>'. JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_ORDER_INTO_BASKET').'</a>';
+                $bar->appendButton('Custom',$loadbutton, JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'));
                 $bar->appendButton('Separator');
             }
+        }
+        
+        if($this->get('Data')->orderstate_id != 7){   
+            $copybutton = '<a onclick="acturl=\''. JRoute::_('index.php?option=com_easysdi_shop&task=basket.copy&id='.$this->item->id).'\';getBasketContent(\'addOrderToBasket\');" class="btn btn-small btn-success" aria-invalid="false">
+                           <span class="icon-apply icon-white"></span>'. JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET').'</a>';
+            $bar->appendButton('Custom',$copybutton, JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET'));
+            $bar->appendButton('Separator');
         }
         
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'order.cancel', false);
