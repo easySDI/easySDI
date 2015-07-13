@@ -46,4 +46,4 @@ ALTER TABLE #__sdi_diffusion ADD packageurl VARCHAR(500) ;
 UPDATE #__sdi_diffusion SET packageurl='{CODE}';
 
 ALTER TABLE `#__sdi_translation` ADD INDEX `text1` (`text1`);
-ALTER TABLE `#__sdi_translation` ADD INDEX `text2` (`text2`);
+ALTER TABLE `#__sdi_translation` ADD INDEX `text2` (`text2`(255));

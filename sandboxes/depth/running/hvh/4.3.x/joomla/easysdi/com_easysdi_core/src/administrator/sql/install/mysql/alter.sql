@@ -21,7 +21,7 @@ ADD CONSTRAINT `#__sdi_sys_authenticationconnector_fk1` FOREIGN KEY (`authentica
 
 ALTER TABLE `#__sdi_translation` ADD INDEX `element_guid` (`element_guid`);
 ALTER TABLE `#__sdi_translation` ADD INDEX `text1` (`text1`);
-ALTER TABLE `#__sdi_translation` ADD INDEX `text2` (`text2`);
+ALTER TABLE `#__sdi_translation` ADD INDEX `text2` (`text2`(255));
 
 ALTER TABLE `#__sdi_sys_rendertype_criteriatype`
 ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk1` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_sys_criteriatype` (`id`) ON DELETE CASCADE;
