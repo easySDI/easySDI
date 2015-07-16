@@ -210,8 +210,10 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
                 break;
         }
         
-        // Notify the customer
-        Easysdi_shopHelper::notifyCustomer($basketData['order_name']);
+        // Notify the customer if order is not a draft
+        if($basketData['ordertype_id'] != Easysdi_shopControllerBasket::ORDERTYPE_DRAFT){
+            Easysdi_shopHelper::notifyCustomer($basketData['order_name']);
+        }
         
         /*******************/
         /** Clean session **/
