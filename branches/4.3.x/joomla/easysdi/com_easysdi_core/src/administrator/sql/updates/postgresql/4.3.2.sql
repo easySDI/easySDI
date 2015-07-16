@@ -46,3 +46,6 @@ MODIFY rebate  decimal(19,2) NULL;
 
 ALTER TABLE #__sdi_diffusion ADD packageurl character varying(500);
 UPDATE #__sdi_diffusion SET packageurl='{CODE}';
+
+CREATE INDEX text1 ON #__sdi_translation USING btree (text1);
+CREATE INDEX text2 ON #__sdi_translation USING btree (text2);

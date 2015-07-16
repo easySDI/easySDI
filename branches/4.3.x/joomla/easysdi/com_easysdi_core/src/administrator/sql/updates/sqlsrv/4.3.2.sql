@@ -61,3 +61,6 @@ ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_checkedouttime DEFAULT
 
 ALTER TABLE [#__sdi_diffusion] ADD [packageurl] [nvarchar](500);
 UPDATE [#__sdi_diffusion] SET [packageurl]='{CODE}';
+
+CREATE NONCLUSTERED INDEX IX_NC_text1 ON [#__sdi_translation] (text1);
+CREATE NONCLUSTERED INDEX IX_NC_text2 ON [#__sdi_translation] (text2);
