@@ -117,7 +117,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         
         $layout = !empty($diffusion->perimeter_id) ? 'grid' : 'default';
         if (!empty($diffusion->file)){
-            $file = file_get_contents($fileFolder . '/' . $diffusion->file);
+            $file = @file_get_contents($fileFolder . '/' . $diffusion->file);
             
             //@TODO: retrieve why file_get_contents returns false
             if($file === false)
