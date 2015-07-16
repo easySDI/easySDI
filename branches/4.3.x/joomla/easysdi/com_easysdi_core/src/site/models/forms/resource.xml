@@ -73,6 +73,7 @@
     
         <field  
             name="organism_id" 
+            onchange="onChangeOrganism();"
             required="true"
             type="resourceorganismsql" 
             class="inputbox"
