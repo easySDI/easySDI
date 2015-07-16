@@ -425,6 +425,7 @@ CREATE TABLE #__sdi_diffusion (
     productstorage_id bigint,
     file character varying(255),
     fileurl character varying(500),
+    packageurl character varying(500)  ,
     perimeter_id bigint,
     hasdownload integer DEFAULT 0 NOT NULL,
     hasextraction integer DEFAULT 0 NOT NULL,

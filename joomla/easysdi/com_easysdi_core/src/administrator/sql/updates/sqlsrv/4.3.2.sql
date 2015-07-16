@@ -58,3 +58,6 @@ ALTER TABLE [#__sdi_organism_category_pricing_rebate] ALTER COLUMN [rebate]  dec
 ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_state DEFAULT 1 FOR [state];
 ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_checkedout  DEFAULT '0'  FOR [checked_out];
 ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_checkedouttime DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
+
+ALTER TABLE [#__sdi_diffusion] ADD [packageurl] [nvarchar](500);
+UPDATE [#__sdi_diffusion] SET [packageurl]='{CODE}';
