@@ -18,13 +18,6 @@ require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
  */
 class Easysdi_shopModelOrders extends JModelList {
     
-    const ORDERTYPE_ORDER       = 1;
-    const ORDERTYPE_ESTIMATE    = 2;
-    const ORDERTYPE_DRAFT       = 3;
-    
-    const USERROLE_VALIDATIONMANAGER = 10;
-    const USERROLE_ORGANISMMANAGER = 11;
-    
     /**
      * Constructor.
      *
@@ -126,7 +119,7 @@ class Easysdi_shopModelOrders extends JModelList {
         
         
         // Filter by type
-        $type = $this->getState('layout.validation') ? self::ORDERTYPE_ORDER : $this->getState('filter.type');
+        $type = $this->getState('layout.validation') ? Easysdi_shopHelper::ORDERTYPE_ORDER : $this->getState('filter.type');
         if (is_numeric($type)) {
         	$query->where('a.ordertype_id = ' . (int) $type);
         }

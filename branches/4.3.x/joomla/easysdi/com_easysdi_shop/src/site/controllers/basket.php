@@ -19,47 +19,15 @@ require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
  */
 class Easysdi_shopControllerBasket extends Easysdi_shopController {
     
-    // ORDERSTATE
-    const ORDERSTATE_ARCHIVED           = 1;
-    const ORDERSTATE_HISTORIZED         = 2;
-    const ORDERSTATE_FINISH             = 3;
-    const ORDERSTATE_AWAIT              = 4;
-    const ORDERSTATE_PROGRESS           = 5;
-    const ORDERSTATE_SENT               = 6;
-    const ORDERSTATE_SAVED              = 7;
-    const ORDERSTATE_VALIDATION         = 8;
-    const ORDERSTATE_REJECTED           = 9; // rejected by thirdparty
-    const ORDERSTATE_REJECTED_SUPPLIER  = 10; // rejected by supplier
+    public function copy() {
+        $this->load(true);
+    }
     
-    // ORDERTYPE
-    const ORDERTYPE_ORDER       = 1;
-    const ORDERTYPE_ESTIMATE    = 2;
-    const ORDERTYPE_DRAFT       = 3;
-    
-    // ROLE
-    const ROLE_MEMBER                   = 1;
-    const ROLE_RESOURCEMANAGER          = 2;
-    const ROLE_METADATARESPONSIBLE      = 3;
-    const ROLE_METADATAEDITOR           = 4;
-    const ROLE_DIFFUSIONMANAGER         = 5;
-    const ROLE_PREVIEWMANAGER           = 6;
-    const ROLE_EXTRACTIONRESPONSIBLE    = 7;
-    const ROLE_PRICINGMANAGER           = 9;
-    const ROLE_VALIDATIONMANAGER        = 10;
-    
-    // PRODUCTSTATE
-    const PRODUCT_AVAILABLE         = 1;
-    const PRODUCT_AWAIT             = 2;
-    const PRODUCT_SENT              = 3;
-    const PRODUCT_VALIDATION        = 4;
-    const PRODUCT_REJECTED          = 5; // rejected by thirdparty
-    const PRODUCT_REJECTED_SUPPLIER = 6; // rejected by supplier
-    
-    public function load() {
+    public function load($copy = false) {
         $jinput = JFactory::getApplication()->input;
         $id = $jinput->get('id', '', 'int');
         $basket = new sdiBasket();
-        $basket->loadOrder($id);
+        $basket->loadOrder($id, $copy);
         
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=edit', false));
@@ -112,8 +80,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         $this->saveBasketToSession(false);
-        $app = JFactory::getApplication();
-
+        
         // Initialise variables.
         $model = $this->getModel('Basket', 'Easysdi_shopModel');
 
@@ -193,7 +160,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $basketData = $session->get('basketData');
         
         switch($basketData['orderstate_id']){
-            case self::ORDERSTATE_SENT:
+            case Easysdi_shopHelper::ORDERSTATE_SENT:
                 // Process notification by diffusion
                 foreach($basketData['diffusions'] as $diffusionId){
                     // Notify notifiedusers
@@ -205,13 +172,13 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
                 
                 break;
             
-            case self::ORDERSTATE_VALIDATION:
+            case Easysdi_shopHelper::ORDERSTATE_VALIDATION:
                 $this->notifyTPValidationManager($basketData['order_id'], $basketData['thirdparty_id']);
                 break;
         }
         
         // Notify the customer if order is not a draft
-        if($basketData['ordertype_id'] != Easysdi_shopControllerBasket::ORDERTYPE_DRAFT){
+        if($basketData['ordertype_id'] != Easysdi_shopHelper::ORDERTYPE_DRAFT){
             Easysdi_shopHelper::notifyCustomer($basketData['order_name']);
         }
         
@@ -283,7 +250,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         //Select orderdiffusion_id
         $query->select('user_id')
                 ->from('#__sdi_user_role_organism')
-                ->where('role_id='.self::ROLE_VALIDATIONMANAGER.' AND organism_id='.(int)$thirdpartyId);
+                ->where('role_id='.Easysdi_shopHelper::ROLE_VALIDATIONMANAGER.' AND organism_id='.(int)$thirdpartyId);
         $db->setQuery($query);
         $users_ids = $db->loadColumn();
         
