@@ -46,6 +46,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             </tr>
                         </thead>
                         <tbody>
+                            <?php if($this->item): ?>
                             <?php foreach ($this->item->categories as $category): ?>
                                 <tr>
                                     <td class="shop-pricing-category-name-col"><?php echo $category->name; ?></td>
@@ -59,6 +60,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
+                                <?php endif ?>
                         </tbody>
                     </table>
                     <?php
