@@ -41,3 +41,6 @@ MODIFY COLUMN `cal_fee_ti`  decimal(19,2) NOT NULL DEFAULT 0.00 AFTER `cal_total
 
 ALTER TABLE `#__sdi_organism_category_pricing_rebate`
 MODIFY COLUMN `rebate`  decimal(19,2) NULL DEFAULT NULL AFTER `category_id`;
+
+ALTER TABLE #__sdi_diffusion ADD packageurl VARCHAR(500) ;
+UPDATE #__sdi_diffusion SET packageurl='{CODE}';
