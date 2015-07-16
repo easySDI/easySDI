@@ -24,6 +24,8 @@ abstract class Easysdi_shopHelper {
     const PRICING_FREE = 1;
     const PRICING_FEE_WITHOUT_PROFILE = 2;
     const PRICING_FEE_WITH_PROFILE = 3;
+    
+    //ROLE
     const ROLE_MEMBER = 1;
     const ROLE_RESOURCEMANAGER = 2;
     const ROLE_METADATARESPONSIBLE = 3;
@@ -34,6 +36,31 @@ abstract class Easysdi_shopHelper {
     const ROLE_PRICINGMANAGER = 9;
     const ROLE_VALIDATIONMANAGER = 10;
 
+    // ORDERSTATE
+    const ORDERSTATE_ARCHIVED           = 1;
+    const ORDERSTATE_HISTORIZED         = 2;
+    const ORDERSTATE_FINISH             = 3;
+    const ORDERSTATE_AWAIT              = 4;
+    const ORDERSTATE_PROGRESS           = 5;
+    const ORDERSTATE_SENT               = 6;
+    const ORDERSTATE_SAVED              = 7;
+    const ORDERSTATE_VALIDATION         = 8;
+    const ORDERSTATE_REJECTED           = 9; // rejected by thirdparty
+    const ORDERSTATE_REJECTED_SUPPLIER  = 10; // rejected by supplier
+    
+    // ORDERTYPE
+    const ORDERTYPE_ORDER       = 1;
+    const ORDERTYPE_ESTIMATE    = 2;
+    const ORDERTYPE_DRAFT       = 3;
+    
+    //PRODUCTSTATE
+    const PRODUCTSTATE_AVAILABLE = 1;
+    const PRODUCTSTATE_AWAIT = 2;
+    const PRODUCTSTATE_SENT = 3;
+    const PRODUCTSTATE_VALIDATION = 4;
+    const PRODUCTSTATE_REJECTED_TP = 5; //product rejected by third party
+    const PRODUCTSTATE_REJECTED_SUPPLIER = 6; // product rejected by supplier
+    
     /**
      * 
      * @param string $item : json {"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}

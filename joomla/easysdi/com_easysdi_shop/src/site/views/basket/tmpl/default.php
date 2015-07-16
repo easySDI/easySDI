@@ -173,9 +173,9 @@ if ($this->item && $this->item->extractions) :
                                 <div id="thirdparty-info">
                                     <p><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EXPLANATION'); ?></p>
                                     <div>
-                                        <p><input type="text" required="true" name="mandate_ref" id="mandate_ref" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_REFERENCE'); ?>"/></p>
-                                        <p><input type="text" required="true" name="mandate_contact" id="mandate_contact" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_CONTACT'); ?>"/></p>
-                                        <p><input type="text" required="true" name="mandate_email" id="mandate_email" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EMAIL'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_ref" id="mandate_ref" value="<?php echo $this->item->mandate_ref; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_REFERENCE'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_contact" id="mandate_contact" value="<?php echo $this->item->mandate_contact; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_CONTACT'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_email" id="mandate_email" value="<?php echo $this->item->mandate_email; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EMAIL'); ?>"/></p>
                                     </div>
                                 </div>
                             <?php endif; ?>

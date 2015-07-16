@@ -21,24 +21,6 @@ class Easysdi_shopModelOrder extends JModelForm {
 
     var $_item = null;
     
-    // orderstate
-    const ARCHIVED = 1;
-    const HISTORIZED = 2;
-    const FINISHED = 3;
-    const AWAIT = 4;
-    const PROGRESS = 5;
-    const SENT = 6;
-    const SAVED = 7;
-    const VALIDATION = 8;
-    const REJECTED = 9;
-    
-    // productstate
-    const PRODUCT_AVAILABLE = 1;
-    const PRODUCT_AWAIT = 2;
-    const PRODUCT_SENT = 3;
-    const PRODUCT_VALIDATION = 4;
-    const PRODUCT_REJECTED = 5; // rejected by thirdparty !
-
     /**
      * Method to auto-populate the model state.
      *
@@ -239,7 +221,7 @@ class Easysdi_shopModelOrder extends JModelForm {
             return false;
         }
         
-        $table->orderstate_id = self::SENT;
+        $table->orderstate_id = Easysdi_shopHelper::ORDERSTATE_SENT;
         $table->validated = true;
         $table->validated_date = date('Y-m-d H:i:s');
         $table->validated_reason= $reason;
@@ -248,7 +230,7 @@ class Easysdi_shopModelOrder extends JModelForm {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->update('#__sdi_order_diffusion')
-                    ->set('productstate_id='.self::PRODUCT_SENT)
+                    ->set('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_SENT)
                     ->where('order_id = ' . (int)$id);
             $db->setQuery($query);
             $db->execute();
@@ -272,7 +254,7 @@ class Easysdi_shopModelOrder extends JModelForm {
             return false;
         }
         
-        $table->orderstate_id = self::REJECTED;
+        $table->orderstate_id = Easysdi_shopHelper::ORDERSTATE_REJECTED;
         $table->validated = false;
         $table->validated_date = date('Y-m-d H:i:s');
         $table->validated_reason = $reason;
@@ -281,7 +263,7 @@ class Easysdi_shopModelOrder extends JModelForm {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->update('#__sdi_order_diffusion')
-                    ->set('productstate_id='.self::PRODUCT_REJECTED)
+                    ->set('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_REJECTED)
                     ->where('order_id = ' . (int)$id);
             $db->setQuery($query);
             $db->execute();

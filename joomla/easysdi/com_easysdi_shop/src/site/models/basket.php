@@ -24,38 +24,6 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
     var $_item = null;
 
-    // ORDERSTATE
-    const ORDERSTATE_ARCHIVED = 1;
-    const ORDERSTATE_HISTORIZED = 2;
-    const ORDERSTATE_FINISH = 3;
-    const ORDERSTATE_AWAIT = 4;
-    const ORDERSTATE_PROGRESS = 5;
-    const ORDERSTATE_SENT = 6;
-    const ORDERSTATE_SAVED = 7;
-    const ORDERSTATE_VALIDATION = 8;
-    const ORDERSTATE_REJECTED = 9; // rejected by thirdparty
-    const ORDERSTATE_REJECTED_SUPPLIER = 10; // rejected by supplier
-    // ORDERTYPE
-    const ORDERTYPE_ORDER = 1;
-    const ORDERTYPE_ESTIMATE = 2;
-    const ORDERTYPE_DRAFT = 3;
-    // ROLE
-    const ROLE_MEMBER = 1;
-    const ROLE_RESOURCEMANAGER = 2;
-    const ROLE_METADATARESPONSIBLE = 3;
-    const ROLE_METADATAEDITOR = 4;
-    const ROLE_DIFFUSIONMANAGER = 5;
-    const ROLE_PREVIEWMANAGER = 6;
-    const ROLE_EXTRACTIONRESPONSIBLE = 7;
-    const ROLE_PRICINGMANAGER = 9;
-    const ROLE_VALIDATIONMANAGER = 10;
-    // PRODUCTSTATE
-    const PRODUCT_AVAILABLE = 1;
-    const PRODUCT_AWAIT = 2;
-    const PRODUCT_SENT = 3;
-    const PRODUCT_VALIDATION = 4;
-    const PRODUCT_REJECTED = 5; // rejected by thirdparty
-    const PRODUCT_REJECTED_SUPPLIER = 6; // rejected by supplier
 
     /**
      * Method to auto-populate the model state.
@@ -130,16 +98,16 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['freeperimetertool'] = $basket->freeperimetertool;
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
-                $data['ordertype_id'] = self::ORDERTYPE_ORDER;
-                $data['orderstate_id'] = ($data['thirdparty_id'] !== NULL) ? self::ORDERSTATE_VALIDATION : self::ORDERSTATE_SENT;
+                $data['ordertype_id'] = Easysdi_shopHelper::ORDERTYPE_ORDER;
+                $data['orderstate_id'] = ($data['thirdparty_id'] !== NULL) ? Easysdi_shopHelper::ORDERSTATE_VALIDATION : Easysdi_shopHelper::ORDERSTATE_SENT;
                 break;
             case 'estimate':
-                $data['ordertype_id'] = self::ORDERTYPE_ESTIMATE;
-                $data['orderstate_id'] = self::ORDERSTATE_SENT;
+                $data['ordertype_id'] = Easysdi_shopHelper::ORDERTYPE_ESTIMATE;
+                $data['orderstate_id'] = Easysdi_shopHelper::ORDERSTATE_SENT;
                 break;
             case 'draft':
-                $data['ordertype_id'] = self::ORDERTYPE_DRAFT;
-                $data['orderstate_id'] = self::ORDERSTATE_SAVED;
+                $data['ordertype_id'] = Easysdi_shopHelper::ORDERTYPE_DRAFT;
+                $data['orderstate_id'] = Easysdi_shopHelper::ORDERSTATE_SAVED;
                 break;
         }
         $data['user_id'] = sdiFactory::getSdiUser()->id;
@@ -167,7 +135,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $od = array();
                 $od['order_id'] = $table->id;
                 $od['diffusion_id'] = $diffusion->id;
-                $od['productstate_id'] = ($table->orderstate_id == self::ORDERSTATE_VALIDATION) ? self::PRODUCT_VALIDATION : self::PRODUCT_SENT;
+                $od['productstate_id'] = ($table->orderstate_id == Easysdi_shopHelper::ORDERSTATE_VALIDATION) ? Easysdi_shopHelper::PRODUCTSTATE_VALIDATION : Easysdi_shopHelper::PRODUCTSTATE_SENT;
                 $od['created_by'] = JFactory::getUser()->id;
                 $orderdiffusion->save($od);
                 array_push($basketData['diffusions'], $orderdiffusion->diffusion_id);
@@ -193,7 +161,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
             //Save perimeters
             //unserialize if necessary
-            if(!is_array($features)){
+            if(!is_array($basket->extent->features)){
                 $features = json_decode($basket->extent->features);
             }else{
                 $features = $basket->extent->features;
