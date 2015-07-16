@@ -238,18 +238,19 @@ Easysdi_shopHelper::addMapShopConfigToDoc();
             <?php echo JHtml::_('form.token'); ?>
         </form>
     </div>
+    <?php echo Easysdi_shopHelper::getAddToBasketModal(); ?>
     <script>
-        Ext.onReady(function () {
-            window.appname.on("ready", function () {
+        Ext.onReady(function() {
+            window.appname.on("ready", function() {
                 loadPerimeter(false);
             })
         })
     </script>
     <script type="text/javascript">
-        jQuery(document).ready(function () {
+        jQuery(document).ready(function() {
             if (jQuery('textarea#reason').length) {
                 jQuery('div#toolbar-delete>button').prop('disabled', true);
-                jQuery('textarea#reason').on('input propertychange', function () {
+                jQuery('textarea#reason').on('input propertychange', function() {
                     jQuery('div#toolbar-delete>button').prop('disabled', !(this.value.length > 20));
                 });
             }
