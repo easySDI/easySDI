@@ -263,7 +263,7 @@ class Easysdi_shopModelOrder extends JModelForm {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->update('#__sdi_order_diffusion')
-                    ->set('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_REJECTED)
+                    ->set('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_REJECTED_TP)
                     ->where('order_id = ' . (int)$id);
             $db->setQuery($query);
             $db->execute();

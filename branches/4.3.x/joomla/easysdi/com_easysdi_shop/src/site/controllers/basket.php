@@ -264,5 +264,19 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
         }
     }
-
+    
+    /**
+     * Return the current number of product in the session basket
+     * @return int
+     */
+    public static function getBasketContent() {
+        $content = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));        
+        if ($content && !empty($content) && !empty($content->extractions)){
+            echo count($content->extractions);            
+        }
+        else {
+            echo 0;
+        }
+        die();
+    }
 }
