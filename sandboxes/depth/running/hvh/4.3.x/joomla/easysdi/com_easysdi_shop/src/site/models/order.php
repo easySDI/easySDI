@@ -201,8 +201,7 @@ class Easysdi_shopModelOrder extends JModelForm {
         }
         
         $table->orderstate_id = $state;
-        return $table->store();
-        
+        return $table->store(false);        
     }
     
     /**

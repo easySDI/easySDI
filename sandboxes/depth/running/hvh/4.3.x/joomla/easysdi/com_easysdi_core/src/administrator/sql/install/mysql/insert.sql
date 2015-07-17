@@ -513,6 +513,7 @@ INSERT INTO `#__sdi_sys_productstate` VALUES ('3', '3', '1', 'sent');
 INSERT INTO `#__sdi_sys_productstate` SET id=4, ordering=4, `state`=1, `value`='validation';
 INSERT INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejected by thirdparty';
 INSERT INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejected by supplier';
+INSERT INTO `#__sdi_sys_productstate` VALUES ('7', '7', '1', 'deleted');
 
 
 INSERT INTO `#__sdi_sys_pricing` VALUES ('1', '1', '1', 'free');

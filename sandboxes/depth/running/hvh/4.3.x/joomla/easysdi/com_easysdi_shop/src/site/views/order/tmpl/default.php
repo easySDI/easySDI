@@ -134,51 +134,51 @@ Easysdi_shopHelper::addMapShopConfigToDoc();
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <?php if ($extraction->productstate_id == 1) : ?>
-                                                        <div class="diffusion-order-result">
-                                                            <div class="span5">
-                                                                <?php if (!empty($extraction->file)) : ?>
-                                                                    <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $extraction->id; ?>&order=<?php echo $this->item->id; ?>" class="btn btn-success" onClick="">
-                                                                        <i class="icon-white icon-flag-2"></i> 
-                                                                        <?php echo $extraction->name; ?>
-                                                                    </a>
-                                                                <?php endif; ?>
+                                                    <?php if (in_array($extraction->productstate_id , [1,7])) : //If product is available or was deleted by the cleanup process after retention delay?>
+                                                        <div class="diffusion-order-result row-fluid">
+                                                            <?php if (!empty($extraction->file)) : ?>
+                                                            <div class="span3">
+                                                                <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $extraction->id; ?>&order=<?php echo $this->item->id; ?>" class="btn btn-success" onClick="">
+                                                                    <i class="icon-white icon-flag-2"></i> 
+                                                                    <?php echo $extraction->name; ?>
+                                                                </a>
                                                             </div>
-                                                            <div class="span5">
+                                                            <?php endif; ?>
+                                                            <div class="span9">
                                                                 <div class="container-fluid">
                                                                     <div class="row-fluid">
-                                                                        <div class="span2 order-edit-label" >
+                                                                        <div class="span3 order-edit-label" >
                                                                             <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
                                                                         </div>
 
-                                                                        <div class="span4 order-edit-value" >
+                                                                        <div class="span6 order-edit-value" >
                                                                             <?php echo $extraction->fee; ?>
                                                                         </div>
                                                                     </div>
                                                                     <div class="row-fluid">
-                                                                        <div class="span2 order-edit-label" >
+                                                                        <div class="span3 order-edit-label" >
                                                                             <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_COMPLETED'); ?>
                                                                         </div>
 
-                                                                        <div class="span4 order-edit-value" >
+                                                                        <div class="span6 order-edit-value" >
                                                                             <?php echo $extraction->completed; ?>
                                                                         </div>
                                                                     </div>
                                                                     <div class="row-fluid">
-                                                                        <div class="span2 order-edit-label" >
+                                                                        <div class="span3 order-edit-label" >
                                                                             <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_CREATED_BY'); ?>
                                                                         </div>
 
-                                                                        <div class="span4 order-edit-value" >
+                                                                        <div class="span6 order-edit-value" >
                                                                             <?php echo $extraction->created_by; ?>
                                                                         </div>
                                                                     </div>
                                                                     <div class="row-fluid">
-                                                                        <div class="span2 order-edit-label" >
+                                                                        <div class="span3 order-edit-label" >
                                                                             <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_REMARK'); ?>
                                                                         </div>
 
-                                                                        <div class="span4 order-edit-value" >
+                                                                        <div class="span6 order-edit-value" >
                                                                             <?php echo $extraction->remark; ?>
                                                                         </div>
                                                                     </div>

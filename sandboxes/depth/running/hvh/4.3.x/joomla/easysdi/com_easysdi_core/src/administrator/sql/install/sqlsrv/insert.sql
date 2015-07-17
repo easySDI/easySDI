@@ -580,6 +580,7 @@ INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (3,
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'validation');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'rejected by thirdparty');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'rejected by supplier');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'deleted');
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_productstorage] ON;

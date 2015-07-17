@@ -210,7 +210,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     }
     
     function archive(){
-        $this->saveState(Easysdi_shopModelOrder::ARCHIVED);        
+        $this->saveState(Easysdi_shopHelper::ORDERSTATE_ARCHIVED);        
     }
     
     function saveState($state){

@@ -65,5 +65,8 @@ UPDATE [#__sdi_diffusion] SET [packageurl]='{CODE}';
 CREATE NONCLUSTERED INDEX IX_NC_text1 ON [#__sdi_translation] (text1);
 CREATE NONCLUSTERED INDEX IX_NC_text2 ON [#__sdi_translation] (text2);
 ALTER TABLE [#__sdi_order] DROP COLUMN [validate];
-ALTER TABLE [#__sdi_order] ADD [validated] [smallint] DEFAULT NULL;
+ALTER TABLE [#__sdi_order] ADD [validated] [smallint];
 
+SET IDENTITY_INSERT [#__sdi_sys_productstate] ON;
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'deleted');
+SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
