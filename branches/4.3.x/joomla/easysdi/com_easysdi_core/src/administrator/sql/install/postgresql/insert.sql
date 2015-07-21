@@ -454,6 +454,7 @@ INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (3, 1, 'sent
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (4, 1, 'validation');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (5, 1, 'rejected by thirdparty');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (6, 1, 'rejected by supplier');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (7, 1, 'deleted');
 
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (1, 1, 'upload');
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (2, 1, 'url');
