@@ -109,13 +109,13 @@ class com_easysdi_shopInstallerScript {
             $this->setParams($params);
         }
                 
-        if ($type == 'update' && $this->release == '4.3.2' && version_compare($this->getParam('version'), $this->release) == -1) {
-            $archiveorderdelay = $this->getParam("archiveorderdelay");
+        if ($type == 'update' && $this->release == '4.3.2') {
+            $archiveorderdelay = $this->getParamValue("archiveorderdelay");
             if(!empty($archiveorderdelay)){
                $this->setParams(array("cleanuporderdelay" => $archiveorderdelay));
             }
         }
-
+        
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->delete('#__menu');
@@ -141,6 +141,21 @@ class com_easysdi_shopInstallerScript {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('manifest_cache');
+        $query->from('#__extensions');
+        $query->where('name = ' . $db->quote('com_easysdi_shop'));
+        $db->setQuery($query);
+        $manifest = json_decode($db->loadResult(), true);
+        return $manifest[$name];
+    }
+    
+    /*
+     * get a variable from the params field.
+     */
+
+    function getParamValue($name) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('params');
         $query->from('#__extensions');
         $query->where('name = ' . $db->quote('com_easysdi_shop'));
         $db->setQuery($query);
