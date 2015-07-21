@@ -108,11 +108,18 @@ class com_easysdi_shopInstallerScript {
             $params['orderaccount'] = $user->id;
             $this->setParams($params);
         }
-
+                
+        if ($type == 'update' && $this->release == '4.3.2') {
+            $archiveorderdelay = $this->getParamValue("archiveorderdelay");
+            if(!empty($archiveorderdelay)){
+               $this->setParams(array("cleanuporderdelay" => $archiveorderdelay));
+            }
+        }
+        
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->delete('#__menu');
-        $query->where('title = '.$db->quote('com_easysdi_shop'));
+        $query->where('title = ' . $db->quote('com_easysdi_shop'));
         $db->setQuery($query);
         $db->query();
     }
@@ -135,7 +142,22 @@ class com_easysdi_shopInstallerScript {
         $query = $db->getQuery(true);
         $query->select('manifest_cache');
         $query->from('#__extensions');
-        $query->where('name = '.$db->quote('com_easysdi_shop'));
+        $query->where('name = ' . $db->quote('com_easysdi_shop'));
+        $db->setQuery($query);
+        $manifest = json_decode($db->loadResult(), true);
+        return $manifest[$name];
+    }
+    
+    /*
+     * get a variable from the params field.
+     */
+
+    function getParamValue($name) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('params');
+        $query->from('#__extensions');
+        $query->where('name = ' . $db->quote('com_easysdi_shop'));
         $db->setQuery($query);
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
@@ -152,8 +174,8 @@ class com_easysdi_shopInstallerScript {
             $query = $db->getQuery(true);
             $query->select('params');
             $query->from('#__extensions');
-            $query->where('name = '.$db->quote('com_easysdi_shop'));
-            
+            $query->where('name = ' . $db->quote('com_easysdi_shop'));
+
             $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
@@ -164,8 +186,8 @@ class com_easysdi_shopInstallerScript {
             $paramsString = json_encode($params);
             $query = $db->getQuery(true);
             $query->update('#__extensions');
-            $query->set('params = ' .$db->quote($paramsString));
-            $query->where('name = '.$db->quote('com_easysdi_shop'));
+            $query->set('params = ' . $db->quote($paramsString));
+            $query->where('name = ' . $db->quote('com_easysdi_shop'));
             $db->setQuery($query);
             $db->query();
         }
