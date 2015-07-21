@@ -204,7 +204,7 @@ var listenerPolygonDrawToZoom = function (e) {
 };
 
 function selectPolygon() {
-    resetAll();
+    resetAllSelection();
     setFreePerimeterTool('polygon');
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}});
     jQuery('#t-features').val('');
@@ -212,7 +212,7 @@ function selectPolygon() {
 }
 
 function selectRectangle() {
-    resetAll();
+    resetAllSelection();
     setFreePerimeterTool('rectangle');
     selectControl = new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
     jQuery('#t-features').val('');
@@ -237,11 +237,11 @@ function importPolygonFromText() {
     var feature = getPolygonFromText(text);
     if (feature) {
         if (feature.attributes['importGeom'] == "rectangle") {
-            resetAll();
+            resetAllSelection();
             boxLayer.addFeatures([feature.clone()]);
             selectRectangleEdit(boxLayer.features[boxLayer.features.length - 1]);
         } else {
-            resetAll();
+            resetAllSelection();
             polygonLayer.addFeatures([feature.clone()]);
             selectPolygonEdit();
         }

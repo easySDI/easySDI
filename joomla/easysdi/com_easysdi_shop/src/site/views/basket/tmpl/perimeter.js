@@ -1,5 +1,5 @@
 function selectPerimeter(perimeter, isrestrictedbyperimeter) {
-    resetAll();
+    resetAllSelection();
     selectPredefinedPerimeter(perimeter, isrestrictedbyperimeter);
     return false;
 }
