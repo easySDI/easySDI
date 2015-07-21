@@ -254,6 +254,18 @@ function beforeFeatureAdded(event) {
 //Reset all values to initial ones
 function resetAll() {
     resetTemporaryFields();
+    reset();
+}
+
+//Reset all except level to initial ones
+function resetAllSelection(){
+    jQuery.each(['perimeter', 'perimetern', 'surface', 'features', 'freeperimetertool'], function (index, value) {
+        jQuery('#'+value).val(jQuery('#t-'+value).val());
+    })
+    reset();
+}
+
+function reset(){
     freePerimeterTool = '';
     removeSelectCounter();
 
@@ -262,8 +274,6 @@ function resetAll() {
     jQuery('#btns-selection').show();
 
     disableDrawControls();
-
-
 }
 
 function disableDrawControls() {
@@ -295,7 +305,7 @@ function toggleSelectControl(action) {
             selectControl.activate();
         }
     } else {
-        resetAll();
+        resetAllSelection();
     }
 }
 
