@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name ="details">
+
+        <field name="name" type="text"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_NAME"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_NAME" 
+        /> 
+        
+        <field name="alias" type="text"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_ALIAS"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_ALIAS" 
+        /> 
+
+        <field name="description" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_DESCRIPTION"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_DESCRIPTION" 
+               filter="safehtml" /> 
+        
+        <field
+            name="accessscope_id" 
+            onchange="enableAccessScope();"
+            type="sql" 
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_ACCESSSCOPE_ID"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_ACCESSSCOPE_ID" 
+            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND value!='category' ORDER BY ordering" 
+            key_field="id" 
+            value_field="value"
+            translate="true"
+        /> 
+        <field
+            name="organisms" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field
+            name="users" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        />  
+
+        <field
+            name="perimetertype_id" 
+            onchange="onChangePerimeterType();"
+            type="sql" 
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_PERIMETERTYPE_ID"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_PERIMETERTYPE_ID" 
+            query="SELECT id, value FROM #__sdi_sys_perimetertype WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="value"
+            translate="true"
+        /> 
+   
+        <field name="id" type="text" default="0" label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+
+    </fieldset> 
+    
+    <field name="access"
+           type="accesslevel"
+           label="JFIELD_ACCESS_LABEL"
+           description="JFIELD_ACCESS_DESC"
+           class="inputbox span12 small"
+           size="1"
+    />
+    
+    <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+        
+    <fieldset name="wms" > 
+             
+<!--        <field 	name="wmsservice_id" 
+                        type="ServicegroupedList" 
+                        onchange=""
+                        multiple ="false"
+                        class="input-xxlarge"
+                        size="10"
+                        servicetype="wms"
+                        label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_WMSSERVICE_ID"
+                        description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_WMSSERVICE_ID" 
+                        required="true"
+        />
+
+        <field name="layername" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_LAYERNAME"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYERNAME" 
+               filter="safehtml" /> -->
+        
+               <field
+                   name="maplayer_id" 
+                   type="sql" 
+                   class="inputbox"
+                   label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_LAYER"
+                   description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_LAYER" 
+                   query="SELECT id, name FROM #__sdi_maplayer WHERE state=1 ORDER BY ordering" 
+                   key_field="id" 
+                   value_field="name"
+                   translate="true"
+               /> 
+    </fieldset>
+         
+    <fieldset name="wfs" >
+            
+        <field 	name="wfsservice_id" 
+                        type="ServicegroupedList" 
+                        onchange=""
+                        multiple ="false"
+                        class="input-xxlarge"
+                        size="10"
+                        servicetype="wfs"
+                        label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_WFSSERVICE_ID"
+                        description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_WFSSERVICE_ID" 
+                        required="true"
+        />
+        
+        <field name="featuretypename" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPENAME"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPENAME" 
+               filter="safehtml" />
+        
+        <field name="prefix" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_PREFIX"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_PREFIX" 
+               filter="safehtml" />
+        
+        <field name="namespace" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_NAMESPACE"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_NAMESPACE" 
+               filter="safehtml" /> 
+
+        <field name="featuretypefieldid" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEID"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEID" 
+               filter="safehtml" /> 
+
+        <field name="featuretypefieldname" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDNAME"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDNAMENAME" 
+               filter="safehtml" /> 
+
+        <field name="featuretypefieldsurface" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDSURFACE"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDSURFACE" 
+               filter="safehtml" /> 
+
+        <field name="featuretypefielddescription" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDDESCRIPTION"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDDESCRIPTION" 
+               filter="safehtml" /> 
+        
+        <field name="featuretypefieldgeometry" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDGEOMETRY"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDGEOMETRY" 
+               filter="safehtml" /> 
+        
+        <field name="featuretypefieldresource" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDRESOURCE"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDRESOURCE" 
+               filter="safehtml" /> 
+        
+        <field name="featuretypefieldlevel" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDLEVEL"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDLEVEL" 
+               filter="safehtml" /> 
+    </fieldset>
+
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+    
+    <fieldset name="publishing">
+        <field 	name="created_by" 
+                type="createdby" 
+                class="readonly"
+                readonly="true" 
+                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_CREATED_BY"
+                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_CREATED_BY" 
+                filter="unset" /> 
+
+        <field 	name="created" 
+                type="calendar" 
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_CREATED"
+                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_CREATED" 
+                filter="safehtml" /> 
+
+        <field 	name="modified_by" 
+                type="createdby" 
+                class="readonly"
+                readonly="true" 
+                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_MODIFIED_BY"
+                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_MODIFIED_BY" 
+                filter="unset" /> 
+
+        <field 	name="modified" 
+                type="calendar" 
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_MODIFIED"
+                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_MODIFIED" 
+                filter="safehtml" /> 
+    </fieldset>
+    
+    <fieldset name="accesscontrol">
+        <field name="asset_id" type="hidden" filter="unset" />
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_shop"
+               section="perimeter"
+        />
+    </fieldset>
+
+</form>
