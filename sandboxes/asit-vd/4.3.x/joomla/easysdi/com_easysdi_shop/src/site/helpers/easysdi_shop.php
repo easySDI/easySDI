@@ -9,11 +9,11 @@
 defined('_JEXEC') or die;
 
 
-require_once JPATH_COMPONENT_ADMINISTRATOR . '/tables/diffusion.php';
-require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiBasket.php';
-require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiExtraction.php';
-require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiPerimeter.php';
-require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiPricingProfile.php';
+require_once JPATH_SITE . '/administrator/components/com_easysdi_shop/tables/diffusion.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiBasket.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiExtraction.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPerimeter.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPricingProfile.php';
 require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
 
 jimport('joomla.application.component.helper');
