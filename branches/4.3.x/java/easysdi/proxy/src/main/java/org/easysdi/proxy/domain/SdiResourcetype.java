@@ -47,7 +47,7 @@ public class SdiResourcetype implements java.io.Serializable {
 	private String Name;
 	private String Description;
 	private String Logo;
-	private boolean Meta;
+	private boolean Application;
 	private boolean Diffusion;
 	private boolean View;
 	private boolean Monitoring;
@@ -67,7 +67,7 @@ public class SdiResourcetype implements java.io.Serializable {
 			int Created_by, Date Created, int Modified_by, Date Modified,
 			int Ordering, boolean State, int Checked_out,
 			Date Checked_out_time, String Name, String Description,
-			String Logo, boolean Meta, boolean Diffusion, boolean View,
+			String Logo, boolean Application, boolean Diffusion, boolean View,
 			boolean Monitoring, boolean Predefined, boolean Versioning,
 			int Access, int Asset_id) {
 		this.sdiSysAccessscope = sdiSysAccessscope;
@@ -85,7 +85,7 @@ public class SdiResourcetype implements java.io.Serializable {
 		this.Name = Name;
 		this.Description = Description;
 		this.Logo = Logo;
-		this.Meta = Meta;
+		this.Application = Application;
 		this.Diffusion = Diffusion;
 		this.View = View;
 		this.Monitoring = Monitoring;
@@ -101,7 +101,7 @@ public class SdiResourcetype implements java.io.Serializable {
 			int Created_by, Date Created, int Modified_by, Date Modified,
 			int Ordering, boolean State, int Checked_out,
 			Date Checked_out_time, String Name, String Description,
-			String Logo, boolean Meta, boolean Diffusion, boolean View,
+			String Logo, boolean Application, boolean Diffusion, boolean View,
 			boolean Monitoring, boolean Predefined, boolean Versioning,
 			String Fragment, String Sitemapparams, int Access, int Asset_id) {
 		this.sdiSysAccessscope = sdiSysAccessscope;
@@ -120,7 +120,7 @@ public class SdiResourcetype implements java.io.Serializable {
 		this.Name = Name;
 		this.Description = Description;
 		this.Logo = Logo;
-		this.Meta = Meta;
+		this.Application = Application;
 		this.Diffusion = Diffusion;
 		this.View = View;
 		this.Monitoring = Monitoring;
@@ -295,13 +295,13 @@ public class SdiResourcetype implements java.io.Serializable {
 		this.Logo = Logo;
 	}
 
-	@Column(name = "meta", nullable = false)
-	public boolean isMeta() {
-		return this.Meta;
+	@Column(name = "application", nullable = false)
+	public boolean isApplication() {
+		return this.Application;
 	}
 
-	public void setMeta(boolean Meta) {
-		this.Meta = Meta;
+	public void setApplication(boolean Application) {
+		this.Application = Application;
 	}
 
 	@Column(name = "diffusion", nullable = false)
