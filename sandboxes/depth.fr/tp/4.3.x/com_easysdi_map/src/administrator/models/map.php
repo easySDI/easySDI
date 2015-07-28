@@ -250,295 +250,324 @@ class Easysdi_mapModelmap extends JModelAdmin {
      * @since   11.1
      */
     public function save($data) {
-        if (parent::save($data)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
-            $query->delete('#__sdi_map_tool');
-            $query->where('map_id = ' . (int) $this->getItem()->get('id'));
-
-            $db->setQuery($query);
-            $db->query();
-
-            $query = $db->getQuery(true);
-            $query->delete('#__sdi_map_physicalservice');
-            $query->where('map_id = ' . (int) $this->getItem()->get('id'));
-            $db->setQuery($query);
-            $db->query();
-
-            $query = $db->getQuery(true);
-            $query->delete('#__sdi_map_virtualservice');
-            $query->where('map_id = ' . (int) $this->getItem()->get('id'));
-            $db->setQuery($query);
-            $db->query();
-
-            //Tools
-            foreach ($data as $key => $value) {
-                if (substr($key, 0, 4) == "tool") {
-                    switch ($value) {
-                        case '1':
-                        case '0':
-                            $tool = substr($key, 4);
-                            $columns = array('map_id', 'tool_id', 'params', 'activated');
-
-                            switch ($tool) {
-                                case '17':
-                                    //Search catalog
-                                    $params = $data['catalog_id'];
-                                    $values = array($this->getItem()->get('id'), $query->quote($tool), $query->quote($params), $value);
-                                    break;
-                                case '14':
-                                    //Scale line params
-                                    $scaleparamsparams = '{\"bottomInUnits\" :\"' . $data["bottomInUnits"] . '\",\"bottomOutUnits\" :\"' . $data["bottomOutUnits"] . '\",\"topInUnits\" :\"' . $data["topInUnits"] . '\",\"topOutUnits\" :\"' . $data["topOutUnits"] . '\"}';
-                                    $values = array($this->getItem()->get('id'), 14, $query->quote($scaleparamsparams), $value);
-                                    break;
-                                case '16':
-                                    //Wfs locator
-                                    $locatorparamsparams = '{\"urlwfslocator\" :\"' . $data["urlwfslocator"] . '\",\"fieldname\" :\"' . $data["fieldname"] . '\",\"featuretype\" :\"' . $data["featuretype"] . '\",\"featureprefix\" :\"' . $data["featureprefix"] . '\",\"geometryname\" :\"' . $data["geometryname"] . '\"}';
-                                    $values = array($this->getItem()->get('id'), 16, $query->quote($locatorparamsparams), $value);
-                                    break;
-                                case '21':
-                                    //Indoor navigation
-                                    $i = 1;
-                                    $indoornavigation = '';
-                                    $codes = $_POST['jform']["code"];
-                                    if (isset($codes)) {
-                                        foreach ($codes as $key => $v) {
-                                            $indoornavigation = (strlen($indoornavigation) > 0 ) ? $indoornavigation . ',' : $indoornavigation;
-                                            $indoornavigation .= '{\"code\": \"' . $v . '\", \"label\":\"' . $_POST['jform']["label"][$key] . '\",\"defaultlevel\":\"' . $_POST['jform']["defaultlevel"][$key] . '\"}';
-                                        }
-                                    }
-                                    $indoornavigation = (strlen($indoornavigation) > 0 ) ? '[' . $indoornavigation . ']' : '';
-                                    $values = array($this->getItem()->get('id'), 21, $query->quote($indoornavigation), $value);
-                                    break;
-                                default :
-                                    $values = array($this->getItem()->get('id'), $query->quote($tool), 'NULL', $value);
-                                    break;
-                            }
-
-                            $query = $db->getQuery(true);
-                            $query->insert('#__sdi_map_tool');
-                            $query->columns($query->quoteName($columns));
-                            $query->values(implode(',', $values));
-
-                            $db->setQuery($query);
-                            if (!$db->query()) {
-                                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
-                                return false;
-                            }
-                            break;
-                        case 'html':
-                        case 'grid':
-                            $tool = substr($key, 4);
-                            $columns = array('map_id', 'tool_id', 'params', 'activated');
-                            $values = array($this->getItem()->get('id'), $query->quote($tool), $query->quote($value), 1);
-                            $query = $db->getQuery(true);
-                            $query->insert('#__sdi_map_tool');
-                            $query->columns($query->quoteName($columns));
-                            $query->values(implode(',', $values));
-
-                            $db->setQuery($query);
-                            if (!$db->query()) {
-                                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
-                                return false;
-                            }
-                            break;
-                    }
-                }
-            }
-
-
-            //Service
-            $services = $data['services'];
-            foreach ($services as $service) {
-                $pos = strstr($service, 'physical_');
-                if ($pos) {
-                    $service_id = substr($service, strrpos($service, '_') + 1);
-
-                    $columns = array('map_id', 'physicalservice_id');
-                    $values = array($this->getItem()->get('id'), $service_id);
-                    $query = $db->getQuery(true);
-                    $query->insert('#__sdi_map_physicalservice');
-                    $query->columns($query->quoteName($columns));
-                    $query->values(implode(',', $values));
-
-                    $db->setQuery($query);
-                } else {
-                    $service_id = substr($service, strrpos($service, '_') + 1);
-
-                    $columns = array('map_id', 'virtualservice_id');
-                    $values = array($this->getItem()->get('id'), $service_id);
-                    $query = $db->getQuery(true);
-                    $query->insert('#__sdi_map_virtualservice');
-                    $query->columns($query->quoteName($columns));
-                    $query->values(implode(',', $values));
-
-                    $db->setQuery($query);
-                }
-                if (!$db->query()) {
-                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_SERVICE_ERROR"));
-                    return false;
-                }
-            }
-
-            //Default adding  group
-            $default = $data['default'];
-
-            //Background group
-            $background = $data['background'];
-
-            //Overlay groups and default adding group
-            $groups = $data['groups'];
-            if (!empty($default) && array_search($default, $groups) === false)
-                $groups[] = $default;
-            if (!empty($background) && array_search($background, $groups) === false)
-                $groups[] = $background;
-
-
-
-            //Get existing relations for the current map
-            try {
+        if ($this->checkMapType($data)){
+            if (parent::save($data)) {
+                $db = JFactory::getDbo();
                 $query = $db->getQuery(true);
-                $query
-                        ->select('group_id')
-                        ->from('#__sdi_map_layergroup ')
-                        ->where('map_id= ' . (int) $this->getItem()->get('id'));
-                $db->setQuery($query);
-                $pks = $db->loadColumn();
-            } catch (Exception $e) {
-                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR"));
-                return false;
-            }
+                $query->delete('#__sdi_map_tool');
+                $query->where('map_id = ' . (int) $this->getItem()->get('id'));
 
-            //Clean up the database from groups no more selected
-            foreach ($pks as $pk) {
-                if (in_array($pk, $groups)) {//Existing group
-                    //Remove this layer from the selected list, because it doesn't have to be changed in the database
-                    if (($key = array_search($pk, $groups)) !== false) {
-                        unset($groups[$key]);
+                $db->setQuery($query);
+                $db->query();
+
+                $query = $db->getQuery(true);
+                $query->delete('#__sdi_map_physicalservice');
+                $query->where('map_id = ' . (int) $this->getItem()->get('id'));
+                $db->setQuery($query);
+                $db->query();
+
+                $query = $db->getQuery(true);
+                $query->delete('#__sdi_map_virtualservice');
+                $query->where('map_id = ' . (int) $this->getItem()->get('id'));
+                $db->setQuery($query);
+                $db->query();
+
+                //Tools
+                foreach ($data as $key => $value) {
+                    if (substr($key, 0, 4) == "tool") {
+                        switch ($value) {
+                            case '1':
+                            case '0':
+                                $tool = substr($key, 4);
+                                $columns = array('map_id', 'tool_id', 'params', 'activated');
+
+                                switch ($tool) {
+                                    case '17':
+                                        //Search catalog
+                                        $params = $data['catalog_id'];
+                                        $values = array($this->getItem()->get('id'), $query->quote($tool), $query->quote($params), $value);
+                                        break;
+                                    case '14':
+                                        //Scale line params
+                                        $scaleparamsparams = '{\"bottomInUnits\" :\"' . $data["bottomInUnits"] . '\",\"bottomOutUnits\" :\"' . $data["bottomOutUnits"] . '\",\"topInUnits\" :\"' . $data["topInUnits"] . '\",\"topOutUnits\" :\"' . $data["topOutUnits"] . '\"}';
+                                        $values = array($this->getItem()->get('id'), 14, $query->quote($scaleparamsparams), $value);
+                                        break;
+                                    case '16':
+                                        //Wfs locator
+                                        $locatorparamsparams = '{\"urlwfslocator\" :\"' . $data["urlwfslocator"] . '\",\"fieldname\" :\"' . $data["fieldname"] . '\",\"featuretype\" :\"' . $data["featuretype"] . '\",\"featureprefix\" :\"' . $data["featureprefix"] . '\",\"geometryname\" :\"' . $data["geometryname"] . '\"}';
+                                        $values = array($this->getItem()->get('id'), 16, $query->quote($locatorparamsparams), $value);
+                                        break;
+                                    case '21':
+                                        //Indoor navigation
+                                        $i = 1;
+                                        $indoornavigation = '';
+                                        $codes = $_POST['jform']["code"];
+                                        if (isset($codes)) {
+                                            foreach ($codes as $key => $v) {
+                                                $indoornavigation = (strlen($indoornavigation) > 0 ) ? $indoornavigation . ',' : $indoornavigation;
+                                                $indoornavigation .= '{\"code\": \"' . $v . '\", \"label\":\"' . $_POST['jform']["label"][$key] . '\",\"defaultlevel\":\"' . $_POST['jform']["defaultlevel"][$key] . '\"}';
+                                            }
+                                        }
+                                        $indoornavigation = (strlen($indoornavigation) > 0 ) ? '[' . $indoornavigation . ']' : '';
+                                        $values = array($this->getItem()->get('id'), 21, $query->quote($indoornavigation), $value);
+                                        break;
+                                    default :
+                                        $values = array($this->getItem()->get('id'), $query->quote($tool), 'NULL', $value);
+                                        break;
+                                }
+
+                                $query = $db->getQuery(true);
+                                $query->insert('#__sdi_map_tool');
+                                $query->columns($query->quoteName($columns));
+                                $query->values(implode(',', $values));
+
+                                $db->setQuery($query);
+                                if (!$db->query()) {
+                                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                                    return false;
+                                }
+                                break;
+                            case 'html':
+                            case 'grid':
+                                $tool = substr($key, 4);
+                                $columns = array('map_id', 'tool_id', 'params', 'activated');
+                                $values = array($this->getItem()->get('id'), $query->quote($tool), $query->quote($value), 1);
+                                $query = $db->getQuery(true);
+                                $query->insert('#__sdi_map_tool');
+                                $query->columns($query->quoteName($columns));
+                                $query->values(implode(',', $values));
+
+                                $db->setQuery($query);
+                                if (!$db->query()) {
+                                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                                    return false;
+                                }
+                                break;
+                        }
                     }
-                } else { //Group is no more selected, delete the relation
-                    $query = $db->getQuery(true);
-                    $query
-                            ->delete('#__sdi_map_layergroup')
-                            ->where('map_id= ' . (int) $this->getItem()->get('id'))
-                            ->where('group_id =' . (int) $pk);
-                    $db->setQuery($query);
-                    try {
-                        // Execute the query in Joomla 3.0.
-                        $result = $db->execute();
-                    } catch (Exception $e) {
-                        $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_GROUP_ERROR"));
+                }
+
+
+                //Service
+                $services = $data['services'];
+                foreach ($services as $service) {
+                    $pos = strstr($service, 'physical_');
+                    if ($pos) {
+                        $service_id = substr($service, strrpos($service, '_') + 1);
+
+                        $columns = array('map_id', 'physicalservice_id');
+                        $values = array($this->getItem()->get('id'), $service_id);
+                        $query = $db->getQuery(true);
+                        $query->insert('#__sdi_map_physicalservice');
+                        $query->columns($query->quoteName($columns));
+                        $query->values(implode(',', $values));
+
+                        $db->setQuery($query);
+                    } else {
+                        $service_id = substr($service, strrpos($service, '_') + 1);
+
+                        $columns = array('map_id', 'virtualservice_id');
+                        $values = array($this->getItem()->get('id'), $service_id);
+                        $query = $db->getQuery(true);
+                        $query->insert('#__sdi_map_virtualservice');
+                        $query->columns($query->quoteName($columns));
+                        $query->values(implode(',', $values));
+
+                        $db->setQuery($query);
+                    }
+                    if (!$db->query()) {
+                        $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_SERVICE_ERROR"));
                         return false;
                     }
                 }
-            }
 
-            //Select max ordering for the groups of the current map
-            try {
+                //Default adding  group
+                $default = $data['default'];
+
+                //Background group
+                $background = $data['background'];
+
+                //Overlay groups and default adding group
+                $groups = $data['groups'];
+                if (!empty($default) && array_search($default, $groups) === false)
+                    $groups[] = $default;
+                if (!empty($background) && array_search($background, $groups) === false)
+                    $groups[] = $background;
+
+
+
+                //Get existing relations for the current map
+                try {
+                    $query = $db->getQuery(true);
+                    $query
+                            ->select('group_id')
+                            ->from('#__sdi_map_layergroup ')
+                            ->where('map_id= ' . (int) $this->getItem()->get('id'));
+                    $db->setQuery($query);
+                    $pks = $db->loadColumn();
+                } catch (Exception $e) {
+                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR"));
+                    return false;
+                }
+
+                //Clean up the database from groups no more selected
+                foreach ($pks as $pk) {
+                    if (in_array($pk, $groups)) {//Existing group
+                        //Remove this layer from the selected list, because it doesn't have to be changed in the database
+                        if (($key = array_search($pk, $groups)) !== false) {
+                            unset($groups[$key]);
+                        }
+                    } else { //Group is no more selected, delete the relation
+                        $query = $db->getQuery(true);
+                        $query
+                                ->delete('#__sdi_map_layergroup')
+                                ->where('map_id= ' . (int) $this->getItem()->get('id'))
+                                ->where('group_id =' . (int) $pk);
+                        $db->setQuery($query);
+                        try {
+                            // Execute the query in Joomla 3.0.
+                            $result = $db->execute();
+                        } catch (Exception $e) {
+                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_GROUP_ERROR"));
+                            return false;
+                        }
+                    }
+                }
+
+                //Select max ordering for the groups of the current map
+                try {
+                    $query = $db->getQuery(true);
+                    $query
+                            ->select('MAX(ordering)')
+                            ->from('#__sdi_map_layergroup ')
+                            ->where('map_id= ' . (int) $this->getItem()->get('id'));
+                    $db->setQuery($query);
+                    $ordering = $db->loadResult();
+                } catch (Exception $e) {
+                    // catch any database errors.
+                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_MAXORDERING_FAIL_GROUP_ERROR"));
+                    return false;
+                }
+                if (!$ordering)
+                    $ordering = 0;
+
+                //Insert the new relation
+                foreach ($groups as $group) {
+                    if (empty($group))
+                        continue;
+                    $ordering++;
+                    //Store map-group relation
+                    $columns = array('map_id', 'group_id', 'isbackground', 'isdefault', 'ordering');
+                    $values = array($this->getItem()->get('id'), $group, '0', '0', $ordering);
+                    $query = $db->getQuery(true);
+                    $query
+                            ->insert($db->quoteName('#__sdi_map_layergroup'))
+                            ->columns($db->quoteName($columns))
+                            ->values(implode(',', $values));
+                    $db->setQuery($query);
+                    try {
+                        $result = $db->execute();
+                    } catch (Exception $e) {
+                        $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_INSERT_FAIL_GROUP_ERROR"));
+                        return false;
+                    }
+                }
+
+                //Clean up isBackground boolean state
                 $query = $db->getQuery(true);
                 $query
-                        ->select('MAX(ordering)')
-                        ->from('#__sdi_map_layergroup ')
+                        ->update($db->quoteName('#__sdi_map_layergroup'))
+                        ->set('isbackground=0')
                         ->where('map_id= ' . (int) $this->getItem()->get('id'));
                 $db->setQuery($query);
-                $ordering = $db->loadResult();
-            } catch (Exception $e) {
-                // catch any database errors.
-                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_MAXORDERING_FAIL_GROUP_ERROR"));
-                return false;
-            }
-            if (!$ordering)
-                $ordering = 0;
-
-            //Insert the new relation
-            foreach ($groups as $group) {
-                if (empty($group))
-                    continue;
-                $ordering++;
-                //Store map-group relation
-                $columns = array('map_id', 'group_id', 'isbackground', 'isdefault', 'ordering');
-                $values = array($this->getItem()->get('id'), $group, '0', '0', $ordering);
-                $query = $db->getQuery(true);
-                $query
-                        ->insert($db->quoteName('#__sdi_map_layergroup'))
-                        ->columns($db->quoteName($columns))
-                        ->values(implode(',', $values));
-                $db->setQuery($query);
                 try {
                     $result = $db->execute();
                 } catch (Exception $e) {
-                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_INSERT_FAIL_GROUP_ERROR"));
+                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELBACKGROUND_FAIL_GROUP_ERROR"));
                     return false;
                 }
-            }
 
-            //Clean up isBackground boolean state
-            $query = $db->getQuery(true);
-            $query
-                    ->update($db->quoteName('#__sdi_map_layergroup'))
-                    ->set('isbackground=0')
-                    ->where('map_id= ' . (int) $this->getItem()->get('id'));
-            $db->setQuery($query);
-            try {
-                $result = $db->execute();
-            } catch (Exception $e) {
-                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELBACKGROUND_FAIL_GROUP_ERROR"));
-                return false;
-            }
-
-            //Clean up isdefault boolean state
-            $query = $db->getQuery(true);
-            $query
-                    ->update($db->quoteName('#__sdi_map_layergroup'))
-                    ->set('isdefault=0')
-                    ->where('map_id= ' . (int) $this->getItem()->get('id'));
-            $db->setQuery($query);
-            try {
-                $result = $db->execute();
-            } catch (Exception $e) {
-                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELDEFAULT_FAIL_GROUP_ERROR"));
-                return false;
-            }
-
-
-            //Set background group if needed
-            if (!empty($background)) {
+                //Clean up isdefault boolean state
                 $query = $db->getQuery(true);
                 $query
                         ->update($db->quoteName('#__sdi_map_layergroup'))
-                        ->set('isbackground=1')
-                        ->where('map_id= ' . (int) $this->getItem()->get('id'))
-                        ->where('group_id= ' . (int) $background);
+                        ->set('isdefault=0')
+                        ->where('map_id= ' . (int) $this->getItem()->get('id'));
                 $db->setQuery($query);
                 try {
                     $result = $db->execute();
                 } catch (Exception $e) {
-                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SETBACKGROUND_FAIL_GROUP_ERROR"));
+                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELDEFAULT_FAIL_GROUP_ERROR"));
                     return false;
                 }
-            }
 
-            //Set default adding group if needed
-            if (!empty($default)) {
-                $query = $db->getQuery(true);
-                $query
-                        ->update($db->quoteName('#__sdi_map_layergroup'))
-                        ->set('isdefault=1')
-                        ->where('map_id= ' . (int) $this->getItem()->get('id'))
-                        ->where('group_id= ' . (int) $default);
-                $db->setQuery($query);
-                try {
-                    $result = $db->execute();
-                } catch (Exception $e) {
-                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SETDEFAULT_FAIL_GROUP_ERROR"));
-                    return false;
+
+                //Set background group if needed
+                if (!empty($background)) {
+                    $query = $db->getQuery(true);
+                    $query
+                            ->update($db->quoteName('#__sdi_map_layergroup'))
+                            ->set('isbackground=1')
+                            ->where('map_id= ' . (int) $this->getItem()->get('id'))
+                            ->where('group_id= ' . (int) $background);
+                    $db->setQuery($query);
+                    try {
+                        $result = $db->execute();
+                    } catch (Exception $e) {
+                        $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SETBACKGROUND_FAIL_GROUP_ERROR"));
+                        return false;
+                    }
                 }
+
+                //Set default adding group if needed
+                if (!empty($default)) {
+                    $query = $db->getQuery(true);
+                    $query
+                            ->update($db->quoteName('#__sdi_map_layergroup'))
+                            ->set('isdefault=1')
+                            ->where('map_id= ' . (int) $this->getItem()->get('id'))
+                            ->where('group_id= ' . (int) $default);
+                    $db->setQuery($query);
+                    try {
+                        $result = $db->execute();
+                    } catch (Exception $e) {
+                        $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SETDEFAULT_FAIL_GROUP_ERROR"));
+                        return false;
+                    }
+                }
+                return true;
             }
-
-
-            return true;
         }
         return false;
+    }
+    
+    /*Verify if the map type is leaflet and context not associated to sh*/
+    /**
+     * Method to check if the map is used in the shop, the catalog or the preview.
+     *
+     * @return  boolean  True if successful, false if the map is used.
+     *
+     * @since   11.1
+     */
+    public function checkMapType($data) {
+        $errmap=true;
+        if ($data['type']=='leaflet'){
+            if (JComponentHelper::getParams('com_easysdi_catalog')->get('catalogmap')==$data['id']){
+                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SETLEAFLETTYPECAT_FAIL_ERROR"));
+                $errmap=false;
+            }
+
+            if (JComponentHelper::getParams('com_easysdi_shop')->get('ordermap')==$data['id']){
+                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SETLEAFLETTYPESHOP_FAIL_ERROR"));
+                $errmap=false;
+            }
+
+            if (JComponentHelper::getParams('com_easysdi_shop')->get('previewmap')==$data['id']){
+                $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SETLEAFLETTYPEMAP_FAIL_ERROR"));
+                $errmap=false;
+            }
+        }
+        return $errmap;
     }
 
     /**

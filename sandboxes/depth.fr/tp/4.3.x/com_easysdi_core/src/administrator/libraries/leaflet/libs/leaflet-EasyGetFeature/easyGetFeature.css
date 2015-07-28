@@ -1,0 +1,123 @@
+.leaflet-container.getFeatureOn .leaflet-map-pane {
+    /*cursor: help;*/
+    cursor: crosshair;
+}
+
+.easygetfeature_popup {
+        max-width: 800px;
+         -o-transition: all 0.25s ease;
+   -webkit-transition: all 0.25s ease;
+   -ms-transition: all 0.25s ease;
+   -moz-transition: all 0.25s ease;
+   transition: all 0.25s ease;
+}
+
+
+
+.easygetfeature_popup .leaflet-popup-content {
+    max-height:350px;
+    overflow: auto;
+    width: auto !important;
+}
+
+.getfeature_results {
+    margin-top: 20px;
+}
+
+.easygetfeature_table{
+    border: 1px solid #ddd;
+    max-width: 100%;
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 5px 0 20px 0;
+}
+
+.easygetfeature_table th, .easygetfeature_table td{
+    border: 1px solid #ddd;
+    line-height: 1.42857;
+    padding: 8px;
+    vertical-align: top;
+}
+
+.easygetfeature_table th{
+    border: 1px solid #ddd;
+}
+
+
+
+.easygetfeature_table caption{
+    background-color: #ddd;
+    color: #777;
+
+    padding: 5px 0 5px 12px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.getfeature_results .removeAllResult {
+    text-align:right;
+    display: block;
+    height: 20px;
+    margin-top: -25px;
+    color: #000;
+}
+
+
+.getfeature_results>div {
+   box-shadow: 0px 0px 0px rgba(0,0,0,0);
+   margin:5px 0px;
+   padding: 5px 10px 5px 30px;
+   border: 1px solid transparent;
+   position: relative;
+   cursor: pointer;
+
+   -o-transition: all 0.25s ease;
+   -webkit-transition: all 0.25s ease;
+   -ms-transition: all 0.25s ease;
+   -moz-transition: all 0.25s ease;
+   transition: all 0.25s ease;
+}
+
+.getfeature_results>div:before{
+    content: '';
+    left: 10px;
+    position: absolute;
+    top: 10px;
+    font-family: FontAwesome;
+}
+
+.getfeature_results>div.loading:before{
+    content: '';
+    animation: 1s steps(8, end) 0s normal none infinite running fa-spin;
+}
+
+.getfeature_results>div.none:before{
+    content: '';
+}
+
+.getfeature_results>div:hover {
+    background: #fff;
+    box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.075);
+    border-color: rgba(0,0,0,0.15);
+}
+
+.getfeature_results>div.none {
+    font-style: italic;
+}
+
+.getfeature_results>div>p {
+    margin:0;
+}
+
+.getfeature_results .warning {
+    color:#d9534f;
+}
+
+.getfeature_results .query-btns {
+    float:right;
+}
+
+.getfeature_results .removeResult {
+    color: #000;
+}

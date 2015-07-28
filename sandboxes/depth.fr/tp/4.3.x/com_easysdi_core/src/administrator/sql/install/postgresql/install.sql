@@ -590,6 +590,7 @@ CREATE TABLE #__sdi_map (
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
     title character varying(255) NOT NULL,
+    type varying(10) DEFAULT 'geoext'  NOT NULL ,
     rootnodetext character varying(255),
     srs character varying(255) NOT NULL,
     unit_id bigint NOT NULL,

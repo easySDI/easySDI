@@ -144,7 +144,7 @@ GeoExt.Lang.add("fr", {
     "gxp.plugins.WMSGetFeatureInfo.prototype": {
         buttonText: "Identify",
         infoActionTip: "Get Feature Info",
-        popupTitle: "Info sur l'objet"
+        popupTitle: "Info"
     },
     "gxp.plugins.Zoom.prototype": {
         zoomMenuText: "Zoom Box",

@@ -11,6 +11,11 @@ jQuery(document).ready(function() {
         addRow('', '');
     });
     
+    jQuery("#jform_type").click(function() {
+        displayMapTypeOptions();
+        jQuery('.nav-tabs a[href="#misc"]').tab('show');
+    });
+    
     jQuery(document).on('click', '[id^="delete_row"]', function() {
         jQuery(this).closest('tr').html('');
     });
@@ -22,6 +27,7 @@ jQuery(document).ready(function() {
         jQuery(this).attr('checked', true);
 
     });
+    displayMapTypeOptions();
 });
 
 function addRow(code, label, dflt) {
@@ -40,5 +46,31 @@ function addRow(code, label, dflt) {
     
     //
     jQuery("#tab-dyn").tableDnD();
+}
+
+function displayMapTypeOptions() {
+    if (jQuery("input[name='jform[type]']:checked").val()=='leaflet') {
+        jQuery("#jform_tool1-lbl").parent().parent().hide();
+        jQuery("#jform_tool4-lbl").parent().parent().hide();
+        jQuery("#jform_tool5-lbl").parent().parent().hide();
+        jQuery("#jform_tool10-lbl").parent().parent().hide();
+        jQuery("#jform_tool11-lbl").parent().parent().hide();
+        jQuery("#jform_tool15-lbl").parent().parent().hide();
+        jQuery("#jform_tool17-lbl").parent().parent().hide();
+        jQuery("#scaletab").hide();
+        jQuery("#wfstab").hide();
+        jQuery("#indoortab").hide();
+    }else{
+        jQuery("#jform_tool1-lbl").parent().parent().show();
+        jQuery("#jform_tool4-lbl").parent().parent().show();
+        jQuery("#jform_tool5-lbl").parent().parent().show();
+        jQuery("#jform_tool10-lbl").parent().parent().show();
+        jQuery("#jform_tool11-lbl").parent().parent().show();
+        jQuery("#jform_tool15-lbl").parent().parent().show();
+        jQuery("#jform_tool17-lbl").parent().parent().show();
+        jQuery("#scaletab").show();
+        jQuery("#wfstab").show();
+        jQuery("#indoortab").show();
+    }
 }
 

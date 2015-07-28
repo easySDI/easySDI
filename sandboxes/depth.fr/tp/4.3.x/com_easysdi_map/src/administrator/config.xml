@@ -12,7 +12,7 @@
                    required ="true"
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_PREVIEWMAP"
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_PREVIEWMAP" 
-                   query="SELECT id, name FROM #__sdi_map WHERE state=1 ORDER BY ordering" 
+                   query="SELECT id, name FROM #__sdi_map WHERE state=1 and type='geoext' ORDER BY ordering" 
                    key_field="id" 
                    value_field="name"
            />

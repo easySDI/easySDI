@@ -907,6 +907,7 @@ CREATE TABLE [#__sdi_map] (
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[title] [nvarchar](255) NOT NULL,
+        [type] [nvarchar](10) NOT NULL,
 	[rootnodetext] [nvarchar](255) NULL,
 	[srs] [nvarchar](255) NOT NULL,
 	[unit_id] [bigint] NOT NULL,

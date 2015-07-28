@@ -54,3 +54,5 @@ ALTER TABLE [#__sdi_pricing_order] ALTER COLUMN [cal_fee_ti]  decimal(19,2) NOT 
 ALTER TABLE [#__sdi_pricing_order] ADD CONSTRAINT DF_cal_fee_ti_po DEFAULT 0.00 FOR [cal_fee_ti];
 
 ALTER TABLE [#__sdi_organism_category_pricing_rebate] ALTER COLUMN [rebate]  decimal(19,2) NULL;
+
+ALTER TABLE [#__sdi_map] ADD [type] [nvarchar](10) DEFAULT 'geoext';

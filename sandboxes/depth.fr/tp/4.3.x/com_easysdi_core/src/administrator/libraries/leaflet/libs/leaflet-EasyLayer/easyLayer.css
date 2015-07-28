@@ -1,0 +1,40 @@
+#tree>h4 {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.easyLayerTree {
+  padding-left:0;
+}
+
+.easyLayerTree, .easyLayerTree ul {
+  list-style: none;
+}
+
+.easyLayerTree ul {
+  padding-left:5px;
+  margin-bottom:10px;
+  margin-top:5px;
+}
+
+.easyLayerTree input {
+  margin-right: 8px;
+}
+
+.easyLayerTree label {
+   cursor: pointer;
+}
+
+ul.easyLayerTree>li a {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+}
+
+ul.easyLayerTree li.on {
+  font-weight: bold;
+}
+
+ul.easyLayerTree li.outOfZoom {
+  font-style: italic;
+}

@@ -1984,6 +1984,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `title` VARCHAR(255)  NOT NULL ,
+`type` VARCHAR(10) DEFAULT 'geoext' NOT NULL ,
 `rootnodetext` VARCHAR(255)  ,
 `srs` VARCHAR(255)  NOT NULL ,
 `unit_id` INT(11) UNSIGNED NOT NULL ,

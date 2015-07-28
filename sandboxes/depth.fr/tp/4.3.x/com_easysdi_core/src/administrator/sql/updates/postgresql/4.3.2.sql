@@ -43,3 +43,5 @@ MODIFY cal_fee_ti  decimal(19,2) NOT NULL DEFAULT 0.00;
 
 ALTER TABLE #__sdi_organism_category_pricing_rebate
 MODIFY rebate  decimal(19,2) NULL;
+
+ALTER TABLE #__sdi_map ADD COLUMN "type" VARCHAR(10) DEFAULT 'geoext';

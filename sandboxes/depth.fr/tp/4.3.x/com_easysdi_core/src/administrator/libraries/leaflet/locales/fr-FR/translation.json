@@ -1,0 +1,66 @@
+{
+    "tools_tooltips": {
+        "layertree": "arbre des couches",
+        "legend": "légende et info",
+        "getfeatureinfo": "interrogation",
+        "zoomInTitle": "zoom avant",
+        "zoomOutTitle": "zoom arrière",
+        "zoomBoxTitle": "zoomer en dessinant un rectangle"
+    },
+
+    "geocoder": {
+        "placeholder": "rechercher ...",
+        "errorMessage": "Aucun résultat.",
+        "title": "trouver une adresse"
+    },
+    "print": {
+        "title": "Imprimer",
+        "cancel": "annuler",
+        "print": "Lancer l'impression"
+    },
+    "layertree": {
+        "zoomOnExtends": "Zoomer sur la couche",
+        "order": "Commander la donnée",
+        "download": "Télécharger le produit",
+        "metadata": "Fiche de métadonnes",
+        "remove": "Enlever la couche",
+        "openLegend": "voir la légende",
+        "legendTitle": "Légende",
+
+        "queryablelayers_title": "Sélectionnez la couche à interroger",
+        "noqueryablelayers": "Il n'y a aucune couche interrogeable sur la carte actuelle.",
+        "emptyselection": "Vider la liste",
+        "noresults": "aucun objet trouvé",
+
+        "addlayers": "ajouter des calques",
+        "selectserver": "Voir les calques disponibles",
+        "addserver": "ajouter un serveur",
+        "loadingtext": "chargement en cours ...",
+        "nolayersfound": "Aucune données disponibles"
+    },
+    "measure": {
+        "title": "Mesure de distances et de surfaces",
+        "start": "Commencer une nouvelle mesure",
+        "addpoint": "Cliquez sur la carte pour ajouter un point",
+        "cancel": "Annuler",
+        "finish": "Terminer la mesure",
+        "lastpoint": "Dernier point",
+        "pathdistance": "Longueur",
+        "meters": "mètres",
+        "kilometers": "kilomètres",
+        "area": "superficie",
+        "acres": "acres",
+        "sqmeters": "mètres carrés",
+        "hectares": "hectares",
+        "pointlocation": "Point",
+        "centerlocation": "Zoomer sur cet objet",
+        "delete": "Supprimer",
+        "linearmesurement": "Mesure de distance",
+        "areamesurement": "Mesure de superficie",
+        "perimeter": "Périmètre",
+
+        "thousandsep": " ",
+        "decsep": ","
+    }
+
+}

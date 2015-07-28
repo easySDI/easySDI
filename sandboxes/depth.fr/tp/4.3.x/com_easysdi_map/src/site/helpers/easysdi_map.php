@@ -16,219 +16,268 @@ abstract class Easysdi_mapHelper {
     public static function getMapScript($mapid, $cleared = false, $appname = "app", $renderto = "sdimapcontainer") {
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
         $item = $model->getData($mapid);
-
-        //Clear the map from all the tools
-        //The goal is to have a clean map to use as a simple and quick data preview
-        if ($cleared) {
-            $item->tools = array();
-            $item->urlwfslocator = "";
-        }
-
-        //Load admin language file
-        $lang = JFactory::getLanguage();
-        $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
-        $user = JFactory::getUser();
-
-        //Loading css files
-        $doc = JFactory::getDocument();
         $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
-        $doc->addStyleSheet($base_url . '/ext/resources/css/ext-all.css');
-        $doc->addStyleSheet($base_url . '/ext/resources/css/xtheme-gray.css');
-        $doc->addStyleSheet($base_url . '/OpenLayers-2.13.1/theme/default/style.css');
-        $doc->addStyleSheet($base_url . '/geoext/resources/css/popup.css');
-        $doc->addStyleSheet($base_url . '/geoext/resources/css/layerlegend.css');
-        $doc->addStyleSheet($base_url . '/geoext/resources/css/gxtheme-gray.css');
-        $doc->addStyleSheet($base_url . '/ux/geoext/resources/css/printpreview.css');
-        $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
-        $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
-        $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css');
+        $doc = JFactory::getDocument();
+        
+        if ($item->type=='geoext'){
+            //Clear the map from all the tools
+            //The goal is to have a clean map to use as a simple and quick data preview
+            if ($cleared) {
+                $item->tools = array();
+                $item->urlwfslocator = "";
+            }
 
-        //Loadind js files
-        if (JDEBUG) {
-            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
-            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
-            $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.js');
-            $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
-            $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');            
-            $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
-            $doc->addScript($base_url . '/ext/ext-all-debug.js');
-            $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
-            $doc->addScript($base_url . '/ux/ext/RowExpander.js');            
-            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');    
-            $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');            
-            $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
-            $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
-            $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
-            $doc->addScript($base_url . '/gxp/script/gxp.js');
-            $doc->addScript($base_url . '/easysdi/js/sdi.js');
-            
-        }else{
-            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
-            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
-            $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.min.js');
-            $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core.js');
-            $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
-            $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
-            $doc->addScript($base_url . '/ext/ext-all.js');
-            $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
-            $doc->addScript($base_url . '/ux/ext/RowExpander.js');
-            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');    
-            $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
-            $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
-            $doc->addScript($base_url . '/geoext/lib/geoextcon.min.js');
-            $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
-            $doc->addScript($base_url . '/gxp/script/gxp.min.js');
-            $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
-            //$doc->addScript($base_url . '/easysdi/js/sdi.js');
-        }
+            //Load admin language file
+            $lang = JFactory::getLanguage();
+            $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+            $user = JFactory::getUser();
 
-        foreach (glob(JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
-            $doc->addScript(str_replace(JPATH_BASE, '', $file));
-        }
+            //Loading css files
+            $doc->addStyleSheet($base_url . '/ext/resources/css/ext-all.css');
+            $doc->addStyleSheet($base_url . '/ext/resources/css/xtheme-gray.css');
+            $doc->addStyleSheet($base_url . '/OpenLayers-2.13.1/theme/default/style.css');
+            $doc->addStyleSheet($base_url . '/geoext/resources/css/popup.css');
+            $doc->addStyleSheet($base_url . '/geoext/resources/css/layerlegend.css');
+            $doc->addStyleSheet($base_url . '/geoext/resources/css/gxtheme-gray.css');
+            $doc->addStyleSheet($base_url . '/ux/geoext/resources/css/printpreview.css');
+            $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
+            $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
+            $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css');
 
-        $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/helpers/map.js');
+            //Loadind js files
+            if (JDEBUG) {
+                $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
+                $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
+                $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.js');
+                $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
+                $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');            
+                $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
+                $doc->addScript($base_url . '/ext/ext-all-debug.js');
+                $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
+                $doc->addScript($base_url . '/ux/ext/RowExpander.js');            
+                $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');    
+                $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');            
+                $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
+                $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
+                $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
+                $doc->addScript($base_url . '/gxp/script/gxp.js');
+                $doc->addScript($base_url . '/easysdi/js/sdi.js');
 
-        $app = JFactory::getApplication();
-        $params = $app->getParams('com_easysdi_map');
-        $proxyhost = JURI::base() . "index.php?option=com_easysdi_core&task=proxy.run&url=";
+            }else{
+                $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
+                $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
+                $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.min.js');
+                $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core.js');
+                $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
+                $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
+                $doc->addScript($base_url . '/ext/ext-all.js');
+                $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
+                $doc->addScript($base_url . '/ux/ext/RowExpander.js');
+                $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');    
+                $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
+                $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
+                $doc->addScript($base_url . '/geoext/lib/geoextcon.min.js');
+                $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
+                $doc->addScript($base_url . '/gxp/script/gxp.min.js');
+                $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
+                //$doc->addScript($base_url . '/easysdi/js/sdi.js');
+            }
 
-        //Default group
-        foreach ($item->groups as $group) :
-            if ($group->isdefault) {
+            foreach (glob(JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
+                $doc->addScript(str_replace(JPATH_BASE, '', $file));
+            }
+
+            $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/helpers/map.js');
+
+            $app = JFactory::getApplication();
+            $params = $app->getParams('com_easysdi_map');
+            $proxyhost = JURI::base() . "index.php?option=com_easysdi_core&task=proxy.run&url=";
+
+            //Default group
+            foreach ($item->groups as $group) :
+                if ($group->isdefault) {
+                    //Acces not allowed
+                    if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                        break;
+                    $defaultgroup = $group->alias;
+                    break;
+                }
+            endforeach;
+
+            //Groups are added in the order saved in the database
+            $groups = array();
+            foreach ($item->groups as $group) :
                 //Acces not allowed
                 if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                    break;
-                $defaultgroup = $group->alias;
-                break;
-            }
-        endforeach;
-
-        //Groups are added in the order saved in the database
-        $groups = array();
-        foreach ($item->groups as $group) :
-            //Acces not allowed
-            if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                continue;
-
-            if ($group->isbackground) {
-                $backgroundname = $group->name;
-                if ($group->isdefaultopen) :
-                    $backgroundexpanded = "true";
-                else :
-                    $backgroundexpanded = "false";
-                endif;
-            }
-            else {
-                $g = new stdClass();
-                $g->alias = $group->alias;
-                $g->title = $group->name;
-                $g->expanded = ($group->isdefaultopen) ? true : false;
-                array_push($groups, $g);
-            }
-        endforeach;
-
-        //Services
-        $services = array();
-        if (isset($item->physicalservices)) :
-            foreach ($item->physicalservices as $service) :
-                //Acces not allowed
-                if (!in_array($service->access, $user->getAuthorisedViewLevels()))
                     continue;
-                if($service->serviceconnector_id == 3) //WMTS
-                    continue;
-                array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
+
+                if ($group->isbackground) {
+                    $backgroundname = $group->name;
+                    if ($group->isdefaultopen) :
+                        $backgroundexpanded = "true";
+                    else :
+                        $backgroundexpanded = "false";
+                    endif;
+                }
+                else {
+                    $g = new stdClass();
+                    $g->alias = $group->alias;
+                    $g->title = $group->name;
+                    $g->expanded = ($group->isdefaultopen) ? true : false;
+                    array_push($groups, $g);
+                }
             endforeach;
-        endif;
 
-        if (isset($item->virtualservices)) :
-            foreach ($item->virtualservices as $service) {
-                if($service->serviceconnector_id == 3) //WMTS
-                    continue;
-                array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
-            }
-        endif;
-
-        //Layers
-        $layers = array();
-        foreach ($item->groups as $group) {
-            //Acces not allowed
-            if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                continue;
-
-            if (!empty($group->layers)) {
-                foreach ($group->layers as $layer) {
+            //Services
+            $services = array();
+            if (isset($item->physicalservices)) :
+                foreach ($item->physicalservices as $service) :
                     //Acces not allowed
-                    if (!in_array($layer->access, $user->getAuthorisedViewLevels()))
+                    if (!in_array($service->access, $user->getAuthorisedViewLevels()))
                         continue;
-                    array_push($layers, Easysdi_mapHelper::getLayerDescriptionObject($layer, $group));
+                    if($service->serviceconnector_id == 3) //WMTS
+                        continue;
+                    array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
+                endforeach;
+            endif;
+
+            if (isset($item->virtualservices)) :
+                foreach ($item->virtualservices as $service) {
+                    if($service->serviceconnector_id == 3) //WMTS
+                        continue;
+                    array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
+                }
+            endif;
+
+            //Layers
+            $layers = array();
+            foreach ($item->groups as $group) {
+                //Acces not allowed
+                if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                    continue;
+
+                if (!empty($group->layers)) {
+                    foreach ($group->layers as $layer) {
+                        //Acces not allowed
+                        if (!in_array($layer->access, $user->getAuthorisedViewLevels()))
+                            continue;
+                        array_push($layers, Easysdi_mapHelper::getLayerDescriptionObject($layer, $group));
+                    }
                 }
             }
-        }
 
-        //Mouseposition
-        $mouseposition = 'false';
-        foreach ($item->tools as $tool) {
-            if ($tool->alias == 'mouseposition') {
-                $mouseposition = 'true';
-                break;
+            //Mouseposition
+            $mouseposition = 'false';
+            foreach ($item->tools as $tool) {
+                if ($tool->alias == 'mouseposition') {
+                    $mouseposition = 'true';
+                    break;
+                }
             }
-        }
 
-        //Build object with params needed by the javascript map object
-        $data = new stdClass();
-        $data->bottomInUnits = $item->bottomInUnits;
-        $data->bottomOutUnits = $item->bottomOutUnits;
-        $data->topInUnits = $item->topInUnits;
-        $data->topOutUnits = $item->topOutUnits;
-        $data->title = $item->title;
-        $data->abstract = $item->abstract;
-        $data->tools = $item->tools;
-        $data->rootnodetext = $item->rootnodetext;
-        $data->srs = $item->srs;
-        $data->maxextent = $item->maxextent;
-        $data->maxresolution = $item->maxresolution;
-        $data->units = $item->unit;
-        $data->centercoordinates = $item->centercoordinates;
-        $data->restrictedextent = $item->restrictedextent;
-        $data->zoom = $item->zoom;
-        $data->urlwfslocator = $item->urlwfslocator;
-        $data->fieldname = $item->fieldname;
-        $data->featuretype = $item->featuretype;
-        $data->featureprefix = $item->featureprefix;
-        $data->fieldname = $item->fieldname;
-        $data->geometryname = $item->geometryname;
-        if(isset($item->level)){
-            $data->level = $item->level;
-        }
+            //Build object with params needed by the javascript map object
+            $data = new stdClass();
+            $data->bottomInUnits = $item->bottomInUnits;
+            $data->bottomOutUnits = $item->bottomOutUnits;
+            $data->topInUnits = $item->topInUnits;
+            $data->topOutUnits = $item->topOutUnits;
+            $data->title = $item->title;
+            $data->abstract = $item->abstract;
+            $data->tools = $item->tools;
+            $data->rootnodetext = $item->rootnodetext;
+            $data->srs = $item->srs;
+            $data->maxextent = $item->maxextent;
+            $data->maxresolution = $item->maxresolution;
+            $data->units = $item->unit;
+            $data->centercoordinates = $item->centercoordinates;
+            $data->restrictedextent = $item->restrictedextent;
+            $data->zoom = $item->zoom;
+            $data->urlwfslocator = $item->urlwfslocator;
+            $data->fieldname = $item->fieldname;
+            $data->featuretype = $item->featuretype;
+            $data->featureprefix = $item->featureprefix;
+            $data->fieldname = $item->fieldname;
+            $data->geometryname = $item->geometryname;
+            if(isset($item->level)){
+                $data->level = $item->level;
+            }
 
-        $c = ($cleared) ? 'true' : 'false';
+            $c = ($cleared) ? 'true' : 'false';
 
-        $output = '<script>
-            var msg = "' . JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE') . '";
-            var layermsg = "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '";
-            var cleared = "' . $c . '";
-            var data = ' . json_encode((array) $data) . ';
-            var renderto = "' . $renderto . '";
-            var proxyhost = "' . $proxyhost . '" ;
-            var params = ' . json_encode($params) . ';
-            var mwidth = "' . $params->get('iframewidth') . '";
-            var mheight = "' . $params->get('iframeheight') . '";
-            var langtag  = "' . $lang->getTag() . '";
-            var appname = "' . $appname . '";
-            var defaultgroup = "' . $defaultgroup . '";
-            var groups = ' . json_encode($groups) . ';
-            var backgroundname = "' . $backgroundname . '";
-            var backgroundexpanded = ' . $backgroundexpanded . ';
-            var loadingMask;
-            var width;
-            var heigth;
-            var services = ' . json_encode($services) . ';
-            var layers = ' . json_encode($layers) . ';
-            var mouseposition = "' . $mouseposition . '";          
+            $output = '<script>
+                var msg = "' . JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE') . '";
+                var layermsg = "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '";
+                var cleared = "' . $c . '";
+                var data = ' . json_encode((array) $data) . ';
+                var renderto = "' . $renderto . '";
+                var proxyhost = "' . $proxyhost . '" ;
+                var params = ' . json_encode($params) . ';
+                var mwidth = "' . $params->get('iframewidth') . '";
+                var mheight = "' . $params->get('iframeheight') . '";
+                var langtag  = "' . $lang->getTag() . '";
+                var appname = "' . $appname . '";
+                var defaultgroup = "' . $defaultgroup . '";
+                var groups = ' . json_encode($groups) . ';
+                var backgroundname = "' . $backgroundname . '";
+                var backgroundexpanded = ' . $backgroundexpanded . ';
+                var loadingMask;
+                var width;
+                var heigth;
+                var services = ' . json_encode($services) . ';
+                var layers = ' . json_encode($layers) . ';
+                var mouseposition = "' . $mouseposition . '";          
+
+
+            </script>
+            <div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
+        }else{
+            //Loadind js files
+            JHtml::_('jquery.framework');
+            if (JDEBUG) {
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/Leaflet.ZoomBox/L.Control.ZoomBox.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-measure/leaflet-measure.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-control-geocoder/Control.Geocoder.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/sidebar-v2/css/leaflet-sidebar.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyPrint/L.Control.EasyPrint.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyLayer/easyLayer.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyAddLayer/easyAddLayer.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyLegend/easyLegend.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-Easy/easyLeaflet.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/font-awesome-4.3.0/css/font-awesome.css');
+                        
+                $doc->addScript($base_url . '/leaflet/libs/i18next-1.9.0/i18next-1.9.0.min.js');
+                $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
+                $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Google.js');
+                $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Bing.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet.TileLayer.WMTS-master/leaflet-tilelayer-wmts-src.js');
+                $doc->addScript($base_url . '/leaflet/libs/Leaflet.ZoomBox/L.Control.ZoomBox.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-measure/leaflet-measure.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-control-geocoder/Control.Geocoder.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyPrint/L.Control.EasyPrint.js');
+                $doc->addScript($base_url . '/leaflet/libs/sidebar-v2/js/leaflet-sidebar.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyLayer/easyLayer.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyAddLayer/easyAddLayer.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyLegend/easyLegend.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.js');
+                $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
+                //$doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4-compressed.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
+                $doc->addScript($base_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js');
+            }else{
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/easySDI_leaflet.pack/main.css');
                 
-
-        </script>
-        <div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
+                $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
+                $doc->addScript($base_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js');
+                $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
+            }
+            
+            $output = "<div id='easySDIMap'><div id='map' class='easySDI-leaflet sidebar-map' data-url='".JURI::base(true)."/index.php?option=com_easysdi_map&view=map&id=".$mapid."&format=json'></div></div>";
+            //$output = "<div id='map' class='easySDI-leaflet sidebar-map' data-url='http://lebouzin/si17/index.php?option=com_easysdi_map&view=map&id=1&Itemid=128&format=json'></div>";
+        }
 
         return $output;
     }
@@ -484,54 +533,145 @@ abstract class Easysdi_mapHelper {
         return htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $metadata_guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
     }
     
+    private static function getServiceConnector($service) { //!TODO a refaire utiliser le modele ??? refaire aussi getServiceDescriptionObject ?
+        $keys=array(
+            1=>"CSW",
+            2=>"WMS",
+            3=>"WMTS",
+            4=>"WFS",
+            5=>"WCS",
+            6=>"WCPS",
+            7=>"SOS",
+            8=>"SPS",
+            9=>"WPS",
+            10=>"OLS",
+            11=>"WMSC",
+            12=>"Bing",
+            13=>"Google",
+            14=>"OSM"
+            );
+
+        $i= (integer) $service->serviceconnector_id;
+        if (isset($keys[$i])) return $keys[$i];
+
+        return 'serviceconnector'.$service->serviceconnector_id;
+    }
+
     /**
     * return options needed to use easySDImap_leaflet.js
     * @return [type] [description]
     */
     public static function getCleanMap($ori){
         $user = JFactory::getUser();
-        $res=array();
-        
+
+        $proxyhost = JURI::base() . "index.php?option=com_easysdi_core&task=proxy.run&url=";
+        $lang=JFactory::getLanguage()->getTag();
+
+        $res=compact('proxyhost','lang');
+
+        $default_group;
+
         if (in_array($ori->access, $user->getAuthorisedViewLevels())){
-            foreach (array('id','name','title','srs','maxresolution','numzoomlevel','maxextent','restrictedextent','centercoordinates','zoom','unit','tools') as $key) {
+            foreach (array('id','guid','name','title','srs','maxresolution','numzoomlevel','maxextent','restrictedextent','centercoordinates','zoom','unit','tools','abstract','title') as $key) {
                 if(property_exists($ori, $key)) {
-                  $res[$key]=$ori->$key;
-              }
+                    $res[$key]=$ori->$key;
+                }
             }
 
             $res['groups']=array();
+            $res['services']=array();
 
-            foreach ($ori->groups as $group) {
+
+
+              foreach ($ori->groups as $group) {
                 if (in_array($group->access, $user->getAuthorisedViewLevels())){
+
+                    if ($group->isdefault) $default_group=$group->alias;
+
                     $resG=array();
-                    foreach (array('id','alias','ordering','name','isbackground','isdefault') as $key) {
+                    foreach (array('id','alias','ordering','name','isbackground') as $key) {
                       if(property_exists($group, $key)) {
                         $resG[$key]=$group->$key;
-                        }
                     }
+                }
 
-                    $resG['layers']=array();
-                    foreach ($group->layers as $layer) {
-                      if (in_array($layer->access, $user->getAuthorisedViewLevels())){
-                        $resL=array();
-                        foreach (array('id','alias','ordering','name','servicetype','layername','istiled','isdefaultvisible','opacity','asOL','asOLstyle','asOLmatrixset','asOLoptions','metadatalink','attribution','serviceurl','serviceconnector','servicealias','version') as $key) {
+                $resG['layers']=array();
+                foreach ($group->layers as $layer) {
+                  if (in_array($layer->access, $user->getAuthorisedViewLevels())){
+                    $resL=array();
+                    //var_dump($layer); die();
+                    foreach (array('id','guid','alias','ordering','name','servicetype','layername','istiled','isdefaultvisible','opacity','asOL','asOLstyle','asOLmatrixset','asOLoptions','metadatalink','metadata_guid','attribution','diffusion_id','hasdownload','hasextraction','serviceurl','serviceconnector','servicealias','version') as $key) {
 
-                              if(property_exists($layer, $key)) {
-                                $resL[$key]=$layer->$key;
-                              }
-                          }
-                         $resG['layers'][]=$resL;
+                      if(property_exists($layer, $key)) {
+                        $resL[$key]=$layer->$key;
+                    }
+                }
 
-                      }
-                    }// end each layers
-                $res['groups'][]=$resG;
-              }
-            } // end each groups
+                if($resL['hasdownload'])
+                    $resL['downloadurl']=self::getLayerDownloadToolUrl($resL['diffusion_id']);
 
-            $config = JFactory::getConfig();
-            $res['sitename']=$config->get( 'sitename' );
+                if($resL['hasextraction'])
+                    $resL['extractionurl']=self::getLayerOrderToolUrl($resL['metadata_guid'],JFactory::getLanguage()->getTag(), '');
+
+                $resG['layers'][]=$resL;
+
+            }
+                        }// end each layers
+                        $res['groups'][]=$resG;
+                    }
+                } // end each groups
+
+
+                $res['default_group']=$default_group;
+
+                if(property_exists($ori,'virtualservices'))
+                foreach ($ori->virtualservices as $service) {
+                 if (in_array($service->access, $user->getAuthorisedViewLevels())){
+                    $desc=self::getServiceDescriptionObject($service);
+                    $resL=array(
+                        'servicetype'=>'virtual',
+                        'servicealias'=>$desc->alias,
+                        'serviceurl'=>$desc->url,
+                        'serviceconnector'=>self::getServiceConnector($service)
+                        );
+                    foreach (array('guid','ordering','name') as $key) {
+                      if(property_exists($service, $key)) {
+                        $resL[$key]=$service->$key;
+                    }
+                }
+
+                if ($resL['servicealias']!==null)
+                    $res['services'][]=$resL;
+
+            }
         }
-        return $res;
+
+
+
+        if(property_exists($ori,'physicalservices'))
+        foreach ($ori->physicalservices as $service) {
+            if (in_array($service->access, $user->getAuthorisedViewLevels())){
+                $desc=self::getServiceDescriptionObject($service);
+                $resL=array(
+                    'servicetype'=>'physical',
+                    'servicealias'=>isset($desc->alias)?$desc->alias:null,
+                    'serviceurl'=>isset($desc->url)?$desc->url:null,
+                    'serviceconnector'=>self::getServiceConnector($service)
+                    );
+                foreach (array('guid','ordering','name') as $key) {
+                  if(property_exists($service, $key)) {
+                    $resL[$key]=$service->$key;
+                }
+            }
+            if ($resL['servicealias']!==null)
+                $res['services'][]=$resL;
+            }
+        }
+
+    $config = JFactory::getConfig();
+    $res['sitename']=$config->get( 'sitename' );
+    }
+    return $res;
     }
 
 }

@@ -18,6 +18,17 @@
                 description="COM_EASYSDI_MAP_FORM_DESC_MAP_ALIAS" 
                 filter="safehtml" />
         
+        <field 	name="type" 
+                type="radio" 
+                class="btn-group"
+                default="GeoExt"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TYPE"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TYPE" 
+        >
+            <option value="geoext">GeoExt</option>
+            <option value="leaflet">Leaflet</option>
+        </field>
+        
         <field 	name="url" 
                 readonly="true"
                 size="500" 
