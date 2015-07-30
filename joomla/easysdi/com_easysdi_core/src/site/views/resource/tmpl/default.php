@@ -15,8 +15,7 @@ JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js')
-
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js');
 ?>
 
 <!-- Styling for making front end forms look OK -->
@@ -73,15 +72,25 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     
     js = jQuery.noConflict();
     js(document).ready(function() {
-        if(js('#jform_id').val())
-            js('#jform_organism_id').attr('disabled', true).trigger("liszt:updated");
+        
+     
         enableAccessScope();
-        onChangeOrganism();
+        onChangeOrganism();   
+        
+        if(js('#jform_id').val()){
+            js('#jform_organism_id').attr('disabled', true).trigger("liszt:updated");
+            js('<input />').attr({
+                type: 'hidden',
+                id: "jform_organism_id",
+                name: "jform[organism_id]",
+                value: js("#jform_organism_id :selected").val()
+            }).appendTo('#adminForm');
+
+        }
+        
         js('#addAllUsersBtn').on('click', function(mEvt){toggleAllUsers(false);mEvt.srcElement.blur();});
         js('#removeAllUsersBtn').on('click', function(mEvt){toggleAllUsers(true);mEvt.srcElement.blur();});
-        js('#form-resource').submit(function(event) {
-
-        });
+        js('#form-resource').submit(function(event) {});
     });
     
     var users = false,
