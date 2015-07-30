@@ -66,6 +66,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
     if(isset($tmpl)):?>
     <input type="hidden" name="tmpl" id="tmpl" value="<?php echo $tmpl ; ?>"/>
     <?php endif; ?>
+    <input type="hidden" name="option" id="option" value="com_easysdi_catalog"/>
     <input type="hidden" name="view" id="view" value="catalog"/>
     <input type="hidden" name="search" id="search" value="true"/>
     <input type="hidden" name="id" id="id" value="<?php echo $this->item->id; ?>"/>
