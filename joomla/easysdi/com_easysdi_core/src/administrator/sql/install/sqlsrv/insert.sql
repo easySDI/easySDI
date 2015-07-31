@@ -68,6 +68,7 @@ SET IDENTITY_INSERT [#__sdi_sys_rendertype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (1, 3, 5);
 INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (2, 3, 6);
+INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (3, 3, 2);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_entity] ON;
 INSERT [#__sdi_sys_entity] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'attribute');

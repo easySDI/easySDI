@@ -665,6 +665,7 @@ INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('24', '14', '11');
 
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('1', '3', '5');
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('2', '3', '6');
+INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('3', '3', '2');
 
 INSERT INTO `#__sdi_sys_searchtab` VALUES ('1', '1', '1', 'simple');
 INSERT INTO `#__sdi_sys_searchtab` VALUES ('2', '2', '1', 'advanced');

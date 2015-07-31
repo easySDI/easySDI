@@ -70,3 +70,7 @@ ALTER TABLE [#__sdi_order] ADD [validated] [smallint];
 SET IDENTITY_INSERT [#__sdi_sys_productstate] ON;
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'deleted');
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
+
+SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
+INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (3, 3, 2);
+SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] OFF;
