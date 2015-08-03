@@ -87,7 +87,7 @@ JHtml::_('formbehavior.chosen', 'select');
                         <tr class="order-line order-line-new">
                             <td class="ordercreated">
                                 <span class="hasTip" title="<?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>">
-                                    <?php echo Easysdi_shopHelper::getRelativeTimeString(new Datetime($item->created)); ?>
+                                    <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->created)); ?>
                                 </span>
                             </td>
                             <td class="ordername">
