@@ -752,6 +752,9 @@ abstract class Easysdi_shopHelper {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
     }
 
+    /**
+     * Add javascript config variables in DOM for SHOP MAP
+     */
     public static function addMapShopConfigToDoc() {
         $document = JFactory::getDocument();
         $document->addScriptDeclaration('var mapFillColor = "'.JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_color', '#EE9900') . '",
@@ -766,6 +769,10 @@ abstract class Easysdi_shopHelper {
                 mapMinSurfaceRectangleBorder = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100). ';');
     }
     
+    /**
+     * Return the modal's HTML to confirm the addition of a product in basket
+     * @return String HTML element of basket modal
+     */
     public static function getAddToBasketModal(){
         return '<div id="modal-dialog" class="modal hide fade" style="z-index: 1000000" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
                     <div class="modal-header">
@@ -780,6 +787,33 @@ abstract class Easysdi_shopHelper {
                         <button onClick="confirmAdd();" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">'. JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_CONFIRM") .'</button>
                     </div>
                 </div>';
+    }
+    
+    
+    /**
+     * Get a phrase like "2 hours ago" from a date. Units are: Year, Month, day, hour, minute, seconds
+     * @param DateTime $date
+     * @return String "xx timeUnit ago"
+     */
+    public static function getRelativeTimeString(DateTime $date) {
+        $current = new DateTime;
+        $diff = $current->diff($date);
+        $units = array("YEAR" => $diff->format("%y"),
+            "MONTH" => $diff->format("%m"),
+            "DAY" => $diff->format("%d"),
+            "HOUR" => $diff->format("%h"),
+            "MINUTE" => $diff->format("%i"),
+            "SECOND" => $diff->format("%s"),
+        );
+        $out = JText::_('MOD_EASYSDI_LASTORDERS_TIME_NOW');
+        foreach ($units as $unit => $amount) {
+            if (empty($amount)) {
+                continue;
+            }
+            $out = JText::plural('COM_EASYSDI_SHOP_TIME_'.$unit.'_AGO',$amount);
+            break;
+        }
+        return $out;
     }
 
 }
