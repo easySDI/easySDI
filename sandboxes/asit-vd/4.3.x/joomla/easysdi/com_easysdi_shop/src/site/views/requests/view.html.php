@@ -31,14 +31,14 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         //Load admin language file
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
-        
+
         $app = JFactory::getApplication();
 
         $this->user = sdiFactory::getSdiUser();
         $this->organisms = $this->user->getOrganisms(array(sdiUser::extractionresponsible, sdiUser::organismmanager));
-        if (!$this->user->isEasySDI || count($this->organisms)==0) {
+        if (!$this->user->isEasySDI || count($this->organisms) == 0) {
             $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-            $app->redirect("index.php");            
+            $app->redirect("index.php");
             return false;
         }
 
@@ -47,8 +47,14 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
-        
 
+        //Get clients orgnaisms for the filter
+        $model = $this->getModel('Requests', 'Easysdi_shopModel');
+        $orgQuery = $model->getClientOrganismsListQuery();
+        $db = JFactory::getDbo();
+        $db->setQuery($orgQuery);
+        $this->clientorganisms = $db->loadObjectList();
+        
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
