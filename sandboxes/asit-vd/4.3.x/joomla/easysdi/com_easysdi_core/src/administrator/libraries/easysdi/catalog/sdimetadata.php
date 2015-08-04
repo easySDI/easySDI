@@ -36,7 +36,8 @@ class sdiMetadata extends cswmetadata {
     const VALIDATED = 2;
     const PUBLISHED = 3;
     const ARCHIVED = 4;
-    const TRASHED = 5;
+
+    //namespaces uri
     const sdi_uri = 'http://www.easysdi.org/2011/sdi';
     const xmlns_uri = 'http://www.w3.org/2000/xmlns/';
     const csw_uri = 'http://www.opengis.net/cat/csw/2.0.2';

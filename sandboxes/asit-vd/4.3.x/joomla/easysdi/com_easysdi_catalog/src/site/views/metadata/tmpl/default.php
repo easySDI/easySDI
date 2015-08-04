@@ -41,7 +41,6 @@ JText::script('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN');
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
 JText::script('PUBLISHED');
-JText::script('TRASHED');
 JText::script('VALIDATED');
 
 JText::script('COM_EASYSDI_CATALOG_GEMET_HOME');

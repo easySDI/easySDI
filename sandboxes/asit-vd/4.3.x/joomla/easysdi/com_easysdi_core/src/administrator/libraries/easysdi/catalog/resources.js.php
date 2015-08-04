@@ -156,8 +156,7 @@ var metadataState = {
     INPROGRESS: 1,
     VALIDATED:  2,
     PUBLISHED:  3,
-    ARCHIVED:   4,
-    TRASHED:    5
+    ARCHIVED:   4
 };
 
 var Metadata = (function(){
