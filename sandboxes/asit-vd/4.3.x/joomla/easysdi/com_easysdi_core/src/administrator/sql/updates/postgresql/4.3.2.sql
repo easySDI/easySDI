@@ -51,3 +51,5 @@ CREATE INDEX text1 ON #__sdi_translation USING btree (text1);
 CREATE INDEX text2 ON #__sdi_translation USING btree (text2);
 
 INSERT INTO #__sdi_sys_productstate (id, ordering, state, value) VALUES (7, 7,1, 'deleted');
+
+INSERT INTO #__sdi_sys_rendertype_criteriatype (criteriatype_id, rendertype_id) VALUES (3, 2);

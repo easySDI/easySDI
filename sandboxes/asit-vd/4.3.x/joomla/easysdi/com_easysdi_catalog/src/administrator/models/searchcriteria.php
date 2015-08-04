@@ -166,6 +166,17 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
                         //Decode defaultvalue
                         $item->defaultvalues = json_decode($catalogsearchcriteria->defaultvalue, true);
                     }
+                } else if($item->criteriatype_id == 3 && $item->rendertype_id == 2){
+                    //Search criteria CSW
+                    $item->defaultvalue = null;
+                    $item->defaultcheckbox = $catalogsearchcriteria->defaultvalue;
+                }
+                
+                //Search filter
+                $searchfilter = JTable::getInstance('searchfilter', 'Easysdi_catalogTable');
+                $rowsfilter = $searchfilter->loadAll($item->id);
+                if (is_array($rowsfilter) && !empty($rowsfilter['searchfilter'])) {
+                    $item->searchfilter = $rowsfilter['searchfilter'];
                 }
             }
         }
@@ -249,22 +260,32 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
             else if (isset($data['version']))
                  $catalogsearchcriteria->defaultvalue = $data['version'];
             else if (isset($data['is']))
-                 $catalogsearchcriteria->defaultvalue = $data['is'];
-            else if (isset($data['defaultvalue']))
+                 $catalogsearchcriteria->defaultvalue = $data['is'];            
+            else if (!empty($data['defaultvalue']))
                  $catalogsearchcriteria->defaultvalue = $data['defaultvalue'];
+            else if (!empty($data['defaultcheckbox']))
+                 $catalogsearchcriteria->defaultvalue = $data['defaultcheckbox'];
             else
                  $catalogsearchcriteria->defaultvalue = null;
             
-            if (isset($data['from']) && strlen($data['from']) > 0)
+            if (!empty($data['from']))
                 $catalogsearchcriteria->defaultvaluefrom = $data['from'];
             else
                 $catalogsearchcriteria->defaultvaluefrom = null;
-            if (isset($data['to'])&& strlen($data['to']) > 0)
+            if (!empty($data['to']))
                $catalogsearchcriteria->defaultvalueto = $data['to'];
             else
                 $catalogsearchcriteria->defaultvalueto = null;
             
             $catalogsearchcriteria->store(true);
+            
+            //Save CSW search fields
+            $searchfilter = JTable::getInstance('searchfilter', 'Easysdi_catalogTable');
+            $data['searchcriteria_id'] = $data['id'];
+            if (!$searchfilter->saveAll($data)) {
+                $this->setError($searchfilter->getError());
+                return false;
+            }
 
             //Save translations
             $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
