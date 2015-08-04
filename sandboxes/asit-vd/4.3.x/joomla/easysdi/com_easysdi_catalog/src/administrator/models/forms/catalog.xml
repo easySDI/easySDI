@@ -87,8 +87,8 @@
                filter="ARRAY" /> 
         
         <field name="text2" type="multilingual" cols="20" rows="3" class="inputbox input-xlarge" 
-               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_INFORMATION"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_INFORMATION" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_NO_RESULTS_EXT_ITEM"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_NO_RESULTS_EXT_ITEM" 
                filter="ARRAY" /> 
         
         <field name="searchsort" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
