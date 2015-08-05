@@ -429,8 +429,8 @@ INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (5, 1, 'progre
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (6, 1, 'sent');
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (7, 1, 'saved');
 INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (8, 1, 'validation');
-INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (9, 1, 'rejected by thirdparty');
-INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (10, 1, 'rejected by supplier');
+INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (9, 1, 'rejectedbythirdparty');
+INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (10, 1, 'rejectedbysupplier');
 
 INSERT INTO #__sdi_sys_ordertype (ordering, state, value) VALUES (1, 1, 'order');
 INSERT INTO #__sdi_sys_ordertype (ordering, state, value) VALUES (2, 1, 'estimate');
@@ -451,8 +451,8 @@ INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (1, 1, 'avai
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (2, 1, 'await');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (3, 1, 'sent');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (4, 1, 'validation');
-INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (5, 1, 'rejected by thirdparty');
-INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (6, 1, 'rejected by supplier');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (5, 1, 'rejectedbythirdparty');
+INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (6, 1, 'rejectedbysupplier');
 INSERT INTO #__sdi_sys_productstate (ordering, state, value) VALUES (7, 1, 'deleted');
 
 INSERT INTO #__sdi_sys_productstorage (ordering, state, value) VALUES (1, 1, 'upload');

@@ -76,3 +76,9 @@ INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertyp
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] OFF;
 
 DELETE FROM [#__sdi_sys_metadatastate] WHERE [id]=5;
+
+UPDATE [#__sdi_sys_orderstate] SET [value] = 'rejectedbythirdparty' WHERE [id] = 9;
+UPDATE [#__sdi_sys_orderstate] SET [value] = 'rejectedbysupplier' WHERE [id] = 10;
+       
+UPDATE [#__sdi_sys_productstate] SET [value] = 'rejectedbythirdparty' WHERE [id] = 5;
+UPDATE [#__sdi_sys_productstate] SET [value] = 'rejectedbysupplier' WHERE [id] = 6;
