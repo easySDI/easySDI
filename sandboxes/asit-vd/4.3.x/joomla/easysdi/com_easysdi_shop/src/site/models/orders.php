@@ -99,14 +99,6 @@ class Easysdi_shopModelOrders extends JModelList {
         
         $query->from('#__sdi_order AS a');
 
-//        // Join over the users for the checked out user.
-//        $query->select('uc.name AS editor');
-//        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-//
-//        // Join over the created by field 'created_by'
-        $query->select('created_by.name AS created_by_name');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-
         //Join over the order state value
         $query->select('state.value AS orderstate');
         $query->innerjoin('#__sdi_sys_orderstate AS state ON state.id = a.orderstate_id');
@@ -114,6 +106,15 @@ class Easysdi_shopModelOrders extends JModelList {
         //Join over the order type value
         $query->select('type.value AS ordertype');
         $query->innerjoin('#__sdi_sys_ordertype AS type ON type.id = a.ordertype_id');
+        
+        //get client and client's organism
+        $query->select('juclient.name AS clientname');
+        $query->select('oclient.name AS organismname');
+        $query->innerjoin('#__sdi_user AS uclient ON uclient.id = a.user_id');
+        $query->innerjoin('#__users AS juclient ON juclient.id = uclient.user_id');
+        $query->innerjoin("#__sdi_user_role_organism urocli ON urocli.user_id=uclient.id");
+        $query->innerjoin("#__sdi_organism oclient ON oclient.id = urocli.organism_id");
+        $query->where('urocli.role_id = ' . Easysdi_shopHelper::ROLE_MEMBER);        
         
         
         

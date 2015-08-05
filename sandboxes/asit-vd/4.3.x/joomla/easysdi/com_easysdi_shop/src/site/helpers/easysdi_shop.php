@@ -24,7 +24,6 @@ abstract class Easysdi_shopHelper {
     const PRICING_FREE = 1;
     const PRICING_FEE_WITHOUT_PROFILE = 2;
     const PRICING_FEE_WITH_PROFILE = 3;
-    
     //ROLE
     const ROLE_MEMBER = 1;
     const ROLE_RESOURCEMANAGER = 2;
@@ -35,24 +34,21 @@ abstract class Easysdi_shopHelper {
     const ROLE_EXTRACTIONRESPONSIBLE = 7;
     const ROLE_PRICINGMANAGER = 9;
     const ROLE_VALIDATIONMANAGER = 10;
-
     // ORDERSTATE
-    const ORDERSTATE_ARCHIVED           = 1;
-    const ORDERSTATE_HISTORIZED         = 2;
-    const ORDERSTATE_FINISH             = 3;
-    const ORDERSTATE_AWAIT              = 4;
-    const ORDERSTATE_PROGRESS           = 5;
-    const ORDERSTATE_SENT               = 6;
-    const ORDERSTATE_SAVED              = 7;
-    const ORDERSTATE_VALIDATION         = 8;
-    const ORDERSTATE_REJECTED           = 9; // rejected by thirdparty
-    const ORDERSTATE_REJECTED_SUPPLIER  = 10; // rejected by supplier
-    
+    const ORDERSTATE_ARCHIVED = 1;
+    const ORDERSTATE_HISTORIZED = 2;
+    const ORDERSTATE_FINISH = 3;
+    const ORDERSTATE_AWAIT = 4;
+    const ORDERSTATE_PROGRESS = 5;
+    const ORDERSTATE_SENT = 6;
+    const ORDERSTATE_SAVED = 7;
+    const ORDERSTATE_VALIDATION = 8;
+    const ORDERSTATE_REJECTED = 9; // rejected by thirdparty
+    const ORDERSTATE_REJECTED_SUPPLIER = 10; // rejected by supplier
     // ORDERTYPE
-    const ORDERTYPE_ORDER       = 1;
-    const ORDERTYPE_ESTIMATE    = 2;
-    const ORDERTYPE_DRAFT       = 3;
-    
+    const ORDERTYPE_ORDER = 1;
+    const ORDERTYPE_ESTIMATE = 2;
+    const ORDERTYPE_DRAFT = 3;
     //PRODUCTSTATE
     const PRODUCTSTATE_AVAILABLE = 1;
     const PRODUCTSTATE_AWAIT = 2;
@@ -60,11 +56,12 @@ abstract class Easysdi_shopHelper {
     const PRODUCTSTATE_VALIDATION = 4;
     const PRODUCTSTATE_REJECTED_TP = 5; //product rejected by third party
     const PRODUCTSTATE_REJECTED_SUPPLIER = 6; // product rejected by supplier
-    
+
     /**
      * 
      * @param string $item : json {"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}
      */
+
     public static function addToBasket($item, $force = false) {
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
@@ -224,9 +221,7 @@ abstract class Easysdi_shopHelper {
 //        $return['COUNT'] = count($basket->extractions);
 //        echo json_encode($return);
 //        die();
-    }    
-    
-    
+    }
 
     public static function abortAdd() {
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null);
@@ -276,9 +271,9 @@ abstract class Easysdi_shopHelper {
             <div class="row-fluid" >
                 <div class="map-recap span8" >
                     <div >
-        <?php
-        echo $mapscript;
-        ?>
+                        <?php
+                        echo $mapscript;
+                        ?>
                     </div>                
                 </div>
                 <div  class="value-recap span4" >
@@ -288,46 +283,48 @@ abstract class Easysdi_shopHelper {
                         </div>                                
                     </div>   -->                 
                     <div  class="row-fluid" >
-        <?php if (!empty($item->basket->extent)): ?>
+                        <?php if (!empty($item->basket->extent)): ?>
                             <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h4>
                                 <div><?php
-            if (!empty($item->basket->extent->surface)) :
-                if (floatval($item->basket->extent->surface) > intval($paramsarray['maxmetervalue'])):
-                    echo round(floatval($item->basket->extent->surface) / 1000000, intval($paramsarray['surfacedigit']));
-                    echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
-                else:
-                    echo round(floatval($item->basket->extent->surface), intval($paramsarray['surfacedigit']));
-                    echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
-                endif;
-            endif;
-            ?></div>
+                                    if (!empty($item->basket->extent->surface)) :
+                                        if (floatval($item->basket->extent->surface) > intval($paramsarray['maxmetervalue'])):
+                                            echo round(floatval($item->basket->extent->surface) / 1000000, intval($paramsarray['surfacedigit']));
+                                            echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
+                                        else:
+                                            echo round(floatval($item->basket->extent->surface), intval($paramsarray['surfacedigit']));
+                                            echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
+                                        endif;
+                                    endif;
+                                    ?></div>
                             </div>         
-                                <?php endif; ?>
+                            <?php
+                        endif;
+                        ?>
                     </div> 
-                        <?php if (!empty($item->basket->extent->level)) : ?>
+                    <?php if (!empty($item->basket->extent->level)) : ?>
                         <div id="indoor-level" class="row-fluid" >
                             <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
                                 <span><?php echo json_decode($item->basket->extent->level)->label; ?></span>                            
                             </div>                                
                         </div>
-        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
 
             </div>
             <div class="row-fluid" >
                 <div id="perimeter-recap" class="span12" >
                     <div><h4><?php echo JText::_($item->basket->extent->name); ?></h4></div>                        
-        <?php
-        if (is_array($item->basket->extent->features)):
-            ?> <div id="perimeter-recap-details" style="overflow-y:auto; height:100px;"> <?php
-                        foreach ($item->basket->extent->features as $feature):
-                            ?>
+                    <?php
+                    if (is_array($item->basket->extent->features)):
+                        ?> <div id="perimeter-recap-details" style="overflow-y:auto; height:100px;"> <?php
+                            foreach ($item->basket->extent->features as $feature):
+                                ?>
                                 <div><?php echo $feature->name; ?></div>
                                 <?php
                             endforeach;
                             ?> </div>   <?php
-                        endif;
-                        ?>
+                    endif;
+                    ?>
 
                 </div>
             </div>
@@ -757,39 +754,38 @@ abstract class Easysdi_shopHelper {
      */
     public static function addMapShopConfigToDoc() {
         $document = JFactory::getDocument();
-        $document->addScriptDeclaration('var mapFillColor = "'.JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_color', '#EE9900') . '",
-                mapFillOpacity = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_opacity', 0.4). ',
-                mapStrokeColor = "'. JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_color', '#EE9900'). '",
-                mapStrokeOpacity = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_opacity', 1.0). ',
-                mapStrokeWidth = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_width', 2). ',
-                mapPointStrokeWidth = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_point_stroke_width', 2). ',
-                mapPointRadius = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5). ',
-                mapRotateIconURL = "'. JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png'). '",
-                mapMinSurfaceRectangle = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0). ',
-                mapMinSurfaceRectangleBorder = '. JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100). ';');
+        $document->addScriptDeclaration('var mapFillColor = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_color', '#EE9900') . '",
+                mapFillOpacity = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_fill_opacity', 0.4) . ',
+                mapStrokeColor = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_color', '#EE9900') . '",
+                mapStrokeOpacity = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_opacity', 1.0) . ',
+                mapStrokeWidth = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_width', 2) . ',
+                mapPointStrokeWidth = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_point_stroke_width', 2) . ',
+                mapPointRadius = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5) . ',
+                mapRotateIconURL = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png') . '",
+                mapMinSurfaceRectangle = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0) . ',
+                mapMinSurfaceRectangleBorder = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100) . ';');
     }
-    
+
     /**
      * Return the modal's HTML to confirm the addition of a product in basket
      * @return String HTML element of basket modal
      */
-    public static function getAddToBasketModal(){
+    public static function getAddToBasketModal() {
         return '<div id="modal-dialog" class="modal hide fade" style="z-index: 1000000" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 id="modalLabel">'. JText::_("COM_EASYSDI_SHOP_ORDER_DIALOG_HEADER") .'</h3>
+                        <h3 id="modalLabel">' . JText::_("COM_EASYSDI_SHOP_ORDER_DIALOG_HEADER") . '</h3>
                     </div>
                     <div class="modal-body">
-                        <p><div id="modal-dialog-body-text">'. JText::_("COM_EASYSDI_SHOP_ORDER_CONFIRM_LOAD_IN_BASKET") .'</div></p>
+                        <p><div id="modal-dialog-body-text">' . JText::_("COM_EASYSDI_SHOP_ORDER_CONFIRM_LOAD_IN_BASKET") . '</div></p>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true">'. JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_ABORT") .'</button>
-                        <button onClick="confirmAdd();" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">'. JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_CONFIRM") .'</button>
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">' . JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_ABORT") . '</button>
+                        <button onClick="confirmAdd();" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">' . JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_CONFIRM") . '</button>
                     </div>
                 </div>';
     }
-    
-    
+
     /**
      * Get a phrase like "2 hours ago" from a date. Units are: Year, Month, day, hour, minute, seconds
      * @param DateTime $date
@@ -810,10 +806,87 @@ abstract class Easysdi_shopHelper {
             if (empty($amount)) {
                 continue;
             }
-            $out = JText::plural('COM_EASYSDI_SHOP_TIME_'.$unit.'_AGO',$amount);
+            $out = JText::plural('COM_EASYSDI_SHOP_TIME_' . $unit . '_AGO', $amount);
             break;
         }
         return $out;
     }
 
+    /**
+     * 
+     * @param type $order an order element
+     * @param type $basket an easysdi basket (matching the order)
+     * @return string A bootstrap styled label element
+     */
+    public static function getOrderStatusLabel($order, $basket) {
+
+        //order and estimates (no draft)
+        if ($order->ordertype_id != 3) {
+            $progressCount = 0;
+            $statusCompl = '';
+            $labelClass = '';
+            //count finished products
+            foreach ($basket->extractions as $extraction) {
+                if ($extraction->productstate_id == 1)
+                    $progressCount++;
+            }
+
+            switch ($order->orderstate_id) {
+                case self::ORDERSTATE_ARCHIVED:
+                case self::ORDERSTATE_HISTORIZED:
+                case self::ORDERSTATE_FINISH:
+                    $labelClass = 'label-success';
+                    if (count($basket->extractions) > 1) {
+                        $statusCompl = ' (' . $progressCount . '/' . count($basket->extractions) . ')';
+                    }
+                    break;
+                case self::ORDERSTATE_AWAIT:
+                    $labelClass = 'label-warning';
+                    break;
+                case self::ORDERSTATE_PROGRESS:
+                    $labelClass = 'label-info';
+                    if (count($basket->extractions) > 1) {
+                        $statusCompl = ' (' . $progressCount . '/' . count($basket->extractions) . ')';
+                    }
+                    break;
+                case self::ORDERSTATE_SENT:
+                    $labelClass = 'label-inverse';
+                    break;
+                case self::ORDERSTATE_SAVED:
+                    $labelClass = 'label-success';
+                    break;
+                case self::ORDERSTATE_VALIDATION:
+                    $labelClass = 'label-warning';
+                    break;
+                case self::ORDERSTATE_REJECTED:
+                case self::ORDERSTATE_REJECTED_SUPPLIER:
+                    $labelClass = 'label-important';
+                    break;
+            }
+
+            return'<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
+
+            //drafts
+        } else {
+            return'<span class="label">' . JText::_($order->ordertype) . '</span>';
+        }
+    }
+
+    /**
+     * Return a string shortent at the end of penultimate word and add a endin string (...)
+     * @param string $string The string to shorten
+     * @param int $len The length to shorten the string to
+     * @param string $endchars The end character(s) , default '...'
+     * @return string the shorenend string
+     */
+    public static function getShortenedString($string, $len, $endchars = '...') {
+        if (strlen($string) > $len) {
+            // truncate string
+            $$stringtCut = substr($string, 0, $len);
+            // make sure it ends in a word so assassinate doesn't become ass...
+            return substr($$stringtCut, 0, strrpos($$stringtCut, ' ')) . $endchars;
+        }else{
+            return $string;
+        }
+    }
 }
