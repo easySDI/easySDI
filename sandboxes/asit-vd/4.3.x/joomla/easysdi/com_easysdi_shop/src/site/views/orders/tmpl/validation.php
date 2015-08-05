@@ -15,52 +15,31 @@ JHtml::_('behavior.tooltip');
 JHtml::_('formbehavior.chosen', 'select');
 ?>
 
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        jQuery('#tporganism').chosen({
-            allow_single_deselect: true
-        }).change(function () {
-            jQuery('#criterias').submit()
-        });
-
-        jQuery('input[name^=filter_status]').on('click', function () {
-            jQuery('#criterias').submit();
-        });
-
-        jQuery(document).on('click', 'a.reject_lnk', function () {
-            jQuery('#modal-dialog-reject input[name=id]').val(jQuery(this).attr('rel'));
-            jQuery('#modal-dialog-reject').modal('show');
-            return false;
-        });
-
-        jQuery('textarea#reason').on('input propertychange', function () {
-            jQuery('#order-reject button[type=submit]').prop('disabled', !(this.value.length > 20));
-        });
-
-        jQuery(document).on('click', '#order-reject button[type=submit]', function () {
-            jQuery('#order-reject').submit();
-        });
-    });
-</script>
-
 <div class="shop front-end-edit">
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERSVALIDATION'); ?></h1>
     <div class="well sdi-searchcriteria">
         <div class="row-fluid">
-            <form id='criterias' class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=orders'); ?>" method="post">
+            <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation'); ?>" method="post">
                 <div class="control-group pull-right">
-                    <fieldset class="radio btn-group btn-group-yesno">
-                        <input type="radio" id="state0" name="filter_status" value="0"<?php if ($this->state->get('filter.status') == 0): ?> checked='checked'<?php endif; ?>>
-                        <label for="state0" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERSVALIDATION_STATUS_DONE'); ?></label>
-                        <input type="radio" id="state1" name="filter_status" value="1"<?php if ($this->state->get('filter.status') == 1): ?> checked='checked'<?php endif; ?>>
-                        <label for="state1" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERSVALIDATION_STATUS_TODO'); ?></label>
-                    </fieldset>
-                    <select id='tporganism' name='filter_organism' data-placeholder='<?php echo JText::_('COM_EASYSDI_SHOP_ORDERSVALIDATION_CHOOSE_ORGANISM_PLACEHOLDER'); ?>'>
-                        <option></option>
-                        <?php foreach ($this->organisms as $organism): ?>
-                            <option value="<?php echo $organism->id; ?>"<?php if ($this->state->get('filter.organism') == $organism->id): ?> selected='selected'<?php endif; ?>><?php echo $organism->name; ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div id="filterstatus">
+                        <fieldset class="radio btn-group btn-group-yesno">
+                            <input type="radio" id="state0" name="filter_status" value="0"<?php if ($this->state->get('filter.status') == 0): ?> checked='checked'<?php endif; ?> onClick="this.form.submit();">
+                            <label for="state0" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERSVALIDATION_STATUS_DONE'); ?></label>
+                            <input type="radio" id="state1" name="filter_status" value="1"<?php if ($this->state->get('filter.status') == 1): ?> checked='checked'<?php endif; ?> onClick="this.form.submit();">
+                            <label for="state1" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERSVALIDATION_STATUS_TODO'); ?></label>
+                        </fieldset>
+                    </div>
+                    <div id="filterorganism" >
+                        <select id="filter_organism" name="filter_organism" onchange="this.form.submit();" class="inputbox">
+                            <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_ORDERS_ORGANISM_FILTER'); ?></option>
+                            <?php foreach ($this->organisms as $organism): ?>
+                                <option value="<?php echo $organism->id; ?>" <?php
+                                if ($this->state->get('filter.organism') == $organism->id) : echo 'selected="selected"';
+                                endif;
+                                ?> ><?php echo $organism->name; ?></option>
+                                    <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
             </form>
         </div>
