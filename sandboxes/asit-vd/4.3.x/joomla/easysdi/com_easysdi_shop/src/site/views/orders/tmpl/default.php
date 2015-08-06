@@ -105,7 +105,7 @@ JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.j
                             </td>
                             <td class="ordername">
                                 <strong>
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=request.edit&id=' . $item->id); ?>"><?php echo $item->name; ?></a>
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.edit&id=' . $item->id); ?>"><?php echo $item->name; ?></a>
                                 </strong> - <?php echo $item->id; ?>
                                 <?php
                                 //only show order type if estimate
@@ -158,7 +158,7 @@ JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.j
                                         </a>
                                         <ul class="dropdown-menu">
                                             <li>
-                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=request.edit&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_OPEN'); ?></a>
+                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.edit&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_OPEN'); ?></a>
                                             </li>
                                             <li>
                                                 <?php if ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER || $item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ESTIMATE): ?>
