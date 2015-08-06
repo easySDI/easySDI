@@ -12,20 +12,17 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHTML::_('behavior.modal');
 JHtml::_('behavior.tooltip');
-JHtml::_('formbehavior.chosen', 'select.chosen');
+JHtml::_('formbehavior.chosen', 'select');
 ?>
-<style type="text/css">
-    .label-important{
-        border-color: #b94a48;
-    }
-</style>
 
 <script type="text/javascript">
     jQuery(document).ready(function () {
         jQuery('#tporganism').chosen({
             allow_single_deselect: true
-        }).change(function(){jQuery('#criterias').submit()});
-        
+        }).change(function () {
+            jQuery('#criterias').submit()
+        });
+
         jQuery('input[name^=filter_status]').on('click', function () {
             jQuery('#criterias').submit();
         });
@@ -51,23 +48,19 @@ JHtml::_('formbehavior.chosen', 'select.chosen');
     <div class="well sdi-searchcriteria">
         <div class="row-fluid">
             <form id='criterias' class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=orders'); ?>" method="post">
-                <div class="control-group">
-                    <label><?php echo JText::_('COM_EASYSDI_SHOP_ORDERSVALIDATION_CHOOSE_ORGANISM'); ?></label>
-                    <select id='tporganism' name='filter_organism' data-placeholder='<?php echo JText::_('COM_EASYSDI_SHOP_ORDERSVALIDATION_CHOOSE_ORGANISM_PLACEHOLDER'); ?>'>
-                        <option></option>
-                        <?php foreach($this->organisms as $organism):?>
-                        <option value="<?php echo $organism->id;?>"<?php if($this->state->get('filter.organism')==$organism->id):?> selected='selected'<?php endif;?>><?php echo $organism->name;?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERSVALIDATION_STATUS'); ?></label>
+                <div class="control-group pull-right">
                     <fieldset class="radio btn-group btn-group-yesno">
-                        <input type="radio" id="state0" name="filter_status" value="0"<?php if($this->state->get('filter.status')==0):?> checked='checked'<?php endif;?>>
+                        <input type="radio" id="state0" name="filter_status" value="0"<?php if ($this->state->get('filter.status') == 0): ?> checked='checked'<?php endif; ?>>
                         <label for="state0" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERSVALIDATION_STATUS_DONE'); ?></label>
-                        <input type="radio" id="state1" name="filter_status" value="1"<?php if($this->state->get('filter.status')==1):?> checked='checked'<?php endif;?>>
+                        <input type="radio" id="state1" name="filter_status" value="1"<?php if ($this->state->get('filter.status') == 1): ?> checked='checked'<?php endif; ?>>
                         <label for="state1" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERSVALIDATION_STATUS_TODO'); ?></label>
                     </fieldset>
+                    <select id='tporganism' name='filter_organism' data-placeholder='<?php echo JText::_('COM_EASYSDI_SHOP_ORDERSVALIDATION_CHOOSE_ORGANISM_PLACEHOLDER'); ?>'>
+                        <option></option>
+                        <?php foreach ($this->organisms as $organism): ?>
+                            <option value="<?php echo $organism->id; ?>"<?php if ($this->state->get('filter.organism') == $organism->id): ?> selected='selected'<?php endif; ?>><?php echo $organism->name; ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </form>
         </div>
@@ -79,27 +72,59 @@ JHtml::_('formbehavior.chosen', 'select.chosen');
 
                 <thead>
                     <tr>
-                        <th><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED_BY') ?></th>
-                        <th><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_NAME') ?></th>
-                        <th><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED') ?></th>
-                        <th colspan="2"></th>
+                        <th class="ordercreated"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED') ?></th>
+                        <th class="orderid"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ORDER_NO') ?></th>
+                        <th class="ordername"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_NAME') ?></th>                        
+                        <th class="orderclient"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_CLIENT') ?></th>
+                        <th class="ordermandate"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_MANDATE') ?></th>
+                        <th class="orderstate"></th>
+                        <th></th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <?php foreach ($this->items as $item) : ?>
-                        <tr class="order-line order-line-new">
-                            <td class="ordercreatedby"><?php echo $item->created_by_name; ?></td>
-                            <td><a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $item->id); ?>"><?php echo $item->name; ?></a></td>
-                            <td class="ordercreated"><?php echo $item->created; ?></td>
-                            <?php if($item->orderstate_id == 8 && $this->isValidationManager):?>
-                                <td><a class="btn btn-success btn-small" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.validate&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_VALIDATE_ORDER'); ?></a></td>
-                                <td><a class="reject_lnk btn btn-danger btn-small" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.reject&id=' . $item->id); ?>" rel='<?php echo $item->id ?>'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_REJECT_ORDER'); ?></a></td>
-                            <?php else:?>
-                                <td colspan="2">&nbsp;</td>
-                            <?php endif;?>
+                    <?php
+                    foreach ($this->items as $item) :
+                        $basket = new sdiBasket();
+                        $basket->loadOrder($item->id);
+                        ?>
+                        <tr class="order-line order-line-new <?php echo('sdi-orderstate-' . preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-' . preg_replace('/\s+/', '', $item->ordertype) ); ?>">
+                            <td class="ordercreated">
+                                <span class="hasTip" title="<?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>">
+                                    <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->created)); ?>
+                                </span>
+                            </td>
+                            <td class="orderid">
+                                <span title="<?php echo $item->name; ?>" class="hasTip" >
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $item->id); ?>">
+                                        <?php echo($item->id); ?>
+                                    </a>
+                                </span>
+                            </td>
+                            <td class="ordername">
+                                <span title="<?php echo $item->id; ?>" class="hasTip" >
+                                    <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $item->id); ?>">
+                                        <?php echo $item->name; ?>
+                                    </a>
+                                </span>
+                            </td>
+                            <td class="orderclient">
+                                <span  class="hasTip" title="<?php echo($item->clientname); ?>">
+                                    <?php echo($item->organismname); ?>
+                                </span>
+                            </td>
+
+                            <td class="ordermandate">
+                                <?php echo Easysdi_shopHelper::getShortenedString($item->mandate_ref, 80); ?>
+                            </td>
+                            <td class="orderstate">
+                                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket); ?>
+                            </td>
+                            <td>
+                                <a class="btn btn-primary btn-small pull-right" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_OPEN'); ?></a>
+                            </td>
                         </tr>
-            <?php endforeach; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -107,34 +132,9 @@ JHtml::_('formbehavior.chosen', 'select.chosen');
 
     <div class="pagination">
         <p class="counter">
-<?php echo $this->pagination->getPagesCounter(); ?>
+            <?php echo $this->pagination->getPagesCounter(); ?>
         </p>
-<?php echo $this->pagination->getPagesLinks(); ?>
+        <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
 
-
-    <!-- MODAL -->
-    <div id="modal-dialog-reject" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <form id='order-reject' action='<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.reject'); ?>'>
-            <input type="hidden" name="task" value="order.reject" />
-            <input type="hidden" name="id" value="" />
-            <input type="hidden" name="option" value="com_easysdi_shop" />
-
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_ORDER_REJECT_DIALOG_HEADER") ?></h3>
-            </div>
-            <div class="modal-body">
-                <p><?php echo JText::_("COM_EASYSDI_SHOP_ORDER_REJECT_DIALOG_BODY") ?></p>
-                <p>
-                    <label for="reason"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK'); ?>:</label>
-                    <textarea id="reason" name="reason"></textarea>
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_("COM_EASYSDI_SHOP_ORDER_REJECT_MODAL_BTN_CANCEL") ?></button>
-                <button type='submit' class="btn btn-primary" data-dismiss="modal" aria-hidden="true" disabled="disabled"><?php echo JText::_("COM_EASYSDI_SHOP_ORDER_REJECT_MODAL_BTN_REJECT") ?></button>
-            </div>
-        </form>
-    </div>
 </div>
