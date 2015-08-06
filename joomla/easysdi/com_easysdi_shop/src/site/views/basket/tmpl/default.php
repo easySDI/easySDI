@@ -27,6 +27,8 @@ JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_LIST_FORMAT');
 JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_EMPTY_POINT_LIST');
 JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CLOSE');
 JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CREATE_F');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_AREA');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
