@@ -97,7 +97,7 @@ JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.j
                         $basket = new sdiBasket();
                         $basket->loadOrder($item->id);
                         ?>
-                        <tr class="order-line order-line-new sdi-orderstate-<?php echo (preg_replace('/\s+/', '', $item->orderstate)); ?>">
+                        <tr class="order-line order-line-new <?php echo('sdi-orderstate-'.preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-'.preg_replace('/\s+/', '', $item->ordertype)  ) ;?>">
                             <td class="ordercreated">
                                 <span class="hasTip" title="<?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>">
                                     <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->created)); ?>
@@ -119,48 +119,7 @@ JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.j
 
                             </td>
                             <td class="orderstate">
-                                <?php
-                                if ($item->ordertype_id != 3):
-
-                                    $progressCount = 0;
-                                    $statusCompl = '';
-                                    //count finished products
-                                    foreach ($basket->extractions as $extraction) {
-                                        if ($extraction->productstate_id == 1)
-                                            $progressCount++;
-                                    }
-                                    ?>
-                                    <span class="label <?php
-                                    switch ($item->orderstate_id) {
-                                        case 3:
-                                            echo 'label-success';
-                                            if (count($basket->extractions) > 1) {
-                                                $statusCompl = ' (' . $progressCount . '/' . count($basket->extractions) . ')';
-                                            }
-                                            break;
-                                        case 4:
-                                            echo 'label-warning';
-                                            break;
-                                        case 5:
-                                            echo 'label-info';
-                                            if (count($basket->extractions) > 1) {
-                                                $statusCompl = ' (' . $progressCount . '/' . count($basket->extractions) . ')';
-                                            }
-                                            break;
-                                        case 6:
-                                            echo 'label-inverse';
-                                            break;
-                                    }
-                                    ?>">
-                                        <?php echo JText::_($item->orderstate); ?> <?php echo $statusCompl; ?></span>
-
-                                <?php else: ?>
-                                    <span class="label">
-                                        <?php echo JText::_($item->ordertype); ?>
-                                    </span>
-                                <?php
-                                endif;
-                                ?>
+                                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket); ?>
                             </td>
                             <td>
                                 <div class="pull-right">
