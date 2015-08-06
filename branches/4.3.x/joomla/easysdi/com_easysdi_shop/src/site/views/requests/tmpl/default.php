@@ -14,8 +14,6 @@ JHTML::_('behavior.modal');
 JHtml::_('behavior.tooltip');
 JHTML::_('behavior.calendar');
 JHtml::_('formbehavior.chosen', 'select');
-$document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/views/requests/tmpl/requests.js');
 ?>
 <div class="shop front-end-edit">
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_REQUESTS'); ?></h1>
