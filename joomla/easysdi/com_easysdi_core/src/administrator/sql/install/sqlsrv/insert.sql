@@ -500,7 +500,6 @@ INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (1
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'validated');
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'published');
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'archived');
-INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'trashed');
 SET IDENTITY_INSERT [#__sdi_sys_metadatastate] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_metadataversion] ON;
 INSERT [#__sdi_sys_metadataversion] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'all');

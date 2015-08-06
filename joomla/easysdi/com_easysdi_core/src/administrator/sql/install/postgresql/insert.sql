@@ -367,7 +367,6 @@ INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (1, 1, 'inp
 INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (2, 1, 'validated');
 INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (3, 1, 'published');
 INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (4, 1, 'archived');
-INSERT INTO #__sdi_sys_metadatastate (ordering, state, value) VALUES (5, 1, 'trashed');
 
 INSERT INTO #__sdi_sys_metadataversion (ordering, state, value) VALUES (1, 1, 'all');
 INSERT INTO #__sdi_sys_metadataversion (ordering, state, value) VALUES (2, 1, 'last');
