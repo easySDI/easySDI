@@ -17,7 +17,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
-require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 /**
  * Easysdi_shop model.
