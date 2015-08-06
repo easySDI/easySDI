@@ -129,7 +129,7 @@ class Easysdi_contactModelcategory extends JModelAdmin {
             $table->load($data['id']);
 
             foreach($data as $key => $value){
-                if(isset($table->$key) || $key == 'overall_fee'){
+                if(property_exists($table,$key)){
                     $table->$key = $value;
                 }
             }
