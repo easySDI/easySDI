@@ -37,8 +37,7 @@ VALUES
 (1,1,'inprogress'),
 (2,1,'validated'),
 (3,1,'published'),
-(4,1,'archived'),
-(5,1,'trashed')
+(4,1,'archived')
 ;
 
 INSERT INTO `#__sdi_sys_spatialoperator` (ordering,state,value) 
