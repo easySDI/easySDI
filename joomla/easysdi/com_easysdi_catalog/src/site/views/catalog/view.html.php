@@ -101,39 +101,113 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
             $xpath->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
             $xpath->registerNamespace('gmd', 'http://www.isotc211.org/2005/gmd');
             $nodes = $xpath->query('//csw:SearchResults/gmd:MD_Metadata');
-            
+
             $results = array();
             foreach ($nodes as $node) {
                 $metadata = new cswmetadata();
                 $metadata->init($node);
                 $metadata->extend($this->item->alias, 'result', $this->preview, 'true', JFactory::getLanguage()->getTag());
-                $result = $metadata->applyXSL(array ('catalog' => $this->item->alias, 'type' => 'result', 'preview' => $this->preview));
-                
+                $result = $metadata->applyXSL(array('catalog' => $this->item->alias, 'type' => 'result', 'preview' => $this->preview));
+
                 $results[] = $result;
             }
 
             return $results;
         }
     }
-    
-    public function getSearchForm(){
+
+    /**
+     * Return the HTML search form for the current catalog
+     * @return type
+     */
+    public function getSearchForm() {
         $shf = new SearchHtmlForm($this->form);
-        
+
         $htmlForm = $shf->getForm();
-        
+
         return $htmlForm;
     }
-    
+
+    /**
+     * Return the "no results" page content (a string or article/table content)
+     * @param String $configVal values can be:
+     * - empty: will return the default string
+     * - an integer : will return the content of com_content article with this id
+     * - a strig composed like this: "databaseNonPrefixedTable:fieldToGet:idTolookFor" 
+     *   will get the content of the specified table/field with the id
+     * @return String, simple simple or HTML content for the "no result" page
+     */
+    public function getEmptyResultContent($configVal = '') {
+        // no config, use default string
+        if (is_null($configVal) || $configVal == '') {
+            return $this->getDefaultEmptyResultContent();
+        }
+        //with config and direct number, use joomla content article id
+        if (is_numeric($configVal)) {
+            $table_plan = & JTable::getInstance('Content', 'JTable');
+            $table_plan_return = $table_plan->load(array('id' => $configVal));
+            if ($table_plan_return) {
+                return($table_plan->introtext);
+            }
+        }
+        $expl = explode(":", $configVal);
+        if (strlen($expl[0]) > 1 & strlen($expl[1]) > 1 & is_numeric($expl[2]) & !isset($expl[3])) {
+            $tableName = $expl[0];
+            $theTable = '#__' . $expl[0];
+            $theField = $expl[1];
+            $theId = (int) $expl[2];
+            $theIdField = 'id';
+
+            $db = JFactory::getDbo();
+
+            //table does not exist
+            if (!array_search($db->getPrefix() . $tableName, $db->getTableList())) {
+                return $this->getDefaultEmptyResultContent();
+            }
+            $tableCols = $db->getTableColumns($theTable);
+            //select field does not exist
+            if (!array_key_exists($theField, $tableCols)) {
+                return $this->getDefaultEmptyResultContent();
+            }
+            //id field does not exist
+            if (!array_key_exists($theIdField, $tableCols)) {
+                return $this->getDefaultEmptyResultContent();
+            }
+            
+            //Try to load content from table
+            $query = $db->getQuery(true);
+            $query->select($db->escape($theField));
+            $query->from($db->escape($theTable));
+            $query->where('id=' . $db->escape($theId));
+            $db->setQuery($query, 0, 1);
+            $content = $db->loadResult();
+            if ($content) {
+                return $content;
+            }
+        }
+
+        //fallback
+        return $this->getDefaultEmptyResultContent();
+    }
+
+    /**
+     * Return the default "no results" string
+     * @return String
+     */
+    private function getDefaultEmptyResultContent() {
+        return JText::_('COM_EASYSDI_CATALOG_NO_RESULTS');
+    }
+
     public function isAdvanced() {
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
-        
-        if(empty($data)){
+
+        if (empty($data)) {
             return false;
         }
-        
-        if($data['searchtype'] == 'advanced'){
+
+        if ($data['searchtype'] == 'advanced') {
             return true;
-        }  else {
+        } else {
             return false;
         }
     }
