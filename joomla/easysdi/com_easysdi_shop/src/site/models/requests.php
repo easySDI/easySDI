@@ -100,6 +100,15 @@ class Easysdi_shopModelRequests extends JModelList {
         //Join over the order type value
         $query->select('type.value AS ordertype');
         $query->innerjoin('#__sdi_sys_ordertype AS type ON type.id = a.ordertype_id');
+        
+        //get client and client's organism
+        $query->select('juclient.name AS clientname');
+        $query->select('oclient.name AS organismname');
+        $query->innerjoin('#__sdi_user AS uclient ON uclient.id = a.user_id');
+        $query->innerjoin('#__users AS juclient ON juclient.id = uclient.user_id');
+        $query->innerjoin("#__sdi_user_role_organism uro ON uro.user_id=uclient.id");
+        $query->innerjoin("#__sdi_organism oclient ON oclient.id = uro.organism_id");
+        $query->where('uro.role_id = '.Easysdi_shopHelper::ROLE_MEMBER);
 
         // Filter by type
         $type = $this->getState('filter.type');
@@ -130,6 +139,7 @@ class Easysdi_shopModelRequests extends JModelList {
         if(count($managedOrganisms)==0){
             $managedOrganisms = array(-1);
         }
+        $query->select('COUNT(od.id) AS productcount');
         $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id')
                 ->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id')
                 ->innerJoin('#__sdi_version v ON v.id=d.version_id')
@@ -151,7 +161,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->where('pm.value = '. $query->quote('manual') );
         
 
-//        $query->group('a.id');
+        $query->group('a.id');
         $query->order('a.created DESC');
 
         return $query;
