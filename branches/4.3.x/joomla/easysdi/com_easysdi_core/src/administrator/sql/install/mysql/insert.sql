@@ -499,8 +499,8 @@ INSERT INTO `#__sdi_sys_orderstate` VALUES ('5', '5', '1', 'progress');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('6', '6', '1', 'sent');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '7', '1', 'saved');
 INSERT INTO `#__sdi_sys_orderstate` SET id=8, ordering=8, `state`=1, `value`='validation';
-INSERT INTO `#__sdi_sys_orderstate` SET id=9, ordering=9, `state`=1, `value`='rejected by thirdparty';
-INSERT INTO `#__sdi_sys_orderstate` SET id=10, ordering=10, `state`=1, `value`='rejected by supplier';
+INSERT INTO `#__sdi_sys_orderstate` SET id=9, ordering=9, `state`=1, `value`='rejectedbythirdparty';
+INSERT INTO `#__sdi_sys_orderstate` SET id=10, ordering=10, `state`=1, `value`='rejectedbysupplier';
 
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('1', '1', '1', 'order');
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('2', '2', '1', 'estimate');
@@ -510,8 +510,8 @@ INSERT INTO `#__sdi_sys_productstate` VALUES ('1', '1', '1', 'available');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('2', '2', '1', 'await');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('3', '3', '1', 'sent');
 INSERT INTO `#__sdi_sys_productstate` SET id=4, ordering=4, `state`=1, `value`='validation';
-INSERT INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejected by thirdparty';
-INSERT INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejected by supplier';
+INSERT INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejectedbythirdparty';
+INSERT INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejectedbysupplier';
 INSERT INTO `#__sdi_sys_productstate` VALUES ('7', '7', '1', 'deleted');
 
 
