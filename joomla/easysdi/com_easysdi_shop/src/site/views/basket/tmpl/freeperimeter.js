@@ -296,6 +296,10 @@ function getPolygonFromText(text) {
 
     //extract geometries from features
     for (var j = 0; j < points.length; j++) {
+        if (!app.mapPanel.map.getMaxExtent().contains(points[j].geometry.x, points[j].geometry.y)) {
+            alert(Joomla.JText._("COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_OUTSIDE_MAP"));
+            return false;
+        }
         pointsGeom.push(points[j].geometry.clone());
     }
 
