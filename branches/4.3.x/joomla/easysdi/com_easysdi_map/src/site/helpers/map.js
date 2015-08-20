@@ -1,11 +1,16 @@
 Ext.Container.prototype.bufferResize = false;
 Ext.onReady(function() {
+   startMap();
+});
+
+function startMap () {
     loadingMask = new Ext.LoadMask(Ext.getBody(), {msg: msg});
     loadingMask.show();
     height = Ext.get(renderto).getHeight();
+    width = Ext.get(renderto).getWidth() ;
     if (!height)
-        height = Ext.get(renderto).getWidth() * 1 / 2;
-    width = Ext.get(renderto).getWidth();
+        height = width * 1 / 2;
+    
     OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
     GeoExt.Lang.set(langtag);
     window.appname = new gxp.Viewer(getMapConfig());
@@ -15,8 +20,7 @@ Ext.onReady(function() {
         window.appname.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());
     }
     var locator = null;
-    window.appname.on("ready", function() {
-//        window.appname.mapPanel.map.setCenter(JSON.parse("[" + data.centercoordinates + "]"),window.appname.mapPanel.map.getZoom(), false, false);
+    window.appname.on("ready", function() {        
         window.appname.portalConfig.renderTo = "sdiNewContainer";
         if (data.urlwfslocator) {
             if (locator === null) {
@@ -54,12 +58,21 @@ Ext.onReady(function() {
     Ext.QuickTips.init();
     Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000});
     Ext.EventManager.onWindowResize(function() {
-        window.appname.portal.setWidth(Ext.get(renderto).getWidth());
-        window.appname.portal.setHeight(Ext.get(renderto).getHeight());        
+        //Modal has to be displayed (display=block) to allow components inside to be resized
+        //and, otherwhise, component sdimapcontainer will have 0 as values for both dimensions.
+        var previousCss, none = false;
+        if(jQuery("#modal-perimeter").css('display') == 'none'){            
+            previousCss  = jQuery("#modal-perimeter").attr("style");
+            jQuery("#modal-perimeter")
+                .css({position:   'absolute', visibility: 'hidden',display:    'block'});
+                none = true;               
+        }                
+        window.appname.portal.setSize(jQuery("#sdimapcontainer").width(),jQuery("#sdimapcontainer").height());       
+        if(none === true){
+            jQuery("#modal-perimeter").attr("style", previousCss ? previousCss : "");
+        }
     });
-
-});
-
+}
 
 function getMapConfig() {
     var config = {};
