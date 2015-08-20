@@ -10,6 +10,7 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modellist');
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 /**
  * Methods supporting a list of Easysdi_shop records.
@@ -190,9 +191,9 @@ class Easysdi_shopModelRequests extends JModelList {
         }
 
         if($doneRequests){
-            $query->where('od.productstate_id <> 3');
+            $query->where('od.productstate_id <> '.Easysdi_shopHelper::PRODUCTSTATE_SENT);
         }else{
-            $query->where('od.productstate_id = 3');
+            $query->where('od.productstate_id = '.Easysdi_shopHelper::PRODUCTSTATE_SENT);
         }
         
 
