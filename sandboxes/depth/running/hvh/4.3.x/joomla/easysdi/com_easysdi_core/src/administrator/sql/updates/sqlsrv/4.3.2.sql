@@ -74,3 +74,5 @@ SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (3, 3, 2);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] OFF;
+
+ALTER TABLE [#__sdi_order] ALTER COLUMN [remark] NVARCHAR (4000);

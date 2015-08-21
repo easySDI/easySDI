@@ -51,3 +51,5 @@ ALTER TABLE `#__sdi_translation` ADD INDEX `text2` (`text2`);
 INSERT IGNORE INTO `#__sdi_sys_productstate` VALUES ('7', '7', '1', 'deleted');
 
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('3', '3', '2');
+
+ALTER TABLE `#__sdi_order` MODIFY `remark` VARCHAR(4000);
