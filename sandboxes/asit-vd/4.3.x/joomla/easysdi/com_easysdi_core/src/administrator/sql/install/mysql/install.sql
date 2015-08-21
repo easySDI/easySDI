@@ -2329,7 +2329,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `validated_reason` VARCHAR(500),
 `buffer` FLOAT(40,20)  NULL ,
 `surface` FLOAT(40,20)  NULL ,
-`remark` VARCHAR(500)  NULL ,
+`remark` VARCHAR(4000)  NULL ,
 `mandate_ref` VARCHAR(75) NULL,
 `mandate_contact` VARCHAR(75),
 `mandate_email` VARCHAR(100),

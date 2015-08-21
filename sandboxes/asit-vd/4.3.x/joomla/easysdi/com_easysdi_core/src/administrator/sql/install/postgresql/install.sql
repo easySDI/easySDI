@@ -747,7 +747,7 @@ CREATE TABLE #__sdi_order (
     validated_reason character varying(255),
     buffer double precision,
     surface double precision,
-    remark character varying(500),
+    remark character varying(4000),
     mandate_ref VARCHAR(75) NULL,
     mandate_contact VARCHAR(75) NULL,
     mandate_email VARCHAR(100) NULL,
