@@ -385,7 +385,13 @@ class FormGenerator {
 
                 case EnumChildtype::$ATTRIBUT:
                     $attribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
-
+                    //Get default value if field is hidden or visible. 
+                    //This value will only be used for hidden or visible List stereotype 
+                    //because, disabled list will not post the selected default value
+                    //and readonly html attribute is not supported on bootstrap list
+                    if(($scope_id == 2 || $scope_id == 3) && $result->stereotype_id == 6){
+                        $result->defaultvalue = $this->getDefaultValue($result->id, null, true );
+                    }
                     foreach ($formStereotype->getStereotype($result) as $st) {
                         $attribute->appendChild($this->structure->importNode($st, true));
                     }
@@ -1705,9 +1711,8 @@ class FormGenerator {
     }
 
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
-
-
-        if (!empty($value) || $value == 0) {
+        
+        if (!empty($value) || (gettype($value) == "integer" && $value == 0)) {
             return $value;
         }
 
