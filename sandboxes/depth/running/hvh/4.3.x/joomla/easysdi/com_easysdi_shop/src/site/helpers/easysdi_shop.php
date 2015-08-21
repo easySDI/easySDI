@@ -751,6 +751,48 @@ abstract class Easysdi_shopHelper {
         if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusiontable->name)))
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
     }
+    
+        /**
+     * notifyValidationManager - notify the validation managers that order has been validated
+     * 
+     * @param integer $order_id
+     * @return void
+     * @since 4.3.2
+     */
+    public static function notifyAfterValidationManager($orderId, $thirdpartyId, $state_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        //Select orderdiffusion_id
+        $query->select('user_id')
+                ->from('#__sdi_user_role_organism')
+                ->where('role_id='.Easysdi_shopHelper::ROLE_VALIDATIONMANAGER.' AND organism_id='.(int)$thirdpartyId);
+        $db->setQuery($query);
+        $users_ids = $db->loadColumn();
+        
+        $url = JRoute::_(JURI::base().'index.php?option=com_easysdi_shop&view=order&layout=validation&id='.$orderId.'&vm=%s');
+        
+        //Select message regarding order state_id
+        switch ($state_id):
+            case Easysdi_shopHelper::ORDERSTATE_VALIDATION :
+                $subject = JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERVALIDATION_VALIDATIONMANAGER_SUBJECT');
+                $bodytext = 'COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERVALIDATION_VALIDATIONMANAGER_BODY';
+                break;
+            case Easysdi_shopHelper::ORDERSTATE_REJECTED :
+                $subject = JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERREJECT_VALIDATIONMANAGER_SUBJECT');
+                $bodytext = 'COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERREJECT_VALIDATIONMANAGER_BODY';
+                break;
+        endswitch;
+        
+        //Send email
+        foreach($users_ids as $user_id){
+            $user = sdiFactory::getSdiUser($user_id);
+            $url = sprintf($url, $user_id);            
+            if(!$user->sendMail($subject,JText::sprintf($bodytext, $orderId, $url) )){
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            }
+        }
+    }
 
     public static function addMapShopConfigToDoc() {
         $document = JFactory::getDocument();
