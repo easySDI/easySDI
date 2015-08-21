@@ -77,6 +77,9 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
                 Easysdi_shopHelper::notifyNotifiedUsers($diffusion->id);
                 Easysdi_shopHelper::notifyExtractionResponsible($diffusion->id);
             }
+            
+            //Notify validation managers
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_VALIDATION);
 
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
@@ -114,6 +117,9 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
 
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTED_SUCCESSFULLY'));
+            
+            //Notify validation managers
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_REJECTED );
         }
         
         // Redirect to the list screen.
