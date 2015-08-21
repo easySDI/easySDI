@@ -59,3 +59,5 @@ UPDATE `#__sdi_sys_orderstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 1
 
 UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbythirdparty' WHERE `id` = 5;
 UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 6;
+
+ALTER TABLE `#__sdi_order` MODIFY `remark` VARCHAR(4000);
