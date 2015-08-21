@@ -412,16 +412,6 @@ var buildMetadataDropDown = function(resource){
 };
 
 var buildManagementDropDown = function(resource){
-    var div = js('<div></div>').addClass('btn-group'),
-        a = js('<a></a>')
-            .addClass('btn')
-            .addClass('btn-primary')
-            .addClass('btn-small')
-            .addClass('dropdown-toggle')
-            .attr('data-toggle', 'dropdown')
-            .html('<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_MANAGE'); ?> '),
-        span = js('<span></span>').addClass('caret');
-    
     var dropdown = [];
     
     /* FIRST SECTION */
@@ -485,7 +475,19 @@ var buildManagementDropDown = function(resource){
         dropdown.push(section);
     }
     
-    js('td#'+resource.id+'_resource_management_actions').empty().append(div.append(a.append(span)).append(dropDown2HTML(dropdown)));
+    var div = js('<div></div>').addClass('btn-group'),
+        a = js('<a></a>')
+            .addClass('btn')
+            .addClass('btn-small')
+            .html('<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_MANAGE'); ?> ');
+    var span = js('<span></span>').addClass('caret');
+    if(dropdown.length === 0){
+        a.addClass('disabled') ;        
+        js('td#'+resource.id+'_resource_management_actions').empty().append(div.append(a.append(span)));
+    }else{
+        a.addClass('btn-primary').addClass('dropdown-toggle').attr('data-toggle', 'dropdown');            
+        js('td#'+resource.id+'_resource_management_actions').empty().append(div.append(a.append(span)).append(dropDown2HTML(dropdown)));
+    }
 };
 
 var buildStatusCell = function(resource){
