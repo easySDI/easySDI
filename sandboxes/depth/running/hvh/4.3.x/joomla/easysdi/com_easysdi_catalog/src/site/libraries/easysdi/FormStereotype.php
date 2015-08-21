@@ -80,7 +80,13 @@ class FormStereotype {
 
         if (!empty($result->attribute_codelist)) {
             $element->setAttribute('codeList', $result->attribute_codelist);
-            $element->setAttribute('codeListValue', '');
+           
+            //Get default value, only if field is hidden or visible
+            if(!empty($result->defaultvalue)){
+                 $element->setAttribute('codeListValue', $result->defaultvalue);
+            }else{
+                 $element->setAttribute('codeListValue', '');
+            }
         }
 
         return $element;
