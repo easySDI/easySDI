@@ -280,8 +280,8 @@ var Resource = (function(){
     <?php if($item->versioning): ?>resource.versioning = 1;<?php endif; ?>
     resource.assignment = <?php  echo $assignenabled; ?>;
     resource.synchronize = <?php  echo $synchronizeenabled; ?>;
-    <?php foreach($item->metadata as $key => $metadata):?>
-        resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, '<?php echo JText::_($metadata->value);?>', '<?php echo $metadata->published;?>');
+    <?php foreach($item->metadata as $key => $metadata):?>        
+        resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, <?php echo  json_encode(JText::_($metadata->value));?>, '<?php echo $metadata->published;?>');
     <?php endforeach;?>
     resources.add(resource);
 <?php endforeach; ?>
