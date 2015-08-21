@@ -1145,7 +1145,7 @@ CREATE TABLE [#__sdi_order] (
         [validated_reason] [nvarchar](500) ,
 	[buffer] [numeric](38, 18) NULL,
 	[surface] [numeric](38, 18) NULL,
-	[remark] [nvarchar](500) NULL,
+	[remark] [nvarchar](4000) NULL,
         [mandate_ref] [nvarchar](75) NULL,
         [mandate_contact] [nvarchar](75) NULL,
         [mandate_email] [nvarchar](100) NULL,
