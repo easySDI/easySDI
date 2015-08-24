@@ -206,11 +206,11 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->group('a.mandate_email');
         $query->group('a.level');
         $query->group('a.freeperimetertool');
-        $query->group('a.validated');
-        $query->group('created_by.name');
+        $query->group('a.validated');        
         $query->group('state.value');
         $query->group('type.value');
-       
+        $query->group('juclient.name');
+        $query->group('oclient.name');
        
         return $query;
     }
