@@ -94,7 +94,7 @@ class Easysdi_shopModelOrders extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'DISTINCT a.*'
+                        'list.select', ' a.*'
                 )
         );
 
@@ -187,7 +187,43 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->where('a.orderstate_id <> 2');
 
         $query->order('a.created DESC');
-
+        
+        $query->group('a.id');
+        $query->group('a.guid');
+        $query->group('a.alias');
+        $query->group('a.created_by');
+        $query->group('a.created');
+        $query->group('a.modified_by');
+        $query->group('a.modified');
+        $query->group('a.ordering');
+        $query->group('a.state');
+        $query->group('a.checked_out');
+        $query->group('a.checked_out_time');
+        $query->group('a.name');
+        $query->group('a.ordertype_id');
+        $query->group('a.orderstate_id');
+        $query->group('a.user_id');
+        $query->group('a.thirdparty_id');
+        $query->group('a.buffer');
+        $query->group('a.surface');
+        $query->group('a.remark');
+        $query->group('a.sent');
+        $query->group('a.completed');
+        $query->group('a.access');
+        $query->group('a.asset_id');
+        $query->group('a.validated_date');
+        $query->group('a.validated_reason');
+        $query->group('a.mandate_ref');
+        $query->group('a.mandate_contact');
+        $query->group('a.mandate_email');
+        $query->group('a.level');
+        $query->group('a.freeperimetertool');
+        $query->group('a.validated');
+        $query->group('created_by.name');
+        $query->group('state.value');
+        $query->group('type.value');
+       
+       
         return $query;
     }
 
