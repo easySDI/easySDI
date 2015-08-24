@@ -68,6 +68,7 @@ SET IDENTITY_INSERT [#__sdi_sys_rendertype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (1, 3, 5);
 INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (2, 3, 6);
+INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (3, 3, 2);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_entity] ON;
 INSERT [#__sdi_sys_entity] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'attribute');
@@ -499,7 +500,6 @@ INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (1
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'validated');
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'published');
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'archived');
-INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'trashed');
 SET IDENTITY_INSERT [#__sdi_sys_metadatastate] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_metadataversion] ON;
 INSERT [#__sdi_sys_metadataversion] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'all');
@@ -565,8 +565,8 @@ INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (5, 5
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'sent');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'saved');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('8', '8', '1', N'validation');
-INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('9', '9', '1', N'rejected by thirdparty');
-INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('10', '10', '1', N'rejected by supplier');
+INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('9', '9', '1', N'rejectedbythirdparty');
+INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('10', '10', '1', N'rejectedbysupplier');
 SET IDENTITY_INSERT [#__sdi_sys_orderstate] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_ordertype] ON;
 INSERT [#__sdi_sys_ordertype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'order');
@@ -578,8 +578,9 @@ INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (1,
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'await');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'sent');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'validation');
-INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'rejected by thirdparty');
-INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'rejected by supplier');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'rejectedbythirdparty');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'rejectedbysupplier');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'deleted');
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_productstorage] ON;

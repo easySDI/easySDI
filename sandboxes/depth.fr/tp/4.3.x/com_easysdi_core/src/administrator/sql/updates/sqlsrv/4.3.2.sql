@@ -54,3 +54,33 @@ ALTER TABLE [#__sdi_pricing_order] ALTER COLUMN [cal_fee_ti]  decimal(19,2) NOT 
 ALTER TABLE [#__sdi_pricing_order] ADD CONSTRAINT DF_cal_fee_ti_po DEFAULT 0.00 FOR [cal_fee_ti];
 
 ALTER TABLE [#__sdi_organism_category_pricing_rebate] ALTER COLUMN [rebate]  decimal(19,2) NULL;
+
+ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_state DEFAULT 1 FOR [state];
+ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_checkedout  DEFAULT '0'  FOR [checked_out];
+ALTER TABLE [#__sdi_pricing_profile] ADD CONSTRAINT DF_pp_checkedouttime DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
+
+ALTER TABLE [#__sdi_diffusion] ADD [packageurl] [nvarchar](500);
+UPDATE [#__sdi_diffusion] SET [packageurl]='{CODE}';
+
+CREATE NONCLUSTERED INDEX IX_NC_text1 ON [#__sdi_translation] (text1);
+CREATE NONCLUSTERED INDEX IX_NC_text2 ON [#__sdi_translation] (text2);
+ALTER TABLE [#__sdi_order] DROP COLUMN [validate];
+ALTER TABLE [#__sdi_order] ADD [validated] [smallint];
+
+SET IDENTITY_INSERT [#__sdi_sys_productstate] ON;
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'deleted');
+SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
+
+SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
+INSERT [#__sdi_sys_rendertype_criteriatype] ([id], [criteriatype_id], [rendertype_id]) VALUES (3, 3, 2);
+SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] OFF;
+
+DELETE FROM [#__sdi_sys_metadatastate] WHERE [id]=5;
+
+UPDATE [#__sdi_sys_orderstate] SET [value] = 'rejectedbythirdparty' WHERE [id] = 9;
+UPDATE [#__sdi_sys_orderstate] SET [value] = 'rejectedbysupplier' WHERE [id] = 10;
+       
+UPDATE [#__sdi_sys_productstate] SET [value] = 'rejectedbythirdparty' WHERE [id] = 5;
+UPDATE [#__sdi_sys_productstate] SET [value] = 'rejectedbysupplier' WHERE [id] = 6;
+
+ALTER TABLE [#__sdi_order] ALTER COLUMN [remark] NVARCHAR (4000);

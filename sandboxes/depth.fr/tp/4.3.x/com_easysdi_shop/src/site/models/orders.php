@@ -18,13 +18,6 @@ require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
  */
 class Easysdi_shopModelOrders extends JModelList {
     
-    const ORDERTYPE_ORDER       = 1;
-    const ORDERTYPE_ESTIMATE    = 2;
-    const ORDERTYPE_DRAFT       = 3;
-    
-    const USERROLE_VALIDATIONMANAGER = 10;
-    const USERROLE_ORGANISMMANAGER = 11;
-    
     /**
      * Constructor.
      *
@@ -35,9 +28,8 @@ class Easysdi_shopModelOrders extends JModelList {
     public function __construct($config = array()) {
         parent::__construct($config);
         
-        //Before displaying list, Archive and Historize old orders
-        $this->archiveOrders();
-        $this->historizeOrders();
+        //Before displaying list, delete old orders' files (according to clean up order delay )
+        $this->cleanUpHistoricOrders();
     }
     
     /**
@@ -101,19 +93,11 @@ class Easysdi_shopModelOrders extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'DISTINCT a.*'
+                        'list.select', ' a.*'
                 )
         );
         
         $query->from('#__sdi_order AS a');
-
-//        // Join over the users for the checked out user.
-//        $query->select('uc.name AS editor');
-//        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-//
-//        // Join over the created by field 'created_by'
-        $query->select('created_by.name AS created_by_name');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
         //Join over the order state value
         $query->select('state.value AS orderstate');
@@ -123,10 +107,19 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->select('type.value AS ordertype');
         $query->innerjoin('#__sdi_sys_ordertype AS type ON type.id = a.ordertype_id');
         
+        //get client and client's organism
+        $query->select('juclient.name AS clientname');
+        $query->select('oclient.name AS organismname');
+        $query->innerjoin('#__sdi_user AS uclient ON uclient.id = a.user_id');
+        $query->innerjoin('#__users AS juclient ON juclient.id = uclient.user_id');
+        $query->innerjoin("#__sdi_user_role_organism urocli ON urocli.user_id=uclient.id");
+        $query->innerjoin("#__sdi_organism oclient ON oclient.id = urocli.organism_id");
+        $query->where('urocli.role_id = ' . Easysdi_shopHelper::ROLE_MEMBER);        
+        
         
         
         // Filter by type
-        $type = $this->getState('layout.validation') ? self::ORDERTYPE_ORDER : $this->getState('filter.type');
+        $type = $this->getState('layout.validation') ? Easysdi_shopHelper::ORDERTYPE_ORDER : $this->getState('filter.type');
         if (is_numeric($type)) {
         	$query->where('a.ordertype_id = ' . (int) $type);
         }
@@ -178,13 +171,47 @@ class Easysdi_shopModelOrders extends JModelList {
             }
         }
         
-        
-        
         //Don't include historized item
         $query->where('a.orderstate_id <> 2');
         
         $query->order('a.created DESC');
-
+        
+        $query->group('a.id');
+        $query->group('a.guid');
+        $query->group('a.alias');
+        $query->group('a.created_by');
+        $query->group('a.created');
+        $query->group('a.modified_by');
+        $query->group('a.modified');
+        $query->group('a.ordering');
+        $query->group('a.state');
+        $query->group('a.checked_out');
+        $query->group('a.checked_out_time');
+        $query->group('a.name');
+        $query->group('a.ordertype_id');
+        $query->group('a.orderstate_id');
+        $query->group('a.user_id');
+        $query->group('a.thirdparty_id');
+        $query->group('a.buffer');
+        $query->group('a.surface');
+        $query->group('a.remark');
+        $query->group('a.sent');
+        $query->group('a.completed');
+        $query->group('a.access');
+        $query->group('a.asset_id');
+        $query->group('a.validated_date');
+        $query->group('a.validated_reason');
+        $query->group('a.mandate_ref');
+        $query->group('a.mandate_contact');
+        $query->group('a.mandate_email');
+        $query->group('a.level');
+        $query->group('a.freeperimetertool');
+        $query->group('a.validated');        
+        $query->group('state.value');
+        $query->group('type.value');
+        $query->group('juclient.name');
+        $query->group('oclient.name');
+       
         return $query;
     }
 
@@ -212,84 +239,52 @@ class Easysdi_shopModelOrders extends JModelList {
     }
     
     /**
-     * Archive orders if they are older than defined in admin
+     * Delete orders files if they are older than the "clean up order delay" 
+     * defined in admin     
      */
-    function archiveOrders() {
+    function cleanUpHistoricOrders() {
         $app = JFactory::getApplication();
-        $archiveorderdelay = $app->getParams('com_easysdi_shop')->get('archiveorderdelay');
+        $cleanuporderdelay = $app->getParams('com_easysdi_shop')->get('cleanuporderdelay');
         
-        if (is_numeric($archiveorderdelay))
-        {
-            // Get UTC for now.
-            $dNow = new JDate;
-            $dStart = clone $dNow;
-            $dStart->modify('-'.$archiveorderdelay.' day');
-
-            $db = $this->getDbo();
-            
-            $query = $db->getQuery(true);
-
-            $query->update('#__sdi_order');
-            $query->set('orderstate_id = 1');
-            $query->where('completed < ' . $db->quote($dStart->format('Y-m-d H:i:s')));
-            $query->where('orderstate_id = 3');
-
-            $db->setQuery($query);
-
-            return $db->execute();
-        }
-    }
-    
-    /**
-     * Historize orders if they are older than defined in admin
-     * This will also delete files associated to the order
-     */
-    function historizeOrders() {
-        $app = JFactory::getApplication();
-        $historyorderdelay = $app->getParams('com_easysdi_shop')->get('historyorderdelay');
-        
-         if (is_numeric($historyorderdelay))
+         if (is_numeric($cleanuporderdelay))
          {
             // Get UTC for now.
             $dNow = new JDate;
             $dStart = clone $dNow;
-            $dStart->modify('-'.$historyorderdelay.' day');
+            $dStart->modify('-'.$cleanuporderdelay.' day');
 
 
-            //Get All the orders to historize and delete associated files
-            //Load all status value
+            //Get all the terminated orders to delete associated files if delay has passed
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
             $query->select('d.id, d.order_id, o.alias ');
             $query->from($db->quoteName('#__sdi_order','o'));
             $query->join('INNER',$db->quoteName('#__sdi_order_diffusion','d'). ' ON (' . $db->quoteName('d.order_id') . ' = ' . $db->quoteName('o.id') . ')');
             $query->where('o.completed < ' . $db->quote($dStart->format('Y-m-d H:i:s')));
-            $query->where('o.orderstate_id = 1');
             $query->where('d.productstate_id = 1');
-            $db->setQuery($query);
+            $query->where('(o.orderstate_id = 3 OR o.orderstate_id = 1)');
+            $db->setQuery($query);            
             $orderstohistorize = $db->loadObjectList();
-            
-            $orderdirectory = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
             
             foreach ($orderstohistorize as $ordertohistorize) {
                //Suppression du répertoire de stockage de la commande
                $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
                $requestDir = JPATH_BASE. '/' .$folder . '/' . $ordertohistorize->order_id; 
                //recursieve delete
+               require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
                Easysdi_shopHelper::rrmdir($requestDir);
+               
+               //Change status of the order_diffusion to mark them deleted
+               //And clean the file name field
+                $query = $db->getQuery(true);
+                $query->update('#__sdi_order_diffusion');
+                $query->set('productstate_id = 7');
+                $query->set($db->quoteName('file') . ' = NULL');
+                $query->where('order_id = ' . $ordertohistorize->order_id);
+                $db->setQuery($query);
+                $s = $query->__toString();
+                $db->execute();
             }
-                        
-            //Change status of the orders to historised
-            $query = $db->getQuery(true);
-
-            $query->update('#__sdi_order');
-            $query->set('orderstate_id = 2');
-            $query->where('completed < ' . $db->quote($dStart->format('Y-m-d H:i:s')));
-            $query->where('orderstate_id = 1');
-
-            $db->setQuery($query);
-
-            return $db->execute();
          }
     }
 }

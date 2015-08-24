@@ -83,7 +83,7 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
                         ->from($db->quoteName('#__sdi_pricing_profile').' as pp')
                         ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate as ppcpr ON ppcpr.pricing_profile_id=pp.id')
                         ->where('pp.organism_id='.(int)$id)
-                        ->group('pp.id')
+                        ->group('pp.id, pp.name, pp.fixed_fee, pp.surface_rate, pp.min_fee, pp.max_fee')
                         ->having('pp.id IS NOT NULL');
             $db->setQuery($query);
             $this->_item->profiles = $db->loadObjectList();

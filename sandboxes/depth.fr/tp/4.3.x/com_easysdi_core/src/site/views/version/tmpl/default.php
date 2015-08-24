@@ -21,6 +21,7 @@ $document->addScript('components/com_easysdi_core/views/version/tmpl/version.js'
 ?>
 <?php
 require_once JPATH_BASE.'/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 /* datatable language */
 $ldao = new SdiLanguageDao();
 $user = new sdiUser();
@@ -42,17 +43,10 @@ if ($this->item) :
     JText::script('VALIDATED');
     JText::script('PUBLISHED');
     JText::script('ARCHIVED');
-    JText::script('TRASHED');
-    
-    $METADATASTATE_INPROGRESS = 1;
-    $METADATASTATE_VALIDATED = 2;
-    $METADATASTATE_PUBLISHED = 3;
-    $METADATASTATE_ARCHIVED = 4;
-    $METADATASTATE_TRASHED = 5;
     
     $versioning = ($this->item->versioning == 1) ? 'true' : 'false';
     $document->addScriptDeclaration('var versioning=' . $versioning . ';');
-    $isReadonly = !in_array($this->item->metadatastate, array($METADATASTATE_INPROGRESS, $METADATASTATE_VALIDATED)) || !$this->user->authorizeOnMetadata($this->item, sdiUser::resourcemanager) ? 'true' : 'false';
+    $isReadonly = !in_array($this->item->metadatastate, array(sdiMetadata::INPROGRESS, sdiMetadata::VALIDATED)) || !$this->user->authorizeOnMetadata($this->item, sdiUser::resourcemanager) ? 'true' : 'false';
     $document->addScriptDeclaration("var isReadonly = ".$isReadonly.";");
     ?>
 

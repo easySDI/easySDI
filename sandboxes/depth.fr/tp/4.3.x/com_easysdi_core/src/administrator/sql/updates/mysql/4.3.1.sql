@@ -40,6 +40,7 @@ UPDATE  #__sdi_language SET datatable='Chinese' WHERE code='zh-CN';
 
 CALL drop_column('sdi_perimeter', 'maplayer_id');
 ALTER TABLE #__sdi_perimeter ADD COLUMN `maplayer_id` INT(11) NULL;
+
 CALL drop_column('sdi_perimeter', 'featuretypefieldlevel');
 ALTER TABLE #__sdi_perimeter ADD COLUMN `featuretypefieldlevel` VARCHAR(100) NULL;
 

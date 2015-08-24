@@ -90,4 +90,20 @@ class Easysdi_shopTableperimeter extends sdiTable {
         return $assetParentId;
     }
 
+    /**
+     * Overrides sdiTable::check() method to avoid alias clean as the alias is used to store codes
+     * Will only manage the 'ordering' field
+     * @return boolean
+     * @see sdiTable::check
+     */
+    public function check() {
+        $fields = $this->getFields();
+        //If there is an ordering column and this is a new row then get the next ordering value
+        if (property_exists($this, 'ordering') && $this->id == 0) {
+            $this->ordering = $this->getNextOrder();
+        }
+        //Do not call parent check to avoid alias alteration
+        return true;
+    }
+
 }

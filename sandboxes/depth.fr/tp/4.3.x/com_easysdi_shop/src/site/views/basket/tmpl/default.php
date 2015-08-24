@@ -27,6 +27,9 @@ JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_LIST_FORMAT');
 JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_EMPTY_POINT_LIST');
 JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CLOSE');
 JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CREATE_F');
+JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_OUTSIDE_MAP');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_AREA');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -98,25 +101,6 @@ if ($this->item && $this->item->extractions) :
                                 </div>                                
                             </div>
                             <div id="perimeter-recap" class="row-fluid" style="<?php if (empty($this->item->extent)): ?>display: none;<?php endif; ?>" >
-                                <!--<div>
-                                    <h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h4>
-                                    <div>
-                                <?php
-                                /*
-                                  if (!empty($this->item->extent->surface)):
-                                  if (floatval($this->item->extent->surface) > intval($this->paramsarray['maxmetervalue'])):
-                                  echo round(floatval($this->item->extent->surface) / 1000000, intval($this->paramsarray['surfacedigit']));
-                                  echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
-                                  else:
-                                  echo round(floatval($this->item->extent->surface), intval($this->paramsarray['surfacedigit']));
-                                  echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
-                                  endif;
-                                  endif;
-                                 */
-                                ?>
-                                    </div>
-                                </div>-->
-
                                 <div id="perimeter-level" style="<?php if (empty($this->item->extent->level)): ?>display: none;<?php endif; ?>">
                                     <h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
                                     <div id="perimeter-level-value"><?php if (!empty($this->item->extent->level)): ?><?php echo json_decode($this->item->extent->level)->label; ?><?php endif; ?></div>
@@ -173,9 +157,9 @@ if ($this->item && $this->item->extractions) :
                                 <div id="thirdparty-info">
                                     <p><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EXPLANATION'); ?></p>
                                     <div>
-                                        <p><input type="text" required="true" name="mandate_ref" id="mandate_ref" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_REFERENCE'); ?>"/></p>
-                                        <p><input type="text" required="true" name="mandate_contact" id="mandate_contact" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_CONTACT'); ?>"/></p>
-                                        <p><input type="text" required="true" name="mandate_email" id="mandate_email" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EMAIL'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_ref" id="mandate_ref" value="<?php echo $this->item->mandate_ref; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_REFERENCE'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_contact" id="mandate_contact" value="<?php echo $this->item->mandate_contact; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_CONTACT'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_email" id="mandate_email" value="<?php echo $this->item->mandate_email; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EMAIL'); ?>"/></p>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -385,7 +369,7 @@ if ($this->item && $this->item->extractions) :
             </div>
         </div>
 
-        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%;"  class="modal invisible " tabindex="-1" role="dialog" aria-labelledby="modal-perimeter-label" data-backdrop="static" data-keyboard="false" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancel();">×</button>
                 <h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></h3>
@@ -520,7 +504,7 @@ if ($this->item && $this->item->extractions) :
                                 </div>
                                 <?php if ($this->importEnabled): ?>
                                     <div class="tab-pane" id="basket-tab-import-polygon">
-                                        <p id="#basket-impot-poly-help"><?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_HELP')); ?></p>
+                                        <p id="basket-impot-poly-help"><?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_HELP')); ?></p>
                                         <textarea id="basket-import-polygon-textarea" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_PLACEHOLDER'); ?>"></textarea>
                                         <br/>
                                         <br/>
@@ -595,12 +579,14 @@ if ($this->item && $this->item->extractions) :
                 if ('undefined' === typeof app) {
                     app = window.appname;
                 }
-                app.on("ready", function () {
-                    jQuery('#modal-perimeter').show();
-                    initMiniMap();
+                app.on("ready", function () {                    
+                   jQuery('#modal-perimeter').show();
+                   initMiniMap();
+                   
+                   jQuery('a[href$="#modal-perimeter"]').click(function(){jQuery('#modal-perimeter').removeClass('invisible');});
                 });
             });
-
+ 
             function initialization() {
                 miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
                 initDraw();
@@ -630,12 +616,7 @@ if ($this->item && $this->item->extractions) :
                     reloadFeatures<?php echo $this->item->extent->id; ?>();
     <?php endif; ?>
                 jQuery('#modal-perimeter').hide();
-            }
-            ;
-
-            //            function loadSelectLayerEnd(){
-            //                reloadFeatures<?php echo $this->item->extent->id; ?>();
-            //            }
+            };
         </script>
         <input type="hidden" name="perimeter" id="perimeter" value="<?php
         if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id;

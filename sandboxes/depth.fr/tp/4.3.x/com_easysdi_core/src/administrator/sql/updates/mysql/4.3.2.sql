@@ -41,3 +41,23 @@ MODIFY COLUMN `cal_fee_ti`  decimal(19,2) NOT NULL DEFAULT 0.00 AFTER `cal_total
 
 ALTER TABLE `#__sdi_organism_category_pricing_rebate`
 MODIFY COLUMN `rebate`  decimal(19,2) NULL DEFAULT NULL AFTER `category_id`;
+
+ALTER TABLE #__sdi_diffusion ADD packageurl VARCHAR(500) ;
+UPDATE #__sdi_diffusion SET packageurl='{CODE}';
+
+ALTER TABLE `#__sdi_translation` ADD INDEX `text1` (`text1`);
+ALTER TABLE `#__sdi_translation` ADD INDEX `text2` (`text2`);
+
+INSERT IGNORE INTO `#__sdi_sys_productstate` VALUES ('7', '7', '1', 'deleted');
+
+INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('3', '3', '2');
+
+DELETE FROM `#__sdi_sys_metadatastate` WHERE id=5;
+
+UPDATE `#__sdi_sys_orderstate` SET `value` = 'rejectedbythirdparty' WHERE `id` = 9;
+UPDATE `#__sdi_sys_orderstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 10;
+
+UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbythirdparty' WHERE `id` = 5;
+UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 6;
+
+ALTER TABLE `#__sdi_order` MODIFY `remark` VARCHAR(4000);

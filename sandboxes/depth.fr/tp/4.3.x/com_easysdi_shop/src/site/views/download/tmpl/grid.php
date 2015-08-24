@@ -77,8 +77,8 @@ Easysdi_shopHelper::addMapShopConfigToDoc();
         </script>
         <input type = "hidden" name = "task" value = "download.download" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-        <input type = "hidden" name = "id" value = "<?php echo $this->item->id; ?>" />
-        <input type = "hidden" name = "url" id="url" value = "" />
+        <input type = "hidden" name = "id" value = "<?php echo $this->item->id; ?>" />        
+        <input type = "hidden" name = "featurecode" id="featurecode" value = "" />        
         <?php echo JHtml::_('form.token'); ?>
     </form>
 
