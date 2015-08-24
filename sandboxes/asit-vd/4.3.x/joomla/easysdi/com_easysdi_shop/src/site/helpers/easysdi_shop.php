@@ -343,9 +343,9 @@ abstract class Easysdi_shopHelper {
                             <?php if ($allowDownload): ?>
                                 <div id="perimeter-recap-details-download">
                                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS'); ?><a href="#" onclick="downloadPerimeter('GML',<?php echo $item->id; ?>);
-                                                    return false;" >GML</a>, <a href="#" onclick="downloadPerimeter('KML',<?php echo $item->id; ?>);
-                                                            return false;" >KML</a>, <a href="#" onclick="downloadPerimeter('DXF',<?php echo $item->id; ?>);
-                                                                    return false;" >DXF</a>
+                                                        return false;" >GML</a>, <a href="#" onclick="downloadPerimeter('KML',<?php echo $item->id; ?>);
+                                                                return false;" >KML</a>, <a href="#" onclick="downloadPerimeter('DXF',<?php echo $item->id; ?>);
+                                                                        return false;" >DXF</a>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -983,7 +983,7 @@ abstract class Easysdi_shopHelper {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
     }
 
-        /**
+    /**
      * notifyValidationManager - notify the validation managers that order has been validated
      * 
      * @param integer $order_id
@@ -997,12 +997,12 @@ abstract class Easysdi_shopHelper {
         //Select orderdiffusion_id
         $query->select('user_id')
                 ->from('#__sdi_user_role_organism')
-                ->where('role_id='.Easysdi_shopHelper::ROLE_VALIDATIONMANAGER.' AND organism_id='.(int)$thirdpartyId);
+                ->where('role_id=' . Easysdi_shopHelper::ROLE_VALIDATIONMANAGER . ' AND organism_id=' . (int) $thirdpartyId);
         $db->setQuery($query);
         $users_ids = $db->loadColumn();
-        
-        $url = JRoute::_(JURI::base().'index.php?option=com_easysdi_shop&view=order&layout=validation&id='.$orderId.'&vm=%s');
-        
+
+        $url = JRoute::_(JURI::base() . 'index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $orderId . '&vm=%s');
+
         //Select message regarding order state_id
         switch ($state_id):
             case Easysdi_shopHelper::ORDERSTATE_VALIDATION :
@@ -1014,12 +1014,12 @@ abstract class Easysdi_shopHelper {
                 $bodytext = 'COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERREJECT_VALIDATIONMANAGER_BODY';
                 break;
         endswitch;
-        
+
         //Send email
-        foreach($users_ids as $user_id){
+        foreach ($users_ids as $user_id) {
             $user = sdiFactory::getSdiUser($user_id);
-            $url = sprintf($url, $user_id);            
-            if(!$user->sendMail($subject,JText::sprintf($bodytext, $orderId, $url) )){
+            $url = sprintf($url, $user_id);
+            if (!$user->sendMail($subject, JText::sprintf($bodytext, $orderId, $url))) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
             }
         }
@@ -1103,8 +1103,14 @@ abstract class Easysdi_shopHelper {
             $labelClass = '';
             //count finished products
             foreach ($basket->extractions as $extraction) {
-                if ($extraction->productstate_id == self::PRODUCTSTATE_AVAILABLE)
+                if (
+                        $extraction->productstate_id == self::PRODUCTSTATE_AVAILABLE ||
+                        $extraction->productstate_id == self::PRODUCTSTATE_DELETED ||
+                        $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_SUPPLIER ||
+                        $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_TP
+                ) {
                     $progressCount++;
+                }
             }
 
             switch ($order->orderstate_id) {
