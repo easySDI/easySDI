@@ -202,6 +202,42 @@ class Easysdi_shopModelRequests extends JModelList {
 
 
         $query->group('a.id');
+        $query->group('a.guid');
+        $query->group('a.alias');
+        $query->group('a.created_by');
+        $query->group('a.created');
+        $query->group('a.modified_by');
+        $query->group('a.modified');
+        $query->group('a.ordering');
+        $query->group('a.state');
+        $query->group('a.checked_out');
+        $query->group('a.checked_out_time');
+        $query->group('a.name');
+        $query->group('a.ordertype_id');
+        $query->group('a.orderstate_id');
+        $query->group('a.user_id');
+        $query->group('a.thirdparty_id');
+        $query->group('a.buffer');
+        $query->group('a.surface');
+        $query->group('a.remark');
+        $query->group('a.sent');
+        $query->group('a.completed');
+        $query->group('a.access');
+        $query->group('a.asset_id');
+        $query->group('a.validated_date');
+        $query->group('a.validated_reason');
+        $query->group('a.mandate_ref');
+        $query->group('a.mandate_contact');
+        $query->group('a.mandate_email');
+        $query->group('a.level');
+        $query->group('a.freeperimetertool');
+        $query->group('a.validated'); 
+        $query->group('uc.name');
+        $query->group('state.value');
+        $query->group('type.value');
+        $query->group('juclient.name');
+        $query->group('oclient.name');
+        
         $query->order('a.created DESC');
 
         return $query;
@@ -253,6 +289,7 @@ class Easysdi_shopModelRequests extends JModelList {
 
 
         $query->group('oclient.id');
+        $query->group('oclient.name');
         $query->order('oclient.name');
 
         return $query;
