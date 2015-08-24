@@ -21,6 +21,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
+$document->addScript($base_url . '/filesaver/FileSaver.js');
 $document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
