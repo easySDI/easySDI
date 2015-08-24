@@ -54,4 +54,12 @@ INSERT INTO #__sdi_sys_productstate (id, ordering, state, value) VALUES (7, 7,1,
 
 INSERT INTO #__sdi_sys_rendertype_criteriatype (criteriatype_id, rendertype_id) VALUES (3, 2);
 
+DELETE FROM #__sdi_sys_metadatastate WHERE id=5;
+
+UPDATE #__sdi_sys_orderstate SET value = 'rejectedbythirdparty' WHERE id = 9;
+UPDATE #__sdi_sys_orderstate SET value = 'rejectedbysupplier' WHERE id = 10;
+
+UPDATE #__sdi_sys_productstate SET value = 'rejectedbythirdparty' WHERE id = 5;
+UPDATE #__sdi_sys_productstate SET value = 'rejectedbysupplier' WHERE id = 6;
+
 ALTER TABLE #__sdi_order MODIFY remark VARCHAR(4000);

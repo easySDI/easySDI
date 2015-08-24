@@ -348,3 +348,4 @@ class com_easysdi_coreInstallerScript {
     }
 
 }
+

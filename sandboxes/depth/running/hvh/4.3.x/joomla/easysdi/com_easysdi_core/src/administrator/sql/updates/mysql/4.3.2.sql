@@ -52,4 +52,12 @@ INSERT IGNORE INTO `#__sdi_sys_productstate` VALUES ('7', '7', '1', 'deleted');
 
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('3', '3', '2');
 
+DELETE FROM `#__sdi_sys_metadatastate` WHERE id=5;
+
+UPDATE `#__sdi_sys_orderstate` SET `value` = 'rejectedbythirdparty' WHERE `id` = 9;
+UPDATE `#__sdi_sys_orderstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 10;
+
+UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbythirdparty' WHERE `id` = 5;
+UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 6;
+
 ALTER TABLE `#__sdi_order` MODIFY `remark` VARCHAR(4000);

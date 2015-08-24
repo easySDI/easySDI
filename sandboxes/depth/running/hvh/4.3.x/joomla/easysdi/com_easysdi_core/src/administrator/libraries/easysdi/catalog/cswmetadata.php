@@ -94,7 +94,7 @@ class cswmetadata {
         $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=" . $content . "&id=" . $this->guid;
 
         $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
-       
+
         if (!$response) {
             return false;
         }
@@ -253,10 +253,11 @@ class cswmetadata {
                 $exmetadata->setAttribute('updated', $this->metadata->modified);
 
                 $query = $this->db->getQuery(true)
-                        ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id,surfacemin,surfacemax')
-                        ->from('#__sdi_diffusion')
-                        ->where('version_id = ' . (int) $this->version->id)
-                        ->where('state = 1');
+                        ->select('d.id, d.guid ,d.pricing_id, d.hasdownload, d.hasextraction, d.accessscope_id, d.surfacemin, d.surfacemax, ps.value as productstorage')
+                        ->from('#__sdi_diffusion AS d')
+                        ->leftJoin('#__sdi_sys_productstorage ps ON d.productstorage_id=ps.id')
+                        ->where('d.version_id = ' . (int) $this->version->id)
+                        ->where('d.state = 1');
                 $this->db->setQuery($query);
                 $diffusion = $this->db->loadObject();
                 if (!empty($diffusion)):
@@ -273,7 +274,7 @@ class cswmetadata {
                     $exdiffusion->setAttribute('size_unit', '');
                     $exdiffusion->setAttribute('file_type', '');
                     $propertiesXMLDoc = $this->getShopExtractionProperties();
-                    if(!is_null($propertiesXMLDoc)){
+                    if (!is_null($propertiesXMLDoc)) {
                         $propertiesXML = $this->extendeddom->importNode($propertiesXMLDoc->documentElement, true);
                         //print_r($propertiesXML);die();
                         $exdiffusion->appendChild($propertiesXML);
@@ -332,6 +333,7 @@ class cswmetadata {
 
                     if ($right):
                         $download = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:download');
+                        $download->setAttribute('productstorage', $diffusion->productstorage);
                         $downloadlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&id=' . $diffusion->id));
                         $download->appendChild($downloadlink);
                         $action->appendChild($download);
@@ -533,7 +535,7 @@ class cswmetadata {
 
                 //Links
                 $query = $this->db->getQuery(true);
-                
+
                 $query->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type, t.text1 as title');
                 $query->from('#__sdi_versionlink vl');
                 $query->innerJoin('#__sdi_version v ON v.id = vl.parent_id');
@@ -543,8 +545,8 @@ class cswmetadata {
                 $query->leftJoin('#__sdi_translation t on t.element_guid = m.guid');
                 $query->leftJoin('#__sdi_language l ON l.id = t.language_id');
                 $query->where('vl.child_id = ' . (int) $this->version->id);
-                $query->where('l.code = ' . $query->quote($lang));    
-                
+                $query->where('l.code = ' . $query->quote($lang));
+
                 $this->db->setQuery($query);
                 $parentsitem = $this->db->loadObjectList();
                 $links = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:links');
@@ -562,7 +564,7 @@ class cswmetadata {
                 endforeach;
 
                 $query = $this->db->getQuery(true);
-                
+
                 $query->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type,  t.text1 as title');
                 $query->from('#__sdi_versionlink vl');
                 $query->innerJoin('#__sdi_version v ON v.id = vl.child_id');
@@ -573,7 +575,7 @@ class cswmetadata {
                 $query->leftJoin('#__sdi_language l ON l.id = t.language_id');
                 $query->where('vl.parent_id = ' . (int) $this->version->id);
                 $query->where('l.code = ' . $query->quote($lang));
-                
+
                 $this->db->setQuery($query);
                 $childrenitem = $this->db->loadObjectList();
                 $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
@@ -664,11 +666,11 @@ class cswmetadata {
         endif;
         $processor = new xsltProcessor();
         $processor->importStylesheet($style);
-        
+
         foreach ($params as $key => $value) {
             $processor->setParameter("", $key, $value);
         }
-        
+
         $html = $processor->transformToDoc($dom);
         $text = $html->saveHTML();
         //Workaround to avoid printf problem with text with a "%", must
@@ -753,7 +755,7 @@ class cswmetadata {
 
 
 //        $html = '<script src="' . JURI::root() . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>';
-        $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm'.$this->diffusion->id.'" name="adminForm" enctype="multipart/form-data">';
+        $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm' . $this->diffusion->id . '" name="adminForm" enctype="multipart/form-data">';
         $html .= '<div class="sdi-shop-order well">';
         $html .= '<div class="sdi-shop-properties" >';
         $html .= '<div class="sdi-shop-properties-title" ></div>';
@@ -863,7 +865,7 @@ class cswmetadata {
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
         $html .= '
             <div class="sdi-shop-toolbar-add-basket pull-right">
-                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton('.$this->diffusion->id.'); return false;">' . JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET') . '</button>
+                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton(' . $this->diffusion->id . '); return false;">' . JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET') . '</button>
                 <input type="hidden" name="diffusion_id" id="diffusion_id" value="' . $this->diffusion->id . '" />
             </div>
             ';
@@ -914,10 +916,10 @@ class cswmetadata {
                 ->order('p.ordering');
         $this->db->setQuery($query);
         $properties = $this->db->loadObjectList();
-        
-        if(count($properties)<1)
+
+        if (count($properties) < 1)
             return null;
-        
+
 
         $domDocProperties = new DOMDocument('1.0', 'UTF-8');
         $props = $domDocProperties->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_ExtractionProperties');
@@ -940,7 +942,7 @@ class cswmetadata {
                 $prop->setAttribute("alias", $property->alias);
                 $prop->setAttribute("label", $property->label);
                 $prop->setAttribute("type", $property->propertytype);
-                $prop->setAttribute("mandatory", $property->mandatory==1?'true':'false');
+                $prop->setAttribute("mandatory", $property->mandatory == 1 ? 'true' : 'false');
                 $props->appendChild($prop);
 
 
@@ -990,7 +992,6 @@ class cswmetadata {
                         }
                         break;
                 endswitch;
-
             } catch (Exception $exc) {
                 //User is not an EasySDI user
             }
