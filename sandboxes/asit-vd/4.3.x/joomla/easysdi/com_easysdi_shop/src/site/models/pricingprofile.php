@@ -81,6 +81,7 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
                         ->select('c.id, c.name, COUNT(ppcpr.id) as isFree')
                         ->from($db->quoteName('#__sdi_category').' as c')
                         ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate ppcpr ON ppcpr.category_id=c.id AND ppcpr.pricing_profile_id='. (int)$id)
+                        ->where('c.state = 1')
                         ->group('c.id, c.name');
             $db->setQuery($query);
             $this->_item->categories = $db->loadObjectList();
