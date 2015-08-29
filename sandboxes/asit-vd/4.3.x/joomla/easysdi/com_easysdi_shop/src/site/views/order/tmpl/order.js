@@ -22,6 +22,9 @@ function downloadPerimeter(format, orderId) {
         case "GML":
             getGMLFileFromFeatureList(orderId, layer);
             break;
+        case "GeoJSON":
+            getGeoJSONFileFromFeatureList(orderId, layer);
+            break;            
     }
     return false;
 }
@@ -39,6 +42,13 @@ function getKMLFileFromFeatureList(orderId, layer) {
         foldersDesc: orderId
     });
     saveTextAs(format.write(layer.features), orderId + ".kml");
+}
+
+function getGeoJSONFileFromFeatureList(orderId, layer) {
+    var srsName = appname.mapPanel.map.getProjection();
+
+    var format = new OpenLayers.Format.GeoJSON({});
+    saveTextAs(format.write(layer.features), orderId + ".geojson");
 }
 
 function getGMLFileFromFeatureList(orderId, layer) {
