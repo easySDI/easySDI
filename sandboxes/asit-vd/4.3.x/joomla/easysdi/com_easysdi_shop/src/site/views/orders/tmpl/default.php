@@ -133,8 +133,8 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                                             if ($extraction->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE):
                                                 if ($first)://Create the dropdown menu to hold the download links
                                                     ?>
-                                                    <div class="btn-group">
-                                                        <a class="btn btn-small dropdown-toggle sdi-btn-download-file-from-list" data-toggle="dropdown" href="#">
+                                                    <div class="btn-group sdi-btn-download-file-from-list">
+                                                        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                                                             <i class="icon-flag-2"></i>
                                                         </a>
                                                         <ul class="dropdown-menu">
