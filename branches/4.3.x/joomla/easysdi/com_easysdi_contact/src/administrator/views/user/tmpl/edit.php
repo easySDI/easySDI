@@ -93,7 +93,7 @@ JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');
             jQuery(" <a />", {
                 id: "edit_organism_link",
                 name: "edit_organism_link",
-                href: "index.php?option=com_users&task=user.edit&id=" + currentOrgId,
+                href: "index.php?option=com_easysdi_contact&task=organism.edit&id=" + currentOrgId,
                 text: linkText
             }).appendTo(jQuery('#jform_organismsMember').parent());
         }
