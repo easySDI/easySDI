@@ -13,13 +13,24 @@ $authorizeddiffusion = isset($displayData['authorizeddiffusion']) ? $displayData
 $managedOrganismsDiffusion = isset($displayData['managedOrganismsDiffusion']) ? $displayData['managedOrganismsDiffusion'] : array();
 
 $app = JFactory::getApplication();
+$doc = JFactory::getDocument();
 
 $cleanuporderdelay = $app->getParams('com_easysdi_shop')->get('cleanuporderdelay');
 
 $showPricing = isset($item->basket->pricing) && $item->basket->pricing->isActivated;
-$showActions = $viewType != Easysdi_shopHelper::ORDERVIEW_VALIDATION;
+
+// show the action column only if: 1) the order type is an order and the view is for the client OR 2) the view is for provider
+$showActions = ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER && $viewType == Easysdi_shopHelper::ORDERVIEW_ORDER) ||
+        $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST;
 
 $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty != 0;
+
+if (!$showPricing) {
+    $doc->addStyleDeclaration('   .price_column{ display : none; }');
+}
+if (!$showActions) {
+    $doc->addStyleDeclaration('   .action_column{ display : none; }');
+}
 ?>
 <div>
 
@@ -174,7 +185,19 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
 
     <!-- order products -->
     <div class="row-fluid shop-product">
-        <h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h2>
+        <h2><?php
+    switch ($viewType) {
+        case Easysdi_shopHelper::ORDERVIEW_ORDER:
+            echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_ORDER');
+            break;
+        case Easysdi_shopHelper::ORDERVIEW_REQUEST:
+            echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_REQUEST');
+            break;
+        case Easysdi_shopHelper::ORDERVIEW_VALIDATION:
+            echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_VALID');
+            break;
+    }
+    ?></h2>
 
         <?php foreach ($item->basket->extractions as $supplier_id => $supplier): ?>
             <?php
@@ -198,8 +221,8 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                     <thead>
                         <tr>
                             <td class="product_column" ><h4><?php echo JText::plural('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER', count($supplier->items)) . ' : ' . $supplier->name; ?></h4></td>
-                            <td class="price_column" style="<?php if (!$showPricing): ?>display:none;<?php endif; ?>"><h4><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></h4></td>
-                            <td class="action_column action_column_recap" style="<?php if (!$showActions): ?>display:none;<?php endif; ?>">&nbsp;</td>
+                            <td class="price_column"><h4><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></h4></td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -225,6 +248,7 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                             ?>
                             <tr rel="<?php echo $productItem->id; ?>">
                                 <td class="product_column">
+                                    <input type = "hidden" name = "jform[diffusion][]" value = "<?php echo $productItem->id; ?>" />
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&guid=' . $productItem->metadataguid); ?>"><?php echo $productItem->name; ?></a><br/>
 
                                     <div class="shop-basket-product-details">
@@ -239,13 +263,13 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                                                         ?>
 
                                                         <span class="shop-basket-property-value"><?php
-                                                            echo empty($value->value) ? $value->name : $value->value;
-                                                            ?></span><?php
-                                                        $i++;
-                                                        if ($i < $c)
-                                                            echo ', ';
-                                                    endforeach;
-                                                    ?>
+                                    echo empty($value->value) ? $value->name : $value->value;
+                                                        ?></span><?php
+                                                            $i++;
+                                                            if ($i < $c)
+                                                                echo ', ';
+                                                        endforeach;
+                                                        ?>
                                                 </li>
                                             <?php endforeach; ?>
                                         </ul>
@@ -256,14 +280,16 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                                             ?>
 
                                             <div class="shop-basket-product-fileupload"><i class="icon icon-paperclip"> </i> <input type="file" name="jform[file][<?php echo $productItem->id; ?>][]" id="file_<?php echo $productItem->id; ?>" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>></div>                                                                             
-                                            <div class="shop-basket-product-remark-field"><i class="icon icon-comment"> </i> <textarea id="remark_<?php echo $productItem->id; ?>" name="jform[remark][<?php echo $productItem->id; ?>]" rows="6" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_ORDER_REMARK_PLACEHOLDER'); ?>" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>></textarea></div>
+                                            <div class="shop-basket-product-remark-field"><i class="icon icon-comment"> </i>
+                                                <textarea class="sdi-provider-remark-field" id="remark_<?php echo $productItem->id; ?>" name="jform[remark][<?php echo $productItem->id; ?>]" rows="4" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_ORDER_REMARK_PLACEHOLDER'); ?>" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>></textarea>
+                                            </div>
                                             <?php
                                         elseif ($isCompleted || $isRejected) :
                                             // product has a response
                                             ?>
                                             <span class="<?php echo $textColorClass; ?> shop-basket-product-completed-date"><i class="icon icon-checkmark"> </i> <?php echo JText::sprintf('COM_EASYSDI_SHOP_ORDER_PRODUCT_COMPLETED_ON', JHtml::date($productItem->completed, JText::_('DATE_FORMAT_LC2'))); ?></span><br/>
-                                            <?php if (isset($productItem->remark)) : ?>
-                                                <span class="<?php echo $textColorClass; ?> shop-basket-product-remark"><i class="icon icon-comment"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRODUCT_REMARK'); ?><?php echo $productItem->remark; ?></span>
+                                            <?php if (isset($productItem->remark) && strlen($productItem->remark) > 0) : ?>
+                                                <span class="<?php echo $textColorClass; ?> shop-basket-product-remark"><i class="icon icon-comment"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRODUCT_REMARK'); ?></span><span class="shop-basket-product-remark-content"><?php echo $productItem->remark; ?></span>
                                                 <?php
                                             endif;
                                         endif;
@@ -272,7 +298,7 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                                     </div>
 
                                 </td>
-                                <td class="price_column" style="<?php if (!$showPricing): ?>display:none;<?php endif; ?>">
+                                <td class="price_column">
 
                                     <?php
                                     $product = $item->basket->pricing->suppliers[$supplier_id]->products[$productItem->id];
@@ -321,16 +347,15 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                                 </td>
 
 
-                                <td class="action_column action_column_recap" style="text-align: center;<?php if (!$showActions): ?>display:none;<?php endif; ?>">
-
+                                <td class="action_column action_column_recap">
                                     <?php
                                     if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST && $productItem->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_SENT) :
                                         // product need a response
                                         ?>
-                                        <button class="btn btn-success" onclick="Joomla.submitbutton('request.save')" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                        <button class="btn btn-success sdi-btn-upload-order-response" onclick="Joomla.submitbutton('request.save')" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             <span class="icon icon-upload"></span>
                                             Envoyer</button>
-                                        <button class="btn btn-danger btn-mini" onclick="" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                        <button class="btn btn-danger btn-mini sdi-btn-cancel-order-response" onclick="" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             Annuler</button>
 
                                         <!--
@@ -383,24 +408,23 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                                     <?php endif; ?>                                    
                                 </td>
                             </tr>
-                        <input type = "hidden" name = "jform[diffusion][]" value = "<?php echo $productItem->id; ?>" />
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
                     </tbody>
-                    <tfoot style="<?php if (!$showPricing): ?>display:none;<?php endif; ?>">
+                    <tfoot>
                         <tr>
                             <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
                             <td class="price_column supplier_cal_fee_ti"><?php echo isset($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti) : '-'; ?></td>
-                            <td class="action_column action_column_recap" style="<?php if (!$showActions): ?>display:none;<?php endif; ?>">&nbsp;</td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                         <tr style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
                             <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
                             <td class="price_column supplier_cal_total_amount_ti"><?php echo isset($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti) : '-'; ?></td>
-                            <td class="action_column action_column_recap" style="<?php if (!$showActions): ?>display:none;<?php endif; ?>">&nbsp;</td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                         <tr style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
                             <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
                             <td class="price_column supplier_cal_total_rebate_ti"><?php echo isset($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) ? Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) : '-'; ?></td>
-                            <td class="action_column action_column_recap" style="<?php if (!$showActions): ?>display:none;<?php endif; ?>">&nbsp;</td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -412,7 +436,7 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                 <tr>
                     <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PLATFORM'); ?></h4></td>
                     <td class="price_column">&nbsp;</td>
-                    <td class="action_column action_column_recap" style="<?php if (!$showActions): ?>display:none;<?php endif; ?>">&nbsp;</td>
+                    <td class="action_column action_column_recap">&nbsp;</td>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -422,14 +446,14 @@ $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty !
                     <td class="price_column">
                         <span class="pricingFeeTI"><?php echo isset($item->basket->pricing->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($item->basket->pricing->cal_fee_ti) : '-'; ?></span>
                     </td>
-                    <td class="action_column action_column_recap" style="<?php if (!$showActions): ?>display:none;<?php endif; ?>">&nbsp;</td>
+                    <td class="action_column action_column_recap">&nbsp;</td>
                 </tr>
                 <tr>
                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOTAL'); ?></td>
                     <td class="price_column">
                         <span class="pricingTotalAmountTI"><?php echo!isset($item->basket->pricing->cal_total_amount_ti) ? '-' : Easysdi_shopHelper::priceFormatter($item->basket->pricing->cal_total_amount_ti); ?></span>
                     </td>
-                    <td class="action_column action_column_recap" style="<?php if (!$showActions): ?>display:none;<?php endif; ?>">&nbsp;</td>
+                    <td class="action_column action_column_recap">&nbsp;</td>
                 </tr>
             </tfoot>
         </table>
