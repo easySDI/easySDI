@@ -41,8 +41,8 @@ class Easysdi_shopViewRequest extends JViewLegacy {
         $this->user = sdiFactory::getSdiUser();
         
         $extractionsIds = array_map(function($d){return $d->id;}, $this->item->basket->extractions);
-        $this->authorizeddiffusion = array_intersect($extractionsIds, $this->user->getResponsibleExtraction());
-        $this->managedOrganismsDiffusion = array_map(function($o){return $o->id;}, $this->user->getOrganismManagerOrganisms());
+        $this->authorizeddiffusion = array_intersect($extractionsIds, (array)$this->user->getResponsibleExtraction());
+        $this->managedOrganismsDiffusion = array_map(function($o){return $o->id;}, (array)$this->user->getOrganismManagerOrganisms());
         
         if (!$this->user->isEasySDI || (count($this->authorizeddiffusion)==0 && !$this->user->isOrganismManager($extractionsIds, 'diffusion'))) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
