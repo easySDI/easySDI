@@ -20,16 +20,23 @@ div#thirdparty-info{
 }
 div.shop-product .table td{
     width: 75%;
-    word-break: break-all;
+    /*word-break: break-all;*/
 }
 div.shop-product .table td.price_column{
     width: auto;
     min-width: 132px;
     text-align: right;
+    vertical-align: middle;
 }
 div.shop-product .table td.action_column{
     width: 5%;
+    vertical-align: middle;
 }
+
+div.shop-product .table td.action_column.action_column_recap{
+    min-width: 132px;
+}
+
 div.shop-product .table tfoot td{
     text-align: right;
 }
