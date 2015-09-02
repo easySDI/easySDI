@@ -110,7 +110,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                                 </strong> - <?php echo $item->id; ?>
                                 <?php
                                 //only show order type if estimate
-                                if ($item->ordertype_id == 2):
+                                if ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ESTIMATE):
                                     $classicontype = 'icon-lamp';
                                     ?>
                                     <i class="<?php echo $classicontype; ?>"></i> <?php echo JText::_($item->ordertype); ?>
@@ -134,7 +134,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                                                 if ($first)://Create the dropdown menu to hold the download links
                                                     ?>
                                                     <div class="btn-group">
-                                                        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                                                        <a class="btn btn-small dropdown-toggle sdi-btn-download-file-from-list" data-toggle="dropdown" href="#">
                                                             <i class="icon-flag-2"></i>
                                                         </a>
                                                         <ul class="dropdown-menu">
