@@ -10224,12 +10224,12 @@ L.control.sidebar = function (sidebar, options) {
          container = div;
 
          container.on('click', '.removeLayer', function () {
-             layertree.switchLayer($(this).data('layerid'), 'off');
+             layertree.switchLayer(jQuery(this).data('layerid'), 'off');
          });
 
          container.on('click', '.zoomlink', function (event) {
              event.preventDefault();
-             var bb = $(this).data('bbox').split(',');
+             var bb = jQuery(this).data('bbox').split(',');
              bb = L.latLngBounds([
                  [bb[1], bb[0]],
                  [bb[3], bb[2]]
@@ -11462,9 +11462,6 @@ jQuery(document).ready(function ($) {
 
         };
 
-
-
-
         var setCRS = function (srs) {
             if (srs == 'EPSG:3857') return L.CRS.EPSG3857;
             if (srs == 'EPSG:4326') return L.CRS.EPSG4326;
@@ -11473,21 +11470,13 @@ jQuery(document).ready(function ($) {
             return null;
         };
 
-
-
-
-
-
-
-
-
         var getOloptions = function (opt) {
-            if (!isset(opt)) return [];
+            if (!isset(opt) || opt=='') return [];
             //console.log(opt);
-            //var asOLoptions = JSON.parse(opt);//opt.replace('OpenLayers.', '_ImportOL.');
+            var asOLoptions = JSON.parse(opt);//opt.replace('OpenLayers.', '_ImportOL.');
             //eval('var asOLoptions= {' + opt + '};');
-            //return asOLoptions;
-            return [];
+            return asOLoptions;
+            //return [];
         };
 
         var _ImportOL = {};
@@ -11495,9 +11484,6 @@ jQuery(document).ready(function ($) {
             var bounds = LatLngFromString(b1 + ',' + b2 + ',' + b3 + ',' + b4, mapOptions.crs.crs);
             return L.latLngBounds(bounds);
         };
-
-
-
 
         var getLayersStatus = function () {
             var res = {

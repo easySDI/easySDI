@@ -62,12 +62,12 @@
          container = div;
 
          container.on('click', '.removeLayer', function () {
-             layertree.switchLayer($(this).data('layerid'), 'off');
+             layertree.switchLayer(jQuery(this).data('layerid'), 'off');
          });
 
          container.on('click', '.zoomlink', function (event) {
              event.preventDefault();
-             var bb = $(this).data('bbox').split(',');
+             var bb = jQuery(this).data('bbox').split(',');
              bb = L.latLngBounds([
                  [bb[1], bb[0]],
                  [bb[3], bb[2]]
