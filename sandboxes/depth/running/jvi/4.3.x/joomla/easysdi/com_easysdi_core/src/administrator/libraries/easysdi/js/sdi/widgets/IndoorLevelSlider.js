@@ -132,8 +132,21 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             if (servertype == 1 || servertype == 3) {
                 var cql_filter;
                 var new_filter =  layer.levelfield + "='" + level.code + "'";
+                
+                //existing CQL_FILTER 
                 if(typeof(layer.params.CQL_FILTER) != 'undefined'){
-                    cql_filter = layer.params.CQL_FILTER + " AND " + new_filter;                    
+                    //if the perimeter is restricted by user
+                    if(layer.params.CQL_FILTER.match(/INTERSECTS/g)){
+                        //remove level filter
+                        var re = new RegExp(" AND "+layer.levelfield+"='.+'","g");
+                        cql_filter = layer.params.CQL_FILTER.replace(re, "");
+                        //add new level
+                        cql_filter = cql_filter + " AND " + new_filter;
+                    }else{
+                        //should only contain a level, let's overwrite it
+                        cql_filter = new_filter;
+                    }  
+                //no CQL_FILTER yet
                 }else{
                     cql_filter = new_filter;
                 }

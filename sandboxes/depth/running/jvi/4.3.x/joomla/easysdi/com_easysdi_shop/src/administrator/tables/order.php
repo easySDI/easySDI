@@ -37,7 +37,7 @@ class Easysdi_shopTableorder extends sdiTable {
      * @param JDatabase A database connector object
      */
     public function __construct(&$db) {
-        parent::__construct('#__sdi_order', 'id', $db);
+        parent::__construct('#__sdi_order', 'id', $db);        
     }
 
     /**

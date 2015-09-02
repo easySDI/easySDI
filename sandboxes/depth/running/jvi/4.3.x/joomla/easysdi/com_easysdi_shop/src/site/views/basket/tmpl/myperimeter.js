@@ -1,5 +1,12 @@
+function initMyPerimeter() {
+    myLayer = new OpenLayers.Layer.Vector("myLayer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection, styleMap: customStyleMap});
+    myLayer.events.register("featureadded", myLayer, listenerFeatureAddedToZoom);
+    app.mapPanel.map.addLayer(myLayer);
+}
+
 function selectMyPerimeter(perimeterid, perimetername, userextent) {
     resetAll();
+    //app.mapPanel.map.addLayer(myLayer);
     jQuery('#btns-selection').hide();
     jQuery('#t-perimeter').val(perimeterid);
     jQuery('#t-perimetern').val(perimetername);
@@ -7,16 +14,16 @@ function selectMyPerimeter(perimeterid, perimetername, userextent) {
     jQuery('#t-surface').val('');
 
     var transformedFeature = getUserRestrictedExtentFeature(userextent);
-
     jQuery('#t-surface').val(JSON.stringify(transformedFeature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
-
-    myLayer = new OpenLayers.Layer.Vector("myLayer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-    myLayer.events.register("featureadded", myLayer, listenerFeatureAdded);
-    myLayer.events.register("featureadded", myLayer, listenerFeatureAddedToZoom);
     myLayer.addFeatures([transformedFeature]);
-    app.mapPanel.map.addLayer(myLayer);
 
     putFeaturesVerticesInHiddenField(transformedFeature.clone());
+    return transformedFeature.clone();
+}
+
+function reloadMyPerimeter(perimeterid, perimetername, userextent){
+    var myPerim = selectMyPerimeter(perimeterid, perimetername, userextent);
+    miniLayer.addFeatures([myPerim]);
 }
 
 function getUserRestrictedExtentFeature(text) {
@@ -28,7 +35,7 @@ function getUserRestrictedExtentFeature(text) {
             var feature = features[i];
             if (feature.geometry instanceof OpenLayers.Geometry.MultiPolygon) {
                 var geoms = feature.geometry.components;
-                for (var j = 0; j < geoms.length; j++) { 
+                for (var j = 0; j < geoms.length; j++) {
                     var geometry = tranformGeometry(geoms[j]);
                     polygonList.push(geometry);
                 }
@@ -55,7 +62,7 @@ function getUserRestrictedExtentFeature(text) {
     var collectionGeometry = new OpenLayers.Geometry.MultiPolygon(polygonList);
     var multigeomFeature = new OpenLayers.Feature.Vector(collectionGeometry);
     return  multigeomFeature;
-    
+
     /**
      * Below is a version of getUserRestrictedExtentFeature() method written to test
      * ArcGIS server WFS capability to answer to a geometric filter.
@@ -113,7 +120,8 @@ function getUserRestrictedExtentFeature(text) {
 //    var multigeomFeature = new OpenLayers.Feature.Vector(collectionGeometry);
 //
 //    return  multigeomFeature;
-};
+}
+;
 
 function tranformGeometry(geometry) {
     return geometry.transform(

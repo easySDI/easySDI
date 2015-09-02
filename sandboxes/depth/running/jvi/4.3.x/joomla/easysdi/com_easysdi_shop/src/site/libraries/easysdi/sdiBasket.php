@@ -30,18 +30,31 @@ class sdiBasket {
     public $created;
     public $created_by;
     public $thirdorganism;
+    public $freeperimetertool = '';
 
     function __construct() {
         $this->sdiUser = sdiFactory::getSdiUser();
     }
 
-    function loadOrder($orderId) {
+    function loadOrder($orderId, $copy = false) {
         try {
             $db = JFactory::getDbo();
 
             //Load order object
             $query = $db->getQuery(true)
-                    ->select('o.id as id, o.name as name, o.thirdparty_id as thirdparty, org.name as thirdorganism, o.buffer as buffer , o.surface,o.level as level, o.created, o.created_by')
+                    ->select('o.id as id, '
+                            . 'o.name as name, '
+                            . 'o.thirdparty_id as thirdparty, '
+                            . 'o.mandate_ref as mandate_ref, '
+                            . 'o.mandate_contact as mandate_contact, '
+                            . 'o.mandate_email as mandate_email, '
+                            . 'org.name as thirdorganism, '
+                            . 'o.buffer as buffer , '
+                            . 'o.surface,o.level as level, '
+                            . 'o.freeperimetertool as freeperimetertool, '
+                            . 'o.created, '
+                            . 'o.created_by, '
+                            . 'o.user_id as user_id ')
                     ->from('#__sdi_order o')
                     ->leftJoin('#__sdi_organism org ON org.id = o.thirdparty_id')
                     ->where('o.id = ' . (int)$orderId);
@@ -50,6 +63,17 @@ class sdiBasket {
             $params = get_object_vars($order);
             foreach ($params as $key => $value) {
                 $this->$key = $value;
+            }
+            
+            //Copy order
+            if($copy){
+                $this->id = null;
+                $this->name = $this->name.JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_NAME_SUFFIX');
+            }
+            
+            //For "non copies": reload the user who's created the order (e.g. in views: order, request )
+            if(!$copy){
+                $this->sdiUser = sdiFactory::getSdiUser($order->user_id);
             }
 
             //Load diffusion

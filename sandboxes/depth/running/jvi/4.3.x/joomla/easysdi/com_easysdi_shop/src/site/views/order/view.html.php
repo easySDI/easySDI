@@ -112,7 +112,7 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         $bar = new JToolBar('toolbar');
         
         if($this->state->get('layout.validation')){
-            if($this->item->orderstate_id == 8 && $this->isValidationManager){
+            if($this->item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_VALIDATION && $this->isValidationManager){
                 $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATE'), 'order.validate', false);
                 $bar->appendButton('Separator');
                 $bar->appendButton('Standard', 'delete', JText::_('COM_EASYSDI_SHOP_ORDER_REJECT'), 'order.reject', false);
@@ -122,9 +122,17 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         else{
             //display the load draft button only if order not sent
             $this->item = $this->get('Data');
-            if (($this->item->orderstate_id == 7))
+            if (($this->item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_SAVED))
             {
-                $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'), 'basket.load', false);
+                $loadbutton = '<a onclick="acturl=\''. JRoute::_('index.php?option=com_easysdi_shop&task=basket.load&id='.$this->item->id).'\';getBasketContent(\'addOrderToBasket\');" class="btn btn-small btn-success" aria-invalid="false">
+                               <span class="icon-cart icon-white"></span> '. JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET').'</a>';
+                $bar->appendButton('Custom',$loadbutton, JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'));
+                $bar->appendButton('Separator');
+            }
+            if($this->get('Data')->orderstate_id != Easysdi_shopHelper::ORDERSTATE_SAVED){   
+                $copybutton = '<a onclick="acturl=\''. JRoute::_('index.php?option=com_easysdi_shop&task=basket.copy&id='.$this->item->id).'\';getBasketContent(\'addOrderToBasket\');" class="btn btn-small btn-success" aria-invalid="false">
+                               <span class="icon-cart icon-white"></span> '. JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET').'</a>';
+                $bar->appendButton('Custom',$copybutton, JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET'));
                 $bar->appendButton('Separator');
             }
         }

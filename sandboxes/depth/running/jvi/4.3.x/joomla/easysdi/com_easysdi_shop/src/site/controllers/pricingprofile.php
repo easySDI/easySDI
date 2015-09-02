@@ -60,7 +60,14 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
         $ex = false;
         $db = JFactory::getDbo();
         try {
-            $db->transactionStart();
+            
+            try {
+                $db->transactionStart();
+            } catch (Exception $exc) {
+                $db->connect();
+                $driver_begin_transaction = $db->name . '_begin_transaction';
+                $driver_begin_transaction($db->getConnection());
+            }
 
             //save pricing profile
             foreach ($dataProfile as $prop => $value)
@@ -80,10 +87,12 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
                     ->insert($db->quoteName('#__sdi_pricing_profile_category_pricing_rebate'))
                     ->columns($db->quoteName('pricing_profile_id') . ', ' . $db->quoteName('category_id'));
             $doInsert = false;
-            foreach ($dataCategories as $category_id => $isFree) {
-                if ((bool) $isFree) {
-                    $doInsert = true;
-                    $query->values($pricingProfile->id . ',' . $category_id);
+            if(!empty($dataCategories)){
+                foreach ($dataCategories as $category_id => $isFree) {
+                    if ((bool) $isFree) {
+                        $doInsert = true;
+                        $query->values($pricingProfile->id . ',' . $category_id);
+                    }
                 }
             }
 

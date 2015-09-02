@@ -28,13 +28,14 @@ class Easysdi_shopViewPropertyvalues extends JViewLegacy {
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
+        $this->propertyname = $this->get('PropertyName');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
 
-        Easysdi_shopHelper::addSubmenu('propertyvalues');
+        Easysdi_shopHelper::addSubmenu('propertyvalues',$this->propertyname);
 
         $this->addToolbar();
 
@@ -53,7 +54,7 @@ class Easysdi_shopViewPropertyvalues extends JViewLegacy {
         $state = $this->get('State');
         $canDo = Easysdi_shopHelper::getActions($state->get('filter.category_id'));
 
-        JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTYVALUES'), 'propertyvalues.png');
+        JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTYVALUES').$this->propertyname, 'propertyvalues.png');
 
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/propertyvalue';

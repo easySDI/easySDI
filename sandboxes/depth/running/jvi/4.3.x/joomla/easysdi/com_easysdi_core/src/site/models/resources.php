@@ -135,8 +135,8 @@ class Easysdi_coreModelResources extends JModelList {
         $query->join('LEFT', '(SELECT child_id, state FROM #__sdi_resourcetypelink GROUP BY child_id, state) rtl2 ON rtl2.child_id=rt.id');
 
         //join over rights table, check if user have any right on resource
-        $query->innerJoin('#__sdi_user_role_organism AS uro ON uro.organism_id=a.organism_id');
-        $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id');
+        $query->innerJoin('#__sdi_user_role_organism AS uro ON uro.organism_id=a.organism_id AND uro.user_id ='.(int)$this->user->id);
+        $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id AND urr.user_id ='.(int)$this->user->id);
         $query->where('(urr.user_id='.(int)$this->user->id.' OR (uro.user_id='.(int)$this->user->id.' AND uro.role_id='.(int)self::organismmanager.'))');
 
         $query->group('a.id');

@@ -1,15 +1,17 @@
 var app;
 
-Ext.onReady(function() {
+Ext.onReady(function () {
     if ('undefined' === typeof app) {
         app = window.appname;
     }
-    app.on("ready", function() {
-            var grid = new predefinedPerimeter(perimeter);
-            grid.init();
-            grid.setListenerFeatureSelected(listenerFeatureSelected);
-            grid.setListenerIndoorLevelChanged(cleanSelectionValues);
-        }
+    app.on("ready", function () {
+        var grid = new predefinedPerimeter(perimeter);
+        grid.init();
+        grid.setListenerFeatureSelected(listenerFeatureSelected);
+        grid.setListenerIndoorLevelChanged(cleanSelectionValues);
+        initStyleMap();
+        selectLayer.styleMap = customStyleMap;
+    }
     );
 });
 
@@ -18,10 +20,10 @@ Ext.onReady(function() {
  * @param {type} e
  * @returns {undefined}
  */
-var listenerFeatureSelected = function(e) {
+var listenerFeatureSelected = function (e) {
     selectLayer.removeAllFeatures();
     selectLayer.addFeatures([e.feature]);
-    js('#url').val(e.feature.attributes[perimeter.featuretypefieldresource]);
+    js('#featurecode').val(e.feature.attributes[perimeter.featuretypefieldresource]);
     js('.sdi-map-feature-selection-name span').text(e.feature.attributes[perimeter.featuretypefieldname]);
     js('.sdi-map-feature-selection-description span').text(e.feature.attributes[perimeter.featuretypefielddescription]);
     enableSave();
@@ -31,8 +33,8 @@ var listenerFeatureSelected = function(e) {
  * Clean form when no feature is selected
  * @returns {undefined}
  */
-var cleanSelectionValues = function() {
-    js('#url').val('');
+var cleanSelectionValues = function () {
+    js('#featurecode').val('');
     js('.sdi-map-feature-selection-name span').text('');
     js('.sdi-map-feature-selection-description span').text('');
     enableSave();
@@ -42,8 +44,8 @@ var cleanSelectionValues = function() {
  * Check if download can be activated and update form element accordingly
  * @returns {undefined}
  */
-var enableSave = function() {
-    if (js('#termsofuse').is(':checked') == true && js('#url').val() != '')
+var enableSave = function () {
+    if (js('#termsofuse').is(':checked') == true && js('#featurecode').val() != '')    
         js('#saveSubmit').removeAttr('disabled', 'disabled');
     else
         js('#saveSubmit').attr('disabled', 'disabled');

@@ -1848,8 +1848,21 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
             if (servertype == 1 || servertype == 3) {
                 var cql_filter;
                 var new_filter =  layer.levelfield + "='" + level.code + "'";
+                
+                //existing CQL_FILTER 
                 if(typeof(layer.params.CQL_FILTER) != 'undefined'){
-                    cql_filter = layer.params.CQL_FILTER + " AND " + new_filter;                    
+                    //if the perimeter is restricted by user
+                    if(layer.params.CQL_FILTER.match(/INTERSECTS/g)){
+                        //remove level filter
+                        var re = new RegExp(" AND "+layer.levelfield+"='.+'","g");
+                        cql_filter = layer.params.CQL_FILTER.replace(re, "");
+                        //add new level
+                        cql_filter = cql_filter + " AND " + new_filter;
+                    }else{
+                        //should only contain a level, let's overwrite it
+                        cql_filter = new_filter;
+                    }  
+                //no CQL_FILTER yet
                 }else{
                     cql_filter = new_filter;
                 }
@@ -2079,7 +2092,7 @@ predefinedPerimeter.prototype.initPerimeterLayer = function() {
         levelfield: this.item.levelfield,
         opacity: this.item.opacity,
         source: this.item.source,
-        tiled: true,
+        tiled: false,
         title: "perimeterLayer",
         iwidth: "360",
         iheight: "360",
@@ -2148,10 +2161,11 @@ predefinedPerimeter.prototype.initSelectControl = function() {
             featureNS: this.item.namespace,
             geometryName: this.item.featuretypefieldgeometry
         }),
-        box: true,
+        box: false,
         click: true,
+        toggle: true,
         multipleKey: "ctrlKey",
-        clickout: true
+        clickout: false
     });
 
     //Build the default filter : merge existing filters on user perimeter and indoor level
