@@ -458,7 +458,7 @@ var updatePricing = function(pricing) {
                 displayedPrice = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE', 'free');
             }
             else{
-                displayedPrice = priceFormatter(product.cal_total_amount_ti);
+                displayedPrice = priceFormatter('undefined' !== typeof product.cal_total_amount_ti ? product.cal_total_amount_ti : '-');
                 var as = '',
                     discount = '',
                     title = '',
@@ -488,8 +488,8 @@ var updatePricing = function(pricing) {
 
         //footer
         jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_fee_ti').html(priceFormatter(supplier.cal_fee_ti));
-        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_amount_ti').html(priceFormatter(supplier.cal_total_amount_ti));
-        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_amount_ti').html('undefined' !== typeof supplier.cal_total_amount_ti ? priceFormatter(supplier.cal_total_amount_ti) : '-');
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_rebate_ti').html('undefined' !== typeof supplier.cal_total_rebate_ti ? priceFormatter(supplier.cal_total_rebate_ti) : '-');
         jQuery('table[rel=' + supplierId + ']>tfoot').show();
     });
 
