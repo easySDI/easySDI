@@ -124,7 +124,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                             </td>
                             <td>
                                 <div class="pull-right">
-                                    <?php if ($item->orderstate_id == 5 || $item->orderstate_id == 3): ?>                                    
+                                    <?php if ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER && ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_PROGRESS || $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH)): ?>                                    
                                         <?php
                                         $first = true;
                                         $basket = new sdiBasket();
