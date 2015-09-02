@@ -12,12 +12,13 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modellist');
 
 require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 /**
  * Methods supporting a list of Easysdi_shop records.
  */
 class Easysdi_shopModelOrders extends JModelList {
-    
+
     /**
      * Constructor.
      *
@@ -27,11 +28,11 @@ class Easysdi_shopModelOrders extends JModelList {
      */
     public function __construct($config = array()) {
         parent::__construct($config);
-        
+
         //Before displaying list, delete old orders' files (according to clean up order delay )
         $this->cleanUpHistoricOrders();
     }
-    
+
     /**
      * Method to auto-populate the model state.
      *
@@ -43,30 +44,30 @@ class Easysdi_shopModelOrders extends JModelList {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        
-        $filter_ctx= (JFactory::getApplication()->input->get('layout') == 'validation') ? 'validation' : 'order';
-        $this->context .= '.'.$filter_ctx;
-        
+
+        $filter_ctx = (JFactory::getApplication()->input->get('layout') == 'validation') ? 'validation' : 'order';
+        $this->context .= '.' . $filter_ctx;
+
         // Load the filter state.
         $search = $app->getUserStateFromRequest($this->context . '.filter.organism', 'filter_organism');
         $this->setState('filter.organism', $search);
-        
+
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
-        
+
         $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status', (JFactory::getApplication()->input->get('layout') == 'validation') ? 1 : null);
         $this->setState('filter.status', $search);
-        
+
         $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
         $this->setState('filter.type', $search);
-                
+
         // List state information
         $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'));
         $this->setState('list.limit', $limit);
 
         $limitstart = JFactory::getApplication()->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
-        
+
         $this->setState('layout.validation', (JFactory::getApplication()->input->get('layout') == 'validation'));
 
 
@@ -96,7 +97,7 @@ class Easysdi_shopModelOrders extends JModelList {
                         'list.select', ' a.*'
                 )
         );
-        
+
         $query->from('#__sdi_order AS a');
 
         //Join over the order state value
@@ -106,7 +107,7 @@ class Easysdi_shopModelOrders extends JModelList {
         //Join over the order type value
         $query->select('type.value AS ordertype');
         $query->innerjoin('#__sdi_sys_ordertype AS type ON type.id = a.ordertype_id');
-        
+
         //get client and client's organism
         $query->select('juclient.name AS clientname');
         $query->select('oclient.name AS organismname');
@@ -114,14 +115,14 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->innerjoin('#__users AS juclient ON juclient.id = uclient.user_id');
         $query->innerjoin("#__sdi_user_role_organism urocli ON urocli.user_id=uclient.id");
         $query->innerjoin("#__sdi_organism oclient ON oclient.id = urocli.organism_id");
-        $query->where('urocli.role_id = ' . Easysdi_shopHelper::ROLE_MEMBER);        
-        
-        
-        
+        $query->where('urocli.role_id = ' . Easysdi_shopHelper::ROLE_MEMBER);
+
+
+
         // Filter by type
         $type = $this->getState('layout.validation') ? Easysdi_shopHelper::ORDERTYPE_ORDER : $this->getState('filter.type');
         if (is_numeric($type)) {
-        	$query->where('a.ordertype_id = ' . (int) $type);
+            $query->where('a.ordertype_id = ' . (int) $type);
         }
 
         // Filter by search in title
@@ -131,49 +132,58 @@ class Easysdi_shopModelOrders extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE '.$search.' )');
+                $query->where('( a.name LIKE ' . $search . ' )');
             }
         }
-        
-        if($this->getState('layout.validation')){
+
+        if ($this->getState('layout.validation')) {
             $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
-                    ->where('uro.user_id='.(int)$user->id)
-                    ->where('uro.role_id IN ('.sdiUser::validationmanager.','.sdiUser::organismmanager.')');
-            
+                    ->where('uro.user_id=' . (int) $user->id)
+                    ->where('uro.role_id IN (' . sdiUser::validationmanager . ',' . sdiUser::organismmanager . ')');
+
             $tpOrganism = $this->getState('filter.organism');
-            if($tpOrganism > 0)
-                $query->where('a.thirdparty_id='.(int)$tpOrganism);
-            
+            if ($tpOrganism > 0)
+                $query->where('a.thirdparty_id=' . (int) $tpOrganism);
+
             // Filter by state
             $status = $this->getState('filter.status');
             if (is_numeric($status)) {
-                if($status == 1) // get orders to check
-                    $query->where('a.orderstate_id = 8');
+                if ($status == 1) // get orders to check
+                    $query->where('a.orderstate_id = ' . Easysdi_shopHelper::ORDERSTATE_VALIDATION);
                 else // get orders checked
-                    $query->where('a.orderstate_id IN (1, 2, 3, 4, 5, 6, 9, 10)');
+                    $query->where('a.orderstate_id IN (' .
+                            Easysdi_shopHelper::ORDERSTATE_ARCHIVED . ', ' .
+                            Easysdi_shopHelper::ORDERSTATE_HISTORIZED . ', ' .
+                            Easysdi_shopHelper::ORDERSTATE_FINISH . ', ' .
+                            Easysdi_shopHelper::ORDERSTATE_AWAIT . ', ' .
+                            Easysdi_shopHelper::ORDERSTATE_PROGRESS . ', ' .
+                            Easysdi_shopHelper::ORDERSTATE_SENT . ', ' .
+                            Easysdi_shopHelper::ORDERSTATE_REJECTED . ', ' .
+                            Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER .
+                            ')');
             }
         }
-        else{
+        else {
             //Only order which belong to the current user
             $organism = $this->getState('filter.organism');
-            $organisms = $organism>0 ? array($organism) : $user->getOrganisms(array(sdiUser::organismmanager), true);
-            if(count($organisms)==0){
+            $organisms = $organism > 0 ? array($organism) : $user->getOrganisms(array(sdiUser::organismmanager), true);
+            if (count($organisms) == 0) {
                 $organisms = array(-1);
             }
             $query->innerJoin('#__sdi_user_role_organism uro ON uro.user_id=a.user_id')
-                    ->where('uro.role_id='.sdiUser::member.' AND (a.user_id='.(int)$user->id.' OR uro.organism_id IN ('.implode(',', $organisms).'))');
-            
-            
+                    ->where('uro.role_id=' . sdiUser::member . ' AND (a.user_id=' . (int) $user->id . ' OR uro.organism_id IN (' . implode(',', $organisms) . '))');
+
+
             // Filter by state
             $status = $this->getState('filter.status');
             if (is_numeric($status)) {
-                $query->where('a.orderstate_id = '.$status);
+                $query->where('a.orderstate_id = ' . $status);
             }
         }
         
         //Don't include historized item
         $query->where('a.orderstate_id <> 2');
-        
+
         $query->order('a.created DESC');
         
         $query->group('a.id');
@@ -226,18 +236,18 @@ class Easysdi_shopModelOrders extends JModelList {
         $db->setQuery($query);
         return $db->loadObjectList();
     }
-    
+
     function getOrderType() {
         //Load all status value
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('t.value, t.id ')
                 ->from('#__sdi_sys_ordertype t')
-                ->where('t.value <> '.$db->quote('draft'));
+                ->where('t.value <> ' . $db->quote('draft'));
         $db->setQuery($query);
         return $db->loadObjectList();
     }
-    
+
     /**
      * Delete orders files if they are older than the "clean up order delay" 
      * defined in admin     
@@ -245,46 +255,46 @@ class Easysdi_shopModelOrders extends JModelList {
     function cleanUpHistoricOrders() {
         $app = JFactory::getApplication();
         $cleanuporderdelay = $app->getParams('com_easysdi_shop')->get('cleanuporderdelay');
-        
-         if (is_numeric($cleanuporderdelay))
-         {
+
+        if (is_numeric($cleanuporderdelay)) {
             // Get UTC for now.
             $dNow = new JDate;
             $dStart = clone $dNow;
-            $dStart->modify('-'.$cleanuporderdelay.' day');
+            $dStart->modify('-' . $cleanuporderdelay . ' day');
 
 
             //Get all the terminated orders to delete associated files if delay has passed
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
             $query->select('d.id, d.order_id, o.alias ');
-            $query->from($db->quoteName('#__sdi_order','o'));
-            $query->join('INNER',$db->quoteName('#__sdi_order_diffusion','d'). ' ON (' . $db->quoteName('d.order_id') . ' = ' . $db->quoteName('o.id') . ')');
+            $query->from($db->quoteName('#__sdi_order', 'o'));
+            $query->join('INNER', $db->quoteName('#__sdi_order_diffusion', 'd') . ' ON (' . $db->quoteName('d.order_id') . ' = ' . $db->quoteName('o.id') . ')');
             $query->where('o.completed < ' . $db->quote($dStart->format('Y-m-d H:i:s')));
-            $query->where('d.productstate_id = 1');
-            $query->where('(o.orderstate_id = 3 OR o.orderstate_id = 1)');
-            $db->setQuery($query);            
+            $query->where('d.productstate_id = ' . Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE);
+            $query->where('(o.orderstate_id = ' . Easysdi_shopHelper::ORDERSTATE_FINISH . ' OR o.orderstate_id = ' . Easysdi_shopHelper::ORDERSTATE_ARCHIVED . ')');
+            $db->setQuery($query);
             $orderstohistorize = $db->loadObjectList();
-            
+
             foreach ($orderstohistorize as $ordertohistorize) {
-               //Suppression du répertoire de stockage de la commande
-               $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
-               $requestDir = JPATH_BASE. '/' .$folder . '/' . $ordertohistorize->order_id; 
-               //recursieve delete
-               require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
-               Easysdi_shopHelper::rrmdir($requestDir);
-               
-               //Change status of the order_diffusion to mark them deleted
-               //And clean the file name field
+                //Suppression du répertoire de stockage de la commande
+                $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
+                $requestDir = JPATH_BASE . '/' . $folder . '/' . $ordertohistorize->order_id;
+                //recursieve delete
+                require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
+                Easysdi_shopHelper::rrmdir($requestDir);
+
+                //Change status of the order_diffusion to mark them deleted
+                //And clean the file name field
                 $query = $db->getQuery(true);
                 $query->update('#__sdi_order_diffusion');
-                $query->set('productstate_id = 7');
+                $query->set('productstate_id = ' . Easysdi_shopHelper::PRODUCTSTATE_DELETED);
                 $query->set($db->quoteName('file') . ' = NULL');
                 $query->where('order_id = ' . $ordertohistorize->order_id);
                 $db->setQuery($query);
                 $s = $query->__toString();
                 $db->execute();
             }
-         }
+        }
     }
+
 }

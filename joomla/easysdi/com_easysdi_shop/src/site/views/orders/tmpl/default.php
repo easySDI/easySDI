@@ -15,6 +15,7 @@ JHtml::_('behavior.tooltip');
 JHtml::_('formbehavior.chosen', 'select');
 
 JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.js');
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 ?>
 <div class="shop front-end-edit">
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'); ?></h1>
@@ -129,7 +130,7 @@ JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.j
                                         $basket = new sdiBasket();
                                         $basket->loadOrder($item->id);
                                         foreach ($basket->extractions as $extraction) {
-                                            if ($extraction->productstate_id == 1):
+                                            if ($extraction->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE):
                                                 if ($first)://Create the dropdown menu to hold the download links
                                                     ?>
                                                     <div class="btn-group">
