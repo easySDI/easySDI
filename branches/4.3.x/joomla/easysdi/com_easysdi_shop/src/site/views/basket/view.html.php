@@ -35,7 +35,9 @@ class Easysdi_shopViewBasket extends JViewLegacy {
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
-
+        if(is_null($this->item->sdiUser->id)){
+            $this->item->sdiUser = sdiFactory::getSdiUser();
+        }
         $this->params = $app->getParams('com_easysdi_shop');
         $this->paramsarray = $this->params->toArray();
         $this->user = sdiFactory::getSdiUser();

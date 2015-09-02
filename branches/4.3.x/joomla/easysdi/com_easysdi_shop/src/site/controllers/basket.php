@@ -49,6 +49,9 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $basket->mandate_ref = $mandate_ref;
         $basket->mandate_contact = $mandate_contact;
         $basket->mandate_email = $mandate_email;
+        if(is_null($basket->sdiUser->id)){
+            $basket->sdiUser = sdiFactory::getSdiUser();
+        }
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
 

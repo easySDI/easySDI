@@ -99,6 +99,10 @@ abstract class Easysdi_shopHelper {
         if (empty($basket) || !$basket) {
             $basket = new sdiBasket();
         }
+        
+        if(is_null($basket->sdiUser->id) && !$user->guest){
+            $basket->sdiUser = sdiFactory::getSdiUser();
+        }
 
         //Add the new extraction to the basket
         if (count($basket->extractions) == 0):
@@ -249,6 +253,9 @@ abstract class Easysdi_shopHelper {
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         $basket->extent = empty($item) ? null : json_decode($item);
         $basket->freeperimetertool = empty($item) ? '' : json_decode($item)->freeperimetertool;
+        if(is_null($basket->sdiUser->id)){
+            $basket->sdiUser = sdiFactory::getSdiUser();
+        }
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
         $return = array(
             'MESSAGE' => 'OK',
@@ -708,7 +715,7 @@ abstract class Easysdi_shopHelper {
             }
 
             // set the platform tax
-            if ($prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee)
+            if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee)
                 $prices->cal_fee_ti = 0;
             else {
                 $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
@@ -802,10 +809,10 @@ abstract class Easysdi_shopHelper {
         $provider->cal_total_rebate_ti = 0;
         $provider->hasFeeWithoutPricingProfileProduct = false;
         foreach ($supplier->items as $product) {
-            $provider->products[$product->id] = self::basketPriceCalculationByProduct($product, $prices);
+            $provider->products[$product->id] = self::basketPriceCalculationByProduct($product, $prices, $internalFreeOrder);
             if ($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder)
                 $provider->hasFeeWithoutPricingProfileProduct = true;
-            elseif ($product->pricing == self::PRICING_FEE_WITH_PROFILE) {
+            elseif (isset($provider->products[$product->id]->cal_total_amount_ti)) {
                 $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
                 $provider->cal_total_rebate_ti += $provider->products[$product->id]->cal_total_rebate_ti;
             }
@@ -832,12 +839,17 @@ abstract class Easysdi_shopHelper {
      * @return \stdClass
      * @since 4.3.0
      */
-    private static function basketPriceCalculationByProduct($product, $prices) {
+    private static function basketPriceCalculationByProduct($product, $prices, $internalFreeOrder) {
 
         // init product sub-object
         $price = new stdClass();
 
         $price->cfg_pricing_type = $product->pricing;
+        
+        if($price->cfg_pricing_type == self::PRICING_FEE_WITHOUT_PROFILE && $internalFreeOrder){
+            $price->cal_total_amount_ti = 0;
+            $price->cal_total_rebate_ti = 0;
+        }
 
         if ($price->cfg_pricing_type != self::PRICING_FEE_WITH_PROFILE)
             return $price;
