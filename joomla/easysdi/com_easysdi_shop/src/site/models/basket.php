@@ -24,7 +24,6 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
     var $_item = null;
 
-
     /**
      * Method to auto-populate the model state.
      *
@@ -32,7 +31,6 @@ class Easysdi_shopModelBasket extends JModelLegacy {
      *
      * @since	1.6
      */
-
     protected function populateState() {
         $content = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
         $this->setState('basket.content', $content);
@@ -161,12 +159,12 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
             //Save perimeters
             //unserialize if necessary
-            if(!is_array($basket->extent->features)){
+            if (!is_array($basket->extent->features)) {
                 $features = json_decode($basket->extent->features);
-            }else{
+            } else {
                 $features = $basket->extent->features;
             }
-            
+
             if (is_array($features)):
                 foreach ($features as $feature):
                     $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');
@@ -311,6 +309,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $session = JFactory::getSession();
         $basketProducts = $session->get('basketProducts');
         $basketProcess = $session->get('basketProcess');
+        $basketData = $session->get('basketData');
         $currentProduct = $basketProducts[$basketProcess['treated']];
         extract($currentProduct);
 
@@ -364,14 +363,17 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $db->setQuery($query);
         $guid = $db->loadResult();
 
+
         // Sheet used to generate XML and PDF files
         $sheet = new Easysdi_catalogControllerSheet();
-        $requestFolder = JPATH_BASE . JComponentHelper::getParams('com_easysdi_shop')->get('orderrequestFolder') . '/';
-        if (!file_exists($requestFolder))
-            mkdir($requestFolder, 0755, true);
 
-        file_put_contents($requestFolder . $product->guid . '.xml', $sheet->exportXML($guid, FALSE));
-        file_put_contents($requestFolder . $product->guid . '.pdf', $sheet->exportPDF($guid, FALSE));
+        $requestFolder = JPATH_BASE . JComponentHelper::getParams('com_easysdi_shop')->get('orderrequestFolder') . '/' . $basketData['order_id'];
+        if (!file_exists($requestFolder)) {
+            mkdir($requestFolder, 0755, true);
+        }
+
+        file_put_contents($requestFolder . '/' . $productId . '.xml', $sheet->exportXML($guid, FALSE));
+        file_put_contents($requestFolder . '/' . $productId . '.pdf', $sheet->exportPDF($guid, FALSE));
 
         // Update session data
         $basketProcess['treated'] ++;
