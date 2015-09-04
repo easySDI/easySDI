@@ -41,13 +41,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         padding-top:70px;
     }
     div.divider {
-            *width: 100%;
-            height: 1px;
-            margin: 8px 1px;
-            *margin: -5px 0 5px;
-            overflow: hidden;
-            background-color: #e5e5e5;
-            border-bottom: 1px solid #fff;
+        *width: 100%;
+        height: 1px;
+        margin: 8px 1px;
+        *margin: -5px 0 5px;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        border-bottom: 1px solid #fff;
     }
 </style>
 <script type="text/javascript">
@@ -57,7 +57,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         var head = document.getElementsByTagName('head')[0],
                 done = false;
         // Attach handlers for all browsers
-        script.onload = script.onreadystatechange = function() {
+        script.onload = script.onreadystatechange = function () {
             if (!done && (!this.readyState
                     || this.readyState == 'loaded'
                     || this.readyState == 'complete')) {
@@ -69,15 +69,15 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         };
         head.appendChild(script);
     }
-    
+
     js = jQuery.noConflict();
-    js(document).ready(function() {
-        
-     
+    js(document).ready(function () {
+
+
         enableAccessScope();
-        onChangeOrganism();   
-        
-        if(js('#jform_id').val()){
+        onChangeOrganism();
+
+        if (js('#jform_id').val()) {
             js('#jform_organism_id').attr('disabled', true).trigger("liszt:updated");
             js('<input />').attr({
                 type: 'hidden',
@@ -87,51 +87,59 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             }).appendTo('#adminForm');
 
         }
-        
-        js('#addAllUsersBtn').on('click', function(mEvt){toggleAllUsers(false);mEvt.srcElement.blur();});
-        js('#removeAllUsersBtn').on('click', function(mEvt){toggleAllUsers(true);mEvt.srcElement.blur();});
-        js('#form-resource').submit(function(event) {});
-    });
-    
-    var users = false,
-        rightsarray = false,
-        currentUserId = <?php echo $this->user->id;?>;
 
-    
-    var addUsersToSelect = function(right, rusers, limit, startup){
-        var userState = js('#jform_'+right).attr('data-orig') || false;
-        if(userState) userState = userState.split(',');
-        js.each(rusers, function(key, user) {
+        js('#addAllUsersBtn').on('click', function (mEvt) {
+            toggleAllUsers(false);
+            mEvt.srcElement.blur();
+        });
+        js('#removeAllUsersBtn').on('click', function (mEvt) {
+            toggleAllUsers(true);
+            mEvt.srcElement.blur();
+        });
+        js('#form-resource').submit(function (event) {
+        });
+    });
+
+    var users = false,
+            rightsarray = false,
+            currentUserId = <?php echo $this->user->id; ?>;
+
+
+    var addUsersToSelect = function (right, rusers, limit, startup) {
+        var userState = js('#jform_' + right).attr('data-orig') || false;
+        if (userState)
+            userState = userState.split(',');
+        js.each(rusers, function (key, user) {
             var option = js('<option></option>').val(user.id).text(user.name);
-            if(
-                limit===false
-                ||  (startup===true
-                    && (
-                        (userState===false && js.inArray(user.id, rightsarray[right])>-1)
-                        || js.inArray(user.id, userState)>-1
-                        )
+            if (
+                    limit === false
+                    || (startup === true
+                            && (
+                                    (userState === false && js.inArray(user.id, rightsarray[right]) > -1)
+                                    || js.inArray(user.id, userState) > -1
+                                    )
+                            )
+                    || (startup === false && right == 2 && user.id == currentUserId)
                     )
-                || (startup===false && right==2 && user.id==currentUserId)
-            )
                 option.attr('selected', 'selected');
-            
+
             js('#jform_' + right).append(option).trigger("liszt:updated");
         });
     };
-    
-    var toggleAllUsers = function(limit, startup){
+
+    var toggleAllUsers = function (limit, startup) {
         limit = Boolean(limit) || false;
         startup = Boolean(startup) || false;
-        
-        js.each(users, function(right, rightUsers) {
-            if(js('#jform_' + right).length){
+
+        js.each(users, function (right, rightUsers) {
+            if (js('#jform_' + right).length) {
                 js('#jform_' + right).empty().trigger("liszt:updated");
 
                 addUsersToSelect(right, rightUsers, limit, startup);
             }
         });
     };
-    
+
     function onChangeOrganism() {
         js('#loader').show();
         var organism_id = js("#jform_organism_id :selected").val();
@@ -143,16 +151,16 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         js.ajax({
             type: 'Get',
             url: uriencoded,
-            success: function(data) {
+            success: function (data) {
                 users = js.parseJSON(data);
                 rightsarray = [];
                 var ra = js.parseJSON(js("#jform_rights").val());
-                js.each(ra, function(i, ur){
-                    if('undefined' === typeof rightsarray[ur.role_id])
+                js.each(ra, function (i, ur) {
+                    if ('undefined' === typeof rightsarray[ur.role_id])
                         rightsarray[ur.role_id] = [];
                     rightsarray[ur.role_id].push(ur.user_id);
                 });
-                
+
                 toggleAllUsers(true, true);
                 js('#loader').hide();
             }})
@@ -190,12 +198,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                         <div class="control-group">
                             <div class="control-label"></div>
                             <div class="controls">
-                                <button type="button" id="addAllUsersBtn" class="btn btn-mini" <?php if(!$this->user->authorize($this->item->id, sdiUser::resourcemanager)):?>disabled="disabled"<?php endif;?>><?php echo JText::_('COM_EASYSDI_CORE_ADD_ALL_USERS_BTN'); ?></button>
-                                <button type="button" id="removeAllUsersBtn" class="btn btn-mini" <?php if(!$this->user->authorize($this->item->id, sdiUser::resourcemanager)):?>disabled="disabled"<?php endif;?>><?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?></button>
+                                <button type="button" id="addAllUsersBtn" class="btn btn-mini" <?php if (!$this->user->authorize($this->item->id, sdiUser::resourcemanager)): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('COM_EASYSDI_CORE_ADD_ALL_USERS_BTN'); ?></button>
+                                <button type="button" id="removeAllUsersBtn" class="btn btn-mini" <?php if (!$this->user->authorize($this->item->id, sdiUser::resourcemanager)): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?></button>
                             </div>
                         </div>
-                        <?php foreach($this->form->getFieldset('rolesManagement') as $field): ?>
-                            <div class="control-group" id="<?php echo $field->fieldname; ?>" <?php if(isset($this->item->resourcerights[$field->name]) && !$this->item->resourcerights[$field->name]): ?>style="display:none"<?php endif; ?>>
+                        <?php foreach ($this->form->getFieldset('rolesManagement') as $field): ?>
+                            <div class="control-group sdi-resource-role" id="<?php echo $field->fieldname; ?>" <?php if (isset($this->item->resourcerights[$field->fieldname]) && !$this->item->resourcerights[$field->fieldname]): ?>style="display:none"<?php endif; ?>>
                                 <div class="control-label"><?php echo $field->label; ?></div>
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
@@ -227,12 +235,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             <?php echo $field->input; ?>
         <?php endforeach; ?>  
 
-        
+
         <input type = "hidden" name = "task" value = "" />
         <input type = "hidden" name = "option" value = "com_easysdi_core" />
         <?php echo JHtml::_('form.token'); ?>
     </form>
 
-<?php echo $this->getToolbar(); ?>
+    <?php echo $this->getToolbar(); ?>
 
 </div>

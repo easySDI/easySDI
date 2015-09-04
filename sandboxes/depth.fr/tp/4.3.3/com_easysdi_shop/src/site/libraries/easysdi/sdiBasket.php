@@ -52,7 +52,9 @@ class sdiBasket {
                             . 'o.buffer as buffer , '
                             . 'o.surface,o.level as level, '
                             . 'o.freeperimetertool as freeperimetertool, '
-                            . 'o.created, o.created_by')
+                            . 'o.created, '
+                            . 'o.created_by, '
+                            . 'o.user_id as user_id ')
                     ->from('#__sdi_order o')
                     ->leftJoin('#__sdi_organism org ON org.id = o.thirdparty_id')
                     ->where('o.id = ' . (int)$orderId);
@@ -67,6 +69,11 @@ class sdiBasket {
             if($copy){
                 $this->id = null;
                 $this->name = $this->name.JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_NAME_SUFFIX');
+            }
+            
+            //For "non copies": reload the user who's created the order (e.g. in views: order, request )
+            if(!$copy){
+                $this->sdiUser = sdiFactory::getSdiUser($order->user_id);
             }
 
             //Load diffusion

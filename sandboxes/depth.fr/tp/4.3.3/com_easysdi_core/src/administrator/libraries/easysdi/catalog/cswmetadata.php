@@ -786,6 +786,7 @@ class cswmetadata {
                         ->where('dpv.diffusion_id = ' . (int) $this->diffusion->id)
                         ->where('p.id = ' . (int) $property->property_id)
                         ->where('l.code = ' . $query->quote($language->getTag()))
+                        ->order('pv.ordering');
                 ;
                 $this->db->setQuery($query);
                 $values = $this->db->loadObjectList();

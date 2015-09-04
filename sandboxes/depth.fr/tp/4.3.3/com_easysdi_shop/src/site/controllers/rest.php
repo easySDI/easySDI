@@ -9,6 +9,7 @@
 
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/controllers/sheet.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 class Easysdi_shopControllerRest extends Easysdi_shopController {
 
