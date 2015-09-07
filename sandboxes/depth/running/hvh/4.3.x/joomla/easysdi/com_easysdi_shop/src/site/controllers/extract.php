@@ -845,7 +845,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         $root->appendChild($this->getProductProperties($orderProduct));
 
-        $root->appendChild($this->getProductMetadata($orderProduct));
+        $root->appendChild($this->getProductMetadata($order, $orderProduct));
 
         $query = $this->db->getQuery(true);
 
@@ -929,16 +929,15 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @return DOMNode sdi:metadata node
      * @since 4.3.0
      */
-    private function getProductMetadata($product) {
+    private function getProductMetadata($order, $product) {
         $metadata = $this->response->createElementNS(self::nsSdi, 'sdi:metadata');
         $this->addAttribute($metadata, 'id', $product->metadata_id);
         $this->addAttribute($metadata, 'guid', $product->metadata_guid);
 
-        $requestFolder = JPATH_BASE . JComponentHelper::getParams('com_easysdi_shop')->get('orderrequestFolder') . '/';
-
-        $xmlStr = file_exists($requestFolder . $product->od_guid . '.xml') ? base64_encode(file_get_contents($requestFolder . $product->od_guid . '.xml')) : '';
+        $requestFolder = JPATH_BASE . JComponentHelper::getParams('com_easysdi_shop')->get('orderrequestFolder') . '/' . $order->id;
+        $xmlStr = file_exists($requestFolder . '/' . $product->product_id . '.xml') ? base64_encode(file_get_contents($requestFolder . '/' . $product->product_id . '.xml')) : '';
         $metadata->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:xml', $xmlStr));
-        $pdfStr = file_exists($requestFolder . $product->od_guid . '.pdf') ? base64_encode(file_get_contents($requestFolder . $product->od_guid . '.pdf')) : '';
+        $pdfStr = file_exists($requestFolder . '/' . $product->product_id . '.pdf') ? base64_encode(file_get_contents($requestFolder . '/' . $product->product_id . '.pdf')) : '';
         $metadata->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:pdf', $pdfStr));
         return $metadata;
     }
@@ -1317,8 +1316,8 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
 
         $storeFileName = $this->getCleanFilename($_FILES['file']['name']);
-        
-        if (!move_uploaded_file($_FILES['file']['tmp_name'], $extractsFilesPath .'/'. $storeFileName)) {
+
+        if (!move_uploaded_file($_FILES['file']['tmp_name'], $extractsFilesPath . '/' . $storeFileName)) {
             //throw an upload exception
             $this->getException(500, 'Cannot save uploaded file');
         }

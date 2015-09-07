@@ -29,7 +29,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 </script>
 
 <div class="shop front-end-edit">
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_TITLE') . ' : ' . $this->item->name; ?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_ITEM_TITLE') . ' : ' . $this->item->name; ?></h1>
 
     <div class="well">
 

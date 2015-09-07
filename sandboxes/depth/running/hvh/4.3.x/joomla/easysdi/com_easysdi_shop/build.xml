@@ -124,6 +124,7 @@
                         <filename>easysdi_shop.php</filename>
                         <folder>controllers</folder>
                         <folder>assets</folder>
+                        <folder>layouts</folder>
                         <folder>helpers</folder>
                         <folder>models</folder>
                         <folder>sql</folder>

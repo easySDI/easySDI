@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 /**
  * Easysdi_shop model.
@@ -244,7 +245,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             endif;
             if(!empty($orderdiffusion->fee) || !empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
                 $orderdiffusion->completed = date('Y-m-d H:i:s');
-                $orderdiffusion->productstate_id = 1;
+                $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
             endif;
             $orderdiffusion->created_by = (int)sdiFactory::getSdiUser()->id;
             $orderdiffusion->store();
@@ -256,7 +257,7 @@ class Easysdi_shopModelRequest extends JModelForm {
         $query->select('COUNT(*)')
                 ->from('#__sdi_order_diffusion')
                 ->where('order_id = ' . (int) $id)
-                ->where('productstate_id = 3');
+                ->where('productstate_id = '.Easysdi_shopHelper::PRODUCTSTATE_SENT);
         $db->setQuery($query);
         $orderdone = $db->loadResult();
 
