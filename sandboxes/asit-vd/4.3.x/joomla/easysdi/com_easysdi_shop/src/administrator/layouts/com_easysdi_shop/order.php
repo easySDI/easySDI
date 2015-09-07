@@ -186,18 +186,18 @@ if (!$showActions) {
     <!-- order products -->
     <div class="row-fluid shop-product">
         <h2><?php
-    switch ($viewType) {
-        case Easysdi_shopHelper::ORDERVIEW_ORDER:
-            echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_ORDER');
-            break;
-        case Easysdi_shopHelper::ORDERVIEW_REQUEST:
-            echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_REQUEST');
-            break;
-        case Easysdi_shopHelper::ORDERVIEW_VALIDATION:
-            echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_VALID');
-            break;
-    }
-    ?></h2>
+            switch ($viewType) {
+                case Easysdi_shopHelper::ORDERVIEW_ORDER:
+                    echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_ORDER');
+                    break;
+                case Easysdi_shopHelper::ORDERVIEW_REQUEST:
+                    echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_REQUEST');
+                    break;
+                case Easysdi_shopHelper::ORDERVIEW_VALIDATION:
+                    echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_VALID');
+                    break;
+            }
+            ?></h2>
 
         <?php foreach ($item->basket->extractions as $supplier_id => $supplier): ?>
             <?php
@@ -263,13 +263,13 @@ if (!$showActions) {
                                                         ?>
 
                                                         <span class="shop-basket-property-value"><?php
-                                    echo empty($value->value) ? $value->name : $value->value;
-                                                        ?></span><?php
-                                                            $i++;
-                                                            if ($i < $c)
-                                                                echo ', ';
-                                                        endforeach;
-                                                        ?>
+                                                            echo empty($value->value) ? $value->name : $value->value;
+                                                            ?></span><?php
+                                                        $i++;
+                                                        if ($i < $c)
+                                                            echo ', ';
+                                                    endforeach;
+                                                    ?>
                                                 </li>
                                             <?php endforeach; ?>
                                         </ul>
@@ -352,10 +352,12 @@ if (!$showActions) {
                                     if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST && $productItem->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_SENT) :
                                         // product need a response
                                         ?>
-                                        <button class="btn btn-success sdi-btn-upload-order-response" onclick="Joomla.submitbutton('request.save')" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                        <button class="btn btn-success sdi-btn-upload-order-response" onclick="enableCurrentProduct(<?php echo $productItem->id; ?>);
+                                                                Joomla.submitbutton('request.save');" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             <span class="icon icon-upload"></span>
                                             Envoyer</button>
-                                        <button class="btn btn-danger btn-mini sdi-btn-cancel-order-response" onclick="" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                        <button class="btn btn-danger btn-mini sdi-btn-cancel-order-response" onclick="enableCurrentProduct(<?php echo $productItem->id; ?>);
+                                                                Joomla.submitbutton('request.cancelproduct');" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             Annuler</button>
 
                                         <!--
@@ -380,9 +382,11 @@ if (!$showActions) {
                                         else:
                                             //link for client
                                             ?>
-                                            <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?>" class="btn btn-success hasTip" onClick="" title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
-                                                <i class="icon-white icon-download"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWLOAD_BTN'); ?>
-                                            </a>
+                                            <span title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>" class="hasTip">
+                                                <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?>" class="btn btn-success " onClick="" title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
+                                                    <i class="icon-white icon-download"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWLOAD_BTN'); ?>
+                                                </a>
+                                            </span>
                                         <?php endif; ?>
 
 
