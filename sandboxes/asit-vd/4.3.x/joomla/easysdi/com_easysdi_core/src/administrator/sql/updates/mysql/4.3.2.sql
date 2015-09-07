@@ -61,3 +61,6 @@ UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbythirdparty' WHERE `id`
 UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 6;
 
 ALTER TABLE `#__sdi_order` MODIFY `remark` VARCHAR(4000);
+
+UPDATE `#__sdi_sys_pricing` SET `value` = 'feewithoutapricingprofile' WHERE `id` = 2;
+UPDATE `#__sdi_sys_pricing` SET `value` = 'feewithapricingprofile' WHERE `id` = 3;
