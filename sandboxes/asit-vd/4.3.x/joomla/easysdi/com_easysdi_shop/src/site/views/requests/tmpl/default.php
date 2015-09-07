@@ -42,33 +42,35 @@ JHtml::_('formbehavior.chosen', 'select');
                         </div>
                     <?php endif; ?>
 
-                    
+
                     <?php if ($this->state->get('filter.status') == '0'): //advanced filters for "historic" requests (=done)?>
                         <div id="filterclientorganism" >
                             <select id="filter_clientorganism" name="filter_clientorganism" onchange="this.form.submit();" class="inputbox">
                                 <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_CLIENTORGANISM_FILTER'); ?></option>
                                 <?php foreach ($this->clientorganisms as $clientorganism): ?>
                                     <option value="<?php echo $clientorganism->id; ?>" <?php
-                            if ($this->state->get('filter.clientorganism') == $clientorganism->id) : echo 'selected="selected"';
-                            endif;
+                                    if ($this->state->get('filter.clientorganism') == $clientorganism->id) : echo 'selected="selected"';
+                                    endif;
                                     ?> ><?php echo $clientorganism->name; ?></option>
                                         <?php endforeach; ?>
                             </select>
                         </div>
-                    <div id="filtersentfrom" >
-                        <?php 
-                        $datefromval = $this->state->get('filter.sentfrom');
-                        if(!($datefromval & strlen ( $datefromval )>1))
-                            $datefromval = '';
-                        echo JHTML::_('calendar', $datefromval, 'filter_sentfrom', 'filter_sentfrom','%Y-%m-%d',array('placeholder'=>JText::_('COM_EASYSDI_CORE_REQUESTS_DATEFROM_FILTER'),'onchange'=>'this.form.submit();')); ?>
-                    </div>
-                    <div id="filtersentto" >
-                        <?php 
-                        $datetoval = $this->state->get('filter.sentto');
-                        if(!($datetoval & strlen ( $datetoval )>1))
-                            $datetoval = '';
-                        echo JHTML::_('calendar', $datetoval, 'filter_sentto', 'filter_sentto','%Y-%m-%d',array('placeholder'=>JText::_('COM_EASYSDI_CORE_REQUESTS_DATETO_FILTER'),'onchange'=>'this.form.submit();')); ?>
-                    </div>
+                        <div id="filtersentfrom" >
+                            <?php
+                            $datefromval = $this->state->get('filter.sentfrom');
+                            if (!($datefromval & strlen($datefromval) > 1))
+                                $datefromval = '';
+                            echo JHTML::_('calendar', $datefromval, 'filter_sentfrom', 'filter_sentfrom', '%Y-%m-%d', array('placeholder' => JText::_('COM_EASYSDI_CORE_REQUESTS_DATEFROM_FILTER'), 'onchange' => 'this.form.submit();'));
+                            ?>
+                        </div>
+                        <div id="filtersentto" >
+                            <?php
+                            $datetoval = $this->state->get('filter.sentto');
+                            if (!($datetoval & strlen($datetoval) > 1))
+                                $datetoval = '';
+                            echo JHTML::_('calendar', $datetoval, 'filter_sentto', 'filter_sentto', '%Y-%m-%d', array('placeholder' => JText::_('COM_EASYSDI_CORE_REQUESTS_DATETO_FILTER'), 'onchange' => 'this.form.submit();'));
+                            ?>
+                        </div>
                     <?php endif; ?>
 
                     <div id="filterstatus">                        
@@ -76,11 +78,11 @@ JHtml::_('formbehavior.chosen', 'select');
                             <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_TYPE_FILTER'); ?></option>
                             <?php foreach ($this->ordertype as $ordertype): ?>
                                 <option value="<?php echo $ordertype->id; ?>" <?php
-                            if ($this->state->get('filter.type') == $ordertype->id) : echo 'selected="selected"';
-                            endif;
+                                if ($this->state->get('filter.type') == $ordertype->id) : echo 'selected="selected"';
+                                endif;
                                 ?> >
-                                        <?php echo JText::_($ordertype->value); ?></option>
-                                <?php endforeach; ?>
+                                    <?php echo JText::_($ordertype->value); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div id="filtersearch">
@@ -115,7 +117,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
                 <tbody>
                     <?php foreach ($this->items as $item) : ?>
-                        <tr class="order-line order-line-new <?php echo('sdi-orderstate-'.preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-'.preg_replace('/\s+/', '', $item->ordertype)  ) ;?>">
+                        <tr class="order-line order-line-new <?php echo('sdi-orderstate-' . preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-' . preg_replace('/\s+/', '', $item->ordertype) ); ?>">
                             <td class="ordercreated">
                                 <span class="hasTip" title="<?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>">
                                     <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->created)); ?>
@@ -148,7 +150,7 @@ JHtml::_('formbehavior.chosen', 'select');
                                 </span>
                             </td>                            
                             <td class="orderactions">
-                                <a class="btn btn-primary btn-small pull-right" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=request.edit&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_REQUESTS_REPLY') ?></a>
+                                <a class="btn btn-primary btn-small pull-right" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=request.edit&id=' . $item->id); ?>"><?php echo $this->state->get('filter.status') == 0 ? JText::_('COM_EASYSDI_SHOP_REQUESTS_REPLY') : JText::_('COM_EASYSDI_SHOP_REQUESTS_OPEN') ?></a>
                             </td>
 
                         </tr>
