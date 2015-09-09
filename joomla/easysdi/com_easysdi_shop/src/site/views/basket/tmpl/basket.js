@@ -454,7 +454,7 @@ var updatePricing = function(pricing) {
         //products
         jQuery.each(supplier.products, function(productId, product) {
             var displayedPrice;
-            if(product.cfg_pricing_type === 1){
+            if(product.cfg_pricing_type == 1){
                 displayedPrice = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE', 'free');
             }
             else{
