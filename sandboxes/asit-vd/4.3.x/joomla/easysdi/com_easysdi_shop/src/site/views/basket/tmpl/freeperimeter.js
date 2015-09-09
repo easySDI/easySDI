@@ -245,6 +245,7 @@ function importPolygonFromText() {
             polygonLayer.addFeatures([feature.clone()]);
             selectPolygonEdit();
         }
+        app.mapPanel.map.zoomToExtent(feature.geometry.getBounds());
     }
 }
 
