@@ -138,7 +138,8 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         $query = $db->getQuery(true);
         $query->select('id, name')
                 ->from('#__sdi_organism')
-                ->where('selectable_as_thirdparty = ' . (int) 1);
+                ->where('selectable_as_thirdparty = ' . (int) 1)
+                ->order('name');
         $db->setQuery($query);
         $thirdparties = $db->loadObjectList();
         return $thirdparties;
