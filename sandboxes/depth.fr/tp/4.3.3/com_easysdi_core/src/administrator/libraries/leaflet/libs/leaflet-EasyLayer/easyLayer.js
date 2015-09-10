@@ -57,24 +57,19 @@
 
      var getLayerById = function (layerId) {
          var rlayer = false;
-         jQuery.each(_this.baseLayer, function (i, layer){
-         //for (var i in _this.baseLayer) {
-             //var layer = _this.baseLayer[i];
+         jQuery.each(_this.baseLayer, function (i, layer) {
              var _layerId = L.Util.stamp(layer.layer);
              if (_layerId == layerId) rlayer = layer;
          });
 
-         jQuery.each(_this.groups, function (i, group){
-         //for (var i in _this.groups) {
-             //var group = _this.layers[_this.groups[i]];
+         jQuery.each(_this.groups, function (i, group) {
              var layers = _this.layers[group];
-             jQuery.each(layers, function (j, layer){
-             //for (var j in group) {
-                 //var layer = group[j];
+             jQuery.each(layers, function (j, layer) {
                  var _layerId = L.Util.stamp(layer.layer);
                  if (_layerId == layerId) rlayer = layer;
              });
          });
+
          return rlayer;
      }
 
@@ -85,8 +80,7 @@
      var onLayerOn = function (layerId) {
          container.find('.easyLayerTree .layer' + layerId).addClass('on');
          //overlay
-         jQuery.each(_this.groups, function (i, group){
-         //for (var i in _this.groups) {
+         jQuery.each(_this.groups, function (i, group) {
              var layers = _this.layers[group];
              if (isset(layers) && isset(layers[layerId])) {
                  layers[layerId].on = true;
@@ -94,8 +88,9 @@
          });
          //baselayer
          if (isset(_this.baseLayer[layerId])) {
-             jQuery.each(_this.baseLayer, function (i, baselayer){
-             //for (var i in _this.baseLayer) {
+
+             jQuery.each(_this.baseLayer, function (i, baselayer) {
+                 //for (var i in _this.baseLayer) {
                  baselayer.on = false;
              });
              _this.baseLayer[layerId].on = true;
@@ -106,8 +101,7 @@
      var onLayerOff = function (layerId) {
          container.find('.easyLayerTree .layer' + layerId).removeClass('on');
          //overlay
-         jQuery.each(_this.groups, function (i, group){
-         //for (var i in _this.groups) {
+         jQuery.each(_this.groups, function (i, group) {
              var layers = _this.layers[group];
              if (isset(layers) && isset(layers[layerId])) {
                  layers[layerId].on = false;
@@ -122,13 +116,14 @@
              _this.switchLayer(this.name);
          });
          container.on('change', '.easyLayerTree input[type=radio]', function () {
-             _this.switchLayer(this.value, 'on');
-             jQuery.each(_this.baseLayer, function (i, blayer){
-             //for (var i in _this.baseLayer) {
-                 if (i !== this.value) {
+             var target_id = this.value;
+             jQuery.each(_this.baseLayer, function (i, blayer) {
+                 if (i !== target_id) {
                      _this.switchLayer(i, 'off');
                  }
              });
+
+             _this.switchLayer(target_id, 'on');
          });
      }
 
@@ -182,6 +177,7 @@
 
      _this.switchLayer = function (layerId, mode) {
          var layerObj = getLayerById(layerId);
+
          if ((layerObj.on && mode !== 'on') || mode === 'off') {
              _this.map.removeLayer(layerObj.layer);
          } else {
@@ -191,12 +187,8 @@
 
      var checkZoom = function () {
          var zoom = map.getZoom();
-         jQuery.each(_this.groups, function (i, group){
-         //for (var i in _this.groups) {
-             //var group = _this.groups[i];
-             jQuery.each(_this.layers[group], function (layerId, layerObj){
-             //for (var layerId in _this.layers[group]) {
-                 //var layerObj = _this.layers[group][layerId];
+         jQuery.each(_this.groups, function (i, group) {
+             jQuery.each(_this.layers[group], function (layerId, layerObj) {
                  var zoomOk = (zoom >= layerObj.layer.options.minZoom && zoom <= layerObj.layer.options.maxZoom);
                  if (zoomOk) {
                      container.find('.easyLayerTree .layer' + layerId).removeClass('outOfZoom');
@@ -216,24 +208,18 @@
              if (Object.keys(_this.baseLayer).length > 0)
                  container.find('.easyLayerTree').append('<li><a href="#" class="grouplink basegroup">' + options.baseGroupName + '</a></li>');
              var ul = jQuery('<ul class="groupbasegroup"></ul>').appendTo(container.find('.easyLayerTree'));
-             jQuery.each(_this.baseLayer, function (i, layer){
-             //for (var i in _this.baseLayer) {
-                 //var layer = _this.baseLayer[i];
+             jQuery.each(_this.baseLayer, function (i, layer) {
                  var layerId = L.Util.stamp(layer.layer);
-                 jQuery('<li class="baselayer layer' + layerId + (layer.on ? ' on' : '') + (isset(layer.layer.data.serviceconnector) ? ' LC_' + layer.layer.data.serviceconnector : '') + '"><label><input name="baselayer" value="' + layerId + '" type="radio" ' + (layer.on ? ' checked=checked' : '') + '>' + layer.name + '</label></li>').appendTo(ul);
+                 jQuery('<li class="baselayer layer' + layerId + (layer.on ? ' on' : '') + (isset(layer.layer.data.serviceconnector) ? ' LC_' + layer.layer.data.serviceconnector : '') + '"><label><input name="baselayer" value="' + layerId + '" type="radio" ' + (layer.on ? ' checked=checked' : '') + '> ' + layer.name + '</label></li>').appendTo(ul);
 
              });
 
-             jQuery.each(_this.groups, function (i, group){
-             //for (var i in _this.groups) {
-                 //var group = _this.groups[i];
+             jQuery.each(_this.groups, function (i, group) {
                  container.find('.easyLayerTree').append('<li><a href="#" class="grouplink group' + i + ' data-group="' + i + '">' + group + '</a></li>');
                  var ul = jQuery('<ul class="group' + i + '"></ul>').appendTo(container.find('.easyLayerTree'));
-                 jQuery.each(_this.layers[group], function (j, layer){
-                 //for (var j in _this.layers[group]) {
-                     //var layer = _this.layers[group][j];
+                 jQuery.each(_this.layers[group], function (j, layer) {
                      var layerId = L.Util.stamp(layer.layer);
-                     jQuery('<li class="layer' + layerId + (layer.on ? ' on' : '') + (isset(layer.layer.data.serviceconnector) ? ' LC_' + layer.layer.data.serviceconnector : '') + '"><label><input name="' + layerId + '" type="checkbox" ' + (layer.on ? ' checked=checked' : '') + '>' + layer.name + '</label></li>').appendTo(ul);
+                     jQuery('<li class="layer' + layerId + (layer.on ? ' on' : '') + (isset(layer.layer.data.serviceconnector) ? ' LC_' + layer.layer.data.serviceconnector : '') + '"><label><input name="' + layerId + '" type="checkbox" ' + (layer.on ? ' checked=checked' : '') + '> ' + layer.name + '</label></li>').appendTo(ul);
                  });
              });
 

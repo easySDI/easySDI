@@ -60,6 +60,9 @@
      //  container.width(width);
      //  container.height(height);
 
+     if (options.defaulttitle == undefined) options.defaulttitle = '';
+     if (options.defaultdesc == undefined) options.defaultdesc = '';
+
      jQuery('body').addClass('easySDImapPrint');
 
      jQuery('body *').addClass('mapPrintHideMe');
@@ -82,7 +85,8 @@
      html += '<a href="#" class="easySDImapPrintOk btn btn-lg btn-large btn-primary">' + options.print + '</a>';
      html += '<a href="#" class="easySDImapPrintCancel btn btn-lg btn-large btn-default">' + options.cancel + '</a>';
      html += '</div>';
-     //console.log(container.parents('.leaflet-container'));
+     console.log(mapContainer);
+     console.log(container);
      mapContainer.after(html);
 
      jQuery('.easySDImapPrintMeta, .easySDImapPrintButtons').width(width);

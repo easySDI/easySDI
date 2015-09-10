@@ -112,8 +112,11 @@
 
 
      _this.onclick = function (e) {
-         var layerId = container.find('.queryable_layers').val();
-         _this.getFeature(layertree.getLayerById(layerId), e)
+         console.log(jQuery('.leaflet-zoom-box-crosshair').length);
+         if (jQuery('.leaflet-zoom-box-crosshair').length == 0) {
+             var layerId = container.find('.queryable_layers').val();
+             _this.getFeature(layertree.getLayerById(layerId), e);
+         }
 
      }
 
@@ -149,10 +152,15 @@
                              request.html += '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
                          });
                      } else {
-                         request.html = 'none';
-                         setTimeout(function () {
-                             removeRes(_this.query[request.id]);
-                         }, 1000);
+                         data = data.replace('GetFeatureInfo results:', '').trim();
+                         if (data.length > 0 && data.search('Search returned no results.') == -1) {
+                             request.html = '<pre class="featureInfo easygetfeature_pre">' + data + '</pre>';
+                         } else {
+                             request.html = 'none';
+                             setTimeout(function () {
+                                 removeRes(_this.query[request.id]);
+                             }, 1000);
+                         }
                      }
                  }
                  var evt = new CustomEvent('getFeature', request);
@@ -201,13 +209,13 @@
                  container_info.append(jQuery('<p>' + options.queryablelayers_title + '</p>'));
                  var select = jQuery('<select class="queryable_layers"></select>');
                  container_info.append(select);
-                 jQuery.each(queryable, function (i, rqueryable){
-                 //for (var i in queryable) {
+                 jQuery.each(queryable, function (i, rqueryable) {
+                     //for (var i in queryable) {
                      var layerId = L.Util.stamp(rqueryable.layer);
                      jQuery('<option value="' + layerId + '"' + (current_layerID == layerId ? ' selected' : '') + '>' + queryable[i].name + '</option>').appendTo(select);
                  });
 
-                 if (jQuery('#sidebar #getfeature').hasClass('active') && !jQuery('#sidebar').hasClass('collapsed')) {
+                 if (jQuery('#sidebar #getfeature').hasClass('active') /*&& !jQuery('#sidebar').hasClass('collapsed')*/ ) {
                      if (!map.hasLayer(marker_layer))
                          map.addLayer(marker_layer);
                      jQuery(map._container).addClass('getFeatureOn');
@@ -236,6 +244,16 @@
              .addTo(marker_layer)
              .openPopup();
 
+         if (!jQuery('#sidebar #getfeature').hasClass('active')) {
+             var popup = L.popup({
+                     className: 'easygetfeature_popup'
+                 })
+                 .setLatLng(query.latlng)
+                 .setContent(html_result)
+                 .openOn(map);
+         }
+
+
          query.obj = nlayer;
      }
 
@@ -251,8 +269,8 @@
              if (query_shown.length > 1)
                  container_results.append('<a href="#" class="removeAllResult" rel="tooltip" title="' + options.emptyselection + '"><i class="fa fa-eraser"></i></a>');
 
-             jQuery.each(_this.query, function (i, query){
-             //for (var i in _this.query) {
+             jQuery.each(_this.query, function (i, query) {
+                 //for (var i in _this.query) {
                  //var query = _this.query[i];
                  if (query.loading) {
                      var html = '<div class="query' + i + ' loading"></div>';

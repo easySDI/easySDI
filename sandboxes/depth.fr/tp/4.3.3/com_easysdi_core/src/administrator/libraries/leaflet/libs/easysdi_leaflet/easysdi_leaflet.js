@@ -209,8 +209,8 @@ jQuery(document).ready(function ($) {
 
 
         _this.getAllServices = function (map) {
-            jQuery.each(map.contextMapData.services, function (i, s){
-            //for (var i in map.contextMapData.services) {
+            jQuery.each(map.contextMapData.services, function (i, s) {
+                //for (var i in map.contextMapData.services) {
                 //var s = map.contextMapData.services[i];
                 var ns = _this.addService(s);
                 ns.name = s.name;
@@ -258,12 +258,12 @@ jQuery(document).ready(function ($) {
             jQuery.ajax({
                 type: "GET",
                 url: url,
-                dataType: "xml",
+                dataType: "text",
                 success: function (xml) {
                     service.loading = false;
                     if (xml != null) {
                         service.getCapabilitiesXML = xml;
-                        service.getCapabilities = xmlToJson(xml);
+                        service.getCapabilities = new WMSCapabilities(xml).toJSON();
                         if (!isset(service.name)) updateServiceName(servicealias);
                     }
                     var evt = new CustomEvent('getCapabilities', service);
@@ -284,32 +284,45 @@ jQuery(document).ready(function ($) {
             return null;
         };
 
+
+
         var getLayers = function (capabilities) {
+
+
             if (capabilities == null) return null;
-            if (isset(capabilities.WMS_Capabilities)) {
-                if (isset(capabilities.WMS_Capabilities.Capability.Layer.Layer))
-                    return capabilities.WMS_Capabilities.Capability.Layer.Layer;
-            } else {
-                if (isset(capabilities.Capabilities)) {
-                    if (isset(capabilities.Capabilities.Contents.Layer))
-                        return capabilities.Capabilities.Contents.Layer;
+            var res = [];
+
+            var recurLayer = function (layer, pretitle, niv) {
+                if (!isset(niv)) niv = 0;
+                if (!isset(pretitle)) pretitle = '';
+                if (isset(layer.Layer)) {
+                    jQuery.each(layer.Layer, function (i, l) {
+                        recurLayer(l, (niv > 1) ? pretitle + layer.Title + ' ' : pretitle, niv + 1);
+                    });
+                } else {
+                    layer.Group = pretitle;
+                    res.push(layer);
                 }
             }
 
-            return [];
+
+            if (isset(capabilities.Capability)) {
+                var Layers = jQuery.extend({}, capabilities.Capability.Layer);
+                recurLayer(Layers, '', 0);
+            }
+
+            return res;
         }
 
         var _getLayerData = function (capabilities, layername) {
-            var rlayer=false;
+            var rlayer = false;
             var layers = getLayers(capabilities);
-            jQuery.each(layers, function (i, lay){
-            //for (var i in layers) {
+            jQuery.each(layers, function (i, lay) {
+                //for (var i in layers) {
                 //var lay = layers[i];
                 var layname;
                 if (isset(lay.Name)) {
-                    layname = lay.Name['#text'];
-                } else {
-                    if (isset(lay['ows:Identifier'])) layname = lay['ows:Identifier']['#text'];
+                    layname = lay.Name;
                 }
                 if (layname == layername) {
                     rlayer = lay;
@@ -331,12 +344,12 @@ jQuery(document).ready(function ($) {
             var lay = _getLayerData(cap, layer.data.layername);
 
             if (isset(lay.Style)) {
-                if (isset(lay.Style.LegendURL)) {
-                    if (isset(lay.Style.LegendURL.OnlineResource))
-                        return lay.Style.LegendURL.OnlineResource['@attributes']['xlink:href'];
-                    else return lay.Style.LegendURL['@attributes']['xlink:href'];
-                } else {
-                    return false;
+                if (isset(lay.Style[0].LegendURL)) {
+                    if (isset(lay.Style[0].LegendURL[0].OnlineResource)) {
+                        return lay.Style[0].LegendURL[0].OnlineResource;
+                    } else {
+                        return lay.Style[0].LegendURL[0];
+                    }
                 }
             }
             return false;
@@ -345,9 +358,9 @@ jQuery(document).ready(function ($) {
         _this.getLegendGraphic = function (layer, map) {
             if (layer.data.serviceconnector != 'WMS' && layer.data.serviceconnector != 'WMTS') return false;
             var service = _this.services[layer.data.servicealias];
-            var crs_code = map.options.crs || map.options.crs;
+            var crs_code = map.contextMapData.srs;
             var scale = 128 * 6378137 / (Math.pow(2, map.getZoom()));
-            var url = service.serviceurl + '?service=' + service.serviceconnector + '&request=GetLegendGraphic&CRS=' + layer.data.layername + '&LAYER=' + layer.data.layername + '&transparent=true&format=image%2Fpng&legend_options=fontAntiAliasing%3Atrue%3BfontSize%3A11%3BfontName%3AAria&scale=' + scale;
+            var url = service.serviceurl + '?service=' + service.serviceconnector + '&request=GetLegendGraphic&CRS=' + crs_code + '&LAYER=' + layer.data.layername + '&transparent=true&format=image%2Fpng&legend_options=fontAntiAliasing%3Atrue%3BfontSize%3A11%3BfontName%3AAria&scale=' + scale;
 
             return url;
         }
@@ -355,20 +368,18 @@ jQuery(document).ready(function ($) {
         _this.getAttribution = function (layer) {
             if (isset(layer.Layer)) return _this.getAttribution(layer.Layer[0]);
             if (!isset(layer.Attribution)) return null;
-            var html = layer.Attribution['Title']['#text'];
+            var html = layer.Attribution['Title'];
             if (isset(layer.Attribution['LogoURL']))
-                html = '<img src="' + layer.Attribution['LogoURL']['OnlineResource']['@attributes']['xlink:href'] + '" alt="" />' + html;
+                html = '<img src="' + layer.Attribution['LogoURL']['OnlineResource'] + '" alt="" />' + html;
             if (isset(layer.Attribution['OnlineResource']))
-                html = '<a href="' + layer.Attribution['OnlineResource']['@attributes']['xlink:href'] + '">' + html + '</a>';
+                html = '<a href="' + layer.Attribution['OnlineResource'] + '">' + html + '</a>';
             return html;
         }
 
         var updateServiceName = function (serviceAlias) {
             var cap = _this.services[serviceAlias].getCapabilities;
-            if (isset(cap.WMS_Capabilities))
-                _this.services[serviceAlias].name = cap.WMS_Capabilities.Service.Title['#text'];
-            if (isset(cap.Capabilities))
-                _this.services[serviceAlias].name = cap.Capabilities['ows:ServiceIdentification']['ows:Title']['#text'];
+            if (isset(cap.Service))
+                _this.services[serviceAlias].name = cap.Service.Title;
         }
 
 
@@ -382,33 +393,25 @@ jQuery(document).ready(function ($) {
 
             if (isset(lay.BoundingBox)) {
                 var boxes = lay.BoundingBox;
-                if (!isset(boxes.length))
-                    boxes = [boxes];
 
                 for (var i in boxes) {
-                    var attr = boxes[i]['@attributes'];
-                    if ('CRS:84' == attr.CRS) {
-                        var bb = LatLngFromString(attr.maxx + ',' + attr.miny + ',' + attr.minx + ',' + attr.maxy);
+                    var attr = boxes[i];
+                    if ('CRS:84' == attr.crs) {
+                        var bb = LatLngFromString(attr.extent[0] + ',' + attr.extent[1] + ',' + attr.extent[2] + ',' + attr.extent[3]);
                         return L.latLngBounds(bb);
                     }
                 }
 
                 for (var i in boxes) {
-                    var attr = boxes[i]['@attributes'];
-                    if (srs == attr.CRS) {
-                        var bb = LatLngFromString(attr.maxx + ',' + attr.miny + ',' + attr.minx + ',' + attr.maxy, map.options.crs);
+                    var attr = boxes[i];
+                    if (srs == attr.crs) {
+                        var bb = LatLngFromString(attr.extent[0] + ',' + attr.extent[1] + ',' + attr.extent[2] + ',' + attr.extent[3], map.options.crs);
                         return L.latLngBounds(bb);
                     }
                 }
 
             }
 
-            if (isset(lay['ows:WGS84BoundingBox'])) {
-                var min = lay['ows:WGS84BoundingBox']['ows:LowerCorner']['#text'].split(' ');
-                var max = lay['ows:WGS84BoundingBox']['ows:UpperCorner']['#text'].split(' ');
-                var bb = LatLngFromString(min[1] + ',' + min[0] + ',' + max[1] + ',' + max[0]);
-                return L.latLngBounds(bb);
-            }
 
             return false;
         };
@@ -420,11 +423,17 @@ jQuery(document).ready(function ($) {
                 request: 'GetFeatureInfo',
                 query_layers: layer.data.layername,
                 layers: layer.data.layername,
-                info_format: 'text/html',
+                info_format: '',
                 feature_count: 10,
                 X: Math.round(loc.x),
                 Y: Math.round(loc.y)
             };
+
+
+            jQuery.each(capabilities.Capability.Request.GetFeatureInfo.Format, function (k, format) {
+                if (format == 'text/plain' && wmsParams.info_format == '') wmsParams.info_format = format;
+                if (format == 'text/html') wmsParams.info_format = format;
+            });
 
             var bounds = map.getBounds();
             var size = map.getSize();
@@ -446,7 +455,7 @@ jQuery(document).ready(function ($) {
             ).join(',');
 
             L.extend(wmsParams, params);
-            var url = capabilities.WMS_Capabilities.Capability.Request.GetFeatureInfo.DCPType.HTTP.Get.OnlineResource['@attributes']['xlink:href'];
+            var url = capabilities.Capability.Request.GetFeatureInfo.DCPType[0].HTTP.Get.OnlineResource;
             url += L.Util.getParamString(wmsParams, url);
             if (isset(_this.proxy)) url = proxy + encodeURIComponent(url);
 
@@ -462,8 +471,8 @@ jQuery(document).ready(function ($) {
 
             var lay = _getLayerData(cap, layer.data.layername);
 
-            if (isset(lay['@attributes']) && isset(lay['@attributes'].queryable)) {
-                if (lay['@attributes'].queryable == 1) {
+            if (isset(lay.queryable)) {
+                if (lay.queryable == true) {
                     return true;
                 }
             }
@@ -527,6 +536,8 @@ jQuery(document).ready(function ($) {
         var boundsLatLng;
         var contextMapData;
 
+        _easySDImap.params = params;
+
         var pushTool = function (alias, control, params) {
             _easySDImap.tools.push({
                 alias: alias,
@@ -539,6 +550,9 @@ jQuery(document).ready(function ($) {
         var init = function () {
 
             container = obj;
+
+            var h = jQuery(window).height();
+            container.height(h * 0.95);
 
             // order mapdata arrays
             contextMapData.groups.sort(byOrdering);
@@ -565,19 +579,14 @@ jQuery(document).ready(function ($) {
             map.contextMapData = contextMapData;
 
 
-            //update map bbox from URL param
-            if (isset(url_obj.parameters.bbox)) {
-                console.info('use url bbox ' + url_obj.parameters.bbox);
-                _easySDImap.setBBox(url_obj.parameters.bbox);
-            }
 
             // initialisation tools
 
 
 
             _easySDImap.tools = [];
-            jQuery.each(contextMapData.tools, function (i, t){
-            //for (var i in contextMapData.tools) {
+            jQuery.each(contextMapData.tools, function (i, t) {
+                //for (var i in contextMapData.tools) {
                 //var t = contextMapData.tools[i];
                 var ntool = addTool(t.alias, t.params);
                 if (ntool !== false)
@@ -589,7 +598,6 @@ jQuery(document).ready(function ($) {
             pushTool('attribution', addTool('attribution'));
 
 
-
             if (!isset(controlLayer)) {
                 controlLayer = L.control.groupedLayers(baseLayers, overlays, {
                     autoZIndex: false
@@ -598,13 +606,13 @@ jQuery(document).ready(function ($) {
 
 
             // creation de couches
-            jQuery.each( contextMapData.groups, function(g, group ) {
-            //for (var g in contextMapData.groups) {
+            jQuery.each(contextMapData.groups, function (g, group) {
+                //for (var g in contextMapData.groups) {
                 //var group = contextMapData.groups[g];
                 var overlay = (group.isbackground != '1');
                 if (isset(group.layers)) {
-                    jQuery.each(group.layers, function (l,layer) {
-                    //for (var l = group.layers.length - 1; l >= 0; l--) {
+                    jQuery.each(group.layers, function (l, layer) {
+                        //for (var l = group.layers.length - 1; l >= 0; l--) {
                         //var layer = group.layers[l];
                         var show = (layer.isdefaultvisible == '1');
                         addLayer(layer, overlay, show, group.name);
@@ -644,10 +652,33 @@ jQuery(document).ready(function ($) {
             };
             _easySDImap.services = services;
 
+            //update map bbox from URL param
+            if (isset(url_obj.parameters.bbox)) {
+                console.info('use url bbox ' + url_obj.parameters.bbox);
+                _easySDImap.setBBox(url_obj.parameters.bbox);
+            }
 
+            setTimeout(updateMapFromContext, 200);
 
 
         };
+
+        var updateMapFromContext = function () {
+            //update map context from params
+            if (isset(_easySDImap.params.context)) {
+                if (typeof _easySDImap.params.context != "object") {
+                    eval('_easySDImap.params.context=' + _easySDImap.params.context + ';');
+                }
+                setContext(_easySDImap.params.context);
+            }
+
+
+            //update map bbox from URL param
+            if (isset(url_obj.parameters.bbox)) {
+                console.info('use url bbox ' + url_obj.parameters.bbox);
+                _easySDImap.setBBox(url_obj.parameters.bbox);
+            }
+        }
 
         _easySDImap.setBBox = function (bbox) {
             var url_bbox = L.latLngBounds(LatLngFromString(bbox, mapOptions.crs));
@@ -656,8 +687,8 @@ jQuery(document).ready(function ($) {
 
         var hasTool = function (toolname) {
             var rtool = false;
-            jQuery.each(_easySDImap.contextMapData.tools,function(t, tool ) {
-            //for (var t in _easySDImap.contextMapData.tools) {
+            jQuery.each(_easySDImap.contextMapData.tools, function (t, tool) {
+                //for (var t in _easySDImap.contextMapData.tools) {
                 //var tool = _easySDImap.contextMapData.tools[t];
                 if (tool.alias == toolname) rtool = tool;
             });
@@ -666,9 +697,9 @@ jQuery(document).ready(function ($) {
 
         _easySDImap.getTool = function (toolname) {
             var rtool = false;
-            jQuery.each(_easySDImap.tools,function(t, tool ) {
-            //for (var t in _easySDImap.tools) {
-               // var tool = _easySDImap.tools[t];
+            jQuery.each(_easySDImap.tools, function (t, tool) {
+                //for (var t in _easySDImap.tools) {
+                // var tool = _easySDImap.tools[t];
                 if (tool.alias == toolname) rtool = tool.control;
             });
             return rtool;
@@ -764,6 +795,8 @@ jQuery(document).ready(function ($) {
                 return initAttribution(params);
                 break;
 
+
+
             default:
                 console.info('ERROR Tool ' + toolname + ' non géré');
             }
@@ -781,9 +814,9 @@ jQuery(document).ready(function ($) {
         };
 
         var getOloptions = function (opt) {
-            if (!isset(opt) || opt=='') return [];
+            if (!isset(opt) || opt == '') return [];
             //console.log(opt);
-            var asOLoptions = JSON.parse(opt);//opt.replace('OpenLayers.', '_ImportOL.');
+            var asOLoptions = JSON.parse(opt); //opt.replace('OpenLayers.', '_ImportOL.');
             //eval('var asOLoptions= {' + opt + '};');
             return asOLoptions;
             //return [];
@@ -801,16 +834,16 @@ jQuery(document).ready(function ($) {
                 overlays: []
             };
 
-            jQuery.each(baseLayers,function(i, baseLayer ) {
-            //for (var i in baseLayers) {
+            jQuery.each(baseLayers, function (i, baseLayer) {
+                //for (var i in baseLayers) {
                 res.baseLayers.push({
                     layer: i,
                     status: isset(baseLayer._map)
                 });
             });
 
-            jQuery.each(overlays,function(g, overlay ) {
-            //for (var g in overlays) {
+            jQuery.each(overlays, function (g, overlay) {
+                //for (var g in overlays) {
                 res.overlays.push({
                     layer: g,
                     status: isset(overlay._map)
@@ -822,25 +855,25 @@ jQuery(document).ready(function ($) {
 
 
         var getContext = function () {
-            var view = {
-                lat: map.getCenter().lat,
-                lng: map.getCenter().lng,
-                zoom: map.getZoom()
-            };
+            var bbox = map.getBounds().toBBoxString();
             return {
-                view: view,
+                bbox: bbox,
                 layers: getLayersStatus()
             };
         };
 
 
         var setContext = function (c) {
-            map.setView([c.view.lat, c.view.lng], c.view.zoom);
+            var coords = c.bbox.split(',');
+            coords = [
+                [coords[1], coords[0]],
+                [coords[3], coords[2]]
+            ];
+            map.fitBounds(coords);
 
-            jQuery.each(c.layers.baseLayers,function(i, contextBaseLayer ) {
-            //for (var i in c.layers.baseLayers) {
-                //var contextBaseLayer = c.layers.baseLayers[i];
-                if (isset(baseLayers[contextBaseLayer.layer])) {
+            jQuery.each(c.layers.baseLayers, function (i, contextBaseLayer) {
+
+                if (isset(baseLayers[contextBaseLayer])) {
                     if (contextBaseLayer.status) {
                         map.addLayer(baseLayers[contextBaseLayer.layer]);
                     } else {
@@ -850,9 +883,7 @@ jQuery(document).ready(function ($) {
                 }
             });
 
-            jQuery.each(c.layers.baseLayers,function(i2, contextOverlay ) {
-            //for (var i2 in c.layers.overlays) {
-                //var contextOverlay = c.layers.overlays[i2];
+            jQuery.each(c.layers.overlays, function (i2, contextOverlay) {
                 if (isset(overlays[contextOverlay.layer])) {
                     if (contextOverlay.status) {
                         map.addLayer(overlays[contextOverlay.layer]);
@@ -899,6 +930,7 @@ jQuery(document).ready(function ($) {
                 return false;
             }
 
+
             if (l !== null && l !== false) {
 
                 l.data = data;
@@ -906,7 +938,7 @@ jQuery(document).ready(function ($) {
                 if (overlay === false) {
                     if (isset(group))
                         setBaseLayerGroup(group);
-                        addBaseLayer(l, data.name);
+                    addBaseLayer(l, data.name);
                 } else {
                     addOverlay(l, group, data.name);
                 }
@@ -1041,8 +1073,8 @@ jQuery(document).ready(function ($) {
 
 
             if (isset(options.topLeftCorner)) {
-                jQuery.each(options.matrixIds,function(m, matrixId ) {
-                //for (var m in options.matrixIds) {
+                jQuery.each(options.matrixIds, function (m, matrixId) {
+                    //for (var m in options.matrixIds) {
                     options.matrixIds[m] = {
                         //identifier: options.matrixIds[m],
                         identifier: matrixId,
@@ -1080,7 +1112,7 @@ jQuery(document).ready(function ($) {
 
         var addBing = function (data) {
             /*if (isset(L.BingLayer))
-                return new L.BingLayer(data.layername);*/
+            return new L.BingLayer(data.layername);*/
             return false;
         };
 
@@ -1159,6 +1191,7 @@ jQuery(document).ready(function ($) {
             tool.addTo(map);
             return tool;
         };
+
 
 
         //**********
@@ -1243,22 +1276,24 @@ jQuery(document).ready(function ($) {
                 layerdetailsheet: hasTool('layerdetailsheet'),
                 layerdownload: hasTool('layerdownload'),
                 layerorder: hasTool('layerorder'),
-                defaultGroup: _easySDImap.contextMapData.default_group
+                defaultGroup: _easySDImap.contextMapData.default_group,
+                sharelink: (_easySDImap.params.sharelink == true)
 
             };
-            
+
             jQuery.extend(options, i18n.t('layertree', {
                 returnObjectTrees: true
             }));
             jQuery.extend(options, params);
 
             var sidebar_html = jQuery('<div id="sidebar" class="sidebar collapsed">' +
-                '<ul class="sidebar-tabs" role="tablist"></ul>' +
+                '<ul class="sidebar-tabs sidebar-tabs-top" role="tablist"></ul>' +
+                '<ul class="sidebar-tabs sidebar-tabs-bottom" role="tablist"></ul>' +
                 '<div class="sidebar-content active"></div>' +
-                '</div>').prependTo('#easySDIMap');//prependTo('body');////jQuery('#map').parent());
+                '</div>').prependTo('#easySDIMap'); //prependTo('body');////jQuery('#map').parent());
 
             // tree
-            jQuery('<li><a href="#tree" role="tab" title="' + i18n.t('tools_tooltips.layertree') + '"><i class="fa fa-bars"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs'));
+            jQuery('<li><a href="#tree" role="tab" title="' + i18n.t('tools_tooltips.layertree') + '"><i class="fa fa-bars"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
             _this.panelTree = jQuery('<div class="sidebar-pane" id="tree"></div>').appendTo(sidebar_html.find('.sidebar-content'));
 
             _this.easyLayer = easyLayer(map, options);
@@ -1268,7 +1303,7 @@ jQuery(document).ready(function ($) {
             pushTool('panelTree', _this.panelTree);
 
             //legend
-            jQuery('<li><a href="#legend" role="tab" title="' + i18n.t('tools_tooltips.legend') + '"><i class="fa fa-newspaper-o"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs'));
+            jQuery('<li><a href="#legend" role="tab" title="' + i18n.t('tools_tooltips.legend') + '"><i class="fa fa-newspaper-o"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
             _this.panelLegend = jQuery('<div class="sidebar-pane" id="legend"></div>').appendTo(sidebar_html.find('.sidebar-content'));
 
             _this.easyLegend = easyLegend(map, controlLayer, serviceConnector, options);
@@ -1288,21 +1323,111 @@ jQuery(document).ready(function ($) {
                 pushTool('addlayer', _this.easyAddLayer);
             }
 
+
+
             //getFeature
             if (options.getfeatureinfo !== false) {
-                jQuery('<li><a href="#getfeature" role="tab" title="' + i18n.t('tools_tooltips.getfeatureinfo') + '"><i class="fa fa-map-marker"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs'));
+                jQuery('<li><a href="#getfeature" role="tab" title="' + i18n.t('tools_tooltips.getfeatureinfo') + '"><i class="fa fa-map-marker"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
                 _this.panelFeature = jQuery('<div class="sidebar-pane" id="getfeature"></div>').appendTo(sidebar_html.find('.sidebar-content'));
 
                 _this.easyGetFeature = easyGetFeature(map, controlLayer, serviceConnector, options);
                 controlGetFeature = _this.easyGetFeature;
                 controlGetFeature.addTo(_this.panelFeature);
-                _this.sidebar = L.control.sidebar('sidebar', options);
-                _this.sidebar.addTo(map);
+
                 map.on('click', function (e) {
-                    controlGetFeature.showPanel(_this.sidebar);
+                    // controlGetFeature.showPanel(_this.sidebar);
                 });
                 pushTool('getfeatureinfo', controlGetFeature);
             }
+
+
+            //sharelink
+            if (options.sharelink) {
+
+                function htmlEncode(value) {
+                    return $('<div/>').text(value).html();
+                }
+
+                function htmlDecode(value) {
+                    return $('<div/>').html(value).text();
+                }
+
+                var updateShareLink = function () {
+                    if (!_easySDImap.getContext) {
+                        setTimeout(updateShareLink, 250);
+                        return false;
+                    }
+                    var base_url = location.protocol + "//" + location.host;
+                    var context_url = _easySDImap.params.url;
+                    if ((context_url.search('http://') != 0) && (context_url.search('https://') != 0) && (context_url.search('//') != 0)) {
+                        context_url = base_url + context_url;
+                    }
+                    var context = _easySDImap.getContext();
+
+
+                    code = '';
+
+                    code += '<!-- ---------------------------------- -->' + "\r\n";
+                    code += '<!-- CODE A AJOUTER DANS LE BLOC <head> -->' + "\r\n";
+                    code += '<!-- ---------------------------------- -->' + "\r\n";
+                    code += '<link rel="stylesheet" href="' + base_url + '/bdt32/administrator/components/com_easysdi_core/libraries/leaflet/libs/leaflet/leaflet.css" type="text/css"/>' + "\r\n";
+                    code += '<link rel="stylesheet" href="' + base_url + '/bdt32/administrator/components/com_easysdi_core/libraries/leaflet/libs/easySDI_leaflet.pack/main.css" type="text/css"/>' + "\r\n";
+
+                    code += "\r\n";
+                    code += "\r\n";
+
+                    code += '<!-- -------------------------------------------------- -->' + "\r\n";
+                    code += '<!-- CODE A AJOUTER OU VOUS SOUHAITEZ AFFICHER LA CARTE -->' + "\r\n";
+                    code += '<!-- -------------------------------------------------- -->' + "\r\n";
+                    code += '<div id="easySDIMap" class="easySDImapPrintBlock">' + "\r\n";
+                    code += '   <div id="map" class="easySDI-leaflet sidebar-map" data-url="' + context_url + '"';
+                    code += ' data-context=\'' + JSON.stringify(context) + "'";
+                    if (isset(_easySDImap.params.ignkey)) code += ' data-ignkey="VOTRE_CLEF_IGN"';
+                    code += '></div>' + "\r\n";
+                    code += '</div>' + "\r\n";
+
+                    code += "\r\n";
+
+
+                    code += "<script> window.jQuery ||  document.write('<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js\"><\\\/script>');</script>" + "\r\n";
+                    code += "<script> window.L ||  document.write('<script src=\"https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js\"><\\\/script>');</script>" + "\r\n";
+                    code += '<script src="' + base_url + '/bdt32/administrator/components/com_easysdi_core/libraries/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js" type="text/javascript"></script>' + "\r\n";
+                    if (jQuery.inArray('Google', context.layers.baseLayer) != -1 || jQuery.inArray('Google', context.layers.overlays) != -1) {
+                        code += '<script src="https://maps.google.com/maps/api/js?v=3&sensor=false" type="text/javascript"></script>' + "\r\n";
+                    }
+
+                    code += '';
+
+                    html = '<h4>Vous pouvez intégrer cette carte à votre site en utilisant le code suivant:</h4>';
+                    html += '<pre class="sharelink">' + htmlEncode(code) + '</pre>';
+
+
+
+
+                    jQuery('#sharelink').html(html);
+                }
+
+                jQuery('<li><a href="#sharelink" role="tab" title="' + i18n.t('tools_tooltips.sharelink') + '"><i class="fa fa-share-alt"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
+                _this.panelSharelink = jQuery('<div class="sidebar-pane" id="sharelink"><pre></pre></div>').appendTo(sidebar_html.find('.sidebar-content'));
+                updateShareLink();
+
+                map.on('moveend', function (e) {
+                    updateShareLink();
+                });
+                map.on('layeradd', function (e) {
+                    updateShareLink();
+                });
+                map.on('layerremove', function (e) {
+                    updateShareLink();
+                });
+
+            }
+
+
+            _this.sidebar = L.control.sidebar('sidebar', options);
+            _this.sidebar.addTo(map);
+
+
 
 
             return _this;
@@ -1321,9 +1446,16 @@ jQuery(document).ready(function ($) {
         }
 
         lang = contextMapData.lang;
-        var i18nPath = jQuery('script[src$="leaflet.js"]').attr('src').replace('libs/leaflet/leaflet.js','locales');
+        var i18nPath = '';
+
+        if (jQuery('script[src$="easySDI_leaflet.pack.js"]').length)
+            i18nPath = jQuery('script[src$="easySDI_leaflet.pack.js"]').attr('src').replace('libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js', 'locales');
+        if (jQuery('script[src$="easysdi_leaflet.js"]').length)
+            i18nPath = jQuery('script[src$="easysdi_leaflet.js"]').attr('src').replace('libs/easysdi_leaflet/easysdi_leaflet.js', 'locales');
+
+
         i18n.init({
-            resGetPath: i18nPath+'/'+lang+'/translation.json',
+            resGetPath: i18nPath + '/' + lang + '/translation.json',
             lng: lang
         }, function (t) {
             init();

@@ -20,6 +20,7 @@ gulp.task('default', function () {
         'libs/leaflet-measure/leaflet-measure.js',
         'libs/leaflet-control-geocoder/Control.Geocoder.js',
         'libs/leaflet-EasyPrint/L.Control.EasyPrint.js',
+        'libs/wms-capabilities/wms-capabilities.min.js',
         'libs/sidebar-v2/js/leaflet-sidebar.js',
         'libs/leaflet-EasyLayer/easyLayer.js',
         'libs/leaflet-EasyAddLayer/easyAddLayer.js',

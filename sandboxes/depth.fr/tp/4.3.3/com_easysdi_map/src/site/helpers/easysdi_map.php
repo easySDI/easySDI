@@ -50,13 +50,13 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
                 $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.js');
                 $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
-                $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');            
+                $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
                 $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
                 $doc->addScript($base_url . '/ext/ext-all-debug.js');
                 $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
-                $doc->addScript($base_url . '/ux/ext/RowExpander.js');            
-                $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');    
-                $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');            
+                $doc->addScript($base_url . '/ux/ext/RowExpander.js');
+                $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
+                $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');
                 $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
                 $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
                 $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
@@ -73,7 +73,7 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/ext/ext-all.js');
                 $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
                 $doc->addScript($base_url . '/ux/ext/RowExpander.js');
-                $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');    
+                $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
                 $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
                 $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
                 $doc->addScript($base_url . '/geoext/lib/geoextcon.min.js');
@@ -225,7 +225,7 @@ abstract class Easysdi_mapHelper {
                 var heigth;
                 var services = ' . json_encode($services) . ';
                 var layers = ' . json_encode($layers) . ';
-                var mouseposition = "' . $mouseposition . '";          
+                var mouseposition = "' . $mouseposition . '";
 
 
             </script>
@@ -246,7 +246,7 @@ abstract class Easysdi_mapHelper {
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-Easy/easyLeaflet.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/font-awesome-4.3.0/css/font-awesome.css');
-                        
+
                 $doc->addScript($base_url . '/leaflet/libs/i18next-1.9.0/i18next-1.9.0.min.js');
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
@@ -262,27 +262,29 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyAddLayer/easyAddLayer.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyLegend/easyLegend.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.js');
-                $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
+                $doc->addScript($base_url . '/leaflet/libs/wms-capabilities/wms-capabilities.min.js');
+                //$doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
+                $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
                 //$doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4-compressed.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
                 $doc->addScript($base_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js');
             }else{
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/easySDI_leaflet.pack/main.css');
-                
+
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
                 $doc->addScript($base_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js');
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
             }
-            
-            $output = "<div id='easySDIMap'><div id='map' class='easySDI-leaflet sidebar-map' data-url='".JURI::base(true)."/index.php?option=com_easysdi_map&view=map&id=".$mapid."&format=json'></div></div>";
+
+            $output = "<div id='easySDIMap' class='easySDImapPrintBlock'><div id='map' class='easySDI-leaflet sidebar-map ' data-url='".JURI::base(true)."/index.php?option=com_easysdi_map&view=map&id=".$mapid."&format=json' data-sharelink=true></div></div>";
         }
 
         return $output;
     }
 
     /**
-     * 
+     *
      * @param type $service
      * @return \stdClass
      */
@@ -346,7 +348,7 @@ abstract class Easysdi_mapHelper {
                 break;
             case 11 :
                 $config = '{id:"' . $service->alias . '",';
-                $config .= ' 
+                $config .= '
                     ptype: "gxp_wmscsource",
                     hidden : "true",
                     url: "' . $url . '"
@@ -421,7 +423,7 @@ abstract class Easysdi_mapHelper {
                     $obj->transitionEffect = "resize";
                     $obj->opacity = $layer->opacity;
                     $obj->style = $layer->asOLstyle;
-                    $obj->matrixSet = $layer->asOLmatrixset;                    
+                    $obj->matrixSet = $layer->asOLmatrixset;
                     $obj->asOLoptions = $layer->asOLoptions;
 //                    $options = preg_replace("/\s\s+/", " ", $layer->asOLoptions);
 //                    $params = explode(',', $options);
@@ -531,7 +533,7 @@ abstract class Easysdi_mapHelper {
     public static function getLayerDetailSheetToolUrl($metadata_guid, $lang, $catalog, $preview) {
         return htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $metadata_guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
     }
-    
+
     private static function getServiceConnector($service) { //!TODO a refaire utiliser le modele ??? refaire aussi getServiceDescriptionObject ?
         $keys=array(
             1=>"CSW",
@@ -555,21 +557,21 @@ abstract class Easysdi_mapHelper {
 
         return 'serviceconnector'.$service->serviceconnector_id;
     }
-    
+
     /**
     * return options needed to use easySDImap_leaflet.js
     * @return [type] [description]
     */
     public static function getCleanMap($ori){
         $user = JFactory::getUser();
-        
+
         $proxyhost = JURI::base() . "index.php?option=com_easysdi_core&task=proxy.run&url=";
         $lang=JFactory::getLanguage()->getTag();
 
         $res=compact('proxyhost','lang');
 
         $default_group;
-        
+
         if (in_array($ori->access, $user->getAuthorisedViewLevels())){
             foreach (array('id','name','title','srs','maxresolution','numzoomlevel','maxextent','restrictedextent','centercoordinates','zoom','unit','tools') as $key) {
                 if(property_exists($ori, $key)) {
@@ -582,9 +584,9 @@ abstract class Easysdi_mapHelper {
 
             foreach ($ori->groups as $group) {
                 if (in_array($group->access, $user->getAuthorisedViewLevels())){
-                    
+
                     if ($group->isdefault) $default_group=$group->alias;
-                    
+
                     $resG=array();
                     foreach (array('id','alias','ordering','name','isbackground') as $key) {
                       if(property_exists($group, $key)) {
@@ -602,13 +604,13 @@ abstract class Easysdi_mapHelper {
                                 $resL[$key]=$layer->$key;
                               }
                           }
-                         
+
                         if($resL['hasdownload'])
                             $resL['downloadurl']=self::getLayerDownloadToolUrl($resL['diffusion_id']);
 
                         if($resL['hasextraction'])
                             $resL['extractionurl']=self::getLayerOrderToolUrl($resL['metadata_guid'],JFactory::getLanguage()->getTag(), '');
-                        
+
                         $resG['layers'][]=$resL;
 
                       }
@@ -616,7 +618,7 @@ abstract class Easysdi_mapHelper {
                 $res['groups'][]=$resG;
               }
             } // end each groups
-            
+
                             $res['default_group']=$default_group;
 
                 if(property_exists($ori,'virtualservices'))

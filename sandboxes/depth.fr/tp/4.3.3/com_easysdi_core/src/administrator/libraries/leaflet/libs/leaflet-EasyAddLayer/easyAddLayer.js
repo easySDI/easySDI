@@ -103,17 +103,13 @@
          }
          for (var i in layers) {
              var l = layers[i];
+
              if (isset(l.Title)) {
-                 var title = l.Title['#text'];
-                 var alias = l.Name['#text'];
+                 var title = l.Title;
+                 var alias = l.Name;
                  jQuery('<li><a href="#" data-layer="' + alias + '">' + title + '</a></li>').appendTo(ul);
              }
 
-             if (isset(l['ows:Title'])) {
-                 var title = l['ows:Title']['#text'];
-                 var alias = l['ows:Identifier']['#text'];
-                 jQuery('<li><a href="#" data-layer="' + alias + '">' + title + '</a></li>').appendTo(ul);
-             }
 
              if (typeof l === 'string') jQuery('<li><a href="#" data-layer="' + l + '">' + l + '</a></li>').appendTo(ul);
 
@@ -132,7 +128,7 @@
 
          if (service.serviceconnector == 'WMS')
              var data = {
-                 name: layer.Title['#text'],
+                 name: layer.Title,
                  serviceconnector: service.serviceconnector,
                  serviceurl: service.serviceurl,
                  servicealias: servicealias,
@@ -149,7 +145,7 @@
 
          if (service.serviceconnector == 'WMTS')
              var data = {
-                 name: layer['ows:Title']['#text'],
+                 name: layer.Title,
                  serviceconnector: service.serviceconnector,
                  serviceurl: service.serviceurl,
                  servicealias: servicealias,
