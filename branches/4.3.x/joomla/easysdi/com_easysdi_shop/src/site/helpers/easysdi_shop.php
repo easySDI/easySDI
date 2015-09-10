@@ -676,7 +676,7 @@ abstract class Easysdi_shopHelper {
         if ($prices->isActivated) {
             // set the invoiced user (based on current user and third-party)
             $prices->debtor = new stdClass();
-            if (isset($basket->thirdparty)) {
+            if (isset($basket->thirdparty) && $basket->thirdparty>0) {
                 $prices->debtor->id = $basket->thirdparty;
             } else {
                 $prices->debtor->id = $basket->sdiUser->role[self::ROLE_MEMBER][0]->id;
