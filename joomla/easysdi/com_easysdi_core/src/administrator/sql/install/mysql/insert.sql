@@ -516,8 +516,8 @@ INSERT INTO `#__sdi_sys_productstate` VALUES ('7', '7', '1', 'deleted');
 
 
 INSERT INTO `#__sdi_sys_pricing` VALUES ('1', '1', '1', 'free');
-INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'fee without a pricing profile');
-INSERT INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='fee with a pricing profile';
+INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'feewithoutapricingprofile');
+INSERT INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='feewithapricingprofile';
 
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('1', '1', '1', 'upload');
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('2', '2', '1', 'url');
