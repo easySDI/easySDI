@@ -584,6 +584,7 @@ if ($this->item && $this->item->extractions) :
                    initMiniMap();
                    
                    jQuery('a[href$="#modal-perimeter"]').click(function(){jQuery('#modal-perimeter').removeClass('invisible');});
+                   <?php echo($this->basketScriptPlugins); ?>
                 });
             });
  
