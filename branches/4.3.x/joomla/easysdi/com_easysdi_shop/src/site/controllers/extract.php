@@ -1079,13 +1079,19 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
 
         // try to get pricing data
-        $po = $this->getPricingOrder($order->id);
+        $po = Easysdi_shopHelper::getPricingOrder($order->id);
         // init other pricing var
         $pos = null;
         $posp = null;
         if ($po !== null) { // pricing order is defined, then load pricing order supplier and pricing order supplier product data
-            $posp = $this->getPricingOrderSupplierProduct($diffusion->id, $po->id);
-            $pos = $this->getPricingOrderSupplier($posp->pricing_order_supplier_id);
+            $posp = Easysdi_shopHelper::getPricingOrderSupplierProduct($diffusion->id, $po->id);
+            if ($posp == null) {
+                $this->getException(500, 'Cannot load the requested pricing product');
+            }
+            $pos = Easysdi_shopHelper::getPricingOrderSupplier($posp->pricing_order_supplier_id);
+            if ($pos == null) {
+                $this->getException(500, 'Cannot load the requested pricing supplier');
+            }
         }
 
         //all is fine
@@ -1194,69 +1200,6 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             //throw a product/organism integrity exception
             $this->getException(403, 'You cannot update this product');
         }
-    }
-
-    /**
-     * getPricingOrder - retrieve a pricingorder object from the order's id
-     * 
-     * @param integer $oId
-     * 
-     * @return stdClass pricingorder object
-     * @since 4.3.0
-     */
-    private function getPricingOrder($oId) {
-        $poModel = $this->getModel('PricingOrder', 'Easysdi_shopModel');
-        $po = $poModel->getTable();
-        $po->load(array('order_id' => $oId));
-        return $po;
-    }
-
-    /**
-     * getPricingOrderSupplierProduct - retrieve a pricingordersupplierproduct object
-     * 
-     * @param integer $dId
-     * @param integer $poId
-     * 
-     * @return stdClass pricingordersupplierproduct object
-     * @since 4.3.0
-     * 
-     * call getException if the pricingordersupplierproduct cannot be loaded
-     */
-    private function getPricingOrderSupplierProduct($dId, $poId) {
-        $pospModel = $this->getModel('PricingOrderSupplierProduct', 'Easysdi_shopModel');
-        $posp = $pospModel->getTable();
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('posp.id')
-                        ->from('#__sdi_pricing_order_supplier_product posp')
-                        ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
-                        ->where('posp.product_id=' . (int) $dId)
-                        ->where('pos.pricing_order_id=' . (int) $poId));
-
-        $pospId = $this->db->loadResult();
-        if ($pospId == null || !($posp->load(array('id' => $pospId)))) {
-            $this->getException(500, 'Cannot load the requested pricing product');
-        }
-        return $posp;
-    }
-
-    /**
-     * getPricingOrderSupplier - retrieve a pricingordersupplier from its id
-     * 
-     * @param integer $posId
-     * 
-     * @return stdClass pricingordersupplier object
-     * @since 4.3.0
-     * 
-     * call getException if the pricingordersupplier cannot be loaded
-     */
-    private function getPricingOrderSupplier($posId) {
-        $posModel = $this->getModel('PricingOrderSupplier', 'Easysdi_shopModel');
-        $pos = $posModel->getTable();
-        if (!($pos->load(array('id' => $posId)))) {
-            $this->getException(500, 'Cannot load the requested pricing supplier');
-        }
-        return $pos;
     }
 
     /**
