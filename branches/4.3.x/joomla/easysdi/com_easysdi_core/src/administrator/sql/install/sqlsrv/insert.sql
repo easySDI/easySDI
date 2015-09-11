@@ -803,8 +803,8 @@ SET IDENTITY_INSERT [#__sdi_perimeter] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_pricing] ON;
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('1', '1', '1', 'free');
-INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('2', '2', '1', 'fee without a pricing profile');
-INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('3', '3', '1', 'fee with a pricing profile');
+INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('2', '2', '1', 'feewithoutapricingprofile');
+INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('3', '3', '1', 'feewithapricingprofile');
 SET IDENTITY_INSERT [#__sdi_sys_pricing] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_server] ON

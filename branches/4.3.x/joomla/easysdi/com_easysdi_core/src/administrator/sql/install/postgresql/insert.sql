@@ -441,8 +441,8 @@ INSERT INTO #__sdi_sys_perimetertype (ordering, state, value) VALUES (2, 1, 'dow
 INSERT INTO #__sdi_sys_perimetertype (ordering, state, value) VALUES (3, 1, 'both');
 
 INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (1, 1, 'free');
-INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (2, 1, 'fee without a pricing profile');
-INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (3, 1, 'fee with a pricing profile');
+INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (2, 1, 'feewithoutapricingprofile');
+INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (3, 1, 'feewithapricingprofile');
 
 INSERT INTO #__sdi_sys_productmining (ordering, state, value) VALUES (1, 1, 'automatic');
 INSERT INTO #__sdi_sys_productmining (ordering, state, value) VALUES (2, 1, 'manual');
