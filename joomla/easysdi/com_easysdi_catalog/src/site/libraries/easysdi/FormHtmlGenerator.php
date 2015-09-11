@@ -92,10 +92,11 @@ class FormHtmlGenerator {
         
         $this->user = new sdiUser();
         $this->userParams = json_decode($this->user->juser->params);
-        
+
         //roles
         $metadata_id = $form->getData()->get('id');
-        $this->isNotOnlyOrganismManager = $this->user->authorizeOnMetadata($metadata_id, sdiUser::resourcemanager)
+        
+        $this->isNotOnlyOrganismManager =  $ajaxXpath != null
                                         || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataresponsible)
                                         || $this->user->authorizeOnMetadata($metadata_id, sdiUser::metadataeditor);
     }
