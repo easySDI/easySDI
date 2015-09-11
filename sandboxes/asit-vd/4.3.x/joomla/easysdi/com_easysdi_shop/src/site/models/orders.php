@@ -166,13 +166,19 @@ class Easysdi_shopModelOrders extends JModelList {
         else {
             //Only order which belong to the current user
             $organism = $this->getState('filter.organism');
-            $organisms = $organism > 0 ? array($organism) : $user->getOrganisms(array(sdiUser::organismmanager), true);
-            if (count($organisms) == 0) {
-                $organisms = array(-1);
-            }
-            $query->innerJoin('#__sdi_user_role_organism uro ON uro.user_id=a.user_id')
-                    ->where('uro.role_id=' . sdiUser::member . ' AND (a.user_id=' . (int) $user->id . ' OR uro.organism_id IN (' . implode(',', $organisms) . '))');
-
+            $organisms = $user->getOrganisms(array(sdiUser::organismmanager), true);
+            
+            if(count($organisms) > 0)
+                $q_manager = ' OR urocli.organism_id IN (' . implode(',', $organisms) . ')';
+            else
+                $q_manager = '';
+            
+            if($organism == 0)//No filter = my orders + orders of the users of the organism I manage   
+                $q_filter = '';
+            else//Filter = my orders + orders of the users of the selected organism
+                $q_filter = ' AND urocli.organism_id = '. (int) $organism;
+           
+            $query->where(' ((a.user_id=' . (int) $user->id . ' '.$q_manager.') '.$q_filter.' )');
 
             // Filter by state
             $status = $this->getState('filter.status');
@@ -224,6 +230,7 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->group('juclient.name');
         $query->group('oclient.name');
        
+        $s = $query->__toString();
         return $query;
     }
 

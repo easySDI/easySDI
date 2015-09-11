@@ -45,7 +45,8 @@ class Easysdi_shopViewOrders extends JViewLegacy {
         $this->ordertype = $this->get('ordertype');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
-        $roles = $this->_layout == "validation" ? array(sdiUser::member, sdiUser::validationmanager, sdiUser::organismmanager) : array( sdiUser::member, sdiUser::organismmanager);
+        $roles = $this->_layout == "validation" ? array(sdiUser::member, sdiUser::validationmanager, sdiUser::organismmanager) : 
+                                                    array( sdiUser::member, sdiUser::organismmanager);
         $this->organisms = $this->user->getOrganisms($roles);
         
         // Check for errors.
