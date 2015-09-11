@@ -476,6 +476,8 @@ abstract class Easysdi_shopHelper {
             $prices->cfg_rounding = null;
             $prices->cfg_overall_default_fee = null;
             $prices->cfg_free_data_fee = null;
+            $prices->cal_total_amount_ti = null;
+            $prices->cal_fee_ti = null;
 
             $prices->pricing_order_id = null;
 
@@ -493,7 +495,8 @@ abstract class Easysdi_shopHelper {
                 $prices->cfg_rounding = (float) $orderPricing->cfg_rounding;
                 $prices->cfg_overall_default_fee = (float) $orderPricing->cfg_overall_default_fee;
                 $prices->cfg_free_data_fee = (bool) $orderPricing->cfg_free_data_fee;
-
+                $prices->cal_total_amount_ti = (float) $orderPricing->cal_total_amount_ti;
+                $prices->cal_fee_ti = (float) $orderPricing->cal_fee_ti;
                 $prices->pricing_order_id = (int) $orderPricing->id;
             }
 
@@ -504,17 +507,14 @@ abstract class Easysdi_shopHelper {
 
 
             // get prices by supplier
-            //TODO
             if ($prices->pricing_order_id) {
                 $prices->suppliers = array();
-                $prices->cal_total_amount_ti = 0;
                 $prices->hasFeeWithoutPricingProfileProduct = false;
                 foreach ($basket->extractions as $supplier_id => $supplier) {
                     $prices->suppliers[$supplier_id] = self::basketReloadSavedPricingBySupplier($supplier, $prices);
-                    if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct)
+                    if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct) {
                         $prices->hasFeeWithoutPricingProfileProduct = true;
-                    else
-                        $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
+                    }
                 }
             }
         }
@@ -560,25 +560,19 @@ abstract class Easysdi_shopHelper {
         $provider->cal_total_amount_ti = (float) $priceOrdSupplier->cal_total_amount_ti;
         $provider->cal_total_rebate_ti = (float) $priceOrdSupplier->cal_total_rebate_ti;
 
-        //TODO
+        //TODO check this
         $prices->supplierRebate = new stdClass();
         $prices->supplierRebate->pct = 0;
         $prices->supplierRebate->name = '';
 
 
         // calculate price for each product and increment the provider sub-total
-        //TODO
         $provider->products = array();
-        $provider->cal_total_amount_ti = 0;
-        $provider->cal_total_rebate_ti = 0;
         $provider->hasFeeWithoutPricingProfileProduct = false;
         foreach ($supplier->items as $product) {
             $provider->products[$product->id] = self::basketReloadSavedPricingByProduct($provider->pricing_order_supplier_id, $product, $prices);
-            if ($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder)
+            if ($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder) {
                 $provider->hasFeeWithoutPricingProfileProduct = true;
-            elseif ($product->pricing == self::PRICING_FEE_WITH_PROFILE) {
-                $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
-                $provider->cal_total_rebate_ti += $provider->products[$product->id]->cal_total_rebate_ti;
             }
         }
 
@@ -608,11 +602,17 @@ abstract class Easysdi_shopHelper {
 
         $price->cfg_pricing_type = $priceOrdSupProduct->pricing_id;
 
+        // total data te
+        $price->cal_amount_data_te = $priceOrdSupProduct->cal_amount_data_te;
         // final price TE
         $price->cal_total_amount_te = $priceOrdSupProduct->cal_total_amount_te;
         // final price TI
         $price->cal_total_amount_ti = $priceOrdSupProduct->cal_total_amount_ti;
         $price->cal_total_rebate_ti = $priceOrdSupProduct->cal_total_rebate_ti;
+
+        // rebate based on category and supplier
+        $price->cfg_pct_category_supplier_discount = $priceOrdSupProduct->cfg_pct_category_supplier_discount;
+        $price->ind_lbl_category_supplier_discount = $priceOrdSupProduct->ind_lbl_category_supplier_discount;
 
         // in case of pricing profile
         if ($price->cfg_pricing_type == self::PRICING_FEE_WITH_PROFILE) {
@@ -636,24 +636,10 @@ abstract class Easysdi_shopHelper {
             $price->cfg_min_fee = $pricingProfile->cfg_min_fee;
             $price->cfg_max_fee = $pricingProfile->cfg_max_fee;
 
-            // calculate product price
-            $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
-
-            // limit price according to min and max price
-            if ($price->cfg_max_fee > 0 && $price->cal_amount_data_te > $price->cfg_max_fee) {
-                $price->cal_amount_data_te = $price->cfg_max_fee;
-            } elseif ($price->cfg_min_fee > 0 && $price->cal_amount_data_te < $price->cfg_min_fee) {
-                $price->cal_amount_data_te = $price->cfg_min_fee;
-            }
 
             // rebate based on category and profile
             $price->cfg_pct_category_profile_discount = $pricingProfile->cfg_pct_category_profile_discount;
             $price->ind_lbl_category_profile_discount = $pricingProfile->ind_lbl_category_profile_discount;
-
-
-            // rebate based on category and supplier
-            $price->cfg_pct_category_supplier_discount = $prices->supplierRebate->pct;
-            $price->ind_lbl_category_supplier_discount = $prices->supplierRebate->name;
         }
 
         return $price;
@@ -1215,7 +1201,7 @@ abstract class Easysdi_shopHelper {
         $po->load(array('order_id' => $oId));
         return $po;
     }
-    
+
     /**
      * getPricingOrderSupplier - retrieve a pricingordersupplier from its id
      * 
@@ -1233,7 +1219,7 @@ abstract class Easysdi_shopHelper {
             return null;
         }
         return $pos;
-    }    
+    }
 
     /**
      * getPricingOrderSupplierProduct - retrieve a pricingordersupplierproduct object
