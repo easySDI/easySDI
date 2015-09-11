@@ -150,7 +150,7 @@ JHtml::_('formbehavior.chosen', 'select');
                                 </span>
                             </td>                            
                             <td class="orderactions">
-                                <a class="btn btn-primary btn-small pull-right" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=request.edit&id=' . $item->id); ?>"><?php echo $this->state->get('filter.status') == 0 ? JText::_('COM_EASYSDI_SHOP_REQUESTS_REPLY') : JText::_('COM_EASYSDI_SHOP_REQUESTS_OPEN') ?></a>
+                                <a class="btn btn-primary btn-small pull-right" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=request.edit&id=' . $item->id); ?>"><?php echo $this->state->get('filter.status') == 0 ? JText::_('COM_EASYSDI_SHOP_REQUESTS_OPEN') : JText::_('COM_EASYSDI_SHOP_REQUESTS_REPLY') ?></a>
                             </td>
 
                         </tr>
