@@ -25,6 +25,20 @@ $showActions = ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER && $v
 
 $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty != 0;
 
+
+/* Load plugins
+ * The plugins must be placed in the 'easysdi_recap_script' folder
+ * and offer the 'getRecapScript($context)' function that returns some JS code */
+JPluginHelper::importPlugin('easysdi_recap_script');
+//get scripts
+$context = new stdClass();
+$context->viewType = $viewType;
+$scripts = $app->triggerEvent('getRecapScript', array($context));
+//get merged scripts , scripts are added at the end of this layout
+$pluginScripts = implode("\n", $scripts);
+
+
+
 if (!$showPricing) {
     $doc->addStyleDeclaration('   .price_column{ display : none; }');
 }
@@ -32,6 +46,7 @@ if (!$showActions) {
     $doc->addStyleDeclaration('   .action_column{ display : none; }');
 }
 ?>
+
 <div>
 
     <?php
@@ -464,5 +479,18 @@ if (!$showActions) {
         <!-- ENDOF TOTAL -->
     </div>
 </div>
+
+<?php
+// If plugins scripts are loaded, they're placed here :
+if (strlen($pluginScripts) > 0):
+    ?>
+    <script>
+        Ext.onReady(function () {
+            window.appname.on("ready", function () {
+    <?php echo $pluginScripts; ?>
+            })
+        });
+    </script>
+<?php endif; ?>
 
 
