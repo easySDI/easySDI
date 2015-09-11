@@ -58,8 +58,9 @@ if ($this->item) :
             <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
                 <?php echo $field->input; ?>
             <?php endforeach; ?>  
-            <input type = "hidden" name = "task" value = "" />
-            <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+            <input type="hidden" name="task" value="" />
+            <input type="hidden" name="option" value="com_easysdi_shop" />
+            <input type="hidden" name="jform[current_product]" id="jform_current_product" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>
     </div>
@@ -69,7 +70,10 @@ if ($this->item) :
             window.appname.on("ready", function () {
                 loadPerimeter(false);
             })
-        })
+        });
+        function enableCurrentProduct(productId) {
+            jQuery('#jform_current_product').val(productId);
+        }
     </script>
     <?php
 else:

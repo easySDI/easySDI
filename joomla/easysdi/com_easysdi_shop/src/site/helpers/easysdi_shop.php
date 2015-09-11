@@ -99,8 +99,8 @@ abstract class Easysdi_shopHelper {
         if (empty($basket) || !$basket) {
             $basket = new sdiBasket();
         }
-        
-        if(is_null($basket->sdiUser->id) && !$user->guest){
+
+        if (is_null($basket->sdiUser->id) && !$user->guest) {
             $basket->sdiUser = sdiFactory::getSdiUser();
         }
 
@@ -253,7 +253,7 @@ abstract class Easysdi_shopHelper {
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         $basket->extent = empty($item) ? null : json_decode($item);
         $basket->freeperimetertool = empty($item) ? '' : json_decode($item)->freeperimetertool;
-        if(is_null($basket->sdiUser->id)){
+        if (is_null($basket->sdiUser->id)) {
             $basket->sdiUser = sdiFactory::getSdiUser();
         }
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
@@ -845,8 +845,8 @@ abstract class Easysdi_shopHelper {
         $price = new stdClass();
 
         $price->cfg_pricing_type = $product->pricing;
-        
-        if($price->cfg_pricing_type == self::PRICING_FEE_WITHOUT_PROFILE && $internalFreeOrder){
+
+        if ($price->cfg_pricing_type == self::PRICING_FEE_WITHOUT_PROFILE && $internalFreeOrder) {
             $price->cal_total_amount_ti = 0;
             $price->cal_total_rebate_ti = 0;
         }
@@ -1199,6 +1199,70 @@ abstract class Easysdi_shopHelper {
         $size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' ' . @$size[$factor];
+    }
+
+    /**
+     * getPricingOrder - retrieve a pricingorder object from the order's id
+     * 
+     * @param integer $oId
+     * 
+     * @return stdClass pricingorder object
+     * @since 4.3.0
+     */
+    public static function getPricingOrder($oId) {
+        $poModel = JModelLegacy::getInstance('PricingOrder', 'Easysdi_shopModel');
+        $po = $poModel->getTable();
+        $po->load(array('order_id' => $oId));
+        return $po;
+    }
+    
+    /**
+     * getPricingOrderSupplier - retrieve a pricingordersupplier from its id
+     * 
+     * @param integer $posId
+     * 
+     * @return stdClass pricingordersupplier object
+     * @since 4.3.0
+     * 
+     * call getException if the pricingordersupplier cannot be loaded
+     */
+    public static function getPricingOrderSupplier($posId) {
+        $posModel = JModelLegacy::getInstance('PricingOrderSupplier', 'Easysdi_shopModel');
+        $pos = $posModel->getTable();
+        if (!($pos->load(array('id' => $posId)))) {
+            return null;
+        }
+        return $pos;
+    }    
+
+    /**
+     * getPricingOrderSupplierProduct - retrieve a pricingordersupplierproduct object
+     * 
+     * @param integer $dId
+     * @param integer $poId
+     * 
+     * @return stdClass pricingordersupplierproduct object
+     * @since 4.3.0
+     * 
+     * call getException if the pricingordersupplierproduct cannot be loaded
+     */
+    public static function getPricingOrderSupplierProduct($dId, $poId) {
+        $db = JFactory::getDbo();
+        $pospModel = JModelLegacy::getInstance('PricingOrderSupplierProduct', 'Easysdi_shopModel');
+        $posp = $pospModel->getTable();
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('posp.id')
+                        ->from('#__sdi_pricing_order_supplier_product posp')
+                        ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
+                        ->where('posp.product_id=' . (int) $dId)
+                        ->where('pos.pricing_order_id=' . (int) $poId));
+
+        $pospId = $db->loadResult();
+        if ($pospId == null || !($posp->load(array('id' => $pospId)))) {
+            return null;
+        }
+        return $posp;
     }
 
 }
