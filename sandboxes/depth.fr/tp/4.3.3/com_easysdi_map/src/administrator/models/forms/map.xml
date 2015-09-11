@@ -21,7 +21,7 @@
         <field 	name="type" 
                 type="radio" 
                 class="btn-group"
-                default="GeoExt"
+                default="geoext"
                 label="COM_EASYSDI_MAP_FORM_LBL_MAP_TYPE"
                 description="COM_EASYSDI_MAP_FORM_DESC_MAP_TYPE" 
         >

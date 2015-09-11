@@ -1363,6 +1363,7 @@ jQuery(document).ready(function ($) {
                         context_url = base_url + context_url;
                     }
                     var context = _easySDImap.getContext();
+                    var local_url = jQuery('script[src$="easySDI_leaflet.pack.js"]').attr('src').replace('libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js', '');
 
 
                     code = '';
@@ -1370,8 +1371,8 @@ jQuery(document).ready(function ($) {
                     code += '<!-- ---------------------------------- -->' + "\r\n";
                     code += '<!-- CODE A AJOUTER DANS LE BLOC <head> -->' + "\r\n";
                     code += '<!-- ---------------------------------- -->' + "\r\n";
-                    code += '<link rel="stylesheet" href="' + base_url + '/bdt32/administrator/components/com_easysdi_core/libraries/leaflet/libs/leaflet/leaflet.css" type="text/css"/>' + "\r\n";
-                    code += '<link rel="stylesheet" href="' + base_url + '/bdt32/administrator/components/com_easysdi_core/libraries/leaflet/libs/easySDI_leaflet.pack/main.css" type="text/css"/>' + "\r\n";
+                    code += '<link rel="stylesheet" href="' + local_url + 'libs/leaflet/leaflet.css" type="text/css"/>' + "\r\n";
+                    code += '<link rel="stylesheet" href="' + local_url + 'libs/easySDI_leaflet.pack/main.css" type="text/css"/>' + "\r\n";
 
                     code += "\r\n";
                     code += "\r\n";
@@ -1391,7 +1392,7 @@ jQuery(document).ready(function ($) {
 
                     code += "<script> window.jQuery ||  document.write('<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js\"><\\\/script>');</script>" + "\r\n";
                     code += "<script> window.L ||  document.write('<script src=\"https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js\"><\\\/script>');</script>" + "\r\n";
-                    code += '<script src="' + base_url + '/bdt32/administrator/components/com_easysdi_core/libraries/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js" type="text/javascript"></script>' + "\r\n";
+                    code += '<script src="' + local_url + 'libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js" type="text/javascript"></script>' + "\r\n";
                     if (jQuery.inArray('Google', context.layers.baseLayer) != -1 || jQuery.inArray('Google', context.layers.overlays) != -1) {
                         code += '<script src="https://maps.google.com/maps/api/js?v=3&sensor=false" type="text/javascript"></script>' + "\r\n";
                     }

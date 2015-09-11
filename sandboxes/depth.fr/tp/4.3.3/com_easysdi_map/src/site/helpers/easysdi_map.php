@@ -273,7 +273,7 @@ abstract class Easysdi_mapHelper {
                 $doc->addStyleSheet($base_url . '/leaflet/libs/easySDI_leaflet.pack/main.css');
 
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
-                $doc->addScript($base_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js');
+                $doc->addScript($base_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js');
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
             }
 

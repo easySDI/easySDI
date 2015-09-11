@@ -2403,7 +2403,7 @@ ul.easyLayerTree li.outOfZoom {
   }
 
   .addlayer_container .available_layers a:hover::before {
-    content: "ï?•";
+    content: "\f055";
   }
 
 .addlayer_container .available_layers a:hover {
@@ -2575,7 +2575,7 @@ ul.easyLegend>li a {
 }
 
 .getfeature_results>div:before{
-  content: 'ï??';
+  content: "\f041";
   left: 10px;
   position: absolute;
   top: 10px;
@@ -2583,12 +2583,12 @@ ul.easyLegend>li a {
 }
 
 .getfeature_results>div.loading:before{
-  content: 'ï„?';
+  content: "\f110";
   animation: 1s steps(8, end) 0s normal none infinite running fa-spin;
 }
 
 .getfeature_results>div.none:before{
-  content: 'ï?±';
+  content: "\f057";
 }
 
 .getfeature_results>div:hover {

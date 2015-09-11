@@ -46,7 +46,7 @@
   }
 
   .addlayer_container .available_layers a:hover::before {
-    content: "";
+    content: "\f055";
   }
 
 .addlayer_container .available_layers a:hover {

@@ -260,7 +260,8 @@
                     sync-package-mod-admininfo,
                     sync-package-mod-adminbutton,
                     sync-package-tpl-easysdiadminpositions,
-                    write-xml" 
+                    write-xml,
+                    package" 
             description="Main target"/>
     
     <target name="sync-package-com-core" depends="core.sync-package" description="Main Target"/>
