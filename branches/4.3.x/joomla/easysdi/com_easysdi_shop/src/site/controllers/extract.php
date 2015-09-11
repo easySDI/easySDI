@@ -811,6 +811,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                         ->leftJoin('#__sdi_pricing_profile pp ON pp.id=pospp.pricing_profile_id')
                         ->where('o.id=' . (int) $order->id)
                         ->where('r.organism_id=' . (int) $supplierId)
+                        ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
                         ->where('od.productstate_id IN (' . implode(',', $this->states) . ')'));
 
         $orderProducts = $this->db->loadObjectList();
