@@ -231,13 +231,9 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
                 $toolbar->append(JText::_('COM_EASYSDI_CATALOG_IMPORT'), 'import', 'btn-small', $importrefactions, true);
             }
 
-            $reset_url = array('root' => 'index.php',
-                'option' => 'com_easysdi_catalog',
-                'view' => 'metadata',
-                'layout' => 'edit',
-                'id'=>  $this->item->id);
+            $reset_url = JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id='.$this->item->id);
 
-            $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_RESET'), JRoute::_(Easysdi_coreHelper::array2URL($reset_url),false), 'btn-small', 'btn-reset');
+            $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_RESET'), $reset_url, 'btn-small', 'btn-reset');
         }
         
         $back_url = array('root' => 'index.php',
