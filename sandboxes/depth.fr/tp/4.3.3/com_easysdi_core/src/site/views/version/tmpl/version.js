@@ -106,7 +106,7 @@ js(document).ready(function() {
                     return Joomla.JText._(child.state, child.state);
             }, bSearchable: false},
             { aTargets: [8], mData: function(child){
-                    return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
+                    return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child).replace(/'/g, ' ')+");'><i class='icon-white icon-minus'></i></button>";
                 }, sClass: 'center', bSearchable: false, bVisible: !isReadonly }
         ]
     }));

@@ -442,7 +442,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `logo` VARCHAR(500) ,
 `name` VARCHAR(255)  NOT NULL ,
 `website` VARCHAR(500)  ,
-`perimeter` TEXT  ,
+`perimeter` LONGTEXT  ,
 `selectable_as_thirdparty` TINYINT(1) DEFAULT 0,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10)  NOT NULL ,

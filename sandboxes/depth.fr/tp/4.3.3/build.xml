@@ -243,6 +243,7 @@
                     sync-package-com-dashboard,
                     sync-package-com-contact,
                     sync-package-com-shop,
+                    sync-package-com-catalog,
                     sync-package-plg-contact,
                     sync-package-plg-monitor,
                     sync-package-plg-service,
