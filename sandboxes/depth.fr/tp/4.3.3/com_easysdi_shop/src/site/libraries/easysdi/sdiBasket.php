@@ -182,6 +182,8 @@ class sdiBasket {
         $this->isrestrictedbyperimeter = false;
         $this->free = true;
         $this->visualization = '';
+        $this->surfacemax = null;
+        $this->surfacemin =null;
         foreach ($this->extractions as $key => $extraction):
             $this->setProperties($extraction);
         endforeach;

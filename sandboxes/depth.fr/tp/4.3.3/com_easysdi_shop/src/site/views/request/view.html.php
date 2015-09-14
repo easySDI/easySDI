@@ -98,11 +98,7 @@ class Easysdi_shopViewRequest extends JViewLegacy {
         //load the JToolBar library and create a toolbar
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
-        //and make whatever calls you require
-        if(count($this->authorizeddiffusion)>0){
-            $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_TO_USER'), 'request.save', false);
-            $bar->appendButton('Separator');
-        }
+
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'request.cancel', false);
         //generate the html and return
         return $bar->render();
