@@ -590,7 +590,7 @@ if ($this->item && $this->item->extractions) :
             });
  
             function initialization() {
-                miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
+                miniBaseLayers[0].events.unregister("loadend", miniBaseLayers[0], initialization);
                 initDraw();
                 initMyPerimeter();
                 addAlertControl(window.appname.mapPanel.map);
