@@ -230,9 +230,7 @@ if ($this->item && $this->item->extractions) :
                                                 if ($product->cfg_pricing_type == Easysdi_shopHelper::PRICING_FREE):
                                                     echo JText::_('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE');
                                                 else:
-                                                    $productPrice = isset($product->cal_total_amount_ti) ? $product->cal_total_amount_ti : '-';
-
-                                                    echo Easysdi_shopHelper::priceFormatter($productPrice);
+                                                    echo Easysdi_shopHelper::priceFormatter($product->cal_total_amount_ti);
 
                                                     $rebate = false;
                                                     $as = '';

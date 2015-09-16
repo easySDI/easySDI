@@ -331,9 +331,7 @@ if (!$showActions) {
                                         if ($product->cfg_pricing_type == Easysdi_shopHelper::PRICING_FREE):
                                             echo JText::_('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE');
                                         else:
-                                            $productPrice = isset($product->cal_total_amount_ti) ? $product->cal_total_amount_ti : '-';
-
-                                            echo Easysdi_shopHelper::priceFormatter($productPrice);
+                                            echo Easysdi_shopHelper::priceFormatter($product->cal_total_amount_ti);
 
                                             $rebate = false;
                                             $as = '';
@@ -432,17 +430,17 @@ if (!$showActions) {
                     <tfoot>
                         <tr>
                             <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
-                            <td class="price_column supplier_cal_fee_ti"><?php echo isset($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti) : '-'; ?></td>
+                            <td class="price_column supplier_cal_fee_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti); ?></td>
                             <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                         <tr style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
                             <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
-                            <td class="price_column supplier_cal_total_amount_ti"><?php echo isset($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti) : '-'; ?></td>
+                            <td class="price_column supplier_cal_total_amount_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti); ?></td>
                             <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                         <tr style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
                             <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
-                            <td class="price_column supplier_cal_total_rebate_ti"><?php echo isset($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) ? Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) : '-'; ?></td>
+                            <td class="price_column supplier_cal_total_rebate_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti); ?></td>
                             <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                     </tfoot>
@@ -463,14 +461,14 @@ if (!$showActions) {
                 <tr>
                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FEE'); ?></td>
                     <td class="price_column">
-                        <span class="pricingFeeTI"><?php echo isset($item->basket->pricing->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($item->basket->pricing->cal_fee_ti) : '-'; ?></span>
+                        <span class="pricingFeeTI"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->cal_fee_ti)?></span>
                     </td>
                     <td class="action_column action_column_recap">&nbsp;</td>
                 </tr>
                 <tr>
                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOTAL'); ?></td>
                     <td class="price_column">
-                        <span class="pricingTotalAmountTI"><?php echo!isset($item->basket->pricing->cal_total_amount_ti) ? '-' : Easysdi_shopHelper::priceFormatter($item->basket->pricing->cal_total_amount_ti); ?></span>
+                        <span class="pricingTotalAmountTI"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->cal_total_amount_ti); ?></span>
                     </td>
                     <td class="action_column action_column_recap">&nbsp;</td>
                 </tr>
