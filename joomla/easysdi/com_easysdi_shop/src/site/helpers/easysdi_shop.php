@@ -977,17 +977,17 @@ abstract class Easysdi_shopHelper {
                             ->from('#__sdi_pricing_order_supplier_product posp')
                             ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
                             ->where('posp.pricing_order_supplier_id=' . (int) $pos->id));
-            $posData = $db->loadObject();;
+            $posData = $db->loadObject();
 
             //if total is 0 and fixed fee are not applied for 'all free' order
             //overwrite the cal_fee_ti with 0
             if ($pos->cfg_data_free_fixed_fee == 0 && $posData->orderSupplierProductsTotal == 0) {
                 $pos->cal_fee_ti = 0;
             }
-            
+
             //update rebates ti total
             $pos->cal_total_rebate_ti = $posData->orderSupplierRebatesTotal;
-            
+
             //update total ti
             $pos->cal_total_amount_ti = ($posData->orderSupplierProductsTotal + $pos->cal_fee_ti);
 
@@ -1042,6 +1042,92 @@ abstract class Easysdi_shopHelper {
             }
         }
         return true;
+    }
+
+    /**
+     * changeOrderState - Dynamically changes the statue of the order.
+     * 
+     * @param integer $orderId Id of the order.
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public static function changeOrderState($orderId) {
+        $orderstate = self::getNewOrderState($orderId);
+        $db = JFactory::getDbo();
+
+        if (isset($orderstate)) {
+            $query = $db->getQuery(true)
+                            ->update('#__sdi_order')->set('orderstate_id=' . $orderstate);
+            if ($orderstate == Easysdi_shopHelper::ORDERSTATE_FINISH) {
+                $query->set('completed=' . $query->quote(date("Y-m-d H:i:s")));
+            }
+            $query->where('id=' . (int) $orderId);
+
+            $db->setQuery($query);
+            $db->execute();
+        }
+    }
+
+    /**
+     * getNewOrderState - Calculates the new order state based on products/diffusion states
+     * 
+     * @param integer $orderId Id of the order.
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public static function getNewOrderState($orderId) {
+
+        $db = JFactory::getDbo();
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId));
+        $total = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT));
+        $await = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE));
+        $available = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER));
+        $rejected = $db->getNumRows($db->execute());
+        
+        return self::chooseOrderState($total, $await, $available, $rejected);
+    }
+
+    /**
+     * chooseOrderState - return the correct orderState according to the given params
+     * 
+     * @param integer $total
+     * @param integer $await
+     * @param integer $available
+     * @param integer $rejected
+     * 
+     * @return integer|null
+     * @since 4.3.0
+     */
+    private static function chooseOrderState($total, $await, $available, $rejected) {
+        if ($total == $rejected) {
+            return Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER;
+        }
+
+        if ($available == $total || $available + $rejected == $total) {
+            return Easysdi_shopHelper::ORDERSTATE_FINISH;
+        }
+
+        if ($available > 0 || $rejected > 0) {
+            return Easysdi_shopHelper::ORDERSTATE_PROGRESS;
+        }
+
+        if ($await > 0) {
+            return Easysdi_shopHelper::ORDERSTATE_AWAIT;
+        }
+
+        return null;
     }
 
     /*     * *********************** */
@@ -1153,6 +1239,51 @@ abstract class Easysdi_shopHelper {
             if (!$user->sendMail($subject, JText::sprintf($bodytext, $orderId, $url))) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
             }
+        }
+    }
+
+    /**
+     * notifyCustomerOnOrderUpdate - notify the customer (only if needed) about the progress of the order
+     * 
+     * @param integer $orderId the id of the order
+     * @param boolean $silentFail optionnal, if an any error, die silently
+     * @return void
+     * @since 4.3.0
+     */
+    public static function notifyCustomerOnOrderUpdate($orderId, $silentFail = false) {
+
+        $sdiUser = sdiFactory::getSdiUser();
+        $orderModel = JModelLegacy::getInstance('order', 'Easysdi_shopModel', array());
+        $order = $orderModel->getTable();
+        $order->load(array('id' => (int) $orderId));
+
+        $errors = false;
+
+        if (isset($order)) {
+
+            switch ($order->orderstate_id) {
+                case Easysdi_shopHelper::ORDERSTATE_FINISH:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;
+                case Easysdi_shopHelper::ORDERSTATE_PROGRESS:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;
+                case Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;                    
+            }
+        }else {
+            $errors = true;
+        }
+
+        if ($errors == !$silentFail) {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
         }
     }
 

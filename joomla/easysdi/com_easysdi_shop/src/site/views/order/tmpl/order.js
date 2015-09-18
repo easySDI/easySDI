@@ -82,7 +82,6 @@ function getLinearRingsFromFeatures(features) {
     for (var i = 0; i < featuresCount; ++i) {
         var feature = features[i];
         if (feature.geometry instanceof OpenLayers.Geometry.MultiPolygon) {
-            console.log('multipolygons');
 
             for (var j = 0; j < feature.geometry.components.length; ++j) {
                 rings = rings.concat(feature.geometry.components[j].components);
@@ -90,7 +89,6 @@ function getLinearRingsFromFeatures(features) {
 
         }
         else if (feature.geometry instanceof OpenLayers.Geometry.Polygon) {
-            console.log('polygons');
             rings = rings.concat(feature.geometry.components);
         }
     }
