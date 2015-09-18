@@ -30,6 +30,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CREATE_F');
 JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_OUTSIDE_MAP');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_AREA');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT');
+JText::script('COM_EASYSDI_SHOP_BASKET_PERIMETER_NO_PERIMETER_SELECTED');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
