@@ -87,3 +87,15 @@ ALTER TABLE [#__sdi_order] ALTER COLUMN [remark] NVARCHAR (4000);
 
 UPDATE [#__sdi_sys_pricing] SET [value] = 'feewithoutapricingprofile' WHERE [id] = 2;
 UPDATE [#__sdi_sys_pricing] SET [value] = 'feewithapricingprofile' WHERE [id] = 3;
+
+ALTER TABLE [#__sdi_pricing_order_supplier_product] ALTER COLUMN [cal_amount_data_te]   decimal(19,2) NULL;
+ALTER TABLE [#__sdi_pricing_order_supplier_product] ALTER COLUMN [cal_total_amount_te]  decimal(19,2) NULL;
+ALTER TABLE [#__sdi_pricing_order_supplier_product] ALTER COLUMN [cal_total_amount_ti]  decimal(19,2) NULL;
+UPDATE  [#__sdi_pricing_order_supplier_product] set [cal_total_rebate_ti] = 0 WHERE [cal_total_rebate_ti] IS NULL;
+ALTER TABLE [#__sdi_pricing_order_supplier_product] ALTER COLUMN [cal_total_rebate_ti]  decimal(19,2) NOT NULL;
+ALTER TABLE [#__sdi_pricing_order_supplier_product] ADD CONSTRAINT DF_cal_total_rebate_ti DEFAULT 0 FOR [cal_total_rebate_ti];
+
+ALTER TABLE [#__sdi_pricing_order_supplier] ALTER COLUMN [cal_total_rebate_ti]  decimal(19,2) NOT NULL;
+ALTER TABLE [#__sdi_pricing_order_supplier] ALTER COLUMN [cal_total_amount_ti]  decimal(19,2) NULL;
+
+ALTER TABLE [#__sdi_pricing_order] ALTER COLUMN [cal_total_amount_ti]  decimal(19,2) NULL;

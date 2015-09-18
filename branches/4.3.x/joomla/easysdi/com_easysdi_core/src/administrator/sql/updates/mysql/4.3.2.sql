@@ -64,3 +64,16 @@ ALTER TABLE `#__sdi_order` MODIFY `remark` VARCHAR(4000);
 
 UPDATE `#__sdi_sys_pricing` SET `value` = 'feewithoutapricingprofile' WHERE `id` = 2;
 UPDATE `#__sdi_sys_pricing` SET `value` = 'feewithapricingprofile' WHERE `id` = 3;
+
+ALTER TABLE `#__sdi_pricing_order_supplier_product`
+MODIFY COLUMN `cal_amount_data_te`  decimal(19,2) NULL AFTER `ind_lbl_category_supplier_discount`,
+MODIFY COLUMN `cal_total_amount_te` decimal(19,2) NULL AFTER `cal_amount_data_te`,
+MODIFY COLUMN `cal_total_amount_ti` decimal(19,2) NULL AFTER `cal_total_amount_te`,
+MODIFY COLUMN `cal_total_rebate_ti` decimal(19,2) NOT NULL DEFAULT 0.00 AFTER `cal_total_amount_ti`;
+
+ALTER TABLE `#__sdi_pricing_order_supplier`
+MODIFY COLUMN `cal_total_rebate_ti` decimal(19,2) NOT NULL DEFAULT 0.00 AFTER `cfg_data_free_fixed_fee`,
+MODIFY COLUMN `cal_total_amount_ti` decimal(19,2) NULL AFTER `cal_fee_ti`;
+
+ALTER TABLE `#__sdi_pricing_order`
+MODIFY COLUMN `cal_total_amount_ti` decimal(19,2) NULL AFTER `cfg_free_data_fee`;
