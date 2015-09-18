@@ -31,7 +31,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
 
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_easysdi_shop.edit.request.id', $editId);
-        
+
         // Get the model.
         $model = $this->getModel('Request', 'Easysdi_shopModel');
 
@@ -55,7 +55,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
      * @return	void
      * @since	1.6
      */
-    public function save() {
+    public function saveproduct() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -64,11 +64,11 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         $model = $this->getModel('Request', 'Easysdi_shopModel');
 
         // Get the user data.
-        $data = $app->input->get('jform', array(), 'array');       
-        
+        $data = $app->input->get('jform', array(), 'array');
+
 
         // Attempt to save the data.
-        $return = $model->save($data);
+        $return = $model->saveproduct($data);
 
         // Check for errors.
         if ($return === false) {
@@ -79,6 +79,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
             return false;
         }
 
+        Easysdi_shopHelper::notifyCustomerOnOrderUpdate($data['id']);
 
         // Check in the profile.
         if ($return) {
@@ -89,7 +90,49 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         $app->setUserState('com_easysdi_shop.edit.request.id', null);
 
         // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
+        $this->setMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_PRODUCT_SAVED_SUCCESSFULLY'));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
+
+        // Flush the data from the session.
+        $app->setUserState('com_easysdi_shop.edit.request.data', null);
+    }
+
+    public function rejectproduct() {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+        // Initialise variables.
+        $app = JFactory::getApplication();
+        $model = $this->getModel('Request', 'Easysdi_shopModel');
+
+        // Get the user data.
+        $data = $app->input->get('jform', array(), 'array');
+
+
+        // Attempt to reject the product
+        $return = $model->rejectproduct($data);
+
+        // Check for errors.
+        if ($return === false) {
+            // Redirect back to the edit screen.
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.request.id');
+            $this->setMessage(JText::sprintf('Reject failed', $model->getError()), 'warning');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&layout=edit&id=' . $id, false));
+            return false;
+        }
+
+        Easysdi_shopHelper::notifyCustomerOnOrderUpdate($data['id']);
+
+        // Check in the profile.
+        if ($return) {
+            $model->checkin($return);
+        }
+
+        // Clear the profile id from the session.
+        $app->setUserState('com_easysdi_shop.edit.request.id', null);
+
+        // Redirect to the list screen.
+        $this->setMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_REJECTED_SUCCESSFULLY'));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
 
         // Flush the data from the session.
@@ -102,7 +145,5 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         $model->checkin($id);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
     }
-
-   
 
 }

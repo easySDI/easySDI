@@ -24,6 +24,8 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 $document->addScript($base_url . '/filesaver/FileSaver.js');
 $document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
 Easysdi_shopHelper::addMapShopConfigToDoc();
+JText::script('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_PRICE');
+JText::script('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_FILE_OR_REMARK');
 ?>
 <?php
 if ($this->item) :
@@ -62,18 +64,108 @@ if ($this->item) :
             <input type="hidden" name="option" value="com_easysdi_shop" />
             <input type="hidden" name="jform[current_product]" id="jform_current_product" value="" />
             <?php echo JHtml::_('form.token'); ?>
+
+            <!-- Reject modal -->
+            <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="rejectModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TITLE'); ?></h4>
+                        </div>
+                        <div id="rejectModalBody" class="modal-body">
+                            <?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TEXT'); ?><br/>
+                            <span class="text-error"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TEXT_WARNING'); ?></span><br/>
+                            <br/>
+                            <?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TEXT_REASON'); ?><br/>
+                            <textarea id="rejectionremark" name="jform[rejectionremark]" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TEXT_REASON_PLACEHOLDER'); ?>" ></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_CANCEL'); ?></button>
+                            <button id="rejectByProviderButton" type="button" class="btn btn-danger" onclick="Joomla.submitbutton('request.rejectproduct');"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_CONFIRM'); ?></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- post product error modal -->
+            <div class="modal fade" id="productErrorModal" tabindex="-1" role="dialog" aria-labelledby="productErrorModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="productErrorModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_ERROR_MODAL_TITLE'); ?></h4>
+                        </div>
+                        <div id="productErrorModalBody" class="modal-body">
+                            asdfasdf
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_ERROR_MODAL_OK'); ?></button>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+
+
         </form>
     </div>
 
     <script>
-        Ext.onReady(function () {
-            window.appname.on("ready", function () {
-                loadPerimeter(false);
-            })
+        var isPricingActivated = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('is_activated') ? 'true' : 'false'; ?>;
+        var orderType = '<?php echo $this->item->ordertype; ?>';
+        jQuery(document).ready(function () {
+            jQuery('#rejectByProviderButton').prop('disabled', true);
+            jQuery('textarea#rejectionremark').on('input propertychange', function () {
+                jQuery('#rejectByProviderButton').prop('disabled', !(this.value.length > 20));
+            });
         });
+
+        function checkAndSendProduct(productId) {
+            enableCurrentProduct(productId);
+            if (checkProductElements(productId)) {
+                Joomla.submitbutton('request.saveproduct');
+            } else {
+                jQuery('#productErrorModal').modal();
+            }
+            return false;
+        }
+
         function enableCurrentProduct(productId) {
             jQuery('#jform_current_product').val(productId);
         }
+
+        function checkProductElements(productId) {
+            var hasFile = jQuery('#file_' + productId).val().length > 0;
+            var hasRemark = jQuery('#remark_' + productId).val().length > 0;
+            var hasFee = jQuery('#fee_' + productId).val().length > 0;
+
+            jQuery('#productErrorModalBody').empty();
+            if (orderType == 'order') {
+                var hasErrors = false;
+                if (!hasFile && !hasRemark) {
+                    jQuery('#productErrorModalBody').append('<p>' + Joomla.JText._('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_FILE_OR_REMARK') + '</p>');
+                    hasErrors = true;
+                }
+                if (isPricingActivated && !hasFee) {
+                    jQuery('#productErrorModalBody').append('<p>' + Joomla.JText._('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_PRICE') + '</p>');
+                    hasErrors = true;
+                }
+                return !hasErrors;
+            } else if (orderType == 'estimate') {
+                return !hasFee;
+            }
+            return false;
+        }
+
+        Ext.onReady(function () {
+            window.appname.on("ready", function () {
+                loadPerimeter(false);
+            });
+        });
+
+
+
+
     </script>
     <?php
 else:
