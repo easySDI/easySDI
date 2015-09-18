@@ -215,8 +215,6 @@ class Easysdi_shopModelRequest extends JModelForm {
 
         $diffusion_id = (int) $data['current_product'];
 
-        /* foreach ($data['diffusion'] as $diffusion_id): */
-
         if (!in_array($diffusion_id, $authorizeddiffusion)):
             //This user is not supposed to access this diffusion
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
@@ -243,7 +241,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             $newfile = JPATH_BASE . '/' . $folder . '/' . $id . '/' . $diffusion_id . '/' . $files['file'][$diffusion_id][0]['name'];
             if (!move_uploaded_file($file, $newfile)):
 
-                JFactory::getApplication()->enqueueMessage(JText::_(JPATH_BASE . '/' . 'COM_EASYSDI_SHOP_REQUEST_COPY_FILE_ERROR_MESSAGE'), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_COPY_FILE_ERROR_MESSAGE'), 'error');
                 JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&id=' . $id, false));
                 return false;
             endif;
@@ -255,22 +253,22 @@ class Easysdi_shopModelRequest extends JModelForm {
         $orderdiffusion->created_by = (int) sdiFactory::getSdiUser()->id;
         $orderdiffusion->store();
 
-        //store pricing in pricing tables
-        $inputFee = str_replace(',','.',$data['fee'][$diffusion_id]);
-        $floatFee = floatval($inputFee);
-        $po = Easysdi_shopHelper::getPricingOrder((int) $id);
-        $pos = Easysdi_shopHelper::getPricingOrderSupplierProduct($diffusion_id, $po->id);
-        $pos->cal_total_amount_ti = $floatFee;
-        $pos->cal_total_rebate_ti = 0.0; //cannot set a rebate in manual product processing
-        $pos->store();
+        //store pricing in pricing tables if pricing is enabled
+        $pricingisActivated = (bool) JComponentHelper::getParams('com_easysdi_shop')->get('is_activated');
+        if ($pricingisActivated) {
+            $inputFee = str_replace(',', '.', $data['fee'][$diffusion_id]);
+            $floatFee = floatval($inputFee);
+            $po = Easysdi_shopHelper::getPricingOrder((int) $id);
+            $posp = Easysdi_shopHelper::getPricingOrderSupplierProduct($diffusion_id, $po->id);
+            $pos = Easysdi_shopHelper::getPricingOrderSupplier($posp->pricing_order_supplier_id);
 
+            $cfg_rounding = (float) JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
 
+            $posp->cal_total_amount_ti = Easysdi_shopHelper::rounding($floatFee, $cfg_rounding);
+            $posp->cal_total_rebate_ti = 0.0; //cannot set a rebate in manual product processing
 
-
-
-
-
-        /* endforeach; */
+            Easysdi_shopHelper::updatePricing($posp, $pos, $po);
+        }
 
         //Update order state if needed
         $db = JFactory::getDbo();

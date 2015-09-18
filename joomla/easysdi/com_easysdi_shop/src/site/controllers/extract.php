@@ -1329,7 +1329,13 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->db->setQuery($query);
 
         if ($this->db->execute()) {
-            $updatePricing ? $this->updatePricing($posp, $pos, $po) : $this->changeOrderState($od->order_id);
+            if ($updatePricing) {
+                $r = Easysdi_shopHelper::updatePricing($posp, $pos, $po, $this->db);
+                if($r !== true){
+                    $this->getException(500, $r);
+                }
+            }
+            $this->changeOrderState($od->order_id);
         }//else throw a db exception
         else {
             $this->getException(500, 'Cannot update order diffusion');
@@ -1460,49 +1466,6 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $query->set('displayName=' . $query->quote($this->product->getElementsByTagNameNS(self::nsSdi, 'filename')->item(0)->nodeValue));
     }
 
-    /**
-     * updatePricing - update the pricing schema branch
-     * 
-     * @param stdClass $posp
-     * @param stdClass $pos
-     * @param stdClass $po
-     * 
-     * @return void
-     * @since 4.3.0
-     * 
-     * call getException if pricingordersupplierproduct, pricingordersupplier or pricingorder object cannot be updated
-     */
-    private function updatePricing($posp, $pos, $po) {
-        if (!$posp->save(array())) {
-            $this->getException(500, 'Cannot update pricing order supplier product');
-        }
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('SUM(posp.cal_total_amount_ti) ctat')
-                        ->from('#__sdi_pricing_order_supplier_product posp')
-                        ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
-                        ->where('posp.pricing_order_supplier_id=' . (int) $pos->id));
-
-        $pos->cal_total_amount_ti = $this->db->loadResult();
-
-        if (!$pos->save(array())) {
-            $this->getException(500, 'Cannot update pricing order supplier');
-        }
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('SUM(posp.cal_total_amount_ti) ctat')
-                        ->from('#__sdi_pricing_order_supplier_product posp')
-                        ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
-                        ->where('pos.pricing_order_id=' . (int) $po->id));
-
-        $po->cal_total_amount_ti = $this->db->loadResult();
-
-        if (!$po->save(array())) {
-            $this->getException(500, 'Cannot update pricing order');
-        }
-
-        $this->changeOrderState($po->order_id);
-    }
 
     /**
      * changeOrderState - Dynamically changes the statue of the order.

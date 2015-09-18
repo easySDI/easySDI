@@ -22,7 +22,7 @@ function copyBaseLayers() {
         if (app.mapPanel.map.layers[j].id.indexOf("Vector") == -1) {
             miniBaseLayers[miniBaseLayersIndex] = app.mapPanel.map.layers[j].clone();
             //register the loadend only on the first layer
-            if(miniBaseLayersIndex == 0){
+            if (miniBaseLayersIndex == 0) {
                 miniBaseLayers[0].events.register("loadend", miniBaseLayers[0], initialization);
             }
             miniBaseLayersIndex++;
@@ -447,15 +447,19 @@ var priceFormatter = function (price, displayCurrency) {
         displayCurrency = true;
     var c = displayCurrency ? ' ' + currency : '';
 
-    if (price != '-' && price != 0)
+    if (price != null && 'undefined' !== typeof price && price != 0) {
         price = number_format(
                 price,
                 digit_after_decimal,
                 decimal_symbol,
                 digit_grouping_symbol
                 );
-
-    return price + c;
+        return price + c;
+    } else if ('undefined' !== typeof price && price != null && price == 0) {
+        return '0' + c;
+    } else {
+        return '-';
+    }
 };
 
 //
@@ -479,7 +483,7 @@ var updatePricing = function (pricing) {
                 displayedPrice = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE', 'free');
             }
             else {
-                displayedPrice = priceFormatter('undefined' !== typeof product.cal_total_amount_ti ? product.cal_total_amount_ti : '-');
+                displayedPrice = priceFormatter(product.cal_total_amount_ti);
                 var as = '',
                         discount = '',
                         title = '',
@@ -509,8 +513,8 @@ var updatePricing = function (pricing) {
 
         //footer
         jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_fee_ti').html(priceFormatter(supplier.cal_fee_ti));
-        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_amount_ti').html('undefined' !== typeof supplier.cal_total_amount_ti ? priceFormatter(supplier.cal_total_amount_ti) : '-');
-        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_rebate_ti').html('undefined' !== typeof supplier.cal_total_rebate_ti ? priceFormatter(supplier.cal_total_rebate_ti) : '-');
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_amount_ti').html(priceFormatter(supplier.cal_total_amount_ti));
+        jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
         jQuery('table[rel=' + supplierId + ']>tfoot').show();
     });
 
