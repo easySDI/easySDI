@@ -1099,6 +1099,83 @@ gxp.Viewer.prototype.reactivate = function() {
     return record;
 };
 
+/**
+ * Overwrite the initMapPanel method in gxp.Viewer to avoid the default blank baselayer.
+ * Since easySDI doesn't allow any map without baselayer, we don't need this baselayer.
+ * Without it, an easySDI baselayer can set the resolutions of the map (for example with WMTS )
+ */
+gxp.Viewer.prototype.initMapPanel = function () {
+    var config = Ext.apply({}, this.initialConfig.map);
+    var mapConfig = {};
+
+    // split initial map configuration into map and panel config
+    if (this.initialConfig.map) {
+        var props = "theme,controls,resolutions,projection,units,maxExtent,restrictedExtent,maxResolution,numZoomLevels,panMethod".split(",");
+        var prop;
+        for (var i = props.length - 1; i >= 0; --i) {
+            prop = props[i];
+            if (prop in config) {
+                mapConfig[prop] = config[prop];
+                delete config[prop];
+            }
+        }
+    }
+
+    this.mapPanel = Ext.ComponentMgr.create(Ext.applyIf({
+        xtype: config.xtype || "gx_mappanel",
+        map: Ext.applyIf({
+            theme: mapConfig.theme || null,
+            controls: mapConfig.controls || [
+                new OpenLayers.Control.Navigation({
+                    zoomWheelOptions: {interval: 250},
+                    dragPanOptions: {enableKinetic: true}
+                }),
+                new OpenLayers.Control.PanPanel(),
+                new OpenLayers.Control.ZoomPanel(),
+                new OpenLayers.Control.Attribution()
+            ],
+            maxExtent: mapConfig.maxExtent && OpenLayers.Bounds.fromArray(mapConfig.maxExtent),
+            restrictedExtent: mapConfig.restrictedExtent && OpenLayers.Bounds.fromArray(mapConfig.restrictedExtent),
+            numZoomLevels: mapConfig.numZoomLevels || 20
+        }, mapConfig),
+        center: config.center && new OpenLayers.LonLat(config.center[0], config.center[1]),
+        resolutions: config.resolutions,
+        forceInitialExtent: true,
+        layers: [],
+        items: this.mapItems,
+        plugins: this.mapPlugins,
+        tbar: config.tbar || new Ext.Toolbar({
+            hidden: true
+        })
+    }, config));
+    this.mapPanel.getTopToolbar().on({
+        afterlayout: this.mapPanel.map.updateSize,
+        show: this.mapPanel.map.updateSize,
+        hide: this.mapPanel.map.updateSize,
+        scope: this.mapPanel.map
+    });
+
+    this.mapPanel.layers.on({
+        "add": function (store, records) {
+            // check selected layer status
+            var record;
+            for (var i = records.length - 1; i >= 0; i--) {
+                record = records[i];
+                if (record.get("selected") === true) {
+                    this.selectLayer(record);
+                }
+            }
+        },
+        "remove": function (store, record) {
+            if (record.get("selected") === true) {
+                this.selectLayer();
+            }
+        },
+        scope: this
+    });
+};
+
+
 
 
 
