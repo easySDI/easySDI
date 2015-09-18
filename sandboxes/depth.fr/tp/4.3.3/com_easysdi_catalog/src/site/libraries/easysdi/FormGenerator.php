@@ -228,8 +228,10 @@ class FormGenerator {
 
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
-            $this->cleanStructure();
-            //$this->mergeCsw();
+            if (!$this->cleanStructure())
+            {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_XML_IMPORT_ERROR'), 'error');
+            }
         }
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
@@ -493,8 +495,8 @@ class FormGenerator {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
         $clone_structure->loadXML($this->structure->saveXML());
-
         $domXpathClone = new DOMXPath($clone_structure);
+        
         $this->registerNamespace($domXpathClone);
 
         $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$RELATIONTYPE . '"]');
@@ -525,7 +527,10 @@ class FormGenerator {
 
             // if occurance == 0 remove node from clone
             if ($occurance == 0) {
-                $parentChildType = $node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
+                if (!method_exists($node->parentNode,'getAttributeNs'))
+                     return false;
+                
+                $parentChildType = @$node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
 
                 //look for the ancestor under which we can clean the structure
                 while (!isset($node->nextSibling) && !isset($node->previousSibling) && $parentChildType != EnumChildtype::$RELATIONTYPE) {
@@ -558,6 +563,8 @@ class FormGenerator {
         $this->getValue($clone_structure->firstChild);
 
         $this->mergeToStructure($clone_structure, $domXpathClone);
+        
+        return true;
     }
 
     /**
@@ -1663,9 +1670,7 @@ class FormGenerator {
     private function setDomXpathCsw() {
         $this->domXpathCsw = new DOMXPath($this->csw);
         $this->registerNamespace($this->domXpathCsw);
-        /* foreach ($this->nsdao->getAll() as $ns) {
-          $this->domXpathCsw->registerNamespace($ns->prefix, $ns->uri);
-          } */
+        
     }
 
     /**
