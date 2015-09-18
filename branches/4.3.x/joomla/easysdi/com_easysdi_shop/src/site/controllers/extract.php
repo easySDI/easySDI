@@ -491,7 +491,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $root->appendChild($this->getOrderPricing($order));
         }
 
-        $this->changeOrderState($order->id);
+        Easysdi_shopHelper::changeOrderState($order->id);
 
         return $root;
     }
@@ -1096,6 +1096,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         //all is fine
         $this->updateOrderDiffusion($orderDiffusion, $order, $po, $pos, $posp);
+        
+        //notify user if needed
+        Easysdi_shopHelper::notifyCustomerOnOrderUpdate($order->id, true);
 
         // prepare response
         $this->setProductSucceeded($order, $diffusion);
@@ -1335,7 +1338,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                     $this->getException(500, $r);
                 }
             }
-            $this->changeOrderState($od->order_id);
+            Easysdi_shopHelper::changeOrderState($od->order_id);
         }//else throw a db exception
         else {
             $this->getException(500, 'Cannot update order diffusion');
@@ -1467,75 +1470,6 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     }
 
 
-    /**
-     * changeOrderState - Dynamically changes the statue of the order.
-     * 
-     * @param integer $orderId Id of the order.
-     * 
-     * @return void
-     * @since 4.3.0
-     */
-    private function changeOrderState($orderId) {
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId));
-        $total = $this->db->getNumRows($this->db->execute());
 
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT));
-        $await = $this->db->getNumRows($this->db->execute());
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE));
-        $available = $this->db->getNumRows($this->db->execute());
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER));
-        $rejected = $this->db->getNumRows($this->db->execute());
-
-        $orderstate = $this->chooseOrderState($total, $await, $available, $rejected);
-
-        if ($orderstate > 0) {
-            $query = $this->db->getQuery(true)
-                            ->update('#__sdi_order')->set('orderstate_id=' . $orderstate);
-            if ($orderstate == Easysdi_shopHelper::ORDERSTATE_FINISH) {
-                $query->set('completed=' . $query->quote(date("Y-m-d H:i:s")));
-            }
-            $query->where('id=' . (int) $orderId);
-
-            $this->db->setQuery($query);
-            $this->db->execute();
-        }
-    }
-
-    /**
-     * chooseOrderState - return the correct orderState according to the given params
-     * 
-     * @param integer $total
-     * @param integer $await
-     * @param integer $available
-     * @param integer $rejected
-     * 
-     * @return integer
-     * @since 4.3.0
-     */
-    private function chooseOrderState($total, $await, $available, $rejected) {
-        if ($total == $rejected) {
-            return Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER;
-        }
-
-        if ($available == $total || $available + $rejected == $total) {
-            return Easysdi_shopHelper::ORDERSTATE_FINISH;
-        }
-
-        if ($available > 0 || $rejected > 0) {
-            return Easysdi_shopHelper::ORDERSTATE_PROGRESS;
-        }
-
-        if ($await > 0) {
-            return Easysdi_shopHelper::ORDERSTATE_AWAIT;
-        }
-
-        return 0;
-    }
 
 }
