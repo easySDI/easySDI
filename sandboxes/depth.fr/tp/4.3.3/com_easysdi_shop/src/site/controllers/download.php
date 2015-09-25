@@ -164,6 +164,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         //Record the download for statistic purpose        
         // Insert columns.
         $columns = array('diffusion_id, user_id', 'executed');
+        $sdiUser = sdiFactory::getSdiUser();
         // Insert values.
         if ($sdiUser->isEasySDI):
             $id = $sdiUser->id;
@@ -195,7 +196,8 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         header('Content-Type: application/octetstream; name="' . $extension . '"');
         header('Content-Disposition: attachement; filename="' . $diffusion->name . $extension . '"');
 
-        echo $file;
+        echo $file;   
+        
         die();
     }
 

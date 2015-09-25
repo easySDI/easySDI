@@ -158,18 +158,55 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
         $file = JPATH_BASE. '/' .$folder.'/'.$order_id.'/'.$diffusion_id.'/'.$orderdiffusion->file;
 
-
         error_reporting(0);
+        
+        $chunk = 8 * 1024 * 1024; // bytes per chunk (10 MB)
+        
+        $size = filesize($file); 
+        if ($size > $chunk) 
+        { 
+        
+            set_time_limit(0);
+            ignore_user_abort(false);
+            ini_set('output_buffering', 0);
+            ini_set('zlib.output_compression', 0);
 
-        ini_set('zlib.output_compression', 0);
-        header('Pragma: public');
-        header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-        header('Content-Transfer-Encoding: none');
-        header("Content-Length: " . filesize($file));
-        header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
-        header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
+            $fh = fopen($file, "rb");
 
-        readfile($file);
+            if ($fh === false) { 
+                $this->setMessage(JText::_('RESOURCE_LOCATION_UNAVAILABLE'), 'error');
+                die();
+            }
+
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header("Accept-Ranges: bytes"); 
+            header('Content-Disposition: attachment; filename="' . $orderdiffusion->file . '"'); 
+            header('Expires: -1');
+            header('Cache-Control: no-cache');
+            header("Cache-Control: public, must-revalidate, post-check=0, pre-check=0"); 
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+
+            // Repeat reading until EOF
+            while (!feof($fh)) { 
+                $buffer = fread($fh, $chunk);
+                echo $buffer;
+                ob_flush();  // flush output
+                //flush();
+            }
+        }else{
+            ini_set('zlib.output_compression', 0);
+            header('Pragma: public');
+            header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+            header('Content-Transfer-Encoding: none');
+            header("Content-Length: " . filesize($file));
+            header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
+            header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
+
+            readfile($file);
+        }
+        
         die();
     }
 
