@@ -30,7 +30,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         enableExtraction();
         enableFreePerimeter();
         
-        js('#adminForm').submit(function(event) { console.log('here');return false;
+        js('#adminForm').submit(function(event) {
             if (js('#jform_deposit').val() != '') {
                 js('#jform_deposit_hidden').val(js('#jform_deposit').val());
             }
