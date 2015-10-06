@@ -241,7 +241,7 @@ class Easysdi_shopModelOrders extends JModelList {
                 ->select('s.value, s.id ')
                 ->from('#__sdi_sys_orderstate s')
                 ->where('s.id <> 2')
-                ->order('id desc');
+                ->order('s.ordering');
         $db->setQuery($query);
         return $db->loadObjectList();
     }
