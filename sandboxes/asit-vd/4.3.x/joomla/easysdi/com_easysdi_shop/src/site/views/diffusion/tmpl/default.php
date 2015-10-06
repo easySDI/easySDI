@@ -20,17 +20,17 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 ?>
 
 <script type="text/javascript">
-    
+
     js = jQuery.noConflict();
-    js(document).ready(function() {
+    js(document).ready(function () {
         enableAccessScope();
         onProductStorageChange();
         onPricingChange();
         enableDownload();
         enableExtraction();
         enableFreePerimeter();
-        
-        js('#adminForm').submit(function(event) {
+
+        js('#adminForm').submit(function (event) {
             if (js('#jform_deposit').val() != '') {
                 js('#jform_deposit_hidden').val(js('#jform_deposit').val());
             }
@@ -39,11 +39,11 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             }
         });
         js('#jform_restrictedperimeter').change(enableFreePerimeter);
-        
+
         js('#jform_testurlauthentication').click(onTestUrlAuthenticationClick);
         js('#jform_testurlauthentication').parent().append('<span id="result_testurlauthentication"></span>');
     });
-    Joomla.submitbutton = function(task)
+    Joomla.submitbutton = function (task)
     {
         if (task == 'diffusion.cancel') {
             Joomla.submitform(task, document.getElementById('adminForm'));
@@ -52,15 +52,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
             if (task != 'diffusion.cancel' && document.formvalidator.isValid(document.id('adminForm'))) {
                 if (js('#jform_hasextraction').is(':checked')) {
-                    var perimeterselected = false;
-                    js('.perimeterselect').each(function() {
-                        var currentElement = js(this);
-                        if (currentElement.val() != -1) {
-                            perimeterselected = true;
-                        }
-                    })
-                    if (perimeterselected == false) {
-                        alert('<?php echo $this->escape(JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_NO_PERIMETER_SELECTED',true)); ?>');
+                    //check that at least one perimeter is active
+                    if (jQuery("[id^=jform_perimeter][id$=_1]:checked").length < 1) {
+                        alert('<?php echo $this->escape(JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_NO_PERIMETER_SELECTED', true)); ?>');
                     } else {
                         Joomla.submitform(task, document.getElementById('adminForm'));
                     }
@@ -69,7 +63,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                 }
             }
             else {
-                alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED',true)); ?>');
+                alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED', true)); ?>');
             }
         }
     }
@@ -80,13 +74,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                 js('#file').show();
                 js('#fileurl,#userurl, #passurl, #testurlauthentication').hide();
                 js('#packageurl').removeAttr('required');
-                js('#perimeter_id,#packageurl').hide();                
+                js('#perimeter_id,#packageurl').hide();
                 break;
             case "2":
                 js('#file').hide();
                 js('#fileurl, #userurl, #passurl, #testurlauthentication').show();
                 js('#packageurl').removeAttr('required');
-                js('#perimeter_id,#packageurl').hide();                
+                js('#perimeter_id,#packageurl').hide();
                 break;
             case "3":
                 js('#file').hide();
@@ -96,34 +90,34 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                 break;
         }
     }
-var globdata;
+    var globdata;
     function onPricingChange() {
-        
-        switch(js('#jform_pricing_id').val()){
+
+        switch (js('#jform_pricing_id').val()) {
             case '1': // FREE
                 js('#fieldset_download').show();
                 js('#pricing_profile_id').hide();
                 break;
-                
+
             case '2': // FEE WITHOUT PRICING PROFILE
                 js('#fieldset_download').hide();
                 js('#pricing_profile_id').hide();
                 break;
-                
+
             case '3': // FEE WITH PRICING PROFILE
                 js('#fieldset_download').hide();
-                
-                if(!js('#pricing_profile_id option').length){
+
+                if (!js('#pricing_profile_id option').length) {
                     js.ajax({
                         url: "<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.getAvailableProfiles') ?>",
                         type: "POST",
                         data: {
-                            version_id: <?php echo $this->item->version_id;?>
+                            version_id: <?php echo $this->item->version_id; ?>
                         }
-                        }).fail(function(){
+                    }).fail(function () {
                         console.log('todo');
-                    }).done(function(data){
-                        data.each(function(item){
+                    }).done(function (data) {
+                        data.each(function (item) {
                             js('#pricing_profile_id select').append(js('<option>', {
                                 value: item.id,
                                 text: item.name
@@ -131,7 +125,7 @@ var globdata;
                         });
                     });
                 }
-                
+
                 js('#pricing_profile_id').show();
                 break;
         }
@@ -178,19 +172,19 @@ var globdata;
     }
 
     function enableFreePerimeter() {
-        <?php if(!$this->isDiffusionManager):?>return;<?php endif;?>
-        
+<?php if (!$this->isDiffusionManager): ?>return;<?php endif; ?>
+
         if (js('#jform_restrictedperimeter0').length == 0 || js('#jform_restrictedperimeter0').is(':checked') == true) {
             js('#jform_perimeter1').removeAttr('disabled', 'disabled');
         } else {
             js('#jform_perimeter1').attr('disabled', 'disabled');
             js('#jform_perimeter1 option[value=-1]').attr("selected", "selected");
-            
+
         }
         js('#jform_perimeter1').trigger("liszt:updated");
     }
-    
-    function onTestUrlAuthenticationClick(){
+
+    function onTestUrlAuthenticationClick() {
         js.ajax({
             url: "<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.testURLAccessibility') ?>",
             type: "POST",
@@ -199,24 +193,26 @@ var globdata;
                 user: js('#jform_userurl').val(),
                 password: js('#jform_passurl').val()
             }
-        }).fail(function(){
+        }).fail(function () {
             console.log('todo');
-        }).done(function(data){
+        }).done(function (data) {
             js('#result_testurlauthentication').removeClass('success error');
-            if(data && data.success)
-                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_OK',true); ?>').addClass('success');
-            else{
-                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE',true); ?>').addClass('error');                console.log(data);
+            if (data && data.success)
+                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_OK', true); ?>').addClass('success');
+            else {
+                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE', true); ?>').addClass('error');
+                console.log(data);
             }
-        }).always(function(){
+        }).always(function () {
             js('#jform_testurlauthentication').blur();
         })
-        ;
-        
+                ;
+
         return false;
-    };
-    
-    
+    }
+    ;
+
+
 </script>
 
 <style type="text/css">
@@ -224,11 +220,11 @@ var globdata;
         padding: 5px 0 0 15px;
         display: inline-block;
     }
-    
+
     #result_testurlauthentication.success{
         color: green;
     }
-    
+
     #result_testurlauthentication.error{
         color: red;
     }
@@ -263,19 +259,21 @@ var globdata;
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_DOWNLOAD'); ?>
                                 <?php echo $this->form->getInput('hasdownload'); ?></legend>
                             <div id="div_download">
-                                <?php foreach ($this->form->getFieldset('download') as $field): 
-                                    if($field->fieldname == 'hasdownload') continue;
+                                <?php
+                                foreach ($this->form->getFieldset('download') as $field):
+                                    if ($field->fieldname == 'hasdownload')
+                                        continue;
                                     ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
                                         <div class="controls">
                                             <?php echo $field->input; ?>
-                                            <?php if($field->fieldname == 'file'):?>
-                                                <?php if(!empty($this->item->file)):?>
+                                            <?php if ($field->fieldname == 'file'): ?>
+                                                <?php if (!empty($this->item->file)): ?>
                                                     <a id="jform_file_hidden_href" href="<?php echo JRoute::_($this->params->get('fileFolder') . '/' . $this->item->file, false); ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
-                                                <?php endif;?>
+                                                <?php endif; ?>
                                                 <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />
-                                            <?php endif;?>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -285,53 +283,59 @@ var globdata;
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?>
                                 <?php echo $this->form->getInput('hasextraction'); ?></legend>
                             <div id="div_extraction">
-                                <?php foreach ($this->form->getFieldset('extraction') as $field): 
-                                    if(in_array($field->fieldname, array('hasextraction','restrictedperimeter'))) continue;
+                                <?php
+                                foreach ($this->form->getFieldset('extraction') as $field):
+                                    if (in_array($field->fieldname, array('hasextraction', 'restrictedperimeter')))
+                                        continue;
                                     ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
                                         <div class="controls">
                                             <?php echo $field->input; ?>
-                                            <?php if($field->fieldname == 'deposit'):?>
-                                                <?php if(!empty($this->item->deposit)):?>
+                                            <?php if ($field->fieldname == 'deposit'): ?>
+                                                <?php if (!empty($this->item->deposit)): ?>
                                                     <a id="jform_deposit_hidden_href" href="<?php echo JRoute::_($this->params->get('depositFolder') . '/' . $this->item->deposit, false); ?>"><?php echo '[' . substr($this->item->deposit, 33) . ']'; ?></a>
-                                                <?php endif;?>
+                                                <?php endif; ?>
                                                 <input type="hidden" name="jform[deposit]" id="jform_deposit_hidden" value="<?php echo $this->item->deposit ?>" />
-                                            <?php endif;?>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
-                                
-                                <?php if($this->params->get('userperimeteractivated') == 1) : ?>
-                                <div class="control-group" id="<?php echo $this->form->getField('restrictedperimeter')->fieldname; ?>">
-                                    <div class="control-label"><?php echo $this->form->getField('restrictedperimeter')->label; ?></div>
-                                    <div class="controls"><?php echo $this->form->getField('restrictedperimeter')->input; ?></div>
-                                </div>
+
+                                <?php if ($this->params->get('userperimeteractivated') == 1) : ?>
+                                    <div class="control-group" id="<?php echo $this->form->getField('restrictedperimeter')->fieldname; ?>">
+                                        <div class="control-label"><?php echo $this->form->getField('restrictedperimeter')->label; ?></div>
+                                        <div class="controls"><?php echo $this->form->getField('restrictedperimeter')->input; ?></div>
+                                    </div>
                                 <?php endif; ?>
-                                
+
                                 <fieldset id ="fieldset_perimeters" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
-                                    <?php foreach ($this->orderperimeters as $orderperimeter): 
-                                            if($orderperimeter->id == 2 && $this->params->get('userperimeteractivated') != 1){
-                                                continue;
-                                            }
-                                            if ($orderperimeter->id == 1){
-                                                $orderperimeterlabel = JText::_('FREEPERIMETER');
-                                            }elseif ($orderperimeter->id == 2){
-                                                $orderperimeterlabel = JText::_('MYPERIMETER');
-                                            }else {
-                                                $orderperimeterlabel = $orderperimeter->name;
-                                            }
+                                    <?php
+                                    foreach ($this->orderperimeters as $orderperimeter):
+                                        if ($orderperimeter->id == 2 && $this->params->get('userperimeteractivated') != 1) {
+                                            continue;
+                                        }
+                                        if ($orderperimeter->id == 1) {
+                                            $orderperimeterlabel = JText::_('FREEPERIMETER');
+                                        } elseif ($orderperimeter->id == 2) {
+                                            $orderperimeterlabel = JText::_('MYPERIMETER');
+                                        } else {
+                                            $orderperimeterlabel = $orderperimeter->name;
+                                        }
                                         ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-                                                <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeterlabel; ?></label>
+                                                <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>"><?php echo $orderperimeterlabel; ?></label>
                                             </div>
                                             <div class="controls">
-                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge perimeterselect" <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?>>
-                                                    <option value="-1" ><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="1" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected'; ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
-                                                </select>
+                                                <?php //var_dump($this->item->perimeter[$orderperimeter->id]); ?>
+                                                <fieldset id="jform_perimeter<?php echo $orderperimeter->id ?>" class="radio btn-group btn-group-yesno">
+                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_0" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="0" <?php if (!array_key_exists($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                    <label for="jform_perimeter<?php echo $orderperimeter->id ?>_0" <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JNO'); ?></label>                                            
+                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_1" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="1" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                    <label for="jform_perimeter<?php echo $orderperimeter->id ?>_1" <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JYES'); ?></label>
+                                                </fieldset>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
@@ -351,7 +355,7 @@ var globdata;
                                                     case 2:
                                                     case 3:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge" multiple="multiple"  <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?>>
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge" multiple="multiple"  <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
@@ -368,7 +372,7 @@ var globdata;
                                                     case 5:
                                                     case 6 :
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge"  <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?> >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge"  <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?> >
                                                             <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
