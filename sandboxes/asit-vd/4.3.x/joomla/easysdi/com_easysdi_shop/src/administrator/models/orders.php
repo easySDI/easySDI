@@ -65,28 +65,40 @@ class Easysdi_shopModelorders extends JModelList {
         $app = JFactory::getApplication('administrator');
 
         // Load the filters states.
-        foreach (array(
-    'search',
-    'state',
-    'ordertype',
-    'orderstate',
-    'orderuser',
-    'orderprovider',
-    'orderdiffusion',
-    'ordersent',
-    'ordercompleted'
+        foreach (
+        array(
+            'search',
+            'state',
+            'ordertype',
+            'orderstate',
+            'orderuser',
+            'orderprovider',
+            'orderdiffusion',
+            'ordersent',
+            'ordercompleted'
         ) as $key) {
             $state = $app->getUserStateFromRequest($this->context . '.filter.' . $key, 'filter_' . $key, '', 'string');
             $this->setState('filter.' . $key, $state);
         }
 
+        //ordering by default : ID
+        $ordering = $app->input->get('filter_order', 'a.id');
+        if (!in_array($ordering, $this->filter_fields)) {
+            $ordering = 'a.id';
+        }
+
+        //direction, by default : DESC
+        $direction = $app->input->get('filter_order_Dir', 'DESC');
+        if (!in_array(strtoupper($direction), array('ASC', 'DESC', ''))) {
+            $direction = 'DESC';
+        }
 
         // Load the parameters.
         $params = JComponentHelper::getParams('com_easysdi_shop');
         $this->setState('params', $params);
 
         // List state information.
-        parent::populateState('a.id', 'asc');
+        parent::populateState($ordering, $direction);
     }
 
     /**
@@ -327,7 +339,7 @@ class Easysdi_shopModelorders extends JModelList {
                 $searchOnId = ' OR (a.id = ' . (int) $search . ')';
             }
             $search = $db->Quote('%' . $db->escape($search, true) . '%');
-            $query->where('(( a.name LIKE ' . $search . ' ) '.$searchOnId. ' )');
+            $query->where('(( a.name LIKE ' . $search . ' ) ' . $searchOnId . ' )');
         }
 
 
