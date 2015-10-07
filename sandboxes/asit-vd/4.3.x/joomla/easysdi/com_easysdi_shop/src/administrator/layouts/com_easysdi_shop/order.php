@@ -148,7 +148,7 @@ if (!$showActions) {
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_NAME'); ?>
                 </div>
                 <div class="span8 order-edit-value" >        
-                    <a href="mailto:<?php echo ($item->basket->sdiUser->juser->email); ?>"><?php echo $item->basket->sdiUser->name; ?></a>
+                    <?php echo $item->basket->sdiUser->name; ?>
                 </div>
             </div>
             <div id="sdi-order-recap-client-organism" class="row-fluid">
@@ -159,7 +159,27 @@ if (!$showActions) {
                     <?php echo $item->basket->sdiUser->getMemberOrganisms()[0]->name; ?>
 
                 </div>
-            </div>            
+            </div>     
+            <?php if ($viewType != Easysdi_shopHelper::ORDERVIEW_ORDER): ?>
+                <div id="sdi-order-recap-client-email" class="row-fluid">
+                    <div class="span4 order-edit-label" >
+                        <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_EMAIL'); ?>
+                    </div>
+                    <div class="span8 order-edit-value" >
+                        <a href="mailto:<?php echo ($item->basket->sdiUser->juser->email); ?>"><?php echo $item->basket->sdiUser->juser->email; ?></a>
+                    </div>
+                </div>  
+                <?php if (isset($item->basket->sdiUser->contactAddress->phone)): ?>
+                    <div id="sdi-order-recap-client-phone" class="row-fluid">
+                        <div class="span4 order-edit-label" >
+                            <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_PHONE'); ?>
+                        </div>
+                        <div class="span8 order-edit-value" >
+                            <?php echo $item->basket->sdiUser->contactAddress->phone; ?>
+                        </div>
+                    </div> 
+                <?php endif; ?>
+            <?php endif; ?>
         </div>
         <?php if ($hasThirdParty): ?>
             <!-- thirdparty -->
@@ -397,12 +417,12 @@ if (!$showActions) {
                                         // product need a response
                                         ?>
                                         <button class="btn btn-success sdi-btn-upload-order-response" onclick="checkAndSendProduct(<?php echo $productItem->id; ?>);
-                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             <span class="icon icon-upload"></span>
                                             Envoyer</button><br/>
                                         <button class="btn btn-danger btn-mini sdi-btn-cancel-order-response" onclick="enableCurrentProduct(<?php echo $productItem->id; ?>);
-                                                                jQuery('#rejectModal').modal();
-                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                jQuery('#rejectModal').modal();
+                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             Annuler</button>
 
                                         <!--
