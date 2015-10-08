@@ -99,8 +99,8 @@ abstract class Easysdi_shopHelper {
         if (empty($basket) || !$basket) {
             $basket = new sdiBasket();
         }
-        
-        if(is_null($basket->sdiUser->id) && !$user->guest){
+
+        if (is_null($basket->sdiUser->id) && !$user->guest) {
             $basket->sdiUser = sdiFactory::getSdiUser();
         }
 
@@ -253,7 +253,7 @@ abstract class Easysdi_shopHelper {
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         $basket->extent = empty($item) ? null : json_decode($item);
         $basket->freeperimetertool = empty($item) ? '' : json_decode($item)->freeperimetertool;
-        if(is_null($basket->sdiUser->id)){
+        if (is_null($basket->sdiUser->id)) {
             $basket->sdiUser = sdiFactory::getSdiUser();
         }
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
@@ -427,7 +427,7 @@ abstract class Easysdi_shopHelper {
      * @return float
      * @since 4.3.0
      */
-    private static function rounding($value, $rounding = 0.01) {
+    public static function rounding($value, $rounding = 0.01) {
         return round($value / $rounding, 0) * $rounding;
     }
 
@@ -476,6 +476,8 @@ abstract class Easysdi_shopHelper {
             $prices->cfg_rounding = null;
             $prices->cfg_overall_default_fee = null;
             $prices->cfg_free_data_fee = null;
+            $prices->cal_total_amount_ti = null;
+            $prices->cal_fee_ti = null;
 
             $prices->pricing_order_id = null;
 
@@ -493,7 +495,8 @@ abstract class Easysdi_shopHelper {
                 $prices->cfg_rounding = (float) $orderPricing->cfg_rounding;
                 $prices->cfg_overall_default_fee = (float) $orderPricing->cfg_overall_default_fee;
                 $prices->cfg_free_data_fee = (bool) $orderPricing->cfg_free_data_fee;
-
+                $prices->cal_total_amount_ti = $orderPricing->cal_total_amount_ti;
+                $prices->cal_fee_ti = $orderPricing->cal_fee_ti;
                 $prices->pricing_order_id = (int) $orderPricing->id;
             }
 
@@ -504,17 +507,14 @@ abstract class Easysdi_shopHelper {
 
 
             // get prices by supplier
-            //TODO
             if ($prices->pricing_order_id) {
                 $prices->suppliers = array();
-                $prices->cal_total_amount_ti = 0;
                 $prices->hasFeeWithoutPricingProfileProduct = false;
                 foreach ($basket->extractions as $supplier_id => $supplier) {
                     $prices->suppliers[$supplier_id] = self::basketReloadSavedPricingBySupplier($supplier, $prices);
-                    if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct)
+                    if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct) {
                         $prices->hasFeeWithoutPricingProfileProduct = true;
-                    else
-                        $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
+                    }
                 }
             }
         }
@@ -554,31 +554,25 @@ abstract class Easysdi_shopHelper {
         $provider->pricing_order_supplier_id = (int) $priceOrdSupplier->id;
 
         // gwt the provider tax
-        $provider->cal_fee_ti = (float) $priceOrdSupplier->cal_fee_ti;
+        $provider->cal_fee_ti = $priceOrdSupplier->cal_fee_ti;
 
         // get total amount for this provider
-        $provider->cal_total_amount_ti = (float) $priceOrdSupplier->cal_total_amount_ti;
-        $provider->cal_total_rebate_ti = (float) $priceOrdSupplier->cal_total_rebate_ti;
+        $provider->cal_total_amount_ti = $priceOrdSupplier->cal_total_amount_ti;
+        $provider->cal_total_rebate_ti = $priceOrdSupplier->cal_total_rebate_ti;
 
-        //TODO
+        //TODO check this
         $prices->supplierRebate = new stdClass();
         $prices->supplierRebate->pct = 0;
         $prices->supplierRebate->name = '';
 
 
         // calculate price for each product and increment the provider sub-total
-        //TODO
         $provider->products = array();
-        $provider->cal_total_amount_ti = 0;
-        $provider->cal_total_rebate_ti = 0;
         $provider->hasFeeWithoutPricingProfileProduct = false;
         foreach ($supplier->items as $product) {
             $provider->products[$product->id] = self::basketReloadSavedPricingByProduct($provider->pricing_order_supplier_id, $product, $prices);
-            if ($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder)
+            if ($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder) {
                 $provider->hasFeeWithoutPricingProfileProduct = true;
-            elseif ($product->pricing == self::PRICING_FEE_WITH_PROFILE) {
-                $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
-                $provider->cal_total_rebate_ti += $provider->products[$product->id]->cal_total_rebate_ti;
             }
         }
 
@@ -608,11 +602,17 @@ abstract class Easysdi_shopHelper {
 
         $price->cfg_pricing_type = $priceOrdSupProduct->pricing_id;
 
+        // total data te
+        $price->cal_amount_data_te = $priceOrdSupProduct->cal_amount_data_te;
         // final price TE
         $price->cal_total_amount_te = $priceOrdSupProduct->cal_total_amount_te;
         // final price TI
         $price->cal_total_amount_ti = $priceOrdSupProduct->cal_total_amount_ti;
         $price->cal_total_rebate_ti = $priceOrdSupProduct->cal_total_rebate_ti;
+
+        // rebate based on category and supplier
+        $price->cfg_pct_category_supplier_discount = $priceOrdSupProduct->cfg_pct_category_supplier_discount;
+        $price->ind_lbl_category_supplier_discount = $priceOrdSupProduct->ind_lbl_category_supplier_discount;
 
         // in case of pricing profile
         if ($price->cfg_pricing_type == self::PRICING_FEE_WITH_PROFILE) {
@@ -636,24 +636,10 @@ abstract class Easysdi_shopHelper {
             $price->cfg_min_fee = $pricingProfile->cfg_min_fee;
             $price->cfg_max_fee = $pricingProfile->cfg_max_fee;
 
-            // calculate product price
-            $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
-
-            // limit price according to min and max price
-            if ($price->cfg_max_fee > 0 && $price->cal_amount_data_te > $price->cfg_max_fee) {
-                $price->cal_amount_data_te = $price->cfg_max_fee;
-            } elseif ($price->cfg_min_fee > 0 && $price->cal_amount_data_te < $price->cfg_min_fee) {
-                $price->cal_amount_data_te = $price->cfg_min_fee;
-            }
 
             // rebate based on category and profile
             $price->cfg_pct_category_profile_discount = $pricingProfile->cfg_pct_category_profile_discount;
             $price->ind_lbl_category_profile_discount = $pricingProfile->ind_lbl_category_profile_discount;
-
-
-            // rebate based on category and supplier
-            $price->cfg_pct_category_supplier_discount = $prices->supplierRebate->pct;
-            $price->ind_lbl_category_supplier_discount = $prices->supplierRebate->name;
         }
 
         return $price;
@@ -676,7 +662,7 @@ abstract class Easysdi_shopHelper {
         if ($prices->isActivated) {
             // set the invoiced user (based on current user and third-party)
             $prices->debtor = new stdClass();
-            if (isset($basket->thirdparty) && $basket->thirdparty>0) {
+            if (isset($basket->thirdparty) && $basket->thirdparty > 0) {
                 $prices->debtor->id = $basket->thirdparty;
             } else {
                 $prices->debtor->id = $basket->sdiUser->role[self::ROLE_MEMBER][0]->id;
@@ -742,7 +728,7 @@ abstract class Easysdi_shopHelper {
 
             // total amount for the platform
             if ($prices->hasFeeWithoutPricingProfileProduct)
-                $prices->cal_total_amount_ti = '-';
+                $prices->cal_total_amount_ti = null;
             else
                 $prices->cal_total_amount_ti += $prices->cal_fee_ti;
         }
@@ -845,8 +831,8 @@ abstract class Easysdi_shopHelper {
         $price = new stdClass();
 
         $price->cfg_pricing_type = $product->pricing;
-        
-        if($price->cfg_pricing_type == self::PRICING_FEE_WITHOUT_PROFILE && $internalFreeOrder){
+
+        if ($price->cfg_pricing_type == self::PRICING_FEE_WITHOUT_PROFILE && $internalFreeOrder) {
             $price->cal_total_amount_ti = 0;
             $price->cal_total_rebate_ti = 0;
         }
@@ -922,12 +908,226 @@ abstract class Easysdi_shopHelper {
     public static function priceFormatter($price, $displayCurrency = true) {
         $c = $displayCurrency ? ' ' . JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '';
 
-        if ($price != '-' && $price != 0)
+        if (isset($price) && $price != null && $price != 0) {
             $price = number_format(
                     $price, JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'")
             );
+            return $price . $c;
+        } elseif (isset($price) && $price == 0) {
+            return '0' . $c;
+        } else {
+            return '-';
+        }
+    }
 
-        return $price . $c;
+    /**
+     * updatePricing - update the pricing schema branch
+     * 
+     * @param stdClass $posp
+     * @param stdClass $pos
+     * @param stdClass $po
+     * @param JDatabase $db an optionnal reference to database (for transactinal use)
+     * 
+     * @return void
+     * @since 4.3.0
+     * 
+     * @return boolean|string Returns Boolean 'true' if everything is correctly saved, otherwise returns the error string.
+     * Ensure to compare the return to === true for correct completion of the process
+     */
+    public static function updatePricing($posp, $pos, $po, &$db = null) {
+        if (!isset($db)) {
+            $db = JFactory::getDbo();
+        }
+
+        if (!$posp->save(array())) {
+            return 'Cannot update pricing order supplier product';
+        }
+
+        $rpos = self::updatePricingSupplierSummary($pos, $po, $db);
+        if ($rpos !== true) {
+            return $rpos;
+        }
+
+
+        //everything went well
+        return true;
+    }
+
+    /**
+     * updatePricingSupplierSummary - update the pricing supplier and order branch if needed
+     * @param stdClass $pos
+     * @param stdClass $po
+     * @param stdClass $db
+     * @return boolean|string Returns Boolean 'true' if everything is correctly saved, otherwise returns the error string.
+     * Ensure to compare the return to === true for correct completion of the process
+     */
+    private static function updatePricingSupplierSummary($pos, $po, &$db) {
+        // count the products without price define for the current provider
+        $db->setQuery($db->getQuery(true)
+                        ->select('COUNT(1)')
+                        ->from('#__sdi_pricing_order_supplier_product posp')
+                        ->where('posp.pricing_order_supplier_id=' . (int) $pos->id)
+                        ->where('posp.cal_total_amount_ti IS NULL'));
+        $productsWithoutPrice = $db->loadResult();
+        //if all products of this supplier have a price, we can update the supplier pricing branch
+        if ($productsWithoutPrice == 0) {
+
+            $db->setQuery($db->getQuery(true)
+                            ->select('SUM(posp.cal_total_amount_ti) orderSupplierProductsTotal, SUM(posp.cal_total_rebate_ti) orderSupplierRebatesTotal')
+                            ->from('#__sdi_pricing_order_supplier_product posp')
+                            ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
+                            ->where('posp.pricing_order_supplier_id=' . (int) $pos->id));
+            $posData = $db->loadObject();
+
+            //if total is 0 and fixed fee are not applied for 'all free' order
+            //overwrite the cal_fee_ti with 0
+            if ($pos->cfg_data_free_fixed_fee == 0 && $posData->orderSupplierProductsTotal == 0) {
+                $pos->cal_fee_ti = 0;
+            }
+
+            //update rebates ti total
+            $pos->cal_total_rebate_ti = $posData->orderSupplierRebatesTotal;
+
+            //update total ti
+            $pos->cal_total_amount_ti = ($posData->orderSupplierProductsTotal + $pos->cal_fee_ti);
+
+            if (!$pos->save(array())) {
+                return 'Cannot update pricing order supplier';
+            }
+
+            $rpo = self::updatePricingOrderSummary($po, $db);
+            if ($rpo !== true) {
+                return $rpo;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * updatePricingOrderSummary - update the pricing order branch if needed
+     * @param type $po
+     * @param type $db
+     * @return boolean|string Returns Boolean 'true' if everything is correctly saved, otherwise returns the error string.
+     * Ensure to compare the return to === true for correct completion of the process
+     */
+    private static function updatePricingOrderSummary($po, &$db) {
+        //count all the suppliers pricing of the order without price
+        $db->setQuery($db->getQuery(true)
+                        ->select('COUNT(1)')
+                        ->from('#__sdi_pricing_order_supplier pos')
+                        ->where('pos.pricing_order_id=' . (int) $po->id)
+                        ->where('pos.cal_total_amount_ti IS NULL'));
+        $suppliersWithoutPrice = $db->loadResult();
+
+        //if all suppliers of this order have a price, we can update the order pricing branch
+        if ($suppliersWithoutPrice == 0) {
+
+            $db->setQuery($db->getQuery(true)
+                            ->select('SUM(pos.cal_total_amount_ti) orderSuppliersTotal')
+                            ->from('#__sdi_pricing_order po')
+                            ->innerJoin('#__sdi_pricing_order_supplier pos ON po.id=pos.pricing_order_id')
+                            ->where('po.id=' . (int) $po->id));
+            $orderSuppliersTotal = $db->loadResult();
+
+            //if total is 0 and platform fee are not applied for 'all free' order
+            //overwrite the cal_fee_ti with 0
+            if ($po->cfg_free_data_fee == 0 && $orderSuppliersTotal == 0) {
+                $po->cal_fee_ti = 0;
+            }
+
+            $po->cal_total_amount_ti = ($orderSuppliersTotal + $po->cal_fee_ti);
+
+            if (!$po->save(array())) {
+                return 'Cannot update pricing order';
+            }
+        }
+        return true;
+    }
+
+    /**
+     * changeOrderState - Dynamically changes the statue of the order.
+     * 
+     * @param integer $orderId Id of the order.
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public static function changeOrderState($orderId) {
+        $orderstate = self::getNewOrderState($orderId);
+        $db = JFactory::getDbo();
+
+        if (isset($orderstate)) {
+            $query = $db->getQuery(true)
+                            ->update('#__sdi_order')->set('orderstate_id=' . $orderstate);
+            if ($orderstate == Easysdi_shopHelper::ORDERSTATE_FINISH) {
+                $query->set('completed=' . $query->quote(date("Y-m-d H:i:s")));
+            }
+            $query->where('id=' . (int) $orderId);
+
+            $db->setQuery($query);
+            $db->execute();
+        }
+    }
+
+    /**
+     * getNewOrderState - Calculates the new order state based on products/diffusion states
+     * 
+     * @param integer $orderId Id of the order.
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public static function getNewOrderState($orderId) {
+
+        $db = JFactory::getDbo();
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId));
+        $total = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT));
+        $await = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE));
+        $available = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER));
+        $rejected = $db->getNumRows($db->execute());
+        
+        return self::chooseOrderState($total, $await, $available, $rejected);
+    }
+
+    /**
+     * chooseOrderState - return the correct orderState according to the given params
+     * 
+     * @param integer $total
+     * @param integer $await
+     * @param integer $available
+     * @param integer $rejected
+     * 
+     * @return integer|null
+     * @since 4.3.0
+     */
+    private static function chooseOrderState($total, $await, $available, $rejected) {
+        if ($total == $rejected) {
+            return Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER;
+        }
+
+        if ($available == $total || $available + $rejected == $total) {
+            return Easysdi_shopHelper::ORDERSTATE_FINISH;
+        }
+
+        if ($available > 0 || $rejected > 0) {
+            return Easysdi_shopHelper::ORDERSTATE_PROGRESS;
+        }
+
+        if ($await > 0) {
+            return Easysdi_shopHelper::ORDERSTATE_AWAIT;
+        }
+
+        return null;
     }
 
     /*     * *********************** */
@@ -1039,6 +1239,51 @@ abstract class Easysdi_shopHelper {
             if (!$user->sendMail($subject, JText::sprintf($bodytext, $orderId, $url))) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
             }
+        }
+    }
+
+    /**
+     * notifyCustomerOnOrderUpdate - notify the customer (only if needed) about the progress of the order
+     * 
+     * @param integer $orderId the id of the order
+     * @param boolean $silentFail optionnal, if an any error, die silently
+     * @return void
+     * @since 4.3.0
+     */
+    public static function notifyCustomerOnOrderUpdate($orderId, $silentFail = false) {
+
+        $sdiUser = sdiFactory::getSdiUser();
+        $orderModel = JModelLegacy::getInstance('order', 'Easysdi_shopModel', array());
+        $order = $orderModel->getTable();
+        $order->load(array('id' => (int) $orderId));
+
+        $errors = false;
+
+        if (isset($order)) {
+
+            switch ($order->orderstate_id) {
+                case Easysdi_shopHelper::ORDERSTATE_FINISH:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;
+                case Easysdi_shopHelper::ORDERSTATE_PROGRESS:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;
+                case Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;                    
+            }
+        }else {
+            $errors = true;
+        }
+
+        if ($errors == !$silentFail) {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
         }
     }
 
@@ -1199,6 +1444,70 @@ abstract class Easysdi_shopHelper {
         $size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' ' . @$size[$factor];
+    }
+
+    /**
+     * getPricingOrder - retrieve a pricingorder object from the order's id
+     * 
+     * @param integer $oId
+     * 
+     * @return stdClass pricingorder object
+     * @since 4.3.0
+     */
+    public static function getPricingOrder($oId) {
+        $poModel = JModelLegacy::getInstance('PricingOrder', 'Easysdi_shopModel');
+        $po = $poModel->getTable();
+        $po->load(array('order_id' => $oId));
+        return $po;
+    }
+
+    /**
+     * getPricingOrderSupplier - retrieve a pricingordersupplier from its id
+     * 
+     * @param integer $posId
+     * 
+     * @return stdClass pricingordersupplier object
+     * @since 4.3.0
+     * 
+     * call getException if the pricingordersupplier cannot be loaded
+     */
+    public static function getPricingOrderSupplier($posId) {
+        $posModel = JModelLegacy::getInstance('PricingOrderSupplier', 'Easysdi_shopModel');
+        $pos = $posModel->getTable();
+        if (!($pos->load(array('id' => $posId)))) {
+            return null;
+        }
+        return $pos;
+    }
+
+    /**
+     * getPricingOrderSupplierProduct - retrieve a pricingordersupplierproduct object
+     * 
+     * @param integer $dId
+     * @param integer $poId
+     * 
+     * @return stdClass pricingordersupplierproduct object
+     * @since 4.3.0
+     * 
+     * call getException if the pricingordersupplierproduct cannot be loaded
+     */
+    public static function getPricingOrderSupplierProduct($dId, $poId) {
+        $db = JFactory::getDbo();
+        $pospModel = JModelLegacy::getInstance('PricingOrderSupplierProduct', 'Easysdi_shopModel');
+        $posp = $pospModel->getTable();
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('posp.id')
+                        ->from('#__sdi_pricing_order_supplier_product posp')
+                        ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
+                        ->where('posp.product_id=' . (int) $dId)
+                        ->where('pos.pricing_order_id=' . (int) $poId));
+
+        $pospId = $db->loadResult();
+        if ($pospId == null || !($posp->load(array('id' => $pospId)))) {
+            return null;
+        }
+        return $posp;
     }
 
 }

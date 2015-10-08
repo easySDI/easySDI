@@ -491,7 +491,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $root->appendChild($this->getOrderPricing($order));
         }
 
-        $this->changeOrderState($order->id);
+        Easysdi_shopHelper::changeOrderState($order->id);
 
         return $root;
     }
@@ -811,6 +811,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                         ->leftJoin('#__sdi_pricing_profile pp ON pp.id=pospp.pricing_profile_id')
                         ->where('o.id=' . (int) $order->id)
                         ->where('r.organism_id=' . (int) $supplierId)
+                        ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
                         ->where('od.productstate_id IN (' . implode(',', $this->states) . ')'));
 
         $orderProducts = $this->db->loadObjectList();
@@ -1078,17 +1079,26 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
 
         // try to get pricing data
-        $po = $this->getPricingOrder($order->id);
+        $po = Easysdi_shopHelper::getPricingOrder($order->id);
         // init other pricing var
         $pos = null;
         $posp = null;
         if ($po !== null) { // pricing order is defined, then load pricing order supplier and pricing order supplier product data
-            $posp = $this->getPricingOrderSupplierProduct($diffusion->id, $po->id);
-            $pos = $this->getPricingOrderSupplier($posp->pricing_order_supplier_id);
+            $posp = Easysdi_shopHelper::getPricingOrderSupplierProduct($diffusion->id, $po->id);
+            if ($posp == null) {
+                $this->getException(500, 'Cannot load the requested pricing product');
+            }
+            $pos = Easysdi_shopHelper::getPricingOrderSupplier($posp->pricing_order_supplier_id);
+            if ($pos == null) {
+                $this->getException(500, 'Cannot load the requested pricing supplier');
+            }
         }
 
         //all is fine
         $this->updateOrderDiffusion($orderDiffusion, $order, $po, $pos, $posp);
+        
+        //notify user if needed
+        Easysdi_shopHelper::notifyCustomerOnOrderUpdate($order->id, true);
 
         // prepare response
         $this->setProductSucceeded($order, $diffusion);
@@ -1193,69 +1203,6 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             //throw a product/organism integrity exception
             $this->getException(403, 'You cannot update this product');
         }
-    }
-
-    /**
-     * getPricingOrder - retrieve a pricingorder object from the order's id
-     * 
-     * @param integer $oId
-     * 
-     * @return stdClass pricingorder object
-     * @since 4.3.0
-     */
-    private function getPricingOrder($oId) {
-        $poModel = $this->getModel('PricingOrder', 'Easysdi_shopModel');
-        $po = $poModel->getTable();
-        $po->load(array('order_id' => $oId));
-        return $po;
-    }
-
-    /**
-     * getPricingOrderSupplierProduct - retrieve a pricingordersupplierproduct object
-     * 
-     * @param integer $dId
-     * @param integer $poId
-     * 
-     * @return stdClass pricingordersupplierproduct object
-     * @since 4.3.0
-     * 
-     * call getException if the pricingordersupplierproduct cannot be loaded
-     */
-    private function getPricingOrderSupplierProduct($dId, $poId) {
-        $pospModel = $this->getModel('PricingOrderSupplierProduct', 'Easysdi_shopModel');
-        $posp = $pospModel->getTable();
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('posp.id')
-                        ->from('#__sdi_pricing_order_supplier_product posp')
-                        ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
-                        ->where('posp.product_id=' . (int) $dId)
-                        ->where('pos.pricing_order_id=' . (int) $poId));
-
-        $pospId = $this->db->loadResult();
-        if ($pospId == null || !($posp->load(array('id' => $pospId)))) {
-            $this->getException(500, 'Cannot load the requested pricing product');
-        }
-        return $posp;
-    }
-
-    /**
-     * getPricingOrderSupplier - retrieve a pricingordersupplier from its id
-     * 
-     * @param integer $posId
-     * 
-     * @return stdClass pricingordersupplier object
-     * @since 4.3.0
-     * 
-     * call getException if the pricingordersupplier cannot be loaded
-     */
-    private function getPricingOrderSupplier($posId) {
-        $posModel = $this->getModel('PricingOrderSupplier', 'Easysdi_shopModel');
-        $pos = $posModel->getTable();
-        if (!($pos->load(array('id' => $posId)))) {
-            $this->getException(500, 'Cannot load the requested pricing supplier');
-        }
-        return $pos;
     }
 
     /**
@@ -1385,7 +1332,13 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->db->setQuery($query);
 
         if ($this->db->execute()) {
-            $updatePricing ? $this->updatePricing($posp, $pos, $po) : $this->changeOrderState($od->order_id);
+            if ($updatePricing) {
+                $r = Easysdi_shopHelper::updatePricing($posp, $pos, $po, $this->db);
+                if($r !== true){
+                    $this->getException(500, $r);
+                }
+            }
+            Easysdi_shopHelper::changeOrderState($od->order_id);
         }//else throw a db exception
         else {
             $this->getException(500, 'Cannot update order diffusion');
@@ -1516,119 +1469,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $query->set('displayName=' . $query->quote($this->product->getElementsByTagNameNS(self::nsSdi, 'filename')->item(0)->nodeValue));
     }
 
-    /**
-     * updatePricing - update the pricing schema branch
-     * 
-     * @param stdClass $posp
-     * @param stdClass $pos
-     * @param stdClass $po
-     * 
-     * @return void
-     * @since 4.3.0
-     * 
-     * call getException if pricingordersupplierproduct, pricingordersupplier or pricingorder object cannot be updated
-     */
-    private function updatePricing($posp, $pos, $po) {
-        if (!$posp->save(array())) {
-            $this->getException(500, 'Cannot update pricing order supplier product');
-        }
 
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('SUM(posp.cal_total_amount_ti) ctat')
-                        ->from('#__sdi_pricing_order_supplier_product posp')
-                        ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
-                        ->where('posp.pricing_order_supplier_id=' . (int) $pos->id));
 
-        $pos->cal_total_amount_ti = $this->db->loadResult();
-
-        if (!$pos->save(array())) {
-            $this->getException(500, 'Cannot update pricing order supplier');
-        }
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('SUM(posp.cal_total_amount_ti) ctat')
-                        ->from('#__sdi_pricing_order_supplier_product posp')
-                        ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
-                        ->where('pos.pricing_order_id=' . (int) $po->id));
-
-        $po->cal_total_amount_ti = $this->db->loadResult();
-
-        if (!$po->save(array())) {
-            $this->getException(500, 'Cannot update pricing order');
-        }
-
-        $this->changeOrderState($po->order_id);
-    }
-
-    /**
-     * changeOrderState - Dynamically changes the statue of the order.
-     * 
-     * @param integer $orderId Id of the order.
-     * 
-     * @return void
-     * @since 4.3.0
-     */
-    private function changeOrderState($orderId) {
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId));
-        $total = $this->db->getNumRows($this->db->execute());
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT));
-        $await = $this->db->getNumRows($this->db->execute());
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE));
-        $available = $this->db->getNumRows($this->db->execute());
-
-        $this->db->setQuery($this->db->getQuery(true)
-                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER));
-        $rejected = $this->db->getNumRows($this->db->execute());
-
-        $orderstate = $this->chooseOrderState($total, $await, $available, $rejected);
-
-        if ($orderstate > 0) {
-            $query = $this->db->getQuery(true)
-                            ->update('#__sdi_order')->set('orderstate_id=' . $orderstate);
-            if ($orderstate == Easysdi_shopHelper::ORDERSTATE_FINISH) {
-                $query->set('completed=' . $query->quote(date("Y-m-d H:i:s")));
-            }
-            $query->where('id=' . (int) $orderId);
-
-            $this->db->setQuery($query);
-            $this->db->execute();
-        }
-    }
-
-    /**
-     * chooseOrderState - return the correct orderState according to the given params
-     * 
-     * @param integer $total
-     * @param integer $await
-     * @param integer $available
-     * @param integer $rejected
-     * 
-     * @return integer
-     * @since 4.3.0
-     */
-    private function chooseOrderState($total, $await, $available, $rejected) {
-        if ($total == $rejected) {
-            return Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER;
-        }
-
-        if ($available == $total || $available + $rejected == $total) {
-            return Easysdi_shopHelper::ORDERSTATE_FINISH;
-        }
-
-        if ($available > 0 || $rejected > 0) {
-            return Easysdi_shopHelper::ORDERSTATE_PROGRESS;
-        }
-
-        if ($await > 0) {
-            return Easysdi_shopHelper::ORDERSTATE_AWAIT;
-        }
-
-        return 0;
-    }
 
 }

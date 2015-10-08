@@ -63,3 +63,19 @@ UPDATE #__sdi_sys_productstate SET value = 'rejectedbythirdparty' WHERE id = 5;
 UPDATE #__sdi_sys_productstate SET value = 'rejectedbysupplier' WHERE id = 6;
 
 ALTER TABLE #__sdi_order MODIFY remark VARCHAR(4000);
+
+UPDATE #__sdi_sys_pricing SET value = 'feewithoutapricingprofile' WHERE id = 2;
+UPDATE #__sdi_sys_pricing SET value = 'feewithapricingprofile' WHERE id = 3;
+
+ALTER TABLE #__sdi_pricing_order_supplier_product
+MODIFY cal_amount_data_te   decimal(19,2) NULL,
+MODIFY cal_total_amount_te  decimal(19,2) NULL,
+MODIFY cal_total_amount_ti  decimal(19,2) NULL,
+MODIFY cal_total_rebate_ti  decimal(19,2) NOT NULL DEFAULT 0.00;
+
+ALTER TABLE #__sdi_pricing_order_supplier
+MODIFY cal_total_rebate_ti  decimal(19,2) NOT NULL DEFAULT 0.00,
+MODIFY cal_total_amount_ti  decimal(19,2) NULL;
+
+ALTER TABLE #__sdi_pricing_order
+MODIFY cal_total_amount_ti  decimal(19,2) NULL 0.00;

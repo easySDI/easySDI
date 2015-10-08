@@ -2309,7 +2309,7 @@ CREATE TABLE [#__sdi_pricing_order] (
     [cfg_rounding] [decimal](3,2) NOT NULL DEFAULT '0.05',
     [cfg_overall_default_fee] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_free_data_fee] [smallint] DEFAULT 0,
-    [cal_total_amount_ti] [decimal],
+    [cal_total_amount_ti] [decimal](19,2),
     [cal_fee_ti] [decimal](19,2) NOT NULL DEFAULT 0,
     [ind_lbl_category_order_fee] [nvarchar](255),
 CONSTRAINT [PK_#__sdi_pricing_order] PRIMARY KEY CLUSTERED
@@ -2340,9 +2340,9 @@ CREATE TABLE [#__sdi_pricing_order_supplier] (
     [cfg_internal_free] [smallint] NOT NULL DEFAULT 1,
     [cfg_fixed_fee_ti] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_data_free_fixed_fee] [smallint] NOT NULL DEFAULT 0,
-    [cal_total_rebate_ti] [float] NOT NULL DEFAULT 0,
+    [cal_total_rebate_ti] [decimal](19,2) NOT NULL DEFAULT 0,
     [cal_fee_ti] decimal(19,2) NOT NULL DEFAULT 0,
-    [cal_total_amount_ti] [float],
+    [cal_total_amount_ti] [decimal](19,2),
 CONSTRAINT [PK_#__sdi_pricing_order_supplier] PRIMARY KEY CLUSTERED
 (
     [id] ASC
@@ -2370,10 +2370,10 @@ CREATE TABLE [#__sdi_pricing_order_supplier_product] (
     [pricing_id] [int] not null,
     [cfg_pct_category_supplier_discount] [decimal](19,2) NOT NULL DEFAULT 0,
     [ind_lbl_category_supplier_discount] [nvarchar](255),
-    [cal_amount_data_te] [float],
-    [cal_total_amount_te] [float],
-    [cal_total_amount_ti] [float],
-    [cal_total_rebate_ti] [float],
+    [cal_amount_data_te] [decimal](19,2),
+    [cal_total_amount_te] [decimal](19,2),
+    [cal_total_amount_ti] [decimal](19,2),
+    [cal_total_rebate_ti] [decimal](19,2) NOT NULL DEFAULT 0,
 CONSTRAINT [PK_#__sdi_pricing_order_supplier_product] PRIMARY KEY CLUSTERED
 (
     [id] ASC

@@ -97,7 +97,7 @@ $results = $this->getResults();
 if ($results):
     ?>
     <div class="catalog-searchresults" id="sdi-search-results">
-        <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') . ' ' . JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>
+        <h3><?php echo JText::plural("COM_EASYSDI_CATALOG_N_RESULTS",JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total')); ?></h3>
         <?php
             // Build of extendend XML for each result entry
             foreach ($results as $result) :

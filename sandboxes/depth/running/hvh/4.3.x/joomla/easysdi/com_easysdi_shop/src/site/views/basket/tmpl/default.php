@@ -30,6 +30,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_UNABLE_TO_CREATE_F');
 JText::script('COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_OUTSIDE_MAP');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_AREA');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT');
+JText::script('COM_EASYSDI_SHOP_BASKET_PERIMETER_NO_PERIMETER_SELECTED');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -229,9 +230,7 @@ if ($this->item && $this->item->extractions) :
                                                 if ($product->cfg_pricing_type == Easysdi_shopHelper::PRICING_FREE):
                                                     echo JText::_('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE');
                                                 else:
-                                                    $productPrice = isset($product->cal_total_amount_ti) ? $product->cal_total_amount_ti : '-';
-
-                                                    echo Easysdi_shopHelper::priceFormatter($productPrice);
+                                                    echo Easysdi_shopHelper::priceFormatter($product->cal_total_amount_ti);
 
                                                     $rebate = false;
                                                     $as = '';
@@ -262,17 +261,17 @@ if ($this->item && $this->item->extractions) :
                                     <?php endforeach; ?>
                                 </tbody>
                                 <tfoot style="<?php if (!isset($this->item->pricing) || !$this->item->pricing->isActivated): ?>display:none;<?php endif; ?>">
-                                    <tr>
+                                    <tr class="supplier_fixed_fee_row">
                                         <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
                                         <td class="price_column supplier_cal_fee_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
-                                    <tr>
+                                    <tr class="supplier_total_row">
                                         <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
                                         <td class="price_column supplier_cal_total_amount_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
                                     </tr>
-                                    <tr>
+                                    <tr class="supplier_rebate_row">
                                         <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
                                         <td class="price_column supplier_cal_total_rebate_ti"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) : '-'; ?></td>
                                         <td class="action_column">&nbsp;</td>
@@ -292,14 +291,14 @@ if ($this->item && $this->item->extractions) :
                             </thead>
                             <tbody></tbody>
                             <tfoot>
-                                <tr>
+                                <tr class="basket_fixed_fee_row">
                                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FEE'); ?></td>
                                     <td class="price_column">
                                         <span class="pricingFeeTI"><?php echo isset($this->item->pricing->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_fee_ti) : '-'; ?></span>
                                     </td>
                                     <td class="action_column">&nbsp;</td>
                                 </tr>
-                                <tr>
+                                <tr class="basket_total_row">
                                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOTAL'); ?></td>
                                     <td class="price_column">
                                         <span class="pricingTotalAmountTI"><?php echo!isset($this->item->pricing->cal_total_amount_ti) ? '-' : Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti); ?></span>
@@ -584,11 +583,12 @@ if ($this->item && $this->item->extractions) :
                    initMiniMap();
                    
                    jQuery('a[href$="#modal-perimeter"]').click(function(){jQuery('#modal-perimeter').removeClass('invisible');});
+                   <?php echo($this->basketScriptPlugins); ?>
                 });
             });
  
             function initialization() {
-                miniBaseLayer.events.unregister("loadend", miniBaseLayer, initialization);
+                miniBaseLayers[0].events.unregister("loadend", miniBaseLayers[0], initialization);
                 initDraw();
                 initMyPerimeter();
                 addAlertControl(window.appname.mapPanel.map);

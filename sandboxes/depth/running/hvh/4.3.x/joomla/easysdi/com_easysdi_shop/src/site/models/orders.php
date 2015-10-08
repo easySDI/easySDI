@@ -128,13 +128,13 @@ class Easysdi_shopModelOrders extends JModelList {
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = ' . (int) substr($search, 3));
-            } else {
-                $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE ' . $search . ' )');
+            $searchOnId = '';
+            if (is_numeric($search)) {
+                $searchOnId = ' OR (a.id = ' . (int) $search . ')';
             }
-        }
+            $search = $db->Quote('%' . $db->escape($search, true) . '%');
+            $query->where('(( a.name LIKE ' . $search . ' ) '.$searchOnId. ' )');
+        }        
 
         if ($this->getState('layout.validation')) {
             $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
