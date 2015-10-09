@@ -49,15 +49,31 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     public function validate() {
         $app = JFactory::getApplication();
         $validateId = $app->input->getInt('id', 0, 'int');
+        $validatorId = $app->input->getInt('sdiUserId', null, 'int');
+
+        if ($validatorId == 0 || $validatorId == '' || $validatorId == null) {
+            //Wrong user id set message
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            return;
+        }
 
         if ($validateId == 0) {
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_NO_ID'));
         } else {
             $model = $this->getModel('Order', 'Easysdi_shopModel');
+
+            //get validator user
+            $validator = sdiFactory::getSdiUser($validatorId);
+            if (!in_array($model->getData($validateId)->thirdparty_id, $validator->getOrganisms(array(sdiUser::validationmanager), true))) {
+                //is not validator, set message
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                return;
+            }
+
             $model->checkout($validateId);
 
-            $model->thirdpartyValidation($validateId, $app->input->get('reason', null, 'html'));
+            $model->thirdpartyValidation($validateId, $validatorId, $app->input->get('reason', null, 'html'));
 
             $model->checkin($validateId);
 
@@ -84,8 +100,12 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
         }
 
-        // Redirect to the list screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+        // Redirect to the list screen. (if user is logged in)
+        if (!JFactory::getUser()->guest) {
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+        } else {
+            $this->setRedirect(JURI::base());
+        }
     }
 
     /**
@@ -97,16 +117,32 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     public function reject() {
         $app = JFactory::getApplication();
         $validateId = $app->input->getInt('id', 0, 'int');
+        $validatorId = $app->input->getInt('sdiUserId', null, 'int');
         $reason = $app->input->get('reason', null, 'html');
+
+        if ($validatorId == 0 || $validatorId == '' || $validatorId == null) {
+            //Wrong user id set message
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            return;
+        }
 
         if ($validateId == 0 || $reason == '') {
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTION_NO_ID_OR_REASON'));
         } else {
             $model = $this->getModel('Order', 'Easysdi_shopModel');
+
+            //get validator user
+            $validator = sdiFactory::getSdiUser($validatorId);
+            if (!in_array($model->getData($validateId)->thirdparty_id, $validator->getOrganisms(array(sdiUser::validationmanager), true))) {
+                //is not validator, set message
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                return;
+            }
+
             $model->checkout($validateId);
 
-            $model->thirdpartyRejection($validateId, $reason);
+            $model->thirdpartyRejection($validateId, $validatorId, $reason);
 
             $model->checkin($validateId);
 
@@ -120,8 +156,12 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_REJECTED);
         }
 
-        // Redirect to the list screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+        // Redirect to the list screen. (if user is logged in)
+        if (!JFactory::getUser()->guest) {
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+        } else {
+            $this->setRedirect(JURI::base());
+        }
     }
 
     /**

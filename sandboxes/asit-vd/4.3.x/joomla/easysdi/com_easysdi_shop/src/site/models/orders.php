@@ -116,6 +116,11 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->innerjoin("#__sdi_user_role_organism urocli ON urocli.user_id=uclient.id");
         $query->innerjoin("#__sdi_organism oclient ON oclient.id = urocli.organism_id");
         $query->where('urocli.role_id = ' . Easysdi_shopHelper::ROLE_MEMBER);
+        
+        //get validator
+        $query->select('juvalid.name AS validator');
+        $query->leftJoin("#__sdi_user AS uvalid ON a.validated_by = uvalid.id");
+        $query->leftJoin('#__users AS juvalid ON juvalid.id = uvalid.user_id');
 
 
 
