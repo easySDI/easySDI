@@ -19,13 +19,14 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.ph
  */
 class Easysdi_shopControllerDownload extends Easysdi_shopController {
 
+    private $sdiUser = null;
+    
     private function stop($url = '', $message = 'Not authorized to access this resource', $type = 'warning') {
         if (empty($url)) {
             $uri = JUri::getInstance()->toString();
             $u64 = base64_encode($uri);
             $url = '/index.php?option=com_users&view=login&return=' . $u64;
         }
-
         $this->setMessage(JText::_($message), $type);
         $this->setRedirect(JRoute::_($url, false));
         return false;
@@ -43,7 +44,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
 
         //check if the user has the right to download
         //@TODO: should return an error msg if he doesn't have the right
-        $sdiUser = sdiFactory::getSdiUser();
+        $this->sdiUser = sdiFactory::getSdiUser();
         switch ($diffusion->accessscope_id) {
             case 4: //accesscope by organism's category
                 $categories = sdiModel::getAccessScopeCategory($diffusion->guid);
@@ -122,37 +123,30 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
 
         try {
             //Record the download for statistic purpose        
-            $columns = array('diffusion_id, user_id', 'executed');
-            $userid = ($sdiUser->isEasySDI ? $sdiUser->id : null);            
-            $db->transactionStart();
+            $columns = array('diffusion_id', 'user_id', 'executed');
+            $userid = ($this->sdiUser->isEasySDI ? $this->sdiUser->id : null);
             $values = array($diffusion->id, $userid, $db->quote(date("Y-m-d H:i:s")));
             $query = $db->getQuery(true)
-                    ->insert('#__sdi_diffusion_download')
+                    ->insert($db->quoteName('#__sdi_diffusion_download'))
                     ->columns($columns)
                     ->values(implode(',', $values));
             $db->setQuery($query);
-            try 
-            {
-                $db->execute();     
-                $db->transactionCommit();
-            } catch (RuntimeException $e) {
-                //Statistic can not be recorded but it doesn't mean that the download have to be interrupted
-                //TODO : a message has to be sent to the site admin that this record can not be done
-            }
-
-            
+            $db->execute();
+        } catch (RuntimeException $e) {
+            //Statistic can not be recorded but it doesn't mean that the download have to be interrupted
+            //TODO : a message has to be sent to the site admin that this record can not be done
+        }
+        try {
             error_reporting(0);
 
             if (!empty($diffusion->file)) { //Download local file
                 $pos = strrpos($diffusion->file, '.');
                 $extension = substr($diffusion->file, $pos);
-
                 $file = @file_get_contents($fileFolder . '/' . $diffusion->file);
-
-                //@TODO: retrieve why file_get_contents returns false
-                if ($file === false)
-                    $dlError = 'COM_EASYSDI_SHOP_THE_RESOURCE_CANNOT_BE_READ';
-
+                // If cannot DL the file, it returns an error msg to the client
+                if ($file === false) {
+                    throw new Exception();
+                }
                 ini_set('zlib.output_compression', 0);
                 header('Pragma: public');
                 header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
@@ -160,77 +154,51 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                 header("Content-Length: " . strlen($file));
                 header('Content-Type: application/octetstream; name="' . $extension . '"');
                 header('Content-Disposition: attachement; filename="' . $diffusion->name . $extension . '"');
-
                 echo $file;
                 die();
-            }
-            elseif (!empty($diffusion->fileurl)) { //Download remote file
+            } elseif (!empty($diffusion->fileurl)) { //Download remote file
                 $pos = strrpos($diffusion->fileurl, '.');
                 $extension = substr($diffusion->fileurl, $pos);
-
                 $curlHelper = new CurlHelper();
                 $curldata['url'] = $diffusion->fileurl;
                 $curldata['fileextension'] = $extension;
                 $curldata['filename'] = $diffusion->name . $extension;
                 $curlHelper->get($curldata);
-
-                /*  $ch = curl_init($diffusion->fileurl);
-                  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-                  if( ($file=curl_exec($ch)) === false)
-                  $dlError = curl_error($ch);
-                  curl_close($ch); */
             } elseif (!empty($diffusion->perimeter_id) && null !== $featurecode = $jinput->getHtml('featurecode', null)) {  //Download remote file by grid
                 $url = str_replace('{CODE}', $featurecode, $diffusion->packageurl);
                 $pos = strrpos($url, '.');
                 $extension = substr($url, $pos);
-
                 $curlHelper = new CurlHelper();
                 $curldata['url'] = $diffusion->fileurl;
                 $curldata['fileextension'] = $extension;
                 $curldata['filename'] = $diffusion->name . $extension;
                 $curlHelper->get($curldata);
-
-                /* $file = @file_get_contents($url);
-
-                  //@TODO: retrieve why file_get_contents returns false
-                  if ($file === false)
-                  $dlError = 'COM_EASYSDI_SHOP_THE_RESOURCE_CANNOT_BE_READ'; */
             } else { //Download is not well configured
                 $this->setMessage(JText::_('RESOURCE_LOCATION_UNAVAILABLE'), 'error');
                 $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
                 return false;
             }
-
-            // If cannot DL the file, it returns an error msg to the client
-            if ($file === false) {
-                $this->setMessage(JText::_($dlError), 'error');
-                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
-                return false;
-            }
-            
-            
         } catch (Exception $e) {
-            // Rollback the record of download for statistic purpose
-            $db->transactionRollback();
+            //Download cannot be done            
+            try {//Remove statistic
+                $conditions = array(
+                    $db->quoteName('diffusion_id') . ' = ' . $values[0],
+                    $db->quoteName('user_id') . ' = ' . $values[1],
+                    $db->quoteName('executed') . ' = ' . $values[2]
+                );
+                $query = $db->getQuery(true)
+                        ->delete($db->quoteName('#__sdi_diffusion_download'))
+                        ->where($conditions);
+                $db->setQuery($query);
+                $db->execute();
+            } catch (RuntimeException $e) {
+                //Statistic can not be deleted, a message has to be sent to the site admin                
+            }
+            //Return error to client
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_THE_RESOURCE_CANNOT_BE_READ'), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
+            return false;
         }
-
-
-//        error_reporting(0);
-
-
-        /*  ini_set('zlib.output_compression', 0);
-          header('Pragma: public');
-          header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-          header('Content-Transfer-Encoding: none');
-          header("Content-Length: " . strlen($file));
-          header('Content-Type: application/octetstream; name="' . $extension . '"');
-          header('Content-Disposition: attachement; filename="' . $diffusion->name . $extension . '"');
-
-          echo $file;
-          die(); */
     }
 
 }

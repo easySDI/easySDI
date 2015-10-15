@@ -275,8 +275,10 @@ class CurlHelper {
         die();
     }
 
-    private function send() {
-        $content = curl_exec($this->ch);
+    private function send() {  
+        if(!$content = curl_exec($this->ch)){
+            throw new Exception(curl_error($this->ch));
+        }
         $data = curl_getinfo($this->ch);
 
         curl_close($this->ch);
