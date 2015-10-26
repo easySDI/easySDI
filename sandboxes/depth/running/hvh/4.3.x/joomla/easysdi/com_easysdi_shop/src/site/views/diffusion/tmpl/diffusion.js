@@ -100,7 +100,7 @@ function onPricingChange() {
                         version_id: version
                     }
                 }).fail(function () {
-                    console.log('todo');
+                    //console.log('todo');
                 }).done(function (data) {
                     data.each(function (item) {
                         js('#pricing_profile_id select').append(js('<option>', {
