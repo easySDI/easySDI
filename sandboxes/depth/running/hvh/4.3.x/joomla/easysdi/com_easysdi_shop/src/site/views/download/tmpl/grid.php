@@ -15,16 +15,13 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/download/tmpl/grid.js');
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
-//$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
+
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
 <?php if ($this->item) : ?>
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+<form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="download-confirm front-end-edit">
-            <h1><?php
-                echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_GRID_TITLE');
-                ;
-                ?></h1>
+            <h1><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_GRID_TITLE');?></h1>
             <div class="container-fluid">
                 <div class="row-fluid">
                     <div class="span12">
@@ -59,7 +56,7 @@ Easysdi_shopHelper::addMapShopConfigToDoc();
                                 </label>
                                 <br/>
                                 <br/>
-                                <button type="submit" id="saveSubmit" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large"><b><?php echo 'download'; ?></b></button>
+                                <a href="#" id="saveSubmit" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');; ?></b></a>                            
                             </div>
                         </div>
                     </div><!--/span-->
@@ -72,12 +69,13 @@ Easysdi_shopHelper::addMapShopConfigToDoc();
             
             js = jQuery.noConflict();
             js(document).ready(function() {                
-                js('#termsofuse').change(enableSave);                
+                js('#termsofuse').change(enableSave);  
+                js('#featurecode').change(enableSave);  
             });            
         </script>
         <input type = "hidden" name = "task" value = "download.download" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-        <input type = "hidden" name = "id" value = "<?php echo $this->item->id; ?>" />        
+        <input type = "hidden" name = "id" id = "id" value = "<?php echo $this->item->id; ?>" />        
         <input type = "hidden" name = "featurecode" id="featurecode" value = "" />        
         <?php echo JHtml::_('form.token'); ?>
     </form>

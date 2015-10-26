@@ -16,10 +16,14 @@ defined('_JEXEC') or die;
         js('#termsofuse').change(enableDownload);
     });
     function enableDownload(){
-        if ( js('#termsofuse').is(':checked') == true )
-            js('#saveSubmit').removeAttr('disabled', 'disabled');            
-        else
-            js('#saveSubmit').attr('disabled', 'disabled');        
+        if ( js('#termsofuse').is(':checked') == true ){
+            js('#saveSubmit').removeAttr('disabled', 'disabled');   
+            js('#saveSubmit').attr('href', js('#adminForm').attr('action') + '?id=' + js('#id').attr('value'));   
+        }
+        else{
+            js('#saveSubmit').attr('disabled', 'disabled'); 
+            js('#saveSubmit').attr('href','#');
+        }
     }
 </script>
 <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -37,17 +41,15 @@ defined('_JEXEC') or die;
                             </label>
                             <br/>
                             <br/>
-                            <button type="submit" id="saveSubmit" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');; ?></b></button>
-                        </div>
-                        
+                            <a href="#" id="saveSubmit" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');; ?></b></a>                            
+                        </div>                        
                     </div>
-                </div><!--/span-->
-                <div><?php echo JURI::base().'index.php?option=com_easysdi_shop&task=download.download&id='.$this->item->id; ?></div>
+                </div><!--/span-->               
             </div><!--/row-->
         </div>
     </div>
     <input type = "hidden" name = "task" value = "download.download" />
     <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-    <input type = "hidden" name = "id" value = "<?php echo $this->item->id; ?>" />
+    <input type = "hidden" name = "id" id = "id" value = "<?php echo $this->item->id; ?>" />
         <?php echo JHtml::_('form.token'); ?>
 </form>
