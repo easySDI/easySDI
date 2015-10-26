@@ -69,8 +69,8 @@ function onProductStorageChange() {
             break;
         case "3":
             js('#file').hide();
-            js('#fileurl, #userurl, #passurl, #testurlauthentication').hide();
-            js('#perimeter_id,#packageurl').show();
+            js('#fileurl, #testurlauthentication').hide();
+            js('#perimeter_id,#packageurl,#userurl, #passurl').show();
             js('#packageurl').attr('required');
             break;
     }

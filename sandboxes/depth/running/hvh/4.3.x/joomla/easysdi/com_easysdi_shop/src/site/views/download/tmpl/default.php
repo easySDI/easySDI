@@ -39,8 +39,10 @@ defined('_JEXEC') or die;
                             <br/>
                             <button type="submit" id="saveSubmit" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');; ?></b></button>
                         </div>
+                        
                     </div>
                 </div><!--/span-->
+                <div><?php echo JURI::base().'index.php?option=com_easysdi_shop&task=download.download&id='.$this->item->id; ?></div>
             </div><!--/row-->
         </div>
     </div>

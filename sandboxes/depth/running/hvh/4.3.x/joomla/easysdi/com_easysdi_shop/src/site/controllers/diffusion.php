@@ -90,14 +90,28 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             return false;
         }
         
-        //Rebuild complete url if storage is URL
-        if($data['productstorage_id'] == 2){
+        //Rebuild complete url if storage is URL or ZONING
+        if($data['productstorage_id'] != 1 && $urlvalue = ($data['productstorage_id'] == 2) ? 'fileurl' : 'packageurl' ){
+             $data[$urlvalue] = Easysdi_shopHelper::unparse_url(parse_url($data[$urlvalue]), array(
+                'user' => $data['userurl'],
+                'pass' => $data['passurl']
+            ));
+            unset($data['userurl'], $data['passurl']);
+        }
+        /*if($data['productstorage_id'] == 2){
             $data['fileurl'] = Easysdi_shopHelper::unparse_url(parse_url($data['fileurl']), array(
                 'user' => $data['userurl'],
                 'pass' => $data['passurl']
             ));
             unset($data['userurl'], $data['passurl']);
         }
+        if($data['productstorage_id'] == 3){
+            $data['packageurl'] = Easysdi_shopHelper::unparse_url(parse_url($data['packageurl']), array(
+                'user' => $data['userurl'],
+                'pass' => $data['passurl']
+            ));
+            unset($data['userurl'], $data['passurl']);
+        }*/
         
         // Validate the posted data.
    //     $data = $model->validate($form, $data);

@@ -20,8 +20,16 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.ph
 class Easysdi_shopControllerDownload extends Easysdi_shopController {
 
     private $sdiUser = null;
-    
-    private function stop($url = '', $message = 'Not authorized to access this resource', $type = 'warning') {
+
+    private function stop($url = '', $message = 'COM_EASYSDI_SHOP_DOWNLOAD_NO_RIGHT', $type = 'warning') {
+        //If the call came from another client than Joomla :
+        //Return an http code 401
+        if (!JSession::checkToken()) {
+            $this->stopOnUnAuthorize();
+            return false;
+        }
+        //If the call came from Joomla :
+        //redirect to the login page
         if (empty($url)) {
             $uri = JUri::getInstance()->toString();
             $u64 = base64_encode($uri);
@@ -32,9 +40,17 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         return false;
     }
 
+    private function stopOnUnAuthorize() {
+        header('HTTP/1.1 401 Unauthorized', true, 401);
+        die();
+    }
+
     private function common() {
+        $app = JFactory::getApplication();
         $db = JFactory::getDBO();
-        $id = JFactory::getApplication()->input->getInt('id', null);
+
+        //Get diffusion object
+        $id = $app->input->getInt('id', null);
         $query = $db->getQuery(true)
                 ->select('*')
                 ->from('#__sdi_diffusion')
@@ -42,51 +58,79 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         $db->setQuery($query);
         $diffusion = $db->loadObject();
 
-        //check if the user has the right to download
-        //@TODO: should return an error msg if he doesn't have the right
+        //Get current user
         $this->sdiUser = sdiFactory::getSdiUser();
+        
+        //If access scope is not public, check if user is authenticated 
+        if ($diffusion->accessscope_id != 1) {
+            if (!$this->checkSdiUser()) {
+                return false;
+            }
+        }
+
+        //Check accessscope
+        if (!$this->checkAccessScope($diffusion)) {
+            return false;
+        }
+
+        return $diffusion;
+    }
+
+    private function checkSdiUser() {
+        if ($this->sdiUser->isEasySDI) {
+            return true;
+        }
+        //Check if basic authentication was made at the call
+        $user = $_SERVER['PHP_AUTH_USER'];
+        $pw = $_SERVER['PHP_AUTH_PW'];
+
+        //Check credentials
+        if (isset($user) && isset($pw)) {
+            $userId = JUserHelper::getUserId($user);
+            if (empty($userId)) {
+                return $this->stop();
+            }
+            $JoomlaUser = new JUser($userId);
+            if (JUserHelper::verifyPassword($pw, $JoomlaUser->password)) {
+                $this->sdiUser = sdiFactory::getSdiUser($userId);
+            } else {
+                return $this->stop();
+            }
+        } else {
+            return $this->stop();
+        }
+    }
+
+    private function checkAccessScope($diffusion) {
+        //check if the user has the right to download
         switch ($diffusion->accessscope_id) {
-            case 4: //accesscope by organism's category
+            case 2: //accesscope by organism's category
                 $categories = sdiModel::getAccessScopeCategory($diffusion->guid);
                 if (count($categories) == 0)
-                    return null;
-
-                $organism = $sdiUser->getMemberOrganisms();
-
-                $query = $db->getQuery(true)
-                        ->select('id')
-                        ->from('#__sdi_organism_category')
-                        ->where('organism_id=' . (int) $organism[0]->id)
-                        ->where('category_id IN (' . implode($categories) . ')');
-                $db->setQuery($query);
-                $db->execute();
-                $numRows = $db->getNumRows();
-                if ($numRows == 0)
                     return $this->stop();
-
-                break;
-
-            case 3: //accessscope by user
-                $users = sdiModel::getAccessScopeUser($diffusion->guid);
-                if (!in_array($sdiUser->id, $users))
+                if (!$this->sdiUser->isPartOfCategories($categories))
                     return $this->stop();
-
+                return true;
                 break;
-
-            case 2: //accessscope by organism
+            case 3: //accessscope by organism
                 $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
                 $organism = $sdiUser->getMemberOrganisms();
                 if (!in_array($organism[0]->id, $organisms))
                     return $this->stop();
-
+                return true;
                 break;
-
+            case 4: //accessscope by user
+                $users = sdiModel::getAccessScopeUser($diffusion->guid);
+                if (!in_array($sdiUser->id, $users))
+                    return $this->stop();
+                return true;
+                break;
             case 1: //accessscope: public
             default:
-            //nothing to do
+                return true;
+                break;
         }
-
-        return $diffusion;
+        return false;
     }
 
     public function direct() {
@@ -200,5 +244,4 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             return false;
         }
     }
-
 }
