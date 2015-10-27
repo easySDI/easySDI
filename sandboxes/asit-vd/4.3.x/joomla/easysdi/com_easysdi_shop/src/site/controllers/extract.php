@@ -159,6 +159,11 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $response = $this->response;
         }
 
+        //if code is not 200, set the HTTP code to the value of error code
+        if ($code != 200) {
+            header('HTTP/1.1 ' . $code . ' ' . $this->HTTPSTATUS[$code]);
+        }
+
         echo $response->saveXML();
         JFactory::getApplication()->close($code);
     }
@@ -1096,7 +1101,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         //all is fine
         $this->updateOrderDiffusion($orderDiffusion, $order, $po, $pos, $posp);
-        
+
         //notify user if needed
         Easysdi_shopHelper::notifyCustomerOnOrderUpdate($order->id, true);
 
@@ -1334,7 +1339,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         if ($this->db->execute()) {
             if ($updatePricing) {
                 $r = Easysdi_shopHelper::updatePricing($posp, $pos, $po, $this->db);
-                if($r !== true){
+                if ($r !== true) {
                     $this->getException(500, $r);
                 }
             }
@@ -1468,8 +1473,5 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         $query->set('displayName=' . $query->quote($this->product->getElementsByTagNameNS(self::nsSdi, 'filename')->item(0)->nodeValue));
     }
-
-
-
 
 }
