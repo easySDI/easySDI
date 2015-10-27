@@ -292,7 +292,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
                 $keys = array("diffusion_id" => $id, "perimeter_id" => $key);
                 $diffusionperimeter->load($keys);
-                if ($perimeter == -1) {
+                if ($perimeter == 0) {
                     try {
                         $diffusionperimeter->delete();
                     } catch (Exception $e) {
