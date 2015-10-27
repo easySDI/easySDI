@@ -1,8 +1,6 @@
 package org.easysdi.proxy.security;
 
 import java.io.IOException;
-import java.util.Map;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -10,11 +8,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-
 import org.easysdi.proxy.domain.Users;
 import org.easysdi.proxy.domain.UsersHome;
 import org.hibernate.SessionFactory;
