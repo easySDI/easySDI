@@ -50,6 +50,12 @@ class Easysdi_shopViewRequest extends JViewLegacy {
             return false;
         }
         
+        //get the contact address of the user
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_contact/tables/address.php';
+        $tableAddress = JTable::getInstance('Address', 'Easysdi_contactTable', array());
+        $tableAddress->loadByUserID($this->item->basket->sdiUser->id, 1);
+        $this->item->basket->sdiUser->contactAddress = $tableAddress;        
+        
         $this->_prepareDocument();
 
         parent::display($tpl);

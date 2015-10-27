@@ -38,31 +38,36 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-        
-        if($this->state->get('validation.manager')){
+
+        if ($this->state->get('validation.manager')) {
             $this->user = sdiFactory::getSdiUser($this->state->get('validation.manager'));
-        }
-        else{
+        } else {
             $this->user = sdiFactory::getSdiUser();
         }
-        
+
         if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
         }
-        
+
         $this->isValidationManager = in_array($this->item->thirdparty_id, $this->user->getOrganisms(array(sdiUser::validationmanager), true));
-        
-        if($this->user->id != $this->item->user_id // current user is not the orderer
+
+        if ($this->user->id != $this->item->user_id // current user is not the orderer
                 && !$this->isValidationManager // current user is not validation manager
                 && !$this->user->isOrganismManager($this->item->user_id, 'user') // current user is not organism manager for the orderer's user
                 && !$this->user->isOrganismManager($this->item->thirdparty_id, 'organism') // current user is not organism manager for the thirdparty organism
-                ){
+        ) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
         }
+
+        //get the contact address of the user
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_contact/tables/address.php';
+        $tableAddress = JTable::getInstance('Address', 'Easysdi_contactTable', array());
+        $tableAddress->loadByUserID($this->item->basket->sdiUser->id, 1);
+        $this->item->basket->sdiUser->contactAddress = $tableAddress;
 
         $this->_prepareDocument();
 
@@ -107,38 +112,36 @@ class Easysdi_shopViewOrder extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
     }
-    
+
     function getToolbar() {
         $bar = new JToolBar('toolbar');
-        
-        if($this->state->get('layout.validation')){
-            if($this->item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_VALIDATION && $this->isValidationManager){
+
+        if ($this->state->get('layout.validation')) {
+            if ($this->item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_VALIDATION && $this->isValidationManager) {
                 $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATE'), 'order.validate', false);
                 $bar->appendButton('Separator');
                 $bar->appendButton('Standard', 'delete', JText::_('COM_EASYSDI_SHOP_ORDER_REJECT'), 'order.reject', false);
                 $bar->appendButton('Separator');
             }
-        }
-        else{
+        } else {
             //display the load draft button only if order not sent
             $this->item = $this->get('Data');
-            if (($this->item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_SAVED))
-            {
-                $loadbutton = '<a onclick="acturl=\''. JRoute::_('index.php?option=com_easysdi_shop&task=basket.load&id='.$this->item->id).'\';getBasketContent(\'addOrderToBasket\');" class="btn btn-small btn-success" aria-invalid="false">
-                               <span class="icon-cart icon-white"></span> '. JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET').'</a>';
-                $bar->appendButton('Custom',$loadbutton, JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'));
+            if (($this->item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_SAVED)) {
+                $loadbutton = '<a onclick="acturl=\'' . JRoute::_('index.php?option=com_easysdi_shop&task=basket.load&id=' . $this->item->id) . '\';getBasketContent(\'addOrderToBasket\');" class="btn btn-small btn-success" aria-invalid="false">
+                               <span class="icon-cart icon-white"></span> ' . JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET') . '</a>';
+                $bar->appendButton('Custom', $loadbutton, JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'));
                 $bar->appendButton('Separator');
             }
-            if($this->get('Data')->orderstate_id != Easysdi_shopHelper::ORDERSTATE_SAVED){   
-                $copybutton = '<a onclick="acturl=\''. JRoute::_('index.php?option=com_easysdi_shop&task=basket.copy&id='.$this->item->id).'\';getBasketContent(\'addOrderToBasket\');" class="btn btn-small btn-success" aria-invalid="false">
-                               <span class="icon-cart icon-white"></span> '. JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET').'</a>';
-                $bar->appendButton('Custom',$copybutton, JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET'));
+            if ($this->get('Data')->orderstate_id != Easysdi_shopHelper::ORDERSTATE_SAVED) {
+                $copybutton = '<a onclick="acturl=\'' . JRoute::_('index.php?option=com_easysdi_shop&task=basket.copy&id=' . $this->item->id) . '\';getBasketContent(\'addOrderToBasket\');" class="btn btn-small btn-success" aria-invalid="false">
+                               <span class="icon-cart icon-white"></span> ' . JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET') . '</a>';
+                $bar->appendButton('Custom', $copybutton, JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET'));
                 $bar->appendButton('Separator');
             }
         }
-        
+
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'order.cancel', false);
-        
+
         //generate the html and return
         return $bar->render();
     }
