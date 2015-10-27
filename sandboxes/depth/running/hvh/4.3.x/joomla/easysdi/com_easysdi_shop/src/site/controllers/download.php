@@ -60,7 +60,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
 
         //Get current user
         $this->sdiUser = sdiFactory::getSdiUser();
-        
+
         //If access scope is not public, check if user is authenticated 
         if ($diffusion->accessscope_id != 1) {
             if (!$this->checkSdiUser()) {
@@ -87,12 +87,15 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         //Check credentials
         if (isset($user) && isset($pw)) {
             $userId = JUserHelper::getUserId($user);
+
             if (empty($userId)) {
                 return $this->stop();
             }
             $JoomlaUser = new JUser($userId);
+
             if (JUserHelper::verifyPassword($pw, $JoomlaUser->password)) {
                 $this->sdiUser = sdiFactory::getSdiUser($userId);
+                return true;
             } else {
                 return $this->stop();
             }
@@ -201,22 +204,10 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                 echo $file;
                 die();
             } elseif (!empty($diffusion->fileurl)) { //Download remote file
-                $pos = strrpos($diffusion->fileurl, '.');
-                $extension = substr($diffusion->fileurl, $pos);
-                $curlHelper = new CurlHelper();
-                $curldata['url'] = $diffusion->fileurl;
-                $curldata['fileextension'] = $extension;
-                $curldata['filename'] = $diffusion->name . $extension;
-                $curlHelper->get($curldata);
+                $this->call($diffusion->fileurl, $diffusion->name);
             } elseif (!empty($diffusion->perimeter_id) && null !== $featurecode = $jinput->getHtml('featurecode', null)) {  //Download remote file by grid
                 $url = str_replace('{CODE}', $featurecode, $diffusion->packageurl);
-                $pos = strrpos($url, '.');
-                $extension = substr($url, $pos);
-                $curlHelper = new CurlHelper();
-                $curldata['url'] = $diffusion->fileurl;
-                $curldata['fileextension'] = $extension;
-                $curldata['filename'] = $diffusion->name . $extension;
-                $curlHelper->get($curldata);
+                $this->call($url, $diffusion->name);
             } else { //Download is not well configured
                 $this->setMessage(JText::_('RESOURCE_LOCATION_UNAVAILABLE'), 'error');
                 $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
@@ -243,5 +234,22 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
             return false;
         }
+    }
+
+    /**
+     * Perform the call to remote url usin CurlHelper class
+     * @param type $url
+     * @param type $diffusion
+     */
+    private function call($url, $name) {
+        $curlHelper = new CurlHelper();
+        $curldata['url'] = $url;
+        $pos = strrpos($url, '.');
+        $extension = ($pos) ? substr($url, $pos) : null;
+        if ($extension) {
+            $curldata['fileextension'] = $extension;
+        }
+        $curldata['filename'] = $name . $extension;
+        $curlHelper->get($curldata);
     }
 }
