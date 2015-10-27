@@ -20,7 +20,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
 class Easysdi_shopModelOrder extends JModelForm {
 
     var $_item = null;
-    
+
     /**
      * Method to auto-populate the model state.
      *
@@ -31,15 +31,15 @@ class Easysdi_shopModelOrder extends JModelForm {
     protected function populateState() {
         $app = JFactory::getApplication('com_easysdi_shop');
         $layout = $app->input->get('layout');
-        
-        
+
+
         // Load state from the request userState on edit or from the passed variable on default
         if ($layout == 'edit') {
             $id = $app->getUserState('com_easysdi_shop.edit.order.id');
         } else {
-            if($layout == 'validation'){
+            if ($layout == 'validation') {
                 $this->setState('layout.validation', true);
-                if($app->input->get('vm')){
+                if ($app->input->get('vm')) {
                     $this->setState('validation.manager', $app->input->get('vm'));
                 }
             }
@@ -86,6 +86,12 @@ class Easysdi_shopModelOrder extends JModelForm {
                 $this->_item->ordertype = constant('Easysdi_shopTableorder::ordertype_' . $this->_item->ordertype_id);
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
+            }
+            
+            //if a validator is set, loat it
+            if(isset($this->_item->validated_by)){
+                $validator = new sdiUser($this->_item->validated_by);
+                $this->_item->validator = $validator->name;
             }
 
             $basket = new sdiBasket();
@@ -196,14 +202,14 @@ class Easysdi_shopModelOrder extends JModelForm {
     function setOrderState($id, $state) {
         $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
         $table = $this->getTable();
-        if(!$table->load($id)){
+        if (!$table->load($id)) {
             return false;
         }
-        
+
         $table->orderstate_id = $state;
-        return $table->store(false);        
+        return $table->store(false);
     }
-    
+
     /**
      * thirdpartyValidation - validation of an order by a thirdparty
      * 
@@ -213,31 +219,32 @@ class Easysdi_shopModelOrder extends JModelForm {
      * @return boolean
      * @since 4.3.0
      */
-    public function thirdpartyValidation($id, $reason=null){
+    public function thirdpartyValidation($id, $validatorId, $reason = null) {
         $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
         $table = $this->getTable();
-        if(!$table->load($id)){
+        if (!$table->load($id)) {
             return false;
         }
-        
+
         $table->orderstate_id = Easysdi_shopHelper::ORDERSTATE_SENT;
         $table->validated = true;
         $table->validated_date = date('Y-m-d H:i:s');
-        $table->validated_reason= $reason;
-        
-        if(($orderStored = $table->store()) === true){
+        $table->validated_reason = $reason;
+        $table->validated_by = $validatorId;
+
+        if (($orderStored = $table->store()) === true) {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->update('#__sdi_order_diffusion')
-                    ->set('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_SENT)
-                    ->where('order_id = ' . (int)$id);
+                    ->set('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_SENT)
+                    ->where('order_id = ' . (int) $id);
             $db->setQuery($query);
             $db->execute();
         }
-        
+
         return $orderStored;
     }
-    
+
     /**
      * thirdpartyRejection - rejection of an order by a thirdparty
      * 
@@ -246,31 +253,32 @@ class Easysdi_shopModelOrder extends JModelForm {
      * @return boolean
      * @since 4.3.0
      */
-    public function thirdpartyRejection($id, $reason=null){
+    public function thirdpartyRejection($id, $validatorId, $reason = null) {
         $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
         $table = $this->getTable();
-        if(!$table->load($id) || is_null($reason)){
+        if (!$table->load($id) || is_null($reason)) {
             return false;
         }
-        
+
         $table->orderstate_id = Easysdi_shopHelper::ORDERSTATE_REJECTED;
         $table->validated = false;
         $table->validated_date = date('Y-m-d H:i:s');
         $table->validated_reason = $reason;
-        
-        if(($orderStored = $table->store()) === true){
+        $table->validated_by = $validatorId;
+
+        if (($orderStored = $table->store()) === true) {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->update('#__sdi_order_diffusion')
-                    ->set('productstate_id='.Easysdi_shopHelper::PRODUCTSTATE_REJECTED_TP)
-                    ->where('order_id = ' . (int)$id);
+                    ->set('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_REJECTED_TP)
+                    ->where('order_id = ' . (int) $id);
             $db->setQuery($query);
             $db->execute();
-            
+
             // Notify customer
             Easysdi_shopHelper::notifyCustomer($table->name);
         }
-        
+
         return $orderStored;
     }
 
@@ -295,7 +303,7 @@ class Easysdi_shopModelOrder extends JModelForm {
         $query
                 ->select('title')
                 ->from('#__categories')
-                ->where('id = ' . (int)$id);
+                ->where('id = ' . (int) $id);
         $db->setQuery($query);
         return $db->loadObject();
     }
