@@ -75,7 +75,8 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
                     ->select('c.id, c.name, ocpr.rebate')
                     ->from($db->quoteName('#__sdi_category') . ' as c')
                     ->join('LEFT', '#__sdi_organism_category_pricing_rebate ocpr ON ocpr.category_id=c.id AND ocpr.organism_id=' . (int) $id)
-                    ->where('c.state = 1');
+                    ->where('c.state = 1')
+                    ->order('c.ordering');
             $db->setQuery($query);
             $this->_item->categories = $db->loadObjectList();
 
