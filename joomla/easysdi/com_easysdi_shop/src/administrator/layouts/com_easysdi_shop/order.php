@@ -110,7 +110,7 @@ if (!$showActions) {
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
             </div>
             <div class="span10 order-edit-value" >
-                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket); ?>
+                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true); ?>
             </div>
         </div>
 
