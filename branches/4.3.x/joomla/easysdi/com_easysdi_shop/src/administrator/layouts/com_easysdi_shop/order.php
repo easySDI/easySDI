@@ -163,7 +163,7 @@ if (!$showActions) {
         <!-- client -->
         <div id="sdi-order-recap-clientblock" class="span6" >
             <h3><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_TITLE'); ?></h3>
-            <div id="sdi-order-recap-cloent-name" class="row-fluid">
+            <div id="sdi-order-recap-client-name" class="row-fluid">
                 <div class="span4 order-edit-label" >
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_NAME'); ?>
                 </div>
