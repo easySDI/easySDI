@@ -110,22 +110,9 @@ if (!$showActions) {
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
             </div>
             <div class="span10 order-edit-value" >
-                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket); ?>
+                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true); ?>
             </div>
         </div>
-
-        <?php if (!is_null($item->validated) && strlen($item->validated_reason) > 0): ?>
-            <div id="sdi-order-recap-validated-reason" class="row-fluid">
-                <div class="span2 order-edit-label" >
-                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_VALIDATED_REASON'); ?>
-                </div>
-                <div class="span10 order-edit-value" >
-                    <span class="<?php echo $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER || $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED ? 'text-error' : ''; ?>">
-                        <?php echo nl2br($item->validated_reason); ?>
-                    </span>
-                </div>
-            </div>
-        <?php endif; ?>
 
         <div id="sdi-order-recap-ordertype" class="row-fluid">
             <div class="span2 order-edit-label" >
@@ -135,6 +122,39 @@ if (!$showActions) {
                 <?php echo JText::_($item->ordertype); ?>
             </div>
         </div>
+
+        <?php
+        //item has been rejected by thrrd party
+        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED) {
+            $displayString = "COM_EASYSDI_SHOP_ORDER_IS_REJECTED_ON_BY";
+            $displayClass = "text-error";
+        } else { //item has been validated
+            $displayString = "COM_EASYSDI_SHOP_ORDER_IS_VALIDATED_ON_BY";
+            $displayClass = "text-success";
+        }
+
+        if (!is_null($item->validated)):
+            ?>
+            <div id="sdi-order-recap-validated-reason" class="row-fluid">
+                <div class="span12" >
+                    <span class="<?php echo $displayClass ?>" >
+                        <?php echo JText::sprintf($displayString, JHtml::date($item->validated_date, JText::_('DATE_FORMAT_LC3')), $item->validator) ?>
+                    </span>
+                </div>
+            </div>
+        <?php endif; ?>                
+        <?php if (!is_null($item->validated) && strlen($item->validated_reason) > 0): ?>
+            <div id="sdi-order-recap-validated-reason" class="row-fluid">
+                <div class="span12" >
+                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_VALIDATED_REASON'); ?> : 
+
+                    <span class="<?php echo $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER || $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED ? 'text-error' : ''; ?>">
+                        <?php echo nl2br($item->validated_reason); ?>
+                    </span>
+                </div>
+            </div>
+        <?php endif; ?>            
+
     </div>
 
 
@@ -143,12 +163,12 @@ if (!$showActions) {
         <!-- client -->
         <div id="sdi-order-recap-clientblock" class="span6" >
             <h3><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_TITLE'); ?></h3>
-            <div id="sdi-order-recap-cloent-name" class="row-fluid">
+            <div id="sdi-order-recap-client-name" class="row-fluid">
                 <div class="span4 order-edit-label" >
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_NAME'); ?>
                 </div>
                 <div class="span8 order-edit-value" >        
-                    <a href="mailto:<?php echo ($item->basket->sdiUser->juser->email); ?>"><?php echo $item->basket->sdiUser->name; ?></a>
+                    <?php echo $item->basket->sdiUser->name; ?>
                 </div>
             </div>
             <div id="sdi-order-recap-client-organism" class="row-fluid">
@@ -159,7 +179,27 @@ if (!$showActions) {
                     <?php echo $item->basket->sdiUser->getMemberOrganisms()[0]->name; ?>
 
                 </div>
-            </div>            
+            </div>     
+            <?php if ($viewType != Easysdi_shopHelper::ORDERVIEW_ORDER): ?>
+                <div id="sdi-order-recap-client-email" class="row-fluid">
+                    <div class="span4 order-edit-label" >
+                        <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_EMAIL'); ?>
+                    </div>
+                    <div class="span8 order-edit-value" >
+                        <a href="mailto:<?php echo ($item->basket->sdiUser->juser->email); ?>"><?php echo $item->basket->sdiUser->juser->email; ?></a>
+                    </div>
+                </div>  
+                <?php if (isset($item->basket->sdiUser->contactAddress->phone)): ?>
+                    <div id="sdi-order-recap-client-phone" class="row-fluid">
+                        <div class="span4 order-edit-label" >
+                            <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_PHONE'); ?>
+                        </div>
+                        <div class="span8 order-edit-value" >
+                            <?php echo $item->basket->sdiUser->contactAddress->phone; ?>
+                        </div>
+                    </div> 
+                <?php endif; ?>
+            <?php endif; ?>
         </div>
         <?php if ($hasThirdParty): ?>
             <!-- thirdparty -->
@@ -196,7 +236,7 @@ if (!$showActions) {
                     <div class="span8 order-edit-value" >
                         <?php echo $item->basket->mandate_ref; ?>
                     </div>
-                </div>
+                </div>            
             </div>
         <?php endif; ?>
     </div>
@@ -397,12 +437,12 @@ if (!$showActions) {
                                         // product need a response
                                         ?>
                                         <button class="btn btn-success sdi-btn-upload-order-response" onclick="checkAndSendProduct(<?php echo $productItem->id; ?>);
-                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             <span class="icon icon-upload"></span>
                                             Envoyer</button><br/>
                                         <button class="btn btn-danger btn-mini sdi-btn-cancel-order-response" onclick="enableCurrentProduct(<?php echo $productItem->id; ?>);
-                                                                jQuery('#rejectModal').modal();
-                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                jQuery('#rejectModal').modal();
+                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             Annuler</button>
 
                                         <!--

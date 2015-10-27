@@ -8,8 +8,6 @@ js(document).ready(function () {
     enableFreePerimeter();
 
     js('#adminForm').submit(function (event) {
-        console.log('here');
-        return false;
         if (js('#jform_deposit').val() != '') {
             js('#jform_deposit_hidden').val(js('#jform_deposit').val());
         }
@@ -31,14 +29,8 @@ Joomla.submitbutton = function (task)
 
         if (task != 'diffusion.cancel' && document.formvalidator.isValid(document.id('adminForm'))) {
             if (js('#jform_hasextraction').is(':checked')) {
-                var perimeterselected = false;
-                js('.perimeterselect').each(function () {
-                    var currentElement = js(this);
-                    if (currentElement.val() != -1) {
-                        perimeterselected = true;
-                    }
-                })
-                if (perimeterselected == false) {
+               //check that at least one perimeter is active
+                if (jQuery("[id^=jform_perimeter][id$=_1]:checked").length < 1) {
                     alert(msgNoPerimeter);
                 } else {
                     Joomla.submitform(task, document.getElementById('adminForm'));
@@ -187,6 +179,7 @@ function onTestUrlAuthenticationClick() {
             js('#result_testurlauthentication').html(testOk).addClass('success');
         else {
             js('#result_testurlauthentication').html(testKo).addClass('error');
+			console.log(data);
         }
     }).always(function () {
         js('#jform_testurlauthentication').blur();

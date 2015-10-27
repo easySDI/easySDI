@@ -1095,7 +1095,7 @@ abstract class Easysdi_shopHelper {
         $db->setQuery($db->getQuery(true)
                         ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER));
         $rejected = $db->getNumRows($db->execute());
-        
+
         return self::chooseOrderState($total, $await, $available, $rejected);
     }
 
@@ -1276,7 +1276,7 @@ abstract class Easysdi_shopHelper {
                     if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_BODY', $order->name))):
                         $errors = true;
                     endif;
-                    break;                    
+                    break;
             }
         }else {
             $errors = true;
@@ -1356,64 +1356,74 @@ abstract class Easysdi_shopHelper {
      * @param type $basket an easysdi basket (matching the order)
      * @return string A bootstrap styled label element
      */
-    public static function getOrderStatusLabel($order, $basket) {
+    public static function getOrderStatusLabel($order, $basket, $isGroupedBySupplier = false) {
 
-        //order and estimates (no draft)
-        if ($order->ordertype_id != 3) {
-            $progressCount = 0;
-            $statusCompl = '';
-            $labelClass = '';
-            //count finished products
-            foreach ($basket->extractions as $extraction) {
-                if (
-                        $extraction->productstate_id == self::PRODUCTSTATE_AVAILABLE ||
-                        $extraction->productstate_id == self::PRODUCTSTATE_DELETED ||
-                        $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_SUPPLIER ||
-                        $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_TP
-                ) {
-                    $progressCount++;
-                }
-            }
-
-            switch ($order->orderstate_id) {
-                case self::ORDERSTATE_ARCHIVED:
-                case self::ORDERSTATE_HISTORIZED:
-                case self::ORDERSTATE_FINISH:
-                    $labelClass = 'label-success';
-                    if (count($basket->extractions) > 1) {
-                        $statusCompl = ' (' . $progressCount . '/' . count($basket->extractions) . ')';
-                    }
-                    break;
-                case self::ORDERSTATE_AWAIT:
-                    $labelClass = 'label-warning';
-                    break;
-                case self::ORDERSTATE_PROGRESS:
-                    $labelClass = 'label-info';
-                    if (count($basket->extractions) > 1) {
-                        $statusCompl = ' (' . $progressCount . '/' . count($basket->extractions) . ')';
-                    }
-                    break;
-                case self::ORDERSTATE_SENT:
-                    $labelClass = 'label-inverse';
-                    break;
-                case self::ORDERSTATE_SAVED:
-                    $labelClass = 'label-success';
-                    break;
-                case self::ORDERSTATE_VALIDATION:
-                    $labelClass = 'label-warning';
-                    break;
-                case self::ORDERSTATE_REJECTED:
-                case self::ORDERSTATE_REJECTED_SUPPLIER:
-                    $labelClass = 'label-important';
-                    break;
-            }
-
-            return'<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
-
-            //drafts
-        } else {
+        //for drafts, return the order type
+        if ($order->ordertype_id == 3) {
             return'<span class="label">' . JText::_($order->ordertype) . '</span>';
         }
+
+        //order and estimates (no draft)
+        $progressCount = 0;
+        $statusCompl = '';
+        $labelClass = '';
+
+        //if extractions have been grouped by supplier, push them in an array
+        $tmpExtractions = [];
+        if ($isGroupedBySupplier) {
+            foreach ($basket->extractions as $supplier) {
+                $tmpExtractions = array_merge($tmpExtractions,$supplier->items);
+            }
+        } else {
+            $tmpExtractions = $basket->extractions;
+        }
+
+        //count finished products
+        foreach ($tmpExtractions as $extraction) {
+            if (
+                    $extraction->productstate_id == self::PRODUCTSTATE_AVAILABLE ||
+                    $extraction->productstate_id == self::PRODUCTSTATE_DELETED ||
+                    $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_SUPPLIER ||
+                    $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_TP
+            ) {
+                $progressCount++;
+            }
+        }
+
+        switch ($order->orderstate_id) {
+            case self::ORDERSTATE_ARCHIVED:
+            case self::ORDERSTATE_HISTORIZED:
+            case self::ORDERSTATE_FINISH:
+                $labelClass = 'label-success';
+                if (count($tmpExtractions) > 1) {
+                    $statusCompl = ' (' . $progressCount . '/' . count($tmpExtractions) . ')';
+                }
+                break;
+            case self::ORDERSTATE_AWAIT:
+                $labelClass = 'label-warning';
+                break;
+            case self::ORDERSTATE_PROGRESS:
+                $labelClass = 'label-info';
+                if (count($tmpExtractions) > 1) {
+                    $statusCompl = ' (' . $progressCount . '/' . count($tmpExtractions) . ')';
+                }
+                break;
+            case self::ORDERSTATE_SENT:
+                $labelClass = 'label-inverse';
+                break;
+            case self::ORDERSTATE_SAVED:
+                $labelClass = 'label-success';
+                break;
+            case self::ORDERSTATE_VALIDATION:
+                $labelClass = 'label-warning';
+                break;
+            case self::ORDERSTATE_REJECTED:
+            case self::ORDERSTATE_REJECTED_SUPPLIER:
+                $labelClass = 'label-important';
+                break;
+        }
+
+        return'<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
     }
 
     /**

@@ -74,9 +74,11 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_DOWNLOAD'); ?>
                                 <?php echo $this->form->getInput('hasdownload'); ?></legend>
                             <div id="div_download">
-                                <?php foreach ($this->form->getFieldset('download') as $field): 
-                                    if($field->fieldname == 'hasdownload') continue;
-                                    ?>
+                                <?php
+                                foreach ($this->form->getFieldset('download') as $field):
+                                    if ($field->fieldname == 'hasdownload')
+                                        continue;
+									?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
                                         <div class="controls">
@@ -96,8 +98,10 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?>
                                 <?php echo $this->form->getInput('hasextraction'); ?></legend>
                             <div id="div_extraction">
-                                <?php foreach ($this->form->getFieldset('extraction') as $field): 
-                                    if(in_array($field->fieldname, array('hasextraction','restrictedperimeter'))) continue;
+                                <?php
+                                foreach ($this->form->getFieldset('extraction') as $field):
+                                    if (in_array($field->fieldname, array('hasextraction', 'restrictedperimeter')))
+                                        continue;
                                     ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
@@ -122,7 +126,8 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                 
                                 <fieldset id ="fieldset_perimeters" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
-                                    <?php foreach ($this->orderperimeters as $orderperimeter): 
+                                    <?php
+                                    foreach ($this->orderperimeters as $orderperimeter): 
                                             if($orderperimeter->id == 2 && $this->params->get('userperimeteractivated') != 1){
                                                 continue;
                                             }
@@ -136,13 +141,16 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                         ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-                                                <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeterlabel; ?></label>
+												<label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>"><?php echo $orderperimeterlabel; ?></label>                                                
                                             </div>
                                             <div class="controls">
-                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge perimeterselect" <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?>>
-                                                    <option value="-1" ><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="1" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected'; ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
-                                                </select>
+                                                <?php //var_dump($this->item->perimeter[$orderperimeter->id]); ?>
+                                                <fieldset id="jform_perimeter<?php echo $orderperimeter->id ?>" class="radio btn-group btn-group-yesno">
+                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_0" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="0" <?php if (!array_key_exists($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                    <label for="jform_perimeter<?php echo $orderperimeter->id ?>_0" <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JNO'); ?></label>                                            
+                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_1" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="1" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                    <label for="jform_perimeter<?php echo $orderperimeter->id ?>_1" <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JYES'); ?></label>
+                                                </fieldset>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>

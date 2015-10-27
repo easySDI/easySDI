@@ -99,3 +99,18 @@ ALTER TABLE [#__sdi_pricing_order_supplier] ALTER COLUMN [cal_total_rebate_ti]  
 ALTER TABLE [#__sdi_pricing_order_supplier] ALTER COLUMN [cal_total_amount_ti]  decimal(19,2) NULL;
 
 ALTER TABLE [#__sdi_pricing_order] ALTER COLUMN [cal_total_amount_ti]  decimal(19,2) NULL;
+
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 1  WHERE [id] = 7;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 2  WHERE [id] = 8;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 3  WHERE [id] = 6;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 4  WHERE [id] = 4;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 5  WHERE [id] = 5;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 6  WHERE [id] = 3;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 7  WHERE [id] = 1;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 8  WHERE [id] = 2;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 9  WHERE [id] = 9;
+UPDATE [#__sdi_sys_orderstate] SET [ordering] = 10 WHERE [id] = 10;
+
+ALTER TABLE [#__sdi_order] ADD  [validated_by] [int] NULL;
+ALTER TABLE #__sdi_order ADD CONSTRAINT #__sdi_order$#__sdi_user_fk5
+FOREIGN KEY ([validated_by]) REFERENCES [#__sdi_user] ([id]) ON DELETE CASCADE ON UPDATE NO ACTION;

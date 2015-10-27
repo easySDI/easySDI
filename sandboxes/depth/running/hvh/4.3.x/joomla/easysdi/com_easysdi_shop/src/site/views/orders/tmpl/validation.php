@@ -13,6 +13,8 @@ JHtml::_('behavior.keepalive');
 JHTML::_('behavior.modal');
 JHtml::_('behavior.tooltip');
 JHtml::_('formbehavior.chosen', 'select');
+
+$todoView = $this->state->get('filter.status') == 1;
 ?>
 
 <div class="shop front-end-edit">
@@ -52,11 +54,16 @@ JHtml::_('formbehavior.chosen', 'select');
                 <thead>
                     <tr>
                         <th class="ordercreated"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED') ?></th>
+                        <?php if (!$todoView): ?>
+                            <th class="ordervalidationstate"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_VALIDATIONSTATE') ?></th>
+                        <?php endif; ?>
                         <th class="orderid"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ORDER_NO') ?></th>
                         <th class="ordername"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_NAME') ?></th>                        
                         <th class="orderclient"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_CLIENT') ?></th>
-                        <th class="ordermandate"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_MANDATE') ?></th>
-                        <th class="orderstate"></th>
+                        <?php if ($todoView): ?>
+                            <th class="ordermandate"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_MANDATE') ?></th>
+                            <th class="orderstate"></th>
+                        <?php endif; ?>
                         <th></th>
                     </tr>
                 </thead>
@@ -66,6 +73,15 @@ JHtml::_('formbehavior.chosen', 'select');
                     foreach ($this->items as $item) :
                         $basket = new sdiBasket();
                         $basket->loadOrder($item->id);
+
+                        //item has been rejected by thrrd party
+                        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED) {
+                            $displayString = "COM_EASYSDI_SHOP_ORDERS_IS_REJECTED_ON_BY";
+                            $displayClass = "text-error";
+                        } else { //item has been validated
+                            $displayString = "COM_EASYSDI_SHOP_ORDERS_IS_VALIDATED_ON_BY";
+                            $displayClass = "text-success";
+                        }
                         ?>
                         <tr class="order-line order-line-new <?php echo('sdi-orderstate-' . preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-' . preg_replace('/\s+/', '', $item->ordertype) ); ?>">
                             <td class="ordercreated">
@@ -73,6 +89,13 @@ JHtml::_('formbehavior.chosen', 'select');
                                     <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->created)); ?>
                                 </span>
                             </td>
+                            <?php if (!$todoView): ?>
+                                <td class="ordervalidationstate">
+                                    <span class="<?php echo $displayClass ?>" >
+                                        <?php echo JText::sprintf($displayString, JHtml::date($item->validated_date, JText::_('DATE_FORMAT_LC3')), $item->validator) ?>
+                                    </span>
+                                </td>
+                            <?php endif; ?>
                             <td class="orderid">
                                 <span title="<?php echo $item->name; ?>" class="hasTip" >
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $item->id); ?>">
@@ -92,13 +115,14 @@ JHtml::_('formbehavior.chosen', 'select');
                                     <?php echo($item->organismname); ?>
                                 </span>
                             </td>
-
-                            <td class="ordermandate">
-                                <?php echo Easysdi_shopHelper::getShortenedString($item->mandate_ref, 80); ?>
-                            </td>
-                            <td class="orderstate">
-                                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket); ?>
-                            </td>
+                            <?php if ($todoView): ?>
+                                <td class="ordermandate">
+                                    <?php echo Easysdi_shopHelper::getShortenedString($item->mandate_ref, 80); ?>
+                                </td>
+                                <td class="orderstate">
+                                    <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket); ?>
+                                </td>
+                            <?php endif; ?>
                             <td>
                                 <a class="btn btn-primary btn-small pull-right" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_OPEN'); ?></a>
                             </td>
