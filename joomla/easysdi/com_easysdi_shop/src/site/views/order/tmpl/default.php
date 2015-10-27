@@ -70,6 +70,7 @@ if ($this->item) :
             <input type = "hidden" name = "task" value = "" />
             <input type = "hidden" name = "id" value = "<?php echo $this->item->id; ?>" />
             <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+            <input type = "hidden" name = "sdiUserId" value = "<?php echo $this->user->id; ?>" />            
             <?php echo JHtml::_('form.token'); ?>
 
         </form>
