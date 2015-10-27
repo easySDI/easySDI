@@ -1,4 +1,7 @@
 var map, miniBaseLayers = [], perimeterLayer, selectLayer, polygonLayer, boxLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, slider, customStyleMap, alertControl, userperimeter;
+var meterToKilometerLimit = 1000000;
+var shopPerimeterSurface_m2 = 'm²';
+var shopPerimeterSurface_km2 = 'km²';
 
 //Init the recapitulation map (map without control)
 function initMiniMap() {
@@ -159,31 +162,39 @@ function orderSurfaceChecking() {
     }
     jQuery('#t-surface').val(tmpSurface);
 
-    var toobig = false;
-    var toosmall = false;
-    if (jQuery('#surfacemax').val() !== '') {
-        if (parseFloat(jQuery('#t-surface').val()) > parseFloat(jQuery('#surfacemax').val()))
-            toobig = true;
-    }
-    if (jQuery('#surfacemin').val() !== '') {
-        if (parseFloat(jQuery('#t-surface').val()) < parseFloat(jQuery('#surfacemin').val()))
-            toosmall = true;
-    }
-
     if (isSelfIntersect) {
         //More than 2 intersectios for a line, mean that a line intersects another one.
         var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT', 'Self-intersecting perimeter is not allowed');
         alertControl.raiseAlert('<span>' + message + '</span>');
-    } else if (toobig || toosmall) {
-        var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_AREA', 'Your current selection of %SURFACE is not in the allowed surface range [%SURFACEMIN,%SURFACEMAX].')
-                .replace('%SURFACE', jQuery('#t-surface').val())
-                .replace('%SURFACEMIN', jQuery('#surfacemin').val())
-                .replace('%SURFACEMAX', jQuery('#surfacemax').val());
+
+    } else if (jQuery('#surfacemax').val() !== '' && parseFloat(tmpSurface) > parseFloat(jQuery('#surfacemax').val())) {
+        //too big
+        var message = getSurfaceMessage(Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_AREA_TOO_LARGE', 'Your current selection of %SURFACE exceeds the %SURFACELIMIT limit.'), tmpSurface, parseFloat(jQuery('#surfacemax').val()));
+        alertControl.raiseAlert('<span>' + message + '</span>');
+
+    } else if (jQuery('#surfacemin').val() !== '' && parseFloat(tmpSurface) < parseFloat(jQuery('#surfacemin').val())) {
+        //too small
+        var message = getSurfaceMessage(Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_AREA_TOO_SMALL', 'Your current selection of %SURFACE is under the %SURFACELIMIT minimum.'), tmpSurface, parseFloat(jQuery('#surfacemin').val()));
         alertControl.raiseAlert('<span>' + message + '</span>');
 
     } else {
+        //no problems
         alertControl.clearAlert();
     }
+}
+
+//build the message for too big / too low surface
+function getSurfaceMessage(baseMessage, tmpSurface, surfaceLimit) {
+
+    var unitString = shopPerimeterSurface_m2;
+
+    //switch to km2 for big surface
+    if (tmpSurface >= meterToKilometerLimit) {
+        tmpSurface = tmpSurface / meterToKilometerLimit;
+        surfaceLimit = surfaceLimit / meterToKilometerLimit;
+        unitString = shopPerimeterSurface_km2;
+    }
+    return baseMessage.replace('%SURFACE', tmpSurface.toFixed(surfacedigit) + ' ' + unitString).replace('%SURFACELIMIT', surfaceLimit.toFixed(surfacedigit) + ' ' + unitString);
 }
 
 //check if a feature is selfintersecting
