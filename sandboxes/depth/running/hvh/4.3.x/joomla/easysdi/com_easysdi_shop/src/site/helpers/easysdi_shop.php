@@ -1369,7 +1369,7 @@ abstract class Easysdi_shopHelper {
         $labelClass = '';
 
         //if extractions have been grouped by supplier, push them in an array
-        $tmpExtractions = [];
+        $tmpExtractions = array();
         if ($isGroupedBySupplier) {
             foreach ($basket->extractions as $supplier) {
                 $tmpExtractions = array_merge($tmpExtractions,$supplier->items);
