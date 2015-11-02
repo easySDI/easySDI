@@ -24,7 +24,8 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
     private function stop($url = '', $message = 'COM_EASYSDI_SHOP_DOWNLOAD_NO_RIGHT', $type = 'warning') {
         //If the call came from another client than Joomla :
         //Return an http code 401
-        if (!JSession::checkToken()) {
+        //echo (JSession::getFormToken()) ; die();
+        if (!JSession::checkToken('get')) {
             $this->stopOnUnAuthorize();
             return false;
         }
@@ -161,6 +162,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         $fileFolder = $params->get('fileFolder');
         $id = JFactory::getApplication()->input->getInt('id', null);
         $db = JFactory::getDBO();
+        
 
         $diffusion = $this->common();
         if ($diffusion === false)

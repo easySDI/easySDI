@@ -17,13 +17,18 @@ defined('_JEXEC') or die;
     });
     function enableDownload(){
         if ( js('#termsofuse').is(':checked') == true ){
-            js('#saveSubmit').removeAttr('disabled', 'disabled');   
+            js('#saveSubmit').removeAttr('disabled', 'disabled'); 
+            js('#saveSubmit').attr('onclick', 'tokenize();');
             js('#saveSubmit').attr('href', js('#adminForm').attr('action') + '?id=' + js('#id').attr('value'));   
         }
         else{
             js('#saveSubmit').attr('disabled', 'disabled'); 
+            js('#saveSubmit').attr('onclick', 'return false;');
             js('#saveSubmit').attr('href','#');
         }
+    }
+    function tokenize(){
+        js('#saveSubmit').attr('href', js('#saveSubmit').attr('href') + '&'+ js('#id').next().attr('name') + '=' + js('#id').next().attr('value')); 
     }
 </script>
 <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -41,7 +46,7 @@ defined('_JEXEC') or die;
                             </label>
                             <br/>
                             <br/>
-                            <a href="#" id="saveSubmit" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');; ?></b></a>                            
+                            <a href="#" id="saveSubmit" onclick="return false;" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');; ?></b></a>                            
                         </div>                        
                     </div>
                 </div><!--/span-->               
