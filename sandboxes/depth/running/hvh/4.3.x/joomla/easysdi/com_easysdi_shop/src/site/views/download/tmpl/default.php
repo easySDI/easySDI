@@ -46,7 +46,7 @@ defined('_JEXEC') or die;
                             </label>
                             <br/>
                             <br/>
-                            <a href="#" id="saveSubmit" onclick="return false;" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');; ?></b></a>                            
+                            <a href="#" id="saveSubmit" onclick="return false;" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');; ?></b></a>                                                        
                         </div>                        
                     </div>
                 </div><!--/span-->               

@@ -24,7 +24,6 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
     private function stop($url = '', $message = 'COM_EASYSDI_SHOP_DOWNLOAD_NO_RIGHT', $type = 'warning') {
         //If the call came from another client than Joomla :
         //Return an http code 401
-        //echo (JSession::getFormToken()) ; die();
         if (!JSession::checkToken('get')) {
             $this->stopOnUnAuthorize();
             return false;
