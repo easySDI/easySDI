@@ -35,11 +35,11 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
         padding: 5px 0 0 15px;
         display: inline-block;
     }
-
+    
     #result_testurlauthentication.success{
         color: green;
     }
-
+    
     #result_testurlauthentication.error{
         color: red;
     }
@@ -78,17 +78,17 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                 foreach ($this->form->getFieldset('download') as $field):
                                     if ($field->fieldname == 'hasdownload')
                                         continue;
-                                    ?>
+									?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
                                         <div class="controls">
                                             <?php echo $field->input; ?>
-                                            <?php if ($field->fieldname == 'file'): ?>
-                                                <?php if (!empty($this->item->file)): ?>
+                                            <?php if($field->fieldname == 'file'):?>
+                                                <?php if(!empty($this->item->file)):?>
                                                     <a id="jform_file_hidden_href" href="<?php echo JRoute::_($this->params->get('fileFolder') . '/' . $this->item->file, false); ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
-                                                <?php endif; ?>
+                                                <?php endif;?>
                                                 <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />
-                                            <?php endif; ?>
+                                            <?php endif;?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -107,41 +107,41 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                         <div class="control-label"><?php echo $field->label; ?></div>
                                         <div class="controls">
                                             <?php echo $field->input; ?>
-                                            <?php if ($field->fieldname == 'deposit'): ?>
-                                                <?php if (!empty($this->item->deposit)): ?>
+                                            <?php if($field->fieldname == 'deposit'):?>
+                                                <?php if(!empty($this->item->deposit)):?>
                                                     <a id="jform_deposit_hidden_href" href="<?php echo JRoute::_($this->params->get('depositFolder') . '/' . $this->item->deposit, false); ?>"><?php echo '[' . substr($this->item->deposit, 33) . ']'; ?></a>
-                                                <?php endif; ?>
+                                                <?php endif;?>
                                                 <input type="hidden" name="jform[deposit]" id="jform_deposit_hidden" value="<?php echo $this->item->deposit ?>" />
-                                            <?php endif; ?>
+                                            <?php endif;?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
-
-                                <?php if ($this->params->get('userperimeteractivated') == 1) : ?>
-                                    <div class="control-group" id="<?php echo $this->form->getField('restrictedperimeter')->fieldname; ?>">
-                                        <div class="control-label"><?php echo $this->form->getField('restrictedperimeter')->label; ?></div>
-                                        <div class="controls"><?php echo $this->form->getField('restrictedperimeter')->input; ?></div>
-                                    </div>
+                                
+                                <?php if($this->params->get('userperimeteractivated') == 1) : ?>
+                                <div class="control-group" id="<?php echo $this->form->getField('restrictedperimeter')->fieldname; ?>">
+                                    <div class="control-label"><?php echo $this->form->getField('restrictedperimeter')->label; ?></div>
+                                    <div class="controls"><?php echo $this->form->getField('restrictedperimeter')->input; ?></div>
+                                </div>
                                 <?php endif; ?>
-
+                                
                                 <fieldset id ="fieldset_perimeters" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
                                     <?php
-                                    foreach ($this->orderperimeters as $orderperimeter):
-                                        if ($orderperimeter->id == 2 && $this->params->get('userperimeteractivated') != 1) {
-                                            continue;
-                                        }
-                                        if ($orderperimeter->id == 1) {
-                                            $orderperimeterlabel = JText::_('FREEPERIMETER');
-                                        } elseif ($orderperimeter->id == 2) {
-                                            $orderperimeterlabel = JText::_('MYPERIMETER');
-                                        } else {
-                                            $orderperimeterlabel = $orderperimeter->name;
-                                        }
+                                    foreach ($this->orderperimeters as $orderperimeter): 
+                                            if($orderperimeter->id == 2 && $this->params->get('userperimeteractivated') != 1){
+                                                continue;
+                                            }
+                                            if ($orderperimeter->id == 1){
+                                                $orderperimeterlabel = JText::_('FREEPERIMETER');
+                                            }elseif ($orderperimeter->id == 2){
+                                                $orderperimeterlabel = JText::_('MYPERIMETER');
+                                            }else {
+                                                $orderperimeterlabel = $orderperimeter->name;
+                                            }
                                         ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-                                                <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>"><?php echo $orderperimeterlabel; ?></label>
+												<label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>"><?php echo $orderperimeterlabel; ?></label>                                                
                                             </div>
                                             <div class="controls">
                                                 <?php //var_dump($this->item->perimeter[$orderperimeter->id]); ?>
@@ -170,7 +170,7 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                                     case 2:
                                                     case 3:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge" multiple="multiple"  <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge" multiple="multiple"  <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?>>
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
@@ -187,7 +187,7 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                                     case 5:
                                                     case 6 :
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge"  <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?> >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge"  <?php if(!$this->isDiffusionManager):?>disabled="disabled"<?php endif;?> >
                                                             <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
