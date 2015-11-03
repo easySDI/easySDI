@@ -226,3 +226,8 @@ svg {
 .file-controls .btn-preview, .file-controls .btn-delete{
     display: none;
 }
+
+.labelrequired:after {
+  content:"*";
+  color:red;
+}
