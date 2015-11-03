@@ -17,14 +17,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
-
 import org.easysdi.proxy.csw.CSWExceptionReport;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiPolicyHome;
@@ -77,7 +75,6 @@ public class OgcProxyServlet extends HttpServlet {
         sdiVirtualserviceHome = (SdiVirtualserviceHome) context.getBean("sdiVirtualserviceHome");
         sdiPolicyHome = (SdiPolicyHome) context.getBean("sdiPolicyHome");
         sdiUserHome = (SdiUserHome) context.getBean("sdiUserHome");
-
         System.setProperty("org.geotools.referencing.forceXY", "true");
         logger.info("OgcProxyServlet initialization done.");
     }
@@ -94,7 +91,6 @@ public class OgcProxyServlet extends HttpServlet {
         ProxyServlet obj = null;
 
         try {
-
 
             obj = createProxy(req.getServletPath().substring(1), req, resp);
             double maxRequestNumber = -1;
@@ -119,7 +115,6 @@ public class OgcProxyServlet extends HttpServlet {
              * What ever happens, always decrease the connection number when
              * finished.
              */
-            //TODO : what this is supposed to do?
             if (obj != null) {
                 decreaseConnections(req, -1);
             }
@@ -159,7 +154,6 @@ public class OgcProxyServlet extends HttpServlet {
              * What ever happens, always decrease the connection number when
              * finished.
              */
-            //TODO : what this is supposed to do?
             if (obj != null) {
                 decreaseConnections(req, -1);
             }
@@ -168,7 +162,7 @@ public class OgcProxyServlet extends HttpServlet {
 
     /**
      * *
-     * Instanciate a ProxyServlet according to the configuration file.
+     * Instantiate a ProxyServlet according to the configuration file.
      *
      * @param servletName
      * @return
@@ -204,8 +198,8 @@ public class OgcProxyServlet extends HttpServlet {
                 if (((HttpServletRequest) req).getUserPrincipal() == null) {
                     //Spring Anonymous user is used to perform this request, but not policy defined for it
                     resp.setHeader("easysdi-proxy-error-occured", "true");
-                    logger.error("Error occurred during " + servletName + " service initialization : No anomnymous policy found.");
-                    sendException("Error occurred during " + servletName + " service initialization : No anomnymous policy found.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK, connector, null);
+                    logger.error("Error occurred during " + servletName + " service initialization : No public policy found.");
+                    sendException("Error occurred during " + servletName + " service initialization : No public policy found.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK, connector, null);
                     return null;
 
                 } else {

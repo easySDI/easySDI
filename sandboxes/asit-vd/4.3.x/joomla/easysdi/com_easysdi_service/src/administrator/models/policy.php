@@ -144,6 +144,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         // Get the access scope
         $item->organisms = $this->getAccessScopeOrganism($item->id);
         $item->users = $this->getAccessScopeUser($item->id);
+        $item->categories = $this->getAccessScopeCategory($item->id);
 
         return $item;
     }
