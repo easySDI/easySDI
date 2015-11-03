@@ -32,10 +32,10 @@
         <property name="url" value="jdbc:postgresql://localhost:5432/joomla" />
         -->
         
-        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
-        <property name="url" value="jdbc:sqlserver://localhost\SQLEXPRESS;databaseName=SDI" />
-        <property name="username" value="sa" />
-        <property name="password" value="pw" />
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/easysdi?zeroDateTimeBehavior=convertToNull" />
+        <property name="username" value="root" />
+        <property name="password" value="Y251WvUIjh" />
     </bean>
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
@@ -76,7 +76,7 @@
 	
     <bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
         <property name="prefix">
-            <value>sdi_</value>
+            <value>jos_</value>
         </property>
     </bean>
 

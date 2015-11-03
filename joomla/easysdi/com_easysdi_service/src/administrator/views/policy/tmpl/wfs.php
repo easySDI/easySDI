@@ -19,6 +19,7 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
+$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/wfs.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
