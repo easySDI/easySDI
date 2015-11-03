@@ -87,12 +87,12 @@ class CurlHelper {
          * @todo develop this method
          */
         return;
-        $this->method = 'PUT';
+      /*  $this->method = 'PUT';
 
         $this->getPUTParameters();
         $this->getCookies();
 
-        $this->perform();
+        $this->perform();*/
     }
 
     /**
@@ -103,12 +103,12 @@ class CurlHelper {
          * @todo develop this method
          */
         return;
-        $this->method = 'DELETE';
+     /*   $this->method = 'DELETE';
 
         $this->getDELETEParameters();
         $this->getCookies();
 
-        $this->perform();
+        $this->perform();*/
     }
 
     /**
