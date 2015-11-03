@@ -56,11 +56,13 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 case 1:
                     $array['fileurl'] = null;
                     $array['perimeter_id'] = null;
+                    $array['packageurl'] = null;
                     break;
                 case 2:
                     $array['file'] = null;
                     $array['file_hidden'] = null;
                     $array['perimeter_id'] = null;
+                    $array['packageurl'] = null;
                     break;
                 case 3:
                     $array['file'] = null;

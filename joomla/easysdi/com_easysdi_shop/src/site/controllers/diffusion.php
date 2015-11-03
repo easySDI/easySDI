@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
-require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/helpers/curl.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
 
 /**
  * Diffusion controller class.
@@ -83,25 +83,6 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
-        // Validate the posted data.
-        $form = $model->getForm();
-        if (!$form) {
-            JError::raiseError(500, $model->getError());
-            return false;
-        }
-        
-        //Rebuild complete url if storage is URL
-        if($data['productstorage_id'] == 2){
-            $data['fileurl'] = Easysdi_shopHelper::unparse_url(parse_url($data['fileurl']), array(
-                'user' => $data['userurl'],
-                'pass' => $data['passurl']
-            ));
-            unset($data['userurl'], $data['passurl']);
-        }
-        
-        // Validate the posted data.
-   //     $data = $model->validate($form, $data);
-
         // Check for errors.
         if ($data === false) {
             // Get the validation messages.
@@ -123,6 +104,32 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusionmetadata.id');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=diffusion&layout=edit&id=' . $id, false));
             return false;
+        }
+        
+        // Validate the posted data.
+        $form = $model->getForm();
+        if (!$form) {
+            JError::raiseError(500, $model->getError());
+            return false;
+        }
+        
+        //Rebuild complete url if storage is URL or ZONING
+        if ($data['productstorage_id'] != 1 && $urlvalue = ($data['productstorage_id'] == 2) ? 'fileurl' : 'packageurl') {
+            $temp_urlvalue = Easysdi_shopHelper::unparse_url(parse_url($data[$urlvalue]), array(
+                        'user' => $data['userurl'],
+                        'pass' => $data['passurl']
+            ));
+            if (!parse_url($data[$urlvalue]) || !parse_url($temp_urlvalue)) {
+                $app->enqueueMessage(JText::sprintf('COM_EASYSDI_SHOP_DOWNLOAD_URL_PARSING_ISSUE', $data[$urlvalue]), 'error');
+                
+                // Redirect back to the edit screen.
+                $app->setUserState('com_easysdi_shop.edit.diffusion.data', $data);
+                $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusionmetadata.id');
+                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $id, false));
+                return false;
+            }
+            $data[$urlvalue] = $temp_urlvalue;
+            unset($data['userurl'], $data['passurl']);
         }
 
         // Attempt to save the data.
@@ -269,28 +276,26 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
         $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
     }
-    
-    public function testURLAccessibility(){
+
+    public function testURLAccessibility() {
         $curlHelper = new CurlHelper();
         $curlHelper->URLChecker(JFactory::getApplication()->input);
     }
-    
-    
-    
-    public function getAvailableProfiles(){
+
+    public function getAvailableProfiles() {
         $data = JFactory::getApplication()->input->getArray();
-        
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('pp.id, pp.name')
-                ->from($db->quoteName('#__sdi_version').' as v')
+                ->from($db->quoteName('#__sdi_version') . ' as v')
                 ->join('LEFT', '#__sdi_resource as r ON r.id=v.resource_id')
                 ->join('LEFT', '#__sdi_pricing_profile as pp ON pp.organism_id=r.organism_id')
-                ->where('v.id='.$data['version_id'])
-                ;
+                ->where('v.id=' . $data['version_id'])
+        ;
         $db->setQuery($query);
         $profiles = $db->loadAssocList();
-        
+
         header('Content-type: application/json');
         echo json_encode($profiles);
         die();

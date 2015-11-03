@@ -155,11 +155,12 @@ class sdiUser {
                 ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
                 ->innerJoin("#__users juser ON juser.id = u.user_id")
                 ->where("uro.role_id = 1")
-                ->where('u.id = ' . (int) $sdiId)
+                ->where('u.user_id = ' . (int) $sdiId)
+                ->where("u.state = 1")
         ;
         $db->setQuery($query);
         $user = $db->loadObject();
-
+        
         $this->juser = JFactory::getUser($user->jid);
         $this->name = $this->juser->name;
 
@@ -678,6 +679,27 @@ class sdiUser {
         $db->setQuery($query);
 
         return $db->loadColumn();
+    }
+
+    public function isPartOfCategories($categories) {
+        if (!is_array($categories) && $categories != null) {
+            $categories = array($categories);
+        }
+        $organism = $this->getMemberOrganisms();
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('id')
+                ->from('#__sdi_organism_category')
+                ->where('organism_id=' . (int) $organism[0]->id)
+                ->where('category_id IN (' . implode(",",$categories) . ')');
+        $db->setQuery($query);
+        $db->execute();
+        $numRows = $db->getNumRows();
+        if($numRows != null)
+            return true;
+        else
+            return false;
     }
 
 }
