@@ -445,7 +445,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			param = paramSB.toString();
 			logger.info("Request="+ param);
 
-			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
+			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.getBytes()))));
 
 			String version = rh.getVersion();
 			requestedVersion = version;

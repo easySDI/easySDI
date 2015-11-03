@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.logging.Level;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -29,8 +28,6 @@ import org.easysdi.proxy.domain.SdiUser;
 import org.easysdi.proxy.domain.SdiUserHome;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
-import org.easysdi.proxy.exception.InvalidServiceNameException;
-import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,15 +150,7 @@ public final class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPage
         }
         SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id, authorities);
         if (policy == null) {
-            try {
-                this.response.setHeader("easysdi-proxy-error-occured", "true");
-                OWS200ExceptionReport report = new OWS200ExceptionReport();
-                report.sendHttpServletResponse(this.request, this.response,
-                        report.generateExceptionReport(this.request, this.response, OWS200ExceptionReport.TEXT_NO_POLICY, OWS200ExceptionReport.CODE_NO_APPLICABLE_CODE, "SERVICE", HttpServletResponse.SC_OK), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-                return null;
-            } catch (IOException ex) {
-                logger.error("Error occured trying to send exception to client.", ex);
-            }
+            return null;
         }
 
         StringBuilder stringBuffer = new StringBuilder();

@@ -12,11 +12,23 @@
             class="inputbox"
             label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ACCESSSCOPE"
             description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ACCESSSCOPE" 
-            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND value!='category' ORDER BY ordering" 
+            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
             key_field="id" 
             value_field="value"
             translate="true"
         /> 
+        <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        />
         <field
             name="organisms" 
             type="sql" 
