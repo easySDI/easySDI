@@ -1573,7 +1573,8 @@ class FormGenerator {
                         $result = $this->db->loadObjectList();
                         switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
                             case EnumRendertype::$CHECKBOX:
-                            case EnumRendertype::$RADIOBUTTON:                          
+                            case EnumRendertype::$RADIOBUTTON:
+                            case EnumRendertype::$LIST:
                                 break;
                             default:
                                 $first = array('id' => '', 'guid' => '', 'name' => '', 'value' => '');
