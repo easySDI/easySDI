@@ -151,8 +151,6 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
             $bar->appendButton('Separator');
             $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'diffusion.save', false);
             $bar->appendButton('Separator');
-            /*$bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'diffusion.remove', false);
-            $bar->appendButton('Separator');*/
         }
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'diffusion.cancel', false);
         //generate the html and return
