@@ -86,15 +86,15 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
 
         //Check credentials
         if (isset($user) && isset($pw)) {
-            $userId = JUserHelper::getUserId($user);
+            $joomlaUserId = JUserHelper::getUserId($user);
 
-            if (empty($userId)) {
+            if (empty($joomlaUserId)) {
                 return $this->stop();
             }
-            $JoomlaUser = new JUser($userId);
+            $JoomlaUser = new JUser($joomlaUserId);
 
             if (JUserHelper::verifyPassword($pw, $JoomlaUser->password)) {
-                $this->sdiUser = sdiFactory::getSdiUser($userId);
+                $this->sdiUser = sdiFactory::getSdiUserByJoomlaId($joomlaUserId);
                 return true;
             } else {
                 return $this->stop();
