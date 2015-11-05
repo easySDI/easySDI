@@ -205,10 +205,20 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                 echo $file;
                 die();
             } elseif (!empty($diffusion->fileurl)) { //Download remote file
-                $this->call($diffusion->fileurl, $diffusion->name);
+                if (!$this->call($diffusion->fileurl, $diffusion->name)) {
+                    //Return error to client
+                    $this->setMessage(JText::_('COM_EASYSDI_SHOP_THE_RESOURCE_ACCESS_ERROR'), 'error');
+                    $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
+                    return false;
+                }
             } elseif (!empty($diffusion->perimeter_id) && null !== $featurecode = $jinput->getHtml('featurecode', null)) {  //Download remote file by grid
                 $url = str_replace('{CODE}', $featurecode, $diffusion->packageurl);
-                $this->call($url, $diffusion->name);
+                if (!$this->call($url, $diffusion->name)) {
+                    //Return error to client
+                    $this->setMessage(JText::_('COM_EASYSDI_SHOP_THE_RESOURCE_ACCESS_ERROR'), 'error');
+                    $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
+                    return false;
+                }
             } else { //Download is not well configured
                 $this->setMessage(JText::_('RESOURCE_LOCATION_UNAVAILABLE'), 'error');
                 $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
@@ -243,7 +253,12 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
      * @param type $diffusion
      */
     private function call($url, $name) {
-        $curlHelper = new CurlHelper();
+        if (JSession::checkToken('get')) { //Call from Joomla
+            $curlHelper = new CurlHelper(true);
+        }else{//Call from tierce client
+            $curlHelper = new CurlHelper(false);
+        }
+        
         $curldata['url'] = $url;
         $pos = strrpos($url, '.');
         $extension = ($pos) ? substr($url, $pos) : null;
@@ -251,7 +266,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             $curldata['fileextension'] = $extension;
         }
         $curldata['filename'] = $name . $extension;
-        $curlHelper->get($curldata);
+        return $curlHelper->get($curldata);
     }
 
 }
