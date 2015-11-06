@@ -316,11 +316,14 @@ if ($this->item && $this->item->extractions) :
                 <!-- ENDOF PRODUCTS -->
 
                 <!-- INFORMATIONS -->
-                <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
+                <?php
+                $footerMessage = (JFactory::getUser()->guest ? $this->paramsarray['shopinfomessageguest'] : $this->paramsarray['shopinfomessage']);
+                if (!empty($footerMessage)):
+                    ?>
                     <div class="row-fluid shop-info" >
                         <div class="row-fluid" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h2>
                             <hr>
-                            <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div>
+                            <div class="shop-information"><?php echo $footerMessage; ?></div>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -580,15 +583,17 @@ if ($this->item && $this->item->extractions) :
                 if ('undefined' === typeof app) {
                     app = window.appname;
                 }
-                app.on("ready", function () {                    
-                   jQuery('#modal-perimeter').show();
-                   initMiniMap();
-                   
-                   jQuery('a[href$="#modal-perimeter"]').click(function(){jQuery('#modal-perimeter').removeClass('invisible');});
-                   <?php echo($this->basketScriptPlugins); ?>
+                app.on("ready", function () {
+                    jQuery('#modal-perimeter').show();
+                    initMiniMap();
+
+                    jQuery('a[href$="#modal-perimeter"]').click(function () {
+                        jQuery('#modal-perimeter').removeClass('invisible');
+                    });
+    <?php echo($this->basketScriptPlugins); ?>
                 });
             });
- 
+
             function initialization() {
                 miniBaseLayers[0].events.unregister("loadend", miniBaseLayers[0], initialization);
                 initDraw();
@@ -618,7 +623,8 @@ if ($this->item && $this->item->extractions) :
                     reloadFeatures<?php echo $this->item->extent->id; ?>();
     <?php endif; ?>
                 jQuery('#modal-perimeter').hide();
-            };
+            }
+            ;
         </script>
         <input type="hidden" name="perimeter" id="perimeter" value="<?php
         if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id;
