@@ -28,6 +28,12 @@ class CurlHelper {
     private $post = null;
     private $filename = null;
     private $fileextension = null;
+    private $returnonerror = false;
+
+    function __construct($returnonerror = false) {
+        //Caller may wants to perform specific action on curl call error
+        $this->returnonerror = $returnonerror;
+    }
 
     /**
      * head - performs a HEAD Request
@@ -59,10 +65,10 @@ class CurlHelper {
 
         if (is_array($input)) {
             $this->getArrayParameters($input);
-        }else  {
+        } else {
             $this->jInput = $input;
             $this->getGETParameters();
-        } 
+        }
         $this->perform();
     }
 
@@ -87,12 +93,12 @@ class CurlHelper {
          * @todo develop this method
          */
         return;
-      /*  $this->method = 'PUT';
+        /*  $this->method = 'PUT';
 
-        $this->getPUTParameters();
-        $this->getCookies();
+          $this->getPUTParameters();
+          $this->getCookies();
 
-        $this->perform();*/
+          $this->perform(); */
     }
 
     /**
@@ -103,12 +109,12 @@ class CurlHelper {
          * @todo develop this method
          */
         return;
-     /*   $this->method = 'DELETE';
+        /*   $this->method = 'DELETE';
 
-        $this->getDELETEParameters();
-        $this->getCookies();
+          $this->getDELETEParameters();
+          $this->getCookies();
 
-        $this->perform();*/
+          $this->perform(); */
     }
 
     /**
@@ -256,7 +262,6 @@ class CurlHelper {
                     $response['success'] = ((int) $matches[1] >= 200 && (int) $matches[1] < 400) ? true : false;
                     $response['code'] = (int) $matches[1];
                     $response['message'] = $matches[2];
-
                     // in case of redirection, we have to take the last response
                     // Then we don't break the loop !
                 }
@@ -275,44 +280,56 @@ class CurlHelper {
         die();
     }
 
-    private function send() {  
-        if(!$content = curl_exec($this->ch)){
+    private function send() {
+        if (!$content = curl_exec($this->ch)) {
             throw new Exception(curl_error($this->ch));
         }
         $data = curl_getinfo($this->ch);
-
         curl_close($this->ch);
+
+        //Handle http code error
+        if ((int) $data['http_code'] < 200 || (int) $data['http_code'] >= 400) {            
+            //If the caller wants to handle the error, we return false
+            if ($this->returnonerror) {
+                return false;
+            }
+            //Else, we send an HTTP error to the client
+            header('HTTP/1.1 502 Bad Gateway', true, 502);
+            echo JText::_('COM_EASYSDI_CORE_CURL_502_MESSAGE');
+            die();
+        }
+
+        //Forcing content_type and charset values doesn't seem to be necessary
         // if no content type defined, set as text/plain
-        if ($data['content_type'] == '') {
-            $data['content_type'] = 'text/plain';
-        }
-
+//        if ($data['content_type'] == '') {
+//            $data['content_type'] = 'text/plain';
+//        }
         // if no charset defined, force utf-8
-        if (strpos($data['content_type'], 'charset') == false) {
-            $content = trim($content);
-            list($ct, $trash) = explode(';', $data['content_type']);
-            $data['content_type'] = trim($ct) . '; charset=utf-8';
-        }
-
+//        if (strpos($data['content_type'], 'charset') == false) {
+//            $content = trim($content);
+//            list($ct, $trash) = explode(';', $data['content_type']);
+//            $data['content_type'] = trim($ct) . '; charset=utf-8';
+//        }
+//        
         // set headers then output response
         header('Content-Type: ' . $data['content_type']);
 
         //Response size
         header("Content-Length: " . strlen($content));
-        
+
         //Optional parameters to overwrite header informations
-        if(isset($this->fileextension)){
+        if (isset($this->fileextension)) {
             header('Content-Type: application/octetstream; name="' . $this->fileextension . '"');
         }
-        if(isset($this->filename)){
+        if (isset($this->filename)) {
             header('Content-Disposition: attachement; filename="' . $this->filename . '"');
-        }        
+        }
         echo $content;
         die();
     }
 
     private function getCookies() {
-        if(!isset($this->jInput))
+        if (!isset($this->jInput))
             return;
         $data = array();
         foreach ($this->jInput->cookie->getArray() as $cookieName => $cookieValue) {
@@ -353,12 +370,12 @@ class CurlHelper {
             $this->method = $data['method'];
             unset($data['method']);
         }
-        
+
         if (isset($data['filename'])) {
             $this->filename = $data['filename'];
             unset($data['filename']);
         }
-        
+
         if (isset($data['fileextension'])) {
             $this->fileextension = $data['fileextension'];
             unset($data['fileextension']);
