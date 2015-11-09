@@ -61,11 +61,12 @@
      _this.addTo = function (div) {
          container = div;
 
-         container.on('click', '.removeLayer', function () {
+         container.on('click', '.removeLayer', function (event) {
+             event.preventDefault();
              layertree.switchLayer(jQuery(this).data('layerid'), 'off');
          });
 
-         container.on('click', '.zoomlink', function (event) {
+        container.on('click', '.zoomlink', function (event) {
              event.preventDefault();
              var bb = jQuery(this).data('bbox').split(',');
              bb = L.latLngBounds([

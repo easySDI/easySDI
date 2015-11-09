@@ -223,7 +223,8 @@
              setLayerAvailableSelect();
          });
 
-         container.on('click', '.available_layers a', function () {
+         container.on('click', '.available_layers a', function (e) {
+             e.preventDefault();
              var layer = jQuery(this).data('layer');
              addLayer(current_service, layer);
          });

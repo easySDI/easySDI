@@ -36,7 +36,7 @@
             required="true"
             label="COM_EASYSDI_SHOP_CONFIG_LBL_ORDERMAP"
             description="COM_EASYSDI_SHOP_CONFIG_DESC_ORDERMAP"
-            query="SELECT id, name FROM #__sdi_map WHERE state=1 ORDER BY ordering"
+            query="SELECT id, name FROM #__sdi_map WHERE state=1 AND type='geoext' ORDER BY ordering"
             key_field="id"
             value_field="name" />
         <field name="orderaccount"

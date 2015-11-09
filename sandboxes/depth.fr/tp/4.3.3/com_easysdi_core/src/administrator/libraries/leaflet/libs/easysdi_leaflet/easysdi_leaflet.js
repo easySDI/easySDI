@@ -2,6 +2,16 @@ var easySDImap;
 
 jQuery(document).ready(function ($) {
 
+    var script_path = 'libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js';
+    if (jQuery('script[src$="' + script_path + '"]').length) {
+        console.log(jQuery('script[src$="' + script_path + '"]'));
+        var local_url = jQuery('script[src$="' + script_path + '"]').attr('src').replace(script_path, '');
+    } else {
+        script_path = 'libs/easysdi_leaflet/easysdi_leaflet.js';
+        var local_url = jQuery('script[src$="' + script_path + '"]').attr('src').replace(script_path, '');
+    }
+
+
     var isset = function (variable) {
         return typeof (variable) != "undefined" && variable !== null;
     };
@@ -961,7 +971,7 @@ jQuery(document).ready(function ($) {
 
 
         var addBaseLayer = function (layer, name) {
-
+            if (!isset(layer.data)) layer.data = {};
             if (isset(layer.setZIndex)) {
                 layer.setZIndex(1);
             }
@@ -971,12 +981,57 @@ jQuery(document).ready(function ($) {
                 controlLayer.addBaseLayer(layer, name);
             lastBaseLayer = layer;
         };
+        _easySDImap.addBaseLayer = addBaseLayer;
 
         var addOverlay = function (layer, group, name) {
+            if (!isset(layer.data)) layer.data = {};
             overlays[name] = layer;
             if (isset(controlLayer))
                 controlLayer.addOverlay(layer, name, group);
         };
+        _easySDImap.addOverlay = addOverlay;
+
+
+        var loadGeojson = function (url, group, name) {
+            if (!isset(group)) group = url;
+            if (!isset(name)) name = group;
+            jQuery.getJSON(url, function (geodata) {
+
+                var geojson_layer = L.Proj.geoJson(geodata, {
+                    style: function (feature) {
+                        var options = {
+                            weight: 2,
+                            opacity: 1
+                        };
+                        options.maxZoom = 50
+                        return options;
+                    },
+                    onEachFeature: function (feature, tlayer) {
+                        tlayer.on('click', function (e) {
+                            var html = '<table class="table table-bordered table-striped" style="display: block; max-height: 400px; overflow: auto">';
+                            jQuery.each(feature.properties, function (k, v) {
+                                html += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
+                            })
+                            html += '</table>';
+
+                            tlayer.bindPopup(html, {
+                                maxWidth: 500
+                            }).openPopup();
+                        });
+                    }
+
+                });
+
+                addOverlay(geojson_layer, group, name);
+                _easySDImap.mapObj.fitBounds(geojson_layer.getBounds());
+                setTimeout(function () {
+                    _easySDImap.mapObj.addLayer(geojson_layer);
+                }, 10);
+
+            });
+
+        };
+        _easySDImap.loadGeojson = loadGeojson;
 
 
         var changeIGNkey = function (url, key) {
@@ -1363,7 +1418,7 @@ jQuery(document).ready(function ($) {
                         context_url = base_url + context_url;
                     }
                     var context = _easySDImap.getContext();
-                    var local_url = jQuery('script[src$="easySDI_leaflet.pack.js"]').attr('src').replace('libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js', '');
+                    //var local_url = jQuery('script[src$="easySDI_leaflet.pack.js"],script[src$="easysdi_leaflet.js"]').attr('src').replace('libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js', '');
 
 
                     code = '';
@@ -1447,13 +1502,7 @@ jQuery(document).ready(function ($) {
         }
 
         lang = contextMapData.lang;
-        var i18nPath = '';
-
-        if (jQuery('script[src$="easySDI_leaflet.pack.js"]').length)
-            i18nPath = jQuery('script[src$="easySDI_leaflet.pack.js"]').attr('src').replace('libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js', 'locales');
-        if (jQuery('script[src$="easysdi_leaflet.js"]').length)
-            i18nPath = jQuery('script[src$="easysdi_leaflet.js"]').attr('src').replace('libs/easysdi_leaflet/easysdi_leaflet.js', 'locales');
-
+        var i18nPath = local_url + 'locales';;
 
         i18n.init({
             resGetPath: i18nPath + '/' + lang + '/translation.json',

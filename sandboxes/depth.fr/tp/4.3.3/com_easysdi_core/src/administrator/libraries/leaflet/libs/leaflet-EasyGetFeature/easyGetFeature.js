@@ -81,17 +81,20 @@
 
          container_results.on('click', '.removeResult', function (e) {
              e.stopPropagation();
+             e.preventDefault();
              queryid = jQuery(this).data('queryid');
              removeRes(_this.query[queryid]);
          });
 
          container_results.on('click', '.removeAllResult', function (e) {
              e.stopPropagation();
+             e.preventDefault();
              for (var i in _this.query)
                  removeRes(_this.query[i]);
          });
 
-         container_results.on('click', '.found', function () {
+         container_results.on('click', '.found', function (e) {
+             e.preventDefault();
              queryid = jQuery(this).data('queryid');
              showRes(_this.query[queryid]);
          });
@@ -112,10 +115,12 @@
 
 
      _this.onclick = function (e) {
-         console.log(jQuery('.leaflet-zoom-box-crosshair').length);
+         // console.log(jQuery('.leaflet-zoom-box-crosshair').length);
          if (jQuery('.leaflet-zoom-box-crosshair').length == 0) {
              var layerId = container.find('.queryable_layers').val();
-             _this.getFeature(layertree.getLayerById(layerId), e);
+             if (isset(layerId)) {
+                 _this.getFeature(layertree.getLayerById(layerId), e);
+             }
          }
 
      }
