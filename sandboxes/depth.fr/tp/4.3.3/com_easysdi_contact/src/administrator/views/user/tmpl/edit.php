@@ -88,7 +88,7 @@ JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');
         jQuery('#edit_organism_link').remove();
         var currentOrgId = jQuery('#jform_organismsMember').val();
         
-        var linkText = Joomla.JText._('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK', 'Edit organism22');
+        var linkText = Joomla.JText._('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK', 'Edit organism');
         if (jQuery.isNumeric(currentOrgId)){
             jQuery(" <a />", {
                 id: "edit_organism_link",

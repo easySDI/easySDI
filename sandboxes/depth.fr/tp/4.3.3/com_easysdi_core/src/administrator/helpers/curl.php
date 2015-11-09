@@ -16,31 +16,29 @@ defined('_JEXEC') or die;
 class CurlHelper {
 
     private $simplified = false;
-
     private $authentication = false;
-
     private $ch = null;
-
     private $jInput = null;
-
     private $url = null;
-
-    private $headers = array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"','Expect:');
-
+    private $headers = array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"', 'Expect:');
     private $cookies = null;
-
     private $method = 'GET';
-
     private $protocol = false;
-
     private $get = null;
-
     private $post = null;
+    private $filename = null;
+    private $fileextension = null;
+    private $returnonerror = false;
+
+    function __construct($returnonerror = false) {
+        //Caller may wants to perform specific action on curl call error
+        $this->returnonerror = $returnonerror;
+    }
 
     /**
      * head - performs a HEAD Request
      */
-    public function head(JInput $jInput){
+    public function head(JInput $jInput) {
         $this->jInput = $jInput;
         $this->method = 'HEAD';
 
@@ -53,7 +51,7 @@ class CurlHelper {
     /**
      * URLChecker - similar to head but return an simplified object
      */
-    public function URLChecker(){
+    public function URLChecker() {
         $this->simplified = true;
         $this->head(JFactory::getApplication()->input);
     }
@@ -61,20 +59,23 @@ class CurlHelper {
     /**
      * get - performs a GET Request
      */
-    public function get(JInput $jInput, $close = true){
+    public function get($input, $close = true) {
         $this->close = $close;
-        $this->jInput = $jInput;
         $this->method = 'GET';
 
-        $this->getGETParameters();
-
+        if (is_array($input)) {
+            $this->getArrayParameters($input);
+        } else {
+            $this->jInput = $input;
+            $this->getGETParameters();
+        }
         $this->perform();
     }
 
     /**
      * post - performs a POST Request
      */
-    public function post(JInput $jInput, $close = true){
+    public function post(JInput $jInput, $close = true) {
         $this->close = $close;
         $this->method = 'POST';
 
@@ -87,40 +88,40 @@ class CurlHelper {
     /**
      * put - performs a PUT Request
      */
-    public function put(JInput $jInput){
+    public function put(JInput $jInput) {
         /**
          * @todo develop this method
          */
         return;
-        $this->method = 'PUT';
+        /*  $this->method = 'PUT';
 
-        $this->getPUTParameters();
-        $this->getCookies();
+          $this->getPUTParameters();
+          $this->getCookies();
 
-        $this->perform();
+          $this->perform(); */
     }
 
     /**
      * delete - performs a DELETE Request
      */
-    public function delete(JInput $jInput){
+    public function delete(JInput $jInput) {
         /**
          * @todo develop this method
          */
         return;
-        $this->method = 'DELETE';
+        /*   $this->method = 'DELETE';
 
-        $this->getDELETEParameters();
-        $this->getCookies();
+          $this->getDELETEParameters();
+          $this->getCookies();
 
-        $this->perform();
+          $this->perform(); */
     }
 
     /**
      * run - perfoms a Request
      * Request type is predicted from the original request and may be overriden by the method property
      */
-    public function run(JInput $jInput, $close = true){
+    public function run(JInput $jInput, $close = true) {
         $this->close = $close;
         $this->jInput = $jInput;
         $this->method = $this->jInput->getMethod();
@@ -131,64 +132,60 @@ class CurlHelper {
         $this->perform();
     }
 
-    private function perform(){
+    private function perform() {
         $this->getCookies();
         $this->init();
 
-        switch($this->method){
+        switch ($this->method) {
             case 'HEAD':
-                if($this->protocol === 'sftp'){
-                    curl_setopt($this->ch, CURLOPT_WRITEFUNCTION, function($ch, $data){
+                if ($this->protocol === 'sftp') {
+                    curl_setopt($this->ch, CURLOPT_WRITEFUNCTION, function($ch, $data) {
                         return -1;
                     });
                     curl_setopt($this->ch, CURLOPT_HEADER, false);
                     curl_setopt($this->ch, CURLOPT_NOBODY, false);
-                }
-                else{
+                } else {
                     curl_setopt($this->ch, CURLOPT_HEADER, true);
                     curl_setopt($this->ch, CURLOPT_NOBODY, true);
                 }
                 break;
-
             case 'GET':
                 curl_setopt($this->ch, CURLOPT_POST, 0);
                 break;
-
             case 'POST':
                 curl_setopt($this->ch, CURLOPT_POST, 1);
                 curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->post);
                 break;
-
             case 'PUT':
-
                 break;
-
             case 'DELETE':
-
                 break;
         }
-
-        $this->send();
+        if ($this->simplified) {
+            $this->sendSimplified();
+        } else {
+            $this->send();
+        }
     }
 
-    private function initSSL(){
+    private function initSSL() {
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_DEFAULT);
     }
 
-    private function initFTP(){
+    private function initFTP() {
         curl_setopt($this->ch, CURLOPT_FTP_CREATE_MISSING_DIRS, false);
         curl_setopt($this->ch, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_DEFAULT);
     }
 
-    private function initProtocol(){
+    private function initProtocol() {
         $this->protocol = parse_url($this->url, PHP_URL_SCHEME);
-        if(!$this->protocol){
+        if (!$this->protocol) {
             $this->protocol = 'http';
         }
 
-        switch(strtoupper($this->protocol)){
+        switch (strtoupper($this->protocol)) {
             case 'HTTP':
                 curl_setopt($this->ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP);
                 break;
@@ -212,15 +209,14 @@ class CurlHelper {
         }
     }
 
-    private function initURL(){
-        if(strlen($this->get)){
-            $this->url .= '?'.$this->get;
+    private function initURL() {
+        if (strlen($this->get)) {
+            $this->url .= '?' . $this->get;
         }
-
         $this->ch = curl_init($this->url);
     }
 
-    private function init(){
+    private function init() {
         $this->initURL();
 
         $this->initProtocol();
@@ -229,7 +225,7 @@ class CurlHelper {
 
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->headers);
 
-        if(!is_null($this->cookies)){
+        if (!is_null($this->cookies)) {
             curl_setopt($this->ch, CURLOPT_COOKIE, $this->cookies);
         }
 
@@ -237,15 +233,15 @@ class CurlHelper {
         curl_setopt($this->ch, CURLOPT_ENCODING, "");
 
         // Authentication
-        if(is_array($this->authentication)){
+        if (is_array($this->authentication)) {
             curl_setopt($this->ch, CURLOPT_UNRESTRICTED_AUTH, true);
-            $httpAuth = isset($this->authentication['authtype']) ? constant('CURLAUTH_'.strtoupper($this->authentication['authtype'])) : CURLAUTH_ANY;
+            $httpAuth = isset($this->authentication['authtype']) ? constant('CURLAUTH_' . strtoupper($this->authentication['authtype'])) : CURLAUTH_ANY;
             curl_setopt($this->ch, CURLOPT_HTTPAUTH, $httpAuth);
-            curl_setopt($this->ch, CURLOPT_USERPWD, $this->authentication['user'].':'.$this->authentication['password']);
+            curl_setopt($this->ch, CURLOPT_USERPWD, $this->authentication['user'] . ':' . $this->authentication['password']);
         }
     }
 
-    private function send(){
+    private function sendSimplified() {
         header("Access-Control-Allow-Origin: *"); // AJOUT Damien
 
         $content = trim(curl_exec($this->ch));
@@ -253,123 +249,169 @@ class CurlHelper {
 
         curl_close($this->ch);
 
-        if($this->simplified){
-            $response = array(
-                'success'   => false,
-                'code'      => 0,
-                'message'   => 'An unpredictable error occured',
-                'content'   => array(),
-                'data'      => $data
-            );
+        $response = array(
+            'success' => false,
+            'code' => 0,
+            'message' => 'An unpredictable error occured',
+            'content' => array(),
+            'data' => $data
+        );
 
-            if(strpos($this->protocol, 'http') !== false){ // http/https case
-                foreach(preg_split("/((\r?\n)|(\r\n?)|(&#13;?&#10;)|(&#13;&#10;?))/", $content) as $line){
-                    array_push($response['content'], $line);
-                    if(preg_match('/HTTP.*(\d{3}) (.+)/', $line, $matches)){
-                        $response['success'] = ((int)$matches[1]>=200 && (int)$matches[1]<400) ? true : false;
-                        $response['code'] = (int)$matches[1];
-                        $response['message'] = $matches[2];
-
-                        // in case of redirection, we have to take the last response
-                        // Then we don't break the loop !
-                    }
+        if (strpos($this->protocol, 'http') !== false) { // http/https case
+            foreach (preg_split("/((\r?\n)|(\r\n?)|(&#13;?&#10;)|(&#13;&#10;?))/", $content) as $line) {
+                array_push($response['content'], $line);
+                if (preg_match('/HTTP.*(\d{3}) (.+)/', $line, $matches)) {
+                    $response['success'] = ((int) $matches[1] >= 200 && (int) $matches[1] < 400) ? true : false;
+                    $response['code'] = (int) $matches[1];
+                    $response['message'] = $matches[2];
+                    // in case of redirection, we have to take the last response
+                    // Then we don't break the loop !
                 }
             }
-            elseif($this->protocol === 'sftp'){
-                $response['success'] = $data['download_content_length']==0 ? false : true;
-                $response['message'] = $content;
-            }
-            elseif(strpos($this->protocol, 'ftp') !== false){ // ftp/ftps cases
-                $response['success'] = ((int)$data['http_code']>=200 && (int)$data['http_code']<400 && $data['download_content_length']>-1) ? true : false;
-                $response['code'] = (int)$data['http_code'];
-                $response['message'] = $content;
-            }
+        } elseif ($this->protocol === 'sftp') {
+            $response['success'] = $data['download_content_length'] == 0 ? false : true;
+            $response['message'] = $content;
+        } elseif (strpos($this->protocol, 'ftp') !== false) { // ftp/ftps cases
+            $response['success'] = ((int) $data['http_code'] >= 200 && (int) $data['http_code'] < 400 && $data['download_content_length'] > -1) ? true : false;
+            $response['code'] = (int) $data['http_code'];
+            $response['message'] = $content;
+        }
 
-            header('Content-type: application/json');
-            echo json_encode($response);
+        header('Content-type: application/json');
+        echo json_encode($response);
+        die();
+    }
+
+    private function send() {
+        if (!$content = curl_exec($this->ch)) {
+            throw new Exception(curl_error($this->ch));
+        }
+        $data = curl_getinfo($this->ch);
+        curl_close($this->ch);
+
+        //Handle http code error
+        if ((int) $data['http_code'] < 200 || (int) $data['http_code'] >= 400) {            
+            //If the caller wants to handle the error, we return false
+            if ($this->returnonerror) {
+                return false;
+            }
+            //Else, we send an HTTP error to the client
+            header('HTTP/1.1 502 Bad Gateway', true, 502);
+            echo JText::_('COM_EASYSDI_CORE_CURL_502_MESSAGE');
             die();
         }
 
+        //Forcing content_type and charset values doesn't seem to be necessary
         // if no content type defined, set as text/plain
-        if($data['content_type'] == ''){
-            $data['content_type'] = 'text/plain';
-        }
-
+//        if ($data['content_type'] == '') {
+//            $data['content_type'] = 'text/plain';
+//        }
         // if no charset defined, force utf-8
-        if(strpos($data['content_type'], 'charset') == false){
-            list($ct, $trash) = explode(';', $data['content_type']);
-            $data['content_type'] = trim($ct).'; charset=utf-8';
-        }
-
+//        if (strpos($data['content_type'], 'charset') == false) {
+//            $content = trim($content);
+//            list($ct, $trash) = explode(';', $data['content_type']);
+//            $data['content_type'] = trim($ct) . '; charset=utf-8';
+//        }
+//        
         // set headers then output response
-        header('Content-Type: '.$data['content_type']);
+        header('Content-Type: ' . $data['content_type']);
+
+        //Response size
+        header("Content-Length: " . strlen($content));
+
+        //Optional parameters to overwrite header informations
+        if (isset($this->fileextension)) {
+            header('Content-Type: application/octetstream; name="' . $this->fileextension . '"');
+        }
+        if (isset($this->filename)) {
+            header('Content-Disposition: attachement; filename="' . $this->filename . '"');
+        }
         echo $content;
         die();
     }
 
-    private function getCookies(){
+    private function getCookies() {
+        if (!isset($this->jInput))
+            return;
         $data = array();
-        foreach($this->jInput->cookie->getArray() as $cookieName => $cookieValue){
-            array_push($data, $cookieName.'='.$cookieValue);
+        foreach ($this->jInput->cookie->getArray() as $cookieName => $cookieValue) {
+            array_push($data, $cookieName . '=' . $cookieValue);
         }
         $this->cookies = implode('; ', $data);
     }
 
-    private function getParameters(&$data){
-        if(isset($data['option'])){
+    private function getParameters(&$data) {
+        if (isset($data['option'])) {
             unset($data['option']);
         }
 
-        if(isset($data['task'])){
+        if (isset($data['task'])) {
             unset($data['task']);
         }
 
-        if(isset($data['url'])){
+        if (isset($data['url'])) {
             $this->url = $data['url'];
             unset($data['url']);
         }
 
-        if(isset($data['user'])){
+        if (isset($data['user'])) {
             $this->authentication = array('user' => $data['user']);
             unset($data['user']);
         }
 
-        if(isset($data['password'])){
+        if (isset($data['password'])) {
             $this->authentication['password'] = $data['password'];
             unset($data['password']);
         }
 
-        if(is_array($authentication)){
+        if (is_array($authentication)) {
             $this->authentication['authtype'] = isset($data['authtype']) ? $data['authtype'] : true;
         }
 
-        if(isset($data['method'])){
+        if (isset($data['method'])) {
             $this->method = $data['method'];
             unset($data['method']);
         }
+
+        if (isset($data['filename'])) {
+            $this->filename = $data['filename'];
+            unset($data['filename']);
+        }
+
+        if (isset($data['fileextension'])) {
+            $this->fileextension = $data['fileextension'];
+            unset($data['fileextension']);
+        }
     }
 
-    private function getGETParameters(){
-        $data = $this->jInput->get->getArray();
-
+    private function getArrayParameters($data) {
         $this->getParameters($data);
+        $this->buildGETParameters($data);
+    }
 
-        if(count($data)){
+    private function getGETParameters() {
+        $data = $this->jInput->get->getArray();
+        $this->getParameters($data);
+        $this->buildGETParameters($data);
+    }
+
+    private function buildGETParameters($data) {
+        if (count($data)) {
             $query = array();
-            foreach($data as $key => $value){
-                array_push($query, $key.'='.$value);
+            foreach ($data as $key => $value) {
+                array_push($query, $key . '=' . $value);
             }
-            if(count($query)){
+            if (count($query)) {
                 $this->get = implode('&', $query);
             }
         }
     }
 
-    private function getPOSTParameters(){
+    private function getPOSTParameters() {
         $data = $this->jInput->post->getArray();
 
-        if(empty($data)){
-            if($this->method == 'POST'){
+        if (empty($data)) {
+            if ($this->method == 'POST') {
                 $this->post = file_get_contents("php://input");
             }
             return;
@@ -377,32 +419,33 @@ class CurlHelper {
 
         $this->getParameters($data);
 
-        if(count($data)){
+        if (count($data)) {
             $query = array();
-            foreach($data as $key => $value){
-                array_push($query, $key.'='.$value);
+            foreach ($data as $key => $value) {
+                array_push($query, $key . '=' . $value);
             }
-            if(count($query)){
+            if (count($query)) {
                 $this->post = implode('&', $query);
             }
         }
     }
 
-    private function getHEADParameters(){
+    private function getHEADParameters() {
         $data = $this->jInput->getArray();
 
         $this->getParameters($data);
 
-        if(count($data)){
+        if (count($data)) {
             $query = array();
-            foreach($data as $key => $value){
-                if(!is_null($value)){
-                    array_push($query, $key.'='.$value);
+            foreach ($data as $key => $value) {
+                if (!is_null($value)) {
+                    array_push($query, $key . '=' . $value);
                 }
             }
-            if(count($query)){
+            if (count($query)) {
                 $this->get = implode('&', $query);
             }
         }
     }
+
 }

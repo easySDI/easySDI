@@ -111,7 +111,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             <td><?php echo $profile->surface_rate; ?></td>
                             <td><?php echo $profile->min_fee; ?></td>
                             <td><?php echo $profile->max_fee; ?></td>
-                            <td><?php echo (bool) $profile->free_category ? JText::_('YES') : JText::_('NO'); ?></td>
+                            <td><?php echo (bool) $profile->free_category ? JText::_('JYES') : JText::_('JNO'); ?></td>
                             <td><?php if($this->isPricingManager):?><button type="button" class="btn btn-danger delete" data-id="<?php echo $profile->id ; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_DELETE_ITEM') ;?></button><?php endif;?></td>
                         </tr>
                     <?php endforeach; ?>

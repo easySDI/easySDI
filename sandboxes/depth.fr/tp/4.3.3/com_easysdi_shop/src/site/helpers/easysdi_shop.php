@@ -427,7 +427,7 @@ abstract class Easysdi_shopHelper {
      * @return float
      * @since 4.3.0
      */
-    private static function rounding($value, $rounding = 0.01) {
+    public static function rounding($value, $rounding = 0.01) {
         return round($value / $rounding, 0) * $rounding;
     }
 
@@ -495,8 +495,8 @@ abstract class Easysdi_shopHelper {
                 $prices->cfg_rounding = (float) $orderPricing->cfg_rounding;
                 $prices->cfg_overall_default_fee = (float) $orderPricing->cfg_overall_default_fee;
                 $prices->cfg_free_data_fee = (bool) $orderPricing->cfg_free_data_fee;
-                $prices->cal_total_amount_ti = (float) $orderPricing->cal_total_amount_ti;
-                $prices->cal_fee_ti = (float) $orderPricing->cal_fee_ti;
+                $prices->cal_total_amount_ti = $orderPricing->cal_total_amount_ti;
+                $prices->cal_fee_ti = $orderPricing->cal_fee_ti;
                 $prices->pricing_order_id = (int) $orderPricing->id;
             }
 
@@ -554,11 +554,11 @@ abstract class Easysdi_shopHelper {
         $provider->pricing_order_supplier_id = (int) $priceOrdSupplier->id;
 
         // gwt the provider tax
-        $provider->cal_fee_ti = (float) $priceOrdSupplier->cal_fee_ti;
+        $provider->cal_fee_ti = $priceOrdSupplier->cal_fee_ti;
 
         // get total amount for this provider
-        $provider->cal_total_amount_ti = (float) $priceOrdSupplier->cal_total_amount_ti;
-        $provider->cal_total_rebate_ti = (float) $priceOrdSupplier->cal_total_rebate_ti;
+        $provider->cal_total_amount_ti = $priceOrdSupplier->cal_total_amount_ti;
+        $provider->cal_total_rebate_ti = $priceOrdSupplier->cal_total_rebate_ti;
 
         //TODO check this
         $prices->supplierRebate = new stdClass();
@@ -662,7 +662,7 @@ abstract class Easysdi_shopHelper {
         if ($prices->isActivated) {
             // set the invoiced user (based on current user and third-party)
             $prices->debtor = new stdClass();
-            if (isset($basket->thirdparty) && $basket->thirdparty>0) {
+            if (isset($basket->thirdparty) && $basket->thirdparty > 0) {
                 $prices->debtor->id = $basket->thirdparty;
             } else {
                 $prices->debtor->id = $basket->sdiUser->role[self::ROLE_MEMBER][0]->id;
@@ -728,7 +728,7 @@ abstract class Easysdi_shopHelper {
 
             // total amount for the platform
             if ($prices->hasFeeWithoutPricingProfileProduct)
-                $prices->cal_total_amount_ti = '-';
+                $prices->cal_total_amount_ti = null;
             else
                 $prices->cal_total_amount_ti += $prices->cal_fee_ti;
         }
@@ -908,12 +908,226 @@ abstract class Easysdi_shopHelper {
     public static function priceFormatter($price, $displayCurrency = true) {
         $c = $displayCurrency ? ' ' . JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '';
 
-        if ($price != '-' && $price != 0)
+        if (isset($price) && $price != null && $price != 0) {
             $price = number_format(
                     $price, JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'")
             );
+            return $price . $c;
+        } elseif (isset($price) && $price == 0) {
+            return '0' . $c;
+        } else {
+            return '-';
+        }
+    }
 
-        return $price . $c;
+    /**
+     * updatePricing - update the pricing schema branch
+     * 
+     * @param stdClass $posp
+     * @param stdClass $pos
+     * @param stdClass $po
+     * @param JDatabase $db an optionnal reference to database (for transactinal use)
+     * 
+     * @return void
+     * @since 4.3.0
+     * 
+     * @return boolean|string Returns Boolean 'true' if everything is correctly saved, otherwise returns the error string.
+     * Ensure to compare the return to === true for correct completion of the process
+     */
+    public static function updatePricing($posp, $pos, $po, &$db = null) {
+        if (!isset($db)) {
+            $db = JFactory::getDbo();
+        }
+
+        if (!$posp->save(array())) {
+            return 'Cannot update pricing order supplier product';
+        }
+
+        $rpos = self::updatePricingSupplierSummary($pos, $po, $db);
+        if ($rpos !== true) {
+            return $rpos;
+        }
+
+
+        //everything went well
+        return true;
+    }
+
+    /**
+     * updatePricingSupplierSummary - update the pricing supplier and order branch if needed
+     * @param stdClass $pos
+     * @param stdClass $po
+     * @param stdClass $db
+     * @return boolean|string Returns Boolean 'true' if everything is correctly saved, otherwise returns the error string.
+     * Ensure to compare the return to === true for correct completion of the process
+     */
+    private static function updatePricingSupplierSummary($pos, $po, &$db) {
+        // count the products without price define for the current provider
+        $db->setQuery($db->getQuery(true)
+                        ->select('COUNT(1)')
+                        ->from('#__sdi_pricing_order_supplier_product posp')
+                        ->where('posp.pricing_order_supplier_id=' . (int) $pos->id)
+                        ->where('posp.cal_total_amount_ti IS NULL'));
+        $productsWithoutPrice = $db->loadResult();
+        //if all products of this supplier have a price, we can update the supplier pricing branch
+        if ($productsWithoutPrice == 0) {
+
+            $db->setQuery($db->getQuery(true)
+                            ->select('SUM(posp.cal_total_amount_ti) orderSupplierProductsTotal, SUM(posp.cal_total_rebate_ti) orderSupplierRebatesTotal')
+                            ->from('#__sdi_pricing_order_supplier_product posp')
+                            ->innerJoin('#__sdi_pricing_order_supplier pos ON pos.id=posp.pricing_order_supplier_id')
+                            ->where('posp.pricing_order_supplier_id=' . (int) $pos->id));
+            $posData = $db->loadObject();
+
+            //if total is 0 and fixed fee are not applied for 'all free' order
+            //overwrite the cal_fee_ti with 0
+            if ($pos->cfg_data_free_fixed_fee == 0 && $posData->orderSupplierProductsTotal == 0) {
+                $pos->cal_fee_ti = 0;
+            }
+
+            //update rebates ti total
+            $pos->cal_total_rebate_ti = $posData->orderSupplierRebatesTotal;
+
+            //update total ti
+            $pos->cal_total_amount_ti = ($posData->orderSupplierProductsTotal + $pos->cal_fee_ti);
+
+            if (!$pos->save(array())) {
+                return 'Cannot update pricing order supplier';
+            }
+
+            $rpo = self::updatePricingOrderSummary($po, $db);
+            if ($rpo !== true) {
+                return $rpo;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * updatePricingOrderSummary - update the pricing order branch if needed
+     * @param type $po
+     * @param type $db
+     * @return boolean|string Returns Boolean 'true' if everything is correctly saved, otherwise returns the error string.
+     * Ensure to compare the return to === true for correct completion of the process
+     */
+    private static function updatePricingOrderSummary($po, &$db) {
+        //count all the suppliers pricing of the order without price
+        $db->setQuery($db->getQuery(true)
+                        ->select('COUNT(1)')
+                        ->from('#__sdi_pricing_order_supplier pos')
+                        ->where('pos.pricing_order_id=' . (int) $po->id)
+                        ->where('pos.cal_total_amount_ti IS NULL'));
+        $suppliersWithoutPrice = $db->loadResult();
+
+        //if all suppliers of this order have a price, we can update the order pricing branch
+        if ($suppliersWithoutPrice == 0) {
+
+            $db->setQuery($db->getQuery(true)
+                            ->select('SUM(pos.cal_total_amount_ti) orderSuppliersTotal')
+                            ->from('#__sdi_pricing_order po')
+                            ->innerJoin('#__sdi_pricing_order_supplier pos ON po.id=pos.pricing_order_id')
+                            ->where('po.id=' . (int) $po->id));
+            $orderSuppliersTotal = $db->loadResult();
+
+            //if total is 0 and platform fee are not applied for 'all free' order
+            //overwrite the cal_fee_ti with 0
+            if ($po->cfg_free_data_fee == 0 && $orderSuppliersTotal == 0) {
+                $po->cal_fee_ti = 0;
+            }
+
+            $po->cal_total_amount_ti = ($orderSuppliersTotal + $po->cal_fee_ti);
+
+            if (!$po->save(array())) {
+                return 'Cannot update pricing order';
+            }
+        }
+        return true;
+    }
+
+    /**
+     * changeOrderState - Dynamically changes the statue of the order.
+     * 
+     * @param integer $orderId Id of the order.
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public static function changeOrderState($orderId) {
+        $orderstate = self::getNewOrderState($orderId);
+        $db = JFactory::getDbo();
+
+        if (isset($orderstate)) {
+            $query = $db->getQuery(true)
+                            ->update('#__sdi_order')->set('orderstate_id=' . $orderstate);
+            if ($orderstate == Easysdi_shopHelper::ORDERSTATE_FINISH) {
+                $query->set('completed=' . $query->quote(date("Y-m-d H:i:s")));
+            }
+            $query->where('id=' . (int) $orderId);
+
+            $db->setQuery($query);
+            $db->execute();
+        }
+    }
+
+    /**
+     * getNewOrderState - Calculates the new order state based on products/diffusion states
+     * 
+     * @param integer $orderId Id of the order.
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public static function getNewOrderState($orderId) {
+
+        $db = JFactory::getDbo();
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId));
+        $total = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT));
+        $await = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE));
+        $available = $db->getNumRows($db->execute());
+
+        $db->setQuery($db->getQuery(true)
+                        ->select('id')->from('#__sdi_order_diffusion')->where('order_id=' . (int) $orderId)->where('productstate_id=' . Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER));
+        $rejected = $db->getNumRows($db->execute());
+
+        return self::chooseOrderState($total, $await, $available, $rejected);
+    }
+
+    /**
+     * chooseOrderState - return the correct orderState according to the given params
+     * 
+     * @param integer $total
+     * @param integer $await
+     * @param integer $available
+     * @param integer $rejected
+     * 
+     * @return integer|null
+     * @since 4.3.0
+     */
+    private static function chooseOrderState($total, $await, $available, $rejected) {
+        if ($total == $rejected) {
+            return Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER;
+        }
+
+        if ($available == $total || $available + $rejected == $total) {
+            return Easysdi_shopHelper::ORDERSTATE_FINISH;
+        }
+
+        if ($available > 0 || $rejected > 0) {
+            return Easysdi_shopHelper::ORDERSTATE_PROGRESS;
+        }
+
+        if ($await > 0) {
+            return Easysdi_shopHelper::ORDERSTATE_AWAIT;
+        }
+
+        return null;
     }
 
     /*     * *********************** */
@@ -1029,6 +1243,51 @@ abstract class Easysdi_shopHelper {
     }
 
     /**
+     * notifyCustomerOnOrderUpdate - notify the customer (only if needed) about the progress of the order
+     * 
+     * @param integer $orderId the id of the order
+     * @param boolean $silentFail optionnal, if an any error, die silently
+     * @return void
+     * @since 4.3.0
+     */
+    public static function notifyCustomerOnOrderUpdate($orderId, $silentFail = false) {
+
+        $sdiUser = sdiFactory::getSdiUser();
+        $orderModel = JModelLegacy::getInstance('order', 'Easysdi_shopModel', array());
+        $order = $orderModel->getTable();
+        $order->load(array('id' => (int) $orderId));
+
+        $errors = false;
+
+        if (isset($order)) {
+
+            switch ($order->orderstate_id) {
+                case Easysdi_shopHelper::ORDERSTATE_FINISH:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;
+                case Easysdi_shopHelper::ORDERSTATE_PROGRESS:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;
+                case Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER:
+                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_BODY', $order->name))):
+                        $errors = true;
+                    endif;
+                    break;
+            }
+        }else {
+            $errors = true;
+        }
+
+        if ($errors == !$silentFail) {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+        }
+    }
+
+    /**
      * Add javascript config variables in DOM for SHOP MAP
      */
     public static function addMapShopConfigToDoc() {
@@ -1097,64 +1356,74 @@ abstract class Easysdi_shopHelper {
      * @param type $basket an easysdi basket (matching the order)
      * @return string A bootstrap styled label element
      */
-    public static function getOrderStatusLabel($order, $basket) {
+    public static function getOrderStatusLabel($order, $basket, $isGroupedBySupplier = false) {
 
-        //order and estimates (no draft)
-        if ($order->ordertype_id != 3) {
-            $progressCount = 0;
-            $statusCompl = '';
-            $labelClass = '';
-            //count finished products
-            foreach ($basket->extractions as $extraction) {
-                if (
-                        $extraction->productstate_id == self::PRODUCTSTATE_AVAILABLE ||
-                        $extraction->productstate_id == self::PRODUCTSTATE_DELETED ||
-                        $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_SUPPLIER ||
-                        $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_TP
-                ) {
-                    $progressCount++;
-                }
-            }
-
-            switch ($order->orderstate_id) {
-                case self::ORDERSTATE_ARCHIVED:
-                case self::ORDERSTATE_HISTORIZED:
-                case self::ORDERSTATE_FINISH:
-                    $labelClass = 'label-success';
-                    if (count($basket->extractions) > 1) {
-                        $statusCompl = ' (' . $progressCount . '/' . count($basket->extractions) . ')';
-                    }
-                    break;
-                case self::ORDERSTATE_AWAIT:
-                    $labelClass = 'label-warning';
-                    break;
-                case self::ORDERSTATE_PROGRESS:
-                    $labelClass = 'label-info';
-                    if (count($basket->extractions) > 1) {
-                        $statusCompl = ' (' . $progressCount . '/' . count($basket->extractions) . ')';
-                    }
-                    break;
-                case self::ORDERSTATE_SENT:
-                    $labelClass = 'label-inverse';
-                    break;
-                case self::ORDERSTATE_SAVED:
-                    $labelClass = 'label-success';
-                    break;
-                case self::ORDERSTATE_VALIDATION:
-                    $labelClass = 'label-warning';
-                    break;
-                case self::ORDERSTATE_REJECTED:
-                case self::ORDERSTATE_REJECTED_SUPPLIER:
-                    $labelClass = 'label-important';
-                    break;
-            }
-
-            return'<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
-
-            //drafts
-        } else {
+        //for drafts, return the order type
+        if ($order->ordertype_id == 3) {
             return'<span class="label">' . JText::_($order->ordertype) . '</span>';
         }
+
+        //order and estimates (no draft)
+        $progressCount = 0;
+        $statusCompl = '';
+        $labelClass = '';
+
+        //if extractions have been grouped by supplier, push them in an array
+        $tmpExtractions = array();
+        if ($isGroupedBySupplier) {
+            foreach ($basket->extractions as $supplier) {
+                $tmpExtractions = array_merge($tmpExtractions,$supplier->items);
+            }
+        } else {
+            $tmpExtractions = $basket->extractions;
+        }
+
+        //count finished products
+        foreach ($tmpExtractions as $extraction) {
+            if (
+                    $extraction->productstate_id == self::PRODUCTSTATE_AVAILABLE ||
+                    $extraction->productstate_id == self::PRODUCTSTATE_DELETED ||
+                    $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_SUPPLIER ||
+                    $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_TP
+            ) {
+                $progressCount++;
+            }
+        }
+
+        switch ($order->orderstate_id) {
+            case self::ORDERSTATE_ARCHIVED:
+            case self::ORDERSTATE_HISTORIZED:
+            case self::ORDERSTATE_FINISH:
+                $labelClass = 'label-success';
+                if (count($tmpExtractions) > 1) {
+                    $statusCompl = ' (' . $progressCount . '/' . count($tmpExtractions) . ')';
+                }
+                break;
+            case self::ORDERSTATE_AWAIT:
+                $labelClass = 'label-warning';
+                break;
+            case self::ORDERSTATE_PROGRESS:
+                $labelClass = 'label-info';
+                if (count($tmpExtractions) > 1) {
+                    $statusCompl = ' (' . $progressCount . '/' . count($tmpExtractions) . ')';
+                }
+                break;
+            case self::ORDERSTATE_SENT:
+                $labelClass = 'label-inverse';
+                break;
+            case self::ORDERSTATE_SAVED:
+                $labelClass = 'label-success';
+                break;
+            case self::ORDERSTATE_VALIDATION:
+                $labelClass = 'label-warning';
+                break;
+            case self::ORDERSTATE_REJECTED:
+            case self::ORDERSTATE_REJECTED_SUPPLIER:
+                $labelClass = 'label-important';
+                break;
+        }
+
+        return'<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
     }
 
     /**

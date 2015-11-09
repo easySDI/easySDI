@@ -88,12 +88,23 @@ class sdiUser {
 
     /**
      * 
-     * @param interger $juser Joomla user identifier
+     * @param int $id The id of the user to load. By default an sdiUser id. To use a joomla user id set $useJoomlaUserId to true.
+     * @param boolean $useJoomlaUserId Set to true to use a joomla user id instead of an sdiUser id.
      * @throws Exception
      */
-    function __construct($sdiId = null) {
-        if (!empty($sdiId)):
-            $user = $this->getUserById($sdiId);
+    function __construct($id = null, $useJoomlaUserId = false) {
+
+        if (!empty($id)):
+
+            // load user by joomla ID
+            if ($useJoomlaUserId):
+                $user = $this->getUserByJoomlaId($id);
+            //load user by easySDI id (default)
+            else:
+                $user = $this->getUserById($id);
+            endif;
+
+        //without id, load the current logged in user
         else:
             $user = $this->getCurrentUser();
         endif;
@@ -146,6 +157,11 @@ class sdiUser {
         }
     }
 
+    /**
+     * Get a user by it's ID
+     * @param int $sdiId an easySDI user id (not a joomla user id !)
+     * @return type
+     */
     private function getUserById($sdiId) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
@@ -155,7 +171,8 @@ class sdiUser {
                 ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
                 ->innerJoin("#__users juser ON juser.id = u.user_id")
                 ->where("uro.role_id = 1")
-                ->where('u.id = ' . (int) $sdiId)
+                ->where('u.id = ' . (int) $sdiId) //use the easySDI id
+                ->where("u.state = 1")
         ;
         $db->setQuery($query);
         $user = $db->loadObject();
@@ -166,6 +183,34 @@ class sdiUser {
         return $user;
     }
 
+    /**
+     * Get a user by it's joomla user id
+     * @param int $joomlaUserId a joomla user id (not an easySDI user id !)
+     */
+    private function getUserByJoomlaId($joomlaUserId) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('u.*, o.perimeter, juser.id as jid')
+                ->from('#__sdi_user AS u')
+                ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id")
+                ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
+                ->innerJoin("#__users juser ON juser.id = u.user_id")
+                ->where("uro.role_id = 1")
+                ->where('u.user_id = ' . (int) $joomlaUserId) //use the joomla id
+                ->where("u.state = 1")
+        ;
+        $db->setQuery($query);
+        $user = $db->loadObject();
+
+        $this->juser = JFactory::getUser($user->jid);
+        $this->name = $this->juser->name;
+
+        return $user;
+    }
+
+    /**
+     * Get the current logged in user
+     */
     private function getCurrentUser() {
 
         $this->juser = JFactory::getUser();
@@ -185,7 +230,7 @@ class sdiUser {
     }
 
     /**
-     * 
+     * Return true if the user is resource manager for at least one organism
      * @return boolean
      */
     public function isResourceManager() {
@@ -348,7 +393,7 @@ class sdiUser {
 
     /**
      * Get the organism the user is member of
-     * @return type
+     * @return array of organims
      */
     public function getMemberOrganisms() {
         if (!$this->isEasySDI) {
@@ -357,6 +402,10 @@ class sdiUser {
         return $this->role[1];
     }
 
+    /**
+     * Get the list of categories of the user's member organism
+     * @return @return array of categories
+     */
     public function getMemberOrganismsCategories() {
         if (!$this->isEasySDI) {
             return null;
@@ -662,6 +711,10 @@ class sdiUser {
         }
     }
 
+    /**
+     * Get the Organisms for which the user is extraction responsible
+     * @return type
+     */
     public function getResponsibleExtraction() {
         if (!$this->isEasySDI) {
             return false;
@@ -678,6 +731,32 @@ class sdiUser {
         $db->setQuery($query);
 
         return $db->loadColumn();
+    }
+
+    /**
+     * Check if the user's member organism is in one of the supplied categories
+     * @param type $categories
+     * @return boolean
+     */
+    public function isPartOfCategories($categories) {
+        if (!is_array($categories) && $categories != null) {
+            $categories = array($categories);
+        }
+        $organism = $this->getMemberOrganisms();
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('id')
+                ->from('#__sdi_organism_category')
+                ->where('organism_id=' . (int) $organism[0]->id)
+                ->where('category_id IN (' . implode(",", $categories) . ')');
+        $db->setQuery($query);
+        $db->execute();
+        $numRows = $db->getNumRows();
+        if ($numRows != null)
+            return true;
+        else
+            return false;
     }
 
 }

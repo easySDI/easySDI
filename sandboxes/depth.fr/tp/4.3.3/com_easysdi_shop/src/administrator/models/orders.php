@@ -27,26 +27,8 @@ class Easysdi_shopModelorders extends JModelList {
 
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                /* 'id', 'a.id',
-                  'guid', 'a.guid',
-                  'alias', 'a.alias',
-                  'created_by', 'a.created_by', */
-                'created', 'a.created', /*
-                  'modified_by', 'a.modified_by',
-                  'modified', 'a.modified',
-                  'ordering', 'a.ordering',
-                  'state', 'a.state', */
+                'created', 'a.created', 
                 'name', 'a.name',
-                /* 'access', 'a.access',
-                  'asset_id', 'a.asset_id',
-                  'ordertype_id', 'a.ordertype_id',
-                  'orderstate_id', 'a.orderstate_id',
-                  'user_id', 'a.user_id',
-                  'thirdparty_id', 'a.thirdparty_id',
-                  'buffer', 'a.buffer',
-                  'surface', 'a.surface',
-                  'remark', 'a.remark',
-                  'sent', 'a.sent', */
                 'completed', 'a.completed',
                 'user', 'user',
             );
@@ -65,28 +47,40 @@ class Easysdi_shopModelorders extends JModelList {
         $app = JFactory::getApplication('administrator');
 
         // Load the filters states.
-        foreach (array(
-    'search',
-    'state',
-    'ordertype',
-    'orderstate',
-    'orderuser',
-    'orderprovider',
-    'orderdiffusion',
-    'ordersent',
-    'ordercompleted'
+        foreach (
+        array(
+            'search',
+            'state',
+            'ordertype',
+            'orderstate',
+            'orderuser',
+            'orderprovider',
+            'orderdiffusion',
+            'ordersent',
+            'ordercompleted'
         ) as $key) {
             $state = $app->getUserStateFromRequest($this->context . '.filter.' . $key, 'filter_' . $key, '', 'string');
             $this->setState('filter.' . $key, $state);
         }
 
+        //ordering by default : ID
+        $ordering = $app->input->get('filter_order', 'a.id');
+        if (!in_array($ordering, $this->filter_fields)) {
+            $ordering = 'a.id';
+        }
+
+        //direction, by default : DESC
+        $direction = $app->input->get('filter_order_Dir', 'DESC');
+        if (!in_array(strtoupper($direction), array('ASC', 'DESC', ''))) {
+            $direction = 'DESC';
+        }
 
         // Load the parameters.
         $params = JComponentHelper::getParams('com_easysdi_shop');
         $this->setState('params', $params);
 
         // List state information.
-        parent::populateState('a.id', 'asc');
+        parent::populateState($ordering, $direction);
     }
 
     /**
@@ -153,14 +147,6 @@ class Easysdi_shopModelorders extends JModelList {
                 ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
                 ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id');
 
-        // product with provider
-        /* $query->select("GROUP_CONCAT(CONCAT(organism.name,' - ',diffusion.name) SEPARATOR '<br/>".PHP_EOL."') AS products")
-          ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
-          ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
-          ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
-          ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
-          ->group('a.id'); */
-
         // Filter by published state
         $published = $this->getState('filter.state');
         if (is_numeric($published)) {
@@ -168,8 +154,6 @@ class Easysdi_shopModelorders extends JModelList {
         } else if ($published === '') {
             $query->where('(a.state IN (0, 1))');
         }
-
-
 
         // Filter by ordertype state
         $ordertype = $this->getState('filter.ordertype');
@@ -207,7 +191,6 @@ class Easysdi_shopModelorders extends JModelList {
                     ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion2 ON order_diffusion2.order_id =a.id')
                     ->where('order_diffusion2.diffusion_id = ' . (int) $orderdiffusion);
         }
-
 
         // Filter by ordersent state
         $ordersent = $this->getState('filter.ordersent');
@@ -327,7 +310,7 @@ class Easysdi_shopModelorders extends JModelList {
                 $searchOnId = ' OR (a.id = ' . (int) $search . ')';
             }
             $search = $db->Quote('%' . $db->escape($search, true) . '%');
-            $query->where('(( a.name LIKE ' . $search . ' ) '.$searchOnId. ' )');
+            $query->where('(( a.name LIKE ' . $search . ' ) ' . $searchOnId . ' )');
         }
 
 
