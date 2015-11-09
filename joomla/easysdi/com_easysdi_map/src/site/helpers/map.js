@@ -39,10 +39,6 @@ Ext.onReady(function() {
                 window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }
         }
-        if (data.level && cleared === "false") {
-            //Init the indoor layer with the default level value
-            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this, window.appname.mapPanel.map.indoorlevelslider.value);
-        }
         loadingMask.hide();
     });
 
@@ -62,6 +58,7 @@ Ext.onReady(function() {
     });
 
 });
+
 
 function getMapConfig() {
     var config = {};
@@ -236,7 +233,7 @@ function getMapConfig() {
                     var tool = {
                         ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar",
-                        url: "index.php?option=com_easysdi_catalog&view=catalog&id=",
+                        url: "index.php?preview=map&tmpl=component&option=com_easysdi_catalog&view=catalog&id="+data.tools[index].params,
                         iwidth: mwidth,
                         iheight: mheight
                     };
@@ -292,7 +289,7 @@ function getMapConfig() {
                     ptype: "gxp_wmsgetfeatureinfo",
                     popupTitle: "Feature Info",
                     toggleGroup: "interaction",
-                    format: "' . $tool->params . '",
+                    format: data.tools[index].params,
                     actionTarget: "hiddentbar",
                     defaultAction: 0
                 };

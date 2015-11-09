@@ -32,6 +32,11 @@ class Easysdi_shopTablediffusionperimeter extends JTable {
         $query->select('perimeter_id, buffer ');
         $query->from($this->_tbl.' as p');        
         $query->where($this->_db->quoteName('p.diffusion_id') . ' = ' . (int) $id);
+        
+        $params = JComponentHelper::getParams('com_easysdi_shop');
+        if ($params->get('userperimeteractivated') != 1){
+            $query->where($this->_db->quoteName('p.perimeter_id') . ' NOT IN (2)');
+        }
         $this->_db->setQuery($query);
 
         try {

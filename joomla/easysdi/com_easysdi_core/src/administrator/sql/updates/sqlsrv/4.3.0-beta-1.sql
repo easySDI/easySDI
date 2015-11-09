@@ -17,10 +17,10 @@ SET IDENTITY_INSERT [#__sdi_sys_role] OFF
 
 ALTER TABLE [#__sdi_category] ADD [overall_fee] decimal(6,2) default 0;
 
-ALTER TABLE [#__sdi_organism] ADD [internal_free] smallint default 0;
-ALTER TABLE [#__sdi_organism] ADD [fixed_fee_ti] decimal(6,2) default 0;
-ALTER TABLE [#__sdi_organism] ADD [data_free_fixed_fee] smallint default 0;
-ALTER TABLE [#__sdi_organism] ADD [selectable_as_thirdparty] smallint default 0;
+ALTER TABLE [#__sdi_organism] ADD [internal_free] smallint NULL;
+ALTER TABLE [#__sdi_organism] ADD [fixed_fee_ti] decimal(6,2) NULL;
+ALTER TABLE [#__sdi_organism] ADD [data_free_fixed_fee] smallint NULL;
+ALTER TABLE [#__sdi_organism] ADD [selectable_as_thirdparty] smallint NULL;
 
 SET QUOTED_IDENTIFIER ON;
 

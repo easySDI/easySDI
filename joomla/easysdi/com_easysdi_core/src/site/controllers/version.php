@@ -914,13 +914,19 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $jform = JFactory::getApplication()->input->get('jform', array(), 'array');
             $id = $jform['id'];
         }
-        $data = array();
-        $data['id'] = $id;
 
-        $version = $model->getData($data['id']);
-        $version->resource_name = $version->resourcename;
-        $version->version_name = $version->name;
-
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        
+        $query->select('m.id as metadata_id,v.*,v.name as version_name,r.name as resource_name, r.id as resource_id');
+        $query->from('#__sdi_version v');
+        $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+        $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
+        $query->where('v.id = '.(int)$id);
+        
+        $db->setQuery($query);
+        $version = $db->loadObject();
+        
         $response = array();
         $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished);
 

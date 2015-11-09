@@ -400,6 +400,16 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     return false;
                 }
             }
+            
+            if ('WFS' == $serviceconnector_name) {
+                require_once(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/WfsWebservice.php');
+                if (!WfsWebservice::saveAllFeatureTypes($data['virtualservice_id'], $data['id'])) {
+                    $this->setError('Failed to save all WFS layers.');
+                    return false;
+                }
+            }
+            
+            
 
             if ('CSW' == $serviceconnector_name) {
                 //Save specific restrictions
@@ -465,12 +475,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                         }
                         break;
                     case 'WFS':
-                        require_once(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/WfsWebservice.php');
-                        if (!WfsWebservice::saveAllFeatureTypes($data['virtualservice_id'], $data['id'])) {
-                            $this->setError('Failed to save all WFS layers.');
-                            return false;
-                        }
-
                         if (!$this->saveWFSInheritance($data)) {
                             $this->setError('Failed to save inheritance.');
                             return false;

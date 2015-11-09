@@ -955,6 +955,8 @@ ALTER TABLE ONLY #__sdi_order_diffusion
     ADD CONSTRAINT #__sdi_order_diffusion_fk2 FOREIGN KEY (diffusion_id) REFERENCES #__sdi_diffusion(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_order_diffusion
     ADD CONSTRAINT #__sdi_order_diffusion_fk3 FOREIGN KEY (productstate_id) REFERENCES #__sdi_sys_productstate(id) MATCH FULL;
+ALTER TABLE ONLY #__sdi_order_diffusion
+    ADD CONSTRAINT #__sdi_order_diffusion_fk4 FOREIGN KEY (storage_id) REFERENCES #__sdi_sys_extractstorage(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_order
     ADD CONSTRAINT #__sdi_order_fk1 FOREIGN KEY (ordertype_id) REFERENCES #__sdi_sys_ordertype(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_order

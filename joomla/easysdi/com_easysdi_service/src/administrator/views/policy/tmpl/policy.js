@@ -121,11 +121,11 @@ jQuery(document).ready(function (){
 	};
 	var allowFrom = jQuery('#jform_allowfrom');
 	var allowTo = jQuery('#jform_allowto');
-	if ('0000-00-00' == allowFrom.val() || '' == allowFrom.val()) {
+        if ('0000-00-00' == allowFrom.val() || '' == allowFrom.val()) {
 		allowFrom.val(date.year + '-' + date.month + '-' + date.day);
 	}
 	if ('0000-00-00' == allowTo.val() || '' == allowTo.val()) {
-		date.year += 100;
+		date.year += 10;
 		allowTo.val(date.year + '-' + date.month + '-' + date.day);
 	}
 	

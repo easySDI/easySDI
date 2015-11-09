@@ -18,7 +18,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/mpdf/
  * Catalog controller class.
  */
 class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
-
+    
     public function exportPDF($id = null, $download = true) {
         if (empty($id)) {
             $id = JFactory::getApplication()->input->get('id', null, 'STRING');
@@ -32,10 +32,14 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
             $type = "";
             $preview = "search_list";
         }
+        //Specific parameter for PDF output
+        $out = JFactory::getApplication()->input->get('out', null, 'STRING');
+        
         $metadata = new cswmetadata($id);
         $metadata->load('complete');
         $metadata->extend($catalog, $type, $preview, 'true', $lang);
-        $file = $metadata->applyXSL($catalog, $preview, $type);
+        
+        $file = $metadata->applyXSL(array ('catalog' => $catalog, 'type' => $type, 'preview' => $preview, 'out' => $out));
 
         $tmp = uniqid();
         $tmpfile = JPATH_BASE . '/tmp/' . $tmp;

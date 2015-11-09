@@ -15,6 +15,9 @@ class sdiExtent {
     public $id;
     public $name;
     public $features;    
+    public $surface;
+    public $level;
+    public $buffer;
 }
 
 ?>

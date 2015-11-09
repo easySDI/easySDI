@@ -9,8 +9,10 @@
 // no direct access
 defined('_JEXEC') or die;
 
-
 JHTML::_('behavior.modal');
+
+$doc = JFactory::getDocument();
+$doc->addScript(Juri::base(true) . '/components/com_easysdi_map/views/preview/tmpl/preview.js');
 
 if (!empty($this->mapscript)) :
     ?>

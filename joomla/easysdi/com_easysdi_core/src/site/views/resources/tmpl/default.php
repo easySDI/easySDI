@@ -49,7 +49,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
             $resourcetypes = $this->user->getResourceType();
             ?>
             <?php // echo $this->itemmap->_item->text; ?>
-            <div class="well">
+            <div class="well sdi-searchcriteria">
                 <div class="row-fluid">
                     <form id='criterias' class="form-search" action="" method="post">
                         <input type='hidden' id='filter_ordering' name='filter_ordering' value='ASC'/>

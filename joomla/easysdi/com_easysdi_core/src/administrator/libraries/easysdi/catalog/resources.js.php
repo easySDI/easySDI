@@ -1,6 +1,22 @@
+<?php
+ $iframewidth = JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth');
+ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight');
+?>
 <script type="text/javascript">
 js = jQuery.noConflict();
 
+    
+    SqueezeBox.initialize({
+        handler: 'iframe',
+        size: {
+            x: <?php echo $iframewidth ; ?>,
+            y: <?php echo $iframeheight ; ?>
+        }
+    });
+    
+var now = new Date();
+now = now.toISOString().replace('T', ' ').substr(0, 10);
+    
 // #n# are used as placeholder
 var Links = {
     resource: {
@@ -10,10 +26,9 @@ var Links = {
         metadata: {
             preview: {
                 class: 'modal',
-                href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
+                href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor&type=complete', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
                 property: 'metadata',
-                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')?>",
-                rel: "{handler:'iframe',size:{x:600,y:700}}"
+                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')?>"
             },
             edit: {
                 href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=#0#')?>',
@@ -346,7 +361,7 @@ var buildMetadataDropDown = function(resource){
     if(
         (resource.rights.metadataEditor && metadata.state===metadataState.INPROGRESS)
         ||
-        ((resource.rights.metadataResponsible || resource.rights.resourceManager) && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED]))
+        (resource.rights.metadataResponsible && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED]))
     )
         section.push(buildDropDownItem(resource, 'metadata.edit'));
     
@@ -475,9 +490,11 @@ var buildStatusCell = function(resource){
         js(versions).each(function(i, version){
             if('undefined' !== typeof version){
                 var metadata = version.metadata();
+                var d = metadata.publishDate.substr(0,10);
+                d = d>now ? '('+d+')' : '';
                 var option = js('<option></option>')
                         .val(version.id)
-                        .html(metadata.name+' : '+metadata.stateName);
+                        .html(metadata.name+' : '+metadata.stateName + ' ' + d);
 
                 select.append(option);
             }
@@ -858,6 +875,7 @@ var buildActionsCell = function(resource, reload){
     getPublishRight(js('a#'+resource.id+'_publish'));
     getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
     SqueezeBox.assign(js('a#'+resource.id+'_preview'));
+    
 };
 
 // Set events
@@ -912,7 +930,7 @@ js(document).ready(function(){
     
     // Fix version's select style and event
     js('td[id$=_resource_versions] > select')
-            .chosen()
+            .chosen({width:'100%'})
             .on('change', function(){buildActionsCell(resources.get(getResourceId(this)));})
             ;
     

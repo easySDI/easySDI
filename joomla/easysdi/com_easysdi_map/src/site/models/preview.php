@@ -130,6 +130,28 @@ class Easysdi_mapModelPreview extends JModelForm {
                         $serviceproperties = $service->getProperties(1);
                         $service = JArrayHelper::toObject($serviceproperties, 'JObject');
                         $item->service = $service;
+                        
+                        //Load server type : used for indoor navigation
+                        if ($maplayer->servicetype == 'physical') {
+                             $item->service->server = $service->server_id;                            
+                        }else{                            
+                            $db = JFactory::getDbo();
+                            $query = $db->getQuery(true);
+                            $query->select('p.server_id');
+                            $query->from('#__sdi_virtualservice AS v');
+                            $query->join('LEFT', '#__sdi_virtual_physical AS vp ON vp.virtualservice_id=v.id');
+                            $query->join('LEFT', '#__sdi_physicalservice AS p ON vp.physicalservice_id=p.id');
+                            $query->group('p.server_id');
+                            $query->where('v.id = ' .  (int) $maplayer->service_id);
+                            $db->setQuery($query);
+                            $services = $db->loadColumn();
+                            if (count($services) > 1) {
+                                //virtual service aggregates more than one kind of physical services
+                                 $item->service->server = 3;
+                            } else {
+                                 $item->service->server = $services[0];
+                            }
+                        }
                     endif;
 
                     //Load related version 

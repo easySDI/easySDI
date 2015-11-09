@@ -441,6 +441,11 @@ REFERENCES [#__sdi_sys_productstate] ([id])
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
+ALTER TABLE [#__sdi_order_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk4] FOREIGN KEY([storage_id])
+REFERENCES [#__sdi_sys_extractstorage] ([id])
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
+
 ALTER TABLE [#__sdi_order_diffusion] CHECK CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk3];
 
 ALTER TABLE [#__sdi_order_perimeter]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk1] FOREIGN KEY([order_id])

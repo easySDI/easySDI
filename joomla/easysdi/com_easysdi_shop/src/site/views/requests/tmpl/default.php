@@ -16,7 +16,7 @@ JHtml::_('formbehavior.chosen', 'select');
 ?>
 <div class="shop front-end-edit">
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_REQUESTS'); ?></h1>
-    <div class="well">
+    <div class="well sdi-searchcriteria">
         <div class="row-fluid">
             <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=requests'); ?>" method="post">
                 <div class="btn-toolbar">

@@ -269,7 +269,7 @@ class SearchJForm extends SearchForm {
             $field->setAttribute('label', EText::_($searchCriteria->guid));
         }
         $field->setAttribute('name', $name);
-        $field->setAttribute('format', 'Y-m-d');
+        $field->setAttribute('format', '%Y-%m-%d');
 
         $field->setAttribute('default', $this->getDefault($searchCriteria, $name));
 

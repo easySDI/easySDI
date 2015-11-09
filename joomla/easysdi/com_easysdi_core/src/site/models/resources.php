@@ -191,7 +191,7 @@ class Easysdi_coreModelResources extends JModelList {
         }
         
         $query->order('a.name '.$this->getState('filter.ordering'));
-
+        
         return $query;
     }
 

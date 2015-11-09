@@ -79,7 +79,7 @@ class Easysdi_catalogControllerSitemap extends Easysdi_catalogController {
         
         $query = $this->db->getQuery(true);
         
-        $query->select('m.guid, m.modified')
+        $query->select("m.guid, DATE_FORMAT(m.modified,'%Y-%m-%d') as modified")
                 ->from('#__sdi_metadata m')
                 ->join('LEFT', '#__sdi_version v on v.id=m.version_id')
                 ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')

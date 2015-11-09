@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/helpers/curl.php';
 
 /**
  * Diffusion controller class.
@@ -270,30 +271,8 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
     }
     
     public function testURLAccessibility(){
-        $data = JFactory::getApplication()->input->getArray();
-        $curlError = false;
-        
-        $url = Easysdi_shopHelper::unparse_url(parse_url($data['url']), array(
-            'user' => $data['user'],
-            'pass' => $data['password']
-        ));
-        unset($data['url'], $data['user'], $data['password']);
-        
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-
-        if( ($head=curl_exec($ch)) === false)
-            $curlError = curl_error($ch);
-
-        curl_close($ch);
-        
-        echo $curlError===false ? 1 : $curlError;
-        die();
+        $curlHelper = new CurlHelper();
+        $curlHelper->URLChecker(JFactory::getApplication()->input);
     }
     
     public function getAvailableProfiles(){

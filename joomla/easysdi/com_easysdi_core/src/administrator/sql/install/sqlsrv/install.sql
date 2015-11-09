@@ -465,9 +465,10 @@ CREATE TABLE [#__sdi_catalog] (
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](500) NULL,
+        [contextualsearchresultpaginationnumber] [tinyint] DEFAULT 0,
 	[xsldirectory] [nvarchar](255) NULL,
 	[oninitrunsearch] [smallint] NULL,
-	[cswfilter] [nvarchar](max) NULL,
+	[cswfilter] [nvarchar](max) NULL,        
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
     [scrolltoresults] [smallint] NOT NULL DEFAULT 1,
@@ -1001,7 +1002,7 @@ SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [#__sdi_maplayer] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
-	[alias] [nvarchar](20) NOT NULL,
+	[alias] [nvarchar](255) NOT NULL,
 	[created_by] [int] NOT NULL,
 	[created] [datetime2](0) NOT NULL,
 	[modified_by] [int] NULL,
@@ -1144,6 +1145,10 @@ CREATE TABLE [#__sdi_order] (
 	[buffer] [numeric](38, 18) NULL,
 	[surface] [numeric](38, 18) NULL,
 	[remark] [nvarchar](500) NULL,
+        [mandate_ref] [nvarchar](75) NULL,
+        [mandate_contact] [nvarchar](75) NULL,
+        [mandate_email] [nvarchar](100) NULL,
+        [level] [nvarchar](100) NULL,
 	[sent] [datetime2](0) NOT NULL,
 	[completed] [datetime2](0) NOT NULL,
 	[access] [int] NOT NULL,
@@ -1176,8 +1181,10 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[remark] [nvarchar](500) NULL,
 	[fee] [decimal](10, 0) NULL,
 	[completed] [datetime2](0) NULL,
+	[storage_id] [bigint] NULL,
 	[file] [nvarchar](500) NULL,
 	[size] [decimal](10, 0) NULL,
+        [displayName] [nvarchar](75) NULL
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1242,14 +1249,14 @@ CREATE TABLE [#__sdi_organism] (
 	[name] [nvarchar](255) NOT NULL,
 	[website] [nvarchar](500) NULL,
 	[perimeter] [nvarchar](max) NULL,
-        [selectable_as_thirdparty] smallint DEFAULT 0,
+        [selectable_as_thirdparty] [smallint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
 	[username] [nvarchar](150) NULL,
 	[password] [nvarchar](65) NULL,
-        [internal_free] smallint DEFAULT 0,
-        [fixed_fee_ti] decimal(6,2) DEFAULT 0,
-        [data_free_fixed_fee] smallint DEFAULT 0,
+        [internal_free] [smallint] NULL,
+        [fixed_fee_ti] [decimal](6,2) NULL,
+        [data_free_fixed_fee] [smallint] NULL,
 
  CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
 (
@@ -1330,6 +1337,8 @@ CREATE TABLE [#__sdi_perimeter] (
 	[featuretypefielddescription] [nvarchar](255) NULL,
 	[featuretypefieldgeometry] [nvarchar](255) NULL,
 	[featuretypefieldresource] [nvarchar](255) NULL,
+        [featuretypefieldlevel] [nvarchar](255) NULL,
+        [maplayer_id] [bigint] NULL,
 	[wmsservice_id] [bigint] NULL,
 	[wmsservicetype_id] [bigint] NULL,
 	[layername] [nvarchar](255) NULL,
@@ -1698,6 +1707,7 @@ CREATE TABLE [#__sdi_relation] (
 	[editorrelationscope_id] [bigint] NULL,
 	[childresourcetype_id] [bigint] NULL,
 	[childtype_id] [bigint] NULL,
+        [accessscope_limitation] [tinyint] DEFAULT 0,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_relation_id] PRIMARY KEY CLUSTERED 

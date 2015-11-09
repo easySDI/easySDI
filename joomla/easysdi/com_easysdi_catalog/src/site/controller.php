@@ -20,6 +20,7 @@ class Easysdi_catalogController extends JControllerLegacy {
         // If view is sheet, we'll check access scope before 
         // doing anything (like getting CSW data etc...)
         $vName = $this->input->get('view', null);
+        $tName = $this->input->get('task', null);
         if ($vName == 'sheet'):
 
             //check if a guid is given
@@ -39,7 +40,7 @@ class Easysdi_catalogController extends JControllerLegacy {
                 $this->setRedirect(JURI::base());
                 return false;
             endif;
-            //check if the user has the right to see the sheet
+            //check if the user has the right to see the sheet if the resource exists in database, else this could be an harvested metadata
             $db = JFactory::getDBO();
             $query = $db->getQuery(true)
                     ->select('r.*')
@@ -51,12 +52,12 @@ class Easysdi_catalogController extends JControllerLegacy {
             $resource = $db->loadObject();
             $app = JFactory::getApplication();
             $sdiUser = sdiFactory::getSdiUser();
-            if ($resource->accessscope_id != 1):
+            if (isset($resource) && ($resource->accessscope_id != 1)):
                 if (!$sdiUser->isEasySDI):
                     JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                     return;
                 endif;
-                if ($resource->accessscope_id == 2):
+                if ($resource->accessscope_id == 3):
                     $organisms = sdiModel::getAccessScopeOrganism($resource->guid);
                     $organism = $sdiUser->getMemberOrganisms();
                     if (!in_array($organism[0]->id, $organisms)):
@@ -64,14 +65,14 @@ class Easysdi_catalogController extends JControllerLegacy {
                         return;
                     endif;
                 endif;
-                if ($resource->accessscope_id == 3):
+                if ($resource->accessscope_id == 4):
                     $users = sdiModel::getAccessScopeUser($resource->guid);
                     if (!in_array($sdiUser->id, $users)):
                         JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                         return;
                     endif;
                 endif;
-                if ($resource->accessscope_id == 4):
+                if ($resource->accessscope_id == 2):
                     $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                     $allowedCategories = sdiModel::getAccessScopeCategory($resource->guid);
                     if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
@@ -81,6 +82,65 @@ class Easysdi_catalogController extends JControllerLegacy {
                 endif;
             endif;
         endif;
+
+        /**
+         * Mapping easysdi v2 report URL
+         */
+        if ($tName == 'getReport') {
+            $jinput = JFactory::getApplication()->input;
+
+            $guid = $jinput->get('metadata_guid', array(), 'array');
+            $type = $jinput->get('reporttype', null, 'STRING');
+            $lang = $jinput->get('language', null, 'STRING');
+            $callfromjoomla = $jinput->get('callfromjoomla', true, 'BOOLEAN');
+            $catalog = $jinput->get('context', null, 'STRING');
+            $lastVersion = $jinput->get('lastVersion',null, 'STRING');
+
+            // map language parameter
+            if (!empty($lang)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('*');
+                $query->from('#__sdi_language');
+                $query->where('UPPER(datatable) LIKE UPPER(' . $query->quote($lang) . ')');
+                
+                $db->setQuery($query);
+                $language = $db->loadObject();
+            }
+            
+            // map lastVersion parameter
+            if(!empty($lastVersion)){
+                if($lastVersion == 'yes'){
+                    $jinput->set('lastVersion', 1);
+                }else{
+                    $jinput->set('lastVersion', 0);
+                }
+            }
+
+            $jinput->set('format', null);
+
+            $jinput->set('guid', $guid);
+            $jinput->set('type', $type);
+            if(isset($language)){
+                $jinput->set('lang', $language->code);
+            }
+            $jinput->set('callfromjoomla', $callfromjoomla);
+            $jinput->set('catalog', $catalog);
+            $jinput->set('view', 'report');
+            $jinput->set('tmpl', 'component');
+        }
+
+        /**
+         * Require 
+         */
+        if ($vName == 'report') {
+            $guids = JFactory::getApplication()->input->get('guid', array(), 'array');
+            if (empty($guids)) {
+                JError::raiseWarning(400, JText::_('COM_EASYSDI_CATALOG_REPORT_MISSING_GUID'));
+                return;
+            }
+        }
 
         parent::display($cachable, $urlparams);
 
