@@ -1252,7 +1252,6 @@ abstract class Easysdi_shopHelper {
      */
     public static function notifyCustomerOnOrderUpdate($orderId, $silentFail = false) {
 
-        $sdiUser = sdiFactory::getSdiUser();
         $orderModel = JModelLegacy::getInstance('order', 'Easysdi_shopModel', array());
         $order = $orderModel->getTable();
         $order->load(array('id' => (int) $orderId));
@@ -1260,6 +1259,8 @@ abstract class Easysdi_shopHelper {
         $errors = false;
 
         if (isset($order)) {
+            
+            $sdiUser = sdiFactory::getSdiUser($order->user_id);
 
             switch ($order->orderstate_id) {
                 case Easysdi_shopHelper::ORDERSTATE_FINISH:
