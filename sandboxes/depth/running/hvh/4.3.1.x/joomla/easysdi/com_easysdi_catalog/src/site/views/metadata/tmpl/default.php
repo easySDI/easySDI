@@ -63,6 +63,10 @@ JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
 JText::script('COM_EASYSDI_CATALOG_OPEN_ALL');
 JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
 
+JText::script('JGLOBAL_SELECT_SOME_OPTIONS');
+JText::script('JGLOBAL_SELECT_AN_OPTION');
+JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
+
 /* bootbox language */
 $ldao = new SdiLanguageDao();
 $user = new sdiUser();
