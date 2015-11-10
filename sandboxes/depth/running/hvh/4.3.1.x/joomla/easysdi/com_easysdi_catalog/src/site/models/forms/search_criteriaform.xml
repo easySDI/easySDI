@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="guid" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_GUID"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_GUID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="alias" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ALIAS"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ALIAS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_CREATED_BY"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CREATED_BY"  /> 
+
+       <field name="created" type="timecreated" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_CREATED"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CREATED"  /> 
+
+       <field name="modified_by" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_MODIFIED_BY"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_MODIFIED_BY" 
+         default="0" 
+        
+        
+        filter="safehtml" /> 
+
+       <field name="modified" type="timeupdated" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_MODIFIED"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_MODIFIED"  /> 
+
+       <field name="name" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_NAME"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_NAME" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="issystem" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ISSYSTEM"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ISSYSTEM" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="criteriatype_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_CRITERIATYPE_ID"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CRITERIATYPE_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="rendertype_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_RENDERTYPE_ID"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_RENDERTYPE_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+         <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+
+                        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" /> 
+
+ </fieldset> 
+
+ <fieldset 
+                        name="accesscontrol">
+                       <field name="asset_id" type="hidden" filter="unset" />
+                       <field name="rules"
+                            type="rules"
+                            label="JFIELD_RULES_LABEL"
+                            translate_label="false"
+                            filter="rules"
+                            validate="rules"
+                            class="inputbox"
+                            component="com_easysdi_catalog"
+                            section="search_criteria"
+                        />
+
+	</fieldset>
+
+</form>
