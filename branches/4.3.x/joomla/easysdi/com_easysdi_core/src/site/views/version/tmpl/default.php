@@ -46,7 +46,7 @@ if ($this->item) :
     
     $versioning = ($this->item->versioning == 1) ? 'true' : 'false';
     $document->addScriptDeclaration('var versioning=' . $versioning . ';');
-    $isReadonly = !in_array($this->item->metadatastate, array(sdiMetadata::INPROGRESS, sdiMetadata::VALIDATED)) || !$this->user->authorizeOnMetadata($this->item, sdiUser::resourcemanager) ? 'true' : 'false';
+    $isReadonly = in_array($this->item->metadatastate, array(sdiMetadata::INPROGRESS, sdiMetadata::VALIDATED)) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::resourcemanager) ? 'false' : 'true';
     $document->addScriptDeclaration("var isReadonly = ".$isReadonly.";");
     ?>
 
