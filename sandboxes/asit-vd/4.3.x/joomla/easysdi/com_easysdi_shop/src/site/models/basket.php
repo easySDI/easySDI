@@ -77,7 +77,11 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $data['id'] = $basket->id;
 
         if (empty($basket->name)):
-            $data['name'] = JFactory::getUser()->name . ' - ' . JFactory::getDate();
+            $systemConfig = JFactory::getConfig();
+            $joomlaUser = JFactory::getUser();
+            $dateForName = JFactory::getDate();
+            $dateForName->setTimeZone(new DateTimeZone($joomlaUser->getParam('timezone', $systemConfig->get('offset'))));
+            $data['name'] = JFactory::getUser()->name . ' - ' . $dateForName;
         else:
             $data['name'] = $basket->name;
         endif;
