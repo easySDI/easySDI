@@ -192,6 +192,7 @@ class Easysdi_shopModelRequests extends JModelList {
 
         if($doneRequests){
             $query->where('od.productstate_id <> '.Easysdi_shopHelper::PRODUCTSTATE_SENT);
+            $query->where('od.productstate_id <> '.Easysdi_shopHelper::PRODUCTSTATE_VALIDATION);
         }else{
             $query->where('od.productstate_id = '.Easysdi_shopHelper::PRODUCTSTATE_SENT);
         }
