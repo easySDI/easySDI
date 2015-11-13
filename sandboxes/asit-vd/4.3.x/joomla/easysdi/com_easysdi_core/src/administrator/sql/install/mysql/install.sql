@@ -2392,7 +2392,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `fee` DECIMAL(10)  NULL ,
 `completed` DATETIME NULL DEFAULT '0000-00-00 00:00:00',
 `storage_id` INT(11) UNSIGNED NULL ,
-`file` VARCHAR(500)  NULL ,
+`file` VARCHAR(4000)  NULL ,
 `size` DECIMAL(10)  NULL ,
 `displayName` VARCHAR(75) NULL,
 PRIMARY KEY (`id`),
