@@ -224,6 +224,8 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         if ($xml === null) {
             $xml = $IO ? $this->request : $this->response;
         }
+        
+        $defaultUseErrors = libxml_use_internal_errors(true);
 
         if (!@$xml->schemaValidate($xsd)) {
             //throw an xml error exception
@@ -236,9 +238,11 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             if ($IO) { // Input
                 $this->getException(400, 'The given XML is not valid. Please consult the XSD : ' . $xsd);
             } else { // Output
-                $this->getException(500, $errors);
+                $this->getException(500, print_r($errors,true));
             }
         }
+        
+        libxml_use_internal_errors($defaultUseErrors);
     }
 
     /**
@@ -533,6 +537,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $suppliers = $this->response->createElementNS(self::nsSdi, 'sdi:suppliers');
 
         foreach (array_keys($basket->extractions) as $supplierId) {
+            //skip other organisms if organismaccount is used
+            if (!empty($this->organism) && $this->organism->id != $supplierId) {
+                continue;
+            }
             $suppliers->appendChild($this->getSupplier($order, $supplierId));
         }
 
@@ -816,6 +824,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                         ->leftJoin('#__sdi_pricing_profile pp ON pp.id=pospp.pricing_profile_id')
                         ->where('o.id=' . (int) $order->id)
                         ->where('r.organism_id=' . (int) $supplierId)
+                        ->where('pos.supplier_id=' . (int) $supplierId)
                         ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
                         ->where('od.productstate_id IN (' . implode(',', $this->states) . ')'));
 
@@ -1219,7 +1228,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * call getException if the unit size is not recognized
      */
     private function convertSize() {
-        $sizeNode = $this->product->getElementsByTagNameNS(self::nsSdi, 'size')->item(0);
+        $sizeNode = $this->product->getElementsByTagNameNS(self::nsSdi, 'filesize')->item(0);
         $unit = $sizeNode->getAttribute('unit');
         $size = $sizeNode->nodeValue;
 

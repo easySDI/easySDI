@@ -1574,7 +1574,7 @@ class FormGenerator {
                         switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
                             case EnumRendertype::$CHECKBOX:
                             case EnumRendertype::$RADIOBUTTON:
-                            case EnumRendertype::$LIST:
+                            //case EnumRendertype::$LIST: //TODO see https://forge.easysdi.org/issues/1171 : it breaks single selects
                                 break;
                             default:
                                 $first = array('id' => '', 'guid' => '', 'name' => '', 'value' => '');
