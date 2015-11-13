@@ -172,7 +172,6 @@ class sdiUser {
                 ->innerJoin("#__users juser ON juser.id = u.user_id")
                 ->where("uro.role_id = 1")
                 ->where('u.id = ' . (int) $sdiId) //use the easySDI id
-                ->where("u.state = 1")
         ;
         $db->setQuery($query);
         $user = $db->loadObject();
@@ -197,7 +196,6 @@ class sdiUser {
                 ->innerJoin("#__users juser ON juser.id = u.user_id")
                 ->where("uro.role_id = 1")
                 ->where('u.user_id = ' . (int) $joomlaUserId) //use the joomla id
-                ->where("u.state = 1")
         ;
         $db->setQuery($query);
         $user = $db->loadObject();
