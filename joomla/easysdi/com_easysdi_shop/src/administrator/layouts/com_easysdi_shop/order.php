@@ -176,7 +176,7 @@ if (!$showActions) {
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_ORGANISM'); ?>
                 </div>
                 <div class="span8 order-edit-value" >
-                    <?php echo $item->basket->sdiUser->getMemberOrganisms()[0]->name; ?>
+                    <?php $organisms = $item->basket->sdiUser->getMemberOrganisms();  echo $organisms[0]->name; ?>
 
                 </div>
             </div>     
