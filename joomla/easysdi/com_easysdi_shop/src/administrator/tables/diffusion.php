@@ -92,7 +92,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['fileurl'] = null;
             $array['perimeter_id'] = null;
         }
-        if(!isset($array['restrictedperimeter'])){
+        if (!isset($array['restrictedperimeter'])) {
             $array['restrictedperimeter'] = 0;
         }
 
@@ -161,7 +161,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 $fileTemp = $file['tmp_name']['deposit'];
 
                 if (!JFile::exists($uploadPath)):
-                    if (!JFile::upload($fileTemp, $uploadPath)):
+                    if (!JFile::upload($fileTemp, $uploadPath, false, true)):
                         JError::raiseWarning(500, JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_MOVING_FILE'));
                         return false;
                     endif;
@@ -232,7 +232,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 $fileTemp = $file['tmp_name']['file'];
 
                 if (!JFile::exists($uploadPath)):
-                    if (!JFile::upload($fileTemp, $uploadPath)):
+                    if (!JFile::upload($fileTemp, $uploadPath, false, true)):
                         JError::raiseWarning(500, JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_MOVING_FILE'));
                         return false;
                     endif;
