@@ -1219,7 +1219,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * call getException if the unit size is not recognized
      */
     private function convertSize() {
-        $sizeNode = $this->product->getElementsByTagNameNS(self::nsSdi, 'size')->item(0);
+        $sizeNode = $this->product->getElementsByTagNameNS(self::nsSdi, 'filesize')->item(0);
         $unit = $sizeNode->getAttribute('unit');
         $size = $sizeNode->nodeValue;
 
