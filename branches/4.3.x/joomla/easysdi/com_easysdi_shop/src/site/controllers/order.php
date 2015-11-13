@@ -190,6 +190,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         }
 
         $downloadAllowed = false;
+        $organisms = $clientUser->getMemberOrganisms();
 
         //the user is the client
         if ($order->user_id == $currentUser->id):
@@ -201,7 +202,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         elseif ($currentUser->isOrganismManager($diffusion_id, 'diffusion')):
             $downloadAllowed = true;
         //the user is organims manager of client's organism
-        elseif ($currentUser->isOrganismManager($clientUser->getMemberOrganisms()[0]->id)):
+        elseif ($currentUser->isOrganismManager($organisms[0]->id)):
             $downloadAllowed = true;
         endif;
 
