@@ -49,7 +49,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $basket->mandate_ref = $mandate_ref;
         $basket->mandate_contact = $mandate_contact;
         $basket->mandate_email = $mandate_email;
-        if(is_null($basket->sdiUser->id)){
+        if (is_null($basket->sdiUser->id)) {
             $basket->sdiUser = sdiFactory::getSdiUser();
         }
 
@@ -165,17 +165,19 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
 
         switch ($basketData['orderstate_id']) {
             case Easysdi_shopHelper::ORDERSTATE_SENT:
-                // Process notification by diffusion
-                foreach ($basketData['diffusions'] as $diffusionId) {
-                    // Notify notifiedusers
-                    Easysdi_shopHelper::notifyNotifiedUsers($diffusionId);
-
-                    // Notify the responsible of extraction
-                    Easysdi_shopHelper::notifyExtractionResponsible($diffusionId);
-                }
-
+            case Easysdi_shopHelper::ORDERSTATE_PROGRESS: //Could only be an estimate order.
+                //Some of the diffusions in this estimate order already have an estimation (free or with a pricing profile).
+                //Those diffusions don't have to be the subject of notifications for notified or responsible users.
+                foreach ($basketData['diffusions'] as $diffusionId) :// Process notification by diffusion
+                    //notify if necessary
+                    if ($diffusionId[1] == Easysdi_shopHelper::PRODUCTSTATE_SENT) {
+                        // Notify notifiedusers
+                        Easysdi_shopHelper::notifyNotifiedUsers($diffusionId[0]);
+                        // Notify the responsible of extraction
+                        Easysdi_shopHelper::notifyExtractionResponsible($diffusionId[0]);
+                    }
+                endforeach;
                 break;
-
             case Easysdi_shopHelper::ORDERSTATE_VALIDATION:
                 $this->notifyTPValidationManager($basketData['order_id'], $basketData['thirdparty_id']);
                 break;
@@ -197,15 +199,15 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         switch ($basketData['ordertype_id']) {
             //Draft
             case Easysdi_shopHelper::ORDERTYPE_DRAFT:
-                $app->enqueueMessage(JText::sprintf('COM_EASYSDI_SHOP_BASKET_DRAFT_SAVED',$basketData['order_id']));
+                $app->enqueueMessage(JText::sprintf('COM_EASYSDI_SHOP_BASKET_DRAFT_SAVED', $basketData['order_id']));
                 break;
             //Estimate
             case Easysdi_shopHelper::ORDERTYPE_ESTIMATE:
-                $app->enqueueMessage(JText::sprintf('COM_EASYSDI_SHOP_BASKET_ESTIMATE_SENT',$basketData['order_id']));
+                $app->enqueueMessage(JText::sprintf('COM_EASYSDI_SHOP_BASKET_ESTIMATE_SENT', $basketData['order_id']));
                 break;
             //Order
             default:
-                $app->enqueueMessage(JText::sprintf('COM_EASYSDI_SHOP_BASKET_ORDER_SENT',$basketData['order_id']));
+                $app->enqueueMessage(JText::sprintf('COM_EASYSDI_SHOP_BASKET_ORDER_SENT', $basketData['order_id']));
                 break;
         }
 
