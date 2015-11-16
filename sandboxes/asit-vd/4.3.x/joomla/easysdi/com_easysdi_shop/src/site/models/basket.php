@@ -396,6 +396,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $db->setQuery($query);
         $orderdiffusion = $db->loadColumn();
 
+        //Delete linked property values
         foreach ($orderdiffusion as $id):
             $query = $db->getQuery(true);
             $query->delete('#__sdi_order_propertyvalue')
@@ -404,18 +405,32 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $db->execute();
         endforeach;
 
+        //Delete linked diffusion
         $query = $db->getQuery(true);
         $query->delete('#__sdi_order_diffusion')
                 ->where('order_id = ' . (int) $order_id);
-
         $db->setQuery($query);
         if (!$db->execute())
             return false;
 
+        //Delete linked perimeters
         $query = $db->getQuery(true);
         $query->delete('#__sdi_order_perimeter')
                 ->where('order_id = ' . (int) $order_id);
-
+        $db->setQuery($query);
+        if (!$db->execute())
+            return false;
+        
+        //Delete Pricing :
+        //Foreign keys with "cascade on delete" constraints, allow
+        //deletion of all the pricing data tree in one query.
+        //Tables concerning by the cascade action are :
+        // - #__sdi_order_supplier
+        // - #__sdi_order_supplier_product
+        // - #__sdi_order_supplier_product_profile
+        $query = $db->getQuery(true);
+        $query->delete('#__sdi_pricing_order')
+                ->where('order_id = ' . (int) $order_id);
         $db->setQuery($query);
         if (!$db->execute())
             return false;
