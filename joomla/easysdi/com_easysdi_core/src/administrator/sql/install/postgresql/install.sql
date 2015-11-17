@@ -774,7 +774,7 @@ CREATE TABLE #__sdi_order_diffusion (
     order_id bigint NOT NULL,
     diffusion_id bigint NOT NULL,
     productstate_id bigint NOT NULL,
-    remark character varying(500) ,
+    remark character varying(4000) ,
     fee numeric(10,0) ,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone ,
     storage_id bigint NULL,

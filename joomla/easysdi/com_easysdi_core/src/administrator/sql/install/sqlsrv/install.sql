@@ -1180,7 +1180,7 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[order_id] [bigint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[productstate_id] [bigint] NOT NULL,
-	[remark] [nvarchar](500) NULL,
+	[remark] [nvarchar](4000) NULL,
 	[fee] [decimal](10, 0) NULL,
 	[completed] [datetime2](0) NULL,
 	[storage_id] [bigint] NULL,
