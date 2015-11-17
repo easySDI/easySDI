@@ -528,6 +528,13 @@ var updatePricing = function (pricing) {
         jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
         jQuery('table[rel=' + supplierId + ']>tfoot').show();
     });
+    
+    //Estimate button
+    if(pricing.cal_total_amount_ti === null){
+        jQuery('#toolbar-estimate>button').show();
+    }else{
+        jQuery('#toolbar-estimate>button').hide();
+    }
 
     //platform
     jQuery('span.pricingFeeTI').html(priceFormatter(pricing.cal_fee_ti)).show();
