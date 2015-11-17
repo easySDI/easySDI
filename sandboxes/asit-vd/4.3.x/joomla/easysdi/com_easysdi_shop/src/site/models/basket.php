@@ -132,15 +132,32 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
             //Save diffusions
             $products = array();
+            $count_available = 0;            
             foreach ($basket->extractions as $diffusion):
                 $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
                 $od = array();
                 $od['order_id'] = $table->id;
                 $od['diffusion_id'] = $diffusion->id;
-                $od['productstate_id'] = ($table->orderstate_id == Easysdi_shopHelper::ORDERSTATE_VALIDATION) ? Easysdi_shopHelper::PRODUCTSTATE_VALIDATION : Easysdi_shopHelper::PRODUCTSTATE_SENT;
+                switch ($table->ordertype_id):
+                    case Easysdi_shopHelper::ORDERTYPE_ESTIMATE: //Some diffusions may already have an estimation (free or with an automatic profile)
+                        if ($diffusion->pricing == Easysdi_shopHelper::PRICING_FEE_WITHOUT_PROFILE):
+                            $od['productstate_id'] = Easysdi_shopHelper::PRODUCTSTATE_SENT;                            
+                        else:
+                            $od['productstate_id'] = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
+                            $count_available++;
+                        endif;
+                        break;
+                    case Easysdi_shopHelper::ORDERTYPE_DRAFT: //Set a state await for a draft
+                        $od['productstate_id'] = Easysdi_shopHelper::PRODUCTSTATE_AWAIT;
+                        break;
+                    case Easysdi_shopHelper::ORDERTYPE_ORDER: //
+                        $od['productstate_id'] = ($table->orderstate_id == Easysdi_shopHelper::ORDERSTATE_VALIDATION) ? Easysdi_shopHelper::PRODUCTSTATE_VALIDATION : Easysdi_shopHelper::PRODUCTSTATE_SENT;
+                        break;
+                endswitch;
+
                 $od['created_by'] = JFactory::getUser()->id;
                 $orderdiffusion->save($od);
-                array_push($basketData['diffusions'], $orderdiffusion->diffusion_id);
+                array_push($basketData['diffusions'], array($orderdiffusion->diffusion_id , $orderdiffusion->productstate_id));
                 array_push($products, $orderdiffusion);
 
                 //Save properties
@@ -157,6 +174,20 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                     endforeach;
                 endforeach;
             endforeach;
+            
+            //In the case of an ESTIMATE, some estimations can be available directly (free and with profile),
+            //the order status has to be updated accordingly
+            if($count_available > 0){  
+                if($count_available == count($basket->extractions) ){
+                    $table->orderstate_id = Easysdi_shopHelper::ORDERSTATE_FINISH;
+                }
+                else {
+                    $table->orderstate_id = Easysdi_shopHelper::ORDERSTATE_PROGRESS;
+                }                        
+                $table->store(false);
+                //Update the session data
+                $basketData['orderstate_id'] = $table->orderstate_id;
+            }
 
             $session = JFactory::getSession();
             $session->set('basketData', $basketData);
@@ -420,7 +451,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $db->setQuery($query);
         if (!$db->execute())
             return false;
-        
+
         //Delete Pricing :
         //Foreign keys with "cascade on delete" constraints, allow
         //deletion of all the pricing data tree in one query.
