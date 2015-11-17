@@ -211,7 +211,7 @@ class Easysdi_shopModelRequest extends JModelForm {
 
         //Save order_diffusion
         $app = JFactory::getApplication();
-        $files = $app->input->files->get('jform');
+        $files = $app->input->files->get('jform', null, 'raw');
 
         $diffusion_id = (int) $data['current_product'];
 
@@ -250,7 +250,7 @@ class Easysdi_shopModelRequest extends JModelForm {
                 return false;
             endif;
         endif;
-        if (!empty($orderdiffusion->fee) || !empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
+        if (isset($orderdiffusion->fee) || !empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
             $orderdiffusion->completed = date('Y-m-d H:i:s');
             $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
         endif;

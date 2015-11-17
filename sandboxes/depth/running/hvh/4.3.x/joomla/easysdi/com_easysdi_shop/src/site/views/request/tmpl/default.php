@@ -152,7 +152,12 @@ if ($this->item) :
                 }
                 return !hasErrors;
             } else if (orderType == 'estimate') {
-                return !hasFee;
+                if (!hasFee) {
+                    jQuery('#productErrorModalBody').append('<p>' + Joomla.JText._('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_PRICE') + '</p>');
+                    return false;
+                } else {
+                    return true;
+                }
             }
             return false;
         }
