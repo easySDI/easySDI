@@ -211,7 +211,7 @@ class Easysdi_shopModelRequest extends JModelForm {
 
         //Save order_diffusion
         $app = JFactory::getApplication();
-        $files = $app->input->files->get('jform');
+        $files = $app->input->files->get('jform', null, 'raw');
 
         $diffusion_id = (int) $data['current_product'];
 
