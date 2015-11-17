@@ -694,25 +694,36 @@ abstract class Easysdi_shopHelper {
             $prices->hasFeeWithoutPricingProfileProduct = false;
             foreach ($basket->extractions as $supplier_id => $supplier) {
                 $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
-                if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct)
+                if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct){
                     $prices->hasFeeWithoutPricingProfileProduct = true;
-                else
+                }else{
                     $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
+                }
             }
 
             // set the platform tax
-            if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee)
+            if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee){
                 $prices->cal_fee_ti = 0;
-            else {
+            }else {
                 $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
-
-                if (count($prices->debtor->categories)) {
+                
+                //Current user categories are used to defined platform fee.
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true)
+                        ->select('c.id')
+                        ->from('#__sdi_organism_category oc')
+                        ->join('LEFT', '#__sdi_category c ON c.id=oc.category_id')
+                        ->where('oc.organism_id=' . (int) $basket->sdiUser->role[self::ROLE_MEMBER][0]->id);
+                $db->setQuery($query);
+                $currentcategories = $db->loadColumn();
+            
+                if (count($currentcategories)) {
                     $db = JFactory::getDbo();
                     $query = $db->getQuery(true)
                             ->select('c.overall_fee, c.name')
                             ->from('#__sdi_category c')
                             ->where('c.overall_fee IS NOT NULL')
-                            ->where('c.id IN (' . implode(',', $prices->debtor->categories) . ')')
+                            ->where('c.id IN (' . implode(',', $currentcategories) . ')')
                             ->order('overall_fee');
                     $db->setQuery($query, 0, 1);
                     $category = $db->loadObject();
@@ -727,10 +738,11 @@ abstract class Easysdi_shopHelper {
             $prices->cal_fee_ti = self::rounding($prices->cal_fee_ti, $prices->cfg_rounding);
 
             // total amount for the platform
-            if ($prices->hasFeeWithoutPricingProfileProduct)
+            if ($prices->hasFeeWithoutPricingProfileProduct){
                 $prices->cal_total_amount_ti = null;
-            else
+            }else{
                 $prices->cal_total_amount_ti += $prices->cal_fee_ti;
+            }
         }
 
         $basket->pricing = $prices;
