@@ -68,8 +68,9 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         Easysdi_shopHelper::extractionsBySupplierGrouping($this->item);
 
         // calculate price for the current basket (only if surface is defined)
-        if (isset($this->item->extent) && isset($this->item->extent->surface))
+        if (isset($this->item->extent) && isset($this->item->extent->surface)){
             Easysdi_shopHelper::basketPriceCalculation($this->item);
+        }
 
         $pathway = $app->getPathway();
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BASKET_TITLE"), JRoute::_('index.php?option=com_easysdi_shop&view=basket', false));
