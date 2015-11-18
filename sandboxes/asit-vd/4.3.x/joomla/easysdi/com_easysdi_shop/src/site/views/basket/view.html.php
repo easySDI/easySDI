@@ -57,7 +57,7 @@ class Easysdi_shopViewBasket extends JViewLegacy {
 
         //check if free perimeter import is enabled and free perimeter is availlable in this basket
         $this->importEnabled = false;
-        foreach ($this->item->perimeters as $perimeter):
+        foreach ((array)$this->item->perimeters as $perimeter):
             if ($perimeter->id == 1) {
                 $this->importEnabled = true;
             }
