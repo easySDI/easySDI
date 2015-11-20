@@ -367,7 +367,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
      * @throws Throwable
      */
     public WMSProxyServletRequest(HttpServletRequest req) throws Throwable {
-        super(req);
+        super(req);        
     }
 
     public void parseRequestPOST() {
@@ -524,7 +524,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
                 CQL_FILTER = value;
             }
         }
-
+        
         //If VERSION and WMTVER are both given, VERSION takes precedence
         //If only WMTVER is given, it will be used as VERSION
         if (version == null && wmtver != null) {
@@ -546,6 +546,13 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
             } catch (UnsupportedEncodingException e) {
                 throw new ProxyServletException(e.toString());
             }
+        }
+    }
+    
+    protected void parseRequest() throws Throwable {
+        super.parseRequest();
+        if(service == null && !operation.equalsIgnoreCase("GetCapabilities")){
+            service = "WMS";
         }
     }
 }
