@@ -61,13 +61,15 @@ abstract class Easysdi_shopHelper {
     const ORDERVIEW_ORDER = 1; //client
     const ORDERVIEW_REQUEST = 2; //provider -> extraction
     const ORDERVIEW_VALIDATION = 3; // for validation
+    // Order productmining
+    const PRODUCTMININGAUTO = 1; //auto
+    const PRODUCTMININGMANUAL = 2; //manual
 
     /**
      * Add a product to basket in session
      * @param string $item : json {"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}
      * @param bool $force : default to false, force the product into the basket, even if there's a perimeter incompatibility
      */
-
     public static function addToBasket($item, $force = false) {
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
@@ -345,19 +347,19 @@ abstract class Easysdi_shopHelper {
                                         <?php
                                     endforeach;
                                     ?> </div>   <?php
-                            endif;
-                            ?>
+                                endif;
+                                ?>
                             <?php if ($allowDownload): ?>
                                 <div id="perimeter-recap-details-download">
                                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS'); ?>
                                     <span id ="perimeter-recap-details-download-gml"><a href="#" onclick="downloadPerimeter('GML',<?php echo $item->id; ?>);
-                                                        return false;" >GML</a>, </span>
+                                            return false;" >GML</a>, </span>
                                     <span id ="perimeter-recap-details-download-kml"><a href="#" onclick="downloadPerimeter('KML',<?php echo $item->id; ?>);
-                                                        return false;" >KML</a>, </span>
+                                            return false;" >KML</a>, </span>
                                     <span id ="perimeter-recap-details-download-dxf"><a href="#" onclick="downloadPerimeter('DXF',<?php echo $item->id; ?>);
-                                                        return false;" >DXF</a> ,</span>
+                                            return false;" >DXF</a> ,</span>
                                     <span id ="perimeter-recap-details-download-geojson"><a href="#" onclick="downloadPerimeter('GeoJSON',<?php echo $item->id; ?>);
-                                                        return false;" >GeoJSON</a></span>                                    
+                                            return false;" >GeoJSON</a></span>                                    
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -1198,6 +1200,11 @@ abstract class Easysdi_shopHelper {
         $diffusiontable = JTable::getInstance('diffusion', 'Easysdi_shopTable');
         $diffusiontable->load($diffusionId);
 
+        //Do not sent notifications for automatic mining
+        if ($diffusiontable->productmining_id == Easysdi_shopHelper::PRODUCTMININGAUTO) {
+            return;
+        }
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('rr.user_id')
@@ -1205,11 +1212,14 @@ abstract class Easysdi_shopHelper {
                 ->where('rr.role_id = 7')
                 ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . (int) $diffusiontable->version_id . ')');
         $db->setQuery($query);
-        $responsible = $db->loadResult();
+        $responsibles = $db->loadColumn();
 
-        $user = sdiFactory::getSdiUser($responsible);
-        if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusiontable->name)))
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+        //Send mail to extraction responsibles
+        foreach ($responsibles as $responsible) {
+            $user = sdiFactory::getSdiUser($responsible);
+            if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusiontable->name)))
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+        }
     }
 
     /**
@@ -1271,7 +1281,7 @@ abstract class Easysdi_shopHelper {
         $errors = false;
 
         if (isset($order)) {
-            
+
             $sdiUser = sdiFactory::getSdiUser($order->user_id);
 
             switch ($order->orderstate_id) {
@@ -1385,7 +1395,7 @@ abstract class Easysdi_shopHelper {
         $tmpExtractions = array();
         if ($isGroupedBySupplier) {
             foreach ($basket->extractions as $supplier) {
-                $tmpExtractions = array_merge($tmpExtractions,$supplier->items);
+                $tmpExtractions = array_merge($tmpExtractions, $supplier->items);
             }
         } else {
             $tmpExtractions = $basket->extractions;
