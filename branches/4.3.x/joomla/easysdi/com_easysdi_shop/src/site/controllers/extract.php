@@ -19,9 +19,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     const CONTACT = '1';
     const BILLING = '2';
     const DELIVERY = '3';
-    // Order productmining
-    const PRODUCTMININGAUTO = 1;
-    const PRODUCTMININGMANUAL = 2;
+
     // Extract storage
     const EXTRACTSTORAGE_LOCAL = 1;
     const EXTRACTSTORAGE_REMOTE = 2;
@@ -392,7 +390,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             }
         }
         $query->where('od.productstate_id IN (' . implode(',', $this->states) . ')')
-                ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
+                ->where('d.productmining_id = ' . Easysdi_shopHelper::PRODUCTMININGAUTO)
                 ->where('o.ordertype_id IN (' . Easysdi_shopHelper::ORDERTYPE_ORDER . ',' . Easysdi_shopHelper::ORDERTYPE_ESTIMATE . ')')
                 ->group($agg);
 
@@ -825,7 +823,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                         ->where('o.id=' . (int) $order->id)
                         ->where('r.organism_id=' . (int) $supplierId)
                         ->where('pos.supplier_id=' . (int) $supplierId)
-                        ->where('d.productmining_id = ' . self::PRODUCTMININGAUTO)
+                        ->where('d.productmining_id = ' . Easysdi_shopHelper::PRODUCTMININGAUTO)
                         ->where('od.productstate_id IN (' . implode(',', $this->states) . ')'));
 
         $orderProducts = $this->db->loadObjectList();
