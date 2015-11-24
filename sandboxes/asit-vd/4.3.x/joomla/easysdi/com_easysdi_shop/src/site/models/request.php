@@ -82,6 +82,12 @@ class Easysdi_shopModelRequest extends JModelForm {
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
+            
+            //if a validator is set, loat it
+            if(isset($this->_item->validated_by)){
+                $validator = new sdiUser($this->_item->validated_by);
+                $this->_item->validator = $validator->name;
+            }            
 
             $basket = new sdiBasket();
             $basket->loadOrder($id);
