@@ -345,20 +345,21 @@ class Easysdi_shopModelRequest extends JModelForm {
      * @since	1.6
      */
     public function save($data) {
+        
+        $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('request.id');
+        
+        $table = $this->getTable();
+        $table->load($id);
 
-        $newOrderstate = Easysdi_shopHelper::getNewOrderState($data['id']);
+        $newOrderstate = Easysdi_shopHelper::getNewOrderState($id);
         if (isset($newOrderstate)) {
-            $data['orderstate_id'] = $newOrderstate;
+            $table->orderstate_id = $newOrderstate;
             if ($newOrderstate == Easysdi_shopHelper::ORDERSTATE_FINISH) {
-                $data['completed'] = date('Y-m-d H:i:s');
+                $table->completed = date('Y-m-d H:i:s');
             }
         }
 
-        if ($data['thirdparty_id'] == '')
-            $data['thirdparty_id'] = null;
-
-        $table = $this->getTable();
-        if ($table->save($data) === true) {
+        if ($table->store(false) === true) {
             return $id;
         } else {
             return false;
