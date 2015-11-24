@@ -745,6 +745,7 @@ CREATE TABLE #__sdi_order (
     validated smallint DEFAULT NULL,
     validated_date timestamp(3) without time zone DEFAULT NULL,
     validated_reason character varying(255),
+	validated_by bigint DEFAULT NULL,
     buffer double precision,
     surface double precision,
     remark character varying(4000),

@@ -1143,6 +1143,7 @@ CREATE TABLE [#__sdi_order] (
         [validated] [smallint] ,
         [validated_date] [datetime2](0) ,
         [validated_reason] [nvarchar](500) ,
+		[validated_by] [int] NULL,
 	[buffer] [numeric](38, 18) NULL,
 	[surface] [numeric](38, 18) NULL,
 	[remark] [nvarchar](4000) NULL,
