@@ -491,16 +491,16 @@ INSERT INTO `#__sdi_sys_country` VALUES ('241', '241', '1', 'Zimbabwe', 'ZW', 'Z
 INSERT INTO `#__sdi_sys_entity` VALUES ('1', '1', '1', 'attribute');
 INSERT INTO `#__sdi_sys_entity` VALUES ('2', '2', '1', 'class');
 
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('1', '1', '1', 'archived');
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('2', '2', '1', 'historized');
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('3', '3', '1', 'finish');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('1', '7', '1', 'archived');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('2', '8', '1', 'historized');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('3', '6', '1', 'finish');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('4', '4', '1', 'await');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('5', '5', '1', 'progress');
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('6', '6', '1', 'sent');
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '7', '1', 'saved');
-INSERT INTO `#__sdi_sys_orderstate` SET id=8, ordering=8, `state`=1, `value`='validation';
-INSERT INTO `#__sdi_sys_orderstate` SET id=9, ordering=9, `state`=1, `value`='rejectedbythirdparty';
-INSERT INTO `#__sdi_sys_orderstate` SET id=10, ordering=10, `state`=1, `value`='rejectedbysupplier';
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('6', '3', '1', 'sent');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '1', '1', 'saved');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('8', '2', '1', 'validation');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('9', '9', '1', 'rejectedbythirdparty');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('10', '10', '1', 'rejectedbysupplier');
 
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('1', '1', '1', 'order');
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('2', '2', '1', 'estimate');

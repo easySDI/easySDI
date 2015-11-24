@@ -991,3 +991,5 @@ REFERENCES [#__sdi_pricing_profile] ([id])
 ON DELETE NO ACTION;
 ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] CHECK CONSTRAINT [#__sdi_pricing_order_supplier_product_profile#__sdi_pricing_order_supplier_product_profile_fk2];
 
+ALTER TABLE #__sdi_order ADD CONSTRAINT #__sdi_order$#__sdi_user_fk5
+FOREIGN KEY ([validated_by]) REFERENCES [#__sdi_user] ([id]) ON DELETE CASCADE ON UPDATE NO ACTION;
