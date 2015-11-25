@@ -1278,3 +1278,6 @@ ALTER TABLE ONLY #__sdi_pricing_order_supplier_product_profile
     ADD CONSTRAINT #__sdi_pricing_order_supplier_product_profile_fk1 FOREIGN KEY (pricing_order_supplier_product_id) REFERENCES #__sdi_pricing_order_supplier_product (id) ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_pricing_order_supplier_product_profile
     ADD CONSTRAINT #__sdi_pricing_order_supplier_product_profile_fk2 FOREIGN KEY (pricing_profile_id) REFERENCES #__sdi_pricing_profile (id) ON DELETE CASCADE;
+	
+ALTER TABLE #__sdi_order
+ADD CONSTRAINT #__sdi_order_fk5 FOREIGN KEY ("validated_by") REFERENCES #__sdi_user ("id") MATCH FULL ON UPDATE NO ACTION ON DELETE NO ACTION;
