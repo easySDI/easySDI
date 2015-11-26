@@ -191,7 +191,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         //In the case of an ESTIMATE, some estimations can be available directly (free and with profile),
         //the order status has to be updated accordingly
         if ($count_available > 0) {
-            if ($count_available == count($basket->extractionsNb)) {
+            if ($count_available == $basket->extractionsNb) {
                 $table->orderstate_id = Easysdi_shopHelper::ORDERSTATE_FINISH;
             } else {
                 $table->orderstate_id = Easysdi_shopHelper::ORDERSTATE_PROGRESS;
