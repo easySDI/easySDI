@@ -33,6 +33,10 @@ JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_AREA_TOO_LARGE');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_AREA_TOO_SMALL');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT');
 JText::script('COM_EASYSDI_SHOP_BASKET_PERIMETER_NO_PERIMETER_SELECTED');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING_TITLE');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -544,16 +548,12 @@ if ($this->item && $this->item->extractions) :
             </div>
         </div>
 
-        <div id="modal-error" class="modal fade" data-backdrop="static" data-keyboard="false" >
+        <div id="modal-error" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="errorModalLabel"  aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
-                    <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE") ?></h3>
+                    <h3 id="errorModalLabel"></h3>
                 </div>               
-                <div class="modal-body">
-                    <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
-                    <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING'); ?>
-                </div>                
+                <div class="modal-body"></div>                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal" ><?php echo JText::_('OK'); ?></button>
                 </div>              

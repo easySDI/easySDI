@@ -287,10 +287,11 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('pp.id, pp.name')
+                ->select('pp.id, pp.name, d.id as affected_diffusion')
                 ->from($db->quoteName('#__sdi_version') . ' as v')
                 ->join('LEFT', '#__sdi_resource as r ON r.id=v.resource_id')
                 ->join('LEFT', '#__sdi_pricing_profile as pp ON pp.organism_id=r.organism_id')
+                ->join('LEFT', '#__sdi_diffusion as d ON d.version_id = v.id AND d.pricing_profile_id = pp.id')
                 ->where('v.id=' . $data['version_id'])
         ;
         $db->setQuery($query);

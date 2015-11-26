@@ -528,11 +528,11 @@ var updatePricing = function (pricing) {
         jQuery('table[rel=' + supplierId + ']>tfoot>tr>td.supplier_cal_total_rebate_ti').html(priceFormatter(supplier.cal_total_rebate_ti));
         jQuery('table[rel=' + supplierId + ']>tfoot').show();
     });
-    
+
     //Estimate button
-    if(pricing.cal_total_amount_ti === null){
+    if (pricing.cal_total_amount_ti === null) {
         jQuery('#toolbar-estimate>button').show();
-    }else{
+    } else {
         jQuery('#toolbar-estimate>button').hide();
     }
 
@@ -541,7 +541,9 @@ var updatePricing = function (pricing) {
     jQuery('#pricingTotal-table').show();
 };
 
-//Call after user validates his extent drawing
+/**
+ * Call after user validates his extent drawing
+ */
 function savePerimeter() {
 
     //clean mini layer then copy all features from vector layers
@@ -579,7 +581,10 @@ function savePerimeter() {
     }
 }
 
-//Manage display according to savePerimeter response
+/**
+ * Manage display according to savePerimeter response
+ * @param response savePerimeter response
+ */
 function updateDisplay(response) {
     if (response.MESSAGE && response.MESSAGE === 'OK') {
         saveTemporaryFields();
@@ -636,6 +641,38 @@ function updateDisplay(response) {
         updatePricing(response.pricing);
     }
     return false;
+}
+
+/**
+ * Check third party details if enabled and a TP is selected
+ * @returns {Boolean}
+ */
+function checkThirdPartyDetails() {
+    //check if details fields are present and a third party selected
+    if (jQuery('select#thirdparty').val() != -1 && jQuery('#mandate_ref').length) {
+
+        if (!jQuery('#mandate_ref').val().length)
+            return false;
+        if (!jQuery('#mandate_contact').val().length)
+            return false;
+        if (!jQuery('#mandate_email').val().length)
+            return false;
+        //mail regex
+        var mailRegex = /^[a-zA-Z0-9.!#$%&â€™*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        return mailRegex.test(jQuery('#mandate_email').val());
+    }
+    return true;
+}
+
+/**
+ * Shows the basket error modal
+ * @param {type} message Modal body
+ * @param {type} title Modal title
+ */
+function showBasketModalError(message, title) {
+    jQuery('#modal-error .modal-header h3').text(title);
+    jQuery('#modal-error .modal-body').text(message);
+    jQuery('#modal-error').modal('show');
 }
 
 
@@ -812,7 +849,16 @@ jQuery(document).ready(function () {
         var task = jQuery(this).attr('rel');
         var t = jQuery('#features').val();
         if (jQuery('#features').val() === '') {
-            jQuery('#modal-error').modal('show');
+            showBasketModalError(
+                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING', 'You have to select an extent to go further'),
+                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE', 'Perimeter missing')
+                    );
+            return false;
+        } else if (!checkThirdPartyDetails()) {
+            showBasketModalError(
+                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING', 'You have to fill third party and mandate details'),
+                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING_TITLE', 'Third party details missing')
+                    );
             return false;
         } else {
             if (jQuery('#allowedbuffer').val() == 0) {

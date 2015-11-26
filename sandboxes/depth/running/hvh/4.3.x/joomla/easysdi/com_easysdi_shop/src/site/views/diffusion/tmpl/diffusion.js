@@ -97,7 +97,8 @@ function onPricingChange() {
                     data.each(function (item) {
                         js('#pricing_profile_id select').append(js('<option>', {
                             value: item.id,
-                            text: item.name
+                            text: item.name,
+                            selected: item.affected_diffusion != null
                         })).trigger('liszt:updated');
                     });
                 });
