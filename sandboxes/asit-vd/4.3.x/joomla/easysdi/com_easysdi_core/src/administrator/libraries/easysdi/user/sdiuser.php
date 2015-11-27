@@ -381,6 +381,7 @@ class sdiUser {
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
                 ->where('l.code = ' . $db->quote($this->lang))
                 ->where('rt.predefined = 0')
+                ->where('rt.state = 1')
                 ->where($cls)
         ;
         $db->setQuery($query);
