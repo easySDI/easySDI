@@ -20,10 +20,6 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     const BILLING = '2';
     const DELIVERY = '3';
 
-    // Extract storage
-    const EXTRACTSTORAGE_LOCAL = 1;
-    const EXTRACTSTORAGE_REMOTE = 2;
-
     /** @var string Possible values global or organism */
     private $userType = 'global';
     private $organism;
@@ -1462,13 +1458,13 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                 //store the file and get back the file(path) and its size
                 list($file, $size) = $this->storeFileLocally($od->diffusion_id, $order->id);
 
-                $query->set('storage_id=' . (int) self::EXTRACTSTORAGE_LOCAL)
+                $query->set('storage_id=' . (int) Easysdi_shopHelper::EXTRACTSTORAGE_LOCAL)
                         ->set('file=' . $query->quote($file))
                         ->set('size=' . $size);
                 break;
 
             case 'remote':
-                $query->set('storage_id=' . (int) self::EXTRACTSTORAGE_REMOTE)
+                $query->set('storage_id=' . (int) Easysdi_shopHelper::EXTRACTSTORAGE_REMOTE)
                         ->set('file=' . $query->quote($this->product->getElementsByTagNameNS(self::nsSdi, 'fileurl')->item(0)->nodeValue))
                         ->set('size=' . (int) $this->convertSize());
                 break;
