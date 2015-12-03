@@ -824,8 +824,11 @@ class cswmetadata {
                                 <fieldset id="' . $property->property_id . '" class="sdi-shop-property-checkbox ">';
                         $i = 0;
                         foreach ($values as $value):
-                            $html .= '<input type="checkbox" id="' . $property->property_id . $i . '" name="' . $property->property_id . '" value="' . $value->propertyvalue_id . '" />
-                                          <label for="' . $property->property_id . $i . '">' . $value->propertyvaluename . '</label>';
+                            $html .= '
+                                <div class="sdi-shop-property-checkbox-item">
+                                    <input type="checkbox" id="' . $property->property_id . $i . '" name="' . $property->property_id . '" value="' . $value->propertyvalue_id . '" />
+                                    <label for="' . $property->property_id . $i . '">' . $value->propertyvaluename . '</label>
+                                </div>';
                             $i++;
                         endforeach;
                         $html .='
