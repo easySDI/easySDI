@@ -15,6 +15,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.ph
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
 require_once JPATH_COMPONENT . '/models/order.php';
 require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
 
 /**
  * Order controller class.
@@ -220,22 +221,38 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $keys['diffusion_id'] = $diffusion_id;
         $orderdiffusion->load($keys);
 
-        $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
-        $file = JPATH_BASE . '/' . $folder . '/' . $order_id . '/' . $diffusion_id . '/' . $orderdiffusion->file;
+        //remote stroage, use curl
+        if ($orderdiffusion->storage_id == Easysdi_shopHelper::EXTRACTSTORAGE_REMOTE) {
 
+            $curlHelper = new CurlHelper(true);
 
-        error_reporting(0);
+            $curldata['url'] = $orderdiffusion->file;
+            $pos = strrpos($url, '.');
+            $extension = ($pos) ? substr($url, $pos) : null;
+            if ($extension) {
+                $curldata['fileextension'] = $extension;
+            }
+            $curldata['filename'] = $orderdiffusion->displayName;
+            return $curlHelper->get($curldata);
+        }
+        //local storage
+        else {
+            $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
+            $file = JPATH_BASE . '/' . $folder . '/' . $order_id . '/' . $diffusion_id . '/' . $orderdiffusion->file;
 
-        ini_set('zlib.output_compression', 0);
-        header('Pragma: public');
-        header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-        header('Content-Transfer-Encoding: none');
-        header("Content-Length: " . filesize($file));
-        header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
-        header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
+            error_reporting(0);
 
-        readfile($file);
-        die();
+            ini_set('zlib.output_compression', 0);
+            header('Pragma: public');
+            header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+            header('Content-Transfer-Encoding: none');
+            header("Content-Length: " . filesize($file));
+            header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
+            header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
+
+            readfile($file);
+            die();
+        }
     }
 
     function cancel() {

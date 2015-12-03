@@ -64,6 +64,9 @@ abstract class Easysdi_shopHelper {
     // Order productmining
     const PRODUCTMININGAUTO = 1; //auto
     const PRODUCTMININGMANUAL = 2; //manual
+    // Extract storage
+    const EXTRACTSTORAGE_LOCAL = 1;
+    const EXTRACTSTORAGE_REMOTE = 2;    
 
     /**
      * Add a product to basket in session
