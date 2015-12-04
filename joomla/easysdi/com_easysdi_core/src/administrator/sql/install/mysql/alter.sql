@@ -20,6 +20,8 @@ ALTER TABLE `#__sdi_sys_authenticationconnector`
 ADD CONSTRAINT `#__sdi_sys_authenticationconnector_fk1` FOREIGN KEY (`authenticationlevel_id`) REFERENCES `#__sdi_sys_authenticationlevel` (`id`);
 
 ALTER TABLE `#__sdi_translation` ADD INDEX `element_guid` (`element_guid`);
+ALTER TABLE `#__sdi_translation` ADD INDEX `text1` (`text1`);
+ALTER TABLE `#__sdi_translation` ADD INDEX `text2` (`text2`(255));
 
 ALTER TABLE `#__sdi_sys_rendertype_criteriatype`
 ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk1` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_sys_criteriatype` (`id`) ON DELETE CASCADE;
@@ -356,3 +358,6 @@ ADD CONSTRAINT `#__sdi_sys_server_serviceconnector_fk2` FOREIGN KEY (`servicecon
 
 ALTER TABLE `#__sdi_physicalservice`
 ADD CONSTRAINT `#__sdi_physicalservice_server_fk1` FOREIGN KEY (`server_id`) REFERENCES `#__sdi_sys_server` (`id`);
+
+ALTER TABLE `#__sdi_order`
+ADD CONSTRAINT `#__sdi_order_fk5` FOREIGN KEY (`validated_by`) REFERENCES `#__sdi_user` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION;

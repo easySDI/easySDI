@@ -50,13 +50,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy_category` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-
-
-
-ALTER TABLE `#__sdi_resourcetype` CHANGE `meta` `application` tinyint (1);
-
-
-
 DELETE FROM `#__sdi_user_role_organism` WHERE role_id=(SELECT id FROM `#__sdi_sys_role` WHERE `value`='ordereligible');
 DELETE FROM `#__sdi_sys_role` WHERE `value`='ordereligible';
 

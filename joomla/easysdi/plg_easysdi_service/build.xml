@@ -52,7 +52,23 @@
                     <language tag="de-DE">language/de-DE/de-DE.plg_content_easysdiservice.sys.ini</language>
                     <language tag="de-DE">language/de-DE/de-DE.plg_content_easysdiservice.ini</language>
                 </languages>
+                <config>
+                    <fields name="params">
+                        <fieldset name="basic">
+                            <field name="displaymessageinapplication" type="list"
+                       default="both"
+                       description="PLG_CONTENT_EASYSDI_DISPLAY_MESSAGE_DESC"
+                       label="PLG_CONTENT_EASYSDI_DISPLAY_MESSAGE"
+                            >
+                                <option value="both">PLG_CONTENT_EASYSDI_DISPLAY_MESSAGE_BOTH</option>
+                                <option value="fe">PLG_CONTENT_EASYSDI_DISPLAY_MESSAGE_FE</option>
+                                <option value="be">PLG_CONTENT_EASYSDI_DISPLAY_MESSAGE_BE</option>
+                                <option value="none">PLG_CONTENT_EASYSDI_DISPLAY_MESSAGE_NONE</option>
+                            </field>
+                        </fieldset>
 
+                    </fields>
+                </config> 
             </extension>
         </echoxml>
     </target>

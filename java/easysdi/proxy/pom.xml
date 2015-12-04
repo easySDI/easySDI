@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.easysdi</groupId>
         <artifactId>easysdi</artifactId>
-        <version>4.3.0</version>
+        <version>4.3.2</version>
     </parent>
 	
     <scm>
@@ -19,6 +19,7 @@
         <gt2.version>2.4.1</gt2.version>
         <geotools.version>12-RC1</geotools.version>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
     <dependencies>
@@ -287,6 +288,24 @@
     </dependencies>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
         <finalName>proxy</finalName>
     
 

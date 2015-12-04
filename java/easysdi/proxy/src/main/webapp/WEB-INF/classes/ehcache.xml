@@ -118,9 +118,9 @@
 	<cache 
 		name="operationBasedCache" 
 		maxElementsInMemory="10000" 
-		diskPersistent="true" 
+		diskPersistent="false" 
 		timeToLiveSeconds="1200" 
-		overflowToDisk="true"
+		overflowToDisk="false"
 		memoryStoreEvictionPolicy="LFU" 
 		clearOnFlush="true" 
 		eternal="false" />

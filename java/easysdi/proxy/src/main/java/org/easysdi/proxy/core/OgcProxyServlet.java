@@ -17,14 +17,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
-
 import org.easysdi.proxy.csw.CSWExceptionReport;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiPolicyHome;
@@ -77,7 +75,6 @@ public class OgcProxyServlet extends HttpServlet {
         sdiVirtualserviceHome = (SdiVirtualserviceHome) context.getBean("sdiVirtualserviceHome");
         sdiPolicyHome = (SdiPolicyHome) context.getBean("sdiPolicyHome");
         sdiUserHome = (SdiUserHome) context.getBean("sdiUserHome");
-
         System.setProperty("org.geotools.referencing.forceXY", "true");
         logger.info("OgcProxyServlet initialization done.");
     }
@@ -95,8 +92,7 @@ public class OgcProxyServlet extends HttpServlet {
 
         try {
 
-
-            obj = createProxy(req.getServletPath().substring(1), req, resp);
+            obj = createProxy(req.getServletPath().substring(1));
             double maxRequestNumber = -1;
 
             waitWhenConnectionsExceed(req, maxRequestNumber);
@@ -119,7 +115,6 @@ public class OgcProxyServlet extends HttpServlet {
              * What ever happens, always decrease the connection number when
              * finished.
              */
-            //TODO : what this is supposed to do?
             if (obj != null) {
                 decreaseConnections(req, -1);
             }
@@ -137,7 +132,7 @@ public class OgcProxyServlet extends HttpServlet {
         try {
 
             // String info  =req.getPathInfo();
-            obj = createProxy(req.getServletPath().substring(1), req, resp);
+            obj = createProxy(req.getServletPath().substring(1));
             double maxRequestNumber = -1;
 
             waitWhenConnectionsExceed(req, maxRequestNumber);
@@ -159,7 +154,6 @@ public class OgcProxyServlet extends HttpServlet {
              * What ever happens, always decrease the connection number when
              * finished.
              */
-            //TODO : what this is supposed to do?
             if (obj != null) {
                 decreaseConnections(req, -1);
             }
@@ -168,13 +162,13 @@ public class OgcProxyServlet extends HttpServlet {
 
     /**
      * *
-     * Instanciate a ProxyServlet according to the configuration file.
+     * Instantiate a ProxyServlet according to the configuration file.
      *
      * @param servletName
      * @return
      * @throws JAXBException
      */
-    private ProxyServlet createProxy(String servletName, HttpServletRequest req, HttpServletResponse resp) throws JAXBException {
+    private ProxyServlet createProxy(String servletName) throws JAXBException {
         String connector = "";
         ProxyServletRequest request = null;
         try {
@@ -201,16 +195,16 @@ public class OgcProxyServlet extends HttpServlet {
             }
             SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualService.getId(), id, authorities);
             if (policy == null) {
-                if (((HttpServletRequest) req).getUserPrincipal() == null) {
+                if (((HttpServletRequest) servletRequest).getUserPrincipal() == null) {
                     //Spring Anonymous user is used to perform this request, but not policy defined for it
-                    resp.setHeader("easysdi-proxy-error-occured", "true");
-                    logger.error("Error occurred during " + servletName + " service initialization : No anomnymous policy found.");
-                    sendException("Error occurred during " + servletName + " service initialization : No anomnymous policy found.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK, connector, null);
+                    servletResponse.setHeader("easysdi-proxy-error-occured", "true");
+                    logger.error("Error occurred during " + servletName + " service initialization : No public policy found.");
+                    sendException("Error occurred during " + servletName + " service initialization : No public policy found.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK, connector, null);
                     return null;
 
                 } else {
                     //No policy found for the authenticated user, return an ogc exception.
-                    resp.setHeader("easysdi-proxy-error-occured", "true");
+                    servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                     logger.error("Error occurred during " + servletName + " service initialization : No policy found for user.");
                     sendException("Error occurred during " + servletName + " service initialization : No policy found for user.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK, connector, null);
                     return null;
@@ -240,21 +234,21 @@ public class OgcProxyServlet extends HttpServlet {
                 String requestClassName = packagename + "ProxyServletRequest";
                 Class<?> requestClasse = Class.forName(requestClassName);
                 Constructor<?> requestConstructeur = requestClasse.getConstructor(new Class[]{Class.forName("javax.servlet.http.HttpServletRequest")});
-                request = (ProxyServletRequest) requestConstructeur.newInstance(req);
-                if (request.getService() == null & request.getService().equals("")) {
-                    resp.setHeader("easysdi-proxy-error-occured", "true");
-                    sendException(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());
+                request = (ProxyServletRequest) requestConstructeur.newInstance(servletRequest);
+                if (request.getService() == null || request.getService().equals("")) {
+                    servletResponse.setHeader("easysdi-proxy-error-occured", "true");
+                    sendException(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());                    
                     return null;
                 }
                 if (!connector.equals(request.getService())) {
-                    resp.setHeader("easysdi-proxy-error-occured", "true");
+                    servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                     sendException(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());
                     return null;
                 }
             } catch (VersionNotSupportedException e) {
                 //Problem parsing the request
                 logger.error("Version not support", e);
-                resp.setHeader("easysdi-proxy-error-occured", "true");
+                servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                 sendException(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "VERSION", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
                 return null;
             } catch (ClassNotFoundException e) {
@@ -263,37 +257,37 @@ public class OgcProxyServlet extends HttpServlet {
                 //The constructor does not exist, keep going on
             } catch (InstantiationException e) {
                 //Problem parsing the request
-                resp.setHeader("easysdi-proxy-error-occured", "true");
+                servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                 logger.error("Problem parsing request in OgcProxyServlet: ", e);
                 sendException("Problem parsing request.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
                 return null;
             } catch (IllegalAccessException e) {
                 //Problem parsing the request
-                resp.setHeader("easysdi-proxy-error-occured", "true");
+                servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                 logger.error("Problem parsing request in OgcProxyServlet: ", e);
                 sendException("Problem parsing request", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
                 return null;
             } catch (java.lang.reflect.InvocationTargetException e) {
                 if (e.getTargetException() instanceof VersionNotSupportedException) {
                     //Problem parsing the request
-                    resp.setHeader("easysdi-proxy-error-occured", "true");
+                    servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                     logger.error(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED, e);
                     sendException(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "VERSION", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
                 } else {
                     //Problem parsing the request
-                    resp.setHeader("easysdi-proxy-error-occured", "true");
+                    servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                     logger.error("Problem parsing request in OgcProxyServlet: ", e);
                     sendException("Problem parsing request", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
                 }
                 return null;
             } catch (IllegalArgumentException e) {
                 //Problem parsing the request
-                resp.setHeader("easysdi-proxy-error-occured", "true");
+                servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                 logger.error("Problem parsing request in OgcProxyServlet: ", e);
                 sendException("Problem parsing request", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
                 return null;
             } catch (ProxyServletException e) {
-                resp.setHeader("easysdi-proxy-error-occured", "true");
+                servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                 logger.error("ProxyServletException in OgcProxyServlet: ", e.toString());
                 sendException(e.getMessage(), e.getCode(), e.getLocator(), e.getHttpCode(), connector, null);
                 return null;
@@ -328,6 +322,7 @@ public class OgcProxyServlet extends HttpServlet {
                         reqVersion = highestversion;
                         //ProxyRequest checks if the current requested operation is supported by the virtualservice loaded and defined by its compliances.
                         if (!request.setServiceCompliance(highestServicecompliance)) {
+                            servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                             sendException(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_NOT_IMPLEMENTED, connector, request.getVersion());
                             return null;
                         }
@@ -338,6 +333,7 @@ public class OgcProxyServlet extends HttpServlet {
                     //Others operations are rejected if the version resquested is not supported
                     if (!found) {
                         logger.error(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED);
+                        servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                         sendException(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "VERSION", HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());
                         return null;
                     } else {
@@ -376,14 +372,14 @@ public class OgcProxyServlet extends HttpServlet {
                 return ps;
             } catch (Exception e) {
                 logger.error("Problem occured in configuration parsing and/or logging settings.", e);
-                resp.setHeader("easysdi-proxy-error-occured", "true");
+                servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                 sendException("Problem occured while instanciate the virtual service.", OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, null);
                 return null;
             }
         } catch (Exception e) {
             //Enable to instanciate the request proxy servlet class due to bad service or bad version parameter
             logger.error("Invalid service and/or version.", e);
-            resp.setHeader("easysdi-proxy-error-occured", "true");
+            servletResponse.setHeader("easysdi-proxy-error-occured", "true");
             sendException("Invalid service and/or version.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, null);
             return null;
         }

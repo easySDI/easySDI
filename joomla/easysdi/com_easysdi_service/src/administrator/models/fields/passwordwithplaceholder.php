@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -13,12 +13,6 @@ defined('JPATH_PLATFORM') or die;
  * EasySDI Extension of :
  * Form Field class for the Joomla Platform.
  * Text field for passwords
- *
- * @package     Joomla.Platform
- * @subpackage  Form
- * @link        http://www.w3.org/TR/html-markup/input.password.html#input.password
- * @note        Two password fields may be validated as matching using JFormRuleEquals
- * @since       11.1
  */
 class JFormFieldPasswordWithPlaceHolder extends JFormField
 {

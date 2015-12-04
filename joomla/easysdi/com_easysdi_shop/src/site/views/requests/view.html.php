@@ -1,16 +1,17 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 /**
  * View class for a list of Easysdi_shop.
@@ -31,20 +32,29 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 
+        $app = JFactory::getApplication();
+
         $this->user = sdiFactory::getSdiUser();
-        if (!$this->user->isEasySDI) {
-            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-            JFactory::getApplication()->redirect(JRoute::_('index.php?', false));
+        $this->organisms = $this->user->getOrganisms(array(sdiUser::extractionresponsible, sdiUser::organismmanager));
+        if (!$this->user->isEasySDI || count($this->organisms) == 0) {
+            $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            $app->redirect("index.php");
             return false;
         }
 
-        $app = JFactory::getApplication();
         $this->state = $this->get('State');
         $this->ordertype = $this->get('ordertype');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
 
+        //Get clients orgnaisms for the filter
+        $model = $this->getModel('Requests', 'Easysdi_shopModel');
+        $orgQuery = $model->getClientOrganismsListQuery();
+        $db = JFactory::getDbo();
+        $db->setQuery($orgQuery);
+        $this->clientorganisms = $db->loadObjectList();
+        
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));

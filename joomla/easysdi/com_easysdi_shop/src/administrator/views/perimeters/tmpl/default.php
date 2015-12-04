@@ -1,9 +1,9 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
@@ -20,6 +20,7 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_shop/assets/css/easysdi_shop.css');
 
 $user = JFactory::getUser();
+$params = JComponentHelper::getParams('com_easysdi_shop');
 $listOrder = $this->state->get('list.ordering');
 $listDirn = $this->state->get('list.direction');
 $archived = $this->state->get('filter.published') == 2 ? true : false;
@@ -137,12 +138,16 @@ if (!empty($this->extra_sidebar)) {
                 <tbody>
                     <?php
                     foreach ($this->items as $i => $item) :
+                        if ($params->get('userperimeteractivated') != 1 && $item->alias == 'myperimeter' ){
+                            continue;
+                        }
                         $ordering = ($listOrder == 'a.ordering');
                         $canCreate = $user->authorise('core.create', 'com_easysdi_shop');
                         $canEdit = $user->authorise('core.edit', 'com_easysdi_shop');
                         $canCheckin = $user->authorise('core.manage', 'com_easysdi_shop');
                         $canChange = $user->authorise('core.edit.state', 'com_easysdi_shop');
                         $islocked = ($item->alias == 'myperimeter' || $item->alias == 'freeperimeter' ) ? true : false;
+                        
                         ?>
                         <tr class="row<?php echo $i % 2; ?>">
 

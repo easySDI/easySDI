@@ -1,10 +1,10 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
 defined('_JEXEC') or die;
@@ -227,29 +227,12 @@ if (!empty($this->extra_sidebar)) {
                                 </div>
                                 <div class="pull-left" >
                                     <?php
-                                    // Create dropdown items
+                                    // Create dropdown items                                           
                                     if ($canEdit) {
-                                        if ($item->searchtab_id == 1) :
-                                            JHtml::_('dropdown.addCustomItem', JText::_('advanced'), 'javascript:changeTab(' . $item->id . ', 2)', '', 'catalogsearchcriterias.', false, null);
-                                            JHtml::_('dropdown.addCustomItem', JText::_('hidden'), 'javascript:changeTab(' . $item->id . ', 3)', '', 'catalogsearchcriterias.', false, null);
-                                            JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->id . ', 4)', '', 'catalogsearchcriterias.', false, null);
-                                        endif;
-                                        if ($item->searchtab_id == 2) :
-                                            JHtml::_('dropdown.addCustomItem', JText::_('simple'), 'javascript:changeTab(' . $item->id . ', 1)', '', 'catalogsearchcriterias.', false, null);
-                                            JHtml::_('dropdown.addCustomItem', JText::_('hidden'), 'javascript:changeTab(' . $item->id . ', 3)', '', 'catalogsearchcriterias.', false, null);
-                                            JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->id . ', 4)', '', 'catalogsearchcriterias.', false, null);
-                                        endif;
-                                        if ($item->searchtab_id == 3) :
-                                            JHtml::_('dropdown.addCustomItem', JText::_('simple'), 'javascript:changeTab(' . $item->id . ', 1)', '', 'catalogsearchcriterias.', false, null);
-                                            JHtml::_('dropdown.addCustomItem', JText::_('advanced'), 'javascript:changeTab(' . $item->id . ', 2)', '', 'catalogsearchcriterias.', false, null);
-                                            JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->id . ', 4)', '', 'catalogsearchcriterias.', false, null);
-                                        endif;
-                                        if ($item->searchtab_id == 4) :
-                                            JHtml::_('dropdown.addCustomItem', JText::_('simple'), 'javascript:changeTab(' . $item->id . ', 1)', '', 'catalogsearchcriterias.', false, null);
-                                            JHtml::_('dropdown.addCustomItem', JText::_('advanced'), 'javascript:changeTab(' . $item->id . ', 2)', '', 'catalogsearchcriterias.', false, null);
-                                            JHtml::_('dropdown.addCustomItem', JText::_('hidden'), 'javascript:changeTab(' . $item->id . ', 3)', '', 'catalogsearchcriterias.', false, null);
-                                        endif;
-                                        JHtml::_('dropdown.divider');
+                                        JHtml::_('dropdown.addCustomItem', JText::_('simple'), 'javascript:changeTab(' . $item->id . ', 1)', '', 'catalogsearchcriterias.', false, null);
+                                        JHtml::_('dropdown.addCustomItem', JText::_('advanced'), 'javascript:changeTab(' . $item->id . ', 2)', '', 'catalogsearchcriterias.', false, null);
+                                        JHtml::_('dropdown.addCustomItem', JText::_('hidden'), 'javascript:changeTab(' . $item->id . ', 3)', '', 'catalogsearchcriterias.', false, null);
+                                        JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->id . ', 4)', '', 'catalogsearchcriterias.', false, null);
                                     }
 
                                     if ($item->checked_out && $canCheckin) :
