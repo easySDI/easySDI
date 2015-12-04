@@ -117,19 +117,12 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state, r.id as ressource_id')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                 ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
                 ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id');
-        
-        $version = $inputs->getString('searchlast','all');
-        
-        if($version == 'last'){
-            $query->group('r.id');
-            $query->order('m.created DESC');
-        }
         
         $where = 'v.id <> ' . (int) $id . ' AND v.id NOT IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id=' . (int) $id . ') AND rt.id IN (' . $resourcetypechild . ')';
 
@@ -187,7 +180,20 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         }
 
         $query->where($where);
-        $db->setQuery($query)->execute();
+        
+        $version = $inputs->getString('searchlast','all');
+        if($version == 'last'){
+            $query->order('m.created DESC');
+            $upquery = $db->getQuery(true);
+            $upquery->select('*')
+                        ->from( '(' . $query->__toString() . ') as up')
+                        ->group('up.ressource_id');
+            $db->setQuery($upquery)->execute();
+            
+        }else{
+            $db->setQuery($query)->execute();
+        }
+        
         $rows = $db->getNumRows();
         $results = $db->loadObjectList();
 

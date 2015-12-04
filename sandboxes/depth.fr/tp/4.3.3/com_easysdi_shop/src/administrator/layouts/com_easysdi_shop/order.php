@@ -176,7 +176,7 @@ if (!$showActions) {
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_ORGANISM'); ?>
                 </div>
                 <div class="span8 order-edit-value" >
-                    <?php echo $item->basket->sdiUser->getMemberOrganisms()[0]->name; ?>
+                    <?php $organisms = $item->basket->sdiUser->getMemberOrganisms();  echo $organisms[0]->name; ?>
 
                 </div>
             </div>     
@@ -298,6 +298,7 @@ if (!$showActions) {
                             $isCompleted = false;
                             $isRejected = false;
                             $isWaiting = false;
+                            $completedDate = $productItem->completed;
                             switch ($productItem->productstate_id) {
                                 case Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE:
                                 case Easysdi_shopHelper::PRODUCTSTATE_DELETED:
@@ -316,6 +317,7 @@ if (!$showActions) {
                                     $textColorClass = ' text-error ';
                                     $completedIcon = 'icon-warning';
                                     $completedString = 'COM_EASYSDI_SHOP_ORDER_PRODUCT_REJECTED_BY_TB_ON';
+                                    $completedDate = $item->validated_date;
                                     $isRejected = true;
                                     break;
                                 case Easysdi_shopHelper::PRODUCTSTATE_SENT:
@@ -369,7 +371,7 @@ if (!$showActions) {
                                         elseif ($isCompleted || $isRejected) :
                                             // product has a response                                            
                                             ?>
-                                            <span class="<?php echo $textColorClass; ?> shop-basket-product-completed-date"><i class="icon <?php echo $completedIcon; ?>"> </i> <?php echo JText::sprintf($completedString, JHtml::date($productItem->completed, JText::_('DATE_FORMAT_LC2'))); ?></span><br/>
+                                            <span class="<?php echo $textColorClass; ?> shop-basket-product-completed-date"><i class="icon <?php echo $completedIcon; ?>"> </i> <?php echo JText::sprintf($completedString, JHtml::date($completedDate, JText::_('DATE_FORMAT_LC2'))); ?></span><br/>
                                             <?php if (isset($productItem->remark) && strlen($productItem->remark) > 0) : ?>
                                                 <span class="<?php echo $textColorClass; ?> shop-basket-product-remark"><i class="icon icon-comment"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRODUCT_REMARK'); ?></span><span class="shop-basket-product-remark-content"><?php echo $productItem->remark; ?></span>
                                                 <?php
@@ -392,7 +394,7 @@ if (!$showActions) {
                                     if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST && $productItem->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_SENT) :
                                         if (isset($product->cal_total_amount_ti)):
                                             ?>
-                                            <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" value="0" placeholder="0" readonly="readonly" class="input-small"/>
+                                            <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" value="<?php echo $product->cal_total_amount_ti; ?>" placeholder="<?php echo $product->cal_total_amount_ti; ?>" readonly="readonly" class="input-small"/>
                                         <?php else: ?>
                                             <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRICE_FIELD_PLACEHOLDER'); ?>" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>/>
                                         <?php

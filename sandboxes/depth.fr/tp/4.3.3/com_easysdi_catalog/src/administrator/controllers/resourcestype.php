@@ -21,7 +21,7 @@ class Easysdi_catalogControllerResourcestype extends JControllerAdmin
 	 * Proxy for getModel.
 	 * @since	1.6
 	 */
-	public function getModel($name = 'resourcetype', $prefix = 'Easysdi_coreModel')
+	public function getModel($name = 'resourcetype', $prefix = 'Easysdi_catalogModel')
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;

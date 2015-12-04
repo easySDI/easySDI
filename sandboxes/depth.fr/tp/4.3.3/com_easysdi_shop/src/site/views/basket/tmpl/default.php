@@ -33,6 +33,10 @@ JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_AREA_TOO_LARGE');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_AREA_TOO_SMALL');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT');
 JText::script('COM_EASYSDI_SHOP_BASKET_PERIMETER_NO_PERIMETER_SELECTED');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING_TITLE');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -160,9 +164,9 @@ if ($this->item && $this->item->extractions) :
                                 <div id="thirdparty-info">
                                     <p><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EXPLANATION'); ?></p>
                                     <div>
-                                        <p><input type="text" required="true" name="mandate_ref" id="mandate_ref" value="<?php echo $this->item->mandate_ref; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_REFERENCE'); ?>"/></p>
-                                        <p><input type="text" required="true" name="mandate_contact" id="mandate_contact" value="<?php echo $this->item->mandate_contact; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_CONTACT'); ?>"/></p>
-                                        <p><input type="text" required="true" name="mandate_email" id="mandate_email" class="validate-email" value="<?php echo $this->item->mandate_email; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EMAIL'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_ref" size="500" id="mandate_ref" value="<?php echo $this->item->mandate_ref; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_REFERENCE'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_contact" size="75" id="mandate_contact" value="<?php echo $this->item->mandate_contact; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_CONTACT'); ?>"/></p>
+                                        <p><input type="text" required="true" name="mandate_email" size="100" id="mandate_email" class="validate-email" value="<?php echo $this->item->mandate_email; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY_INFO_EMAIL'); ?>"/></p>
                                     </div>
                                 </div>
                             <?php endif; ?>
@@ -316,11 +320,14 @@ if ($this->item && $this->item->extractions) :
                 <!-- ENDOF PRODUCTS -->
 
                 <!-- INFORMATIONS -->
-                <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
+                <?php
+                $footerMessage = (JFactory::getUser()->guest ? $this->paramsarray['shopinfomessageguest'] : $this->paramsarray['shopinfomessage']);
+                if (!empty($footerMessage)):
+                    ?>
                     <div class="row-fluid shop-info" >
                         <div class="row-fluid" ><h2><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h2>
                             <hr>
-                            <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div>
+                            <div class="shop-information"><?php echo $footerMessage; ?></div>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -346,11 +353,9 @@ if ($this->item && $this->item->extractions) :
                                 <div class="btn-wrapper" id="toolbar-draft">
                                     <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE') ?></button>
                                 </div>
-                                <?php if (!$this->item->free): ?>
-                                    <div class="btn-wrapper" id="toolbar-estimate">
-                                        <button class="btn btn-small" rel="basket.estimate"><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
-                                    </div>
-                                <?php endif; ?>
+                                <div class="btn-wrapper" id="toolbar-estimate">
+                                    <button class="btn btn-small" rel="basket.estimate" <?php if (isset($this->item->pricing->cal_total_amount_ti)): echo 'style="display: none;"'; else : echo 'style="display: inline-block;"'; endif;?>><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
+                                </div>
                                 <div class="btn-wrapper" id="toolbar-order">
                                     <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER') ?></button>
                                 </div>
@@ -543,16 +548,12 @@ if ($this->item && $this->item->extractions) :
             </div>
         </div>
 
-        <div id="modal-error" class="modal fade" data-backdrop="static" data-keyboard="false" >
+        <div id="modal-error" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="errorModalLabel"  aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
-                    <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE") ?></h3>
+                    <h3 id="errorModalLabel"></h3>
                 </div>               
-                <div class="modal-body">
-                    <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
-                    <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING'); ?>
-                </div>                
+                <div class="modal-body"></div>                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal" ><?php echo JText::_('OK'); ?></button>
                 </div>              
@@ -580,15 +581,17 @@ if ($this->item && $this->item->extractions) :
                 if ('undefined' === typeof app) {
                     app = window.appname;
                 }
-                app.on("ready", function () {                    
-                   jQuery('#modal-perimeter').show();
-                   initMiniMap();
-                   
-                   jQuery('a[href$="#modal-perimeter"]').click(function(){jQuery('#modal-perimeter').removeClass('invisible');});
-                   <?php echo($this->basketScriptPlugins); ?>
+                app.on("ready", function () {
+                    jQuery('#modal-perimeter').show();
+                    initMiniMap();
+
+                    jQuery('a[href$="#modal-perimeter"]').click(function () {
+                        jQuery('#modal-perimeter').removeClass('invisible');
+                    });
+    <?php echo($this->basketScriptPlugins); ?>
                 });
             });
- 
+
             function initialization() {
                 miniBaseLayers[0].events.unregister("loadend", miniBaseLayers[0], initialization);
                 initDraw();
@@ -618,7 +621,8 @@ if ($this->item && $this->item->extractions) :
                     reloadFeatures<?php echo $this->item->extent->id; ?>();
     <?php endif; ?>
                 jQuery('#modal-perimeter').hide();
-            };
+            }
+            ;
         </script>
         <input type="hidden" name="perimeter" id="perimeter" value="<?php
         if (isset($this->item->extent) && !empty($this->item->extent)): echo $this->item->extent->id;

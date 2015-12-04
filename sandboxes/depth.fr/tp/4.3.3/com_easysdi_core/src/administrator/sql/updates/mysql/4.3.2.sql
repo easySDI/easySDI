@@ -92,3 +92,7 @@ UPDATE `#__sdi_sys_orderstate` SET `ordering` = 10 WHERE `id` = 10;
 ALTER TABLE `#__sdi_order`
 ADD COLUMN `validated_by` INT(11) UNSIGNED NULL DEFAULT NULL AFTER `validated_reason`,
 ADD CONSTRAINT `#__sdi_order_fk5` FOREIGN KEY (`validated_by`) REFERENCES `#__sdi_user` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE `#__sdi_order_diffusion` MODIFY `remark` VARCHAR(4000);
+
+ALTER TABLE `#__sdi_order` MODIFY `mandate_ref` VARCHAR(500);

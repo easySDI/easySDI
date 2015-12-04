@@ -114,3 +114,7 @@ UPDATE [#__sdi_sys_orderstate] SET [ordering] = 10 WHERE [id] = 10;
 ALTER TABLE [#__sdi_order] ADD  [validated_by] [int] NULL;
 ALTER TABLE #__sdi_order ADD CONSTRAINT #__sdi_order$#__sdi_user_fk5
 FOREIGN KEY ([validated_by]) REFERENCES [#__sdi_user] ([id]) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE [#__sdi_order_diffusion] ALTER COLUMN [remark] NVARCHAR (4000);
+
+ALTER TABLE [#__sdi_order] ALTER COLUMN [mandate_ref] NVARCHAR (500);

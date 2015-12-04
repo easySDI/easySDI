@@ -138,13 +138,13 @@ class Easysdi_shopModelRequests extends JModelList {
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = ' . (int) substr($search, 3));
-            } else {
-                $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE ' . $search . ' )');
+            $searchOnId = '';
+            if (is_numeric($search)) {
+                $searchOnId = ' OR (a.id = ' . (int) $search . ')';
             }
-        }
+            $search = $db->Quote('%' . $db->escape($search, true) . '%');
+            $query->where('(( a.name LIKE ' . $search . ' ) '.$searchOnId. ' )');
+        } 
 
         //Only order that the current user has something to do with
         $user = sdiFactory::getSdiUser();
@@ -190,12 +190,13 @@ class Easysdi_shopModelRequests extends JModelList {
             }
         }
 
-        if($doneRequests){
-            $query->where('od.productstate_id <> '.Easysdi_shopHelper::PRODUCTSTATE_SENT);
-        }else{
-            $query->where('od.productstate_id = '.Easysdi_shopHelper::PRODUCTSTATE_SENT);
+        if ($doneRequests) {
+            $query->where('od.productstate_id <> ' . Easysdi_shopHelper::PRODUCTSTATE_SENT);
+            $query->where('od.productstate_id <> ' . Easysdi_shopHelper::PRODUCTSTATE_VALIDATION);
+        } else {
+            $query->where('od.productstate_id = ' . Easysdi_shopHelper::PRODUCTSTATE_SENT);
         }
-        
+
 
         //And the product minig is manual
         $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
@@ -232,13 +233,13 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->group('a.mandate_email');
         $query->group('a.level');
         $query->group('a.freeperimetertool');
-        $query->group('a.validated'); 
+        $query->group('a.validated');
         $query->group('uc.name');
         $query->group('state.value');
         $query->group('type.value');
         $query->group('juclient.name');
         $query->group('oclient.name');
-        
+
         $query->order('a.created DESC');
 
         return $query;

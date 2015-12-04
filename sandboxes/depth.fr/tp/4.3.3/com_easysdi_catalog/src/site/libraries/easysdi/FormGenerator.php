@@ -911,10 +911,10 @@ class FormGenerator {
             if ($readonly) {
                 $field->setAttribute('readonly', 'true');
             }
-
-            $field->setAttribute('default', $i18nChild->nodeValue);
-            $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
+            
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
+            $field->setAttribute('default', $this->getDefaultValue($relId, $i18nChild->nodeValue, FALSE, $this->ldao->getByIso3166($localeValue)->id));
+            $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getByIso3166($localeValue)->value . ')'); //
             $description = EText::_($guid, 2);
             if (!empty($description)) {
@@ -1581,7 +1581,7 @@ class FormGenerator {
                         switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
                             case EnumRendertype::$CHECKBOX:
                             case EnumRendertype::$RADIOBUTTON:
-                            case EnumRendertype::$LIST:
+                            //case EnumRendertype::$LIST: //TODO see https://forge.easysdi.org/issues/1171 : it breaks single selects
                                 break;
                             default:
                                 $first = array('id' => '', 'guid' => '', 'name' => '', 'value' => '');

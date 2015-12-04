@@ -15,6 +15,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.ph
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
 require_once JPATH_COMPONENT . '/models/order.php';
 require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
 
 /**
  * Order controller class.
@@ -190,6 +191,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         }
 
         $downloadAllowed = false;
+        $organisms = $clientUser->getMemberOrganisms();
 
         //the user is the client
         if ($order->user_id == $currentUser->id):
@@ -201,7 +203,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         elseif ($currentUser->isOrganismManager($diffusion_id, 'diffusion')):
             $downloadAllowed = true;
         //the user is organims manager of client's organism
-        elseif ($currentUser->isOrganismManager($clientUser->getMemberOrganisms()[0]->id)):
+        elseif ($currentUser->isOrganismManager($organisms[0]->id)):
             $downloadAllowed = true;
         endif;
 
@@ -219,6 +221,22 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $keys['diffusion_id'] = $diffusion_id;
         $orderdiffusion->load($keys);
 
+        //remote stroage, use curl
+        if ($orderdiffusion->storage_id == Easysdi_shopHelper::EXTRACTSTORAGE_REMOTE) {
+
+            $curlHelper = new CurlHelper(true);
+
+            $curldata['url'] = $orderdiffusion->file;
+            $pos = strrpos($url, '.');
+            $extension = ($pos) ? substr($url, $pos) : null;
+            if ($extension) {
+                $curldata['fileextension'] = $extension;
+            }
+            $curldata['filename'] = $orderdiffusion->displayName;
+            return $curlHelper->get($curldata);
+        }
+        //local storage
+        else {
         $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
         $file = JPATH_BASE . '/' . $folder . '/' . $order_id . '/' . $diffusion_id . '/' . $orderdiffusion->file;
 
@@ -272,6 +290,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         }
         
         die();
+    }
     }
 
     function cancel() {

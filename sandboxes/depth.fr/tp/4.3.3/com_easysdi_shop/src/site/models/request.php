@@ -82,6 +82,12 @@ class Easysdi_shopModelRequest extends JModelForm {
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
+            
+            //if a validator is set, loat it
+            if(isset($this->_item->validated_by)){
+                $validator = new sdiUser($this->_item->validated_by);
+                $this->_item->validator = $validator->name;
+            }            
 
             $basket = new sdiBasket();
             $basket->loadOrder($id);
@@ -211,7 +217,7 @@ class Easysdi_shopModelRequest extends JModelForm {
 
         //Save order_diffusion
         $app = JFactory::getApplication();
-        $files = $app->input->files->get('jform');
+        $files = $app->input->files->get('jform', null, 'raw');
 
         $diffusion_id = (int) $data['current_product'];
 
@@ -250,7 +256,7 @@ class Easysdi_shopModelRequest extends JModelForm {
                 return false;
             endif;
         endif;
-        if (!empty($orderdiffusion->fee) || !empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
+        if (isset($orderdiffusion->fee) || !empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
             $orderdiffusion->completed = date('Y-m-d H:i:s');
             $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
         endif;
@@ -345,20 +351,21 @@ class Easysdi_shopModelRequest extends JModelForm {
      * @since	1.6
      */
     public function save($data) {
+        
+        $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('request.id');
+        
+        $table = $this->getTable();
+        $table->load($id);
 
-        $newOrderstate = Easysdi_shopHelper::getNewOrderState($data['id']);
+        $newOrderstate = Easysdi_shopHelper::getNewOrderState($id);
         if (isset($newOrderstate)) {
-            $data['orderstate_id'] = $newOrderstate;
+            $table->orderstate_id = $newOrderstate;
             if ($newOrderstate == Easysdi_shopHelper::ORDERSTATE_FINISH) {
-                $data['completed'] = date('Y-m-d H:i:s');
+                $table->completed = date('Y-m-d H:i:s');
             }
         }
 
-        if ($data['thirdparty_id'] == '')
-            $data['thirdparty_id'] = null;
-
-        $table = $this->getTable();
-        if ($table->save($data) === true) {
+        if ($table->store(false) === true) {
             return $id;
         } else {
             return false;
