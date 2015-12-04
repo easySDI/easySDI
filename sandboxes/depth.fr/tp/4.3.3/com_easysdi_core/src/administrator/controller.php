@@ -48,6 +48,14 @@ class Easysdi_coreController extends JControllerLegacy
                 $query = $db->getQuery(true);
                 $query->select('COUNT(*)');
                 $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_processing'));
+                
+                $db->setQuery($query);
+		$app->setUserState( 'com_easysdi_processing-installed' ,$db->loadResult() == 0 ? false : true);
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
                 $query->where('name = '.$db->quote('com_easysdi_shop'));
                 
 		$db->setQuery($query);

@@ -1,0 +1,165 @@
+<?xml version="1.0" ?>
+
+<project default="com_easysdi_processing" basedir="../../../">
+    
+    <property name="processing.component.name" value="com_easysdi_processing"/>
+    <property name="processing.src.out.dir" value="${root.out.dir}/${processing.component.name}/src"/>
+    <property name="processing.package.out.dir" value="${root.out.dir}/${processing.component.name}/target"/>
+    
+    <available file="${joomla.administrator.components.dir}/${processing.component.name}" type="dir" property="processing.admin.exist"/>
+    <available file="${joomla.site.components.dir}/${processing.component.name}" type="dir" property="processing.site.exist"/>
+    
+    <target name="package" depends="write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
+    <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
+    <!-- 
+        Create the administrator folder if necessary.
+        Empty the administrator folder, except svn files.
+        Copy the files from the Admin.
+    --> 
+    <target name="copy-administrator" if="processing.admin.exist">
+        
+        <echo>Copy administrator structure of ${processing.component.name} component</echo>
+        <copy todir="${processing.src.out.dir}/administrator" overwrite="true">
+            <fileset dir="${joomla.administrator.components.dir}/${processing.component.name}">
+                <exclude name="easysdi_*.xml"/>
+                <exclude name="script.*"/>
+            </fileset>
+        </copy>
+        <echo>Copy administrator language file of ${processing.component.name} component</echo>
+        <copy todir="${processing.src.out.dir}/administrator/language" overwrite="true">
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${processing.component.name}.ini **/*${processing.component.name}.sys.ini"/>
+        </copy>
+        <echo>Copy administrator deployement xml file of ${processing.component.name} component</echo>
+        <copy todir="${processing.src.out.dir}" overwrite="true">
+            <fileset dir="${joomla.administrator.components.dir}/${processing.component.name}">
+                <include name="easysdi_*.xml"/>
+                <include name="script.*"/>
+            </fileset>
+        </copy>
+    </target>
+ 
+    <!-- 
+        Create the site folder if necessary.
+        Empty the site folder, except svn files.
+        Copy the files from the site.
+    --> 
+    <target name="copy-site" if="processing.site.exist">
+       
+        <echo>Copy site structure of ${processing.component.name} component</echo>
+        
+        <copy todir="${processing.src.out.dir}/site" overwrite="true">
+            <fileset dir="${joomla.site.components.dir}/${processing.component.name}"/>
+        </copy>
+        <echo>Copy site language file of ${processing.component.name} component</echo>
+        <copy todir="${processing.src.out.dir}/site/language" overwrite="true">
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${processing.component.name}.ini"/>
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${processing.component.name}.sys.ini"/>
+        </copy>
+    </target>
+    
+    <target name="write-xml">
+        <echoxml file="${processing.src.out.dir}/easysdi_processing.xml">
+            <extension type="component" version="3.0.0" method="upgrade">
+                <name>com_easysdi_processing</name>
+                <creationDate>${xml.releaseDate}</creationDate>
+                <copyright>${xml.copyright}</copyright>
+                <license>${xml.license}</license>
+                <author>${xml.author}</author>
+                <authorEmail>${xml.authorEmail}</authorEmail>
+                <authorUrl>${xml.authorUrl}</authorUrl>
+                <version>${version}</version>
+                <description></description>
+                <scriptfile>script.php</scriptfile>
+                <files folder="site">
+                    <filename>index.html</filename>
+                    <filename>easysdi_processing.php</filename>
+                    <filename>controller.php</filename>
+                    <filename>router.php</filename>
+                    <folder>assets</folder>
+                    <folder>views</folder>
+                    <folder>models</folder>
+                    <folder>controllers</folder>
+                    <folder>helpers</folder>
+                </files>
+                <languages folder="site">
+                    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_processing.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_processing.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.com_easysdi_processing.ini</language>
+                </languages>
+                <administration>
+                    <files folder="administrator">
+                        <filename>access.xml</filename>
+                        <filename>config.xml</filename>
+                        <filename>controller.php</filename>
+                        <filename>index.html</filename>
+                        <filename>easysdi_processing.php</filename>
+                        <folder>controllers</folder>
+                        <folder>assets</folder>
+                        <folder>helpers</folder>
+                        <folder>models</folder>
+                        <folder>tables</folder>
+                        <folder>views</folder>
+                    </files>
+                    <languages folder="administrator">
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_processing.ini</language>
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_processing.sys.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_processing.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_processing.sys.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_processing.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_processing.sys.ini</language>
+                    </languages>
+                </administration>
+            </extension>
+        </echoxml>
+    </target>
+    
+    <!-- Create the build description file. --> 
+    <target name="build-info">
+        
+        <echo>Create buid info file for ${processing.component.name} component</echo>
+        <mkdir dir="${processing.src.out.dir}/META-INF"/>
+        <tstamp>
+            <format property="buildtime" pattern="dd.MM.yyyy hh:mm:ss aa" />
+        </tstamp>
+        <exec executable="svnversion" outputproperty="svnrevision">
+            <arg line="${processing.src.out.dir}"/>
+        </exec>
+        
+        <propertyfile file="${processing.src.out.dir}/META-INF/build-info.properties" comment="This file is automatically generated - DO NOT EDIT">
+            <entry key="build-datetime" value="${buildtime}"/>
+            <entry key="component" value="${processing.component.name}"/>
+            <entry key="build" value="${version}-r${svnrevision}"/>
+            <entry key="build-owner" value="${user.name}"/>
+        </propertyfile>
+    </target>
+    
+    <!-- Compresses the component package. --> 
+    <target name="zip-package">
+        
+        <echo>Zip package ${processing.component.name}.zip</echo>
+        
+        <mkdir dir="${processing.package.out.dir}"/>
+        <delete>
+            <fileset dir="${processing.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${processing.package.out.dir}/${processing.component.name}.zip">
+            <fileset dir="${processing.src.out.dir}"/>
+        </jar>
+    </target>
+    
+    <target name="zip-dev-package">
+        
+        <echo>Zip package ${processing.component.name}.zip</echo>
+        
+        <mkdir dir="${processing.package.out.dir}"/>
+        <delete>
+            <fileset dir="${processing.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${processing.package.out.dir}/${processing.component.name}.zip">
+            <fileset dir="${processing.src.out.dir}"/>
+        </jar>
+    </target>
+    
+</project>

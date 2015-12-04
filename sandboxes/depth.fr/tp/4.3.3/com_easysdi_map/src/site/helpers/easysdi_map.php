@@ -83,8 +83,8 @@ abstract class Easysdi_mapHelper {
                 //$doc->addScript($base_url . '/easysdi/js/sdi.js');
             }
 
-            foreach (glob(Juri::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
-                $doc->addScript(str_replace(JPATH_BASE, '', $file));
+            foreach (glob(JPATH_SITE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
+                $doc->addScript(str_replace(JPATH_SITE, JURI::base(true), $file));
             }
 
             $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/helpers/map.js');
