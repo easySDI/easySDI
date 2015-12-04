@@ -1,12 +1,13 @@
 <?php
-
 /**
- * @package     Joomla.Platform
- * @subpackage  Form
- *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @version     4.3.2
+ * @package     com_easysdi_map
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
+
 defined('JPATH_PLATFORM') or die;
 
 JFormHelper::loadFieldClass('list');
@@ -14,9 +15,6 @@ JFormHelper::loadFieldClass('list');
 /**
  * Supports an custom SQL select list
  *
- * @package     Joomla.Platform
- * @subpackage  Form
- * @since       11.1
  */
 class JFormFieldSqlperimeterwithaccessscope extends JFormFieldList {
 
@@ -53,8 +51,10 @@ class JFormFieldSqlperimeterwithaccessscope extends JFormFieldList {
             $user = sdiFactory::getSdiUser();
             $organisms = $user->getDiffusionManagerOrganisms();
             $query .= ' AND (p.accessscope_id = 1 ';
-            $query .= 'OR (p.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = '. (int)$organisms[0]->id.' AND a.entity_guid = p.guid ) = 1)';
-            $query .= 'OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = '. (int)$user->id.' AND a.entity_guid = p.guid ) = 1)';
+            $query .= 'OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = '. (int)$organisms[0]->id.' AND a.entity_guid = p.guid ) = 1)';
+            $query .= 'OR (p.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = '. (int)$user->id.' AND a.entity_guid = p.guid ) = 1)';
+            
+            //TODO add category access scope
             $query .= ')';
         } catch (Exception $e) {
             //Can't handle accessscope restriction

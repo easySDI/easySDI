@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
@@ -37,15 +37,24 @@ class Easysdi_shopViewRequest extends JViewLegacy {
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-
+        
         $this->user = sdiFactory::getSdiUser();
-        if (!$this->user->isEasySDI) {
+        
+        $extractionsIds = array_map(function($d){return $d->id;}, $this->item->basket->extractions);
+        $this->authorizeddiffusion = array_intersect($extractionsIds, (array)$this->user->getResponsibleExtraction());
+        $this->managedOrganismsDiffusion = array_map(function($o){return $o->id;}, (array)$this->user->getOrganismManagerOrganisms());
+        
+        if (!$this->user->isEasySDI || (count($this->authorizeddiffusion)==0 && !$this->user->isOrganismManager($extractionsIds, 'diffusion'))) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
             return false;
         }
         
-        $this->authorizeddiffusion = $this->user->getResponsibleExtraction();
+        //get the contact address of the user
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_contact/tables/address.php';
+        $tableAddress = JTable::getInstance('Address', 'Easysdi_contactTable', array());
+        $tableAddress->loadByUserID($this->item->basket->sdiUser->id, 1);
+        $this->item->basket->sdiUser->contactAddress = $tableAddress;        
         
         $this->_prepareDocument();
 
@@ -95,9 +104,7 @@ class Easysdi_shopViewRequest extends JViewLegacy {
         //load the JToolBar library and create a toolbar
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
-        //and make whatever calls you require
-        $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_TO_USER'), 'request.save', false);
-        $bar->appendButton('Separator');
+
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'request.cancel', false);
         //generate the html and return
         return $bar->render();

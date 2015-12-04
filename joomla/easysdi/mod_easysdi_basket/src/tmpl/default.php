@@ -1,4 +1,12 @@
 <?php
+/**
+ * @version     4.0.0
+ * @package     mod_easysdi_basket
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
+
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 JText::script('COM_EASYSDI_SHOP_BASKET_SUCCESSFULLY_UPDATED');

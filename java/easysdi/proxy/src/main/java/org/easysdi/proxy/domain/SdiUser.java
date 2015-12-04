@@ -293,7 +293,7 @@ public class SdiUser implements java.io.Serializable {
 		Set<SdiUserRoleOrganism> result = new HashSet<SdiUserRoleOrganism>() ;
 		for(SdiUserRoleOrganism uro :this.getSdiUserRoleOrganisms()){
 			Integer role = (uro).getSdiSysRole().getId();
-			 if(role == 6){
+			 if(role == 1){
 				 result.add(uro);
 			 }
 		}

@@ -445,7 +445,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			param = paramSB.toString();
 			logger.info("Request="+ param);
 
-			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
+			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.getBytes()))));
 
 			String version = rh.getVersion();
 			requestedVersion = version;
@@ -1065,11 +1065,12 @@ public class WFSProxyServlet extends ProxyServlet {
 
 									// Debug tb 21.05.2009
 									// True if remoteFilter is activ but not Set
-									if (userFilter != null && userFilter.equals("")) {
+									if ((userFilter != null && userFilter.equals("")) || userFilter == null) {
 										if (!paramUrl.endsWith("&")) {
 											paramUrl = paramUrl + "&";
 										}
-										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(filter, "UTF-8");
+										paramUrl = paramUrl + "FILTER=" + filter;
+                                                                                
 									}
 									// True if remoteFilter is activ and Set
 									else if (userFilter != null && !userFilter.equals(""))

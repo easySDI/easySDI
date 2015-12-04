@@ -977,6 +977,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_catalog` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(500)  ,
+`contextualsearchresultpaginationnumber` int(3) DEFAULT 0,
 `xsldirectory` VARCHAR(255) ,
 `oninitrunsearch` TINYINT(1) DEFAULT '0' ,
 `cswfilter` TEXT(1000)   ,
@@ -1240,7 +1241,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
 `editorrelationscope_id` INT(11) UNSIGNED  ,
 `childresourcetype_id` INT(11)  UNSIGNED,
 `childtype_id` INT(11)  UNSIGNED,
-
+`accessscope_limitation` INT(1) DEFAULT 0,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
@@ -1932,7 +1933,7 @@ UNIQUE (`alias`)
 CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
-`alias` VARCHAR(20)  NOT NULL ,
+`alias` VARCHAR(255)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL ,
 `modified_by` INT(11)  ,
@@ -2053,7 +2054,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_visualization` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
-`alias` VARCHAR(20)  NOT NULL ,
+`alias` VARCHAR(50)  NOT NULL ,
 `created` DATETIME NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `modified_by` INT(11)  ,
@@ -2190,6 +2191,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_perimeter` (
 `featuretypefielddescription` VARCHAR(255)   NULL ,
 `featuretypefieldgeometry` VARCHAR(255)   NULL ,
 `featuretypefieldresource` VARCHAR(255)   NULL ,
+`featuretypefieldlevel` VARCHAR(255)   NULL ,
+`maplayer_id` INT(11) UNSIGNED   NULL ,
 `wmsservice_id` INT(11) UNSIGNED   NULL ,
 `wmsservicetype_id` INT(11) UNSIGNED   NULL ,
 `layername` VARCHAR(255)   NULL ,
@@ -2224,10 +2227,10 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile` (
     `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
     `organism_id` int(11) UNSIGNED NOT NULL,
     `name` varchar(75) NOT NULL,
-    `fixed_fee` FLOAT(6,2),
-    `surface_rate` FLOAT(6,2),
-    `min_fee` FLOAT(6,2),
-    `max_fee` FLOAT(6,2),
+    `fixed_fee` decimal(19,2),
+    `surface_rate` decimal(19,2),
+    `min_fee` decimal(19,2),
+    `max_fee` decimal(19,2),
     PRIMARY KEY (`id`),
     KEY `#__sdi_pricing_profile_fk1` (`organism_id`),
     CONSTRAINT `#__sdi_pricing_profile_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -2258,6 +2261,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `productstorage_id` INT(11) UNSIGNED ,
 `file` VARCHAR(255)   ,
 `fileurl` VARCHAR(500)   ,
+`packageurl` VARCHAR(500)   ,
 `perimeter_id` INT(11) UNSIGNED  ,
 `hasdownload` TINYINT(1)  NOT NULL DEFAULT 0 ,
 `hasextraction` TINYINT(1)  NOT NULL DEFAULT 0 ,
@@ -2323,9 +2327,15 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `validated` TINYINT(1) DEFAULT NULL,
 `validated_date` DATETIME DEFAULT NULL,
 `validated_reason` VARCHAR(500),
+`validated_by` INT(11) UNSIGNED NULL DEFAULT NULL,
 `buffer` FLOAT(40,20)  NULL ,
 `surface` FLOAT(40,20)  NULL ,
-`remark` VARCHAR(500)  NULL ,
+`remark` VARCHAR(4000)  NULL ,
+`mandate_ref` VARCHAR(500) NULL,
+`mandate_contact` VARCHAR(75),
+`mandate_email` VARCHAR(100),
+`level` VARCHAR(100),
+`freeperimetertool` VARCHAR(100),
 `sent` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `completed` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `access` INT(10)  NOT NULL DEFAULT '1',
@@ -2357,6 +2367,14 @@ PRIMARY KEY (`id`),
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_extractstorage` (
+    `id` int(11) unsigned not null auto_increment,
+    `ordering` int(11),
+    `state` int(11) not null default '1',
+    `value` varchar(255) not null,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
 CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36) NOT NULL,
@@ -2371,15 +2389,18 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `order_id` INT(11) UNSIGNED NOT NULL ,
 `diffusion_id` INT(11) UNSIGNED NOT NULL ,
 `productstate_id` INT(11) UNSIGNED NOT NULL ,
-`remark` VARCHAR(500)  NULL ,
+`remark` VARCHAR(4000)  NULL ,
 `fee` DECIMAL(10)  NULL ,
 `completed` DATETIME NULL DEFAULT '0000-00-00 00:00:00',
-`file` VARCHAR(500)  NULL ,
+`storage_id` INT(11) UNSIGNED NULL ,
+`file` VARCHAR(4000)  NULL ,
 `size` DECIMAL(10)  NULL ,
+`displayName` VARCHAR(75) NULL,
 PRIMARY KEY (`id`),
   INDEX `#__sdi_order_diffusion_fk1` (`order_id` ASC) ,
   INDEX `#__sdi_order_diffusion_fk2` (`diffusion_id` ASC) ,
   INDEX `#__sdi_order_diffusion_fk3` (`productstate_id` ASC) ,
+  INDEX `#__sdi_order_diffusion_fk4` (`storage_id` ASC) ,
   CONSTRAINT `#__sdi_order_diffusion_fk1`
     FOREIGN KEY (`order_id`)
     REFERENCES `#__sdi_order` (`id`)
@@ -2393,6 +2414,11 @@ PRIMARY KEY (`id`),
   CONSTRAINT `#__sdi_order_diffusion_fk3`
     FOREIGN KEY (`productstate_id`)
     REFERENCES `#__sdi_sys_productstate` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_order_diffusion_fk4`
+    FOREIGN KEY (`storage_id`)
+    REFERENCES `#__sdi_sys_extractstorage` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -2536,7 +2562,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism_category_pricing_rebate` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `organism_id` INT(11) UNSIGNED,
     `category_id` INT(11) UNSIGNED,
-    `rebate` FLOAT(6,2),
+    `rebate` decimal(19,2),
     PRIMARY KEY (`id`),
   KEY `#__sdi_organism_category_pricing_rebate_fk1` (`organism_id`),
   KEY `#__sdi_organism_category_pricing_rebate_fk2` (`category_id`),
@@ -2568,13 +2594,13 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order` (
     `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
     `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
     `order_id` int(11) UNSIGNED NOT NULL,
-    `cfg_vat` decimal(6,2) NOT NULL DEFAULT 0,
+    `cfg_vat` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_currency` char(3) NOT NULL DEFAULT 'CHF',
     `cfg_rounding` decimal(3,2) NOT NULL DEFAULT '0.05',
-    `cfg_overall_default_fee` decimal(6,2) NOT NULL DEFAULT 0,
+    `cfg_overall_default_fee` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_free_data_fee` TINYINT DEFAULT 0,
-    `cal_total_amount_ti` float,
-    `cal_fee_ti` decimal(6,2) NOT NULL DEFAULT 0,
+    `cal_total_amount_ti` decimal(19,2),
+    `cal_fee_ti` decimal(19,2) NOT NULL DEFAULT 0,
     `ind_lbl_category_order_fee` varchar(255),
     PRIMARY KEY (`id`),
     KEY `#__sdi_pricing_order_fk1` (`order_id`),
@@ -2596,11 +2622,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier` (
     `supplier_id` int(11) UNSIGNED NOT NULL,
     `supplier_name` varchar(255) NOT NULL,
     `cfg_internal_free` TINYINT NOT NULL DEFAULT 1,
-    `cfg_fixed_fee_ti` decimal(6,2) NOT NULL DEFAULT 0,
+    `cfg_fixed_fee_ti` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_data_free_fixed_fee` TINYINT NOT NULL DEFAULT 0,
-    `cal_total_rebate_ti` float NOT NULL DEFAULT 0,
-    `cal_fee_ti` decimal(6,2) NOT NULL DEFAULT 0,
-    `cal_total_amount_ti` float,
+    `cal_total_rebate_ti` decimal(19,2) NOT NULL DEFAULT 0,
+    `cal_fee_ti` decimal(19,2) NOT NULL DEFAULT 0,
+    `cal_total_amount_ti` decimal(19,2),
     PRIMARY KEY (`id`),
     KEY `#__sdi_pricing_order_supplier_fk1` (`pricing_order_id`),
     KEY `#__sdi_pricing_order_supplier_fk2` (`supplier_id`),
@@ -2622,12 +2648,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product` (
     `pricing_order_supplier_id` int(11) unsigned not null,
     `product_id` int(11) unsigned not null,
     `pricing_id` int(11) unsigned not null,
-    `cfg_pct_category_supplier_discount` decimal(6,2) NOT NULL DEFAULT 0,
+    `cfg_pct_category_supplier_discount` decimal(19,2) NOT NULL DEFAULT 0,
     `ind_lbl_category_supplier_discount` varchar(255),
-    `cal_amount_data_te` float,
-    `cal_total_amount_te` float,
-    `cal_total_amount_ti` float,
-    `cal_total_rebate_ti` float,
+    `cal_amount_data_te` decimal(19,2),
+    `cal_total_amount_te` decimal(19,2),
+    `cal_total_amount_ti` decimal(19,2),
+    `cal_total_rebate_ti` decimal(19,2) NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     KEY `#__sdi_pricing_order_supplier_product_fk1` (`pricing_order_supplier_id`),
     KEY `#__sdi_pricing_order_supplier_product_fk2` (`product_id`),
@@ -2651,25 +2677,17 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product_profile` (
     `pricing_order_supplier_product_id` int(11) unsigned not null,
     `pricing_profile_id` int(11) unsigned not null,
     `pricing_profile_name` varchar(255) not null,
-    `cfg_fixed_fee` decimal(6,2) NOT NULL DEFAULT 0,
-    `cfg_surface_rate` decimal(6,2) NOT NULL DEFAULT 0,
-    `cfg_min_fee` decimal(6,2) NOT NULL DEFAULT 0,
-    `cfg_max_fee` decimal(6,2) NOT NULL DEFAULT 0,
-    `cfg_pct_category_profile_discount` decimal(6,2) NOT NULL DEFAULT 0,
+    `cfg_fixed_fee` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_surface_rate` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_min_fee` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_max_fee` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_pct_category_profile_discount` decimal(19,2) NOT NULL DEFAULT 0,
     `ind_lbl_category_profile_discount` varchar(255),
     PRIMARY KEY (`id`),
     KEY `#__sdi_pricing_order_supplier_product_profile_fk1` (`pricing_order_supplier_product_id`),
     KEY `#__sdi_pricing_order_supplier_product_profile_fk2` (`pricing_profile_id`),
     CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk1` FOREIGN KEY (`pricing_order_supplier_product_id`) REFERENCES `#__sdi_pricing_order_supplier_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk2` FOREIGN KEY (`pricing_profile_id`) REFERENCES `#__sdi_pricing_profile` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_extractstorage` (
-    `id` int(11) unsigned not null auto_increment,
-    `ordering` int(11),
-    `state` int(11) not null default '1',
-    `value` varchar(255) not null,
-    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- com_easysdi_monitor
@@ -3175,4 +3193,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_monitor_exports` (
                   `xsltUrl` varchar (500),
                   PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+
 

@@ -151,12 +151,16 @@ svg {
 }
 
 .syntaxhighlighter{
-    overflow: visible !important;
+    height : 450px;
 }
 
 #previewModal{
-    width: 900px;
-    left: 40%;
+    width: 80%;
+    left: 50%;    
+}
+
+#previewModal .modal-body{
+    max-height:none;
 }
 
 #search_table{
@@ -164,8 +168,12 @@ svg {
 }
 
 #searchModal{
-    width: 900px;
-    left: 40%;
+    width: 60%;
+    left: 60%;
+}
+
+#searchModal .modal-body{
+    max-height:none;
 }
 
 .sdi-multi-extent-select.chzn-container-multi .chzn-choices li.search-choice {
@@ -209,4 +217,25 @@ svg {
     margin-left: 3px;
 }
 
+.bar {
+    height: 18px;
+    background-color: #428bca;
+    border-radius: 4px;
+}
 
+#fileUploadPreview{
+    float:right;
+}
+
+#fileUploadValidate{
+    margin-right: 125px;
+}
+
+.file-controls .btn-preview, .file-controls .btn-delete{
+    display: none;
+}
+
+.labelrequired:after {
+  content:"*";
+  color:red;
+}

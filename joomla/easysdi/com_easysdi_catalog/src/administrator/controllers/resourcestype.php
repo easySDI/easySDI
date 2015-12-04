@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -21,7 +21,7 @@ class Easysdi_catalogControllerResourcestype extends JControllerAdmin
 	 * Proxy for getModel.
 	 * @since	1.6
 	 */
-	public function getModel($name = 'resourcetype', $prefix = 'Easysdi_coreModel')
+	public function getModel($name = 'resourcetype', $prefix = 'Easysdi_catalogModel')
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;
