@@ -1,3 +1,4 @@
+CALL drop_column('sdi_language', 'datatable');
 ALTER TABLE #__sdi_language ADD COLUMN `datatable` varchar(50) NOT NULL DEFAULT 'English';
 
 UPDATE `#__sdi_language` SET datatable='Arabic' WHERE id='1';

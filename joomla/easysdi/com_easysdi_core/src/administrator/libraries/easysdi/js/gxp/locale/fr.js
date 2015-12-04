@@ -11,6 +11,8 @@ GeoExt.Lang.add("fr", {
         untitledText: "Sans titre",
         addLayerSourceErrorText: "Impossible d'obtenir les capacités WMS ({msg}).\nVeuillez vérifier l'URL et essayez à nouveau.",
         availableLayersText: "Couches disponibles",
+        panelTitleText: "Titre",
+        layerSelectionText: "Afficher les données disponibles depuis :",
         doneText: "Terminé",
         uploadText: "Télécharger des données",
         addFeedActionMenuText: "Add feeds",

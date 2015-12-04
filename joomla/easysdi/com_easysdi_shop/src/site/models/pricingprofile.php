@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access.
@@ -59,6 +59,7 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
      * @return	mixed	Object on success, false on failure.
      */
     public function &getData($id = null) {
+        $db = JFactory::getDbo();
         if ($this->_item === null) {
             $this->_item = new stdClass();
 
@@ -66,21 +67,35 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
                 $id = $this->getState('pricingprofile.id');
             }
 
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true)
+            if ($id == 0) {
+                // if this is a new pricing profile, only load categories
+                $query = $db->getQuery(true)
+                        ->select('c.id, c.name, 0 as isFree')
+                        ->from($db->quoteName('#__sdi_category') . ' as c')
+                        ->where('c.state = 1')
+                        ->order('c.ordering');
+                $db->setQuery($query);
+                $this->_item->categories = $db->loadObjectList();
+            } else {
+
+                
+                $query = $db->getQuery(true)
                         ->select('pp.*')
-                        ->from($db->quoteName('#__sdi_pricing_profile').' as pp')
-                        ->where('pp.id='.(int)$id);
-            $db->setQuery($query);
-            $this->_item = $db->loadObject();
-            
-            $query = $db->getQuery(true)
+                        ->from($db->quoteName('#__sdi_pricing_profile') . ' as pp')
+                        ->where('pp.id=' . (int) $id);
+                $db->setQuery($query);
+                $this->_item = $db->loadObject();
+
+                $query = $db->getQuery(true)
                         ->select('c.id, c.name, COUNT(ppcpr.id) as isFree')
-                        ->from($db->quoteName('#__sdi_category').' as c')
-                        ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate ppcpr ON ppcpr.category_id=c.id AND ppcpr.pricing_profile_id='. (int)$id)
-                        ->group('c.id');
-            $db->setQuery($query);
-            $this->_item->categories = $db->loadObjectList();
+                        ->from($db->quoteName('#__sdi_category') . ' as c')
+                        ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate ppcpr ON ppcpr.category_id=c.id AND ppcpr.pricing_profile_id=' . (int) $id)
+                        ->where('c.state = 1')
+                        ->group('c.id, c.name')
+                        ->order('c.ordering');
+                $db->setQuery($query);
+                $this->_item->categories = $db->loadObjectList();
+            }
         }
 
         return $this->_item;
@@ -101,6 +116,15 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
         $form = $this->loadForm('com_easysdi_shop.pricingprofile', 'pricingprofile', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) {
             return false;
+        }
+
+        if (!sdiFactory::getSdiUser()->isPricingManager($this->getState('pricingprofile.organism_id'))) {
+            foreach ($form->getFieldsets() as $fieldset) {
+                foreach ($form->getFieldset($fieldset->name) as $field) {
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
+                }
+            }
         }
 
         return $form;

@@ -159,13 +159,13 @@
         <field  name="accessscope_limitation"
                 type="radio"
                 default="0"
-                label="Access's scope limitation"
-                description="descr"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ACCESSSCOPELIMITATION"
         >
-            <option value="0">None</option>
-            <option value="1">User's Organism</option>
-            <option value="2">Metadata's Organism</option>
-            <option value="3">Both</option>
+            <option value="0">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION_NONE</option>
+            <option value="1">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION_USER</option>
+            <option value="2">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION_METADATA</option>
+            <option value="3">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION_BOTH</option>
         </field>
         
         <field

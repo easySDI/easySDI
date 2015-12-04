@@ -1,10 +1,10 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
 defined('_JEXEC') or die;
@@ -75,11 +75,24 @@ $document->addScript('components/com_easysdi_catalog/assets/js/searchcriteria.js
         switch (rendertype) {
             case "5" :
                 js('#cswdatevalue').hide();
+                js('#jform_from').val('');
+                js('#jform_to').val('');
                 js('#cswtextvalue').show();
+                js('#cswcbvalue').hide();
                 break;
             case "6":
                 js('#cswdatevalue').show();
                 js('#cswtextvalue').hide();
+                js('#jform_defaultvalue').val('');
+                js('#cswcbvalue').hide();
+                break;
+            case "2":
+                js('#cswdatevalue').hide();
+                js('#jform_from').val('');
+                js('#jform_to').val('');
+                js('#cswtextvalue').hide();
+                js('#jform_defaultvalue').val('');
+                js('#cswcbvalue').show();                
                 break;
         }
     }
@@ -219,7 +232,7 @@ $document->addScript('components/com_easysdi_catalog/assets/js/searchcriteria.js
                         <?php endif ?>
                         <?php if ($this->item->criteriatype_id == 3) : ?>
                             <div id="cswdatevalue">
-                                <div class="control-group" id="cswdatevalue">
+                                <div class="control-group" >
                                     <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
                                 </div>
                                 <div class="control-group">
@@ -234,6 +247,10 @@ $document->addScript('components/com_easysdi_catalog/assets/js/searchcriteria.js
                             <div class="control-group" id="cswtextvalue">
                                 <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
                                 <div class="controls"><?php echo $this->form->getInput('defaultvalue'); ?></div>
+                            </div>
+                            <div class="control-group" id="cswcbvalue">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaultcheckbox'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('defaultcheckbox'); ?></div>
                             </div>
                         <?php endif ?>
                         <?php if ($this->item->criteriatype_id == 2) : ?>
@@ -254,7 +271,6 @@ $document->addScript('components/com_easysdi_catalog/assets/js/searchcriteria.js
                                     <div class="control-label"><?php echo $this->form->getLabel('defaultvalues'); ?></div>
                                     <div class="controls"><?php echo $this->form->getInput('defaultvalues'); ?></div>
                                 </div>
-
                             <?php else: ?>
                                 <div class="control-group">
                                     <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>

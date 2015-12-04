@@ -63,14 +63,16 @@ public class EasysdiProvider implements AuthenticationProvider,
      */
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException, DataAccessException {
-        user = usersHome.findByUserName(username);
-        String[] passwordParts = user.getPassword().split(":");
-        String salt = (passwordParts.length > 1) ? passwordParts[1] : null;
         try {
+            user = usersHome.findByUserName(username);
+            if(user == null) //No user for the username
+                return null;
+            String[] passwordParts = user.getPassword().split(":");
+            String salt = (passwordParts.length > 1) ? passwordParts[1] : null;
             JoomlaUser joomlaUser = new JoomlaUser(user.getUsername(), user.getPassword(), salt, getAuthorities(user.getUsername()), true, true, true, user.getBlock() == 0);
             return joomlaUser;
         } catch (Exception ex) {
-            String s = ex.getMessage();
+            
         }
         return null;
     }

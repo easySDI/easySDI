@@ -1,16 +1,18 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
 defined('_JEXEC') or die;
 
-
 JHTML::_('behavior.modal');
+
+$doc = JFactory::getDocument();
+$doc->addScript(Juri::base(true) . '/components/com_easysdi_map/views/preview/tmpl/preview.js');
 
 if (!empty($this->mapscript)) :
     ?>

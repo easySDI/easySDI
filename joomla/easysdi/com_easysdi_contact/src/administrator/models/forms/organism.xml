@@ -54,7 +54,7 @@
 
         <field name="categories" 
                type="sql" 
-               query="SELECT id, name as value FROM #__sdi_category WHERE state=1" 
+               query="SELECT id, name as value FROM #__sdi_category WHERE state=1 ORDER BY ordering" 
                key_field="id"
                value_field="value"
                multiple="true"

@@ -224,15 +224,19 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                 if (endatt.contains("&")) {
                     int endlayername = att.indexOf("&", startlayername);
                     String oldlayername = att.substring(startlayername, endlayername);
-                    att = att.replace(oldlayername, prefixedName);
+                    att = att.replace("layer="+oldlayername, "layer="+prefixedName);
                 } else {
                     String oldlayername = att.substring(startlayername);
-                    att = att.replace(oldlayername, prefixedName);
+                    att = att.replace("layer="+oldlayername, "layer="+prefixedName);
                 }
             }
 
             if (!att.contains("version=")) {
                 att += "&version=" + version;
+            }
+            
+            if (!att.contains("service=")) {
+                att += "&service=WMS";
             }
 
             toUpdate.setAttribute("href", att, nsXLINK);
@@ -956,7 +960,15 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
     public ByteArrayOutputStream GetFeatureInfoAggregation(TreeMap<Integer, ProxyRemoteServerResponse> wmsGetFeatureInfoResponseFilePath) {
         try {
             SAXBuilder sxb = new SAXBuilder();
-
+            
+            /* GetFeatureInfo responses referencing http://www.w3.org/TR/html4/loose.dtd can not be parsed
+            because this document is not valid.
+            To avoid exceptions thrown due to this particular situation, external dtd validation is deactivated.
+            */            
+//            sxb.setFeature("http://xml.org/sax/features/validation", false);
+//            sxb.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+            sxb.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            
             Document doc = new Document();
             Element root = new Element("GetFeatureInfoResponse");
             doc.setRootElement(root);
