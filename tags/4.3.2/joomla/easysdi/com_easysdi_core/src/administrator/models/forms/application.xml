@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="guid" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_GUID"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_GUID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="alias" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_ALIAS"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_ALIAS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_CREATED_BY"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_CREATED_BY"  /> 
+
+       <field name="created" type="calendar" class="inputbox"
+        
+        
+         default="0" 
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_CREATED"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_CREATED" 
+        filter="safehtml" /> 
+
+       <field name="modified_by" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_MODIFIED_BY"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_MODIFIED_BY" 
+         default="0" 
+        
+        
+        filter="safehtml" /> 
+
+       <field name="modified" type="calendar" class="inputbox"
+        
+        
+         default="0" 
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_MODIFIED"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_MODIFIED" 
+        filter="safehtml" /> 
+
+       <field name="name" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_NAME"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_NAME" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="description" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_DESCRIPTION"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_DESCRIPTION" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="resource_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_RESOURCE_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_RESOURCE_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="options" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_OPTIONS"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_OPTIONS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="url" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_URL"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_URL" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="windowname" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_WINDOWNAME"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_WINDOWNAME" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="access" type="accesslevel"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_APPLICATION_ACCESS"
+            description="COM_EASYSDI_CORE_FORM_DESC_APPLICATION_ACCESS" 
+                
+                
+                
+            filter="raw" /> 
+
+         <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+
+                        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" /> 
+
+ </fieldset> 
+
+ <fieldset 
+                        name="accesscontrol">
+                       <field name="asset_id" type="hidden" filter="unset" />
+                       <field name="rules"
+                            type="rules"
+                            label="JFIELD_RULES_LABEL"
+                            translate_label="false"
+                            filter="rules"
+                            validate="rules"
+                            class="inputbox"
+                            component="com_easysdi_core"
+                            section="application"
+                        />
+
+	</fieldset>
+
+</form>
