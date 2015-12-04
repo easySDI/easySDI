@@ -3,9 +3,9 @@
 /**
  * @version     4.2.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
 defined('_JEXEC') or die;
@@ -79,7 +79,7 @@ class Easysdi_catalogControllerSitemap extends Easysdi_catalogController {
         
         $query = $this->db->getQuery(true);
         
-        $query->select('m.guid, m.modified')
+        $query->select("m.guid, DATE_FORMAT(m.modified,'%Y-%m-%d') as modified")
                 ->from('#__sdi_metadata m')
                 ->join('LEFT', '#__sdi_version v on v.id=m.version_id')
                 ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')

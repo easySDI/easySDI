@@ -1,4 +1,11 @@
 <?php
+/**
+ * @version     4.3.2
+ * @package     com_easysdi_service
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 
 // No direct access
 defined('_JEXEC') or die;
@@ -334,7 +341,7 @@ class WfsWebservice {
 	public static function saveAllFeatureTypes($virtualServiceID, $policyID) {
 		$db = JFactory::getDbo();
                 $query = $db->getQuery(true);
-                $query->select('ps.id, ps.resourceurl AS url, psp.id AS psp_id');
+                $query->select('ps.id, ps.resourceurl AS url, psp.id AS psp_id, ps.resourceusername, ps.resourcepassword');
                 $query->from('#__sdi_virtualservice vs');
                 $query->innerJoin('#__sdi_virtual_physical vp ON vs.id = vp.virtualservice_id');
                 $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vp.physicalservice_id');
@@ -356,7 +363,7 @@ class WfsWebservice {
 		
 		foreach ($resultset as $result) {
 			$physicalServiceID = $result->id;
-			$wfsObj = new WfsPhysicalService($result->id, $result->url);
+			$wfsObj = new WfsPhysicalService($result->id, $result->url, $result->resourceusername, $result->resourcepassword);
 			$wfsObj->getCapabilities();
 			$wfsObj->populate();
 			$layerList = $wfsObj->getLayerList();

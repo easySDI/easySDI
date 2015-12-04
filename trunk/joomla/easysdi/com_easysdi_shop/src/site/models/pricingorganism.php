@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access.
@@ -65,26 +65,28 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                        ->select('o.id, o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
-                        ->from($db->quoteName('#__sdi_organism').' as o')
-                        ->where('o.id='.(int)$id);
+                    ->select('o.id, o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
+                    ->from($db->quoteName('#__sdi_organism') . ' as o')
+                    ->where('o.id=' . (int) $id);
             $db->setQuery($query);
             $this->_item = $db->loadObject();
 
             $query = $db->getQuery(true)
-                        ->select('c.id, c.name, ocpr.rebate')
-                        ->from($db->quoteName('#__sdi_category').' as c')
-                        ->join('LEFT', '#__sdi_organism_category_pricing_rebate ocpr ON ocpr.category_id=c.id AND ocpr.organism_id='. (int)$id);
+                    ->select('c.id, c.name, ocpr.rebate')
+                    ->from($db->quoteName('#__sdi_category') . ' as c')
+                    ->join('LEFT', '#__sdi_organism_category_pricing_rebate ocpr ON ocpr.category_id=c.id AND ocpr.organism_id=' . (int) $id)
+                    ->where('c.state = 1')
+                    ->order('c.ordering');
             $db->setQuery($query);
             $this->_item->categories = $db->loadObjectList();
 
             $query = $db->getQuery(true)
-                        ->select('pp.id, pp.name, pp.fixed_fee, pp.surface_rate, pp.min_fee, pp.max_fee, COUNT(ppcpr.id) as free_category')
-                        ->from($db->quoteName('#__sdi_pricing_profile').' as pp')
-                        ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate as ppcpr ON ppcpr.pricing_profile_id=pp.id')
-                        ->where('pp.organism_id='.(int)$id)
-                        ->group('pp.id')
-                        ->having('pp.id IS NOT NULL');
+                    ->select('pp.id, pp.name, pp.fixed_fee, pp.surface_rate, pp.min_fee, pp.max_fee, COUNT(ppcpr.id) as free_category')
+                    ->from($db->quoteName('#__sdi_pricing_profile') . ' as pp')
+                    ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate as ppcpr ON ppcpr.pricing_profile_id=pp.id')
+                    ->where('pp.organism_id=' . (int) $id)
+                    ->group('pp.id, pp.name, pp.fixed_fee, pp.surface_rate, pp.min_fee, pp.max_fee')
+                    ->having('pp.id IS NOT NULL');
             $db->setQuery($query);
             $this->_item->profiles = $db->loadObjectList();
         }
@@ -107,6 +109,15 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
         $form = $this->loadForm('com_easysdi_shop.pricingorganism', 'pricingorganism', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) {
             return false;
+        }
+
+        if (!sdiFactory::getSdiUser()->isPricingManager($this->_item->id)) {
+            foreach ($form->getFieldsets() as $fieldset) {
+                foreach ($form->getFieldset($fieldset->name) as $field) {
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
+                }
+            }
         }
 
         return $form;

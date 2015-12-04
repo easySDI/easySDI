@@ -3,7 +3,7 @@
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiDao.php';
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -12,6 +12,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao
 class SdiNamespaceDao extends SdiDao{
     
     /**
+     * Get all namespace
      * 
      * @return array
      */
@@ -24,6 +25,25 @@ class SdiNamespaceDao extends SdiDao{
 
         $this->db->setQuery($query);
         $result = $this->db->loadObjectList();
+        
+        return $result;
+    }
+    
+    /**
+     * Get a namspace object by prefix
+     * 
+     * @param string $prefix
+     * @return stdClass
+     */
+    public function getByPrefix($prefix){
+        $query = $this->db->getQuery(true);
+        
+        $query->select('*');
+        $query->from('#__sdi_namespace');
+        $query->where('prefix = '.$query->quote($prefix));
+
+        $this->db->setQuery($query);
+        $result = $this->db->loadObject();
         
         return $result;
     }
