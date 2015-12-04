@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -97,6 +97,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
             $version->load($this->_item->version_id);
             $resource->load($version->resource_id);
             $this->_item->name = $resource->name;
+            $this->_item->alias = $resource->alias;
         }
 
         return $this->_item;
@@ -106,12 +107,14 @@ class Easysdi_mapModelVisualization extends JModelForm {
         $db = JFactory::getDbo();
         $sdiUser = sdiFactory::getSdiUser();
 
-        $cls = '(ml.accessscope_id = 1 OR ((ml.accessscope_id = 3) AND (' . (int)$sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
+        $cls = '(ml.accessscope_id = 1 OR ((ml.accessscope_id = 4) AND (' . (int)$sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
         $organisms = $sdiUser->getMemberOrganisms();
-        $cls .= 'OR ((ml.accessscope_id = 2) AND (';
+        $cls .= 'OR ((ml.accessscope_id = 3) AND (';
         $cls .= $organisms[0]->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = ml.guid)';
         $cls .= '))';
         $cls .= ')';
+        
+        //TODO add accessscope for category organism
 
         if (!empty($visualization_id)):
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.id <> ' . (int)$visualization_id . ' AND v.maplayer_id IS NOT NULL)';
@@ -218,6 +221,15 @@ class Easysdi_mapModelVisualization extends JModelForm {
         $form = $this->loadForm('com_easysdi_map.visualization', 'visualization', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) {
             return false;
+        }
+        
+        if(!sdiFactory::getSdiUser()->authorizeOnVersion($this->_item->version_id, sdiUser::viewmanager)){
+            foreach($form->getFieldsets() as $fieldset){
+                foreach($form->getFieldset($fieldset->name) as $field){
+                    $form->setFieldAttribute($field->fieldname, 'readonly', 'true');
+                    $form->setFieldAttribute($field->fieldname, 'disabled', 'true');
+                }
+            }
         }
 
         return $form;

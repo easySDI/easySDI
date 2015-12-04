@@ -779,10 +779,10 @@ public class CSWProxyDataAccessibilityManager {
      * <ogc:PropertyName>metadatastate</ogc:PropertyName>
      * <ogc:Literal>published</ogc:Literal>
      * </ogc:PropertyIsEqualTo>
-     * <ogc:PropertyIsGreaterThanOrEqualTo>
+     * <ogc:PropertyIsLessThanOrEqualTo>
      * <ogc:PropertyName>published</ogc:PropertyName>
      * <ogc:Literal>2010-12-21 10:12:45</ogc:Literal>
-     * </ogc:PropertyIsGreaterThanOrEqualTo>
+     * </ogc:PropertyIsLessThanOrEqualTo>
      * <ogc:PropertyIsEqualTo>
      * <ogc:PropertyName>lastversion</ogc:PropertyName>
      * <ogc:Literal>true</ogc:Literal>
@@ -811,11 +811,11 @@ public class CSWProxyDataAccessibilityManager {
                     filter += "<ogc:PropertyName>metadatastate</ogc:PropertyName>";
                     filter += "<ogc:Literal>" + policyMetadataState.getSdiSysMetadatastate().getValue() + "</ogc:Literal>";
                     filter += "</ogc:PropertyIsEqualTo>";
-                    filter += "<ogc:PropertyIsGreaterThanOrEqualTo>";
+                    filter += "<ogc:PropertyIsLessThanOrEqualTo>";
                     filter += "<ogc:PropertyName>published</ogc:PropertyName>";
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     filter += "<ogc:Literal>" + dateFormat.format(new Date()) + "</ogc:Literal>";
-                    filter += "</ogc:PropertyIsGreaterThanOrEqualTo>";
+                    filter += "</ogc:PropertyIsLessThanOrEqualTo>";
                     if (policyMetadataState.getSdiSysMetadataversion().getValue().equals("last")) {
                         filter += "<ogc:PropertyIsEqualTo>";
                         filter += "<ogc:PropertyName>lastversion</ogc:PropertyName>";

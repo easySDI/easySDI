@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
@@ -56,11 +56,13 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 case 1:
                     $array['fileurl'] = null;
                     $array['perimeter_id'] = null;
+                    $array['packageurl'] = null;
                     break;
                 case 2:
                     $array['file'] = null;
                     $array['file_hidden'] = null;
                     $array['perimeter_id'] = null;
+                    $array['packageurl'] = null;
                     break;
                 case 3:
                     $array['file'] = null;
@@ -89,6 +91,9 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['file_hidden'] = null;
             $array['fileurl'] = null;
             $array['perimeter_id'] = null;
+        }
+        if (!isset($array['restrictedperimeter'])) {
+            $array['restrictedperimeter'] = 0;
         }
 
         $params = JFactory::getApplication()->getParams('com_easysdi_shop');
@@ -156,7 +161,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 $fileTemp = $file['tmp_name']['deposit'];
 
                 if (!JFile::exists($uploadPath)):
-                    if (!JFile::upload($fileTemp, $uploadPath)):
+                    if (!JFile::upload($fileTemp, $uploadPath, false, true)):
                         JError::raiseWarning(500, JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_MOVING_FILE'));
                         return false;
                     endif;
@@ -227,7 +232,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 $fileTemp = $file['tmp_name']['file'];
 
                 if (!JFile::exists($uploadPath)):
-                    if (!JFile::upload($fileTemp, $uploadPath)):
+                    if (!JFile::upload($fileTemp, $uploadPath, false, true)):
                         JError::raiseWarning(500, JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_MOVING_FILE'));
                         return false;
                     endif;

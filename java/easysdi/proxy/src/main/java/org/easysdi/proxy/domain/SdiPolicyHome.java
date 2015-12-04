@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
@@ -76,7 +75,7 @@ public class SdiPolicyHome {
             //Policies of the organisms which the current user is member of
             Collection<Integer> c = new ArrayList<Integer>();
             Iterator<GrantedAuthority> i = authorities.iterator();
-			//Loop through the authority to remove those which are not SdiOrganism id
+            //Loop through the authority to remove those which are not SdiOrganism id
             //see EasysdiProvider.getAuthorities() to know how the authorities list is built
             while (i.hasNext()) {
                 try {
@@ -88,7 +87,7 @@ public class SdiPolicyHome {
             }
 
             if (c.size() > 0) {
-                // Check organisms
+                // Check organisms, if a policy is found, it's instantly returned
                 Query oQuery = session.createQuery(
                         "SELECT p  FROM SdiPolicy p INNER JOIN p.sdiOrganisms as po "
                         + "INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) "
@@ -108,18 +107,15 @@ public class SdiPolicyHome {
                     }
                 }
 
-                // Check categories
+                // Check categories, if a policy is found, it's instantly returned
                 Query oQueryCo = session.createQuery(
                         "SELECT p  FROM SdiPolicy p INNER JOIN p.sdiCategories as pc INNER JOIN pc.sdiOrganisms as co "
                         + "INNER JOIN p.sdiVirtualservice as vs WHERE co.id IN (:organism) "
                         + "AND vs.id = :virtualservice "
-                        + "ORDER BY p.ordering asc");
-                
+                        + "ORDER BY p.ordering asc");                
                 oQueryCo.setParameterList("organism", c);
-                oQueryCo.setParameter("virtualservice", virtualservice);
-                
-                List oResultsCo = oQueryCo.setCacheRegion("SdiPolicyQueryCache").setCacheable(true).list();
-                
+                oQueryCo.setParameter("virtualservice", virtualservice);                
+                List oResultsCo = oQueryCo.setCacheRegion("SdiPolicyQueryCache").setCacheable(true).list();                
                 if (oResultsCo != null && oResultsCo.size() > 0) {
                     for (SdiPolicy policy : (List<SdiPolicy>) oResultsCo) {
                         //Date validity is check out of the SQL query to not interfer with query cache
@@ -132,7 +128,7 @@ public class SdiPolicyHome {
                 }
             }
 
-			//If no authorities are SdiOrganism id, or if no policies are defined for the authorities, try to load a public policy
+            //If no authorities are SdiOrganism id, or if no policies are defined for the authorities, try to load a public policy
             //Public policies
             Query pQuery = session.createQuery(
                     "SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs "
@@ -152,6 +148,7 @@ public class SdiPolicyHome {
                 }
             }
 
+            //At the end, if no policy is found at all, return a null value
             return null;
         } catch (RuntimeException re) {
             log.error("get failed", re);

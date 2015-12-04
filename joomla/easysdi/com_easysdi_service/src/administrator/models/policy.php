@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -144,6 +144,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         // Get the access scope
         $item->organisms = $this->getAccessScopeOrganism($item->id);
         $item->users = $this->getAccessScopeUser($item->id);
+        $item->categories = $this->getAccessScopeCategory($item->id);
 
         return $item;
     }
@@ -400,6 +401,16 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     return false;
                 }
             }
+            
+            if ('WFS' == $serviceconnector_name) {
+                require_once(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/WfsWebservice.php');
+                if (!WfsWebservice::saveAllFeatureTypes($data['virtualservice_id'], $data['id'])) {
+                    $this->setError('Failed to save all WFS layers.');
+                    return false;
+                }
+            }
+            
+            
 
             if ('CSW' == $serviceconnector_name) {
                 //Save specific restrictions
@@ -465,12 +476,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                         }
                         break;
                     case 'WFS':
-                        require_once(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/WfsWebservice.php');
-                        if (!WfsWebservice::saveAllFeatureTypes($data['virtualservice_id'], $data['id'])) {
-                            $this->setError('Failed to save all WFS layers.');
-                            return false;
-                        }
-
                         if (!$this->saveWFSInheritance($data)) {
                             $this->setError('Failed to save inheritance.');
                             return false;

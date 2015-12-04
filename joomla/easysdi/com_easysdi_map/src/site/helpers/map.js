@@ -1,11 +1,16 @@
 Ext.Container.prototype.bufferResize = false;
 Ext.onReady(function() {
+   startMap();
+});
+
+function startMap () {
     loadingMask = new Ext.LoadMask(Ext.getBody(), {msg: msg});
     loadingMask.show();
     height = Ext.get(renderto).getHeight();
+    width = Ext.get(renderto).getWidth() ;
     if (!height)
-        height = Ext.get(renderto).getWidth() * 1 / 2;
-    width = Ext.get(renderto).getWidth();
+        height = width * 1 / 2;
+    
     OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
     GeoExt.Lang.set(langtag);
     window.appname = new gxp.Viewer(getMapConfig());
@@ -15,7 +20,7 @@ Ext.onReady(function() {
         window.appname.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());
     }
     var locator = null;
-    window.appname.on("ready", function() {
+    window.appname.on("ready", function() {        
         window.appname.portalConfig.renderTo = "sdiNewContainer";
         if (data.urlwfslocator) {
             if (locator === null) {
@@ -39,10 +44,6 @@ Ext.onReady(function() {
                 window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }
         }
-        if (data.level && cleared === "false") {
-            //Init the indoor layer with the default level value
-            window.appname.mapPanel.map.indoorlevelslider.changeIndoorLevel(this, window.appname.mapPanel.map.indoorlevelslider.value);
-        }
         loadingMask.hide();
     });
 
@@ -57,11 +58,21 @@ Ext.onReady(function() {
     Ext.QuickTips.init();
     Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000});
     Ext.EventManager.onWindowResize(function() {
-        window.appname.portal.setWidth(Ext.get(renderto).getWidth());
-        window.appname.portal.setHeight(Ext.get(renderto).getWidth() * 1 / 2);
+        //Modal has to be displayed (display=block) to allow components inside to be resized
+        //and, otherwhise, component sdimapcontainer will have 0 as values for both dimensions.
+        var previousCss, none = false;
+        if(jQuery("#modal-perimeter").css('display') == 'none'){            
+            previousCss  = jQuery("#modal-perimeter").attr("style");
+            jQuery("#modal-perimeter")
+                .css({position:   'absolute', visibility: 'hidden',display:    'block'});
+                none = true;               
+        }                
+        window.appname.portal.setSize(jQuery("#sdimapcontainer").width(),jQuery("#sdimapcontainer").height());       
+        if(none === true){
+            jQuery("#modal-perimeter").attr("style", previousCss ? previousCss : "");
+        }
     });
-
-});
+}
 
 function getMapConfig() {
     var config = {};
@@ -236,7 +247,7 @@ function getMapConfig() {
                     var tool = {
                         ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar",
-                        url: "index.php?option=com_easysdi_catalog&view=catalog&id=",
+                        url: "index.php?preview=map&tmpl=component&option=com_easysdi_catalog&view=catalog&id="+data.tools[index].params,
                         iwidth: mwidth,
                         iheight: mheight
                     };
@@ -292,7 +303,7 @@ function getMapConfig() {
                     ptype: "gxp_wmsgetfeatureinfo",
                     popupTitle: "Feature Info",
                     toggleGroup: "interaction",
-                    format: "' . $tool->params . '",
+                    format: data.tools[index].params,
                     actionTarget: "hiddentbar",
                     defaultAction: 0
                 };
@@ -360,6 +371,8 @@ function getMapConfig() {
         maxResolution: data.maxresolution,
         units: data.units
     };
+    
+   //config.map["resolutions"] = JSON.parse("[4000.0,3750.0,3500.0,3250.0,3000.0,2750.0,2500.0,2250.0,2000.0,1750.0,1500.0,1250.0,1000.0,750.0,650.0,500.0,250.0,100.0,50.0,20.0,10.0,5.0,2.5,2.0,1.5,1.0,0.5,0.25,0.1,0.05]");
     if (data.centercoordinates)
         config.map["center"] = JSON.parse("[" + data.centercoordinates + "]");
     if (data.restrictedextent)

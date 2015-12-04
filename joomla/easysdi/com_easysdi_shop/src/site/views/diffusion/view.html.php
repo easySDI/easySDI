@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
@@ -47,8 +47,9 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
+        $this->isDiffusionManager = $this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager);
         if (!empty($this->item->id)) {
-            if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager)) {
+            if (!$this->isDiffusionManager && !$this->user->isOrganismManager($this->item->id, 'metadata')) {
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                 JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
@@ -63,7 +64,8 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $query->select('p.*')
                 ->from('#__sdi_property p')
                 ->where('p.state = 1')
-                ->where("(p.accessscope_id = 1 OR (p.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = p.guid ) = 1) OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = p.guid ) = 1))");
+                ->where("(p.accessscope_id = 1 OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = p.guid ) = 1) OR (p.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = p.guid ) = 1))");
+                //TODO add organism category accessscope
         $db->setQuery($query);
         $this->properties = $db->loadObjectList();
 
@@ -80,11 +82,11 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
                 ->from('#__sdi_perimeter p')
                 ->where('p.state = 1')
                 ->where("p.perimetertype_id IN (1,3)")
-                ->where("(p.accessscope_id = 1 OR (p.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = p.guid ) = 1) OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = p.guid ) = 1))");
+                ->where("(p.accessscope_id = 1 OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = p.guid ) = 1) OR (p.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = p.guid ) = 1))")
+                ->order("p.ordering");
+                //TODO add organism category accessscope
         $db->setQuery($query);
         $this->orderperimeters = $db->loadObjectList();
-
-
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
@@ -94,7 +96,7 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $pathway = $app->getPathway();
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BREADCRUMBS_RESOURCES"), JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BREADCRUMBS_DIFFUSION"), '');
-
+        
         $this->_prepareDocument();
 
         parent::display($tpl);
@@ -144,12 +146,12 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'diffusion.apply', false);
-        $bar->appendButton('Separator');
-        $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'diffusion.save', false);
-        $bar->appendButton('Separator');
-        /*$bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'diffusion.remove', false);
-        $bar->appendButton('Separator');*/
+        if($this->isDiffusionManager){
+            $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'diffusion.apply', false);
+            $bar->appendButton('Separator');
+            $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'diffusion.save', false);
+            $bar->appendButton('Separator');
+        }
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'diffusion.cancel', false);
         //generate the html and return
         return $bar->render();

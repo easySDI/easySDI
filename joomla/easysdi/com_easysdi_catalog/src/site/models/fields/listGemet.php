@@ -1,22 +1,14 @@
 <?php
 /**
- * @package     Joomla.Platform
- * @subpackage  Form
- *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @version     4.3.2
+ * @package     com_easysdi_catalog
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 
 defined('JPATH_PLATFORM') or die;
 
-/**
- * Form Field class for the Joomla Platform.
- * Supports a generic list of options.
- *
- * @package     Joomla.Platform
- * @subpackage  Form
- * @since       11.1
- */
 class JFormFieldListGemet extends JFormField
 {
 	/**

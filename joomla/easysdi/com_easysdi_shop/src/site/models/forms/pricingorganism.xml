@@ -7,7 +7,7 @@
     <fieldset name="global">
         <field name="internal_free" 
                type="radio" 
-               class="radio"
+               class="btn-group btn-group-yesno"
                label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGORGANISM_INTERNAL_FREE"
                description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGORGANISM_INTERNAL_FREE"
                default="0">
@@ -25,7 +25,7 @@
         
         <field name="data_free_fixed_fee" 
                type="radio" 
-               class="radio"
+               class="btn-group btn-group-yesno"
                label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGORGANISM_FIXED_COSTS_IF_DATA_FREE"
                description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGORGANISM_FIXED_COSTS_IF_DATA_FREE"
                default="0">

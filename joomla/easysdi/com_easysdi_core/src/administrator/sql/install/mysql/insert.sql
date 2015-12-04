@@ -17,6 +17,7 @@ INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','previewmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('7','7','1','extractionresponsible' );
 INSERT INTO `#__sdi_sys_role` SET id=9, ordering=9, `state`=1, value='pricingmanager';
 INSERT INTO `#__sdi_sys_role` SET id=10, ordering=10, `state`=1, `value`='validationmanager';
+INSERT INTO `#__sdi_sys_role` SET id=11, ordering=11, `state`=1, `value`='organismmanager';
 
 INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
 VALUES 
@@ -36,8 +37,7 @@ VALUES
 (1,1,'inprogress'),
 (2,1,'validated'),
 (3,1,'published'),
-(4,1,'archived'),
-(5,1,'trashed')
+(4,1,'archived')
 ;
 
 INSERT INTO `#__sdi_sys_spatialoperator` (ordering,state,value) 
@@ -491,16 +491,16 @@ INSERT INTO `#__sdi_sys_country` VALUES ('241', '241', '1', 'Zimbabwe', 'ZW', 'Z
 INSERT INTO `#__sdi_sys_entity` VALUES ('1', '1', '1', 'attribute');
 INSERT INTO `#__sdi_sys_entity` VALUES ('2', '2', '1', 'class');
 
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('1', '1', '1', 'archived');
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('2', '2', '1', 'historized');
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('3', '3', '1', 'finish');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('1', '7', '1', 'archived');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('2', '8', '1', 'historized');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('3', '6', '1', 'finish');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('4', '4', '1', 'await');
 INSERT INTO `#__sdi_sys_orderstate` VALUES ('5', '5', '1', 'progress');
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('6', '6', '1', 'sent');
-INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '7', '1', 'saved');
-INSERT INTO `#__sdi_sys_orderstate` SET id=8, ordering=8, `state`=1, `value`='validation';
-INSERT INTO `#__sdi_sys_orderstate` SET id=9, ordering=9, `state`=1, `value`='rejected by thirdparty';
-INSERT INTO `#__sdi_sys_orderstate` SET id=10, ordering=10, `state`=1, `value`='rejected by supplier';
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('6', '3', '1', 'sent');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '1', '1', 'saved');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('8', '2', '1', 'validation');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('9', '9', '1', 'rejectedbythirdparty');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('10', '10', '1', 'rejectedbysupplier');
 
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('1', '1', '1', 'order');
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('2', '2', '1', 'estimate');
@@ -510,13 +510,14 @@ INSERT INTO `#__sdi_sys_productstate` VALUES ('1', '1', '1', 'available');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('2', '2', '1', 'await');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('3', '3', '1', 'sent');
 INSERT INTO `#__sdi_sys_productstate` SET id=4, ordering=4, `state`=1, `value`='validation';
-INSERT INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejected by thirdparty';
-INSERT INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejected by supplier';
+INSERT INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejectedbythirdparty';
+INSERT INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejectedbysupplier';
+INSERT INTO `#__sdi_sys_productstate` VALUES ('7', '7', '1', 'deleted');
 
 
 INSERT INTO `#__sdi_sys_pricing` VALUES ('1', '1', '1', 'free');
-INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'fee without a pricing profile');
-INSERT INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='fee with a pricing profile';
+INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'feewithoutapricingprofile');
+INSERT INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='feewithapricingprofile';
 
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('1', '1', '1', 'upload');
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('2', '2', '1', 'url');
@@ -599,6 +600,9 @@ INSERT INTO `#__sdi_sys_rendertype` VALUES ('5', '5', '1', 'textbox');
 INSERT INTO `#__sdi_sys_rendertype` VALUES ('6', '6', '1', 'date');
 INSERT INTO `#__sdi_sys_rendertype` VALUES ('7', '7', '1', 'datetime');
 INSERT INTO `#__sdi_sys_rendertype` VALUES ('8', '8', '1', 'gemet');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('9', '9', '1', 'upload');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('10', '10', '1', 'url');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('11', '11', '1', 'upload and url');
 
 INSERT INTO `#__sdi_searchcriteria` VALUES ('1', '58dfe161-60c3-4b72-b768-e4a09bae8cdb', 'fulltext', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'fulltext', '1', '1', '5', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('2', '05b0fb40-459c-4ed2-a985-ce1611593969', 'resourcetype', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'resourcetype', '1', '1', '2', null, '0', '0');
@@ -649,16 +653,18 @@ INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('11', '6', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('12', '7', '1');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('13', '7', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('14', '8', '6');
-
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('16', '9', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('17', '10', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('18', '12', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('19', '13', '5');
-INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('20', '14', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('21', '11', '8');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('22', '14', '9');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('23', '14', '10');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('24', '14', '11');
 
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('1', '3', '5');
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('2', '3', '6');
+INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('3', '3', '2');
 
 INSERT INTO `#__sdi_sys_searchtab` VALUES ('1', '1', '1', 'simple');
 INSERT INTO `#__sdi_sys_searchtab` VALUES ('2', '2', '1', 'advanced');

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access
@@ -88,6 +88,22 @@ class Easysdi_shopTableperimeter extends sdiTable {
             $assetParentId = $assetParent->id;
         }
         return $assetParentId;
+    }
+
+    /**
+     * Overrides sdiTable::check() method to avoid alias clean as the alias is used to store codes
+     * Will only manage the 'ordering' field
+     * @return boolean
+     * @see sdiTable::check
+     */
+    public function check() {
+        $fields = $this->getFields();
+        //If there is an ordering column and this is a new row then get the next ordering value
+        if (property_exists($this, 'ordering') && $this->id == 0) {
+            $this->ordering = $this->getNextOrder();
+        }
+        //Do not call parent check to avoid alias alteration
+        return true;
     }
 
 }

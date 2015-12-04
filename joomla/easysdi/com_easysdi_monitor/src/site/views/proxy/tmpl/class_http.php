@@ -1,14 +1,11 @@
 <?php
-/*
-* Filename.......: class_http.php
-* Author.........: Troy Wolf [troy@troywolf.com]
-* Last Modified..: Date: 2006/03/06 10:15:00
-* Description....: Screen-scraping class with caching. Includes image_cache.php
-                   companion script. Includes static methods to extract data
-                   out of HTML tables into arrays or XML. Now supports sending
-                   XML requests and custom verbs with support for making
-                   WebDAV requests to Microsoft Exchange Server.
-*/
+/**
+ * @version     4.3.2
+ * @package     com_easysdi_monitor
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 
 class http {
     var $log;

@@ -1,5 +1,5 @@
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (9, 1, 'pricingmanager');
-INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (10, 1, 'validationmanager');
+INSERT IGNORE INTO #__sdi_sys_role (ordering, state, value) VALUES (9, 1, 'pricingmanager');
+INSERT IGNORE INTO #__sdi_sys_role (ordering, state, value) VALUES (10, 1, 'validationmanager');
 
 ALTER TABLE #__sdi_category ADD overall_fee decimal(6,2) UNSIGNED DEFAULT 0;
 
@@ -20,9 +20,9 @@ CREATE TABLE IF NOT EXISTS #__sdi_organism_category_pricing_rebate (
   CONSTRAINT #__sdi_organism_category_pricing_rebate_fk2 FOREIGN KEY (category_id) REFERENCES #__sdi_category (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (1, 1, 'free');
-INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (2, 1, 'fee without a pricing profile');
-INSERT INTO #__sdi_sys_pricing (ordering, state, value) VALUES (3, 1, 'fee with a pricing profile');
+INSERT IGNORE INTO #__sdi_sys_pricing (ordering, state, value) VALUES (1, 1, 'free');
+INSERT IGNORE INTO #__sdi_sys_pricing (ordering, state, value) VALUES (2, 1, 'fee without a pricing profile');
+INSERT IGNORE INTO #__sdi_sys_pricing (ordering, state, value) VALUES (3, 1, 'fee with a pricing profile');
 
 CREATE TABLE IF NOT EXISTS #__sdi_pricing_profile (
     id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -65,9 +65,9 @@ ALTER TABLE ONLY #__sdi_diffusion
 
 
 
-INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (8, 1, 'validation');
-INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (9, 1, 'rejected by thirdparty');
-INSERT INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (10, 1, 'rejected by supplier');
+INSERT IGNORE INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (8, 1, 'validation');
+INSERT IGNORE INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (9, 1, 'rejected by thirdparty');
+INSERT IGNORE INTO #__sdi_sys_orderstate (ordering, state, value) VALUES (10, 1, 'rejected by supplier');
 
 ALTER TABLE #__sdi_order ADD validated smallint DEFAULT NULL AFTER thirdparty_id;
 ALTER TABLE #__sdi_order ADD validated_date DATETIME DEFAULT NULL AFTER validated;
@@ -191,7 +191,7 @@ CREATE TABLE IF NOT EXISTS #__sdi_sys_extractstorage (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-INSERT INTO #__sdi_sys_extractstorage (ordering, state, value) VALUES (1, 1, 'local');
-INSERT INTO #__sdi_sys_extractstorage (ordering, state, value) VALUES (2, 1, 'remote');
+INSERT IGNORE INTO #__sdi_sys_extractstorage (ordering, state, value) VALUES (1, 1, 'local');
+INSERT IGNORE INTO #__sdi_sys_extractstorage (ordering, state, value) VALUES (2, 1, 'remote');
 
 

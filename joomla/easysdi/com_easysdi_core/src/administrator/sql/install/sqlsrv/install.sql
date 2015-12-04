@@ -465,9 +465,10 @@ CREATE TABLE [#__sdi_catalog] (
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](500) NULL,
+        [contextualsearchresultpaginationnumber] [tinyint] DEFAULT 0,
 	[xsldirectory] [nvarchar](255) NULL,
 	[oninitrunsearch] [smallint] NULL,
-	[cswfilter] [nvarchar](max) NULL,
+	[cswfilter] [nvarchar](max) NULL,        
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
     [scrolltoresults] [smallint] NOT NULL DEFAULT 1,
@@ -630,6 +631,7 @@ CREATE TABLE [#__sdi_diffusion] (
 	[productstorage_id] [bigint] NULL,
 	[file] [nvarchar](255) NULL,
 	[fileurl] [nvarchar](500) NULL,
+        [packageurl] [nvarchar](500) ,
 	[perimeter_id] [bigint] NULL,
 	[hasdownload] [smallint] NOT NULL,
 	[hasextraction] [smallint] NOT NULL,
@@ -1001,7 +1003,7 @@ SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [#__sdi_maplayer] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
-	[alias] [nvarchar](20) NOT NULL,
+	[alias] [nvarchar](255) NOT NULL,
 	[created_by] [int] NOT NULL,
 	[created] [datetime2](0) NOT NULL,
 	[modified_by] [int] NULL,
@@ -1138,12 +1140,18 @@ CREATE TABLE [#__sdi_order] (
 	[orderstate_id] [bigint] NOT NULL,
 	[user_id] [bigint] NOT NULL,
 	[thirdparty_id] [bigint] NULL,
-        [validate] [smallint] DEFAULT NULL,
-        [validated_date] [datetime2](0) DEFAULT NULL,
-        [validated_reason] [nvarchar](500) DEFAULT NULL,
+        [validated] [smallint] ,
+        [validated_date] [datetime2](0) ,
+        [validated_reason] [nvarchar](500) ,
+		[validated_by] [int] NULL,
 	[buffer] [numeric](38, 18) NULL,
 	[surface] [numeric](38, 18) NULL,
-	[remark] [nvarchar](500) NULL,
+	[remark] [nvarchar](4000) NULL,
+        [mandate_ref] [nvarchar](500) NULL,
+        [mandate_contact] [nvarchar](75) NULL,
+        [mandate_email] [nvarchar](100) NULL,
+        [level] [nvarchar](100) NULL,
+        [freeperimetertool] [nvarchar](100) NULL,
 	[sent] [datetime2](0) NOT NULL,
 	[completed] [datetime2](0) NOT NULL,
 	[access] [int] NOT NULL,
@@ -1173,11 +1181,13 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[order_id] [bigint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[productstate_id] [bigint] NOT NULL,
-	[remark] [nvarchar](500) NULL,
+	[remark] [nvarchar](4000) NULL,
 	[fee] [decimal](10, 0) NULL,
 	[completed] [datetime2](0) NULL,
+	[storage_id] [bigint] NULL,
 	[file] [nvarchar](500) NULL,
 	[size] [decimal](10, 0) NULL,
+        [displayName] [nvarchar](75) NULL
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1242,14 +1252,14 @@ CREATE TABLE [#__sdi_organism] (
 	[name] [nvarchar](255) NOT NULL,
 	[website] [nvarchar](500) NULL,
 	[perimeter] [nvarchar](max) NULL,
-        [selectable_as_thirdparty] smallint DEFAULT 0,
+        [selectable_as_thirdparty] [smallint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
 	[username] [nvarchar](150) NULL,
 	[password] [nvarchar](65) NULL,
-        [internal_free] smallint DEFAULT 0,
-        [fixed_fee_ti] decimal(6,2) DEFAULT 0,
-        [data_free_fixed_fee] smallint DEFAULT 0,
+        [internal_free] [smallint] NULL,
+        [fixed_fee_ti] [decimal](6,2) NULL,
+        [data_free_fixed_fee] [smallint] NULL,
 
  CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
 (
@@ -1330,6 +1340,8 @@ CREATE TABLE [#__sdi_perimeter] (
 	[featuretypefielddescription] [nvarchar](255) NULL,
 	[featuretypefieldgeometry] [nvarchar](255) NULL,
 	[featuretypefieldresource] [nvarchar](255) NULL,
+        [featuretypefieldlevel] [nvarchar](255) NULL,
+        [maplayer_id] [bigint] NULL,
 	[wmsservice_id] [bigint] NULL,
 	[wmsservicetype_id] [bigint] NULL,
 	[layername] [nvarchar](255) NULL,
@@ -1698,6 +1710,7 @@ CREATE TABLE [#__sdi_relation] (
 	[editorrelationscope_id] [bigint] NULL,
 	[childresourcetype_id] [bigint] NULL,
 	[childtype_id] [bigint] NULL,
+        [accessscope_limitation] [tinyint] DEFAULT 0,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_relation_id] PRIMARY KEY CLUSTERED 
@@ -2265,10 +2278,10 @@ CREATE TABLE [#__sdi_pricing_profile](
     [checked_out_time] [datetime2](0) NOT NULL,
     [organism_id] [bigint] NOT NULL,
     [name] [nvarchar](75) NOT NULL,
-    [fixed_fee] [decimal](6,2),
-    [surface_rate] [decimal](6,2),
-    [min_fee] [decimal](6,2),
-    [max_fee] [decimal](6,2),
+    [fixed_fee] [decimal](19,2),
+    [surface_rate] [decimal](19,2),
+    [min_fee] [decimal](19,2),
+    [max_fee] [decimal](19,2),
 CONSTRAINT [PK_#__sdi_pricing_profile] PRIMARY KEY CLUSTERED
 (
     [id] ASC
@@ -2292,15 +2305,108 @@ CREATE TABLE [#__sdi_pricing_order] (
     [checked_out] [int] NOT NULL,
     [checked_out_time] [datetime2](0) NOT NULL,
     [order_id] [bigint] NOT NULL,
-    [cfg_vat] [decimal](6,2) NOT NULL DEFAULT 0,
+    [cfg_vat] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_currency] [char](3) NOT NULL DEFAULT 'CHF',
     [cfg_rounding] [decimal](3,2) NOT NULL DEFAULT '0.05',
-    [cfg_overall_default_fee] [decimal](6,2) NOT NULL DEFAULT 0,
+    [cfg_overall_default_fee] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_free_data_fee] [smallint] DEFAULT 0,
-    [cal_total_amount_ti] [decimal],
-    [cal_fee_ti] [decimal](6,2) NOT NULL DEFAULT 0,
+    [cal_total_amount_ti] [decimal](19,2),
+    [cal_fee_ti] [decimal](19,2) NOT NULL DEFAULT 0,
     [ind_lbl_category_order_fee] [nvarchar](255),
 CONSTRAINT [PK_#__sdi_pricing_order] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_order_supplier] (
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [guid] [nvarchar](36) NOT NULL,
+    [alias] [nvarchar](50) NOT NULL,
+    [created_by] [int] NOT NULL,
+    [created] [datetime2](0) NOT NULL,
+    [modified_by] [int] NULL,
+    [modified] [datetime2](0) NULL,
+    [ordering] [int] NOT NULL,
+    [state] [int] NOT NULL,
+    [checked_out] [int] NOT NULL,
+    [checked_out_time] [datetime2](0) NOT NULL,
+    [pricing_order_id] [int] NOT NULL,
+    [supplier_id] [int] NOT NULL,
+    [supplier_name] [nvarchar](255) NOT NULL,
+    [cfg_internal_free] [smallint] NOT NULL DEFAULT 1,
+    [cfg_fixed_fee_ti] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_data_free_fixed_fee] [smallint] NOT NULL DEFAULT 0,
+    [cal_total_rebate_ti] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cal_fee_ti] decimal(19,2) NOT NULL DEFAULT 0,
+    [cal_total_amount_ti] [decimal](19,2),
+CONSTRAINT [PK_#__sdi_pricing_order_supplier] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_order_supplier_product] (
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [guid] [nvarchar](36) NOT NULL,
+    [alias] [nvarchar](50) NOT NULL,
+    [created_by] [int] NOT NULL,
+    [created] [datetime2](0) NOT NULL,
+    [modified_by] [int] NULL,
+    [modified] [datetime2](0) NULL,
+    [ordering] [int] NOT NULL,
+    [state] [int] NOT NULL,
+    [checked_out] [int] NOT NULL,
+    [checked_out_time] [datetime2](0) NOT NULL,
+    [pricing_order_supplier_id] [int] not null,
+    [product_id] [int] not null,
+    [pricing_id] [int] not null,
+    [cfg_pct_category_supplier_discount] [decimal](19,2) NOT NULL DEFAULT 0,
+    [ind_lbl_category_supplier_discount] [nvarchar](255),
+    [cal_amount_data_te] [decimal](19,2),
+    [cal_total_amount_te] [decimal](19,2),
+    [cal_total_amount_ti] [decimal](19,2),
+    [cal_total_rebate_ti] [decimal](19,2) NOT NULL DEFAULT 0,
+CONSTRAINT [PK_#__sdi_pricing_order_supplier_product] PRIMARY KEY CLUSTERED
+(
+    [id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)ON [PRIMARY];
+
+SET ANSI_NULLS ON;
+
+SET QUOTED_IDENTIFIER ON;
+
+CREATE TABLE [#__sdi_pricing_order_supplier_product_profile] (
+    [id] [bigint] IDENTITY(1,1) NOT NULL,
+    [guid] [nvarchar](36) NOT NULL,
+    [alias] [nvarchar](50) NOT NULL,
+    [created_by] [int] NOT NULL,
+    [created] [datetime2](0) NOT NULL,
+    [modified_by] [int] NULL,
+    [modified] [datetime2](0) NULL,
+    [ordering] [int] NOT NULL,
+    [state] [int] NOT NULL,
+    [checked_out] [int] NOT NULL,
+    [checked_out_time] [datetime2](0) NOT NULL,
+    [pricing_order_supplier_product_id] [int](11) not null,
+    [pricing_profile_id] [int](11) not null,
+    [pricing_profile_name] [nvarchar](255) not null,
+    [cfg_fixed_fee] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_surface_rate] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_min_fee] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_max_fee] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_pct_category_profile_discount] [decimal](19,2) NOT NULL DEFAULT 0,
+    [ind_lbl_category_profile_discount] [nvarchar](255),
+CONSTRAINT [PK_#__sdi_pricing_order_supplier_product_profile] PRIMARY KEY CLUSTERED
 (
     [id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2314,7 +2420,7 @@ CREATE TABLE [#__sdi_pricing_profile_category_pricing_rebate] (
     [id] [bigint] IDENTITY(1,1) NOT NULL,
     [pricing_profile_id] [bigint] NOT NULL,
     [category_id] [bigint] NOT NULL,
-    [rebate] [decimal](6,2) default 100,
+    [rebate] [decimal](19,2) default 100,
 CONSTRAINT [PK_#__sdi_pricing_profile_category_pricing_rebate] PRIMARY KEY CLUSTERED
 (
     [id] ASC
@@ -3038,7 +3144,7 @@ SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [#__sdi_visualization] (
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
-	[alias] [nvarchar](20) NOT NULL,
+	[alias] [nvarchar](50) NOT NULL,
 	[created] [datetime2](0) NOT NULL,
 	[created_by] [int] NOT NULL,
 	[modified_by] [int] NULL,
@@ -3164,7 +3270,7 @@ CREATE TABLE [#__sdi_organism_category_pricing_rebate] (
     [id] [bigint] IDENTITY(1,1) NOT NULL,
     [organism_id] [bigint],
     [category_id] [bigint],
-    [rebate] [decimal](6,2),
+    [rebate] [decimal](19,2),
 CONSTRAINT [PK_#__sdi_organism_category_pricing_rebate] PRIMARY KEY CLUSTERED
 (
     [id] ASC

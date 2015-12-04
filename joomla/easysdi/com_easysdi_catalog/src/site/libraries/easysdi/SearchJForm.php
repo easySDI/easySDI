@@ -1,4 +1,11 @@
 <?php
+/**
+ * @version     4.3.2
+ * @package     com_easysdi_catalog
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
@@ -7,11 +14,6 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enu
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/SearchForm.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 
-/**
- * 
- *
- * @author Marc Battaglia <marc.battaglia@depth.ch>
- */
 class SearchJForm extends SearchForm {
 
     /** @var SdiLanguageDao  */
@@ -269,7 +271,7 @@ class SearchJForm extends SearchForm {
             $field->setAttribute('label', EText::_($searchCriteria->guid));
         }
         $field->setAttribute('name', $name);
-        $field->setAttribute('format', 'Y-m-d');
+        $field->setAttribute('format', '%Y-%m-%d');
 
         $field->setAttribute('default', $this->getDefault($searchCriteria, $name));
 
@@ -298,6 +300,15 @@ class SearchJForm extends SearchForm {
             return $this->getDefaultFromSession($name);
         } else {
             if (isset($searchCriteria->defaultvalue)) {
+                //If rendertype is text, checkbox or radiobutton, default value is 
+                //to get from the field 'defaultvalue'
+                if($searchCriteria->rendertype_id == 1 
+                        || $searchCriteria->rendertype_id == 5 
+                        || $searchCriteria->rendertype_id == 2 
+                        || $searchCriteria->rendertype_id == 3){
+                    return $searchCriteria->defaultvalue;
+                }
+                //Otherwise, default value is to query against the attributevalue table
                 return $this->getJsonDefaultValue($searchCriteria, $searchCriteria->defaultvalue);
             } elseif (isset($searchCriteria->defaultvaluefrom)) {
                 return $searchCriteria->defaultvaluefrom . ',' . $searchCriteria->defaultvalueto;

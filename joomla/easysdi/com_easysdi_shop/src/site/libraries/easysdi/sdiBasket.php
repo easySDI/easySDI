@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // No direct access.
@@ -30,26 +30,50 @@ class sdiBasket {
     public $created;
     public $created_by;
     public $thirdorganism;
+    public $freeperimetertool = '';
 
     function __construct() {
         $this->sdiUser = sdiFactory::getSdiUser();
     }
 
-    function loadOrder($orderId) {
+    function loadOrder($orderId, $copy = false) {
         try {
             $db = JFactory::getDbo();
 
             //Load order object
             $query = $db->getQuery(true)
-                    ->select('o.id as id, o.name as name, o.thirdparty_id as thirdparty, org.name as thirdorganism, o.buffer as buffer , o.surface, o.created, o.created_by')
+                    ->select('o.id as id, '
+                            . 'o.name as name, '
+                            . 'o.thirdparty_id as thirdparty, '
+                            . 'o.mandate_ref as mandate_ref, '
+                            . 'o.mandate_contact as mandate_contact, '
+                            . 'o.mandate_email as mandate_email, '
+                            . 'org.name as thirdorganism, '
+                            . 'o.buffer as buffer , '
+                            . 'o.surface,o.level as level, '
+                            . 'o.freeperimetertool as freeperimetertool, '
+                            . 'o.created, '
+                            . 'o.created_by, '
+                            . 'o.user_id as user_id ')
                     ->from('#__sdi_order o')
                     ->leftJoin('#__sdi_organism org ON org.id = o.thirdparty_id')
-                    ->where('o.id = ' . (int)$orderId);
+                    ->where('o.id = ' . (int) $orderId);
             $db->setQuery($query);
             $order = $db->loadObject();
             $params = get_object_vars($order);
             foreach ($params as $key => $value) {
                 $this->$key = $value;
+            }
+
+            //Copy order
+            if ($copy) {
+                $this->id = null;
+                $this->name = $this->name . JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_NAME_SUFFIX');
+            }
+
+            //For "non copies": reload the user who's created the order (e.g. in views: order, request )
+            if (!$copy) {
+                $this->sdiUser = sdiFactory::getSdiUser($order->user_id);
             }
 
             //Load diffusion
@@ -58,7 +82,7 @@ class sdiBasket {
                     ->from('#__sdi_diffusion d')
                     ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                     ->innerJoin('#__sdi_order o ON o.id = od.order_id')
-                    ->where('o.id = ' . (int)$orderId);
+                    ->where('o.id = ' . (int) $orderId);
             $db->setQuery($query);
             $extractions = $db->loadObjectList();
             foreach ($extractions as $extraction) :
@@ -69,7 +93,7 @@ class sdiBasket {
                 $query = $db->getQuery(true)
                         ->select('opv.property_id')
                         ->from('#__sdi_order_propertyvalue opv')
-                        ->where('opv.orderdiffusion_id = ' . (int)$extraction->orderdiffusion_id)
+                        ->where('opv.orderdiffusion_id = ' . (int) $extraction->orderdiffusion_id)
                         ->group('opv.property_id');
                 $db->setQuery($query);
                 $properties = $db->loadObjectList();
@@ -77,8 +101,8 @@ class sdiBasket {
                     $query = $db->getQuery(true)
                             ->select('opv.propertyvalue_id, opv.propertyvalue')
                             ->from('#__sdi_order_propertyvalue opv')
-                            ->where('opv.orderdiffusion_id = ' . (int)$extraction->orderdiffusion_id)
-                            ->where('property_id = ' . (int)$property->property_id);
+                            ->where('opv.orderdiffusion_id = ' . (int) $extraction->orderdiffusion_id)
+                            ->where('property_id = ' . (int) $property->property_id);
                     $db->setQuery($query);
                     $properyvalues = $db->loadObjectList();
                     $propertyobject = new stdClass();
@@ -100,7 +124,7 @@ class sdiBasket {
                 $ex->completed = $extraction->completed;
                 $ex->file = $extraction->file;
                 $ex->size = $extraction->size;
-                $ex->created_by = sdiFactory::getSdiUser($extraction->created_by)->name;
+                $ex->created_by = sdiFactory::getSdiUserByJoomlaId($extraction->created_by)->name;
                 $this->addExtraction($ex);
                 $this->setPerimeters($ex->perimeters);
             endforeach;
@@ -111,7 +135,7 @@ class sdiBasket {
                     ->select('op.*, p.name as perimeter_name')
                     ->from('#__sdi_order_perimeter op')
                     ->innerJoin('#__sdi_perimeter p ON p.id = op.perimeter_id')
-                    ->where('op.order_id = ' . (int)$orderId);
+                    ->where('op.order_id = ' . (int) $orderId);
             $db->setQuery($query);
             $perimeters = $db->loadObjectList();
             $extent = new stdClass();
@@ -119,6 +143,7 @@ class sdiBasket {
             $extent->name = $perimeters[0]->perimeter_name;
             $extent->surface = $order->surface;
             $extent->buffer = $order->buffer;
+            $extent->level = $order->level;
             $extent->features = array();
             foreach ($perimeters as $perimeter):
                 if (!strpos($perimeter->value, ',')):
@@ -133,9 +158,7 @@ class sdiBasket {
                 endif;
             endforeach;
 
-            $this->extent = $extent;          
-            
-            
+            $this->extent = $extent;
         } catch (JDatabaseException $e) {
             
         }
@@ -157,6 +180,8 @@ class sdiBasket {
         $this->isrestrictedbyperimeter = false;
         $this->free = true;
         $this->visualization = '';
+        $this->surfacemax = null;
+        $this->surfacemin = null;
         foreach ($this->extractions as $key => $extraction):
             $this->setProperties($extraction);
         endforeach;
@@ -186,16 +211,16 @@ class sdiBasket {
         if ($extraction->pricing == 2)
             $this->free = false;
     }
-    
-    function renderAsOrder(){
+
+    function renderAsOrder() {
         
     }
-    
-    function renderAsRequest(){
+
+    function renderAsRequest() {
         
     }
-    
-    function renderAsBasket(){
+
+    function renderAsBasket() {
         
     }
 
