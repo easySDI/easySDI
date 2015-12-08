@@ -634,3 +634,10 @@ IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_prici
 DROP TABLE [#__sdi_pricing_order_supplier_product_profile];
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_sys_extractstorage]') AND TYPE IN (N'U'))
 DROP TABLE [#__sdi_sys_extractstorage];
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_processing]') AND TYPE IN (N'U'))
+DROP TABLE [#__sdi_processing];
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_processing_obs]') AND TYPE IN (N'U'))
+DROP TABLE [#__sdi_processing_obs];
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_processing_order]') AND TYPE IN (N'U'))
+DROP TABLE [#__sdi_processing_order];
