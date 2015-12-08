@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension method="upgrade" type="component" version="3.0.0">
+  <name>EasySDI_processing</name>
+  <creationDate>septembre 2015</creationDate>
+  <releaseDate>23 septembre 2015</releaseDate>
+  <copyright>Copyright (C) 2014. All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+  <author>Depth France</author>
+  <authorEmail>portier@depth.fr</authorEmail>
+  <authorUrl>http://www.depth.fr</authorUrl>
+  <version>1.0</version>
+  <description />
+  <scriptfile>script.php</scriptfile>
+  <files folder="site">
+    <filename>index.html</filename>
+    <filename>easysdi_processing.php</filename>
+    <filename>controller.php</filename>
+    <filename>router.php</filename>
+    <folder>views</folder>
+    <folder>models</folder>
+    <folder>assets</folder>
+    <folder>helpers</folder>
+  </files>
+  <administration>
+    <files folder="administrator">
+      <filename>access.xml</filename>
+      <filename>config.xml</filename>
+      <filename>controller.php</filename>
+      <filename>index.html</filename>
+      <filename>easysdi_processing.php</filename>
+      <filename>script.php</filename>
+      <folder>controllers</folder>
+      <folder>assets</folder>
+      <folder>helpers</folder>
+      <folder>models</folder>
+      <folder>views</folder>
+    </files>
+  </administration>
+</extension>
