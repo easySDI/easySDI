@@ -269,7 +269,9 @@
                     sync-package-mod-admininfo,
                     sync-package-mod-adminbutton,
                     sync-package-tpl-easysdiadminpositions,
+                    copy-sub-package,
                     write-xml,
+                    build-info,
                     package" 
             description="Main target"/>
     
