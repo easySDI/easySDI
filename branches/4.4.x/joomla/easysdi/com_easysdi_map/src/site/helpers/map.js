@@ -301,7 +301,7 @@ function getMapConfig() {
             case 'getfeatureinfo':
                 var tool = {
                     ptype: "gxp_wmsgetfeatureinfo",
-                    popupTitle: "Feature Info",
+                    //popupTitle: "Feature Info",
                     toggleGroup: "interaction",
                     format: data.tools[index].params,
                     actionTarget: "hiddentbar",

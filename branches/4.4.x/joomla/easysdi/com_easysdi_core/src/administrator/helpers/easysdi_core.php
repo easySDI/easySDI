@@ -23,6 +23,7 @@ class Easysdi_coreHelper {
         self::addComponentSubmeu('com_easysdi_user');
         self::addComponentSubmeu('com_easysdi_catalog');
         self::addComponentSubmeu('com_easysdi_shop');
+        self::addComponentSubmeu('com_easysdi_processing');
         self::addComponentSubmeu('com_easysdi_service');
         self::addComponentSubmeu('com_easysdi_map');
         self::addComponentSubmeu('com_easysdi_monitor');
@@ -61,6 +62,14 @@ class Easysdi_coreHelper {
                 if ($app->getUserState('com_easysdi_catalog-installed') && $user->authorise('core.manage', 'com_easysdi_catalog')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-grid-view"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_CATALOG'), 'index.php?option=com_easysdi_catalog'
+                    );
+                }
+                break;
+                
+            case 'com_easysdi_processing':
+                if ($app->getUserState('com_easysdi_processing-installed') && $user->authorise('core.manage', 'com_easysdi_processing')) {
+                    JHtmlSidebar::addEntry(
+                            '<i class="icon-cogs"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_PROCESSING'), 'index.php?option=com_easysdi_processing'
                     );
                 }
                 break;

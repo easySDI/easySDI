@@ -66,9 +66,9 @@ $document->addScript(Juri::base(true) . '/components/com_easysdi_core/libraries/
                     <div class="span10 form-horizontal">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#misc" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_MISC'); ?></a></li>
-                            <li><a href="#scale" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_SCALE'); ?></a></li>
-                            <li><a href="#wfs" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_WFS'); ?></a></li>
-                            <li><a href="#indoor" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_INDOOR'); ?></a></li>                            
+                            <li><a href="#scale" id="scaletab" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_SCALE'); ?></a></li>
+                            <li><a href="#wfs" id="wfstab" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_WFS'); ?></a></li>
+                            <li><a href="#indoor" id="indoortab" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_INDOOR'); ?></a></li>                            
                         </ul>
 
                         <div class="tab-content">

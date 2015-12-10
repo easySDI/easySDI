@@ -6,7 +6,7 @@
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.3.2"/>
+    <property name="version" value="4.4.0"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -51,6 +51,7 @@
     <include file="com_easysdi_dashboard/build.xml" as="dashboard"/>
     <include file="com_easysdi_contact/build.xml" as="contact"/>
     <include file="com_easysdi_shop/build.xml" as="shop"/>
+    <include file="com_easysdi_processing/build.xml" as="processing"/>
     <include file="plg_easysdi_monitor/build.xml" as="plg-monitor"/>
     <include file="plg_easysdi_contact/build.xml" as="plg-contact"/>
     <include file="plg_easysdi_service/build.xml" as="plg-service"/>
@@ -79,6 +80,7 @@
                     package-com-dashboard,
                     package-com-contact,
                     package-com-shop,
+                    package-com-processing,
                     package-plg-contact,
                     package-plg-monitor,
                     package-plg-service,
@@ -109,6 +111,7 @@
     <target name="package-com-service" depends="service.package" description="Main Target"/>
     <target name="package-com-dashboard" depends="dashboard.package" description="Main Target"/>
     <target name="package-com-shop" depends="shop.package" description="Main Target"/>
+    <target name="package-com-processing" depends="processing.package" description="Main Target"/>
     <target name="package-com-contact" depends="contact.package" description="Main Target"/>
     
     <target name="package-plg-contact" depends="plg-contact.package" description="Main Target"/>
@@ -142,6 +145,7 @@
                     dev-package-com-dashboard,
                     dev-package-com-contact,
                     dev-package-com-shop,
+                    dev-package-com-processing,
                     package-plg-contact,
                     package-plg-monitor,
                     package-plg-service,
@@ -171,6 +175,7 @@
     <target name="dev-package-com-service" depends="service.dev-package" description="Main Target"/>
     <target name="dev-package-com-dashboard" depends="dashboard.dev-package" description="Main Target"/>
     <target name="dev-package-com-shop" depends="shop.dev-package" description="Main Target"/>
+    <target name="dev-package-com-processing" depends="processing.dev-package" description="Main Target"/>
     <target name="dev-package-com-contact" depends="contact.dev-package" description="Main Target"/>
     
     <target name="dev-package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.dev-package" description="Main Target"/>
@@ -185,6 +190,7 @@
                     sync-com-dashboard,
                     sync-com-contact,
                     sync-com-shop,
+                    sync-com-processing,
                     sync-plg-contact,
                     sync-plg-monitor,
                     sync-plg-service,
@@ -212,6 +218,7 @@
     <target name="sync-com-dashboard" depends="dashboard.sync" description="Main Target"/>
     <target name="sync-com-contact" depends="contact.sync" description="Main Target"/>
     <target name="sync-com-shop" depends="shop.sync" description="Main Target"/>
+    <target name="sync-com-processing" depends="processing.sync" description="Main Target"/>
     
     <target name="sync-plg-contact" depends="plg-contact.sync" description="Main Target"/>
     <target name="sync-plg-monitor" depends="plg-monitor.sync" description="Main Target"/>
@@ -243,6 +250,8 @@
                     sync-package-com-dashboard,
                     sync-package-com-contact,
                     sync-package-com-shop,
+                    sync-package-com-processing,
+                    sync-package-com-catalog,
                     sync-package-plg-contact,
                     sync-package-plg-monitor,
                     sync-package-plg-service,
@@ -260,7 +269,10 @@
                     sync-package-mod-admininfo,
                     sync-package-mod-adminbutton,
                     sync-package-tpl-easysdiadminpositions,
-                    write-xml" 
+                    copy-sub-package,
+                    write-xml,
+                    build-info,
+                    package" 
             description="Main target"/>
     
     <target name="sync-package-com-core" depends="core.sync-package" description="Main Target"/>
@@ -271,6 +283,7 @@
     <target name="sync-package-com-dashboard" depends="dashboard.sync-package" description="Main Target"/>
     <target name="sync-package-com-contact" depends="contact.sync-package" description="Main Target"/>
     <target name="sync-package-com-shop" depends="shop.sync-package" description="Main Target"/>
+    <target name="sync-package-com-processing" depends="processing.sync-package" description="Main Target"/>
     
     <target name="sync-package-plg-contact" depends="plg-contact.sync-package" description="Main Target"/>
     <target name="sync-package-plg-monitor" depends="plg-monitor.sync-package" description="Main Target"/>
@@ -309,6 +322,7 @@
             <fileset dir="${root.out.dir}/com_easysdi_dashboard/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_shop/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_processing/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_service/target" includes="*" erroronmissingdir="false"/>
@@ -352,6 +366,7 @@
                     <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
                     <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
                     <file type="component" id="com_easysdi_shop">com_easysdi_shop.zip</file>
+                    <file type="component" id="com_easysdi_processing">com_easysdi_processing.zip</file>
                     <file type="component" id="com_easysdi_monitor">com_easysdi_monitor.zip</file>
                     <file type="module" id="mod_easysdi_basket">mod_easysdi_basket.zip</file>
                     <file type="module" id="mod_easysdi_admininfo">mod_easysdi_admininfo.zip</file>

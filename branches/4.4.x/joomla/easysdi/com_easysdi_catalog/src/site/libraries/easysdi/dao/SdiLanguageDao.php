@@ -24,7 +24,7 @@ class SdiLanguageDao extends SdiDao{
     public function getSupported() {
         $supportedIds = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
         
-        if(!isset($supportedIds)){
+        if(!isset($supportedIds) || (sizeof($supportedIds)==0)){
             return array();
         }
         

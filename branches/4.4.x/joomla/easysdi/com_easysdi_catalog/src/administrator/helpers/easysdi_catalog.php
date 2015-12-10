@@ -70,6 +70,7 @@ class Easysdi_catalogHelper {
                 Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIES'), 'index.php?option=com_easysdi_catalog&view=boundaries', $vName == 'boundaries'
         );
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_processing');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');
