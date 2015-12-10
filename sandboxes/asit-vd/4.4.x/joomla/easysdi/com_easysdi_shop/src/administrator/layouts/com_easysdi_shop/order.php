@@ -10,10 +10,6 @@ $item = $displayData['item'];
 $form = $displayData['form'];
 $viewType = $displayData['viewType'];
 
-//for now: no differentiation for admin, use the client's view
-if($viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN){
-    $viewType = Easysdi_shopHelper::ORDERTYPE_ORDER;
-}
 
 $authorizeddiffusion = isset($displayData['authorizeddiffusion']) ? $displayData['authorizeddiffusion'] : array();
 $managedOrganismsDiffusion = isset($displayData['managedOrganismsDiffusion']) ? $displayData['managedOrganismsDiffusion'] : array();
@@ -27,6 +23,11 @@ $showPricing = isset($item->basket->pricing) && $item->basket->pricing->isActiva
 
 // show the action column only if: 1) the order type is an order and the view is for the client OR 2) the view is for provider
 $showActions = ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER && $viewType == Easysdi_shopHelper::ORDERVIEW_ORDER) ||
+        $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST ||
+        $viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN;
+
+$showClientDetails = $viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN ||
+        $viewType == Easysdi_shopHelper::ORDERVIEW_VALIDATION ||
         $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST;
 
 $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty != 0;
@@ -130,7 +131,7 @@ if (!$showActions) {
         </div>
 
         <?php
-        //item has been rejected by thrrd party
+        //item has been rejected by third party
         if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED) {
             $displayString = "COM_EASYSDI_SHOP_ORDER_IS_REJECTED_ON_BY";
             $displayClass = "text-error";
@@ -174,7 +175,19 @@ if (!$showActions) {
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_NAME'); ?>
                 </div>
                 <div class="span8 order-edit-value" >        
-                    <?php echo $item->basket->sdiUser->name; ?>
+                    <?php
+                    if ($viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN):
+                        ?>
+                        <span class="hasTooltip" title="<?php echo $item->basket->sdiUser->juser->username ?>">
+                            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_contact&task=user.edit&id=' . (int) $item->basket->sdiUser->id); ?>">
+                                <?php echo $item->basket->sdiUser->name; ?>
+                            </a>
+                        </span>
+                        <?php
+                    else:
+                        echo $item->basket->sdiUser->name;
+                    endif;
+                    ?>
                 </div>
             </div>
             <div id="sdi-order-recap-client-organism" class="row-fluid">
@@ -182,11 +195,24 @@ if (!$showActions) {
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_ORGANISM'); ?>
                 </div>
                 <div class="span8 order-edit-value" >
-                    <?php $organisms = $item->basket->sdiUser->getMemberOrganisms();  echo $organisms[0]->name; ?>
+                    <?php
+                    $organisms = $item->basket->sdiUser->getMemberOrganisms();
+
+
+                    if ($viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN):
+                        ?>
+                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_contact&task=organism.edit&id=' . (int) $organisms[0]->id); ?>">
+                            <?php echo $organisms[0]->name; ?>
+                        </a>
+                        <?php
+                    else:
+                        echo $organisms[0]->name;
+                    endif;
+                    ?>
 
                 </div>
             </div>     
-            <?php if ($viewType != Easysdi_shopHelper::ORDERVIEW_ORDER): ?>
+            <?php if ($showClientDetails): ?>
                 <div id="sdi-order-recap-client-email" class="row-fluid">
                     <div class="span4 order-edit-label" >
                         <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_EMAIL'); ?>
@@ -249,7 +275,7 @@ if (!$showActions) {
 
 
     <!-- order perimter -->
-    <?php Easysdi_shopHelper::getHTMLOrderPerimeter($item, $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST); ?>
+    <?php Easysdi_shopHelper::getHTMLOrderPerimeter($item, $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST || $viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN); ?>
 
 
     <!-- order products -->
@@ -257,6 +283,7 @@ if (!$showActions) {
         <h2><?php
             switch ($viewType) {
                 case Easysdi_shopHelper::ORDERVIEW_ORDER:
+                case Easysdi_shopHelper::ORDERVIEW_ADMIN:
                     echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_ORDER');
                     break;
                 case Easysdi_shopHelper::ORDERVIEW_REQUEST:
@@ -281,7 +308,8 @@ if (!$showActions) {
 
             //Show All products, except in case of Request view (only products with extraction rights)
             if (
-                    $viewType == Easysdi_shopHelper::ORDERVIEW_ORDER || $viewType == Easysdi_shopHelper::ORDERVIEW_VALIDATION ||
+                    $viewType == Easysdi_shopHelper::ORDERVIEW_ORDER || $viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN ||
+                    $viewType == Easysdi_shopHelper::ORDERVIEW_VALIDATION ||
                     $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST && ($hasEditModeProducts || in_array($supplier_id, $managedOrganismsDiffusion))
             ) :
                 ?>
@@ -339,7 +367,7 @@ if (!$showActions) {
                             <tr rel="<?php echo $productItem->id; ?>" class="sdi-productstate-id-<?php echo($productItem->productstate_id); ?>">
                                 <td class="product_column">
                                     <input type = "hidden" name = "jform[diffusion][]" value = "<?php echo $productItem->id; ?>" />
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&guid=' . $productItem->metadataguid); ?>"><?php echo $productItem->name; ?></a><br/>
+                                    <a href="<?php echo JRoute::_(JUri::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $productItem->metadataguid); ?>"><?php echo $productItem->name; ?></a><br/>
 
                                     <div class="shop-basket-product-details">
 
