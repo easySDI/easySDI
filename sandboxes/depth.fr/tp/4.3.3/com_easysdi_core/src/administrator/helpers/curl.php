@@ -242,7 +242,7 @@ class CurlHelper {
     }
 
     private function sendSimplified() {
-        header("Access-Control-Allow-Origin: *"); // AJOUT Damien
+        header("Access-Control-Allow-Origin: *");
 
         $content = trim(curl_exec($this->ch));
         $data = curl_getinfo($this->ch);
