@@ -23,15 +23,15 @@ $document = JFactory::getDocument();
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js.php');
 $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
 ?>
-<style> 
+<style>
     .tooltip{
         width: 250px;
     }
-    
+
     .tooltip-inner {
         white-space:pre-wrap;
     }
-    
+
 </style>
  <script type="text/javascript">
       var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
@@ -156,19 +156,19 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                         <?php foreach ($this->items as $item) : ?>
                         <tr id="<?php echo $item->id;?>_resource">
                             <td id="<?php echo $item->id;?>_resource_name" class="resource_name">
-                                
+
                             </td>
                             <td id="<?php echo $item->id;?>_resource_type" class="resource_type">
-                                
+
                             </td>
                             <td id="<?php echo $item->id;?>_resource_versions" class="resource_versions">
-                                
+
                             </td>
                             <td id="<?php echo $item->id;?>_resource_metadata_actions" class="resource_metadata_actions">
-                                
+
                             </td>
                             <td id="<?php echo $item->id;?>_resource_management_actions" class="resource_management_actions">
-                                
+
                             </td>
                         </tr>
                         <?php endforeach;?>
@@ -188,7 +188,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                 <?php
                 $resourceFrom   = ($this->pagination->pagesCurrent-1)*$this->pagination->limit + 1;
                 $resourceTo     = min($resourceFrom + $this->pagination->limit - 1, $this->pagination->total);
-                
+
                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESULTS').' '.$resourceFrom.' '.JText::_('COM_EASYSDI_CORE_RESOURCES_TO').' '.$resourceTo.' '.JText::_('COM_EASYSDI_CORE_RESOURCES_OF').' '.$this->pagination->total; ?>
             </p>
             <p class="counter">

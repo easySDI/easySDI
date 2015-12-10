@@ -26,7 +26,9 @@ class Easysdi_mapViewMap extends JViewLegacy {
     private static function returnJson($data,$status='success',$message=null,$code=null) {
         JResponse::clearHeaders();
         JResponse::setHeader('Content-Type', 'application/json', true);
+        JResponse::setHeader("Access-Control-Allow-Origin","*", true);
         JResponse::sendHeaders();
+
         $response_array=compact('status');
         foreach (['data','message','code'] as $param) {
             if (isset($$param)) $response_array[$param]=$$param;

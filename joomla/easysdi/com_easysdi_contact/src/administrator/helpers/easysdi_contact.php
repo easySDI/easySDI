@@ -33,6 +33,7 @@ class Easysdi_contactHelper {
         );
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_processing');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');
