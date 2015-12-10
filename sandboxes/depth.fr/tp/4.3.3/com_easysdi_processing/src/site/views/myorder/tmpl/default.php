@@ -80,6 +80,7 @@ $doc->addScript($base_url . '/js/easysdi_processing.js');
 
 $dispatcher = JDispatcher::getInstance();
 $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($order));
+
 ?>
 <?php //include_once(dirname(__FILE__).'/../../header.php');?>
 <div  data-processingplugin=<?php echo $order->plugins ?> class="<?php
@@ -129,53 +130,64 @@ $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($or
         </ul>
         <h3><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_PARAMS'); ?></h3>
         <?php echo Easysdi_processingParamsHelper::table($order->processing_parameters,$order->parameters,$order) ?>
-    </div>
-
-
-
-    <?php //if (in_array($order->status, ['done','achived'])) { ?>
-    <div class="tab-pane" id="output">
-
-        <?php if ($order->output != '') {
-            ?>
-            <?php echo Easysdi_processingParamsHelper::file_link($order->output, $order,'output'); ?><br>
-            <?php
-        }
-
-        if ($order->outputpreview != '') {
-            ?>
-            <?php echo Easysdi_processingParamsHelper::file_link($order->outputpreview, $order, 'outputpreview'); ?><br>
-            <?php
-        }
-        if ($order->info != '') {
-            ?>
-            <?php echo $order->info; ?><br>
-            <?php
-        }
-        ?>
         <?php
         foreach ($plugin_results as $k=>$plugin_result) {
-            if (isset($plugin_result['output'])) echo ' <div class="'.$plugin_result['plugin'].'_'.$order->id.'_output">'.$plugin_result['output'].'</div>';
-        }
-        ?>
-
-        <hr>
-        publié le <?php echo $order->sent ?> par <?php echo $order->processing_contact_label ?>
-    </div>
-    <?php //} ?>
-
-
-    <?php
-    foreach ($plugin_results as $k=>$plugin_result) {
-        if (isset($plugin_result['tabcontent'])) {
-            ?>
-            <div class="tab-pane" id="<?php echo $plugin_result['plugin']; ?>">
-                <?php echo $plugin_result['tabcontent']; ?>
-            </div>
+            if (isset($plugin_result['parent'])&&$plugin_result['parent']) {
+                ?>
+                <br><span class='parent_order'>
+                basé sur la modération: <strong><a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$plugin_result['parent']->id); ?>"><?php echo $plugin_result['parent']->name ?></a></strong> - <?php echo $plugin_result['parent']->id; ?>
+            </span>
             <?php
         }
     }
     ?>
+</div>
+
+
+
+<?php //if (in_array($order->status, ['done','achived'])) { ?>
+<div class="tab-pane" id="output">
+
+    <?php if ($order->output != '') {
+        ?>
+        <?php echo Easysdi_processingParamsHelper::file_link($order->output, $order,'output'); ?><br>
+        <?php
+    }
+
+    if ($order->outputpreview != '') {
+        ?>
+        <?php echo Easysdi_processingParamsHelper::file_link($order->outputpreview, $order, 'outputpreview'); ?><br>
+        <?php
+    }
+    if ($order->info != '') {
+        ?>
+        <?php echo $order->info; ?><br>
+        <?php
+    }
+    ?>
+    <?php
+    foreach ($plugin_results as $k=>$plugin_result) {
+        if (isset($plugin_result['output'])) echo ' <div class="'.$plugin_result['plugin'].'_'.$order->id.'_output">'.$plugin_result['output'].'</div>';
+    }
+    ?>
+
+    <hr>
+    publié le <?php echo $order->sent ?> par <?php echo $order->processing_contact_label ?>
+</div>
+<?php //} ?>
+
+
+<?php
+foreach ($plugin_results as $k=>$plugin_result) {
+    if (isset($plugin_result['tabcontent'])) {
+        ?>
+        <div class="tab-pane" id="<?php echo $plugin_result['plugin']; ?>">
+            <?php echo $plugin_result['tabcontent']; ?>
+        </div>
+        <?php
+    }
+}
+?>
 
 </div>
 

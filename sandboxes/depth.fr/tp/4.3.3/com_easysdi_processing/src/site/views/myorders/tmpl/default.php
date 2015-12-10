@@ -60,98 +60,108 @@ $doc->addScript($base_url . '/js/easysdi_processing.js');
 
                     ?>
                     <tr data-processingplugin=<?php echo $order->plugins ?> class="<?php
-                            foreach ($plugin_results as $k=>$plugin_result) {
-                                if (isset($plugin_result['plugin'])) echo ' plugin_'.$plugin_result['plugin'];
-                            }
-                            ?>">
+                        foreach ($plugin_results as $k=>$plugin_result) {
+                            if (isset($plugin_result['plugin'])) echo ' plugin_'.$plugin_result['plugin'];
+                        }
+                        ?>">
                         <td><?php echo Easysdi_processingHelper::getRelativeTimeString(JFactory::getDate($order->created)); ?></td></td>
-                        <td><strong><a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id); ?>"><?php echo $order->name ?></a></strong> - <?php echo $order->id; ?></td>
+                        <td>
+                            <strong><a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id); ?>"><?php echo $order->name ?></a></strong> - <?php echo $order->id; ?>
+                        </td>
                         <td><?php echo $order->processing ?></td>
                         <td class="orderstate">
                             <?php echo Easysdi_processingStatusHelper::status($order->status) ?>
                             <?php
                             foreach ($plugin_results as $k=>$plugin_result) {
                                 if (isset($plugin_result['status'])) echo ' <span class="'.$plugin_result['plugin'].'_'.$order->id.'_status">'.$plugin_result['status'].'</span>';
+                                if (isset($plugin_result['parent'])&&$plugin_result['parent']) {
+                                ?>
+                                <br><span class='parent_order'>
+                                    basé sur la modération: <strong><a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$plugin_result['parent']->id); ?>"><?php echo $plugin_result['parent']->name ?></a></strong> - <?php echo $plugin_result['parent']->id; ?>
+                                </span>
+                                <?php
+                            }
                             }
                             ?>
+
                         </td>
                         <td><?php
                             foreach ($plugin_results as $k=>$plugin_result) {
                                 if (isset($plugin_result['progression'])) echo ' <span class="'.$plugin_result['plugin'].'_'.$order->id.'_progression">'.$plugin_result['progression'].'</span>';
                             }
                             ?></td>
-                        <td>
-                            <div class="pull-right">
-                                <?php
+                            <td>
+                                <div class="pull-right">
+                                    <?php
                                 //$order->output_obj=json_decode($order->output);
-                                if ($order->output != '') {
-                                    ?>
+                                    if ($order->output != '') {
+                                        ?>
 
-                                    <div class="btn-group sdi-btn-download-file-from-list">
-                                        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                                            <i class="icon-flag-2"></i>
-                                        </a>
+                                        <div class="btn-group sdi-btn-download-file-from-list">
+                                            <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                                                <i class="icon-flag-2"></i>
+                                            </a>
 
-                                        <ul class="dropdown-menu">
+                                            <ul class="dropdown-menu">
 
-                                            <li><?php echo Easysdi_processingParamsHelper::file_link($order->output, $order,'output',false); ?></li>
-                                            <?php if ($order->outputpreview != '') {
-                                                ?>
-                                                <li><?php echo Easysdi_processingParamsHelper::file_link($order->outputpreview, $order,'outputpreview',false); ?></li>
-                                                <?php } ?>
+                                                <li><?php echo Easysdi_processingParamsHelper::file_link($order->output, $order,'output',false); ?></li>
+                                                <?php if ($order->outputpreview != '') {
+                                                    ?>
+                                                    <li><?php echo Easysdi_processingParamsHelper::file_link($order->outputpreview, $order,'outputpreview',false); ?></li>
+                                                    <?php } ?>
+                                                </ul>
+                                            </div>
+                                            <?php
+                                        }
+                                        ?>
+                                        <div class="btn-group">
+                                            <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                                                <?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_ACTIONS'); ?>
+                                                <span class="caret"></span>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id); ?>"><?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_OPEN'); ?></a>
+                                                </li>
+                                                <li>
+                                                    <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&task=myorder.remove&order_id=' . $order->id); ?>"><?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_DELETE'); ?></a>
+                                                </li>
+                                                <?php if (($order->status == 'done') || ($order->status == 'fail')): ?>
+                                                    <li>
+                                                        <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&task=myorder.archive&id=' . $order->id); ?>"><?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_ARCHIVE'); ?></a>
+                                                    </li>
+                                                <?php endif; ?>
                                             </ul>
                                         </div>
-                                        <?php
-                                    }
-                                    ?>
-                                    <div class="btn-group">
-                                        <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                                            <?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_ACTIONS'); ?>
-                                            <span class="caret"></span>
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id); ?>"><?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_OPEN'); ?></a>
-                                            </li>
-                                            <li>
-                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&task=myorder.remove&order_id=' . $order->id); ?>"><?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_DELETE'); ?></a>
-                                            </li>
-                                            <?php if (($order->status == 'done') || ($order->status == 'fail')): ?>
-                                                <li>
-                                                    <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&task=myorder.archive&id=' . $order->id); ?>"><?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_ARCHIVE'); ?></a>
-                                                </li>
-                                            <?php endif; ?>
-                                        </ul>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php
-                    }
-                    ?>
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
 
+            </div>
         </div>
-    </div>
-    <?php //include_once(dirname(__FILE__).'/../../footer.php'); ?>
-    <?php
+        <?php //include_once(dirname(__FILE__).'/../../footer.php'); ?>
+        <?php
 
 
 
 
-?>
+        ?>
 
-<?php if($this->items) : ?>
+        <?php if($this->items) : ?>
 
-     <div class="pagination">
-        <?php if ($this->params->def('show_pagination_results', 1)) : ?>
-            <p class="counter">
-                <?php echo $this->pagination->getPagesCounter(); ?>
-            </p>
-        <?php endif; ?>
-        <?php echo $this->pagination->getPagesLinks(); ?>
-    </div>
+           <div class="pagination">
+            <?php if ($this->params->def('show_pagination_results', 1)) : ?>
+                <p class="counter">
+                    <?php echo $this->pagination->getPagesCounter(); ?>
+                </p>
+            <?php endif; ?>
+            <?php echo $this->pagination->getPagesLinks(); ?>
+        </div>
 
 
-<?php endif; ?>
+    <?php endif; ?>

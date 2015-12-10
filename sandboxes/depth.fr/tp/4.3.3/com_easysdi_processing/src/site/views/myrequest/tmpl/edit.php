@@ -85,7 +85,7 @@ $processing=Easysdi_processingHelper::getProcessById($app->input->get('processin
 $processing_parameters=json_decode($processing->parameters);
 ?>
 <script>
-    
+
     jQuery(function(){
 
         jQuery("select[data-toggleif]").each(function(){
@@ -108,8 +108,8 @@ $processing_parameters=json_decode($processing->parameters);
         });
 
     })
-    
-    
+
+
 </script>
 <div  data-processingplugin=<?php echo $order->plugins ?> class="<?php
     foreach ($plugin_results as $k=>$plugin_result) {
@@ -153,6 +153,17 @@ $processing_parameters=json_decode($processing->parameters);
             </ul>
             <h3><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_PARAMS'); ?></h3>
             <?php echo Easysdi_processingParamsHelper::table($order->processing_parameters,$order->parameters) ?>
+            <?php
+        foreach ($plugin_results as $k=>$plugin_result) {
+            if (isset($plugin_result['parent'])&&$plugin_result['parent']) {
+                ?>
+                <br><span class='parent_order'>
+                basé sur la modération: <strong><a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$plugin_result['parent']->id); ?>"><?php echo $plugin_result['parent']->name ?></a></strong> - <?php echo $plugin_result['parent']->id; ?>
+            </span>
+            <?php
+        }
+    }
+    ?>
         </div>
 
         <div class="tab-pane" id="details">

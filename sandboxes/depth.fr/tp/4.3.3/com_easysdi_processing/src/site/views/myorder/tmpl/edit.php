@@ -242,6 +242,12 @@ var globdata;
             </fieldset>
             <?php
         }
+
+        $dispatcher = JDispatcher::getInstance();
+        $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderForm' ,array($processing, sdiFactory::getSdiUser()));
+
+        if (isset($plugin_results[0])&&isset($plugin_results[0]['html'])) echo $plugin_results[0]['html'];
+
         ?>
            <br>
 

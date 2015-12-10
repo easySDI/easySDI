@@ -209,9 +209,9 @@ abstract class Easysdi_processingParamsHelper
         $path_parts = pathinfo($order->file);
         $t='<span class="file" data-extension="'.$path_parts['extension'].'">';
         $t.=$order->file;
-        $filepath=JComponentHelper::getParams('com_easysdi_processing')->get('output_path'). '/' . $order->id . '/' . $order->outputpreview;
+        $filepath=JComponentHelper::getParams('com_easysdi_processing')->get('upload_path'). '/' . $order->file;
         if (!file_exists($filepath)) {
-          $t.=' <strong>fichier introuvable</strong>';
+          $t.=' <strong>fichier introuvable</strong>';// /*DEBUG*/.$filepath;
         } else {
           $t.='&nbsp;<small>'.self::human_filesize(filesize($filepath)).'</small>';
         }$t.='</span>';
