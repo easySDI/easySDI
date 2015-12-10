@@ -210,15 +210,25 @@
     </fieldset>
     
     <fieldset name="hidden">
-        <field name="id" type="hidden" filter="safehtml" />
         <field name="version_id" type="hidden" filter="safehtml" />
         <field name="checked_out" type="hidden" filter="safehtml" />
         <field name="checked_out_time" type="hidden" filter="safehtml" /> 
-        <field name="guid" type="hidden" filter="safehtml" /> 
         <field name="ordering" type="hidden" filter="safehtml" /> 
     </fieldset>
     
     <fieldset name="publishing">
+        <field name="id" 
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ID"
+               type="text"
+               class="input-xlarge"
+               readonly="true" 
+               filter="safehtml" />
+        <field name="guid" 
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_GUID"
+               type="text" 
+               class="input-xlarge"
+               readonly="true"
+               filter="safehtml" />         
         <field name="created_by" type="createdby" default=""  readonly="true"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED_BY"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_CREATED_BY"  /> 
