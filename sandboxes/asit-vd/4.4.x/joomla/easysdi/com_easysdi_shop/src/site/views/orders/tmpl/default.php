@@ -14,7 +14,7 @@ JHTML::_('behavior.modal');
 JHtml::_('behavior.tooltip');
 JHtml::_('formbehavior.chosen', 'select');
 
-JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.js');
+JFactory::getDocument()->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js');
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 ?>
 <div class="shop front-end-edit">
@@ -98,7 +98,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                         $basket = new sdiBasket();
                         $basket->loadOrder($item->id);
                         ?>
-                        <tr class="order-line order-line-new <?php echo('sdi-orderstate-'.preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-'.preg_replace('/\s+/', '', $item->ordertype)  ) ;?>">
+                        <tr class="order-line order-line-new <?php echo('sdi-orderstate-' . preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-' . preg_replace('/\s+/', '', $item->ordertype) ); ?>">
                             <td class="ordercreated">
                                 <span class="hasTip" title="<?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>">
                                     <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->created)); ?>
@@ -164,10 +164,10 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                                             <li>
                                                 <?php if ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER || $item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ESTIMATE): ?>
                                                     <a onclick="acturl = '<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.copy&id='); ?><?php echo $item->id; ?>';
-                                                                    getBasketContent('addOrderToBasket');"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET'); ?></a>
+                                                            getBasketContent('addOrderToBasket');"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_COPY_ORDER_INTO_BASKET'); ?></a>
                                                    <?php else : ?>
                                                     <a onclick="acturl = '<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.load&id='); ?><?php echo $item->id; ?>';
-                                                                    getBasketContent('addOrderToBasket');"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'); ?></a>
+                                                            getBasketContent('addOrderToBasket');"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'); ?></a>
                                                    <?php endif; ?>
                                             </li>
                                             <?php if ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_DRAFT): ?>

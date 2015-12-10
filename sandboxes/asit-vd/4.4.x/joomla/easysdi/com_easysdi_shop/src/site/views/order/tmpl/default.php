@@ -15,8 +15,8 @@ JHtml::_('behavior.formvalidation');
 
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/helpers/helper.js');
-$base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js');
+$base_url = Juri::root(true) . '/administrator/components/com_easysdi_core/libraries';
 //TODO : do not include proj here !!
 $document->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
@@ -25,7 +25,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 $document->addScript($base_url . '/filesaver/FileSaver.js');
-$document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
+$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
 <?php

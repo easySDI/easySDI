@@ -35,7 +35,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		Easysdi_shopHelper::addSubmenu('orders');
+		Easysdi_shopAdminHelper::addSubmenu('orders');
 
 		$this->addToolbar();
 
@@ -53,7 +53,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 		require_once JPATH_COMPONENT.'/helpers/easysdi_shop.php';
 
 		$state	= $this->get('State');
-		$canDo	= Easysdi_shopHelper::getActions($state->get('filter.category_id'));
+		$canDo	= Easysdi_shopAdminHelper::getActions($state->get('filter.category_id'));
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'), 'orders.png');
 
@@ -161,7 +161,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 
 
         //add Filter sent INPUT
-        $ordersent= Easysdi_shopHelper::getRangeOptions();
+        $ordersent= Easysdi_shopAdminHelper::getRangeOptions();
         JHtmlSidebar::addFilter(
             JText::_('COM_EASYSDI_SHOP_FILTER_SELECT_ORDERS_SENT'),
             'filter_ordersent',
@@ -170,7 +170,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 
 
         //add Filter completed INPUT
-        $ordercompleted= Easysdi_shopHelper::getRangeOptions();
+        $ordercompleted= Easysdi_shopAdminHelper::getRangeOptions();
         JHtmlSidebar::addFilter(
             JText::_('COM_EASYSDI_SHOP_FILTER_SELECT_ORDERS_COMPLETED'),
             'filter_ordercompleted',

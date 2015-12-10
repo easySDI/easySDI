@@ -9,13 +9,19 @@
 $item = $displayData['item'];
 $form = $displayData['form'];
 $viewType = $displayData['viewType'];
+
+//for now: no differentiation for admin, use the client's view
+if($viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN){
+    $viewType = Easysdi_shopHelper::ORDERTYPE_ORDER;
+}
+
 $authorizeddiffusion = isset($displayData['authorizeddiffusion']) ? $displayData['authorizeddiffusion'] : array();
 $managedOrganismsDiffusion = isset($displayData['managedOrganismsDiffusion']) ? $displayData['managedOrganismsDiffusion'] : array();
 
 $app = JFactory::getApplication();
 $doc = JFactory::getDocument();
 
-$cleanuporderdelay = $app->getParams('com_easysdi_shop')->get('cleanuporderdelay');
+$cleanuporderdelay = JComponentHelper::getParams('com_easysdi_shop')->get('cleanuporderdelay');
 
 $showPricing = isset($item->basket->pricing) && $item->basket->pricing->isActivated;
 
