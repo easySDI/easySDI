@@ -60,3 +60,5 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   KEY `processing_id` (`processing_id`),
   KEY `created_by` (`created_by`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+ALTER TABLE `#__sdi_category` ADD COLUMN `backend_only` TINYINT(1) NOT NULL DEFAULT 0 ;
