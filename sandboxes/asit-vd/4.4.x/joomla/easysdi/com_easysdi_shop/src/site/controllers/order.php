@@ -222,6 +222,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         return Easysdi_shopHelper::downloadOrderFile($orderdiffusion);
     }
 
+        
     function cancel() {
         JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));

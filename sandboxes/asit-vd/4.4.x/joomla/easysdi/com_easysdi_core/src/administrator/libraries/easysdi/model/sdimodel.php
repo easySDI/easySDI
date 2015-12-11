@@ -59,7 +59,7 @@ abstract class sdiModel extends JModelAdmin {
      * @since   12.2
      */
     public function save($data) {
-
+        
         if (parent::save($data)) {
 
             //Get the element guid

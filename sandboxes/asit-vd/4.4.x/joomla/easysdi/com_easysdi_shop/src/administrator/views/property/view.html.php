@@ -27,8 +27,8 @@ class Easysdi_shopViewProperty extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$this->state	= $this->get('State');
-		$this->item		= $this->get('Item');
-		$this->form		= $this->get('Form');
+		$this->item	= $this->get('Item');
+		$this->form	= $this->get('Form');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
@@ -48,11 +48,11 @@ class Easysdi_shopViewProperty extends JViewLegacy
 
 		$user		= JFactory::getUser();
 		$isNew		= ($this->item->id == 0);
-        if (isset($this->item->checked_out)) {
+                if (isset($this->item->checked_out)) {
 		    $checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-        } else {
-            $checkedOut = false;
-        }
+                } else {
+                    $checkedOut = false;
+                }
 		$canDo		= Easysdi_shopAdminHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTY'), 'property.png');
@@ -60,7 +60,6 @@ class Easysdi_shopViewProperty extends JViewLegacy
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))
 		{
-
 			JToolBarHelper::apply('property.apply', 'JTOOLBAR_APPLY');
 			JToolBarHelper::save('property.save', 'JTOOLBAR_SAVE');
 		}

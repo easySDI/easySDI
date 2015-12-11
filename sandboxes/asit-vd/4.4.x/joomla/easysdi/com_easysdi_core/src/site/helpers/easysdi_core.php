@@ -10,6 +10,6 @@
 defined('_JEXEC') or die;
 
 class Easysdi_coreHelper {
-
+    
 
 }

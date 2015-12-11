@@ -24,6 +24,7 @@ class Easysdi_serviceHelper {
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_user');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_processing');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
         JHtmlSidebar::addEntry(
                 Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'), 'index.php?option=com_easysdi_service&view=physicalservices', $vName == 'physicalservices'

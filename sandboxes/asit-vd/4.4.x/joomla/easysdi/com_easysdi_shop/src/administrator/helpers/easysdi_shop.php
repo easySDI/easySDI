@@ -38,6 +38,7 @@ class Easysdi_shopAdminHelper {
         JHtmlSidebar::addEntry(
                 Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'), 'index.php?option=com_easysdi_shop&view=orders', $vName == 'orders'
         );
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_processing');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');
