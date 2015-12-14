@@ -22,6 +22,12 @@ jimport('joomla.application.component.controller');
 
 JForm::addFieldPath(JPATH_ADMINISTRATOR . '/components/com_easysdi_core/models/fields');
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/factory/sdifactory.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiBasket.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiExtraction.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPerimeter.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPricingProfile.php';
+
 $controller	= JControllerLegacy::getInstance('Easysdi_shop');
 $controller->execute(JFactory::getApplication()->input->get('task'));
 $controller->redirect();

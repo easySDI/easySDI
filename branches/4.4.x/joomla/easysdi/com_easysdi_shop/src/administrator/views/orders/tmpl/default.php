@@ -9,6 +9,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
+
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
@@ -147,10 +149,14 @@ if (!empty($this->extra_sidebar)) {
                     <?php
                     foreach ($this->items as $i => $item) :
                         $ordering = ($listOrder == 'a.ordering');
-                        $canCreate = $user->authorise('core.create', 'com_easysdi_shop');
+                        //$canCreate = $user->authorise('core.create', 'com_easysdi_shop');
                         $canEdit = $user->authorise('core.edit', 'com_easysdi_shop');
                         $canCheckin = $user->authorise('core.manage', 'com_easysdi_shop');
                         $canChange = $user->authorise('core.edit.state', 'com_easysdi_shop');
+
+                        $basket = new sdiBasket();
+                        $basket->loadOrder($item->id);
+                                               
                         ?>
                         <tr class="row<?php echo $i % 2; ?>">
 
@@ -207,39 +213,32 @@ if (!empty($this->extra_sidebar)) {
                                 <?php endif; ?>
                             </td>
                             <td><?php
-                                if ('order' === $item->ordertype) {
-                                    echo '<i class="icon-cart"></i>&nbsp;';
-                                }
                                 echo JText::_($item->ordertype);
+                                if ('estimate' === $item->ordertype) {
+                                    echo '&nbsp;<i class="icon-lamp"></i>';
+                                }
                                 ?></td>
-                            <td><?php
-                                if ($item->ordertype_id != 3):
-                                    if ($item->orderstate_id == 1):
-                                        $classlabel = '';
-                                    elseif ($item->orderstate_id == 2):
-                                        $classlabel = '';
-                                    elseif ($item->orderstate_id == 3):
-                                        $classlabel = 'label-success';
-                                    elseif ($item->orderstate_id == 4):
-                                        $classlabel = 'label-warning';
-                                    elseif ($item->orderstate_id == 5):
-                                        $classlabel = 'label-info';
-                                    elseif ($item->orderstate_id == 6):
-                                        $classlabel = 'label-inverse';
-                                    endif;
-                                    ?>
-                                    <span class="label <?php echo $classlabel; ?> "><?php
-                                        echo JText::_($item->orderstate);
-                                        ?></span><?php
-                                endif;
-                                ?></td>
-                            <td><?php echo $item->user; ?></td>
+                            <td class="orderstate">
+                                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket); ?>
+                            </td>
+                            <td>
+                                <span class="hasTooltip" title="<?php echo $item->username ?>">
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_contact&task=user.edit&id=' . (int) $item->user_id); ?>">
+                                        <?php echo $item->user; ?>
+                                    </a>
+                                </span>
+                            </td>
                             <td><?php echo $item->created; ?></td>
                             <td><?php
                                 if ('0000-00-00 00:00:00' != $item->completed)
                                     echo $item->completed;
                                 ?></td>
-                            <td><?php echo $item->products; ?></td>
+                            <td><?php 
+                                foreach ($basket->extractions as $extraction):
+                                    echo($extraction->name . '<br/>');
+                                endforeach; 
+                            
+                            ?></td>
 
                         </tr>
                     <?php endforeach; ?>

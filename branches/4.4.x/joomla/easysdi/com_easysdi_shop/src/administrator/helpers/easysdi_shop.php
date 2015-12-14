@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * Easysdi_shop helper.
  */
-class Easysdi_shopHelper {
+class Easysdi_shopAdminHelper {
 
     /**
      * Configure the Linkbar.
