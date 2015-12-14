@@ -42,7 +42,7 @@ $orderLayout = new JLayoutFile('com_easysdi_shop.order', null, array('debug' => 
 Easysdi_shopHelper::extractionsBySupplierGrouping($this->item->basket);
 Easysdi_shopHelper::basketReloadSavedPricing($this->item->basket);
 ?>
-<h1><?php echo $item->name; ?></h1>
+<h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?> <span id="sdi-order-title-id"><?php echo $item->id; ?></span></h1>
 <div class="order-edit back-end-edit">
 
     <?php

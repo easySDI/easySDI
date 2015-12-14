@@ -87,7 +87,7 @@ if (!$showActions) {
     <?php endif; ?>
 
     <div class="row-fluid ">
-        <h2 id="sdi-order-recap-type-and-name"><span id="sdi-order-title-type"><?php echo JText::_($item->ordertype); ?></span> : <span id="sdi-order-title-name"><?php echo $item->basket->name; ?></span> - <span id="sdi-order-title-id"><?php echo $item->id; ?></span></h2>
+        <h2 id="sdi-order-recap-type-and-name"><span id="sdi-order-title-type"><?php echo JText::_($item->ordertype); ?></span> : <span id="sdi-order-title-name"><?php echo $item->basket->name; ?></span></h2>
         <div id="sdi-order-recap-created" class="row-fluid" >
             <div class="span2 order-edit-label" >
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_CREATED'); ?>

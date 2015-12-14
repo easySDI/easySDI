@@ -13,6 +13,7 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 $document = JFactory::getDocument();
 $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js');
@@ -35,7 +36,7 @@ if ($this->item) :
     Easysdi_shopHelper::basketReloadSavedPricing($this->item->basket);
     ?> 
 
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?> <span id="sdi-order-title-id"><?php echo $this->item->id; ?></span></h1>
 
     <div class="order-edit front-end-edit">
         <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
