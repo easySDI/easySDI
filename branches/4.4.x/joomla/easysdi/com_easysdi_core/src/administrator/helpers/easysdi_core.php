@@ -51,7 +51,7 @@ class Easysdi_coreHelper {
                 );
                 break;
             case 'com_easysdi_user':
-                if ($app->getUserState('com_easysdi_contact-installed') && $user->authorise('core.manage', 'com_easysdi_contact')) {
+                if ($user->authorise('core.manage', 'com_easysdi_contact')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-user"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_CONTACT'), 'index.php?option=com_easysdi_contact', $active
                     );
@@ -59,7 +59,7 @@ class Easysdi_coreHelper {
                 break;
 
             case 'com_easysdi_catalog':
-                if ($app->getUserState('com_easysdi_catalog-installed') && $user->authorise('core.manage', 'com_easysdi_catalog')) {
+                if ($user->authorise('core.manage', 'com_easysdi_catalog')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-grid-view"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_CATALOG'), 'index.php?option=com_easysdi_catalog'
                     );
@@ -67,7 +67,7 @@ class Easysdi_coreHelper {
                 break;
                 
             case 'com_easysdi_processing':
-                if ($app->getUserState('com_easysdi_processing-installed') && $user->authorise('core.manage', 'com_easysdi_processing')) {
+                if ($user->authorise('core.manage', 'com_easysdi_processing')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-cogs"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_PROCESSING'), 'index.php?option=com_easysdi_processing'
                     );
@@ -75,7 +75,7 @@ class Easysdi_coreHelper {
                 break;
 
             case 'com_easysdi_shop':
-                if ($app->getUserState('com_easysdi_shop-installed') && $user->authorise('core.manage', 'com_easysdi_shop')) {
+                if ($user->authorise('core.manage', 'com_easysdi_shop')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-basket"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_SHOP'), 'index.php?option=com_easysdi_shop'
                     );
@@ -83,7 +83,7 @@ class Easysdi_coreHelper {
                 break;
 
             case 'com_easysdi_service':
-                if ($app->getUserState('com_easysdi_service-installed') && $user->authorise('core.manage', 'com_easysdi_service')) {
+                if ($user->authorise('core.manage', 'com_easysdi_service')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-wrench"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_SERVICE'), 'index.php?option=com_easysdi_service'
                     );
@@ -91,7 +91,7 @@ class Easysdi_coreHelper {
                 break;
 
             case 'com_easysdi_map':
-                if ($app->getUserState('com_easysdi_map-installed') && $user->authorise('core.manage', 'com_easysdi_map')) {
+                if ($user->authorise('core.manage', 'com_easysdi_map')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-location"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_MAP'), 'index.php?option=com_easysdi_map'
                     );
@@ -99,7 +99,7 @@ class Easysdi_coreHelper {
                 break;
 
             case 'com_easysdi_monitor':
-                if ($app->getUserState('com_easysdi_monitor-installed') && $user->authorise('core.manage', 'com_easysdi_monitor')) {
+                if ($user->authorise('core.manage', 'com_easysdi_monitor')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-health"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_MONITOR'), 'index.php?option=com_easysdi_monitor'
                     );
@@ -107,7 +107,7 @@ class Easysdi_coreHelper {
                 break;
 
             case 'com_easysdi_dashboard':
-                if ($app->getUserState('com_easysdi_dashboard-installed') && $user->authorise('core.manage', 'com_easysdi_dashboard')) {
+                if ($user->authorise('core.manage', 'com_easysdi_dashboard')) {
                     JHtmlSidebar::addEntry(
                             '<i class="icon-dashboard"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_DASHBOARD'), 'index.php?option=com_easysdi_dashboard'
                     );

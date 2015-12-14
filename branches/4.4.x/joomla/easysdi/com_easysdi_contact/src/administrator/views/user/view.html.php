@@ -43,7 +43,6 @@ class Easysdi_contactViewUser extends JViewLegacy
 		$this->delivryitem 			= $this->delivryaddressmodel->getItemByUserID($this->item->id,3);
 		
 		$app 				= JFactory::getApplication();
-		$this->shop 		= $app->getUserState( 'com_easysdi_shop-installed');
                 
                 $this->pricing = JComponentHelper::getParams('com_easysdi_shop')->get('is_activated', false);
 		
