@@ -852,7 +852,7 @@ class FormHtmlGenerator {
             }
 
             // path to Ext images
-            Ext.BLANK_IMAGE_URL = 'http://gis.bnhelp.cz/wwwlibs/ext/ext3/resources/images/default/s.gif';
+            Ext.BLANK_IMAGE_URL = '" . JURI::root() . "administrator/components/com_easysdi_core/libraries/ext/resources/images/default/s.gif';
 
             // sets the user interface language
             HS.setLang('" . $default . "');
