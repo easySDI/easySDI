@@ -1600,7 +1600,10 @@ abstract class Easysdi_shopHelper {
                 header('Cache-Control: no-cache');
                 header("Cache-Control: public, must-revalidate, post-check=0, pre-check=0");
                 header('Pragma: public');
-                header('Content-Length: ' . filesize($file));
+                //do not check filesize on 32bits integer systems : http://php.net/manual/en/function.filesize.php#refsect1-function.filesize-returnvalues
+                if (PHP_INT_SIZE >= 8) {
+                    header('Content-Length: ' . filesize($file));
+                }
 
                 // Repeat reading until EOF
                 while (!feof($fh)) {
