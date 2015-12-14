@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
 
 /**
  * Easysdi_shop model.
@@ -82,106 +83,43 @@ class Easysdi_shopModelorder extends JModelAdmin {
      * @return	mixed	Object on success, false on failure.
      * @since	1.6
      */
-    public function getItem($pk = null) {
-        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
-        $db = $this->getDbo();
+    public function getItem($id = null) {
+        if ($this->item === null) {
+            $this->item = false;
 
-        $query = $db->getQuery(true);
+            if (empty($id)) {
+                $id = $this->getState('order.id');
+            }
 
-        // Select the required fields from the table.
-        $query->select(
-                $this->getState(
-                        'list.select', 'a.*'
-                )
-        );
-        $query->from('#__sdi_order AS a');
+            // Get a level row instance.
+            $table = $this->getTable();
 
+            // Attempt to load the row.
+            if ($table->load($id)) {
+                // Convert the JTable to a clean JObject.
+                $properties = $table->getProperties(1);
+                $this->item = JArrayHelper::toObject($properties, 'JObject');
 
-        // Join over the users for the checked out user.
-        $query->select('uc.name AS editor');
-        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+                //Get constante value (to display)
+                $this->item->orderstate = constant('Easysdi_shopTableorder::orderstate_' . $this->item->orderstate_id);
+                $this->item->ordertype = constant('Easysdi_shopTableorder::ordertype_' . $this->item->ordertype_id);
+            } elseif ($error = $table->getError()) {
+                $this->setError($error);
+            }
+            
+            //if a validator is set, loat it
+            if(isset($this->item->validated_by)){
+                $validator = new sdiUser($this->item->validated_by);
+                $this->item->validator = $validator->name;
+            }
 
-        // Join over the user field 'user'
-        $query->select('users2.name AS client')
-                ->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id=a.user_id')
-                ->join('LEFT', '#__users AS users2 ON users2.id=sdi_user.user_id');
+            $basket = new sdiBasket();
+            $basket->loadOrder($id);
 
-        // Join over the orderstate field 'orderstate'
-        $query->select('orderstate.value AS orderstate')
-                ->join('LEFT', '#__sdi_sys_orderstate AS orderstate ON orderstate.id = a.orderstate_id');
-
-        // Join over the ordertype field 'ordertype'
-        $query->select('ordertype.value AS ordertype')
-                ->join('LEFT', '#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
-
-        // Join over the thirdparty field 'thirdparty'
-        $query->select('users3.name AS thirdparty')
-                ->join('LEFT', '#__sdi_user AS sdi_user2 ON sdi_user2.id=a.thirdparty_id')
-                ->join('LEFT', '#__users AS users3 ON users3.id=sdi_user2.user_id');
-
-
-        $query->select($query->concatenate(array('diffusion.name', $query->quote(' ('), 'organism.name', $query->quote(')'))) . ' as product')
-                ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
-                ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
-                ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
-                ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
-                ->group('a.id');
-
-        $query->where('a.id = ' . (int) $pk);
-
-        $query->group('a.guid');
-        $query->group('a.alias');
-        $query->group('a.created_by');
-        $query->group('a.created');
-        $query->group('a.modified_by');
-        $query->group('a.modified');
-        $query->group('a.ordering');
-        $query->group('a.state');
-        $query->group('a.checked_out');
-        $query->group('a.checked_out_time');
-        $query->group('a.name');
-        $query->group('a.ordertype_id');
-        $query->group('a.orderstate_id');
-        $query->group('a.user_id');
-        $query->group('a.thirdparty_id');
-        $query->group('a.buffer');
-        $query->group('a.surface');
-        $query->group('a.remark');
-        $query->group('a.sent');
-        $query->group('a.completed');
-        $query->group('a.access');
-        $query->group('a.asset_id');
-        $query->group('a.validated');
-        $query->group('a.validated_date');
-        $query->group('a.validated_reason');
-        $query->group('a.mandate_ref');
-        $query->group('a.mandate_contact');
-        $query->group('a.mandate_email');
-        $query->group('a.level');
-        $query->group('a.freeperimetertool');
-        $query->group('uc.name');
-        $query->group('orderstate.value');
-        $query->group('ordertype.value');
-        $query->group('users3.name');
-        $query->group('diffusion.name');
-        $query->group('organism.name');
-        $query->group('users2.name');
-
-
-
-
-
-        $db->setQuery($query);
-        $items = $db->loadObjectList();
-
-        $products = array();
-        foreach ($items as $item) {
-            $products[] = $item->product;
+            $this->item->basket = $basket;
         }
 
-        $item->products = implode('</br>' . PHP_EOL, $products);
-
-        return $item;
+        return $this->item;
     }
 
     /**

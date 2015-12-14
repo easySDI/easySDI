@@ -35,7 +35,7 @@ class Easysdi_shopViewPropertyvalues extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        Easysdi_shopHelper::addSubmenu('propertyvalues',$this->propertyname);
+        Easysdi_shopAdminHelper::addSubmenu('propertyvalues',$this->propertyname);
 
         $this->addToolbar();
 
@@ -52,7 +52,7 @@ class Easysdi_shopViewPropertyvalues extends JViewLegacy {
         require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
         $state = $this->get('State');
-        $canDo = Easysdi_shopHelper::getActions($state->get('filter.category_id'));
+        $canDo = Easysdi_shopAdminHelper::getActions($state->get('filter.category_id'));
 
         JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTYVALUES').$this->propertyname, 'propertyvalues.png');
 

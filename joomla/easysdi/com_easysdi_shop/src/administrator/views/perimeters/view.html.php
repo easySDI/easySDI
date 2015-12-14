@@ -34,7 +34,7 @@ class Easysdi_shopViewPerimeters extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        Easysdi_shopHelper::addSubmenu('perimeters');
+        Easysdi_shopAdminHelper::addSubmenu('perimeters');
 
         $this->addToolbar();
 
@@ -51,7 +51,7 @@ class Easysdi_shopViewPerimeters extends JViewLegacy {
         require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
         $state = $this->get('State');
-        $canDo = Easysdi_shopHelper::getActions($state->get('filter.category_id'));
+        $canDo = Easysdi_shopAdminHelper::getActions($state->get('filter.category_id'));
 
         JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PERIMETERS'), 'perimeters.png');
 

@@ -191,7 +191,9 @@ class Easysdi_shopModelOrders extends JModelList {
                 $query->where('a.orderstate_id = ' . $status);
             }
         }
-        
+
+
+
         //Don't include historized item
         $query->where('a.orderstate_id <> 2');
 
