@@ -73,6 +73,7 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
                         ->select('c.id, c.name, 0 as isFree')
                         ->from($db->quoteName('#__sdi_category') . ' as c')
                         ->where('c.state = 1')
+                        ->where('c.backend_only = 0')
                         ->order('c.ordering');
                 $db->setQuery($query);
                 $this->_item->categories = $db->loadObjectList();
@@ -91,6 +92,7 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
                         ->from($db->quoteName('#__sdi_category') . ' as c')
                         ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate ppcpr ON ppcpr.category_id=c.id AND ppcpr.pricing_profile_id=' . (int) $id)
                         ->where('c.state = 1')
+                        ->where('c.backend_only = 0')
                         ->group('c.id, c.name')
                         ->order('c.ordering');
                 $db->setQuery($query);

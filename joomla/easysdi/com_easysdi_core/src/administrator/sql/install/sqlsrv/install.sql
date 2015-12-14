@@ -1288,6 +1288,7 @@ CREATE TABLE [#__sdi_category] (
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
         [overall_fee] decimal(6,2)  NULL,
+        [backend_only] [tinyint] NOT NULL,
  CONSTRAINT [PK_#__sdi_category_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -3886,6 +3887,8 @@ ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT '1' FOR [state];
 ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT '1' FOR [state];
 
 ALTER TABLE [#__sdi_category] ADD  DEFAULT '0' FOR [asset_id];
+
+ALTER TABLE [#__sdi_category] ADD  DEFAULT '0' FOR [backend_only];
 
 ALTER TABLE [#__sdi_class] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
