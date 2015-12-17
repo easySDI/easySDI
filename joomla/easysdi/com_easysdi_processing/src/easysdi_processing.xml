@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_processing</name>
-  <creationDate>10 décembre 2015</creationDate>
+  <creationDate>17 décembre 2015</creationDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
