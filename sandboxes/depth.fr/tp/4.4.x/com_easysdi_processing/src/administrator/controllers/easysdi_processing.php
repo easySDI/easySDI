@@ -1,12 +1,11 @@
 <?php
-/*------------------------------------------------------------------------
-# easysdi_processing.php - easysdi_processing Component
-# ------------------------------------------------------------------------
-# author    Thomas Portier
-# copyright Copyright (C) 2015. All Rights Reserved
-# license   Depth France
-# website   www.depth.fr
--------------------------------------------------------------------------*/
+/**
+* @version     4.4.0
+* @package     com_easysdi_processing
+* @copyright   Copyright (C) 2013-2015. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');

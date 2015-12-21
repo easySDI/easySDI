@@ -1,12 +1,11 @@
 <?php
-
 /**
- * @version     4.3.2
- * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
- * @license     GNU General Public License version 3 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
- */
+* @version     4.4.0
+* @package     com_easysdi_processing
+* @copyright   Copyright (C) 2013-2015. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 // No direct access
 defined('_JEXEC') or die;
 
@@ -121,10 +120,10 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
                 $fileFolder = $params->get('upload_path');
                 $maxfilesize = $params->get('maxuploadfilesize', 0);
                 jimport('joomla.filesystem.file');
-                
+
                 //Support for file field: file
                 if (isset($_FILES['jform']['name']['file'])):
-                    
+
                     $file = $_FILES['jform'];
 
                     //Check if the server found any error.
@@ -193,7 +192,7 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
                     }
 
                 endif;
-                
+
                 //Support for other file fields
                 foreach($_FILES as $pfile => $pdata){
                     //Upload des fichiers en paramètre
@@ -444,14 +443,15 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
     {
 
         $jinput = JFactory::getApplication()->input;
-        $inputs= $jinput->getArray(['order_id'=>'int', 'type'=>'word', 'file'=>'string']);
+        $inputs= $jinput->getArray(['order_id'=>'int', 'type'=>'word', 'file'=>'string', 'access_key'=>'string']);
 
         $order_model=$this->getModel('myorder');
         $order=$order_model->getItem($inputs['order_id']);
         $user_roles=Easysdi_processingHelper::getCurrentUserRolesOnData($order);
+        $private_access=($order->access_key!==null && $order->access_key==$inputs['access_key']);
 
 
-        if (in_array('creator',$user_roles) || in_array('contact',$user_roles) ) {
+        if (in_array('creator',$user_roles) || in_array('contact',$user_roles) || $private_access ) {
             if (($inputs['type']=='output') || ($inputs['type']=='outputpreview')) {
                 $file_path=JComponentHelper::getParams('com_easysdi_processing')->get('output_path');
 

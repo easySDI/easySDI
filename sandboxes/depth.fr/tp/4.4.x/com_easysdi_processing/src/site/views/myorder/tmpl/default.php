@@ -1,16 +1,71 @@
 <?php
 /**
-*** @version     4.0.0
-* @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
- * @license     GNU General Public License version 3 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
- */
+* @version     4.4.0
+* @package     com_easysdi_processing
+* @copyright   Copyright (C) 2013-2015. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 
 
 // no direct access
 defined('_JEXEC') or die;
 $order= $this->item;
+
+
+
+//var_dump($order->access_key);
+
+
+$user=sdiFactory::getSdiUser();
+$jinput = JFactory::getApplication()->input;
+if(!$user->isEasySDI) {
+    $input_key=$jinput->get('private_key',false);
+    if ($input_key==false || $input_key!=$order->access_key)
+        return JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+} else {
+    $input_share=$jinput->get('share',false);
+    if ($input_share==='true' && $order->access_key===null) {
+        //share
+
+        function rand_md5($length) {
+          $max = ceil($length / 32);
+          $random = '';
+          for ($i = 0; $i < $max; $i ++) {
+            $random .= md5(microtime(true).mt_rand(10000,90000));
+        }
+        return substr($random, 0, $length);
+    }
+
+    $order->access_key=rand_md5(16);
+    $db = JFactory::getDbo();
+    $query = "
+    UPDATE `#__sdi_processing_order`
+    SET `access_key` = '".$order->access_key."'
+    WHERE `id` = '".$order->id."';
+    ";
+    $db->setQuery($query);
+    $db->query();
+    echo '<div class="alert alert-info"><strong>Le document est maintenant partagé</strong><br>'.
+    "<p>Transmettez ce lien à vos partenaires pour qu'ils puissent consulter le document</p>".
+    '<a target=_blank href="'. JURI::base().JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key).'">'. JURI::base().JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key, true, -1).'</a>'.
+    '</div>';
+
+}
+if ($input_share==='false' && $order->access_key!==null) {
+    $order->access_key=null;
+    $db = JFactory::getDbo();
+    $query = "
+    UPDATE `#__sdi_processing_order`
+    SET `access_key` = NULL
+    WHERE `id` = '".$order->id."';
+    ";
+    $db->setQuery($query);
+    $db->query();
+    echo '<div class="alert alert-info">Le document n\'est plus partagé</div>';
+}
+}
+
 $user_roles=Easysdi_processingHelper::getCurrentUserRolesOnData($order);
 
 $doc = JFactory::getDocument();
@@ -98,47 +153,81 @@ $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($or
         ?>
     </h1>
     <h2><?php echo JText::_('COM_EASYSDI_PROCESSING_TITLE'); ?>: <?php echo $order->processing_label ?></h2>
+    <?php
 
-    <ul class="nav nav-tabs">
-        <li class='active'><a href="#order" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER'); ?></a></li>
-        <?php if ($order->status=='active') { ?>
-        <li><a href="#active" data-toggle="tab"></a></li>
-        <?php } ?>
-        <?php if ($order->status=='done' || $order->status=='achived' || $order->status=='fail' ) { ?>
-        <li><a href="#output" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_RESULTS'); ?></a></li>
-        <?php } ?>
-        <?php
-        foreach ($plugin_results as $k=>$plugin_result) {
-            if (isset($plugin_result['tabtitle'])) {
-                ?>
-                <li><a href="#<?php echo $plugin_result['plugin']; ?>" data-toggle="tab"><?php echo $plugin_result['tabtitle']; ?></a></li>
-                <?php
-            }
-        }
+    if ($user->isEasySDI) {
+
         ?>
-    </ul>
-
-    <div class="tab-content">
-      <div class="tab-pane active" id="order">
-        <?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_DATE'); ?> <?php echo $order->created ?>
-        <?php if (count(array_intersect(['contact','obs','superuser'], $user_roles))>0) { ?>
-        <?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_BY'); ?> <?php echo $order->user_label ?><br/>
-        <?php } ?>
-        <h3><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_DATA'); ?></h3>
-        <ul class="unstyled">
-            <li><?php echo Easysdi_processingParamsHelper::file_link($file, $order,'input'); ?></li>
-        </ul>
-        <h3><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_PARAMS'); ?></h3>
-        <?php echo Easysdi_processingParamsHelper::table($order->processing_parameters,$order->parameters,$order) ?>
-        <?php
-        foreach ($plugin_results as $k=>$plugin_result) {
-            if (isset($plugin_result['parent'])&&$plugin_result['parent']) {
+        <div class="text-right">
+            <?php
+            if ($order->access_key!=false) {
                 ?>
-                <br><span class='parent_order'>
-                basé sur la modération: <strong><a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$plugin_result['parent']->id); ?>"><?php echo $plugin_result['parent']->name ?></a></strong> - <?php echo $plugin_result['parent']->id; ?>
-            </span>
+
+                <a href="#processing_hotlink" role="button" class="btn btn-warning" data-toggle="modal">ce document est partagé</a>
+                <!-- Modal -->
+                <div id="processing_hotlink" class="modal hide fade text-left" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel">Vous avez partagé ce document</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Transmettez ce lien à vos partenaires pour qu'ils puissent consulter le document <strong><?php echo $order->name ?></strong></p>
+                    <a target=_blank href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key); ?>"><?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key, true, -1); ?></a>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
+                    <a href='<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;share=false'); ?>' class="btn btn-primary"  onclick="return confirm('Attention vos partenaires ne pourront plus acceder à ce document')">Supprimer le partage</a>
+                </div>
+            </div>
+
+            <?php
+        } else {
+            ?>
+
+            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;share=true'); ?>" class="btn btn-default">partager ce document</a>
+
             <?php
         }
+        ?>
+    </div>
+    <?php
+}
+?>
+
+<ul class="nav nav-tabs">
+    <li class='active'><a href="#order" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER'); ?></a></li>
+    <?php if ($order->status=='active') { ?>
+    <li><a href="#active" data-toggle="tab"></a></li>
+    <?php } ?>
+    <?php if ($order->status=='done' || $order->status=='achived' || $order->status=='fail' ) { ?>
+    <li><a href="#output" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_RESULTS'); ?></a></li>
+    <?php } ?>
+    <?php
+    foreach ($plugin_results as $k=>$plugin_result) {
+        if (isset($plugin_result['tabtitle'])) {
+            ?>
+            <li><a href="#<?php echo $plugin_result['plugin']; ?>" data-toggle="tab"><?php echo $plugin_result['tabtitle']; ?></a></li>
+            <?php
+        }
+    }
+    ?>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane active" id="order">
+    <?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_DATE'); ?> <?php echo $order->created ?>
+    <?php if (count(array_intersect(['contact','obs','superuser'], $user_roles))>0) { ?>
+    <?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_BY'); ?> <?php echo $order->user_label ?><br/>
+    <?php } ?>
+    <h3><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_DATA'); ?></h3>
+    <ul class="unstyled">
+        <li><?php echo Easysdi_processingParamsHelper::file_link($file, $order,'input'); ?></li>
+    </ul>
+    <h3><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_PARAMS'); ?></h3>
+    <?php echo Easysdi_processingParamsHelper::table($order->processing_parameters,$order->parameters,$order) ?>
+    <?php
+    foreach ($plugin_results as $k=>$plugin_result) {
+        if (isset($plugin_result['parent_txt'])&&$plugin_result['parent_txt']) echo $plugin_result['parent_txt'];
     }
     ?>
 </div>
