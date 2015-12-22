@@ -1956,7 +1956,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `isindoor`  TINYINT(1) NULL,
 `levelfield`  varchar(255) NULL,
 `metadatalink` TEXT  ,
-`attribution` VARCHAR(255)   ,
+`attribution` TEXT   ,
 `accessscope_id` INT(11) UNSIGNED NOT NULL DEFAULT '1',
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10),
