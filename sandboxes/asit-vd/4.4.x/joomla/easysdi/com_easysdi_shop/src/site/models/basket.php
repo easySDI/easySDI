@@ -99,6 +99,8 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['mandate_contact'] = $basket->mandate_contact;
         $data['mandate_email'] = $basket->mandate_email;
         $data['freeperimetertool'] = $basket->freeperimetertool;
+        $data['access_token'] = JUserHelper::genRandomPassword(64);
+        $data['validation_token'] = JUserHelper::genRandomPassword(64);
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
                 $data['ordertype_id'] = Easysdi_shopHelper::ORDERTYPE_ORDER;

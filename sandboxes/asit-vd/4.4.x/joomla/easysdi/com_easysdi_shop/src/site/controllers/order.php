@@ -81,20 +81,10 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             $app->setUserState('com_easysdi_shop.edit.order.id', null);
 
             // Notify notifiedusers and extractionresponsible for each orderdiffusion of the current order
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true)
-                    ->select('diffusion_id as id')
-                    ->from('#__sdi_order_diffusion')
-                    ->where('order_id=' . (int) $validateId);
-            $db->setQuery($query);
-            $diffusions = $db->loadObjectList();
-            foreach ($diffusions as $diffusion) {
-                Easysdi_shopHelper::notifyNotifiedUsers($diffusion->id);
-                Easysdi_shopHelper::notifyExtractionResponsible($diffusion->id);
-            }
+            Easysdi_shopHelper::notifyExtractionResponsibleAndNotifiedUsers($validateId);
 
             //Notify validation managers
-            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_VALIDATION);
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId);
 
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
@@ -152,8 +142,10 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTED_SUCCESSFULLY'));
 
+            //Notify customer
+            Easysdi_shopHelper::notifyCustomerOnOrderUpdate($validateId);
             //Notify validation managers
-            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_REJECTED);
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId);
         }
 
         // Redirect to the list screen. (if user is logged in)

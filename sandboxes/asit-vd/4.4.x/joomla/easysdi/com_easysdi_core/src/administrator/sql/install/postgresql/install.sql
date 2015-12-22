@@ -756,6 +756,9 @@ CREATE TABLE #__sdi_order (
     freeperimetertool VARCHAR(100) NULL,
     sent timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
+    usernotified smallint(1) DEFAULT 0 NOT NULL,
+    access_token character varying(64) NULL,
+    validation_token character varying(64) NULL,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
