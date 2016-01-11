@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-function Easysdi_processingBuildRoute(&$query)
+/*function Easysdi_processingBuildRoute(&$query)
 {
 	$segments = array();
 
@@ -37,10 +37,10 @@ function Easysdi_processingParseRoute($segments)
 	}
 
 	return $vars;
-}
+}*/
 
 
-/*
+
 function Easysdi_processingBuildRoute(&$query)
 {
 	$segments = array();
@@ -87,5 +87,5 @@ function Easysdi_processingParseRoute($segments)
 
 	return $vars;
 }
-*/
+
 ?>

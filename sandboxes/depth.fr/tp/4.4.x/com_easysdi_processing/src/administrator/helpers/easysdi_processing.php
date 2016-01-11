@@ -321,7 +321,7 @@ public static function getOrder($id){
 
 public static function getCurrentUserRolesOnData($data){
 
-    $roles=[];
+    //$roles=[];
     $user=sdiFactory::getSdiUser();
 
     if ( $user->juser->authorise('core.admin')) $roles[]='superuser';
