@@ -43,6 +43,14 @@ $scripts = $app->triggerEvent('getRecapScript', array($context));
 //get merged scripts , scripts are added at the end of this layout
 $pluginScripts = implode("\n", $scripts);
 
+//get access token if any
+$access_token_param = '';
+$access_token = JFactory::getApplication()->input->getString('a_token');
+if ((strlen($access_token) >= 64 && $item->access_token == $access_token)) {
+    $access_token_param = '&a_token=' . $access_token;
+}
+
+
 //avoid posting form with return
 $doc->addScriptDeclaration("\n"
         . "//disbale return key submit\n"
@@ -473,12 +481,12 @@ if (!$showActions) {
                                         // product need a response
                                         ?>
                                         <button class="btn btn-success sdi-btn-upload-order-response" onclick="checkAndSendProduct(<?php echo $productItem->id; ?>);
-                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             <span class="icon icon-upload"></span>
                                             Envoyer</button><br/>
                                         <button class="btn btn-danger btn-mini sdi-btn-cancel-order-response" onclick="enableCurrentProduct(<?php echo $productItem->id; ?>);
-                                                jQuery('#rejectModal').modal();
-                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                                jQuery('#rejectModal').modal();
+                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             Annuler</button>
 
                                         <!--
@@ -504,7 +512,7 @@ if (!$showActions) {
                                             //link for client
                                             ?>
                                             <span title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>" class="hasTip">
-                                                <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?>" class="btn btn-success " onClick="" title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
+                                                <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?><?php echo $access_token_param; ?>" class="btn btn-success " onClick="" title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
                                                     <i class="icon-white icon-download"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWLOAD_BTN'); ?>
                                                 </a>
                                             </span>

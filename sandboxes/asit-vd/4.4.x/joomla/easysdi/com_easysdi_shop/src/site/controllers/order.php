@@ -162,6 +162,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     function download() {
         $diffusion_id = JFactory::getApplication()->input->getInt('id', null, 'int');
         $order_id = JFactory::getApplication()->input->getInt('order', null, 'int');
+        $access_token = JFactory::getApplication()->input->getString('a_token');
 
         if (empty($diffusion_id)):
             $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_EMPTY_ID');
@@ -186,6 +187,9 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
 
         //the user is the client
         if ($order->user_id == $currentUser->id):
+            $downloadAllowed = true;
+        //user has access token from mail
+        elseif (strlen($access_token) >= 64 && $order->access_token == $access_token):
             $downloadAllowed = true;
         //the user is extraction responsible of the product
         elseif (in_array($diffusion_id, $userExtrationsResponsible)):
