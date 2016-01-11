@@ -189,9 +189,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $root = $response->createElementNS(self::nsSdi, 'sdi:exception');
         $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', self::xsiException);
 
-        $root->appendChild($response->createElementNS(self::nsSdi, 'sdi:code', $code));
-        $root->appendChild($response->createElementNS(self::nsSdi, 'sdi:message', $this->HTTPSTATUS[$code]));
-        $root->appendChild($response->createElementNS(self::nsSdi, 'sdi:details', $details));
+        $this->addTextChildNode($root, 'sdi:code', $code);
+        $this->addTextChildNode($root, 'sdi:message', $this->HTTPSTATUS[$code]);
+        $this->addTextChildNode($root, 'sdi:details', $details);
 
         $response->appendChild($root);
 
@@ -218,7 +218,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         if ($xml === null) {
             $xml = $IO ? $this->request : $this->response;
         }
-        
+
         $defaultUseErrors = libxml_use_internal_errors(true);
 
         if (!@$xml->schemaValidate($xsd)) {
@@ -232,10 +232,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             if ($IO) { // Input
                 $this->getException(400, 'The given XML is not valid. Please consult the XSD : ' . $xsd);
             } else { // Output
-                $this->getException(500, print_r($errors,true));
+                $this->getException(500, print_r($errors, true));
             }
         }
-        
+
         libxml_use_internal_errors($defaultUseErrors);
     }
 
@@ -273,6 +273,41 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $attribute = $this->response->createAttribute($attrName);
         $attribute->value = $attrValue;
         $parent->appendChild($attribute);
+    }
+
+    /**
+     * addTextNode - safe way to add a child node with text to a DOMNode to response document
+     * this way, text content are correctly escaped for XML by libXML.
+     * Nodes will have the default easySDI namespace defined by self::nsSdi
+     * 
+     * @param DOMNode $parent - the DOMNode which the new node + text node will be added to
+     * @param string $nodeName - the node name
+     * @param string $nodeText - the node text value
+     * 
+     * @return void
+     * @since 4.4.0*
+     */
+    private function addTextChildNode(&$parent, $nodeName, $nodeText = null) {
+        $newNode = $this->response->createElementNS(self::nsSdi, $nodeName);
+        if (isset($nodeText)) {
+            $newTextNode = $this->response->createTextNode($nodeText);
+            $newNode->appendChild($newTextNode);
+        }
+        $parent->appendChild($newNode);
+    }
+
+     /**
+     * addTextToNode - add a textnode to an existing node
+     * 
+     * @param DOMNode $node - the DOMNode which the attribute will be added to
+     * @param string $text - the node text value
+     * 
+     * @return void
+     * @since 4.4.0*
+     */
+    private function addTextToNode(&$node, $text) {
+        $newTextNode = $this->response->createTextNode($text);
+        $node->appendChild($newTextNode);
     }
 
     /**
@@ -480,7 +515,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addAttribute($root, 'guid', $order->guid);
         $this->addAttribute($root, 'datetimesent', implode('T', explode(' ', $order->sent)));
 
-        $root->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $order->name));
+        $this->addTextChildNode($root, 'sdi:name', $order->name);
 
         $root->appendChild($this->getClient($order));
         $root->appendChild($this->getTierce($order->thirdparty_id));
@@ -509,13 +544,13 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      */
     private function getOrderPricing($order) {
         $pricing = $this->response->createElementNS(self::nsSdi, 'sdi:pricing');
-        $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_vat', $order->cfg_vat));
-        $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_currency', $order->cfg_currency));
-        $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_rounding', $order->cfg_rounding));
-        $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_overall_default_fee', $order->cfg_overall_default_fee));
-        $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_free_data_fee', (bool) $order->cfg_free_data_fee ? 'true' : 'false'));
-        $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cal_fee_ti', $order->cal_fee_ti));
-        $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:ind_lbl_category_order_fee', $order->ind_lbl_category_order_fee));
+        $this->addTextChildNode($pricing, 'sdi:cfg_vat', $order->cfg_vat);
+        $this->addTextChildNode($pricing, 'sdi:cfg_currency', $order->cfg_currency);
+        $this->addTextChildNode($pricing, 'sdi:cfg_rounding', $order->cfg_rounding);
+        $this->addTextChildNode($pricing, 'sdi:cfg_overall_default_fee', $order->cfg_overall_default_fee);
+        $this->addTextChildNode($pricing, 'sdi:cfg_free_data_fee', (bool) $order->cfg_free_data_fee ? 'true' : 'false');
+        $this->addTextChildNode($pricing, 'sdi:cal_fee_ti', $order->cal_fee_ti);
+        $this->addTextChildNode($pricing, 'sdi:ind_lbl_category_order_fee', $order->ind_lbl_category_order_fee);
         return $pricing;
     }
 
@@ -565,10 +600,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $this->db->setQuery($query);
             $orderSupplier = $this->db->loadObject();
 
-            $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_internal_free', (bool) $orderSupplier->cfg_internal_free ? 'true' : 'false'));
-            $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_fixed_fee_ti', (float) $orderSupplier->cfg_fixed_fee_ti));
-            $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_data_free_fixed_fee', (bool) $orderSupplier->cfg_data_free_fixed_fee ? 'true' : 'false'));
-            $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cal_fee_ti', (float) $orderSupplier->cal_fee_ti));
+            $this->addTextChildNode($pricing, 'sdi:cfg_internal_free', (bool) $orderSupplier->cfg_internal_free ? 'true' : 'false');
+            $this->addTextChildNode($pricing, 'sdi:cfg_fixed_fee_ti', (float) $orderSupplier->cfg_fixed_fee_ti);
+            $this->addTextChildNode($pricing, 'sdi:cfg_data_free_fixed_fee', (bool) $orderSupplier->cfg_data_free_fixed_fee ? 'true' : 'false');
+            $this->addTextChildNode($pricing, 'sdi:cal_fee_ti', (float) $orderSupplier->cal_fee_ti);
 
             $supplier->appendChild($pricing);
         }
@@ -642,20 +677,20 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @since 4.3.0
      */
     private function addAddressData(&$address, $addressdata) {
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:organismacronym', $addressdata->acronym));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:organismname', $addressdata->name));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:agentfirstname', $addressdata->firstname));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:agentlastname', $addressdata->lastname));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:addressstreet1', $addressdata->address));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:addressstreet2', $addressdata->addresscomplement));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:zip', $addressdata->postalcode));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:pobox', $addressdata->postalbox));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:locality', $addressdata->locality));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:country', $addressdata->country_iso));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:email', $addressdata->email));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:mobile', $addressdata->mobile));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:phone', $addressdata->phone));
-        $address->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:fax', $addressdata->fax));
+        $this->addTextChildNode($address, 'sdi:organismacronym', $addressdata->acronym);
+        $this->addTextChildNode($address, 'sdi:organismname', $addressdata->name);
+        $this->addTextChildNode($address, 'sdi:agentfirstname', $addressdata->firstname);
+        $this->addTextChildNode($address, 'sdi:agentlastname', $addressdata->lastname);
+        $this->addTextChildNode($address, 'sdi:addressstreet1', $addressdata->address);
+        $this->addTextChildNode($address, 'sdi:addressstreet2', $addressdata->addresscomplement);
+        $this->addTextChildNode($address, 'sdi:zip', $addressdata->postalcode);
+        $this->addTextChildNode($address, 'sdi:pobox', $addressdata->postalbox);
+        $this->addTextChildNode($address, 'sdi:locality', $addressdata->locality);
+        $this->addTextChildNode($address, 'sdi:country', $addressdata->country_iso);
+        $this->addTextChildNode($address, 'sdi:email', $addressdata->email);
+        $this->addTextChildNode($address, 'sdi:mobile', $addressdata->mobile);
+        $this->addTextChildNode($address, 'sdi:phone', $addressdata->phone);
+        $this->addTextChildNode($address, 'sdi:fax', $addressdata->fax);
     }
 
     /**
@@ -678,9 +713,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addAttribute($organism, 'id', $result->id);
         $this->addAttribute($organism, 'guid', $result->guid);
 
-        $organism->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $result->name));
-        $organism->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:acronym', $result->acronym));
-        $organism->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:website', $result->website));
+        $this->addTextChildNode($organism, 'sdi:name', $result->name);
+        $this->addTextChildNode($organism, 'sdi:acronym', $result->acronym);
+        $this->addTextChildNode($organism, 'sdi:website', $result->website);
 
         $organism->appendChild($this->getCategories($result->id));
 
@@ -723,7 +758,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addAttribute($client, 'id', $order->user_id);
         $this->addAttribute($client, 'guid', $order->user_guid);
 
-        $client->appendChild($this->response->createElementNS(self::nsSdi, 'name', $order->user_name));
+        $this->addTextChildNode($client, 'sdi:name', $order->user_name);
 
         $client->appendChild($this->getAddress(self::CONTACT, $order->user_id));
         $client->appendChild($this->getAddress(self::BILLING, $order->user_id));
@@ -777,7 +812,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $this->addAttribute($category, 'guid', $cat->guid);
             $this->addAttribute($category, 'alias', $cat->alias);
 
-            $category->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $cat->name));
+            $this->addTextChildNode($category, 'sdi:name', $cat->name);
 
             $categories->appendChild($category);
         }
@@ -846,7 +881,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addAttribute($root, 'id', $orderProduct->product_id);
         $this->addAttribute($root, 'guid', $orderProduct->guid);
 
-        $root->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $orderProduct->name));
+        $this->addTextChildNode($root, 'sdi:name', $orderProduct->name);
 
         if ($order->pricing_order !== null) {
             $root->appendChild($this->getPricing($orderProduct));
@@ -881,25 +916,25 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         switch ($product->pricing_id) {
             case 1: // free product
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_type', 'free'));
+                $this->addTextChildNode($pricing, 'sdi:cfg_type', 'free');
                 break;
 
             case 2: // fee without profile
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_type', 'fee'));
+                $this->addTextChildNode($pricing, 'sdi:cfg_type', 'fee');
                 break;
 
             case 3: // fee with profile
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_type', 'profile'));
+                $this->addTextChildNode($pricing, 'sdi:cfg_type', 'profile');
 
                 $pricing->appendChild($this->getPricingProfile($product));
 
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cal_amount_data_te', $product->cal_amount_data_te));
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_pct_category_profile_discount', $product->cfg_pct_category_profile_discount));
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:ind_lbl_category_profile_discount', $product->ind_lbl_category_profile_discount));
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_pct_category_supplier_discount', $product->cfg_pct_category_supplier_discount));
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:ind_lbl_category_supplier_discount', $product->ind_lbl_category_supplier_discount));
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cal_total_amount_te', $product->cal_total_amount_te));
-                $pricing->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cal_total_amount_ti', $product->cal_total_amount_ti));
+                $this->addTextChildNode($pricing, 'sdi:cal_amount_data_te', $product->cal_amount_data_te);
+                $this->addTextChildNode($pricing, 'sdi:cfg_pct_category_profile_discount', $product->cfg_pct_category_profile_discount);
+                $this->addTextChildNode($pricing, 'sdi:ind_lbl_category_profile_discount', $product->ind_lbl_category_profile_discount);
+                $this->addTextChildNode($pricing, 'sdi:cfg_pct_category_supplier_discount', $product->cfg_pct_category_supplier_discount);
+                $this->addTextChildNode($pricing, 'sdi:ind_lbl_category_supplier_discount', $product->ind_lbl_category_supplier_discount);
+                $this->addTextChildNode($pricing, 'sdi:cal_total_amount_te', $product->cal_total_amount_te);
+                $this->addTextChildNode($pricing, 'sdi:cal_total_amount_ti', $product->cal_total_amount_ti);
                 break;
         }
         return $pricing;
@@ -919,13 +954,16 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addAttribute($profile, 'id', $product->pricing_profile_id);
         $this->addAttribute($profile, 'guid', $product->pricing_profile_guid);
 
-        $profile->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $product->pricing_profile_name));
-        $profile->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_fixed_fee', $product->cfg_fixed_fee));
-        $surfaceRate = $this->response->createElementNS(self::nsSdi, 'sdi:cfg_surface_rate', $product->cfg_surface_rate);
+        $this->addTextChildNode($profile, 'sdi:name', $product->pricing_profile_name);
+        $this->addTextChildNode($profile, 'sdi:cfg_fixed_fee', $product->cfg_fixed_fee);
+
+        $surfaceRate = $this->response->createElementNS(self::nsSdi, 'sdi:cfg_surface_rate');
+        $this->addTextToNode($surfaceRate, $product->cfg_surface_rate);
         $this->addAttribute($surfaceRate, 'unit', 'currency per km2');
         $profile->appendChild($surfaceRate);
-        $profile->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_min_fee', $product->cfg_min_fee));
-        $profile->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:cfg_max_fee', $product->cfg_max_fee));
+
+        $this->addTextChildNode($profile, 'sdi:cfg_min_fee', $product->cfg_min_fee);
+        $this->addTextChildNode($profile, 'sdi:cfg_max_fee', $product->cfg_max_fee);
 
         return $profile;
     }
@@ -945,9 +983,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         $requestFolder = JPATH_BASE . JComponentHelper::getParams('com_easysdi_shop')->get('orderrequestFolder') . '/' . $order->id;
         $xmlStr = file_exists($requestFolder . '/' . $product->product_id . '.xml') ? base64_encode(file_get_contents($requestFolder . '/' . $product->product_id . '.xml')) : '';
-        $metadata->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:xml', $xmlStr));
+        $this->addTextChildNode($metadata, 'sdi:xml', $xmlStr);
         $pdfStr = file_exists($requestFolder . '/' . $product->product_id . '.pdf') ? base64_encode(file_get_contents($requestFolder . '/' . $product->product_id . '.pdf')) : '';
-        $metadata->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:pdf', $pdfStr));
+        $this->addTextChildNode($metadata, 'sdi:pdf', $pdfStr);
         return $metadata;
     }
 
@@ -978,7 +1016,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $this->addAttribute($property, 'id', $propertydata->id);
             $this->addAttribute($property, 'alias', $propertydata->palias);
             $this->addAttribute($property, 'guid', $propertydata->guid);
-            $property->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:value', $propertydata->pvalias));
+            $this->addTextChildNode($property, 'sdi:value', $propertydata->pvalias);
 
             $properties->appendChild($property);
         }
@@ -1012,7 +1050,8 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addAttribute($perimeter, 'alias', $contents[0]->alias);
         $this->addAttribute($perimeter, 'guid', $contents[0]->guid);
 
-        $surface = $this->response->createElementNS(self::nsSdi, 'sdi:surface', $order->surface);
+        $surface = $this->response->createElementNS(self::nsSdi, 'sdi:surface');
+        $this->addTextToNode($surface, $order->surface);
         $this->addAttribute($surface, 'unit', 'm2');
         $perimeter->appendChild($surface);
 
@@ -1026,7 +1065,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         $contentsnode = $this->response->createElementNS(self::nsSdi, 'sdi:contents');
         foreach ($contents as $content) {
-            $contentsnode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:content', $content->perimeter_value));
+            $this->addTextChildNode($contentsnode, 'sdi:content', $content->perimeter_value);
         }
         $perimeter->appendChild($contentsnode);
 
@@ -1369,17 +1408,17 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', self::xsiSetProduct);
 
         $code = 200;
-        $root->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:code', $code));
-        $root->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:message', $this->HTTPSTATUS[$code]));
+        $this->addTextChildNode($root, 'sdi:code', $code);
+        $this->addTextChildNode($root, 'sdi:message', $this->HTTPSTATUS[$code]);
 
         $orderNode = $this->response->createElementNS(self::nsSdi, 'sdi:order');
         $orderNode->setAttribute('guid', $order->guid);
-        $orderNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $order->name));
+        $this->addTextChildNode($orderNode, 'sdi:name', $order->name);
         $root->appendChild($orderNode);
 
         $productNode = $this->response->createElementNS(self::nsSdi, 'sdi:product');
         $productNode->setAttribute('guid', $diffusion->guid);
-        $productNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $diffusion->name));
+        $this->addTextChildNode($productNode, 'sdi:name', $diffusion->name);
         $root->appendChild($productNode);
 
         $this->response->appendChild($root);
