@@ -405,10 +405,10 @@ class Easysdi_processingControllerMyRequest extends Easysdi_processingController
 
         $file_info=Easysdi_processingHelper::getFileInfo($file);
         $result = file_get_contents($file);
-        $headers= [
+        $headers= array(
         'Content-Type'=>$file_info['mime_type'],
         'Content-Disposition'=>'attachment; filename="'.$file_info['basename'].'"',
-        ];
+        );
 
         JResponse::clearHeaders();
         foreach ($headers as $key => $value) {
@@ -423,7 +423,7 @@ class Easysdi_processingControllerMyRequest extends Easysdi_processingController
     public function proxy()
     {
         $jinput = JFactory::getApplication()->input;
-        $inputs= $jinput->getArray(['order_id'=>'int', 'type'=>'word', 'file'=>'string']);
+        $inputs= $jinput->getArray(array('order_id'=>'int', 'type'=>'word', 'file'=>'string']));
 
         $order_model=$this->getModel('myorder');
         $order=$order_model->getItem($inputs['order_id']);
