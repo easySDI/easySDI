@@ -1,12 +1,11 @@
 <?php
-/*------------------------------------------------------------------------
-# easysdi_processing.php - Easysdi_processing Component
-# ------------------------------------------------------------------------
-# author    Thomas Portier
-# copyright Copyright (C) 2015. All Rights Reserved
-# license   Depth France
-# website   www.depth.fr
--------------------------------------------------------------------------*/
+/**
+* @version     4.4.0
+* @package     com_easysdi_processing
+* @copyright   Copyright (C) 2013-2015. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
@@ -326,7 +325,7 @@ public static function getCurrentUserRolesOnData($data){
     $user=sdiFactory::getSdiUser();
 
     if ( $user->juser->authorise('core.admin')) $roles[]='superuser';
-    if ( $data->created_by == $user->id) $roles[]='creator';
+    if ( $data->user_id == $user->id) $roles[]='creator';
     if ( $data->processing_contact_id == $user->id) $roles[]='contact';
     if ( in_array($user->id, explode(',', $data->processing_obs)) ) $roles[]='obs';
     return $roles;
@@ -373,13 +372,13 @@ public static function getFileInfo($file){
         }
         return $out;
     }
-    
+
     /**
-     * 
+     *
      * Rebuild url from its different parts - check http_build_url() PHP Manual
      * http_build_url() is part of pecl_http
      * unparse_url() does the work with or without http_build_url()
-     * 
+     *
      * @param mixed $url | string or array as returned by parse_url()
      * @param mixed $parts | same as $url
      * @return string

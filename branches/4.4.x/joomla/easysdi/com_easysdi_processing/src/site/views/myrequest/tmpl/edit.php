@@ -1,13 +1,18 @@
 <?php
 /**
- * @version     4.3.2
- * @package     com_easysdi_processing
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
- * @license     GNU General Public License version 3 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
- */
+* @version     4.4.0
+* @package     com_easysdi_processing
+* @copyright   Copyright (C) 2013-2015. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 // no direct access
 defined('_JEXEC') or die;
+
+$user=sdiFactory::getSdiUser();
+if(!$user->isEasySDI) {
+    return JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+}
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('behavior.tooltip');
@@ -155,13 +160,7 @@ $processing_parameters=json_decode($processing->parameters);
             <?php echo Easysdi_processingParamsHelper::table($order->processing_parameters,$order->parameters) ?>
             <?php
         foreach ($plugin_results as $k=>$plugin_result) {
-            if (isset($plugin_result['parent'])&&$plugin_result['parent']) {
-                ?>
-                <br><span class='parent_order'>
-                basé sur la modération: <strong><a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$plugin_result['parent']->id); ?>"><?php echo $plugin_result['parent']->name ?></a></strong> - <?php echo $plugin_result['parent']->id; ?>
-            </span>
-            <?php
-        }
+            if (isset($plugin_result['parent_txt'])&&$plugin_result['parent_txt']) echo $plugin_result['parent_txt'];
     }
     ?>
         </div>

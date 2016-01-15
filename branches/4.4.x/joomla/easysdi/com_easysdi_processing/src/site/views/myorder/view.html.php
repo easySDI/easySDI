@@ -1,11 +1,11 @@
 <?php
 /**
- * @package	AcyMailing for Joomla!
- * @version	4.8.1
- * @author	acyba.com
- * @copyright	(C) 2009-2014 ACYBA S.A.R.L. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
+* @version     4.4.0
+* @package     com_easysdi_processing
+* @copyright   Copyright (C) 2013-2015. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 defined('_JEXEC') or die('Restricted access');
 // Require helper file
 //require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_processing/helpers/easysdi_processing.php';
