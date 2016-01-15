@@ -288,7 +288,7 @@ if (!$showActions) {
 
     <!-- order products -->
     <div class="row-fluid shop-product">
-        <h2><?php
+        <h2 id="sdi-recap-prod-list"><?php
             switch ($viewType) {
                 case Easysdi_shopHelper::ORDERVIEW_ORDER:
                 case Easysdi_shopHelper::ORDERVIEW_ADMIN:
