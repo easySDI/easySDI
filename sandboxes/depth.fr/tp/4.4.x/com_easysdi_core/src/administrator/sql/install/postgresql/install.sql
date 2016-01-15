@@ -849,7 +849,8 @@ CREATE TABLE IF NOT EXISTS #__sdi_category (
     name character varying(255) NOT NULL,
     access integer NOT NULL,
     asset_id integer NOT NULL,
-    overall_fee DECIMAL(6,2) UNSIGNED DEFAULT NULL
+    overall_fee DECIMAL(6,2) UNSIGNED DEFAULT NULL,
+    backend_only smallint DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS #__sdi_organism_category (

@@ -9,10 +9,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js');
 $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
 //TODO : do not include proj here !!
 $document->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
@@ -34,7 +37,7 @@ if ($this->item) :
     Easysdi_shopHelper::basketReloadSavedPricing($this->item->basket);
     ?>
 
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_TITLE'); ?> <span id="sdi-order-title-id"><?php echo $this->item->id; ?></span></h1>
 
     <div class="order-edit front-end-edit">
         <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">

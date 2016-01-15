@@ -13,10 +13,11 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/helpers/helper.js');
-$base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js');
+$base_url = Juri::root(true) . '/administrator/components/com_easysdi_core/libraries';
 //TODO : do not include proj here !!
 $document->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
@@ -25,7 +26,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 $document->addScript($base_url . '/filesaver/FileSaver.js');
-$document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
+$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
 <?php
@@ -35,7 +36,7 @@ if ($this->item) :
     Easysdi_shopHelper::basketReloadSavedPricing($this->item->basket);
     ?> 
 
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?> <span id="sdi-order-title-id"><?php echo $this->item->id; ?></span></h1>
 
     <div class="order-edit front-end-edit">
         <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">

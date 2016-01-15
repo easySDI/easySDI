@@ -485,6 +485,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_category` (
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10)  NOT NULL ,
 `overall_fee` FLOAT(6,2) UNSIGNED DEFAULT NULL,
+`backend_only` TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

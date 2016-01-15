@@ -15,7 +15,7 @@ JHtml::_('behavior.formvalidation');
 
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js');
 ?>
 
 <script type="text/javascript">

@@ -33,6 +33,8 @@ abstract class Easysdi_mapHelper {
             $user = JFactory::getUser();
 
             //Loading css files
+        $doc = JFactory::getDocument();
+        $base_url = Juri::root(true) . '/administrator/components/com_easysdi_core/libraries';
             $doc->addStyleSheet($base_url . '/ext/resources/css/ext-all.css');
             $doc->addStyleSheet($base_url . '/ext/resources/css/xtheme-gray.css');
             $doc->addStyleSheet($base_url . '/OpenLayers-2.13.1/theme/default/style.css');
@@ -41,16 +43,16 @@ abstract class Easysdi_mapHelper {
             $doc->addStyleSheet($base_url . '/geoext/resources/css/gxtheme-gray.css');
             $doc->addStyleSheet($base_url . '/ux/geoext/resources/css/printpreview.css');
             $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
-            $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
+        $doc->addStyleSheet(Juri::root(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
             $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css');
 
             //Loadind js files
             if (JDEBUG) {
-                $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
-                $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
-                $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.js');
-                $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
-                $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
+            $doc->addScript(Juri::root(true) . '/media/jui/js/jquery.js');
+            $doc->addScript(Juri::root(true) . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript(Juri::root(true) . '/media/jui/js/bootstrap.js');
+            $doc->addScript(JURI::root(true) . '/media/system/js/mootools-core-uncompressed.js');
+            $doc->addScript(JURI::root(true) . '/media/system/js/core-uncompressed.js');            
                 $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
                 $doc->addScript($base_url . '/ext/ext-all-debug.js');
                 $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
@@ -65,11 +67,11 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/easysdi/js/sdi.js');
 
             }else{
-                $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
-                $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
-                $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.min.js');
-                $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core.js');
-                $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
+            $doc->addScript(JURI::root(true) . '/media/jui/js/jquery.min.js');
+            $doc->addScript(JURI::root(true) . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript(JURI::root(true) . '/media/jui/js/bootstrap.min.js');
+            $doc->addScript(JURI::root(true) . '/media/system/js/mootools-core.js');
+            $doc->addScript(JURI::root(true) . '/media/system/js/core.js');
                 $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
                 $doc->addScript($base_url . '/ext/ext-all.js');
                 $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
@@ -89,11 +91,10 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript(str_replace(JPATH_SITE, JURI::base(true), $file));
             }
 
-            $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/helpers/map.js');
+        $doc->addScript(JURI::root(true) . '/components/com_easysdi_map/helpers/map.js');
 
-            $app = JFactory::getApplication();
-            $params = $app->getParams('com_easysdi_map');
-            $proxyhost = JURI::base() . "index.php?option=com_easysdi_core&task=proxy.run&url=";
+        $params = JComponentHelper::getParams('com_easysdi_map');
+        $proxyhost = JURI::root() . "index.php?option=com_easysdi_core&task=proxy.run&url=";
 
             //Default group
             foreach ($item->groups as $group) :

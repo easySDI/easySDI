@@ -15,6 +15,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiExt
 require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPerimeter.php';
 require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPricingProfile.php';
 require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
 
 jimport('joomla.application.component.helper');
 
@@ -61,12 +62,13 @@ abstract class Easysdi_shopHelper {
     const ORDERVIEW_ORDER = 1; //client
     const ORDERVIEW_REQUEST = 2; //provider -> extraction
     const ORDERVIEW_VALIDATION = 3; // for validation
+    const ORDERVIEW_ADMIN = 4; // backend view
     // Order productmining
     const PRODUCTMININGAUTO = 1; //auto
     const PRODUCTMININGMANUAL = 2; //manual
     // Extract storage
     const EXTRACTSTORAGE_LOCAL = 1;
-    const EXTRACTSTORAGE_REMOTE = 2;    
+    const EXTRACTSTORAGE_REMOTE = 2;
 
     /**
      * Add a product to basket in session
@@ -286,11 +288,11 @@ abstract class Easysdi_shopHelper {
      * @param order $item
      */
     public static function getHTMLOrderPerimeter($item, $allowDownload = false) {
-        $params = JFactory::getApplication()->getParams('com_easysdi_shop');
+        $params = JComponentHelper::getParams('com_easysdi_shop');
         $paramsarray = $params->toArray();
 
         $document = JFactory::getDocument();
-        $document->addScript('components/com_easysdi_shop/views/order/tmpl/order.js');
+        $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/order/tmpl/order.js');
 
         $mapscript = Easysdi_mapHelper::getMapScript($paramsarray['ordermap'], true);
         ?> <div class="row-fluid" >
@@ -350,8 +352,8 @@ abstract class Easysdi_shopHelper {
                                         <?php
                                     endforeach;
                                     ?> </div>   <?php
-                                endif;
-                                ?>
+                            endif;
+                            ?>
                             <?php if ($allowDownload): ?>
                                 <div id="perimeter-recap-details-download">
                                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS'); ?>
@@ -699,19 +701,19 @@ abstract class Easysdi_shopHelper {
             $prices->hasFeeWithoutPricingProfileProduct = false;
             foreach ($basket->extractions as $supplier_id => $supplier) {
                 $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
-                if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct){
+                if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct) {
                     $prices->hasFeeWithoutPricingProfileProduct = true;
-                }else{
+                } else {
                     $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
                 }
             }
 
             // set the platform tax
-            if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee){
+            if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee) {
                 $prices->cal_fee_ti = 0;
-            }else {
+            } else {
                 $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
-                
+
                 //Current user categories are used to defined platform fee.
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true)
@@ -721,7 +723,7 @@ abstract class Easysdi_shopHelper {
                         ->where('oc.organism_id=' . (int) $basket->sdiUser->role[self::ROLE_MEMBER][0]->id);
                 $db->setQuery($query);
                 $currentcategories = $db->loadColumn();
-            
+
                 if (count($currentcategories)) {
                     $db = JFactory::getDbo();
                     $query = $db->getQuery(true)
@@ -743,9 +745,9 @@ abstract class Easysdi_shopHelper {
             $prices->cal_fee_ti = self::rounding($prices->cal_fee_ti, $prices->cfg_rounding);
 
             // total amount for the platform
-            if ($prices->hasFeeWithoutPricingProfileProduct){
+            if ($prices->hasFeeWithoutPricingProfileProduct) {
                 $prices->cal_total_amount_ti = null;
-            }else{
+            } else {
                 $prices->cal_total_amount_ti += $prices->cal_fee_ti;
             }
         }
@@ -1544,6 +1546,86 @@ abstract class Easysdi_shopHelper {
             return null;
         }
         return $posp;
+    }
+
+    /**
+     * downloadOrderFile get the file from local or remote storage,
+     * rights must have been checked before
+     * @param type $orderdiffusion easySDI order diffusion
+     * @return type
+     */
+    public static function downloadOrderFile($orderdiffusion) {
+        //remote stroage, use curl
+        if ($orderdiffusion->storage_id == Easysdi_shopHelper::EXTRACTSTORAGE_REMOTE) {
+
+            $curlHelper = new CurlHelper(true);
+
+            $curldata['url'] = $orderdiffusion->file;
+            $pos = strrpos($curldata['url'], '.');
+            $extension = ($pos) ? substr($curldata['url'], $pos) : null;
+            if ($extension) {
+                $curldata['fileextension'] = $extension;
+            }
+            $curldata['filename'] = $orderdiffusion->displayName;
+            return $curlHelper->get($curldata);
+        }
+        //local storage
+        else {
+            $folder = JComponentHelper::getParams('com_easysdi_shop')->get('orderresponseFolder');
+            $file = JPATH_ROOT . '/' . $folder . '/' . $orderdiffusion->order_id . '/' . $orderdiffusion->diffusion_id . '/' . $orderdiffusion->file;
+
+            error_reporting(0);
+
+            $chunk = 8 * 1024 * 1024; // bytes per chunk (10 MB)
+
+            $size = filesize($file);
+            if ($size > $chunk) {
+                set_time_limit(0);
+                ignore_user_abort(false);
+                ini_set('output_buffering', 0);
+                ini_set('zlib.output_compression', 0);
+
+                $fh = fopen($file, "rb");
+
+                if ($fh === false) {
+                    $this->setMessage(JText::_('RESOURCE_LOCATION_UNAVAILABLE'), 'error');
+                    die();
+                }
+
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header("Accept-Ranges: bytes");
+                header('Content-Disposition: attachment; filename="' . $orderdiffusion->file . '"');
+                header('Expires: -1');
+                header('Cache-Control: no-cache');
+                header("Cache-Control: public, must-revalidate, post-check=0, pre-check=0");
+                header('Pragma: public');
+                //do not check filesize on 32bits integer systems : http://php.net/manual/en/function.filesize.php#refsect1-function.filesize-returnvalues
+                if (PHP_INT_SIZE >= 8) {
+                    header('Content-Length: ' . filesize($file));
+                }
+
+                // Repeat reading until EOF
+                while (!feof($fh)) {
+                    $buffer = fread($fh, $chunk);
+                    echo $buffer;
+                    ob_flush();  // flush output
+                    //flush();
+                }
+            } else {
+                ini_set('zlib.output_compression', 0);
+                header('Pragma: public');
+                header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+                header('Content-Transfer-Encoding: none');
+                header("Content-Length: " . filesize($file));
+                header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
+                header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
+
+                readfile($file);
+            }
+
+            die();
+        }
     }
 
 }

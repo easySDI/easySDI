@@ -53,7 +53,7 @@ class Easysdi_shopViewPropertyvalue extends JViewLegacy
         } else {
             $checkedOut = false;
         }
-		$canDo		= Easysdi_shopHelper::getActions();
+		$canDo		= Easysdi_shopAdminHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTYVALUE').$this->item->propertyname, 'propertyvalue.png');
 

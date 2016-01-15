@@ -53,3 +53,5 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   sent timestamp NULL DEFAULT NULL,
   PRIMARY KEY (id)
 );
+
+ALTER TABLE #__sdi_category ADD COLUMN backend_only smallint NOT NULL DEFAULT 0;
