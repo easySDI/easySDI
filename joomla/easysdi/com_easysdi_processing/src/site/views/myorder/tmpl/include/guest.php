@@ -1,1 +1,0 @@
-<p>Seuls les utilisateurs enregistrés peuvent commander des traitements</p>

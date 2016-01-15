@@ -1,12 +1,11 @@
 <?php
-/*------------------------------------------------------------------------
-# controller.php - Easysdi_processing Component
-# ------------------------------------------------------------------------
-# author    Thomas Portier
-# copyright Copyright (C) 2015. All Rights Reserved
-# license   Depth France
-# website   www.depth.fr
--------------------------------------------------------------------------*/
+/**
+* @version     4.4.0
+* @package     com_easysdi_processing
+* @copyright   Copyright (C) 2013-2015. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
@@ -74,6 +73,14 @@ class Easysdi_processingController extends JControllerLegacy
         require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_processing/models/order.php';
         $model=new Easysdi_processingModelorder;
         $order=$model->getItem($jinput->get('id'));
+
+         $user_roles=Easysdi_processingHelper::getCurrentUserRolesOnData($order);
+
+        $private_access=($order->access_key!==null && $order->access_key==$jinput->get('access_key'));
+
+        if (!in_array('creator',$user_roles) && !in_array('contact',$user_roles) && !$private_access ) {
+            return JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+        }
 
         $dispatcher = JDispatcher::getInstance();
         $plugin_results = $dispatcher->trigger( 'onProcessingOrderPluginCall' ,compact('order'));

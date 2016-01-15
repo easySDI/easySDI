@@ -1,1 +1,0 @@
-process edit <? echo $id; ?>
