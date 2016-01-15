@@ -216,7 +216,7 @@ $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($or
 <div class="tab-content">
   <div class="tab-pane active" id="order">
     <?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_DATE'); ?> <?php echo $order->created ?>
-    <?php if (count(array_intersect(['contact','obs','superuser'], $user_roles))>0) { ?>
+    <?php if (count(array_intersect(array('contact','obs','superuser'), $user_roles))>0) { ?>
     <?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_BY'); ?> <?php echo $order->user_label ?><br/>
     <?php } ?>
     <h3><?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_DATA'); ?></h3>
