@@ -535,6 +535,7 @@ if (!$showActions) {
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
+                    <?php if ($showPricing){?>
                     <tfoot>
                         <tr class="supplier_fixed_fee_row">
                             <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
@@ -552,6 +553,7 @@ if (!$showActions) {
                             <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                     </tfoot>
+                    <?php }?>
                 </table>
             <?php endif; ?>
         <?php endforeach; ?>
