@@ -137,7 +137,7 @@ abstract class Easysdi_processingParamsHelper
 
     if ($param->type=='select' || $param->type=='selectmulti') {
       $res .= '<select id="'.$name.'" name="'.$name.'"'.($param->type=='selectmulti'?' multiple':'').($param->required?' required':'').' class="form-control params_editor_input_source">';
-      $defaults=is_array($param->default)?$param->default:[$param->default];
+      $defaults=is_array($param->default)?$param->default:array($param->default);
       foreach ($param->values as $value) {
         $res .= '<option value="'.$value->id.'"'.(in_array($value->id, $defaults)?' selected':'').'>'
         .$value->text
@@ -160,8 +160,8 @@ abstract class Easysdi_processingParamsHelper
     self::forceJson($paramsDef);
     self::forceJson($params);
 
-    if (null == $paramsDef) $paramsDef=[];
-    if (null == $params) $params=[];
+    if (null == $paramsDef) $paramsDef=array();
+    if (null == $params) $params=array();
 
     $res='<table class="table table-bordered table-striped table-params">';
 
