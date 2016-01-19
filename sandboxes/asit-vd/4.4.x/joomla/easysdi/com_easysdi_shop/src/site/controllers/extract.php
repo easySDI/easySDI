@@ -175,6 +175,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * call sendResponse to return the exception
      */
     private function getException($code, $details = '') {
+
         // Rollback SQL Transaction
         if ($this->transaction) {
             $this->db->transactionRollback();
@@ -183,6 +184,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         if (is_array($details)) {
             $details = implode('<br>', $details);
         }
+
 
         $response = new DOMDocument('1.0', 'utf-8');
 
@@ -232,7 +234,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             if ($IO) { // Input
                 $this->getException(400, 'The given XML is not valid. Please consult the XSD : ' . $xsd);
             } else { // Output
-                $this->getException(500, print_r($errors, true));
+                $this->getException(500, print_r($errors, true) . "\n\nOrginal failed XML =" . $xml->saveXML());
             }
         }
 
@@ -270,7 +272,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @since 4.3.0
      */
     private function addAttribute(&$parent, $attrName, $attrValue) {
-        $attribute = $this->response->createAttribute($attrName);
+        $attribute = $parent->ownerDocument->createAttribute($attrName);
         $attribute->value = $attrValue;
         $parent->appendChild($attribute);
     }
@@ -288,15 +290,15 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @since 4.4.0*
      */
     private function addTextChildNode(&$parent, $nodeName, $nodeText = null) {
-        $newNode = $this->response->createElementNS(self::nsSdi, $nodeName);
+        $newNode = $parent->ownerDocument->createElementNS(self::nsSdi, $nodeName);
         if (isset($nodeText)) {
-            $newTextNode = $this->response->createTextNode($nodeText);
+            $newTextNode = $parent->ownerDocument->createTextNode($nodeText);
             $newNode->appendChild($newTextNode);
         }
         $parent->appendChild($newNode);
     }
 
-     /**
+    /**
      * addTextToNode - add a textnode to an existing node
      * 
      * @param DOMNode $node - the DOMNode which the attribute will be added to
@@ -306,7 +308,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @since 4.4.0*
      */
     private function addTextToNode(&$node, $text) {
-        $newTextNode = $this->response->createTextNode($text);
+        $newTextNode = $node->ownerDocument->createTextNode($text);
         $node->appendChild($newTextNode);
     }
 
