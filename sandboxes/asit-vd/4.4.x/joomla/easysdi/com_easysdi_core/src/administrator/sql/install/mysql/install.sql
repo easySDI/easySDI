@@ -3257,6 +3257,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   `modified_by` int(10) NOT NULL,
   `modified` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `sent` timestamp NULL DEFAULT NULL,
+  `access_key` varchar(255),
   PRIMARY KEY (`id`),
   KEY `processing_id` (`processing_id`),
   KEY `created_by` (`created_by`)
