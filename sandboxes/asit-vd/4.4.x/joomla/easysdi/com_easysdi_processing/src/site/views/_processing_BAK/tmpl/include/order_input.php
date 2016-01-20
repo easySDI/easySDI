@@ -1,1 +1,0 @@
-process input <? echo $id; ?>
