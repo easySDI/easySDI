@@ -147,12 +147,7 @@ class Cswrecords extends SearchForm {
         $and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'published'));
         $datetime = new DateTime('tomorrow');
         $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', $datetime->format('Y-m-d')));
-        
-        $ordate = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');        
-        $ordate->appendChild($this->ogcFilters->getIsGreatherOrEqual('endpublished', $datetime->format('Y-m-d')));
-        $ordate->appendChild($this->ogcFilters->getIsEqualTo('endpublished', '0000-00-00 00:00:00'));
-        $and4->appendChild($ordate);
-        
+
         // User and organism filter
         $and4->appendChild($this->getOrganismBlock());
 
