@@ -354,7 +354,7 @@ if ($this->item && $this->item->extractions) :
                                     <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE') ?></button>
                                 </div>
                                 <div class="btn-wrapper" id="toolbar-estimate">
-                                    <button class="btn btn-small" rel="basket.estimate" <?php if (isset($this->item->pricing->cal_total_amount_ti)): echo 'style="display: none;"'; else : echo 'style="display: inline-block;"'; endif;?>><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
+                                    <button class="btn btn-small" rel="basket.estimate" <?php if (isset($this->item->pricing->cal_total_amount_ti)||!$this->item->pricing->isActivated): echo 'style="display: none;"'; else : echo 'style="display: inline-block;"'; endif;?>><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
                                 </div>
                                 <div class="btn-wrapper" id="toolbar-order">
                                     <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER') ?></button>
