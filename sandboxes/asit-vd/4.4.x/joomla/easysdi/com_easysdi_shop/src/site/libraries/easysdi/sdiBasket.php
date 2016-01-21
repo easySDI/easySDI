@@ -86,8 +86,28 @@ class sdiBasket {
 
             //Copy order
             if ($copy) {
+                //reset ID
                 $this->id = null;
-                $this->name = $this->name . JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_NAME_SUFFIX');
+
+                //create the copy name
+                $copySuffix = JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_NAME_SUFFIX');
+                $incrementSeparator = ' ';
+                $pattern = '/.*' . $copySuffix . '(?:$|' . $incrementSeparator . '(\d*)$)/';
+                $matches = array();
+                $matched = preg_match($pattern, $this->name, $matches, PREG_OFFSET_CAPTURE);
+                
+                //order name contains the copy suffix
+                if ($matched) {
+                    if (count($matches) > 1) { //is third copy or more, change increment
+                        $newName = substr($this->name, 0, $matches[1][1]) . (((int) $matches[1][0]) + 1);
+                    } else { //is the second copy, add increment
+                        $newName = $this->name . $incrementSeparator . '2';
+                    }
+                } else { //is the first copy
+                    $newName = $this->name . $copySuffix;
+                }
+                
+                $this->name = $newName;
             }
 
             //For "non copies": reload the user who's created the order (e.g. in views: order, request )
