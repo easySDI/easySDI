@@ -381,6 +381,8 @@ CREATE INDEX "IX_LOG_ENTRIES_ID_QUERY_REQUEST_TIME" ON log_entries USING btree (
 CREATE INDEX alias1 ON #__sdi_sys_unit USING btree (alias);
  
 CREATE INDEX element_guid ON #__sdi_translation USING btree (element_guid);
+CREATE INDEX text1 ON #__sdi_translation USING btree (text1);
+CREATE INDEX text2 ON #__sdi_translation USING btree (text2);
  
 CREATE INDEX "fk_log_entries_statuses_STATUS1" ON log_entries USING btree ("ID_STATUS");
  
@@ -1276,3 +1278,6 @@ ALTER TABLE ONLY #__sdi_pricing_order_supplier_product_profile
     ADD CONSTRAINT #__sdi_pricing_order_supplier_product_profile_fk1 FOREIGN KEY (pricing_order_supplier_product_id) REFERENCES #__sdi_pricing_order_supplier_product (id) ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_pricing_order_supplier_product_profile
     ADD CONSTRAINT #__sdi_pricing_order_supplier_product_profile_fk2 FOREIGN KEY (pricing_profile_id) REFERENCES #__sdi_pricing_profile (id) ON DELETE CASCADE;
+	
+ALTER TABLE #__sdi_order
+ADD CONSTRAINT #__sdi_order_fk5 FOREIGN KEY ("validated_by") REFERENCES #__sdi_user ("id") MATCH FULL ON UPDATE NO ACTION ON DELETE NO ACTION;

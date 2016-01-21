@@ -300,6 +300,15 @@ class SearchJForm extends SearchForm {
             return $this->getDefaultFromSession($name);
         } else {
             if (isset($searchCriteria->defaultvalue)) {
+                //If rendertype is text, checkbox or radiobutton, default value is 
+                //to get from the field 'defaultvalue'
+                if($searchCriteria->rendertype_id == 1 
+                        || $searchCriteria->rendertype_id == 5 
+                        || $searchCriteria->rendertype_id == 2 
+                        || $searchCriteria->rendertype_id == 3){
+                    return $searchCriteria->defaultvalue;
+                }
+                //Otherwise, default value is to query against the attributevalue table
                 return $this->getJsonDefaultValue($searchCriteria, $searchCriteria->defaultvalue);
             } elseif (isset($searchCriteria->defaultvaluefrom)) {
                 return $searchCriteria->defaultvaluefrom . ',' . $searchCriteria->defaultvalueto;

@@ -50,16 +50,24 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
 
         $ex = false;
         $db = JFactory::getDbo();
+
         try {
-            $db->transactionStart();
+            
+            try {
+                $db->transactionStart();
+            } catch (Exception $exc) {
+                $db->connect();
+                $driver_begin_transaction = $db->name . '_begin_transaction';
+                $driver_begin_transaction($db->getConnection());
+            }
 
             //save organism's pricing
             $query = $db->getQuery(true)
-                    ->update($db->quoteName('#__sdi_organism') . ' as o');
+                    ->update($db->quoteName('#__sdi_organism') );
             foreach ($dataOrganism as $prop => $val)
                 $query->set($db->quoteName($prop) . "='{$val}'");
 
-            $query->where('o.id=' . (int) $id);
+            $query->where('id=' . (int) $id);
             $db->setQuery($query);
             $update = $db->execute();
 
@@ -70,20 +78,21 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
             $db->setQuery($query);
             $delete = $db->execute();
 
-            
-            $concatCategories = implode('', $dataCategories);
-            if (!empty($concatCategories)) {
-                $query = $db->getQuery(true)
-                        ->insert($db->quoteName('#__sdi_organism_category_pricing_rebate'))
-                        ->columns($db->quoteName('organism_id') . ', ' . $db->quoteName('category_id') . ', ' . $db->quoteName('rebate'));
-                foreach ($dataCategories as $category_id => $rebate) {
-                    if ("" === $rebate)
-                        continue;
-                    $query->values("{$id}, {$category_id}, {$rebate}");
-                }
+            if(!empty($dataCategories)){
+                $concatCategories = implode('', $dataCategories);
+                if (!empty($concatCategories)) {
+                    $query = $db->getQuery(true)
+                            ->insert($db->quoteName('#__sdi_organism_category_pricing_rebate'))
+                            ->columns($db->quoteName('organism_id') . ', ' . $db->quoteName('category_id') . ', ' . $db->quoteName('rebate'));
+                    foreach ($dataCategories as $category_id => $rebate) {
+                        if ("" === $rebate)
+                            continue;
+                        $query->values("{$id}, {$category_id}, {$rebate}");
+                    }
 
-                $db->setQuery($query);
-                $insert = $db->execute();
+                    $db->setQuery($query);
+                    $insert = $db->execute();
+                }
             }
 
             $db->transactionCommit();

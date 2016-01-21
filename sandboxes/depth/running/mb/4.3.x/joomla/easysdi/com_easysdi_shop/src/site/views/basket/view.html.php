@@ -35,7 +35,9 @@ class Easysdi_shopViewBasket extends JViewLegacy {
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
-
+        if (is_null($this->item->sdiUser->id)) {
+            $this->item->sdiUser = sdiFactory::getSdiUser();
+        }
         $this->params = $app->getParams('com_easysdi_shop');
         $this->paramsarray = $this->params->toArray();
         $this->user = sdiFactory::getSdiUser();
@@ -51,9 +53,11 @@ class Easysdi_shopViewBasket extends JViewLegacy {
 
         $this->thirdParties = $this->getAvailableThirdParties();
 
+        $this->basketScriptPlugins = $this->getBasketScriptPlugins();
+
         //check if free perimeter import is enabled and free perimeter is availlable in this basket
         $this->importEnabled = false;
-        foreach ($this->item->perimeters as $perimeter):
+        foreach ((array)$this->item->perimeters as $perimeter):
             if ($perimeter->id == 1) {
                 $this->importEnabled = true;
             }
@@ -64,8 +68,9 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         Easysdi_shopHelper::extractionsBySupplierGrouping($this->item);
 
         // calculate price for the current basket (only if surface is defined)
-        if (isset($this->item->extent) && isset($this->item->extent->surface))
+        if (isset($this->item->extent) && isset($this->item->extent->surface)){
             Easysdi_shopHelper::basketPriceCalculation($this->item);
+        }
 
         $pathway = $app->getPathway();
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BASKET_TITLE"), JRoute::_('index.php?option=com_easysdi_shop&view=basket', false));
@@ -114,6 +119,10 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         }
     }
 
+    /**
+     * Return the toolbar for the view
+     * @return JToolBar
+     */
     function getToolbar() {
         //load the JToolBar library and create a toolbar
         jimport('joomla.html.toolbar');
@@ -131,15 +140,36 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         return $bar->render();
     }
 
+    /**
+     * Return the list of availlable third parties organisms
+     * @return Array list of thirdparties
+     */
     private function getAvailableThirdParties() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('id, name')
                 ->from('#__sdi_organism')
-                ->where('selectable_as_thirdparty = ' . (int) 1);
+                ->where('selectable_as_thirdparty = ' . (int) 1)
+                ->order('name');
         $db->setQuery($query);
         $thirdparties = $db->loadObjectList();
         return $thirdparties;
+    }
+
+    /**
+     * Load the plugins and get the javascript
+     * Note: plugins must be in 'easysdi_basket_script' folder and 
+     * offer the 'getBasketScript' public function
+     * @return String javascript from plugins
+     */
+    private function getBasketScriptPlugins() {
+        JPluginHelper::importPlugin('easysdi_basket_script');
+        $app = JFactory::getApplication();
+        //get scripts
+        $scripts = $app->triggerEvent('getBasketScript');
+
+        //Return merged scripts
+        return implode("\n", $scripts);
     }
 
 }

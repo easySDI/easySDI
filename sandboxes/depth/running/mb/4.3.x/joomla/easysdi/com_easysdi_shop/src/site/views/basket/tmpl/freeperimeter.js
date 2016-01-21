@@ -204,7 +204,7 @@ var listenerPolygonDrawToZoom = function (e) {
 };
 
 function selectPolygon() {
-    resetAll();
+    resetAllSelection();
     setFreePerimeterTool('polygon');
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}});
     jQuery('#t-features').val('');
@@ -212,7 +212,7 @@ function selectPolygon() {
 }
 
 function selectRectangle() {
-    resetAll();
+    resetAllSelection();
     setFreePerimeterTool('rectangle');
     selectControl = new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
     jQuery('#t-features').val('');
@@ -237,14 +237,15 @@ function importPolygonFromText() {
     var feature = getPolygonFromText(text);
     if (feature) {
         if (feature.attributes['importGeom'] == "rectangle") {
-            resetAll();
+            resetAllSelection();
             boxLayer.addFeatures([feature.clone()]);
             selectRectangleEdit(boxLayer.features[boxLayer.features.length - 1]);
         } else {
-            resetAll();
+            resetAllSelection();
             polygonLayer.addFeatures([feature.clone()]);
             selectPolygonEdit();
         }
+        app.mapPanel.map.zoomToExtent(feature.geometry.getBounds());
     }
 }
 
@@ -296,6 +297,10 @@ function getPolygonFromText(text) {
 
     //extract geometries from features
     for (var j = 0; j < points.length; j++) {
+        if (!app.mapPanel.map.getMaxExtent().contains(points[j].geometry.x, points[j].geometry.y)) {
+            alert(Joomla.JText._("COM_EASYSDI_SHOP_BASKET_IMPORT_POLY_ERROR_OUTSIDE_MAP"));
+            return false;
+        }
         pointsGeom.push(points[j].geometry.clone());
     }
 

@@ -102,14 +102,22 @@ class Easysdi_shopViewPricingOrganism extends JViewLegacy {
         //load the JToolBar library and create a toolbar
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
+        
+        //Get the number of organisms the user is managing the pricing
+        $modelList = JModelLegacy::getInstance('PricingOrganisms', 'Easysdi_shopModel');
+        $items = $modelList->getItems();
+            
         //and make whatever calls you require
         if($this->isPricingManager){
             $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'pricingorganism.apply', false);
             $bar->appendButton('Separator');
-            $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'pricingorganism.save', false);
-            $bar->appendButton('Separator');
+            if(count($items) > 1){
+                $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'pricingorganism.save', false);
+                $bar->appendButton('Separator');
+            }
         }
-        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'pricingorganism.cancel', false);
+        if(count($items) > 1)
+            $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'pricingorganism.cancel', false);
         //generate the html and return
         return $bar->render();
     }

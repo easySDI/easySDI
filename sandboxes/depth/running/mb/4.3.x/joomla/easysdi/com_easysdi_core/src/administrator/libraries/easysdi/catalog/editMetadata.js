@@ -926,7 +926,10 @@ function getOccuranceCount(className) {
 function chosenRefresh() {
     js('select').chosen({
         disable_search_threshold: 10,
-        allow_single_deselect: true
+        allow_single_deselect: true,
+        placeholder_text_multiple: Joomla.JText._('JGLOBAL_SELECT_SOME_OPTIONS', 'JGLOBAL_SELECT_SOME_OPTIONS'),
+        placeholder_text_single: Joomla.JText._('JGLOBAL_SELECT_AN_OPTION', 'JGLOBAL_SELECT_AN_OPTION'),
+        no_results_text: Joomla.JText._('JGLOBAL_SELECT_NO_RESULTS_MATCH', 'JGLOBAL_SELECT_NO_RESULTS_MATCH')
     });
 }
 

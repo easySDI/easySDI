@@ -29,7 +29,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 </script>
 
 <div class="shop front-end-edit">
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_TITLE') . ' : ' . $this->item->name; ?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_ITEM_TITLE') . ' : ' . $this->item->name; ?></h1>
 
     <div class="well">
 
@@ -46,6 +46,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             </tr>
                         </thead>
                         <tbody>
+                            <?php if($this->item): ?>
                             <?php foreach ($this->item->categories as $category): ?>
                                 <tr>
                                     <td class="shop-pricing-category-name-col"><?php echo $category->name; ?></td>
@@ -59,6 +60,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
+                                <?php endif ?>
                         </tbody>
                     </table>
                     <?php

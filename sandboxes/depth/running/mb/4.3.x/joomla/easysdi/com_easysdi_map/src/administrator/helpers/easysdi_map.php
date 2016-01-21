@@ -19,20 +19,24 @@ class Easysdi_mapHelper {
      * Configure the Linkbar.
      */
     public static function addSubmenu($vName = '') {
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_core');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_user');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
         JHtmlSidebar::addEntry(
-                '<i class="icon-home"></i> '.JText::_('COM_EASYSDI_MAP_TITLE_HOME'),
-                'index.php?option=com_easysdi_core&view=easysdi',
-                $vName == 'easysdi'
-	);
-        JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_MAP_TITLE_MAPS'), 'index.php?option=com_easysdi_map&view=maps', $vName == 'maps'
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_MAP_TITLE_MAPS'), 'index.php?option=com_easysdi_map&view=maps', $vName == 'maps'
         );
         JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_MAP_TITLE_LAYERS'), 'index.php?option=com_easysdi_map&view=layers', $vName == 'layers'
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_MAP_TITLE_LAYERS'), 'index.php?option=com_easysdi_map&view=layers', $vName == 'layers'
         );
         JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'), 'index.php?option=com_easysdi_map&view=groups', $vName == 'groups'
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'), 'index.php?option=com_easysdi_map&view=groups', $vName == 'groups'
         );
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_dashboard');
     }
 
     /**
@@ -83,7 +87,7 @@ class Easysdi_mapHelper {
             $query->from('#__sdi_physicalservice s');
             $query->innerJoin('#__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id');
             $query->where('s.id=' . substr($service, strrpos($service, '_') + 1));
-            
+
             $db->setQuery($query);
             $resource = $db->loadObject();
             if ($resource->username) {
@@ -97,18 +101,18 @@ class Easysdi_mapHelper {
             $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
             $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
             $query->where('ssc.service_id =' . $id);
-            
-            $db->setQuery($query,0,1);
+
+            $db->setQuery($query, 0, 1);
             $compliance = $db->loadObject();
         } else {
             $id = substr($service, strrpos($service, '_') + 1);
-            
+
             $query = $db->getQuery(true);
             $query->select('s.url as url,  sc.value as connector, s.alias as alias');
             $query->from('#__sdi_virtualservice s');
             $query->innerJoin('#__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id');
             $query->where('s.id=' . substr($service, strrpos($service, '_') + 1));
-            
+
             $db->setQuery($query);
             $resource = $db->loadObject();
             $Juser = JFactory::getUser();
@@ -122,10 +126,10 @@ class Easysdi_mapHelper {
             $query->select('sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc');
             $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
             $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
-            $query->where('ssc.service_id =' . (int)$id);
+            $query->where('ssc.service_id =' . (int) $id);
             $query->order('sv.value DESC');
-            
-            $db->setQuery($query,0,1);
+
+            $db->setQuery($query, 0, 1);
             $compliance = $db->loadObject();
         }
 
@@ -206,19 +210,19 @@ class Easysdi_mapHelper {
                 switch ($version) {
                     case "1.3.0":
                         $layers_array = $xmlCapa->xpath('//dflt:Layer/dflt:Name');
-                        if(!empty($layers_array)){
+                        if (!empty($layers_array)) {
                             foreach ($layers_array as $layer):
-                                $r = $xmlCapa->xpath('//dflt:Layer[dflt:Name="'.(string)$layer.'"]/dflt:Title[1]'); 
-                                $layers [(string)$layer] = (string) $r[0];
+                                $r = $xmlCapa->xpath('//dflt:Layer[dflt:Name="' . (string) $layer . '"]/dflt:Title[1]');
+                                $layers [(string) $layer] = (string) $r[0];
                             endforeach;
                         }
                         break;
                     default:
                         $layers_array = $xmlCapa->xpath('//Layer/Name');
-                        if(!empty($layers_array)){
+                        if (!empty($layers_array)) {
                             foreach ($layers_array as $layer):
-                                $r = $xmlCapa->xpath('//Layer[Name="'.(string)$layer.'"]/Title[1]'); 
-                                $layers [(string)$layer] = (string) $r[0];
+                                $r = $xmlCapa->xpath('//Layer[Name="' . (string) $layer . '"]/Title[1]');
+                                $layers [(string) $layer] = (string) $r[0];
                             endforeach;
                         }
                         break;
@@ -226,12 +230,12 @@ class Easysdi_mapHelper {
                 break;
             case "WMTS" :
                 $layers_array = $xmlCapa->xpath('//dflt:Layer/ows:Identifier');
-                if(!empty($layers_array)){
-                            foreach ($layers_array as $layer):
-                                $r = $xmlCapa->xpath('//dflt:Layer[ows:Identifier="'.(string)$layer.'"]/ows:Title[1]'); 
-                                $layers [(string)$layer] = (string) $r[0];
-                            endforeach;
-                        }
+                if (!empty($layers_array)) {
+                    foreach ($layers_array as $layer):
+                        $r = $xmlCapa->xpath('//dflt:Layer[ows:Identifier="' . (string) $layer . '"]/ows:Title[1]');
+                        $layers [(string) $layer] = (string) $r[0];
+                    endforeach;
+                }
                 break;
         }
 

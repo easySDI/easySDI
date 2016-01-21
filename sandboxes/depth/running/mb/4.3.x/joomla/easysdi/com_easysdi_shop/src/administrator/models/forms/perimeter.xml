@@ -160,8 +160,8 @@
                filter="safehtml" /> 
 
         <field name="featuretypefieldname" type="text" size="40" class="inputbox"
-               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPENAME"
-               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPENAME" 
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPEFIELDNAME"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPEFIELDNAMENAME" 
                filter="safehtml" /> 
 
         <field name="featuretypefieldsurface" type="text" size="40" class="inputbox"

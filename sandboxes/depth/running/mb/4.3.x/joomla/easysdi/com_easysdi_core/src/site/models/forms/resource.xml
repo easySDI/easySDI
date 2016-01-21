@@ -41,7 +41,7 @@
             multiple="true"
             label=""
             description="" 
-            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY ordering" 
             key_field="id" 
             value_field="name"
             translate="true"
@@ -73,6 +73,7 @@
     
         <field  
             name="organism_id" 
+            onchange="onChangeOrganism();"
             required="true"
             type="resourceorganismsql" 
             class="inputbox"

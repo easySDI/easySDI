@@ -25,7 +25,8 @@ class Easysdi_shopTableorder extends sdiTable {
     const orderstate_6 = 'sent';
     const orderstate_7 = 'saved';
     const orderstate_8 = 'validation';
-    const orderstate_9 = 'rejected';
+    const orderstate_9 = 'rejectedbythirdparty';
+    const orderstate_10 = 'rejectedbysupplier';
         
     const ordertype_1 = 'order';
     const ordertype_2 = 'estimate';
@@ -37,7 +38,7 @@ class Easysdi_shopTableorder extends sdiTable {
      * @param JDatabase A database connector object
      */
     public function __construct(&$db) {
-        parent::__construct('#__sdi_order', 'id', $db);
+        parent::__construct('#__sdi_order', 'id', $db);        
     }
 
     /**

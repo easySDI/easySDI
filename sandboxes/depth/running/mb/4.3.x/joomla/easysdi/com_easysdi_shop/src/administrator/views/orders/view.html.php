@@ -203,7 +203,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 		'a.name' => JText::_('COM_EASYSDI_SHOP_ORDERS_NAME'),
 		'a.access' => JText::_('COM_EASYSDI_SHOP_ORDERS_ACCESS'),
 		'a.asset_id' => JText::_('COM_EASYSDI_SHOP_ORDERS_ASSET_ID'),*/
-
+        'a.id' => JText::_('COM_EASYSDI_SHOP_ORDERS_ID'),
         'a.name' => JText::_('COM_EASYSDI_SHOP_ORDERS_NAME'),
         'user' => JText::_('COM_EASYSDI_SHOP_ORDERS_USER'),
         'thirdparty' => JText::_('COM_EASYSDI_SHOP_ORDERS_THIRDPARTY'),

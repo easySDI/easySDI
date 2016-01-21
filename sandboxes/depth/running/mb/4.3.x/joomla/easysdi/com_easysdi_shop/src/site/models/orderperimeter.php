@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
-require_once JPATH_COMPONENT."/libraries/easysdi/sdiBasket.php";
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiBasket.php';
 
 /**
  * Easysdi_shop model.

@@ -41,3 +41,58 @@ MODIFY COLUMN `cal_fee_ti`  decimal(19,2) NOT NULL DEFAULT 0.00 AFTER `cal_total
 
 ALTER TABLE `#__sdi_organism_category_pricing_rebate`
 MODIFY COLUMN `rebate`  decimal(19,2) NULL DEFAULT NULL AFTER `category_id`;
+
+ALTER TABLE #__sdi_diffusion ADD packageurl VARCHAR(500) ;
+UPDATE #__sdi_diffusion SET packageurl='{CODE}';
+
+ALTER TABLE `#__sdi_translation` ADD INDEX `text1` (`text1`);
+ALTER TABLE `#__sdi_translation` ADD INDEX `text2` (`text2`);
+
+INSERT IGNORE INTO `#__sdi_sys_productstate` VALUES ('7', '7', '1', 'deleted');
+
+INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('3', '3', '2');
+
+DELETE FROM `#__sdi_sys_metadatastate` WHERE id=5;
+
+UPDATE `#__sdi_sys_orderstate` SET `value` = 'rejectedbythirdparty' WHERE `id` = 9;
+UPDATE `#__sdi_sys_orderstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 10;
+
+UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbythirdparty' WHERE `id` = 5;
+UPDATE `#__sdi_sys_productstate` SET `value` = 'rejectedbysupplier' WHERE `id` = 6;
+
+ALTER TABLE `#__sdi_order` MODIFY `remark` VARCHAR(4000);
+
+UPDATE `#__sdi_sys_pricing` SET `value` = 'feewithoutapricingprofile' WHERE `id` = 2;
+UPDATE `#__sdi_sys_pricing` SET `value` = 'feewithapricingprofile' WHERE `id` = 3;
+
+ALTER TABLE `#__sdi_pricing_order_supplier_product`
+MODIFY COLUMN `cal_amount_data_te`  decimal(19,2) NULL AFTER `ind_lbl_category_supplier_discount`,
+MODIFY COLUMN `cal_total_amount_te` decimal(19,2) NULL AFTER `cal_amount_data_te`,
+MODIFY COLUMN `cal_total_amount_ti` decimal(19,2) NULL AFTER `cal_total_amount_te`,
+MODIFY COLUMN `cal_total_rebate_ti` decimal(19,2) NOT NULL DEFAULT 0.00 AFTER `cal_total_amount_ti`;
+
+ALTER TABLE `#__sdi_pricing_order_supplier`
+MODIFY COLUMN `cal_total_rebate_ti` decimal(19,2) NOT NULL DEFAULT 0.00 AFTER `cfg_data_free_fixed_fee`,
+MODIFY COLUMN `cal_total_amount_ti` decimal(19,2) NULL AFTER `cal_fee_ti`;
+
+ALTER TABLE `#__sdi_pricing_order`
+MODIFY COLUMN `cal_total_amount_ti` decimal(19,2) NULL AFTER `cfg_free_data_fee`;
+
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 1  WHERE `id` = 7;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 2  WHERE `id` = 8;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 3  WHERE `id` = 6;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 4  WHERE `id` = 4;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 5  WHERE `id` = 5;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 6  WHERE `id` = 3;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 7  WHERE `id` = 1;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 8  WHERE `id` = 2;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 9  WHERE `id` = 9;
+UPDATE `#__sdi_sys_orderstate` SET `ordering` = 10 WHERE `id` = 10;
+
+ALTER TABLE `#__sdi_order`
+ADD COLUMN `validated_by` INT(11) UNSIGNED NULL DEFAULT NULL AFTER `validated_reason`,
+ADD CONSTRAINT `#__sdi_order_fk5` FOREIGN KEY (`validated_by`) REFERENCES `#__sdi_user` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE `#__sdi_order_diffusion` MODIFY `remark` VARCHAR(4000);
+
+ALTER TABLE `#__sdi_order` MODIFY `mandate_ref` VARCHAR(500);

@@ -425,6 +425,7 @@ CREATE TABLE #__sdi_diffusion (
     productstorage_id bigint,
     file character varying(255),
     fileurl character varying(500),
+    packageurl character varying(500)  ,
     perimeter_id bigint,
     hasdownload integer DEFAULT 0 NOT NULL,
     hasextraction integer DEFAULT 0 NOT NULL,
@@ -744,10 +745,11 @@ CREATE TABLE #__sdi_order (
     validated smallint DEFAULT NULL,
     validated_date timestamp(3) without time zone DEFAULT NULL,
     validated_reason character varying(255),
+	validated_by bigint DEFAULT NULL,
     buffer double precision,
     surface double precision,
-    remark character varying(500),
-    mandate_ref VARCHAR(75) NULL,
+    remark character varying(4000),
+    mandate_ref VARCHAR(500) NULL,
     mandate_contact VARCHAR(75) NULL,
     mandate_email VARCHAR(100) NULL,
     "level" VARCHAR(100) NULL,
@@ -773,7 +775,7 @@ CREATE TABLE #__sdi_order_diffusion (
     order_id bigint NOT NULL,
     diffusion_id bigint NOT NULL,
     productstate_id bigint NOT NULL,
-    remark character varying(500) ,
+    remark character varying(4000) ,
     fee numeric(10,0) ,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone ,
     storage_id bigint NULL,
@@ -2412,7 +2414,7 @@ CREATE TABLE IF NOT EXISTS #__sdi_pricing_order (
     cfg_rounding decimal(3,2) NOT NULL DEFAULT '0.05',
     cfg_overall_default_fee decimal(19,2) NOT NULL DEFAULT 0,
     cfg_free_data_fee TINYINT DEFAULT 0,
-    cal_total_amount_ti float,
+    cal_total_amount_ti decimal(19,2),
     cal_fee_ti decimal(19,2) NOT NULL DEFAULT 0,
     ind_lbl_category_order_fee varchar(255),
     PRIMARY KEY (id)
@@ -2435,9 +2437,9 @@ CREATE TABLE IF NOT EXISTS #__sdi_pricing_order_supplier (
     cfg_internal_free TINYINT NOT NULL DEFAULT 1,
     cfg_fixed_fee_ti decimal(19,2) NOT NULL DEFAULT 0,
     cfg_data_free_fixed_fee TINYINT NOT NULL DEFAULT 0,
-    cal_total_rebate_ti float NOT NULL DEFAULT 0,
+    cal_total_rebate_ti decimal(19,2) NOT NULL DEFAULT 0,
     cal_fee_ti decimal(19,2) NOT NULL DEFAULT 0,
-    cal_total_amount_ti float,
+    cal_total_amount_ti decimal(19,2),
     PRIMARY KEY (id)
 );
 
@@ -2457,10 +2459,10 @@ CREATE TABLE IF NOT EXISTS #__sdi_pricing_order_supplier_product (
     pricing_id int(11) unsigned not null,
     cfg_pct_category_supplier_discount decimal(19,2) NOT NULL DEFAULT 0,
     ind_lbl_category_supplier_discount varchar(255),
-    cal_amount_data_te float,
-    cal_total_amount_te float,
-    cal_total_amount_ti float,
-    cal_total_rebate_ti float,
+    cal_amount_data_te decimal(19,2),
+    cal_total_amount_te decimal(19,2),
+    cal_total_amount_ti decimal(19,2),
+    cal_total_rebate_ti decimal(19,2) NOT NULL DEFAULT 0,
     PRIMARY KEY (id)
 );
 

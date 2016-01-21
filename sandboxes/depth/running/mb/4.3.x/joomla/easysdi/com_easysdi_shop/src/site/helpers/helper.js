@@ -127,3 +127,25 @@ function initStyleMap() {
         })
     });
 }
+
+var acturl;
+        
+function addOrderToBasket (n){
+    if(n!=0){ jQuery('#modal-dialog').modal('show');}
+    else{confirmAdd();}
+}
+
+function confirmAdd() {jQuery(location).attr('href',acturl);}
+
+function getBasketContent(callback){
+    jQuery.ajax({
+        cache: false,
+        type: 'GET',
+        url: 'index.php?option=com_easysdi_shop&task=basket.getBasketContent'
+    }).done(function(r){
+        try{
+           window[callback](r);
+        }
+        catch(e){if(window.console){console.log(e);}}
+    });
+}

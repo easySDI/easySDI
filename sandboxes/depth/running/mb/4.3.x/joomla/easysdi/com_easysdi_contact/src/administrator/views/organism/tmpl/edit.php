@@ -26,7 +26,7 @@ $document->addScript('components/com_easysdi_contact/views/organism/tmpl/contact
     orgId = <?php echo(empty($this->item->id) ? '0' : $this->item->id); ?>;
     lblYes = '<?php echo JText::_('JYES'); ?>';
     lblNo = '<?php echo JText::_('JNO'); ?>';
-    dtLang = '<?php echo explode(' ', JFactory::getLanguage()->getName())[0]; ?>';
+    dtLang = '<?php $l =  explode(' ', JFactory::getLanguage()->getName()); echo $l[0] ?>';
     siteRoot = '<?php echo(JURI::root()); ?>';
     invalidFormMsg = '<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>';
 

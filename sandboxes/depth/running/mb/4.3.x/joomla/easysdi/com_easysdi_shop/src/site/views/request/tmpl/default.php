@@ -9,6 +9,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
+
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
@@ -19,229 +21,156 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
+$document->addScript($base_url . '/filesaver/FileSaver.js');
+$document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
 Easysdi_shopHelper::addMapShopConfigToDoc();
+JText::script('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_PRICE');
+JText::script('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_FILE_OR_REMARK');
 ?>
-<?php if ($this->item) : ?>
+<?php
+if ($this->item) :
+    $orderLayout = new JLayoutFile('com_easysdi_shop.order', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
+    Easysdi_shopHelper::extractionsBySupplierGrouping($this->item->basket);
+    Easysdi_shopHelper::basketReloadSavedPricing($this->item->basket);
+    ?>
 
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
-        <div class="order-edit front-end-edit">
-            <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
-            <div >
-                <div class="row-fluid">
-                    <div class="span10 offset1 well">
-                        <div class="row-fluid ">
-                            <h3><?php echo $this->item->basket->name; ?></h3>
-                            <div class="row-fluid" >
-                                <div class="span4 order-edit-label" >
-                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER'); ?>
-                                </div>
-                                <div class="span8 order-edit-value" >
-                                    <?php echo $this->item->client->name; ?>
-                                </div>
-                            </div>
-                            <div class="row-fluid" >
-                                <div class="span4 order-edit-label" >
-                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER_ORGANISM'); ?>
-                                </div>
-                                <div class="span8 order-edit-value" >
-                                    <?php
-                                    $organisms = $this->item->client->getMemberOrganisms();
-                                    echo $organisms[0]->name;
-                                    ?>
-                                </div>
-                            </div>
-                            <div class="row-fluid" >
-                                <div class="span4 order-edit-label" >
-                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_CREATED'); ?>
-                                </div>
-                                <div class="span8 order-edit-value" >
-                                    <?php echo $this->item->created; ?>
-                                </div>
-                            </div>
-                            <div class="row-fluid">
-                                <div class="span4 order-edit-label" >
-                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
-                                </div>
-                                <div class="span8 order-edit-value" >
-                                    <?php echo JText::_($this->item->orderstate); ?>
-                                </div>
-                            </div>
-                            <div class="row-fluid">
-                                <div class="span4 order-edit-label" >
-                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERTYPE_ID'); ?>
-                                </div>
-                                <div class="span8 order-edit-value" >
-                                    <?php echo JText::_($this->item->ordertype); ?>
-                                </div>
-                            </div>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
+
+    <div class="order-edit front-end-edit">
+        <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+
+
+            <?php
+            //load layout, set data and view type
+            echo $orderLayout->render(array(
+                'item' => $this->item,
+                'form' => $this->form,
+                'viewType' => Easysdi_shopHelper::ORDERVIEW_REQUEST,
+                'authorizeddiffusion' => $this->authorizeddiffusion,
+                'managedOrganismsDiffusion' => $this->managedOrganismsDiffusion
+            ));
+            ?>
+
+
+
+            <div>
+                <?php echo $this->getToolbar(); ?>
+            </div>
+
+            <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+                <?php echo $field->input; ?>
+            <?php endforeach; ?>  
+            <input type="hidden" name="task" value="" />
+            <input type="hidden" name="option" value="com_easysdi_shop" />
+            <input type="hidden" name="jform[current_product]" id="jform_current_product" value="" />
+            <?php echo JHtml::_('form.token'); ?>
+
+            <!-- Reject modal -->
+            <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="rejectModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TITLE'); ?></h4>
                         </div>
-
-                        <?php if (!empty($this->item->basket->thirdparty)): ?>
-                            <div class="row-fluid" >
-                                <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>                                
-                                <span ><?php echo $this->item->basket->thirdorganism; ?></span>
-                            </div>
-                        <?php endif; ?>
-
-                        <div class="row-fluid ">
-                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
-                            <table class="table table-striped">
-                                <tfoot>
-                                </tfoot>
-                                <tbody>
-                                    <?php foreach ($this->item->basket->extractions as $extraction) : ?>
-                                        <?php if (($editMode = in_array($extraction->id, $this->authorizeddiffusion)) || in_array($extraction->organism, $this->managedOrganismsDiffusion)) : ?>
-                                            <tr id="<?php echo $extraction->id; ?>">
-                                                <td>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&preview=editor&guid=' . $extraction->metadataguid); ?>"><?php echo $extraction->name; ?></a>
-                                                    <div class="small"><?php echo $extraction->organism; ?></div>
-                                                    <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
-                                                        <div class="accordion-group">
-                                                            <div class="accordion-heading">
-                                                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse">
-                                                                    <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
-                                                                </a>
-                                                            </div>
-                                                            <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body in">
-                                                                <div class="accordion-inner">
-                                                                    <?php
-                                                                    foreach ($extraction->properties as $property):
-                                                                        ?>
-                                                                        <div class="small">
-                                                                            <div class="order-property-label" >
-                                                                                <?php echo $property->name; ?> :
-                                                                            </div>
-
-                                                                            <?php
-                                                                            foreach ($property->values as $value) :
-                                                                                ?>
-                                                                                <div class="order-property-value" >
-                                                                                    <?php
-                                                                                    if (!empty($value->value)) :
-                                                                                        echo $value->value;
-                                                                                    else :
-                                                                                        echo $value->name;
-                                                                                    endif;
-                                                                                    if (next($property->values) == true)
-                                                                                        echo', ';
-                                                                                    ?>
-                                                                                </div>
-                                                                                <?php
-                                                                            endforeach;
-                                                                            ?>
-                                                                        </div>
-                                                                        <?php
-                                                                    endforeach;
-                                                                    ?>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row-fluid diffusion-order-result">
-                                                        <div class="span2">
-                                                            <span class="badge badge-info"><i class="icon-white icon-upload"></i></span>                                                                
-                                                        </div>
-                                                        <div class="span10">
-                                                            <div class="row-fluid">
-                                                                <?php if ($extraction->productstate_id == 3) : ?>
-                                                                    <div class="span8">
-                                                                        <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>                                                                             
-                                                                    </div>
-                                                                <?php else : ?>
-                                                                    <div class="span2 order-edit-label" >
-                                                                        <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FILE'); ?>
-                                                                    </div>
-
-                                                                    <div class="span6 order-edit-value" >
-                                                                        <?php echo $extraction->file . ' (' . $extraction->size . ' B)'; ?>
-                                                                    </div>
-                                                                <?php endif; ?>
-
-
-                                                            </div>
-                                                            <div class="row-fluid order-fee">
-                                                                <div class="span2 order-edit-label" >
-                                                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
-                                                                </div>
-                                                                <div class="span6 order-edit-value" >
-                                                                    <?php if ($extraction->productstate_id == 3) : ?>
-                                                                        <input type="text" id="fee_<?php echo $extraction->id; ?>" name="jform[fee][<?php echo $extraction->id; ?>]" placeholder="" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>>
-                                                                    <?php else : ?>
-                                                                        <?php echo $extraction->fee; ?>
-                                                                    <?php endif; ?>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row-fluid order-remark">
-                                                                <div class="span2 order-edit-label" >
-                                                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_REMARK'); ?>
-                                                                </div>
-
-                                                                <div class="span6 order-edit-value" >
-                                                                    <?php if ($extraction->productstate_id == 3) : ?>
-                                                                        <textarea id="remark_<?php echo $extraction->id; ?>" name="jform[remark][<?php echo $extraction->id; ?>]" rows="6" placeholder="" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>></textarea>
-                                                                    <?php else : ?>
-                                                                        <?php echo $extraction->remark; ?>
-                                                                    <?php endif; ?>
-
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </td>        
-                                                <td>
-
-                                                </td>
-                                            </tr>
-                                        <input type = "hidden" name = "jform[diffusion][]" value = "<?php echo $extraction->id; ?>" />
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                        <div id="rejectModalBody" class="modal-body">
+                            <?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TEXT'); ?><br/>
+                            <span class="text-error"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TEXT_WARNING'); ?></span><br/>
+                            <br/>
+                            <?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TEXT_REASON'); ?><br/>
+                            <textarea id="rejectionremark" name="jform[rejectionremark]" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_TEXT_REASON_PLACEHOLDER'); ?>" ></textarea>
                         </div>
-                        <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
+                        <div class="modal-footer">
+                            <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_CANCEL'); ?></button>
+                            <button id="rejectByProviderButton" type="button" class="btn btn-danger" onclick="Joomla.submitbutton('request.rejectproduct');"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_CONFIRM'); ?></button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div>
-            <?php echo $this->getToolbar(); ?>
-        </div>
-        <?php if ($this->item->basket->extent->id == 1 || $this->item->basket->extent->id == 2): ?>
-            <?php echo $this->form->getInput('perimeter', null, $this->item->basket->extent->features); ?>
-            <?php
-        else :
-            foreach ($this->item->basket->perimeters as $perimeter):
-                if ($perimeter->id == $this->item->basket->extent->id):
-                    echo $this->form->getInput('wfsfeaturetypefieldid', null, $perimeter->featuretypefieldid);
-                    echo $this->form->getInput('wfsfeaturetypename', null, $perimeter->featuretypename);
-                    echo $this->form->getInput('wfsurl', null, $perimeter->wfsurl);
-                    echo $this->form->getInput('wfsnamespace', null, $perimeter->namespace);
-                    echo $this->form->getInput('wfsprefix', null, $perimeter->prefix);
-                    echo $this->form->getInput('wfsfeaturetypefieldgeometry', null, $perimeter->featuretypefieldgeometry);
-                    break;
-                endif;
-            endforeach;
-            ?>
-            <?php echo $this->form->getInput('wfsperimeter', null, json_encode($this->item->basket->extent->features)); ?>
-        <?php endif; ?>
-        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
-            <?php echo $field->input; ?>
-        <?php endforeach; ?>  
-        <input type = "hidden" name = "task" value = "" />
-        <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-        <?php echo JHtml::_('form.token'); ?>
-    </form>
 
+            <!-- post product error modal -->
+            <div class="modal fade" id="productErrorModal" tabindex="-1" role="dialog" aria-labelledby="productErrorModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="productErrorModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_ERROR_MODAL_TITLE'); ?></h4>
+                        </div>
+                        <div id="productErrorModalBody" class="modal-body">
+                            asdfasdf
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_ERROR_MODAL_OK'); ?></button>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+
+
+        </form>
+    </div>
 
     <script>
+        var isPricingActivated = <?php echo JComponentHelper::getParams('com_easysdi_shop')->get('is_activated') ? 'true' : 'false'; ?>;
+        var orderType = '<?php echo $this->item->ordertype; ?>';
+        jQuery(document).ready(function () {
+            jQuery('#rejectByProviderButton').prop('disabled', true);
+            jQuery('textarea#rejectionremark').on('input propertychange', function () {
+                jQuery('#rejectByProviderButton').prop('disabled', !(this.value.length > 20));
+            });
+        });
+
+        function checkAndSendProduct(productId) {
+            enableCurrentProduct(productId);
+            if (checkProductElements(productId)) {
+                Joomla.submitbutton('request.saveproduct');
+            } else {
+                jQuery('#productErrorModal').modal();
+            }
+            return false;
+        }
+
+        function enableCurrentProduct(productId) {
+            jQuery('#jform_current_product').val(productId);
+        }
+
+        function checkProductElements(productId) {
+            var hasFile = jQuery('#file_' + productId).val().length > 0;
+            var hasRemark = jQuery('#remark_' + productId).val().length > 0;
+            var hasFee = jQuery('#fee_' + productId).val().length > 0;
+
+            jQuery('#productErrorModalBody').empty();
+            if (orderType == 'order') {
+                var hasErrors = false;
+                if (!hasFile && !hasRemark) {
+                    jQuery('#productErrorModalBody').append('<p>' + Joomla.JText._('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_FILE_OR_REMARK') + '</p>');
+                    hasErrors = true;
+                }
+                if (isPricingActivated && !hasFee) {
+                    jQuery('#productErrorModalBody').append('<p>' + Joomla.JText._('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_PRICE') + '</p>');
+                    hasErrors = true;
+                }
+                return !hasErrors;
+            } else if (orderType == 'estimate') {
+                if (!hasFee) {
+                    jQuery('#productErrorModalBody').append('<p>' + Joomla.JText._('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_PRICE') + '</p>');
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         Ext.onReady(function () {
             window.appname.on("ready", function () {
                 loadPerimeter(false);
-            })
-        })
+            });
+        });
+
+
+
+
     </script>
     <?php
 else:

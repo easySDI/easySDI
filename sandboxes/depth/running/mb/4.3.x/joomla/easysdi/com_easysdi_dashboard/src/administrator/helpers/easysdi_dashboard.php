@@ -19,15 +19,18 @@ class Easysdi_dashboardHelper {
      * Configure the Linkbar.
      */
     public static function addSubmenu($vName = '') {
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_core');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_user');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_dashboard');
         JHtmlSidebar::addEntry(
-                '<i class="icon-home"></i> ' . JText::_('COM_EASYSDI_DASHBOARD_TITLE_HOME'), 'index.php?option=com_easysdi_core&view=easysdi', $vName == 'easysdi'
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_DASHBOARD_TITLE_SHOP'), 'index.php?option=com_easysdi_dashboard&view=shop', $vName == 'shop'
         );
-        JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_DASHBOARD_TITLE_SHOP'), 'index.php?option=com_easysdi_dashboard&view=shop', $vName == 'shop'
-        );
-        /*JHtmlSidebar::addEntry(
-                JText::_('COM_EASYSDI_DASHBOARD_TITLE_CATALOG'), 'index.php?option=com_easysdi_dashboard&view=dashboard', $vName == 'dashboard'
-        );*/
     }
 
     public static function getActions($id = null) {
@@ -61,7 +64,7 @@ class Easysdi_dashboardHelper {
         );
         return $opts;
     }
-    
+
     public static function getReportFormatList() {
         $opts = array(
             array("text" => "PDF", "value" => "pdf"),
@@ -70,7 +73,7 @@ class Easysdi_dashboardHelper {
         );
         return $opts;
     }
-    
+
     public static function getReportLimitList() {
         $opts = array(
             array("text" => JText::_('COM_EASYSDI_DASHBOARD_REPORTING_LIMIT_ALL'), "value" => 0),
@@ -80,7 +83,7 @@ class Easysdi_dashboardHelper {
             array("text" => "1000", "value" => 1000)
         );
         return $opts;
-    }    
+    }
 
     /**
      * Return HTML pseudo filters that look like joomla originals
@@ -98,9 +101,9 @@ class Easysdi_dashboardHelper {
             $query = $db->getQuery(true)
                     ->select('o.id as value, o.name as text')
                     ->from($db->quoteName('#__sdi_diffusion', 'd'))
-                    ->join('INNER', $db->quoteName('#__sdi_version','v') .  ' ON (' . $db->quoteName('d.version_id') . ' = ' . $db->quoteName('v.id') . ')')
-                    ->join('INNER', $db->quoteName('#__sdi_resource','r') .  ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
-                    ->join('INNER', $db->quoteName('#__sdi_organism','o') .  ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('o.id') . ')')
+                    ->join('INNER', $db->quoteName('#__sdi_version', 'v') . ' ON (' . $db->quoteName('d.version_id') . ' = ' . $db->quoteName('v.id') . ')')
+                    ->join('INNER', $db->quoteName('#__sdi_resource', 'r') . ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
+                    ->join('INNER', $db->quoteName('#__sdi_organism', 'o') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('o.id') . ')')
                     ->group($db->quoteName('o.id'))
                     ->group($db->quoteName('o.name'))
                     ->order($db->quoteName('o.name'));
@@ -146,8 +149,7 @@ class Easysdi_dashboardHelper {
         curl_setopt($c, CURLOPT_HEADER, false);
         curl_setopt($c, CURLOPT_HTTPHEADER, array('Expect:'));
         curl_setopt($c, CURLOPT_POST, true);
-        curl_setopt($c, CURLOPT_POSTFIELDS, 
-                '__report=' . $reportName . '&' .
+        curl_setopt($c, CURLOPT_POSTFIELDS, '__report=' . $reportName . '&' .
                 '__format=' . $report_format . '&' .
                 'Json=' . $jsonData);
         $output = curl_exec($c);

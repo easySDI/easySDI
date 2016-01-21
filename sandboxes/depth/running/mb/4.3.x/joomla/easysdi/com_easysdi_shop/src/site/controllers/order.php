@@ -15,6 +15,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.ph
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
 require_once JPATH_COMPONENT . '/models/order.php';
 require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
 
 /**
  * Order controller class.
@@ -39,73 +40,110 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit', false));
     }
-    
+
     /**
      * validate - thirdparty validation of an order
      * 
      * @return void
      * @since 4.3.0
      */
-    public function validate(){
+    public function validate() {
         $app = JFactory::getApplication();
         $validateId = $app->input->getInt('id', 0, 'int');
-        
-        if($validateId == 0){
+        $validatorId = $app->input->getInt('sdiUserId', null, 'int');
+
+        if ($validatorId == 0 || $validatorId == '' || $validatorId == null) {
+            //Wrong user id set message
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            return;
+        }
+
+        if ($validateId == 0) {
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_NO_ID'));
-        }
-        else{
+        } else {
             $model = $this->getModel('Order', 'Easysdi_shopModel');
+
+            //get validator user
+            $validator = sdiFactory::getSdiUser($validatorId);
+            if (!in_array($model->getData($validateId)->thirdparty_id, $validator->getOrganisms(array(sdiUser::validationmanager), true))) {
+                //is not validator, set message
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                return;
+            }
+
             $model->checkout($validateId);
 
-            $model->thirdpartyValidation($validateId, $app->input->get('reason', null, 'html'));
+            $model->thirdpartyValidation($validateId, $validatorId, $app->input->get('reason', null, 'html'));
 
             $model->checkin($validateId);
 
             // Clear the profile id from the session.
             $app->setUserState('com_easysdi_shop.edit.order.id', null);
-            
+
             // Notify notifiedusers and extractionresponsible for each orderdiffusion of the current order
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->select('diffusion_id as id')
                     ->from('#__sdi_order_diffusion')
-                    ->where('order_id='.(int)$validateId);
+                    ->where('order_id=' . (int) $validateId);
             $db->setQuery($query);
             $diffusions = $db->loadObjectList();
-            foreach($diffusions as $diffusion){
+            foreach ($diffusions as $diffusion) {
                 Easysdi_shopHelper::notifyNotifiedUsers($diffusion->id);
                 Easysdi_shopHelper::notifyExtractionResponsible($diffusion->id);
             }
 
+            //Notify validation managers
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_VALIDATION);
+
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
         }
-        
-        // Redirect to the list screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+
+        // Redirect to the list screen. (if user is logged in)
+        if (!JFactory::getUser()->guest) {
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+        } else {
+            $this->setRedirect(JURI::base());
+        }
     }
-    
+
     /**
      * reject - thirdparty rejection of an order
      * 
      * @return void
      * @since 4.3.0
      */
-    public function reject(){
+    public function reject() {
         $app = JFactory::getApplication();
         $validateId = $app->input->getInt('id', 0, 'int');
+        $validatorId = $app->input->getInt('sdiUserId', null, 'int');
         $reason = $app->input->get('reason', null, 'html');
-        
-        if($validateId == 0 || $reason == ''){
+
+        if ($validatorId == 0 || $validatorId == '' || $validatorId == null) {
+            //Wrong user id set message
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            return;
+        }
+
+        if ($validateId == 0 || $reason == '') {
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTION_NO_ID_OR_REASON'));
-        }
-        else{
+        } else {
             $model = $this->getModel('Order', 'Easysdi_shopModel');
+
+            //get validator user
+            $validator = sdiFactory::getSdiUser($validatorId);
+            if (!in_array($model->getData($validateId)->thirdparty_id, $validator->getOrganisms(array(sdiUser::validationmanager), true))) {
+                //is not validator, set message
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                return;
+            }
+
             $model->checkout($validateId);
 
-            $model->thirdpartyRejection($validateId, $reason);
+            $model->thirdpartyRejection($validateId, $validatorId, $reason);
 
             $model->checkin($validateId);
 
@@ -114,10 +152,17 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
 
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTED_SUCCESSFULLY'));
+
+            //Notify validation managers
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_REJECTED);
         }
-        
-        // Redirect to the list screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+
+        // Redirect to the list screen. (if user is logged in)
+        if (!JFactory::getUser()->guest) {
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+        } else {
+            $this->setRedirect(JURI::base());
+        }
     }
 
     /**
@@ -133,14 +178,41 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             die();
         endif;
 
-        //Check user right on this order
         $order = JTable::getInstance('order', 'Easysdi_shopTable');
         $order->load($order_id);
-        if ($order->user_id != sdiFactory::getSdiUser()->id):
+
+        /////////// Check user right on this order
+        $currentUser = sdiFactory::getSdiUser();
+        $clientUser = new sdiUser((int) $order->user_id);
+        // current user extrations (if is extraction responsible)
+        $userExtrationsResponsible = $currentUser->getResponsibleExtraction();
+        if (!is_array($userExtrationsResponsible)) {
+            $userExtrationsResponsible = array();
+        }
+
+        $downloadAllowed = false;
+        $organisms = $clientUser->getMemberOrganisms();
+
+        //the user is the client
+        if ($order->user_id == $currentUser->id):
+            $downloadAllowed = true;
+        //the user is extraction responsible of the product
+        elseif (in_array($diffusion_id, $userExtrationsResponsible)):
+            $downloadAllowed = true;
+        //the user is organism manager of the provider's organism
+        elseif ($currentUser->isOrganismManager($diffusion_id, 'diffusion')):
+            $downloadAllowed = true;
+        //the user is organims manager of client's organism
+        elseif ($currentUser->isOrganismManager($organisms[0]->id)):
+            $downloadAllowed = true;
+        endif;
+
+
+        if (!$downloadAllowed) {
             $return['ERROR'] = JText::_('JERROR_ALERTNOAUTHOR');
             echo json_encode($return);
             die();
-        endif;
+        }
 
         //Load order response
         $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
@@ -149,22 +221,38 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $keys['diffusion_id'] = $diffusion_id;
         $orderdiffusion->load($keys);
 
-        $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
-        $file = JPATH_BASE. '/' .$folder.'/'.$order_id.'/'.$diffusion_id.'/'.$orderdiffusion->file;
+        //remote stroage, use curl
+        if ($orderdiffusion->storage_id == Easysdi_shopHelper::EXTRACTSTORAGE_REMOTE) {
 
+            $curlHelper = new CurlHelper(true);
 
-        error_reporting(0);
+            $curldata['url'] = $orderdiffusion->file;
+            $pos = strrpos($url, '.');
+            $extension = ($pos) ? substr($url, $pos) : null;
+            if ($extension) {
+                $curldata['fileextension'] = $extension;
+            }
+            $curldata['filename'] = $orderdiffusion->displayName;
+            return $curlHelper->get($curldata);
+        }
+        //local storage
+        else {
+            $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
+            $file = JPATH_BASE . '/' . $folder . '/' . $order_id . '/' . $diffusion_id . '/' . $orderdiffusion->file;
 
-        ini_set('zlib.output_compression', 0);
-        header('Pragma: public');
-        header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-        header('Content-Transfer-Encoding: none');
-        header("Content-Length: " . filesize($file));
-        header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
-        header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
+            error_reporting(0);
 
-        readfile($file);
-        die();
+            ini_set('zlib.output_compression', 0);
+            header('Pragma: public');
+            header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+            header('Content-Transfer-Encoding: none');
+            header("Content-Length: " . filesize($file));
+            header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
+            header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
+
+            readfile($file);
+            die();
+        }
     }
 
     function cancel() {
@@ -177,15 +265,15 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
 
         $id = JFactory::getApplication()->input->getInt('id', null, 'array');
 
-       if(empty($id)):
-           // Redirect back to the list screen.
-           $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDERS_ERROR_MSG_CANT_REMOVE'), 'error');
-           $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
-           return false;
-       endif;
+        if (empty($id)):
+            // Redirect back to the list screen.
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDERS_ERROR_MSG_CANT_REMOVE'), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+            return false;
+        endif;
 
         // Attempt to save the data.
-        $return = $model->delete(array('id'=> $id));
+        $return = $model->delete(array('id' => $id));
 
         // Check for errors.
         if ($return === false) {
@@ -206,27 +294,26 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_DELETED_SUCCESSFULLY'));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+    }
 
+    function archive() {
+        $this->saveState(Easysdi_shopHelper::ORDERSTATE_ARCHIVED);
     }
-    
-    function archive(){
-        $this->saveState(Easysdi_shopModelOrder::ARCHIVED);        
-    }
-    
-    function saveState($state){
+
+    function saveState($state) {
         $model = $this->getModel('Order', 'Easysdi_shopModel');
 
         $id = JFactory::getApplication()->input->getInt('id', null, 'array');
 
-       if(empty($id)):
-           // Redirect back to the list screen.
-           $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDERS_ERROR_MSG_CANT_ARCHIVE'), 'error');
-           $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
-           return false;
-       endif;
+        if (empty($id)):
+            // Redirect back to the list screen.
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDERS_ERROR_MSG_CANT_ARCHIVE'), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+            return false;
+        endif;
 
         // Attempt to save order state.
-        $return = $model->setOrderState($id, $state );
+        $return = $model->setOrderState($id, $state);
 
         // Check for errors.
         if ($return === false) {

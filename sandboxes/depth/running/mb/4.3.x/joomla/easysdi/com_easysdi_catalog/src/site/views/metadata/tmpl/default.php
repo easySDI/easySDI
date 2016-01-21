@@ -41,7 +41,6 @@ JText::script('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN');
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
 JText::script('PUBLISHED');
-JText::script('TRASHED');
 JText::script('VALIDATED');
 
 JText::script('COM_EASYSDI_CATALOG_GEMET_HOME');
@@ -67,6 +66,10 @@ JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_OK');
 JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_KO');
 JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_UNABLE');
 JText::script('COM_EASYSDI_CATALOG_FILE_UPLOAD_SUCCES');
+
+JText::script('JGLOBAL_SELECT_SOME_OPTIONS');
+JText::script('JGLOBAL_SELECT_AN_OPTION');
+JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
 
 /* bootbox language */
 $ldao = new SdiLanguageDao();

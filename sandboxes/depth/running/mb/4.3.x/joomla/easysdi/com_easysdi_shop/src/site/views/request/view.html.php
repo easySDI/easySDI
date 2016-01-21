@@ -41,14 +41,20 @@ class Easysdi_shopViewRequest extends JViewLegacy {
         $this->user = sdiFactory::getSdiUser();
         
         $extractionsIds = array_map(function($d){return $d->id;}, $this->item->basket->extractions);
-        $this->authorizeddiffusion = array_intersect($extractionsIds, $this->user->getResponsibleExtraction());
-        $this->managedOrganismsDiffusion = array_map(function($o){return $o->name;}, $this->user->getOrganisms(array(sdiUser::organismmanager)));
+        $this->authorizeddiffusion = array_intersect($extractionsIds, (array)$this->user->getResponsibleExtraction());
+        $this->managedOrganismsDiffusion = array_map(function($o){return $o->id;}, (array)$this->user->getOrganismManagerOrganisms());
         
         if (!$this->user->isEasySDI || (count($this->authorizeddiffusion)==0 && !$this->user->isOrganismManager($extractionsIds, 'diffusion'))) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
             return false;
         }
+        
+        //get the contact address of the user
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_contact/tables/address.php';
+        $tableAddress = JTable::getInstance('Address', 'Easysdi_contactTable', array());
+        $tableAddress->loadByUserID($this->item->basket->sdiUser->id, 1);
+        $this->item->basket->sdiUser->contactAddress = $tableAddress;        
         
         $this->_prepareDocument();
 
@@ -98,11 +104,7 @@ class Easysdi_shopViewRequest extends JViewLegacy {
         //load the JToolBar library and create a toolbar
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
-        //and make whatever calls you require
-        if(count($this->authorizeddiffusion)>0){
-            $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_TO_USER'), 'request.save', false);
-            $bar->appendButton('Separator');
-        }
+
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'request.cancel', false);
         //generate the html and return
         return $bar->render();
