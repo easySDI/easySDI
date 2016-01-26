@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+
+        <field  name="searchtype"             
+                type="resourcetypesql" 
+                class="inputbox"
+                key_field="id" 
+                value_field="name"
+                label="COM_EASYSDI_CORE_FORM_LBL_VERSION_SEARCH_TYPE"
+                description="COM_EASYSDI_CORE_FORM_DESC_VERSION_SEARCH_TYPE" 
+        />
+        
+        <field name="searchid" type="text" size="40" class="inputbox"        
+               label="COM_EASYSDI_CORE_FORM_LBL_VERSION_SEARCH_ID"
+               description="COM_EASYSDI_CORE_FORM_DESC_VERSION_SEARCH_ID" 
+               filter="safehtml" /> 
+        
+        <field name="searchname" type="text" size="40" class="inputbox"        
+               label="COM_EASYSDI_CORE_FORM_LBL_VERSION_SEARCH_NAME"
+               description="COM_EASYSDI_CORE_FORM_DESC_VERSION_SEARCH_NAME" 
+               filter="safehtml" />
+        
+        <field  name="searchstate"             
+                type="sql" 
+                class="inputbox"
+                translate="true" 
+                query="SELECT null as id,'' as value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_metadatastate WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="value"
+                label="COM_EASYSDI_CORE_FORM_LBL_VERSION_SEARCH_STATE"
+                description="COM_EASYSDI_CORE_FORM_DESC_VERSION_SEARCH_STATE" 
+        />
+    </fieldset> 
+
+    <field name="searchlast" 
+            type="radio" 
+            class="" 
+            default="all"
+            label="COM_EASYSDI_CORE_FORM_LBL_VERSION_SEARCH_LAST"
+            description="COM_EASYSDI_CORE_FORM_DESC_VERSION_SEARCH_LAST" 
+    > 
+        <option value="all">COM_EASYSDI_CORE_FORM_VERSION_SEARCH_ALL</option>
+        <option value="last">COM_EASYSDI_CORE_FORM_VERSION_SEARCH_LAST</option>            
+    </field>
+            
+    <fieldset name="hidden">
+        <field name="id" type="hidden" filter="safehtml" />
+        <field name="access" type="hidden" filter="safehtml" />
+        <field name="asset_id" type="hidden" filter="safehtml" />
+        <field name="state" type="hidden" filter="safehtml" />
+        <field name="checked_out" type="hidden" filter="safehtml" />
+        <field name="checked_out_time" type="hidden" filter="safehtml" /> 
+        <field name="guid" type="hidden" filter="safehtml" /> 
+        <field name="name" type="hidden" filter="safehtml" /> 
+        <field name="resourcetype_id" type="hidden" filter="safehtml" />
+        <field name="resource_id" type="hidden" filter="safehtml" /> 
+        <field name="rights" type="hidden" filter="safehtml" /> 
+        <field name="childrentoremove" id="childrentoremove" type="hidden" filter="safehtml" /> 
+        <field name="childrentoadd" id="childrentoadd" type="hidden" filter="safehtml" /> 
+        <field name="ordering" type="hidden" filter="safehtml" />
+    </fieldset>
+    
+
+</form>

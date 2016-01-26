@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name ="details">
+        <field name="alias" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_ALIAS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_ALIAS" 
+               filter="safehtml" /> 
+
+        <field name="name" type="text" size="40" class="inputbox" required ="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_NAME"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_NAME" 
+               filter="safehtml" /> 
+
+        <field name="description" type="textarea" rows="5" cols="10" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_DESCRIPTION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_DESCRIPTION" 
+               filter="safehtml" /> 
+
+        <field name="namespace_id" 
+                type="sql" 
+                required="true"
+                class="inputbox input-small"
+                query="SELECT id, prefix FROM #__sdi_namespace WHERE state=1 ORDER BY prefix" 
+                key_field="id" 
+                value_field="prefix"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAMESPACE_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAMESPACE_ID" 
+        /> 
+
+        <field name="isocode" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_ISOCODE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_ISOCODE" 
+               filter="safehtml" /> 
+
+        <field name="stereotype_id"
+               type="sql" 
+               onchange="onStereotypeChange()"
+               class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_ATTRIBUTETYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_ATTRIBUTETYPE_ID"            
+               query="SELECT NULL AS id, '' AS value 
+                        UNION SELECT id, value FROM #__sdi_sys_stereotype 
+                        WHERE state=1 AND entity_id = 1 ORDER BY value" 
+               key_field="id" 
+               required ="true"
+               value_field="value"
+               translate="true"/> 
+
+        <field name="length" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_LENGTH"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_LENGTH" 
+               filter="safehtml" /> 
+
+        <field name="pattern" type="textarea" rows="5" cols="10" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_PATTERN"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_PATTERN" 
+               filter="safehtml" /> 
+
+        <field name="listnamespace_id" 
+                type="sql" 
+                class="inputbox input-mini"
+                query=" SELECT NULL AS id, '' AS name
+                        UNION SELECT id, name FROM #__sdi_namespace 
+                        WHERE state=1 ORDER BY name" 
+                key_field="id" 
+                value_field="name"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAMESPACE_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAMESPACE_ID" 
+        />
+       
+        <field name="type_isocode" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_TYPE_ISOCODE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_TYPE_ISOCODE" 
+               filter="safehtml" /> 
+
+        <field name="codelist" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_CODELIST"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_CODELIST" 
+               filter="safehtml" /> 
+
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_FORMAT_HELP"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_FORMAT_HELP" 
+               filter="ARRAY" />
+        
+        <field name="text2" type="multilingual" cols="20" rows="5" class="inputbox input-xlarge"  
+               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_HELP"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_HELP" 
+               filter="ARRAY" />
+        
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+
+    </fieldset> 
+
+    <field name="access"
+        type="accesslevel"
+        label="JFIELD_ACCESS_LABEL"
+        description="JFIELD_ACCESS_DESC"
+        class="inputbox span12 small"
+        size="1"
+    />
+ 
+    <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field>
+        
+    <fieldset name="accesscontrol">
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="attribute"
+        />
+    </fieldset>
+
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+    
+    <field name="created_by" type="createdby" default="" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_CREATED_BY"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_CREATED_BY"  /> 
+
+    <field name="created" type="timecreated" default="" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_CREATED"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_CREATED"  /> 
+
+    <field name="modified_by" type="createdby" size="40" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_MODIFIED_BY"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_MODIFIED_BY" 
+           default="0" 
+           filter="safehtml" /> 
+
+    <field name="modified" type="timeupdated" default="" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_MODIFIED"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_MODIFIED"  /> 
+
+</form>
