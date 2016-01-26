@@ -90,7 +90,7 @@ class plgUserEasysdicontact extends JPlugin {
 		$dbo->setQuery($query);
 		$id = $dbo->loadResult();
                 
-		if(isset($id)){
+		if(!empty($id)){
 			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'), 'error');
                         $app->redirect(JRoute::_('index.php?option=com_users&view=profile&layout=edit'));
                         jExit();

@@ -1,6 +1,22 @@
+<?php
+ $iframewidth = JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth');
+ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight');
+?>
 <script type="text/javascript">
 js = jQuery.noConflict();
 
+    
+    SqueezeBox.initialize({
+        handler: 'iframe',
+        size: {
+            x: <?php echo $iframewidth ; ?>,
+            y: <?php echo $iframeheight ; ?>
+        }
+    });
+    
+var now = new Date();
+now = now.toISOString().replace('T', ' ').substr(0, 10);
+    
 // #n# are used as placeholder
 var Links = {
     resource: {
@@ -10,26 +26,19 @@ var Links = {
         metadata: {
             preview: {
                 class: 'modal',
-                href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
+                href: 'index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor&type=complete', //'<?php echo JRoute::_('index.php?option=com_easysdi_catalog&id=#0#&tmpl=component&view=sheet&preview=editor')?>',
                 property: 'metadata',
-                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')?>",
-                rel: "{handler:'iframe',size:{x:600,y:700}}"
+                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')?>"
             },
             edit: {
                 href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=#0#')?>',
                 property: 'metadata',
                 html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_EDIT_METADATA')?>"
             },
-            publish: {
-                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA')?>"
-            },
             inprogress: {
                 href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=#0#')?>',
                 property: 'metadata',
                 html: "<?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM')?>"
-            },
-            changepublishdate: {
-                html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA')?>"
             },
             archive: {
                 href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=#0#')?>',
@@ -99,7 +108,6 @@ var Links = {
         child_number:   '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getChildren&parentId=#0#')?>',
         new_version:    '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getNewVersionRight&metadata_id=#0#')?>',
         synchronization: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.getSynchronisationInfo&metadata_id=#0#')?>',
-        publish_right: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getPublishRight&metadata_id=#0#')?>',
         inprogress_right: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getParent&versionId=#0#&parentState=#1#')?>',
         delete_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadeDeleteChild&version_id=#0#')?>',
         get_roles: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.getRoles&versionId=#0#')?>',
@@ -141,8 +149,7 @@ var metadataState = {
     INPROGRESS: 1,
     VALIDATED:  2,
     PUBLISHED:  3,
-    ARCHIVED:   4,
-    TRASHED:    5
+    ARCHIVED:   4
 };
 
 var Metadata = (function(){
@@ -194,7 +201,8 @@ var Resource = (function(){
             metadataResponsible:    false,
             resourceManager:        false,
             diffusionManager:       false,
-            viewManager:            false
+            viewManager:            false,
+            organismManager:        false
         };
         this.versioning = false;
         this.assignment = false;
@@ -255,6 +263,7 @@ var Resource = (function(){
     <?php if($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>resource.rights.resourceManager = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::diffusionmanager)): ?>resource.rights.diffusionManager = 1;<?php endif; ?>
     <?php if($this->user->authorize($item->id, sdiUser::viewmanager)): ?>resource.rights.viewManager = 1;<?php endif; ?>
+    <?php if($this->user->isOrganismManager($item->organism_id)): ?>resource.rights.organismManager = 1;<?php endif; ?>
     <?php if($item->supportapplication): ?>resource.support.application = 1;<?php endif; ?>
     <?php if($item->supportdiffusion): ?>resource.support.diffusion = 1;<?php endif; ?>
     <?php if($item->supportrelation): ?>resource.support.relation = 1;<?php endif; ?>
@@ -263,8 +272,8 @@ var Resource = (function(){
     <?php if($item->versioning): ?>resource.versioning = 1;<?php endif; ?>
     resource.assignment = <?php  echo $assignenabled; ?>;
     resource.synchronize = <?php  echo $synchronizeenabled; ?>;
-    <?php foreach($item->metadata as $key => $metadata):?>
-        resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, '<?php echo JText::_($metadata->value);?>', '<?php echo $metadata->published;?>');
+    <?php foreach($item->metadata as $key => $metadata):?>        
+        resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, <?php echo  json_encode(JText::_($metadata->value));?>, '<?php echo $metadata->published;?>');
     <?php endforeach;?>
     resources.add(resource);
 <?php endforeach; ?>
@@ -343,23 +352,23 @@ var buildMetadataDropDown = function(resource){
     var section = [];
     section.push(buildDropDownItem(resource, 'metadata.preview'));
     
-    if(
+    if( 
         (resource.rights.metadataEditor && metadata.state===metadataState.INPROGRESS)
         ||
-        ((resource.rights.metadataResponsible || resource.rights.resourceManager) && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED]))
-    )
+        (resource.rights.metadataResponsible && js.inArray(metadata.state, [metadataState.INPROGRESS, metadataState.VALIDATED, metadataState.PUBLISHED])>-1)
+        || resource.rights.organismManager
+    ){
         section.push(buildDropDownItem(resource, 'metadata.edit'));
+    }
     
-    if(resource.rights.metadataResponsible)
+    if(resource.rights.metadataResponsible){
         switch(metadata.state){
             case metadataState.VALIDATED:
                 section.push(buildDropDownItem(resource, 'metadata.inprogress'));
-                section.push(buildDropDownItem(resource, 'metadata.publish'));
                 break;
                 
             case metadataState.PUBLISHED:
                 section.push(buildDropDownItem(resource, 'metadata.inprogress'));
-                section.push(buildDropDownItem(resource, 'metadata.changepublishdate'));
                 section.push(buildDropDownItem(resource, 'metadata.archive'));
                 break;
                 
@@ -367,6 +376,7 @@ var buildMetadataDropDown = function(resource){
                 section.push(buildDropDownItem(resource, 'metadata.inprogress'));
                 break;
         }
+    }
     
     dropdown.push(section);
     
@@ -392,40 +402,35 @@ var buildMetadataDropDown = function(resource){
 };
 
 var buildManagementDropDown = function(resource){
-    var div = js('<div></div>').addClass('btn-group'),
-        a = js('<a></a>')
-            .addClass('btn')
-            .addClass('btn-primary')
-            .addClass('btn-small')
-            .addClass('dropdown-toggle')
-            .attr('data-toggle', 'dropdown')
-            .html('<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_MANAGE'); ?> '),
-        span = js('<span></span>').addClass('caret');
-    
     var dropdown = [];
     
     /* FIRST SECTION */
-    if(resource.rights.resourceManager){
-        var section = [];
+    var section = [];
+    
+    if(resource.rights.resourceManager || resource.rights.organismManager){
+        if(resource.support.relation || resource.canBeChild){
+            section.push(buildDropDownItem(resource, 'management.relation'))
+        }
         
-        if(resource.versioning)
-            section.push(buildDropDownItem(resource, 'management.new_version'));
-        
-        if(resource.support.relation || resource.canBeChild)
-            section.push(buildDropDownItem(resource, 'management.relation'));
-        
-        if(resource.support.relation)
+        if(resource.support.relation){
             section.push(buildDropDownItem(resource, 'management.child_list'));
-        
-        if(resource.support.application)
-            section.push(buildDropDownItem(resource, 'management.application'));
-        
-        if(section.length)
-            dropdown.push(section);
+        }
     }
     
+    if(resource.rights.resourceManager){
+        if(resource.versioning){
+            section.unshift(buildDropDownItem(resource, 'management.new_version'));
+        }
+        
+        if(resource.support.application){
+            section.push(buildDropDownItem(resource, 'management.application'));
+        }
+    }
+    
+    section.length ? dropdown.push(section) : delete section;
+    
     /* SECOND SECTION */
-    if(resource.rights.diffusionManager && resource.support.diffusion){
+    if((resource.rights.diffusionManager || resource.rights.organismManager) && resource.support.diffusion){
         var section = [];
         
         section.push(buildDropDownItem(resource, 'management.diffusion'));
@@ -434,7 +439,7 @@ var buildManagementDropDown = function(resource){
     }
     
     /* THIRD SECTION */
-    if(resource.rights.viewManager && resource.support.view){
+    if((resource.rights.viewManager || resource.rights.organismManager) && resource.support.view){
         var section = [];
         
         section.push(buildDropDownItem(resource, 'management.view'));
@@ -452,7 +457,7 @@ var buildManagementDropDown = function(resource){
     }
     
     /* FIFTH SECTION */
-    if(resource.rights.metadataEditor  && resource.assignment == 1){
+    if((resource.rights.metadataEditor || resource.rights.organismManager) && resource.assignment == 1){
         var section = [];
         
         section.push(buildDropDownItem(resource, 'management.assignment_history'));
@@ -460,7 +465,19 @@ var buildManagementDropDown = function(resource){
         dropdown.push(section);
     }
     
-    js('td#'+resource.id+'_resource_management_actions').empty().append(div.append(a.append(span)).append(dropDown2HTML(dropdown)));
+    var div = js('<div></div>').addClass('btn-group'),
+        a = js('<a></a>')
+            .addClass('btn')
+            .addClass('btn-small')
+            .html('<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_MANAGE'); ?> ');
+    var span = js('<span></span>').addClass('caret');
+    if(dropdown.length === 0){
+        a.addClass('disabled') ;        
+        js('td#'+resource.id+'_resource_management_actions').empty().append(div.append(a.append(span)));
+    }else{
+        a.addClass('btn-primary').addClass('dropdown-toggle').attr('data-toggle', 'dropdown');            
+        js('td#'+resource.id+'_resource_management_actions').empty().append(div.append(a.append(span)).append(dropDown2HTML(dropdown)));
+    }
 };
 
 var buildStatusCell = function(resource){
@@ -475,9 +492,11 @@ var buildStatusCell = function(resource){
         js(versions).each(function(i, version){
             if('undefined' !== typeof version){
                 var metadata = version.metadata();
+                var d = metadata.publishDate.substr(0,10);
+                d = d>now ? '('+d+')' : '';
                 var option = js('<option></option>')
                         .val(version.id)
-                        .html(metadata.name+' : '+metadata.stateName);
+                        .html(metadata.name+' : '+metadata.stateName + ' ' + d);
 
                 select.append(option);
             }
@@ -505,7 +524,7 @@ var buildStatusCell = function(resource){
 };
 
 var enableResourceLink = function(resource){
-    if(resource.rights.resourceManager){
+    if(resource.rights.resourceManager || resource.rights.organismManager){
         var a = js('<a></a>')
                 .html(resource.name)
                 .attr('href', Links.resource.edit.replace('#0#', resource.id));
@@ -669,39 +688,6 @@ var getSynchronizationInfo = function(element){
     });
 };
 
-var getPublishRight = function(element){
-    if(element.length === 0) return;
-    
-    var metadata_id = getMetadataId(element);
-    js.ajax({
-        cache: false,
-        type: 'GET',
-        url: Links.ajax.publish_right.replace('#0#', metadata_id)
-    }).done(function(data){
-        try{
-            var response = js.parseJSON(data);
-            if(response !== null && response.canPublish>0)
-                js(element)
-                    .addClass('disabled')
-                    .css('color', '#cbcbcb')
-                    .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_UNPUBLISHED_OR_UNVALIDATED_CHILDREN')?>", html: true})
-                    .off('click');
-            else
-                js(element)
-                    .removeClass('disabled')
-                    .css('color', 'inherit')
-                    .tooltip('destroy')
-                    .on('click', function(){showPublishModal(this);return false;});
-        }
-        catch(e){
-            if(window.console){
-                console.log(e);
-                console.log(data);
-            }
-        }
-    });
-};
-
 var getSetInProgressRight = function(element){
     if(element.length === 0) return;
     
@@ -855,9 +841,9 @@ var buildActionsCell = function(resource, reload){
     // Performs some action on dropdowns links
     js('a#'+resource.id+'_child_list').length>0 ? getChildNumber(js('a#'+resource.id+'_child_list')) : getSynchronizationInfo(js('a#'+resource.id+'_synchronize'));
     getNewVersionRight(js('a#'+resource.id+'_new_version'));
-    getPublishRight(js('a#'+resource.id+'_publish'));
     getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
     SqueezeBox.assign(js('a#'+resource.id+'_preview'));
+    
 };
 
 // Set events
@@ -912,7 +898,7 @@ js(document).ready(function(){
     
     // Fix version's select style and event
     js('td[id$=_resource_versions] > select')
-            .chosen()
+            .chosen({width:'100%'})
             .on('change', function(){buildActionsCell(resources.get(getResourceId(this)));})
             ;
     

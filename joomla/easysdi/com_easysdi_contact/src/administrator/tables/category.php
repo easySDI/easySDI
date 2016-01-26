@@ -3,7 +3,7 @@
 /**
  *** @version     4.0.0
  * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -36,18 +36,16 @@ class Easysdi_contactTablecategory extends sdiTable {
      * @since	1.5
      */
     public function bind($array, $ignore = '') {
-
-        
-		if(isset($array['created_by']) || $array['created_by'] == 0){
-			$array['created_by'] = JFactory::getUser()->id;
-		}
-		if(isset($array['created']) || $array['created'] == ''){
-			$array['created'] = date("Y-m-d H:i:s");
-		}
-		$array['modified'] = date("Y-m-d H:i:s");
-		if(!JFactory::getUser()->authorise('core.edit.state','com_easysdi_contact') && $array['state'] == 1){
-			$array['state'] = 0;
-		}
+        if(!isset($array['created_by']) || $array['created_by'] == 0){
+                $array['created_by'] = JFactory::getUser()->id;
+        }
+        if(!isset($array['created']) || $array['created'] == ''){
+                $array['created'] = date("Y-m-d H:i:s");
+        }
+//		$array['modified'] = date("Y-m-d H:i:s");
+        if(!JFactory::getUser()->authorise('core.edit.state','com_easysdi_contact') && $array['state'] == 1){
+                $array['state'] = 0;
+        }
 
         if (isset($array['params']) && is_array($array['params'])) {
             $registry = new JRegistry();

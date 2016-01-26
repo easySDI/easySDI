@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -21,6 +21,7 @@ $document->addScript('components/com_easysdi_core/views/version/tmpl/version.js'
 ?>
 <?php
 require_once JPATH_BASE.'/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 /* datatable language */
 $ldao = new SdiLanguageDao();
 $user = new sdiUser();
@@ -42,18 +43,11 @@ if ($this->item) :
     JText::script('VALIDATED');
     JText::script('PUBLISHED');
     JText::script('ARCHIVED');
-    JText::script('TRASHED');
-    
-    $METADATASTATE_INPROGRESS = 1;
-    $METADATASTATE_VALIDATED = 2;
-    $METADATASTATE_PUBLISHED = 3;
-    $METADATASTATE_ARCHIVED = 4;
-    $METADATASTATE_TRASHED = 5;
     
     $versioning = ($this->item->versioning == 1) ? 'true' : 'false';
     $document->addScriptDeclaration('var versioning=' . $versioning . ';');
-    $isReadonly = !in_array($this->item->metadatastate, array($METADATASTATE_INPROGRESS, $METADATASTATE_VALIDATED));
-    $document->addScriptDeclaration("var isReadonly = '{$isReadonly}';");
+    $isReadonly = in_array($this->item->metadatastate, array(sdiMetadata::INPROGRESS, sdiMetadata::VALIDATED)) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::resourcemanager) ? 'false' : 'true';
+    $document->addScriptDeclaration("var isReadonly = ".$isReadonly.";");
     ?>
 
 <style type="text/css">
@@ -62,12 +56,11 @@ if ($this->item) :
 </style>
 
     <div class="version-edit front-end-edit">
-        <?php if (!empty($this->item->id)): ?>
-            <script type="text/javascript">
-                var version = <?php echo $this->item->id?>,
-                    resourcetypechild = "<?php echo $this->item->resourcetypechild;?>",
-                    baseUrl = "<?php echo JUri::base(); ?>index.php?";
-            </script>
+        <?php if (!empty($this->item->id)): 
+            $document->addScriptDeclaration("var version = ".$this->item->id."");
+            $document->addScriptDeclaration("var resourcetypechild = '".$this->item->resourcetypechild."';");
+            $document->addScriptDeclaration("var baseUrl = '".JUri::base()."/index.php?';");
+            ?>
             <?php if ($this->item->versioning): ?>
                 <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->resourcename . ' - ' . $this->item->name; ?></h1>
             <?php else: ?>
@@ -86,6 +79,7 @@ if ($this->item) :
             <div class="row-fluid">
                 <?php if($this->item->resourcetypechild): ?>
                 <!-- Criteria -->
+                <div class="row-fluid">
                 <div class="span12">
                     <div class="well">
                         <div class="sdi-searchcriteria form-horizontal form-inline form-validate">
@@ -127,6 +121,7 @@ if ($this->item) :
                             </table>
                         </div>
                     </div>
+                </div>
                 </div>
                 
                 
