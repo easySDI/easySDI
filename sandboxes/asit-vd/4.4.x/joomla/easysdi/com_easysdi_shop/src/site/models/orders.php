@@ -197,7 +197,7 @@ class Easysdi_shopModelOrders extends JModelList {
         //Don't include historized item
         $query->where('a.orderstate_id <> 2');
 
-        $query->order('a.created DESC');
+        $query->order('a.sent DESC');
         
         $query->group('a.id');
         $query->group('a.guid');

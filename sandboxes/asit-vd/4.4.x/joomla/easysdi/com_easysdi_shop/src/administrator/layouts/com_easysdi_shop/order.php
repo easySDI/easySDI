@@ -101,7 +101,7 @@ if (!$showActions) {
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_CREATED'); ?>
             </div>
             <div class="span10 order-edit-value" >
-                <?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>
+                <?php echo JHtml::date($item->sent, JText::_('DATE_FORMAT_LC2')); ?>
             </div>
         </div>
 

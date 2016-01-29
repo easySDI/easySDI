@@ -240,7 +240,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->group('juclient.name');
         $query->group('oclient.name');
 
-        $query->order('a.created DESC');
+        $query->order('a.sent DESC');
 
         return $query;
     }
