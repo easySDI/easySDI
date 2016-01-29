@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version		4.4.0
  * @package     mod_easysdi_adminbutton
- * @copyright   Copyright (C) 2013. All rights reserved.
- * @license     GNU General Public License version 3 or later; see LICENSE.txt
- * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ * @copyright	
+ * @license		
+ * @author		
  */
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
