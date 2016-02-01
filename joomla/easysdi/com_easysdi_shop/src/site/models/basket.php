@@ -83,7 +83,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $joomlaUser = JFactory::getUser();
             $dateForName = JFactory::getDate();
             $dateForName->setTimeZone(new DateTimeZone($joomlaUser->getParam('timezone', $systemConfig->get('offset'))));
-            $data['name'] = JFactory::getUser()->name . ' - ' . $dateForName;
+            $data['name'] = JFactory::getUser()->name . JHtml::date($dateForName, JText::_('COM_EASYSDI_SHOP_BASKET_DATE_IN_NAME_FORMAT'));;
         else:
             $data['name'] = $basket->name;
         endif;
@@ -99,6 +99,8 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['mandate_contact'] = $basket->mandate_contact;
         $data['mandate_email'] = $basket->mandate_email;
         $data['freeperimetertool'] = $basket->freeperimetertool;
+        $data['access_token'] = JUserHelper::genRandomPassword(64);
+        $data['validation_token'] = JUserHelper::genRandomPassword(64);
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
                 $data['ordertype_id'] = Easysdi_shopHelper::ORDERTYPE_ORDER;

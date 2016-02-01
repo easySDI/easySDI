@@ -60,3 +60,10 @@ CREATE TABLE IF NOT EXISTS [#__sdi_processing_order] (
     SET ANSI_NULLS ON;
 
 ALTER TABLE [#__sdi_category] ADD [backend_only] [tinyint] NOT NULL DEFAULT 0;
+
+ALTER TABLE [#__sdi_order] ADD  [usernotified]     [tinyint]      NOT NULL DEFAULT 0;
+ALTER TABLE [#__sdi_order] ADD  [access_token]     [nvarchar](64) NULL;
+ALTER TABLE [#__sdi_order] ADD  [validation_token] [nvarchar](64) NULL;
+
+UPDATE [#__sdi_order] SET [access_token]     = LOWER( CONVERT(NVARCHAR(64), HASHBYTES('SHA2_512', CONVERT(NVARCHAR(36),NEWID()) ),2));
+UPDATE [#__sdi_order] SET [validation_token] = LOWER( CONVERT(NVARCHAR(64), HASHBYTES('SHA2_512', CONVERT(NVARCHAR(36),NEWID()) ),2));

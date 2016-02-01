@@ -28,8 +28,8 @@ $filterStatus = isset($displayData['filterStatus']) ? $displayData['filterStatus
         <?php foreach ($items as $item) : ?>
             <tr class="order-line order-line-new <?php echo('sdi-orderstate-' . preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-' . preg_replace('/\s+/', '', $item->ordertype) ); ?>">
                 <td class="ordercreated">
-                    <span class="hasTip" title="<?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>">
-                        <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->created)); ?>
+                    <span class="hasTip" title="<?php echo JHtml::date($item->sent, JText::_('DATE_FORMAT_LC2')); ?>">
+                        <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->sent)); ?>
                     </span>
                 </td>
                 <td class="ordername">

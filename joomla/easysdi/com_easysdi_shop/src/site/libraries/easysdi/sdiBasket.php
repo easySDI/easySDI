@@ -13,6 +13,9 @@ defined('_JEXEC') or die;
 require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiExtraction.php';
 require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPerimeter.php';
 
+/**
+ * reprents an easySDI basket or an order with all its products, permter and properties
+ */
 class sdiBasket {
 
     public $id;
@@ -32,10 +35,18 @@ class sdiBasket {
     public $thirdorganism;
     public $freeperimetertool = '';
 
+    /**
+     * contructor of sdiBasket, to load an existing basket loadOrder($id)
+     */
     function __construct() {
         $this->sdiUser = sdiFactory::getSdiUser();
     }
 
+    /**
+     * loads an existing basket (order)
+     * @param integer $orderId The order id to load from database
+     * @param boolean $copy Make a copy (default false)
+     */
     function loadOrder($orderId, $copy = false) {
         try {
             $db = JFactory::getDbo();
@@ -50,11 +61,19 @@ class sdiBasket {
                             . 'o.mandate_email as mandate_email, '
                             . 'org.name as thirdorganism, '
                             . 'o.buffer as buffer , '
-                            . 'o.surface,o.level as level, '
+                            . 'o.surface as surface, '
+                            . 'o.level as level, '
                             . 'o.freeperimetertool as freeperimetertool, '
                             . 'o.created, '
                             . 'o.created_by, '
-                            . 'o.user_id as user_id ')
+                            . 'o.orderstate_id as orderstate_id, '
+                            . 'o.user_id as user_id ,'
+                            . 'o.usernotified as usernotified ,'
+                            . 'o.validated_date as validated_date ,'
+                            . 'o.validated_reason as validated_reason ,'
+                            . 'o.validated_by as validated_by ,'
+                            . 'o.access_token as access_token ,'
+                            . 'o.validation_token as validation_token ')
                     ->from('#__sdi_order o')
                     ->leftJoin('#__sdi_organism org ON org.id = o.thirdparty_id')
                     ->where('o.id = ' . (int) $orderId);
@@ -67,8 +86,28 @@ class sdiBasket {
 
             //Copy order
             if ($copy) {
+                //reset ID
                 $this->id = null;
-                $this->name = $this->name . JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_NAME_SUFFIX');
+
+                //create the copy name
+                $copySuffix = JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_NAME_SUFFIX');
+                $incrementSeparator = ' ';
+                $pattern = '/.*' . $copySuffix . '(?:$|' . $incrementSeparator . '(\d*)$)/';
+                $matches = array();
+                $matched = preg_match($pattern, $this->name, $matches, PREG_OFFSET_CAPTURE);
+                
+                //order name contains the copy suffix
+                if ($matched) {
+                    if (count($matches) > 1) { //is third copy or more, change increment
+                        $newName = substr($this->name, 0, $matches[1][1]) . (((int) $matches[1][0]) + 1);
+                    } else { //is the second copy, add increment
+                        $newName = $this->name . $incrementSeparator . '2';
+                    }
+                } else { //is the first copy
+                    $newName = $this->name . $copySuffix;
+                }
+                
+                $this->name = $newName;
             }
 
             //For "non copies": reload the user who's created the order (e.g. in views: order, request )
@@ -78,7 +117,7 @@ class sdiBasket {
 
             //Load diffusion
             $query = $db->getQuery(true)
-                    ->select('d.id as id, od.id as orderdiffusion_id, od.productstate_id, od.remark, od.fee, od.completed,' . $db->quoteName('od.file') . ' , od.size, od.created_by')
+                    ->select('d.id as id, od.id as orderdiffusion_id, od.productstate_id, od.remark, od.fee, od.completed,' . $db->quoteName('od.file') . ' , od.displayName as displayname, od.size, od.created_by')
                     ->from('#__sdi_diffusion d')
                     ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                     ->innerJoin('#__sdi_order o ON o.id = od.order_id')
@@ -123,6 +162,7 @@ class sdiBasket {
                 $ex->fee = $extraction->fee;
                 $ex->completed = $extraction->completed;
                 $ex->file = $extraction->file;
+                $ex->displayname = $extraction->displayname;
                 $ex->size = $extraction->size;
                 $ex->created_by = sdiFactory::getSdiUserByJoomlaId($extraction->created_by)->name;
                 $this->addExtraction($ex);
@@ -164,11 +204,19 @@ class sdiBasket {
         }
     }
 
+    /**
+     * add an extraction to the basket
+     * @param sdiExtraction $extraction
+     */
     function addExtraction($extraction) {
         $this->setProperties($extraction);
         $this->extractions[] = $extraction;
     }
 
+    /**
+     * remove an extraction (=diffusion/product) from the basket by its id
+     * @param integer $id
+     */
     function removeExtraction($id) {
         foreach ($this->extractions as $key => $extraction):
             if ($extraction->id == $id) {
@@ -187,6 +235,10 @@ class sdiBasket {
         endforeach;
     }
 
+    /**
+     * set the permieters of each extraction
+     * @param sdiPerimeter $perimeters
+     */
     function setPerimeters($perimeters) {
         $this->perimeters = $perimeters;
         foreach ($this->perimeters as $perimeter):
@@ -194,34 +246,31 @@ class sdiBasket {
         endforeach;
     }
 
+    /**
+     * set the properties of each extraction
+     * @param sdiExtraction $extraction
+     */
     function setProperties($extraction) {
-        if (!empty($extraction->visualization)):
-            if ($this->sdiUser->canView($extraction->visualization))
+        if (!empty($extraction->visualization)) {
+            if ($this->sdiUser->canView($extraction->visualization)) {
                 $this->visualization .= $extraction->visualization . ',';
-        endif;
-        if ($extraction->restrictedperimeter == '1')
+            }
+        }
+        if ($extraction->restrictedperimeter == '1') {
             $this->isrestrictedbyperimeter = true;
+        }
 
-        if ((empty($this->surfacemin) && !empty($extraction->surfacemin)) || (!empty($extraction->surfacemin) && $extraction->surfacemin > $this->surfacemin))
+        if ((empty($this->surfacemin) && !empty($extraction->surfacemin)) || (!empty($extraction->surfacemin) && $extraction->surfacemin > $this->surfacemin)) {
             $this->surfacemin = $extraction->surfacemin;
+        }
 
-        if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax))
+        if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax)) {
             $this->surfacemax = $extraction->surfacemax;
+        }
 
-        if ($extraction->pricing == 2)
+        if ($extraction->pricing == 2) {
             $this->free = false;
-    }
-
-    function renderAsOrder() {
-        
-    }
-
-    function renderAsRequest() {
-        
-    }
-
-    function renderAsBasket() {
-        
+        }
     }
 
 }

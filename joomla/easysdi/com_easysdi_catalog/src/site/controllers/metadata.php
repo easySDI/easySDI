@@ -428,7 +428,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $user = new sdiUser();
         //user's organism's categories
         $categories = $user->getMemberOrganismsCategoriesIds();
-        if(is_null($caegories) || count($categories)==0){
+        if (is_null($caegories) || count($categories) == 0) {
             $categories = array(0);
         }
 
@@ -844,7 +844,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         else
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_WARNING'), 'warning');
 
-        if (count($success)) {
+        $notificationsenabled = JComponentHelper::getParams('com_easysdi_catalog')->get('notificationsenabled', 1);
+        if (count($success) && $notificationsenabled) {
             $byUser = new sdiUser($data['assigned_by']);
             $toUser = new sdiUser($data['assigned_to']);
 
@@ -1260,12 +1261,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             $users = $this->db->loadColumn();
 
-            foreach ($users as $user) {
-                $sdiUser = new sdiUser($user);
+            $notificationsenabled = JComponentHelper::getParams('com_easysdi_catalog')->get('notificationsenabled', 1);
+            if ($notificationsenabled) {
+                foreach ($users as $user) {
+                    $sdiUser = new sdiUser($user);
 
-                $sdiUser->sendMail(
-                        JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $sdiUser->juser->name)
-                );
+                    $sdiUser->sendMail(
+                            JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $sdiUser->juser->name)
+                    );
+                }
             }
         }
     }
@@ -1337,7 +1341,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $supportedIds = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
 
         $results = array();
-        $results['supported'] = array(); 
+        $results['supported'] = array();
 
         // Only if multiple languages supported
         if ($supportedIds) {
@@ -1352,7 +1356,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $this->db->setQuery($query);
 
             $results['supported'] = $this->db->loadObjectList('iso3166-1-alpha2');
-        } 
+        }
 
         $query = $this->db->getQuery(true);
         $query->select('t.text2, ' . $query->quoteName('iso3166-1-alpha2'));

@@ -182,11 +182,11 @@ class Easysdi_shopModelRequests extends JModelList {
             // Filter by dates (order sent date)
             $sentfrom = $this->getState('filter.sentfrom');
             if (strlen($sentfrom) > 1) {
-                $query->where('a.sent >= \'' . $sentfrom . '\'');
+                $query->where('a.sent >= \'' . $sentfrom . ' 00:00:00\'');
             }
             $sentto = $this->getState('filter.sentto');
             if (strlen($sentto) > 1) {
-                $query->where('a.sent <= \'' . $sentto . '\'');
+                $query->where('a.sent <= \'' . $sentto . ' 23:59:59\'');
             }
         }
 
@@ -240,7 +240,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->group('juclient.name');
         $query->group('oclient.name');
 
-        $query->order('a.created DESC');
+        $query->order('a.sent DESC');
 
         return $query;
     }

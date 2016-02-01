@@ -1154,6 +1154,9 @@ CREATE TABLE [#__sdi_order] (
         [freeperimetertool] [nvarchar](100) NULL,
 	[sent] [datetime2](0) NOT NULL,
 	[completed] [datetime2](0) NOT NULL,
+	[usernotified] [tinyint] NOT NULL,
+	[access_token] [nvarchar](64) NULL,
+	[validation_token] [nvarchar](64) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_order_id] PRIMARY KEY CLUSTERED 
@@ -4047,6 +4050,8 @@ ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_o
 ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [sent];
 
 ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [completed];
+
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '0' FOR [usernotified];
 
 ALTER TABLE [#__sdi_order] ADD  DEFAULT '1' FOR [access];
 
