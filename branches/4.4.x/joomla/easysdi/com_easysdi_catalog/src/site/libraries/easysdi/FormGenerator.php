@@ -15,11 +15,11 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 /**
  * This Class will generate a form in XML format for Joomla.
  * 
- * @version		4.4.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright	
- * @license		
- * @author		
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 class FormGenerator {
 
@@ -87,7 +87,7 @@ class FormGenerator {
      * Returns a form structure to Joomla format.
      * 
      * @return string Form structure in Joomla format
-     * @version		4.4.0
+     * @version 4.0.0
      */
     public function getForm() {
 
@@ -1645,7 +1645,7 @@ class FormGenerator {
     /**
      * Unserialze the Xpath
      * 
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      * 
      * @param string $xpath
