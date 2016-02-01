@@ -24,7 +24,7 @@ class Easysdi_shopController extends JControllerLegacy {
     public function display($cachable = false, $urlparams = false) {
         require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
-        $view = JFactory::getApplication()->input->getCmd('view', 'perimeters');
+        $view = JFactory::getApplication()->input->getCmd('view', 'orders');
         JFactory::getApplication()->input->set('view', $view);
 
         parent::display($cachable, $urlparams);

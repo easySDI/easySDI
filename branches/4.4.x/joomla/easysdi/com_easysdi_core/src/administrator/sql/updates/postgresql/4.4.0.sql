@@ -55,3 +55,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
 );
 
 ALTER TABLE #__sdi_category ADD COLUMN backend_only smallint NOT NULL DEFAULT 0;
+
+ALTER TABLE #__sdi_order ADD COLUMN usernotified     smallint(1)     DEFAULT 0 NOT NULL         AFTER completed;
+ALTER TABLE #__sdi_order ADD COLUMN access_token     character varying(64)  NULL               AFTER `usernotified`;
+ALTER TABLE #__sdi_order ADD COLUMN validation_token character varying(64)  NULL               AFTER `access_token`;
+
+UPDATE #__sdi_order SET access_token     = concat(md5(random()::text || clock_timestamp()::text)::cstring , md5(random()::text || clock_timestamp()::text)::cstring);
+UPDATE #__sdi_order SET validation_token = concat(md5(random()::text || clock_timestamp()::text)::cstring , md5(random()::text || clock_timestamp()::text)::cstring);
+

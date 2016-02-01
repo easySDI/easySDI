@@ -62,3 +62,10 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE `#__sdi_category` ADD COLUMN `backend_only` TINYINT(1) NOT NULL DEFAULT 0 ;
+
+ALTER TABLE `#__sdi_order` ADD COLUMN `usernotified`     TINYINT(1)   NOT NULL DEFAULT 0 AFTER `completed`;
+ALTER TABLE `#__sdi_order` ADD COLUMN `access_token`     VARCHAR(64) NULL               AFTER `usernotified`;
+ALTER TABLE `#__sdi_order` ADD COLUMN `validation_token` VARCHAR(64) NULL               AFTER `access_token`;
+
+UPDATE `#__sdi_order` SET `access_token`     = CONCAT(MD5(UUID()), MD5(RAND()));
+UPDATE `#__sdi_order` SET `validation_token` = CONCAT(MD5(UUID()), MD5(RAND()));
