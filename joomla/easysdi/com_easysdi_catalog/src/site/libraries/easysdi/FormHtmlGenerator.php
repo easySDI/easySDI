@@ -10,11 +10,11 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 /**
  * This Class will browse the xml structure in session and create the tree fielset.
  *
- * @version		4.4.0
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright	
- * @license		
- * @author		
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 class FormHtmlGenerator {
 
@@ -104,7 +104,7 @@ class FormHtmlGenerator {
     /**
      * This function returns the form in HTML.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      * @return string
      */
@@ -148,7 +148,7 @@ class FormHtmlGenerator {
     /**
      * This function recursively browse the XML structure to create the HTML form.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $parent Parent element in the XML structure.
@@ -241,7 +241,7 @@ class FormHtmlGenerator {
     /**
      * Built on the action bar to add new relation instance.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $relation Current relation.
@@ -302,7 +302,7 @@ class FormHtmlGenerator {
      * Built fieldset corresponding to a relation instance.
      * This method also creates the "Close" button and, if necessary, the "Delete" button.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $element
@@ -392,7 +392,7 @@ class FormHtmlGenerator {
     /**
      * Encode special characters into HTML entities. Unless the <> characters.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param string $text
@@ -408,7 +408,7 @@ class FormHtmlGenerator {
      * This method constructs a set of attributes.
      * It will contain either a single field or a field for each language or a group of fields corresponding to a stereotype.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $attribute The current attribute.
@@ -587,7 +587,7 @@ class FormHtmlGenerator {
     /**
      * Returns a DIV containing the fields of the stereotype "geographic extent."
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $attribute The current attribute.
@@ -815,7 +815,7 @@ class FormHtmlGenerator {
     /**
      * This method returns a DIV containing the fields of the stereotype "GEMET".
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $attribute
@@ -992,7 +992,7 @@ class FormHtmlGenerator {
     /**
      * This method builds up the field retrieve structure Joomla field.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $attribute The current attribute.
@@ -1072,7 +1072,7 @@ class FormHtmlGenerator {
     /**
      * Import the HTML structure of the label in a DOMElement.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param JField $field The Joomla JField
@@ -1096,7 +1096,7 @@ class FormHtmlGenerator {
     /**
      * Import the HTML structure of the label in a DOMElement.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.2
      *
      * @param JField $field The Joomla JField
@@ -1131,7 +1131,7 @@ class FormHtmlGenerator {
     /**
      * This method creates the tooltip script.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param JFormField $field The Joomla JField
@@ -1154,7 +1154,7 @@ class FormHtmlGenerator {
     /**
      * This method creates the tooltip script.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param JFormField $field The Joomla JField
@@ -1183,7 +1183,7 @@ class FormHtmlGenerator {
     /**
      * Create the "ADD" bouton, if necessary.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $attribute The current attribute.
@@ -1237,7 +1237,7 @@ class FormHtmlGenerator {
     /**
      * Adds the "Preview" button to the File stereotype.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $attribute
@@ -1263,7 +1263,7 @@ class FormHtmlGenerator {
     /**
      * Adds the "Clear" button to the File stereotype.
      *
-     * @author		
+     * @author Depth S.A.
      * @since 4.0
      *
      * @param DOMElement $attribute The current attribute.

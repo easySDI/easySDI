@@ -1,9 +1,9 @@
 /**
- * @version		4.4.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
@@ -146,11 +146,11 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
 Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype,sdi.gxp.plugins.LayerTree);
 
 /**
- * @version		4.4.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
@@ -512,11 +512,11 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
 Ext.preg(sdi.gxp.plugins.Print.prototype.ptype, sdi.gxp.plugins.Print);
 
 /**
- * @version		4.4.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
@@ -639,11 +639,11 @@ sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
 Ext.preg(sdi.gxp.plugins.LayerManager.prototype.ptype, sdi.gxp.plugins.LayerManager);
 
 /**
-* @version		4.4.0
+* @version     4.0.0
 * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 Ext.namespace("sdi.gxp.plugins");
 
@@ -697,11 +697,11 @@ sdi.gxp.plugins.BingSource = Ext.extend(gxp.plugins.BingSource, {
 
 Ext.preg(sdi.gxp.plugins.BingSource.prototype.ptype, sdi.gxp.plugins.BingSource);
 /**
- * @version		4.4.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright	
- * @license		
- * @author		
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 Ext.namespace("sdi.gxp.plugins");
 
@@ -755,11 +755,11 @@ sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
 
 Ext.preg(sdi.gxp.plugins.GoogleSource.prototype.ptype, sdi.gxp.plugins.GoogleSource);
 /**
- * @version		4.4.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright	
- * @license		
- * @author		
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 Ext.namespace("sdi.gxp.plugins");
 
@@ -810,11 +810,11 @@ sdi.gxp.plugins.OSMSource = Ext.extend(gxp.plugins.OSMSource, {
 
 Ext.preg(sdi.gxp.plugins.OSMSource.prototype.ptype, sdi.gxp.plugins.OSMSource);
 /**
- * @version		4.4.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
@@ -895,11 +895,11 @@ sdi.gxp.plugins.LoadingIndicator = Ext.extend(gxp.plugins.LoadingIndicator, {
 Ext.preg(sdi.gxp.plugins.LoadingIndicator.prototype.ptype, sdi.gxp.plugins.LoadingIndicator);
 
 /**
-* @version		4.4.0
+* @version     4.0.0
 * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 Ext.namespace("sdi.gxp.plugins");
 
@@ -974,11 +974,11 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
 Ext.preg(sdi.gxp.plugins.WMSSource.prototype.ptype, sdi.gxp.plugins.WMSSource);
 
 /**
-* @version		4.4.0
+* @version     4.0.0
 * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 Ext.namespace("sdi.gxp.widgets");
 
@@ -1183,11 +1183,11 @@ gxp.Viewer.prototype.initMapPanel = function () {
 
 
 /**
- * @version		4.4.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 /**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
@@ -1249,11 +1249,11 @@ sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
 });
 
 /**
- * @version		4.4.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 /**
 
@@ -1336,11 +1336,11 @@ sdi.geoext.ux.PrintPreview = Ext.extend(GeoExt.ux.PrintPreview, {
 
 
 /**
- * @version		4.4.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 /**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
@@ -2113,11 +2113,11 @@ sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
 });
 
 /**
- * @version		4.4.0
+ * @version     4.3.x
  * @package     com_easysdi_core
- * @copyright	
- * @license		
- * @author		
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 
 /**

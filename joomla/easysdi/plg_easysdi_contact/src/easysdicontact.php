@@ -1,10 +1,10 @@
 <?php
 /**
-* @version		4.4.0
+* @version     4.0.0
 * @package     plg_easysdi_user
-* @copyright	
-* @license		
-* @author		
+* @copyright   Copyright (C) 2013. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 
 require_once JPATH_ADMINISTRATOR .'/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';

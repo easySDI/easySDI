@@ -1,10 +1,10 @@
 <?php
 /**
- * @version		4.4.0
+ * @version     4.3.2
  * @package     com_easysdi_service
- * @copyright	
- * @license		
- * @author		
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 
 require_once('PhysicalService.php');
@@ -38,7 +38,7 @@ class WmsPhysicalService extends PhysicalService{
 			return;
 		}
 		
-		$version = $this->xmlCapabilities->xpath('@version		4.4.0
+		$version = $this->xmlCapabilities->xpath('@version');
 		$version = (string)$version[0];
 		$xpathQuery = 'Capability//Layer[Name]';
 		
