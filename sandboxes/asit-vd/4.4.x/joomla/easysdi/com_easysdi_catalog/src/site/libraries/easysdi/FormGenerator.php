@@ -1645,7 +1645,7 @@ class FormGenerator {
     /**
      * Unserialze the Xpath
      * 
-     * @author Depth S.A.
+     * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
      * @since 4.0
      * 
      * @param string $xpath
