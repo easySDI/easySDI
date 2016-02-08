@@ -12,17 +12,17 @@ var tabIsOpen;
 var resourcetypes;
 
 var enumRendertype = {
-    TEXTAREA:1,
-    CHECKBOX:2,
-    RADIOBUTTON:3,
-    LIST:4,
-    TEXTBOX:5,
-    DATE:6,
-    DATETIME:7,
-    GEMET:8,
-    UPLOAD:9,
-    URL:10,
-    UPLOADANDURL:11
+    TEXTAREA: 1,
+    CHECKBOX: 2,
+    RADIOBUTTON: 3,
+    LIST: 4,
+    TEXTBOX: 5,
+    DATE: 6,
+    DATETIME: 7,
+    GEMET: 8,
+    UPLOAD: 9,
+    URL: 10,
+    UPLOADANDURL: 11
 }
 
 js('document').ready(function () {
@@ -49,7 +49,7 @@ js('document').ready(function () {
     js('.attribute-action').each(function () {
         setAttributeAction(js(this));
     });
-    
+
     /**
      * Retrieves resource types and displays or not the checkboxes versions. 
      */
@@ -353,12 +353,44 @@ js(document).on('change', '#resourcetype_id', function () {
     });
 });
 
+// Poll to check IDs correspondance (local DOM metadata ID et server's session metadata id)
+js('document').ready(function () {
+    var myMetadataId = parseInt(js('#jform_id').val());
+    var remoteId = 0;
+    (function poll() {
+        setTimeout(function () {
+            js.ajax({
+                url: baseUrl + 'option=com_easysdi_catalog&task=ajax.getCurrentEditId',
+                type: "GET",
+                success: function (data) {
+                    //compare local and remote IDs
+                    remoteId = parseInt(data.id);
+                    if (remoteId != NaN && remoteId > 0 && remoteId === myMetadataId) {
+                        //OK, we have the correct session ID, setup the next poll recursively
+                        poll();
+                    } else { //IDs mismatch, lock the form
+                        lockFormForSession();
+                    }
+                },
+                // user disconnected or other session error, lock the form
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.readyState == 0 || jqXHR.status == 0) {
+                        poll(); //Skip this error (back button pressed, cancelled by user etc...)
+                    } else {
+                        lockFormForSession();
+                    }
+                },
+                dataType: "json"});
+        }, 2000);
+    })();
+});
+
 
 // File input section
 //==============================
 js('document').ready(function () {
     js('.file-controls').each(function () {
-        if(js(this).children('input').val().length>0){
+        if (js(this).children('input').val().length > 0) {
             js(this).children('.btn-preview, .btn-delete').show();
         }
     });
@@ -367,15 +399,15 @@ js('document').ready(function () {
 /**
  * Lisener on file preview btn
  */
-js(document).on('click', '.file-controls .btn-preview', function(){
+js(document).on('click', '.file-controls .btn-preview', function () {
     var url = js(this).parent().children('input').val();
-    window.open(url,'_blank');
+    window.open(url, '_blank');
 });
 
 /**
  * Lisener on fle delete btn
  */
-js(document).on('click', '.file-controls .btn-delete', function(){
+js(document).on('click', '.file-controls .btn-delete', function () {
     var parent = js(this).parent();
     parent.children('input').val('');
     parent.children('.btn-preview').hide();
@@ -385,11 +417,11 @@ js(document).on('click', '.file-controls .btn-delete', function(){
 /**
  * Load url value in file field
  */
-js(document).on('click','#fileModal .btn-success',function(){
-    js('#'+js('#file_source_field').val()).val(js('#file_url').val());
+js(document).on('click', '#fileModal .btn-success', function () {
+    js('#' + js('#file_source_field').val()).val(js('#file_url').val());
     js('#fileModal').modal('hide');
-    console.log(js('#'+js('#file_source_field').val()).parent());
-    js('#'+js('#file_source_field').val()).parent().children('.btn-preview, .btn-delete').show();
+    console.log(js('#' + js('#file_source_field').val()).parent());
+    js('#' + js('#file_source_field').val()).parent().children('.btn-preview, .btn-delete').show();
 });
 
 
@@ -399,9 +431,9 @@ js(document).on('click','#fileModal .btn-success',function(){
 js(document).on('click', '.attach-btn', function () {
     resetFileUploadTab();
     resetFileUrlTab();
-    js('#fileModal .btn-success').prop( "disabled", true );
+    js('#fileModal .btn-success').prop("disabled", true);
     var rendertype = parseInt(js(this).attr('rendertypeId'));
-    switch(rendertype){
+    switch (rendertype) {
         case enumRendertype.UPLOAD:
             js('#fileModal .url').removeClass('active in').hide();
             js('#fileModal .upload').addClass('active in').show();
@@ -415,7 +447,7 @@ js(document).on('click', '.attach-btn', function () {
             js('#fileModal .upload').addClass('active in').show();
             break;
     }
-    
+
     js('#file_source_field').val(js(this).prev().attr('id'));
     js('#fileModal').modal('show');
 });
@@ -424,22 +456,22 @@ js(document).on('click', '.attach-btn', function () {
  * check file url on lost focus
  */
 js(document).on('blur', '#fileUrl', function () {
-    
+
     var url = js('#fileUrl').val();
     js('#fileUrlValidate').hide();
-    
-    if(url.length>0){
+
+    if (url.length > 0) {
         js.ajax({
             url: baseUrl + 'option=com_easysdi_catalog&task=ajax.checkFileUrl&url=' + url,
             type: "GET",
             cache: false
         }).done(function (data) {
-            if(data.code === 200){
+            if (data.code === 200) {
                 js('#fileUrlValidate').removeClass('alert alert-error').addClass('alert alert-success').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_VALIDATE_OK')).show();
                 js('#file_url').val(js('#fileUrl').val());
-                js('#fileModal .btn-success').prop( "disabled", false );
+                js('#fileModal .btn-success').prop("disabled", false);
                 resetFileUploadTab();
-            }else{
+            } else {
                 js('#fileUrlValidate').removeClass('alert alert-success').addClass('alert alert-error').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_VALIDATE_KO')).show();
             }
         }).fail(function () {
@@ -448,42 +480,42 @@ js(document).on('blur', '#fileUrl', function () {
     }
 });
 
-js(function(){
+js(function () {
     js('#fileUpload').fileupload({
         dataType: 'json',
-        add: function(e, data){
+        add: function (e, data) {
             js('#fileUploadValidate').hide();
             js('.progress').show();
             data.submit();
         },
-        progressall: function(e, data){
-          var progress = parseInt(data.loaded / data.total * 100, 10);
-            js('.progress .bar').css('width',progress + '%');
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            js('.progress .bar').css('width', progress + '%');
         },
-        done: function(e, data){
+        done: function (e, data) {
             var result = data.result;
-            if(result.status === 'success'){
+            if (result.status === 'success') {
                 js('#fileUploadValidate').removeClass('alert alert-error').addClass('alert alert-success').html(Joomla.JText._('COM_EASYSDI_CATALOG_FILE_UPLOAD_SUCCES')).show();
                 js('#fileUploadPreview').show();
-                js('#fileUploadPreview a').attr('href',result.files.fileUpload.url);
-                js('#fileUploadPreview img').attr('src',result.files.fileUpload.thumbnail);
+                js('#fileUploadPreview a').attr('href', result.files.fileUpload.url);
+                js('#fileUploadPreview img').attr('src', result.files.fileUpload.thumbnail);
                 js('#file_url').val(result.files.fileUpload.url);
-                js('#fileModal .btn-success').prop( "disabled", false );
+                js('#fileModal .btn-success').prop("disabled", false);
                 resetFileUrlTab();
-            }else{
+            } else {
                 console.log('fail');
                 js('#fileUploadValidate').removeClass('alert alert-success').addClass('alert alert-error').html(result.error);
             }
-            
+
         }
     });
 });
 
-function resetFileUploadTab(){
+function resetFileUploadTab() {
     js('.progress, #fileUploadPreview, #fileUploadValidate').hide();
 }
 
-function resetFileUrlTab(){
+function resetFileUrlTab() {
     js('#fileUrlValidate').hide();
     js('#fileUrl').val('');
 }
@@ -1025,6 +1057,29 @@ function disableVisible() {
     js('fieldset.scope-visible').prev('.action a').remove();
     js('fieldset.scope-visible .remove-btn, fieldset.scope-visible .add-btn, fieldset.scope-visible .attribute-add-btn').remove();
     js('.scope-visible select').trigger("liszt:updated");
+}
+
+function lockFormForSession() {
+    //disable form
+    disableCompleteForm()
+    //show message
+    Joomla.renderMessages({'error': ['<b>Cette fiche est verrouillée</b><br/>Vous avez ouvert une autre fiche en édition, ou votre session a expiré. Il est impossible de sauver cette fiche.']});
+    //move to top
+    js("html, body").animate({scrollTop: 0}, 'slow');
+}
+
+/**
+ * Disable all editable fields and button (except return and collapse form)
+ * @returns void
+ */
+function disableCompleteForm() {
+    //disable form
+    js('.metadata-edit.front-end-edit #form-metadata select').prop('disabled', true).trigger("liszt:updated");
+    js('.metadata-edit.front-end-edit #form-metadata button').prop('disabled', true);
+    js('.metadata-edit.front-end-edit #form-metadata a.btn').not('.collapse-btn').prop('disabled', true).addClass('disabled');
+    js('.metadata-edit.front-end-edit #form-metadata :input').filter(':text,:password,textarea').prop('disabled', true);
+    js('.metadata-edit.front-end-edit .btn-toolbar #import').prop('disabled', true);
+    js('.metadata-edit.front-end-edit .btn-toolbar #btn-reset').prop('disabled', true).addClass('disabled');
 }
 
 //Décode une chaîne
