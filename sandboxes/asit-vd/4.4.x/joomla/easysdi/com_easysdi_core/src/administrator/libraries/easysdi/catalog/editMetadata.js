@@ -1063,7 +1063,7 @@ function lockFormForSession() {
     //disable form
     disableCompleteForm()
     //show message
-    Joomla.renderMessages({'error': ['<b>Cette fiche est verrouillée</b><br/>Vous avez ouvert une autre fiche en édition, ou votre session a expiré. Il est impossible de sauver cette fiche.']});
+    Joomla.renderMessages({'error': ['<b>'+Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_TITLE', 'COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_TITLE')+'</b><br/>'+Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_MESSAGE', 'COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_MESSAGE')]});
     //move to top
     js("html, body").animate({scrollTop: 0}, 'slow');
 }
