@@ -157,11 +157,17 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $session = JFactory::getSession();
         $app = JFactory::getApplication();
 
+        $basketData = $session->get('basketData');
+
+        // Change sent date to make the order availlable to services
+        $model = $this->getModel('Basket', 'Easysdi_shopModel');
+        $model->finalSave($basketData);
+
         /*
          * *****************************
          * * Process all notifications *
          * *************************** */
-        $basketData = $session->get('basketData');
+
 
         switch ($basketData['orderstate_id']) {
             case Easysdi_shopHelper::ORDERSTATE_SENT:
@@ -169,7 +175,6 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
 
                 //ORDERSTATE_PROGRESS Could only be an estimate order.
                 //Some of the diffusions in this estimate order already have an estimation (free or with a pricing profile).
-
                 // Notify the responsible of extraction + notifiedusers 
                 Easysdi_shopHelper::notifyExtractionResponsibleAndNotifiedUsers($basketData['order_id']);
 

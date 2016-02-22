@@ -1494,7 +1494,7 @@ abstract class Easysdi_shopHelper {
             "MINUTE" => $diff->format("%i"),
             "SECOND" => $diff->format("%s"),
         );
-        $out = JText::_('MOD_EASYSDI_LASTORDERS_TIME_NOW');
+        $out = JText::_('COM_EASYSDI_SHOP_TIME_NOW');
         foreach ($units as $unit => $amount) {
             if (empty($amount)) {
                 continue;

@@ -456,10 +456,16 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                 $query->where('d.id IN (' . implode(',', $restrictionList) . ')');
             }
         }
+        //only orders and drafts in automatic mining
         $query->where('od.productstate_id IN (' . implode(',', $this->states) . ')')
                 ->where('d.productmining_id = ' . Easysdi_shopHelper::PRODUCTMININGAUTO)
-                ->where('o.ordertype_id IN (' . Easysdi_shopHelper::ORDERTYPE_ORDER . ',' . Easysdi_shopHelper::ORDERTYPE_ESTIMATE . ')')
-                ->group($agg);
+                ->where('o.ordertype_id IN (' . Easysdi_shopHelper::ORDERTYPE_ORDER . ',' . Easysdi_shopHelper::ORDERTYPE_ESTIMATE . ')');
+        
+        //only order that are completely saved (avoid partial orders : https://forge.easysdi.org/issues/1252)
+        $query->where('o.sent > \'0000-00-00 00:00:00\'');
+        
+        //group by selected items
+        $query->group($agg);
 
         $this->db->setQuery($query);
 
