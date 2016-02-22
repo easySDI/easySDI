@@ -161,6 +161,18 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         echo json_encode($resourcetype);
         die();
     }
+    
+    /**
+     * Return the current metadata id in session
+     */
+    public function getCurrentEditId() {
+        $app = JFactory::getApplication();
+        $response = array();
+        $response['success'] = true;
+        $response['id'] = $app->getUserState('com_easysdi_catalog.edit.metadata.id');
+        echo json_encode($response);
+        die();
+    }    
 
     /**
      * Check Url from file popup
