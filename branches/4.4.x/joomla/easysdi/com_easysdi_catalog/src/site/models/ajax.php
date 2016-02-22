@@ -54,7 +54,9 @@ class Easysdi_catalogModelAjax extends JModelForm {
             $id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.metadata.id');
         } else {
             $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.metadata.id', $id);
+            if(isset($id)){
+                JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.metadata.id', $id);
+            }
         }
         $this->setState('metadata.id', $id);
 
