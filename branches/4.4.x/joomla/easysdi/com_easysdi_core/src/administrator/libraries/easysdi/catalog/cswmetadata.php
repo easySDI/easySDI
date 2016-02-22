@@ -821,7 +821,7 @@ class cswmetadata {
                     case self::CHECKBOX:
                         $html .='
                             <div class="controls">
-                                <fieldset id="' . $property->property_id . '" class="sdi-shop-property-checkbox ">';
+                                <fieldset id="' . $property->property_id . '" class="sdi-shop-property-checkbox checkboxes ' . $classrequired . '" ' . $required . ' >';
                         $i = 0;
                         foreach ($values as $value):
                             $html .= '
