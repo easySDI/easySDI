@@ -45,8 +45,8 @@ class Easysdi_shopModelorders extends JModelList {
                   'thirdparty_id', 'a.thirdparty_id',
                   'buffer', 'a.buffer',
                   'surface', 'a.surface',
-                  'remark', 'a.remark',*/
-                  'sent', 'a.sent', 
+                  'remark', 'a.remark', */
+                'sent', 'a.sent',
                 'completed', 'a.completed',
                 'user', 'user',
             );
@@ -134,10 +134,10 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select(
-          $this->getState('DISTINCT ' .
-          'list.select', ' a.*'
-          )
-          );
+                $this->getState('DISTINCT ' .
+                        'list.select', ' a.*'
+                )
+        );
 
         $query->from('#__sdi_order AS a');
 
@@ -242,16 +242,16 @@ class Easysdi_shopModelorders extends JModelList {
 
             if ($ordersent == 'post_year') {
                 $query->where(
-                        'a.created < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
+                        'a.sent < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
                 );
             } else {
                 $query->where(
-                        'a.created >= ' . $db->quote($dStart->format('Y-m-d H:i:s')) .
-                        ' AND a.created <=' . $db->quote($dNow->format('Y-m-d H:i:s'))
+                        'a.sent >= ' . $db->quote($dStart->format('Y-m-d H:i:s')) .
+                        ' AND a.sent <=' . $db->quote($dNow->format('Y-m-d H:i:s'))
                 );
             }
         }
-        
+
         // Filter by ordercompleted state
         $ordercompleted = $this->getState('filter.ordercompleted');
         if ($ordercompleted !== '') {
@@ -298,7 +298,7 @@ class Easysdi_shopModelorders extends JModelList {
 
             if ($ordercompleted == 'post_year') {
                 $query->where(
-                        'a.created < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
+                        'a.completed < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
                 );
             } else {
                 $query->where(
@@ -325,6 +325,9 @@ class Easysdi_shopModelorders extends JModelList {
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
+
+        //group by order_id
+        $query->group('a.id');
 
         return $query;
     }
