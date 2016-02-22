@@ -142,15 +142,15 @@ class Easysdi_catalogModelrelations extends JModelList {
         // Join over the class for the parent name.
         $query->select('parentclass.name AS parentname');
         $query->join('LEFT', '#__sdi_class AS parentclass ON parentclass.id=a.parent_id');
-        
-         // Join over the class for the class child name.
+
+        // Join over the class for the class child name.
         $query->select('childclass.name AS classchildname');
         $query->join('LEFT', '#__sdi_class AS childclass ON childclass.id=a.classchild_id');
-        
+
         // Join over the attribute for the attribute child name.
         $query->select('childattribute.name AS attributechildname');
         $query->join('LEFT', '#__sdi_attribute AS childattribute ON childattribute.id=a.attributechild_id');
-        
+
         // Join over the resourcetype for the resourcetype child name.
         $query->select('resourcetype.name AS resourcetypechildname');
         $query->join('LEFT', '#__sdi_resourcetype AS resourcetype ON resourcetype.id=a.childresourcetype_id');
@@ -170,7 +170,7 @@ class Easysdi_catalogModelrelations extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE '.$search.' ) OR ( parentclass.name LIKE '.$search.' ) OR ( childclass.name LIKE '.$search.' ) OR ( childattribute.name LIKE '.$search.' ) ');
+                $query->where('( ( a.name LIKE ' . $search . ' ) OR ( parentclass.name LIKE ' . $search . ' ) OR ( childclass.name LIKE ' . $search . ' ) OR ( childattribute.name LIKE ' . $search . ' ) ) ');
             }
         }
 
@@ -178,18 +178,18 @@ class Easysdi_catalogModelrelations extends JModelList {
         $orderCol = $this->state->get('list.ordering');
         $orderDirn = $this->state->get('list.direction');
         if ($orderCol && $orderDirn) {
-            switch ($orderCol){
+            switch ($orderCol) {
                 case 'resourcetypechildname':
-                    $orderCol='resourcetype.name';
+                    $orderCol = 'resourcetype.name';
                     break;
                 case 'attributechildname':
-                    $orderCol='childattribute.name';
+                    $orderCol = 'childattribute.name';
                     break;
                 case 'classchildname':
-                    $orderCol='childclass.name';
+                    $orderCol = 'childclass.name';
                     break;
                 case 'parentname':
-                    $orderCol='parentclass.name';
+                    $orderCol = 'parentclass.name';
                     break;
             }
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
