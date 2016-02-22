@@ -45,8 +45,8 @@ class Easysdi_shopModelorders extends JModelList {
                   'thirdparty_id', 'a.thirdparty_id',
                   'buffer', 'a.buffer',
                   'surface', 'a.surface',
-                  'remark', 'a.remark',
-                  'sent', 'a.sent', */
+                  'remark', 'a.remark',*/
+                  'sent', 'a.sent', 
                 'completed', 'a.completed',
                 'user', 'user',
             );
