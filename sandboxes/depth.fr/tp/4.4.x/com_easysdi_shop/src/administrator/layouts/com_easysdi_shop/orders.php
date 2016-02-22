@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -30,8 +30,8 @@ $displayTitle = isset($displayData['displayTitle']) ? $displayData['displayTitle
             ?>
             <tr class="order-line order-line-new <?php echo('sdi-orderstate-' . preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-' . preg_replace('/\s+/', '', $item->ordertype) ); ?>">
                 <td class="ordercreated">
-                    <span class="hasTip" title="<?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>">
-                        <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->created)); ?>
+                    <span class="hasTip" title="<?php echo JHtml::date($item->sent, JText::_('DATE_FORMAT_LC2')); ?>">
+                        <?php echo Easysdi_shopHelper::getRelativeTimeString(JFactory::getDate($item->sent)); ?>
                     </span>
                 </td>
                 <td class="ordername">

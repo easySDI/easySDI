@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -224,12 +224,12 @@ class Easysdi_shopModelorders extends JModelList {
 
             if ($ordersent == 'post_year') {
                 $query->where(
-                        'a.created < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
+                        'a.sent < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
                 );
             } else {
                 $query->where(
-                        'a.created >= ' . $db->quote($dStart->format('Y-m-d H:i:s')) .
-                        ' AND a.created <=' . $db->quote($dNow->format('Y-m-d H:i:s'))
+                        'a.sent >= ' . $db->quote($dStart->format('Y-m-d H:i:s')) .
+                        ' AND a.sent <=' . $db->quote($dNow->format('Y-m-d H:i:s'))
                 );
             }
         }
@@ -280,7 +280,7 @@ class Easysdi_shopModelorders extends JModelList {
 
             if ($ordercompleted == 'post_year') {
                 $query->where(
-                        'a.created < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
+                        'a.completed < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
                 );
             } else {
                 $query->where(
@@ -307,6 +307,9 @@ class Easysdi_shopModelorders extends JModelList {
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
+
+        //group by order_id
+        $query->group('a.id');
 
         return $query;
     }

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -327,9 +327,10 @@ class com_easysdi_coreInstallerScript {
             // read the existing component value(s)
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
-            $query->select('manifest_cache');
+            $query->select('params');
             $query->from('#__extensions');
-            $query->where('name = '.$db->quote('com_easysdi_core'));
+            $query->where('name = ' . $db->quote('com_easysdi_core'));
+
             $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
@@ -339,9 +340,9 @@ class com_easysdi_coreInstallerScript {
             // store the combined new and existing values back as a JSON string
             $paramsString = json_encode($params);
             $query = $db->getQuery(true);
-            $query->select('params');
-            $query->from('#__extensions');
-            $query->where('name = '.$db->quote('com_easysdi_core'));
+            $query->update('#__extensions');
+            $query->set('params = ' . $db->quote($paramsString));
+            $query->where('name = ' . $db->quote('com_easysdi_core'));
             $db->setQuery($query);
             $db->query();
         }

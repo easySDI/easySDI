@@ -1,12 +1,12 @@
 <?php
+
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/CatalogNs.php';
 
@@ -47,7 +47,7 @@ class FormStereotype {
 
             case EnumStereotype::$GEOGRAPHICEXTENT:
                 if ($result->upperbound < 2) {
-                    $element = $this->getExtendStereotype();
+                    $element = $this->getExtendStereotype($result->relGuid);
                 } else {
                     $element = $this->getMultipleExtendStereotype($result);
                 }
@@ -80,12 +80,12 @@ class FormStereotype {
 
         if (!empty($result->attribute_codelist)) {
             $element->setAttribute('codeList', $result->attribute_codelist);
-           
+
             //Get default value, only if field is hidden or visible
-            if(!empty($result->defaultvalue)){
-                 $element->setAttribute('codeListValue', $result->defaultvalue);
-            }else{
-                 $element->setAttribute('codeListValue', '');
+            if (!empty($result->defaultvalue)) {
+                $element->setAttribute('codeListValue', $result->defaultvalue);
+            } else {
+                $element->setAttribute('codeListValue', '');
             }
         }
 
@@ -105,7 +105,7 @@ class FormStereotype {
 
         $characterString = $dom->createElementNS($this->namespaces['gco'], 'gco:CharacterString');
         $characterString->nodeValue = isset($values[$default->{'iso3166-1-alpha2'}]) ? $values[$default->{'iso3166-1-alpha2'}] : '';
-        
+
         $elements[] = $characterString;
         foreach ($languages as $key => $value) {
             $pt_freetext = $dom->createElementNS($this->namespaces['gmd'], 'gmd:PT_FreeText');
@@ -143,6 +143,7 @@ class FormStereotype {
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':upperbound', $result->upperbound);
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', $result->lowerbound);
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':relid', $result->id);
+        $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':relGuid', $result->relGuid);
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':label', 'COM_EASYSDI_CATALOG_EXTENT_DESCRIPTION');
 
         $CharacterString = $dom->createElementNS($this->namespaces['gco'], 'gco:CharacterString');
@@ -163,10 +164,9 @@ class FormStereotype {
 
         $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
         $extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '1');
-        $extent->appendChild($dom->importNode($this->getExtendStereotype($boundary->extent_type, $boundary->descriptions, $boundary->northbound, $boundary->southbound, $boundary->eastbound, $boundary->westbound, $boundary->codes), true));
-    
+        $extent->appendChild($dom->importNode($this->getExtendStereotype(null, $boundary->descriptions, $boundary->northbound, $boundary->southbound, $boundary->eastbound, $boundary->westbound, $boundary->codes), true));
+
         return $extent;
-        
     }
 
     /**
@@ -184,29 +184,32 @@ class FormStereotype {
      * 
      * @return DOMElement
      */
-    public function getExtendStereotype($extent_type_value = '', $descriptions = '', $northbound_value = '', $southbound_value = '', $eastbound_value = '', $westbound_value = '', $codes = '', $wrap_extent = false) {
+    public function getExtendStereotype($relationGuid = null, $descriptions = '', $northbound_value = '', $southbound_value = '', $eastbound_value = '', $westbound_value = '', $codes = '', $wrap_extent = false) {
         $dom = new DOMDocument('1.0', 'utf-8');
 
         $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
         //$extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '1');
-        
+
         $EX_Extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_Extent');
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':dbid', '0');
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$CLASS);
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$GEOGRAPHICEXTENT);
-        $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX.':id', 'decedd18-b418-4336-9980-20f8db3ebb4b');
+        $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':id', 'decedd18-b418-4336-9980-20f8db3ebb4b');
 
         $description = $dom->createElementNS($this->namespaces['gmd'], 'gmd:description');
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$BOUNDARY);
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$LIST);
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':label', 'COM_EASYSDI_CATALOG_EXTENT_DESCRIPTION');
+        if (isset($relationGuid)) {
+            $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':relGuid', $relationGuid);
+        }
 
         $geographicElement = $dom->createElementNS($this->namespaces['gmd'], 'gmd:geographicElement');
         $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$RELATION);
         $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '3');
         $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':upperbound', '3');
-        $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX.':id', 'e3bbff44-f3c1-498b-a940-d0bc717f82de');
+        $geographicElement->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':id', 'e3bbff44-f3c1-498b-a940-d0bc717f82de');
 
         $geographicElement1 = $geographicElement->cloneNode();
         $geographicElement1->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '1');
@@ -214,7 +217,7 @@ class FormStereotype {
 
         $EX_GeographicBoundingBox = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_GeographicBoundingBox');
         $EX_GeographicBoundingBox->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$CLASS);
-        $EX_GeographicBoundingBox->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX.':id', '3fcd1f3c-c5a6-4f76-9ac5-195b7138e82b');
+        $EX_GeographicBoundingBox->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':id', '3fcd1f3c-c5a6-4f76-9ac5-195b7138e82b');
 
         $extentTypeCode = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extentTypeCode');
         $extentTypeCode->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
@@ -254,7 +257,7 @@ class FormStereotype {
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':map', 'true');
 
         $geographicElement2 = $geographicElement->cloneNode();
-        $geographicElement2->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX.':id', 'f8b8668a-cc39-40fd-8491-b19d28e74704');
+        $geographicElement2->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':id', 'f8b8668a-cc39-40fd-8491-b19d28e74704');
         //$geographicElement2->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '0');
 
         $EX_GeographicDescription = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_GeographicDescription');
@@ -278,7 +281,7 @@ class FormStereotype {
         $Decimal = $dom->createElementNS($this->namespaces['gco'], 'gco:Decimal');
 
         foreach ($this->getI18nStereotype($descriptions) as $element) {
-            $description->appendChild($dom->importNode($element,true));
+            $description->appendChild($dom->importNode($element, true));
         }
         $extentTypeCode->appendChild($Boolean->cloneNode(true));
         $northBoundLatitude->appendChild($Decimal->cloneNode());
@@ -286,7 +289,7 @@ class FormStereotype {
         $eastBoundLongitude->appendChild($Decimal->cloneNode());
         $westBoundLongitude->appendChild($Decimal->cloneNode());
         foreach ($this->getI18nStereotype($codes) as $element) {
-            $code->appendChild($dom->importNode($element,true));
+            $code->appendChild($dom->importNode($element, true));
         }
 
         $MD_Identifier->appendChild($code);
@@ -306,22 +309,21 @@ class FormStereotype {
 
         $EX_Extent->appendChild($description);
         $EX_Extent->appendChild($geographicElement1);
-        if(!empty($descriptions)){
-        $EX_Extent->appendChild($geographicElement2);
+        if (!empty($descriptions)) {
+            $EX_Extent->appendChild($geographicElement2);
         }
 
         $northBoundLatitude->firstChild->nodeValue = $northbound_value;
         $southBoundLatitude->firstChild->nodeValue = $southbound_value;
         $eastBoundLongitude->firstChild->nodeValue = $eastbound_value;
         $westBoundLongitude->firstChild->nodeValue = $westbound_value;
-        
-        if($wrap_extent){
-             $extent->appendChild($EX_Extent);
-             return $extent;
-        }else{
-        return $EX_Extent;
-    }
 
+        if ($wrap_extent) {
+            $extent->appendChild($EX_Extent);
+            return $extent;
+        } else {
+            return $EX_Extent;
+        }
     }
 
     /**
@@ -337,31 +339,31 @@ class FormStereotype {
                 ->from('#__sdi_boundary b')
                 ->innerJoin('#__sdi_translation t ON b.guid=t.element_guid')
                 ->innerJoin('#__sdi_boundarycategory bc ON bc.id=b.category_id')
-                ->where('t.text1='.$query->quote($name))
-                ;
+                ->where('t.text1=' . $query->quote($name))
+        ;
 
         $db->setQuery($query);
         $boundary = $db->loadObject();
 
         $query = $db->getQuery(true);
-        $query->select('t.text1 AS description, t.text3 AS code, l.'.$query->quoteName('iso3166-1-alpha2').' AS lang_code');
+        $query->select('t.text1 AS description, t.text3 AS code, l.' . $query->quoteName('iso3166-1-alpha2') . ' AS lang_code');
         $query->from('#__sdi_translation t');
         $query->innerJoin('#__sdi_language l ON l.id = t.language_id');
-        $query->where('element_guid = '.$query->quote($boundary->guid));
-        
+        $query->where('element_guid = ' . $query->quote($boundary->guid));
+
         $db->setQuery($query);
         $translations = $db->loadObjectList();
-        
+
         $descriptions = array();
         $codes = array();
         foreach ($translations as $translation) {
             $descriptions[$translation->lang_code] = $translation->description;
             $codes[$translation->lang_code] = $translation->code;
         }
-        
+
         $boundary->descriptions = $descriptions;
         $boundary->codes = $codes;
-        
+
         return $boundary;
     }
 

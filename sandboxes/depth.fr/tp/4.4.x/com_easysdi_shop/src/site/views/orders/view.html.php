@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -29,26 +29,25 @@ class Easysdi_shopViewOrders extends JViewLegacy {
         //Load admin language file
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
-        
+
         $app = JFactory::getApplication();
-        
+
         $this->user = sdiFactory::getSdiUser();
         if (!$this->user->isEasySDI) {
             $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-            $app->redirect("index.php");            
+            $app->redirect("index.php");
             return false;
         }
-        
+
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->orderstate = $this->get('orderstate');
         $this->ordertype = $this->get('ordertype');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
-        $roles = $this->_layout == "validation" ? array(sdiUser::member, sdiUser::validationmanager, sdiUser::organismmanager) : 
-                                                    array( sdiUser::member, sdiUser::organismmanager);
+        $roles = $this->_layout == "validation" ? array(sdiUser::validationmanager, sdiUser::organismmanager) : array(sdiUser::member, sdiUser::organismmanager);
         $this->organisms = $this->user->getOrganisms($roles);
-        
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));

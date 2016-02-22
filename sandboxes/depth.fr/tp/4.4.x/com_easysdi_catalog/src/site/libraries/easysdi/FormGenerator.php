@@ -228,8 +228,7 @@ class FormGenerator {
 
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
-            if (!$this->cleanStructure())
-            {
+            if (!$this->cleanStructure()) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_XML_IMPORT_ERROR'), 'error');
             }
         }
@@ -365,6 +364,7 @@ class FormGenerator {
                             $params['upperbound'] = $result->upperbound;
                             $params['lowerbound'] = $result->lowerbound;
                             $params['id'] = $result->id;
+                            $params['relGuid'] = $result->guid;
 
                             foreach ($formStereotype->getStereotype(JArrayHelper::toObject($params)) as $st) {
                                 $relation->appendChild($this->structure->importNode($st, true));
@@ -496,7 +496,7 @@ class FormGenerator {
         $clone_structure = new DOMDocument('1.0', 'utf-8');
         $clone_structure->loadXML($this->structure->saveXML());
         $domXpathClone = new DOMXPath($clone_structure);
-        
+
         $this->registerNamespace($domXpathClone);
 
         $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$RELATIONTYPE . '"]');
@@ -527,9 +527,9 @@ class FormGenerator {
 
             // if occurance == 0 remove node from clone
             if ($occurance == 0) {
-                if (!method_exists($node->parentNode,'getAttributeNs'))
-                     return false;
-                
+                if (!method_exists($node->parentNode, 'getAttributeNs'))
+                    return false;
+
                 $parentChildType = @$node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
 
                 //look for the ancestor under which we can clean the structure
@@ -563,7 +563,7 @@ class FormGenerator {
         $this->getValue($clone_structure->firstChild);
 
         $this->mergeToStructure($clone_structure, $domXpathClone);
-        
+
         return true;
     }
 
@@ -911,7 +911,7 @@ class FormGenerator {
             if ($readonly) {
                 $field->setAttribute('readonly', 'true');
             }
-            
+
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
             $field->setAttribute('default', $this->getDefaultValue($relId, $i18nChild->nodeValue, FALSE, $this->ldao->getByIso3166($localeValue)->id));
             $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
@@ -1118,9 +1118,9 @@ class FormGenerator {
             $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
             $field->setAttribute('name', $name);
             $field->setAttribute('multiple', 'true');
-            $field->setAttribute('type', 'MultipleDefaultList');            
+            $field->setAttribute('type', 'MultipleDefaultList');
         } else {
-            $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));            
+            $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         }
 
         if ($readonly) {
@@ -1421,7 +1421,8 @@ class FormGenerator {
         }
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
-        $field->setAttribute('label', JText::_('COM_EASYSDI_CATALOG_RESOURCETYPE_NAME'));
+        $field->setAttribute('label', EText::_($guid));
+        $field->setAttribute('description', $this->getDescription(null, $guid));
 
         foreach ($this->getAttributOptions($relationtype) as $opt) {
             $option = $this->form->createElement('option', $opt->name);
@@ -1581,7 +1582,7 @@ class FormGenerator {
                         switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
                             case EnumRendertype::$CHECKBOX:
                             case EnumRendertype::$RADIOBUTTON:
-                            //case EnumRendertype::$LIST: //TODO see https://forge.easysdi.org/issues/1171 : it breaks single selects
+                                //case EnumRendertype::$LIST: //TODO see https://forge.easysdi.org/issues/1171 : it breaks single selects
                                 break;
                             default:
                                 $first = array('id' => '', 'guid' => '', 'name' => '', 'value' => '');
@@ -1645,7 +1646,7 @@ class FormGenerator {
     /**
      * Unserialze the Xpath
      * 
-     * @author Depth S.A.
+     * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
      * @since 4.0
      * 
      * @param string $xpath

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * ** @version     4.0.0
+ * ** @version     4.4.0
  * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -132,7 +132,7 @@ class Easysdi_contactTableaddress extends sdiTable {
         $data['postalcode'] = $src[$type . '_postalcode'];
         $data['postalbox'] = $src[$type . '_postalbox'];
         $data['locality'] = $src[$type . '_locality'];
-        $data['country_id'] = $src[$type . '_country'];
+        $data['country_id'] = $src[$type . '_country_id'];
         $data['phone'] = $src[$type . '_phone'];
         $data['mobile'] = $src[$type . '_mobile'];
         $data['fax'] = $src[$type . '_fax'];

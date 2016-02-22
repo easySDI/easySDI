@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -157,35 +157,36 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $session = JFactory::getSession();
         $app = JFactory::getApplication();
 
+        $basketData = $session->get('basketData');
+
+        // Change sent date to make the order availlable to services
+        $model = $this->getModel('Basket', 'Easysdi_shopModel');
+        $model->finalSave($basketData);
+
         /*
          * *****************************
          * * Process all notifications *
          * *************************** */
-        $basketData = $session->get('basketData');
+
 
         switch ($basketData['orderstate_id']) {
             case Easysdi_shopHelper::ORDERSTATE_SENT:
-            case Easysdi_shopHelper::ORDERSTATE_PROGRESS: //Could only be an estimate order.
+            case Easysdi_shopHelper::ORDERSTATE_PROGRESS:
+
+                //ORDERSTATE_PROGRESS Could only be an estimate order.
                 //Some of the diffusions in this estimate order already have an estimation (free or with a pricing profile).
-                //Those diffusions don't have to be the subject of notifications for notified or responsible users.
-                foreach ($basketData['diffusions'] as $diffusionId) :// Process notification by diffusion
-                    //notify if necessary
-                    if ($diffusionId[1] == Easysdi_shopHelper::PRODUCTSTATE_SENT) {
-                        // Notify notifiedusers
-                        Easysdi_shopHelper::notifyNotifiedUsers($diffusionId[0]);
-                        // Notify the responsible of extraction
-                        Easysdi_shopHelper::notifyExtractionResponsible($diffusionId[0]);
-                    }
-                endforeach;
+                // Notify the responsible of extraction + notifiedusers 
+                Easysdi_shopHelper::notifyExtractionResponsibleAndNotifiedUsers($basketData['order_id']);
+
                 break;
             case Easysdi_shopHelper::ORDERSTATE_VALIDATION:
-                $this->notifyTPValidationManager($basketData['order_id'], $basketData['thirdparty_id']);
+                Easysdi_shopHelper::notifyTPValidationManager($basketData['order_id'], $basketData['thirdparty_id']);
                 break;
         }
 
         // Notify the customer if order is not a draft
         if ($basketData['ordertype_id'] != Easysdi_shopHelper::ORDERTYPE_DRAFT) {
-            Easysdi_shopHelper::notifyCustomer($basketData['order_name']);
+            Easysdi_shopHelper::notifyCustomer($basketData['order_id']);
         }
 
         /*
@@ -254,36 +255,6 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         header('content-type: application/json');
         echo json_encode($response);
         JFactory::getApplication()->close();
-    }
-
-    /**
-     * notifyTPValidationManager - notify the thirdparty validation manager after an order
-     * 
-     * @param integer $orderId
-     * @param integer $thirdpartyId
-     * @return void
-     * @since 4.3.0
-     */
-    private function notifyTPValidationManager($orderId, $thirdpartyId) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        //Select orderdiffusion_id
-        $query->select('user_id')
-                ->from('#__sdi_user_role_organism')
-                ->where('role_id=' . Easysdi_shopHelper::ROLE_VALIDATIONMANAGER . ' AND organism_id=' . (int) $thirdpartyId);
-        $db->setQuery($query);
-        $users_ids = $db->loadColumn();
-
-        $url = JRoute::_(JURI::base() . 'index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $orderId . '&vm=%s&lang=fr');
-
-        foreach ($users_ids as $user_id) {
-            $user = sdiFactory::getSdiUser($user_id);
-            $url = sprintf($url, $user_id);
-
-            if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_VALIDATIONMANAGER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_VALIDATIONMANAGER_BODY', $orderId, $url)))
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-        }
     }
 
     /**
