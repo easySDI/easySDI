@@ -364,6 +364,7 @@ class FormGenerator {
                             $params['upperbound'] = $result->upperbound;
                             $params['lowerbound'] = $result->lowerbound;
                             $params['id'] = $result->id;
+                            $params['relGuid'] = $result->guid;
 
                             foreach ($formStereotype->getStereotype(JArrayHelper::toObject($params)) as $st) {
                                 $relation->appendChild($this->structure->importNode($st, true));

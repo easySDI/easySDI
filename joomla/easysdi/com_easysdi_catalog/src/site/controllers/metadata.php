@@ -679,7 +679,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 $eastBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal')->item(0);
                 $westBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal')->item(0);
 
-                $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype('', $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
+                $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype(null, $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
             }
         }
     }
