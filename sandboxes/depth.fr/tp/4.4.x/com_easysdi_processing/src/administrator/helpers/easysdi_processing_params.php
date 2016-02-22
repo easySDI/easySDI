@@ -198,9 +198,9 @@ abstract class Easysdi_processingParamsHelper
 
   private static function visuplugin_geojson($filename, $order, $type) {
     $proxy_link=self::file_url($order, $type, $filename);
-    return '&nbsp;<a href="#" class="btn btn-default btn-mini openvisu"
+    return '</br>'.JText::_('COM_EASYSDI_PROCESSING_LBL_PREVIEW_OUTPUT').' : <a href="#" class="btn btn-default btn-mini openvisu"
     data-visu="geojson" data-url="'.$proxy_link.'"
-    data-mapid="'.$order->processing_map_id.'" data-name="'.$filename.'">voir</a>';
+    data-mapid="'.$order->processing_map_id.'" data-name="'.$filename.'">'.JText::_('COM_EASYSDI_PROCESSING_SHOW').'</a>';
   }
 
 
@@ -213,15 +213,19 @@ abstract class Easysdi_processingParamsHelper
         $t.=pathinfo($order->fileurl, PATHINFO_BASENAME);
         $t.='</span>';
       }else{
-        $path_parts = pathinfo($order->file);
-        $t='<span class="file" data-extension="'.$path_parts['extension'].'">';
-        $t.=$order->file;
-        $filepath=JComponentHelper::getParams('com_easysdi_processing')->get('upload_path'). '/' . $order->file;
-        if (!file_exists($filepath)) {
-          $t.=' <strong>fichier introuvable</strong>';// /*DEBUG*/.$filepath;
-        } else {
-          $t.='&nbsp;<small>'.self::human_filesize(filesize($filepath)).'</small>';
-        }$t.='</span>';
+        if (!is_null($order->file)){
+            $path_parts = pathinfo($order->file);
+            $t='<span class="file" data-extension="'.$path_parts['extension'].'">';
+            $t.=substr($order->file,strpos($order->file,'-')+1,strlen($order->file)-strpos($order->file,'-'));
+            $filepath=JComponentHelper::getParams('com_easysdi_processing')->get('upload_path'). '/' . $order->file;
+            if (!file_exists($filepath)) {
+              $t.=' <strong>fichier introuvable</strong>';// /*DEBUG*/.$filepath;
+            } else {
+              $t.='&nbsp;<small>'.self::human_filesize(filesize($filepath)).'</small>';
+            }$t.='</span>';
+        }else{
+            $t.=' <strong>fichier introuvable</strong>';
+        }
       }
       break;
       case 'output' :
@@ -251,10 +255,10 @@ abstract class Easysdi_processingParamsHelper
       break;
       case 'field' :
 
-      $path_parts = pathinfo($filename);
+      $path_parts = pathinfo($file);
       $t='<span class="file" data-extension="'.$path_parts['extension'].'">';
-      $t.=$filename;
-      $filepath=JComponentHelper::getParams('com_easysdi_processing')->get('upload_path'). '/' . $order->id . '/' . $order->outputpreview;
+      $t.=substr($file,strpos($file,'-')+1,strlen($file)-strpos($file,'-'));
+      $filepath=JComponentHelper::getParams('com_easysdi_processing')->get('upload_path'). '/' . $file;
         if (!file_exists($filepath)) {
           $t.=' <strong>fichier introuvable</strong>';
         } else {
@@ -268,13 +272,22 @@ abstract class Easysdi_processingParamsHelper
 
   public static function  file_url($order, $type="output", $filename="") {
     if (("output"==$type) || ("outputpreview"==$type)|| ("field"==$type)) return JRoute::_('index.php?option=com_easysdi_processing&task=myorder.proxy&order_id='.$order->id.'&type='.$type.'&file='.$filename);
+    if (($order->file == "") && $order->fileurl == "") return "";
     return JRoute::_('index.php?option=com_easysdi_processing&task=myorder.proxy&order_id='.$order->id.'&type='.$type);
   }
 
   public static function file_link($file, $order, $type="output", $showPlugins=true) {
+    if (strpos($file,'\\') !== false) {
+        $tmp = preg_split("[\\\]",$file);
+        $file = $tmp[count($tmp) - 1];
+      }
     $pathinfo=pathinfo($file);
     $proxy_link=self::file_url($order, $type, $pathinfo['basename'], $file);
-    $res='<a href="'.$proxy_link.'">'.self::file_span($file, $order, $type).'</a>';
+    if ($proxy_link<>""){
+        $res='<a href="'.$proxy_link.'">'.self::file_span($file, $order, $type).'</a>';
+    }else{
+        $res='<a >'.self::file_span($file, $order, $type).'</a>';
+    }
 
     if ($showPlugins && in_array($pathinfo['extension'], self::$plugins_extensions)) {
       $function_name='visuplugin_'.$pathinfo['extension'];

@@ -490,8 +490,7 @@ if ($this->item && $this->item->extractions) :
 
                                                     <?php
                                                     if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1):
-                                                        $perimeterScript.="var userperimeter = '" . $this->user->perimeter;
-                                                        ".';\n";
+                                                        $perimeterScript.="var userperimeter = '" . $this->user->perimeter . "';\n";
                                                     endif;
                                                     $perimeterScript.="function selectPerimeter" . $perimeter->id . "() {\n" .
                                                             "    return selectPerimeter(" . json_encode($perimeter) . "," . (($this->item->isrestrictedbyperimeter && $this->user->isEasySDI && $this->params->get('userperimeteractivated') == 1) ? "1" : "0") . ");\n" .

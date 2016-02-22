@@ -19,7 +19,7 @@ class PlgEasysdi_admin_infoGetdiffuextractables extends JPlugin {
         $query = $db->getQuery(true);
         $query->select('COUNT(*) as nbre');
         $query->from('#__sdi_diffusion');
-        $query->where('hasdownload = 1');
+        $query->where('hasextraction = 1');
         $db->setQuery($query);
         $rows = $db->loadObjectList();
         //Convert the stdClass object in an array

@@ -171,7 +171,7 @@ class Easysdi_processingControllerMyRequest extends Easysdi_processingController
                     $fileTemp = $file['tmp_name']['output'];
 
                     if (!JFile::exists($filePath)):
-                        if (!JFile::upload($fileTemp, $filePath)):
+                        if (!JFile::upload($fileTemp, $filePath,false,true)):
                             JError::raiseWarning(500, JText::_('COM_EASYSDI_PROCESSING_FORM_MSG_DIFFUSION_ERROR_UPLOAD'));
                             $return=false;
                         endif;
@@ -244,7 +244,7 @@ class Easysdi_processingControllerMyRequest extends Easysdi_processingController
                     $fileTemp = $file['tmp_name']['outputpreview'];
 
                     if (!JFile::exists($filePath)):
-                        if (!JFile::upload($fileTemp, $filePath)):
+                        if (!JFile::upload($fileTemp, $filePath,false,true)):
                             JError::raiseWarning(500, JText::_('COM_EASYSDI_PROCESSING_FORM_MSG_DIFFUSION_ERROR_UPLOAD'));
                             $return=false;
                         endif;
@@ -423,7 +423,7 @@ class Easysdi_processingControllerMyRequest extends Easysdi_processingController
     public function proxy()
     {
         $jinput = JFactory::getApplication()->input;
-        $inputs= $jinput->getArray(array('order_id'=>'int', 'type'=>'word', 'file'=>'string']));
+        $inputs= $jinput->getArray(array('order_id'=>'int', 'type'=>'word', 'file'=>'string'));
 
         $order_model=$this->getModel('myorder');
         $order=$order_model->getItem($inputs['order_id']);
