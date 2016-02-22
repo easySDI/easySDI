@@ -73,6 +73,10 @@ JText::script('JGLOBAL_SELECT_SOME_OPTIONS');
 JText::script('JGLOBAL_SELECT_AN_OPTION');
 JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
 
+JText::script('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_OK');
+JText::script('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CANCEL');
+JText::script('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CONFIRM');
+
 /* bootbox language */
 $ldao = new SdiLanguageDao();
 $user = new sdiUser();
@@ -132,6 +136,13 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQ
     var iframeheight = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight'); ?>";
     js = jQuery.noConflict();
     js('document').ready(function () {
+        //override or create locale
+        bootbox.addLocale('<?php echo $bbLanguage; ?>' , {
+            OK      : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_OK', 'OK'),
+            CANCEL  : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CANCEL', 'Cancel'),
+            CONFIRM : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CONFIRM', 'Confirm')
+        });
+        //set locale
         bootbox.setLocale("<?php echo $bbLanguage; ?>");
 <?php if ($this->params->get('editmetadatafieldsetstate') == "allopen") { ?>
             toogleAll(js('#btn_toggle_all'));
@@ -178,8 +189,10 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
         <div>
 
-            <?php if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();
-            endif; ?>
+            <?php
+            if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();
+            endif;
+            ?>
 
 <?php echo JHtml::_('form.token'); ?>
         </div>
