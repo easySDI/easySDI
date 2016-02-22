@@ -37,6 +37,8 @@ JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING_TITLE');
+JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE');
+JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE_TITLE');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -597,6 +599,7 @@ if ($this->item && $this->item->extractions) :
                 initDraw();
                 initMyPerimeter();
                 addAlertControl(window.appname.mapPanel.map);
+                addVisibilityChecks(window.appname.mapPanel.map);
                 slider = window.appname.mapPanel.map.indoorlevelslider;
                 if (slider) {
                     slider.on("indoorlevelchanged", function () {
