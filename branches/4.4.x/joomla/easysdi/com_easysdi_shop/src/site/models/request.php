@@ -236,10 +236,13 @@ class Easysdi_shopModelRequest extends JModelForm {
         $orderdiffusion->fee = (int) $data['fee'][$diffusion_id];
         $orderdiffusion->remark = $data['remark'][$diffusion_id];
         if (!empty($files['file'][$diffusion_id][0]['name'])):
+            //get clean filename for storage
+            $storeFileName = Easysdi_shopHelper::getCleanFilename($files['file'][$diffusion_id][0]['name']);
             //Save uploaded file 
             $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
             $orderdiffusion->size = $files['file'][$diffusion_id][0]['size'];
-            $orderdiffusion->file = $files['file'][$diffusion_id][0]['name'];
+            $orderdiffusion->file = $storeFileName;
+            $orderdiffusion->displayName = $storeFileName;
             $extractsFilesPath = JPATH_BASE . '/' . $folder . '/' . $id . '/' . $diffusion_id;
             if (!file_exists($extractsFilesPath)) {
                 if (!mkdir($extractsFilesPath, 0755, true)) {
@@ -248,7 +251,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             }
             $file = $files['file'][$diffusion_id][0]['tmp_name'];
 
-            $newfile = $extractsFilesPath . '/' . $files['file'][$diffusion_id][0]['name'];
+            $newfile = $extractsFilesPath . '/' . $storeFileName;
             if (!move_uploaded_file($file, $newfile)):
 
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_COPY_FILE_ERROR_MESSAGE'), 'error');

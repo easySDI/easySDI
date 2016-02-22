@@ -1345,7 +1345,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             }
         }
 
-        $storeFileName = $this->getCleanFilename($_FILES['file']['name']);
+        $storeFileName = Easysdi_shopHelper::getCleanFilename($_FILES['file']['name']);
 
         if (!move_uploaded_file($_FILES['file']['tmp_name'], $extractsFilesPath . '/' . $storeFileName)) {
             //throw an upload exception
@@ -1353,23 +1353,6 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         }
 
         return array($storeFileName, $_FILES['file']['size']);
-    }
-
-    /**
-     * getCleanFilename - Remove path information and dots around the filename, to prevent uploading
-     * into different directories or replacing hidden system files.
-     * Also remove control characters and spaces (\x00..\x20) around the filename.
-     * If filename is empty before or after cleaning, a guid is returned.
-     * 
-     * @param string $name
-     * @return string new clean filename
-     */
-    private function getCleanFilename($name) {
-        $name = trim(basename(stripslashes($name)), ".\x00..\x20");
-        if (!$name) {
-            $name = str_replace('.', '-', microtime(true));
-        }
-        return $name;
     }
 
     /**
