@@ -207,7 +207,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
         'a.name' => JText::_('COM_EASYSDI_SHOP_ORDERS_NAME'),
         'user' => JText::_('COM_EASYSDI_SHOP_ORDERS_USER'),
         'thirdparty' => JText::_('COM_EASYSDI_SHOP_ORDERS_THIRDPARTY'),
-        'a.created' => JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED'),
+        'a.sent' => JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED'),
         'a.completed' => JText::_('COM_EASYSDI_SHOP_ORDERS_COMPLETED'),
 		);
 	}

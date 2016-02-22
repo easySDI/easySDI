@@ -116,7 +116,7 @@ if (!empty($this->extra_sidebar)) {
                         <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ORDERTYPE'); ?></th>
                         <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_STATE'); ?></th>
                         <th class='left'><?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_ORDERS_USER', 'user', $listDirn, $listOrder); ?></th>
-                        <th class='left'><?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_ORDERS_CREATED', 'a.created', $listDirn, $listOrder); ?></th>
+                        <th class='left'><?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_ORDERS_CREATED', 'a.sent', $listDirn, $listOrder); ?></th>
                         <th class='left'><?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_ORDERS_COMPLETED', 'a.completed', $listDirn, $listOrder); ?></th>
                         <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_PRODUCTS'); ?></th>
 
@@ -156,7 +156,6 @@ if (!empty($this->extra_sidebar)) {
 
                         $basket = new sdiBasket();
                         $basket->loadOrder($item->id);
-                                               
                         ?>
                         <tr class="row<?php echo $i % 2; ?>">
 
@@ -228,17 +227,18 @@ if (!empty($this->extra_sidebar)) {
                                     </a>
                                 </span>
                             </td>
-                            <td><?php echo $item->created; ?></td>
+                            <td>
+                                <?php echo JHtml::date($item->sent, 'Y-m-d H:i:s'); ?>
+                            </td>
                             <td><?php
                                 if ('0000-00-00 00:00:00' != $item->completed)
-                                    echo $item->completed;
+                                    echo JHtml::date($item->completed, 'Y-m-d H:i:s');
                                 ?></td>
-                            <td><?php 
+                            <td><?php
                                 foreach ($basket->extractions as $extraction):
                                     echo($extraction->name . '<br/>');
-                                endforeach; 
-                            
-                            ?></td>
+                                endforeach;
+                                ?></td>
 
                         </tr>
                     <?php endforeach; ?>
