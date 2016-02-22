@@ -567,7 +567,7 @@ js(document).on('click', '.attribute-remove-btn', function () {
     var parent = js(this).parent();
     var uuid = getUuid('attribute-remove-btn', this.id);
 
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
+    sdiDangerConfirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
         if (result) {
             js.ajax({
                 url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
@@ -654,7 +654,7 @@ js(document).on('click', '.remove-btn', function () {
     var id = this.id;
     var xpath = js(this).attr('data-xpath');
 
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
+    sdiDangerConfirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function (result) {
         if (result) {
 
             var uuid = getUuid('remove-btn', id);
@@ -1059,18 +1059,22 @@ function disableVisible() {
     js('.scope-visible select').trigger("liszt:updated");
 }
 
+/**
+ * Locks the form, shows an error message and scroll up the page.
+ * @returns {void}
+ */
 function lockFormForSession() {
     //disable form
     disableCompleteForm()
     //show message
-    Joomla.renderMessages({'error': ['<b>'+Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_TITLE', 'COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_TITLE')+'</b><br/>'+Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_MESSAGE', 'COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_MESSAGE')]});
+    Joomla.renderMessages({'error': ['<b>' + Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_TITLE', 'COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_TITLE') + '</b><br/>' + Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_MESSAGE', 'COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_MESSAGE')]});
     //move to top
     js("html, body").animate({scrollTop: 0}, 'slow');
 }
 
 /**
  * Disable all editable fields and button (except return and collapse form)
- * @returns void
+ * @returns {void}
  */
 function disableCompleteForm() {
     //disable form
@@ -1082,7 +1086,41 @@ function disableCompleteForm() {
     js('.metadata-edit.front-end-edit .btn-toolbar #btn-reset').prop('disabled', true).addClass('disabled');
 }
 
-//Décode une chaîne
+/**
+ * easySDI custom bootbox confirm message with 'danger' button to match 
+ * https://forge.easysdi.org/issues/1006 and https://forge.easysdi.org/issues/924
+ * for 'risky actions'. Uses bootbox.dialog.
+ * @param {string} message Text for the dialog
+ * @param {function} cb Callback function
+ * @returns void
+ */
+function sdiDangerConfirm(message, cb) {
+    bootbox.dialog(message,
+            [
+                {
+                    "label": Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CANCEL', 'Cancel'),
+                    "callback": function () {
+                        if (typeof cb == 'function') {
+                            cb(false);
+                        }
+                    }
+                }, {
+                    "label": Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CONFIRM', 'Confirm'),
+                    "class": "btn-danger",
+                    "callback": function () {
+                        if (typeof cb == 'function') {
+                            cb(true);
+                        }
+                    }
+                }
+            ]);
+}
+
+/**
+ * Decodes common HTML entities
+ * @param {String} texte
+ * @returns {String}
+ */
 function html_entity_decode(texte) {
     texte = texte.replace(/&quot;/g, '"'); // 34 22
     texte = texte.replace(/&amp;/g, '&'); // 38 26	
