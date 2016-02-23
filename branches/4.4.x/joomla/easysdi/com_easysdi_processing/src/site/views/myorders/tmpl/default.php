@@ -54,6 +54,7 @@ $doc->addScript($base_url . '/js/easysdi_processing.js');
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -91,7 +92,6 @@ $doc->addScript($base_url . '/js/easysdi_processing.js');
                             }
                             ?></td>
                             <td>
-                                <div class="pull-right">
                                     <?php
                                 //$order->output_obj=json_decode($order->output);
                                     if ($order->output != '') {
@@ -114,6 +114,8 @@ $doc->addScript($base_url . '/js/easysdi_processing.js');
                                             <?php
                                         }
                                         ?>
+                            </td>
+                            <td>
                                         <div class="btn-group">
                                             <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                                                 <?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_ACTIONS'); ?>
@@ -127,13 +129,12 @@ $doc->addScript($base_url . '/js/easysdi_processing.js');
                                                     <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&task=myorder.remove&order_id=' . $order->id); ?>"><?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_DELETE'); ?></a>
                                                 </li>
                                                 <?php if (($order->status == 'done') || ($order->status == 'fail')): ?>
-                                                    <li>
+                                                    <!--<li>
                                                         <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&task=myorder.archive&id=' . $order->id); ?>"><?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_ARCHIVE'); ?></a>
-                                                    </li>
+                                                    </li>-->
                                                 <?php endif; ?>
                                             </ul>
                                         </div>
-                                    </div>
                                 </td>
                             </tr>
                             <?php

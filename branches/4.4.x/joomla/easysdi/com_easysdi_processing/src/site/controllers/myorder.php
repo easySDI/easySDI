@@ -183,7 +183,7 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
                         $fileTemp = $file['tmp_name']['file'];
 
                         if (!JFile::exists($uploadPath)):
-                            if (!JFile::upload($fileTemp, $uploadPath)):
+                            if (!JFile::upload($fileTemp, $uploadPath,false,true)):
                                 JError::raiseWarning(500, JText::_('COM_EASYSDI_PROCESSING_FORM_MSG_DIFFUSION_ERROR_UPLOAD'));
                                 return false;
                             endif;
@@ -238,7 +238,7 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
                             $fileTemp = $file['tmp_name'];
 
                             if (!JFile::exists($uploadPath)):
-                                if (!JFile::upload($fileTemp, $uploadPath)):
+                                if (!JFile::upload($fileTemp, $uploadPath,false,true)):
                                     JError::raiseWarning(500, JText::_('COM_EASYSDI_PROCESSING_FORM_MSG_DIFFUSION_ERROR_UPLOAD'));
                                     return false;
                                 endif;
@@ -349,6 +349,25 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
         $data['id'] = JFactory::getApplication()->input->get('order_id', null, 'int');
 
         $order = $model->getData($data['id']);
+        
+        $params = JFactory::getApplication()->getParams('com_easysdi_processing');
+            $fileFolder = $params->get('upload_path');
+            $outputFolder=$params->get('output_path');
+            
+            $filepath = $fileFolder . '/'. $order->file;
+            
+            if (JFile::exists($filepath))
+                JFile::delete($filepath);
+            
+            $filepath = $outputFolder . '/' .$data['id'] . '/' . $order->output;
+            
+            if (JFile::exists($filepath))
+                JFile::delete($filepath);
+            
+            $filepath = $outputFolder . '/' . $data['id'] . '/' . $order->outputpreview;
+            
+            if (JFile::exists($filepath))
+                JFile::delete($filepath);
 
         try {
             try {
@@ -360,6 +379,8 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
             }
             $model->delete($data['id']);
             $db->transactionCommit();
+            
+            
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EASYSDI_PROCESSING_ITEM_DELETED_SUCCESSFULLY'));
@@ -372,39 +393,7 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
         }
     }
 
-    /*public function getUsers() {
-        $jinput = JFactory::getApplication()->input;
-        $organism_id = $jinput->get('organism', '0', 'string');
-
-        $all = array();
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('uro.role_id, u.id, s.name');
-        $query->from('#__sdi_user_role_organism uro');
-        $query->innerJoin('#__sdi_user u ON u.id = uro.user_id');
-        $query->innerJoin('#__users s ON u.user_id = s.id');
-        $query->where('organism_id=' . (int)$organism_id);
-        $query->order('s.name');
-
-        $db->setQuery($query);
-        $users = $db->loadObjectList();
-
-        foreach ($users as $user) :
-            if (!isset($all[$user->role_id]))
-                $all[$user->role_id] = array();
-            $u = new stdClass();
-            $u->id = $user->id;
-            $u->name = $user->name;
-            array_push($all[$user->role_id], $u);
-        endforeach;
-
-
-        echo json_encode($all);
-        die();
-    }*/
-
-    function apply() {
+     function apply() {
         $this->save(false);
     }
 
@@ -449,14 +438,14 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
         $private_access=($order->access_key!==null && $order->access_key==$inputs['access_key']);
 
 
-        if (in_array('creator',$user_roles) || in_array('contact',$user_roles) || $private_access ) {
+        if (in_array('creator',$user_roles) || in_array('contact',$user_roles) || $private_access || $inputs['type']=='field' ) {
             if (($inputs['type']=='output') || ($inputs['type']=='outputpreview')) {
                 $file_path=JComponentHelper::getParams('com_easysdi_processing')->get('output_path');
 
                     $file_path.= '/' . $order->id.'/'.basename($inputs['file']);
             } elseif($inputs['type']=='field') {
                 $file_path=JComponentHelper::getParams('com_easysdi_processing')->get('upload_path');
-                $file_path.= '/' . $order->id.'/'.basename($inputs['file']);
+                $file_path.= '/'.basename($inputs['file']);
 
              } else {
                 if ($order->filestorage == 'url')

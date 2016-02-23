@@ -3228,7 +3228,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing` (
   KEY `state` (`state`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `#__sdi_processing`;
+DROP TABLE IF EXISTS `#__sdi_processing_obs`;
 CREATE TABLE IF NOT EXISTS `#__sdi_processing_obs` (
   `processing_id` int(10) unsigned NOT NULL,
   `sdi_user_id` int(10) unsigned NOT NULL,
@@ -3257,7 +3257,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   `modified_by` int(10) NOT NULL,
   `modified` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `sent` timestamp NULL DEFAULT NULL,
-  `access_key` varchar(255),
+  `access_key` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `processing_id` (`processing_id`),
   KEY `created_by` (`created_by`)
