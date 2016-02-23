@@ -78,11 +78,11 @@
         />
 
         <field name="auto"
-        type="radio"
+        type="hidden"
         label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_TYPE"
         description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_TYPE"
         class="btn-group"
-        default="1">
+        default="0">
         <option value="1">COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_AUTO</option>
         <option value="0">COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_MANUAL</option>
         </field>
@@ -90,7 +90,7 @@
          <field
             name="command"
             onchange=""
-            type="text"
+            type="hidden"
             class="inputbox"
             required ="false"
             label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_COMMAND"

@@ -116,6 +116,9 @@ $processing_parameters=json_decode($processing->parameters);
 
 
 </script>
+
+<?php echo '<a href="' . JRoute::_('index.php?option=com_easysdi_processing&amp;view=myrequests') . '">' . JText::_('COM_EASYSDI_PROCESSING_FORM_LBL_BACK') . '</a>'; ?>
+
 <div  data-processingplugin=<?php echo $order->plugins ?> class="<?php
     foreach ($plugin_results as $k=>$plugin_result) {
         if (isset($plugin_result['plugin'])) echo ' plugin_'.$plugin_result['plugin'];
@@ -214,6 +217,7 @@ $processing_parameters=json_decode($processing->parameters);
         ?>
 
 
+    </div>
 </div>
         <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
             <?php echo $field->input; ?>
