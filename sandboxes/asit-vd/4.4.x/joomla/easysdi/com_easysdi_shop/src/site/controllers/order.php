@@ -215,7 +215,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $keys['diffusion_id'] = $diffusion_id;
         $orderdiffusion->load($keys);
 
-        return Easysdi_shopHelper::downloadOrderFile($orderdiffusion);
+        Easysdi_shopHelper::downloadOrderFile($orderdiffusion);
     }
 
         
