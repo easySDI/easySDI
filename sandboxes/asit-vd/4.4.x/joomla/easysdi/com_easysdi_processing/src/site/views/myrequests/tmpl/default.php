@@ -37,6 +37,7 @@ $doc->addScript($base_url . '/js/easysdi_processing.js?v=' . sdiFactory::getSdiF
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -68,7 +69,6 @@ $doc->addScript($base_url . '/js/easysdi_processing.js?v=' . sdiFactory::getSdiF
                             }
                             ?></td>
                         <td>
-                            <div class="pull-right">
                                 <div class="btn-group sdi-btn-download-file-from-list">
                                     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                                         <i class="icon-flag-2"></i>
@@ -88,6 +88,8 @@ $doc->addScript($base_url . '/js/easysdi_processing.js?v=' . sdiFactory::getSdiF
                                        }?>
                                    </ul>
                                </div>
+                        </td>
+                        <td>
                                <div class="btn-group">
                                 <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                                     <?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_ACTIONS'); ?>
@@ -100,7 +102,6 @@ $doc->addScript($base_url . '/js/easysdi_processing.js?v=' . sdiFactory::getSdiF
 
                                 </ul>
                             </div>
-                        </div>
                     </td>
                 </tr>
                 <?php

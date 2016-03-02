@@ -10,7 +10,7 @@
                 onchange="onProductStorageChange()"
                 label="COM_EASYSDI_PROCESSING_FORM_LBL_DIFFUSION_PRODUCTSTORAGE"
                 description="COM_EASYSDI_PROCESSING_FORM_DESC_DIFFUSION_PRODUCTSTORAGE"
-                class="inputbox"
+                class="inputbox" 
                 size="1"
                 default="upload">
             <option value="upload">Upload</option>

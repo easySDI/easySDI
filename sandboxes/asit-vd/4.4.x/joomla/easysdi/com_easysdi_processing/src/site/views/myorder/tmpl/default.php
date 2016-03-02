@@ -19,8 +19,8 @@ $order= $this->item;
 
 $user=sdiFactory::getSdiUser();
 $jinput = JFactory::getApplication()->input;
+$input_key=$jinput->get('private_key',false);
 if(!$user->isEasySDI) {
-    $input_key=$jinput->get('private_key',false);
     if ($input_key==false || $input_key!=$order->access_key)
         return JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
 } else {
@@ -48,7 +48,7 @@ if(!$user->isEasySDI) {
     $db->query();
     echo '<div class="alert alert-info"><strong>Le document est maintenant partagé</strong><br>'.
     "<p>Transmettez ce lien à vos partenaires pour qu'ils puissent consulter le document</p>".
-    '<a target=_blank href="'. JURI::base().JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key).'">'. JURI::base().JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key, true, -1).'</a>'.
+    '<a target=_blank href="'. JURI::base().'index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key.'">'. JURI::base().'index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key.'</a>'.
     '</div>';
 
 }
@@ -136,8 +136,10 @@ $doc->addScript($base_url . '/js/easysdi_processing.js?v=' . sdiFactory::getSdiF
 $dispatcher = JDispatcher::getInstance();
 $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($order));
 
-?>
-<?php //include_once(dirname(__FILE__).'/../../header.php');?>
+if (!$input_key)
+    echo '<a href="' . JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorders') . '">' . JText::_('COM_EASYSDI_PROCESSING_FORM_LBL_BACK') . '</a>'; ?>
+
+
 <div  data-processingplugin=<?php echo $order->plugins ?> class="<?php
     foreach ($plugin_results as $k=>$plugin_result) {
         if (isset($plugin_result['plugin'])) echo ' plugin_'.$plugin_result['plugin'];
@@ -163,20 +165,20 @@ $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($or
             if ($order->access_key!=false) {
                 ?>
 
-                <a href="#processing_hotlink" role="button" class="btn btn-warning" data-toggle="modal">ce document est partagé</a>
+                <a href="#processing_hotlink" role="button" class="btn btn-warning" data-toggle="modal"><?php echo JText::_('COM_EASYSDI_PROCESSING_SHARED_ORDER'); ?></a>
                 <!-- Modal -->
                 <div id="processing_hotlink" class="modal hide fade text-left" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="myModalLabel">Vous avez partagé ce document</h3>
+                    <h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_PROCESSING_YOU_SHARED_ORDER'); ?></h3>
                 </div>
                 <div class="modal-body">
-                    <p>Transmettez ce lien à vos partenaires pour qu'ils puissent consulter le document <strong><?php echo $order->name ?></strong></p>
-                    <a target=_blank href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key); ?>"><?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key, true, -1); ?></a>
+                    <p><?php echo JText::_('COM_EASYSDI_PROCESSING_SHARE_LINK'); ?> <strong><?php echo $order->name ?></strong></p>
+                    <a target=_blank href="<?php echo JURI::base().'index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key; ?>"><?php echo JURI::base().'index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;private_key='.$order->access_key; ?></a>
                 </div>
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
-                    <a href='<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;share=false'); ?>' class="btn btn-primary"  onclick="return confirm('Attention vos partenaires ne pourront plus acceder à ce document')">Supprimer le partage</a>
+                    <a href='<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;share=false'); ?>' class="btn btn-primary"  onclick="return confirm('<?php echo JText::_('COM_EASYSDI_PROCESSING_WARNING_SHARE_DELETE'); ?>')"><?php echo JText::_('COM_EASYSDI_PROCESSING_SHARE_DELETE'); ?></a>
                 </div>
             </div>
 
@@ -184,7 +186,7 @@ $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($or
         } else {
             ?>
 
-            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;share=true'); ?>" class="btn btn-default">partager ce document</a>
+            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_processing&amp;view=myorder&amp;id='.$order->id.'&amp;share=true'); ?>" class="btn btn-default"><?php echo JText::_('COM_EASYSDI_PROCESSING_SHARE_ORDER'); ?></a>
 
             <?php
         }
@@ -239,13 +241,13 @@ $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($or
 
     <?php if ($order->output != '') {
         ?>
-        <?php echo Easysdi_processingParamsHelper::file_link($order->output, $order,'output'); ?><br>
+        <?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_DOWNLOAD_OUTPUT') .' : '. Easysdi_processingParamsHelper::file_link($order->output, $order,'output'); ?><br>
         <?php
     }
 
     if ($order->outputpreview != '') {
         ?>
-        <?php echo Easysdi_processingParamsHelper::file_link($order->outputpreview, $order, 'outputpreview'); ?><br>
+        <?php echo JText::_('COM_EASYSDI_PROCESSING_LBL_DOWNLOAD_OUTPUTPREVIEW') .' : '.Easysdi_processingParamsHelper::file_link($order->outputpreview, $order, 'outputpreview'); ?><br>
         <?php
     }
     if ($order->info != '') {
@@ -261,7 +263,7 @@ $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($or
     ?>
 
     <hr>
-    publié le <?php echo $order->sent ?> par <?php echo $order->processing_contact_label ?>
+    <?php echo JText::_('COM_EASYSDI_PROCESSING_ORDER_PUBLISHED_AT')." ".$order->sent." ".JText::_('COM_EASYSDI_PROCESSING_LBL_ORDER_BY') . " ". $order->processing_contact_label ?>
 </div>
 <?php //} ?>
 

@@ -87,8 +87,9 @@ if (JDEBUG) {
 //****************
 $doc->addScript($base_url . '/js/easysdi_processing.js?v=' . sdiFactory::getSdiFullVersion());
 
+echo '<a href="' . JRoute::_('index.php?option=com_easysdi_processing&amp;view=myrequests') . '">' . JText::_('COM_EASYSDI_PROCESSING_FORM_LBL_BACK') . '</a>'; ?>
+
 ?>
-<?php //include_once(dirname(__FILE__).'/../../header.php'); ?>
 <h1><?php echo $order->name ?> <?php echo Easysdi_processingStatusHelper::status($order->status) ?></h1>
 <h2><?php echo JText::_('COM_EASYSDI_PROCESSING_TITLE'); ?>: <?php echo $order->processing_label ?></h2>
 
