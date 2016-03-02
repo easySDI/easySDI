@@ -39,17 +39,13 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
         $metadata->load('complete');
         $metadata->extend($catalog, $type, $preview, 'true', $lang);
         
-        $file = $metadata->applyXSL(array ('catalog' => $catalog, 'type' => $type, 'preview' => $preview, 'out' => $out));
+        $xhtmlfile = $metadata->applyXSL(array ('catalog' => $catalog, 'type' => $type, 'preview' => $preview, 'out' => $out));
 
-        $tmp = uniqid();
-        $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
-        file_put_contents($tmpfile . '.xml', $file);
         $mpdf = new mPDF();
-        $mpdf->WriteHTML($file);
-        $mpdf->Output($tmpfile . '.pdf', 'F');
+        $mpdf->WriteHTML($xhtmlfile);
         $file = $mpdf->Output('', 'S');
         if ($download) {
-            Easysdi_catalogControllerSheet::setResponse($file, $tmpfile . '.pdf', 'application/pdf', 'report.pdf', strlen($file));
+            $this->setResponse($file, 'application/pdf', 'report.pdf', strlen($file));
         } else {
             return $file;
         }
@@ -63,18 +59,14 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
         $metadata->load('complete');
         $metadata->dom->formatOutput = FALSE;
         $file = $metadata->dom->saveXML();
-        $tmp = uniqid();
-        $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
-        file_put_contents($tmpfile . '.xml', $file);
         if ($download) {
-            Easysdi_catalogControllerSheet::setResponse($file, $tmpfile . '.xml', 'text/xml', 'report.xml', strlen($file));
+            $this->setResponse($file, 'text/xml', 'report.xml', strlen($file));
         } else {
             return $file;
         }
     }
 
-    function setResponse($file, $filename, $contenttype, $downloadname, $size) {
-        unlink($filename);
+    function setResponse($file, $contenttype, $downloadname, $size) {
         error_reporting(0);
         ini_set('zlib.output_compression', 0);
 
