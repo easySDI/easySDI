@@ -16,7 +16,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
+$document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css?v=' . sdiFactory::getSdiFullVersion());
 
 $user = JFactory::getUser();
 $userId = $user->get('id');

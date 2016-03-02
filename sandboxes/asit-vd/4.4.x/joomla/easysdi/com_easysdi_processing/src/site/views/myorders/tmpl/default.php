@@ -20,7 +20,7 @@ require_once JPATH_COMPONENT_ADMINISTRATOR.'/helpers/easysdi_processing.php';
 
 $doc = JFactory::getDocument();
 $base_url=Juri::base(true) . '/components/com_easysdi_processing/assets';
-$doc->addScript($base_url . '/js/easysdi_processing.js');
+$doc->addScript($base_url . '/js/easysdi_processing.js?v=' . sdiFactory::getSdiFullVersion());
 
 ?>
 <?php //include_once(dirname(__FILE__).'/../../header.php'); ?>

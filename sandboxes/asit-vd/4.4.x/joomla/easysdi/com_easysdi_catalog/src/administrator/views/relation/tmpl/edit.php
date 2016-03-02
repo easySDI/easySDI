@@ -17,9 +17,9 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
-$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
-$document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js');
+$document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
     var url = '<?php echo JURI::root(); ?>administrator/index.php?option=com_easysdi_catalog&task=relation.getRenderType&attributechild=';
