@@ -22,13 +22,12 @@
         <!-- write revision to a temp file -->
         <property name="svnrevision.temp.file" value="${root.out.dir}/svnrevisiontemp.txt"/>
         <exec executable="svnversion" output="${svnrevision.temp.file}">
-            <arg line="-n"/>
-            <arg line="-c"/>
             <arg line="${parent.src.out.dir}"/>
         </exec>
         <!-- load revision, clean with regex, store in property and delete file -->
-        <loadfile srcfile="${svnrevision.temp.file}" property="svnrevision">
+        <loadfile srcfile="${svnrevision.temp.file}" property="php.var.svnrevision">
             <filterchain>
+                <striplinebreaks/>
                 <replaceregex pattern="[^0-9:]" replace="" flags="gi"/>
                 <replaceregex pattern=":" replace="-" flags="gi"/>
             </filterchain>
@@ -37,7 +36,7 @@
         <!-- write php file -->
         <echo file="${destinationfile}" append="false">&lt;?php${line.separator}</echo>
         <echo file="${destinationfile}" append="true">$sdi_build_version=&quot;${version}&quot;;${line.separator}</echo>
-        <echo file="${destinationfile}" append="true">$sdi_build_revision=&quot;${svnrevision}&quot;;${line.separator}</echo>
+        <echo file="${destinationfile}" append="true">$sdi_build_revision=&quot;${php.var.svnrevision}&quot;;${line.separator}</echo>
     </target>
     
     <!-- 
