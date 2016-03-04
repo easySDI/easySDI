@@ -143,12 +143,17 @@ var listenerFeatureAddedToZoom = function (e) {
 
 //Check if the surface of the selection is applicable
 function orderSurfaceChecking() {
-
     var tmpSurface = 0;
     var isSelfIntersect = false;
 
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
         if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
+            
+            //do not count Draw Layers
+            if (app.mapPanel.map.layers[j].name.indexOf("OpenLayers.Handler.") >= 0) {
+                continue;
+            }
+            
             var layer = app.mapPanel.map.layers[j];
             for (var f = 0; f < layer.features.length; f++) {
                 if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
