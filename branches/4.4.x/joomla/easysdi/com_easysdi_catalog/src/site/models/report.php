@@ -179,32 +179,24 @@ class Easysdi_catalogModelReport extends JModelForm {
         $xmls->appendChild($metadataset);
 
         $file = $xmls->saveXML();
-        $tmp = uniqid();
-        $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
-        file_put_contents($tmpfile . '.xml', $file);
 
-        $this->setResponse($file, $tmpfile . '.xml', 'text/xml', 'report.xml', strlen($file));
+        $this->setResponse($file, 'text/xml', 'report.xml', strlen($file));
     }
 
     private function reportPDF($catalog, $type, $preview, $metadatas){
-        $file = '';
+        $xhtmlfile = '';
         foreach ($metadatas as $metadata) {
-            $file .= $metadata->applyXSL(array('catalog' => $catalog, 'type' => $type, 'preview' => $preview));
+            $xhtmlfile .= $metadata->applyXSL(array('catalog' => $catalog, 'type' => $type, 'preview' => $preview));
         }
 
-        $tmp = uniqid();
-        $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
-        file_put_contents($tmpfile . '.xml', $file);
         $mpdf = new mPDF();
-        $mpdf->WriteHTML($file);
-        $mpdf->Output($tmpfile . '.pdf', 'F');
+        $mpdf->WriteHTML($xhtmlfile);
         $file = $mpdf->Output('', 'S');
 
-        $this->setResponse($file, $tmpfile . '.pdf', 'application/pdf', 'report.pdf', strlen($file));
+        $this->setResponse($file, 'application/pdf', 'report.pdf', strlen($file));
     }
 
-    private function setResponse($file, $filename, $contenttype, $downloadname, $size) {
-        unlink($filename);
+    private function setResponse($file, $contenttype, $downloadname, $size) {
         error_reporting(0);
         ini_set('zlib.output_compression', 0);
 
