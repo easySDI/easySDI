@@ -27,8 +27,9 @@ class CurlHelper {
     private $get = null;
     private $post = null;
     private $filename = null;
-    private $fileextension = null;
     private $returnonerror = false;
+    private $contentType = null;
+    private $headersAlreadySent = false;
 
     function __construct($returnonerror = false) {
         //Caller may wants to perform specific action on curl call error
@@ -229,7 +230,7 @@ class CurlHelper {
             curl_setopt($this->ch, CURLOPT_COOKIE, $this->cookies);
         }
 
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_ENCODING, "");
 
         // Authentication
@@ -283,14 +284,15 @@ class CurlHelper {
     }
 
     private function send() {
-        if (!$content = curl_exec($this->ch)) {
-            throw new Exception(curl_error($this->ch));
-        }
-        $data = curl_getinfo($this->ch);
-        curl_close($this->ch);
 
-        //Handle http code error
-        if ((int) $data['http_code'] < 200 || (int) $data['http_code'] >= 400) {            
+        //Set callbakc functions last (dependency on other params), except for sftp head
+        //if ($this->protocol !== 'sftp' && $this->method !== 'HEAD') {
+            curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, false);
+            curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array($this, 'curlCB_readHeader'));
+            curl_setopt($this->ch, CURLOPT_WRITEFUNCTION, array($this, 'curlCB_readBody'));
+        //}
+
+        if (!curl_exec($this->ch)) {
             //If the caller wants to handle the error, we return false
             if ($this->returnonerror) {
                 return false;
@@ -298,41 +300,103 @@ class CurlHelper {
             //Else, we send an HTTP error to the client
             header('HTTP/1.1 502 Bad Gateway', true, 502);
             echo JText::_('COM_EASYSDI_CORE_CURL_502_MESSAGE');
+            curl_close($this->ch);
             die();
         }
 
-        //Forcing content_type and charset values doesn't seem to be necessary
-        // if no content type defined, set as text/plain
-//        if ($data['content_type'] == '') {
-//            $data['content_type'] = 'text/plain';
-//        }
-        // if no charset defined, force utf-8
-//        if (strpos($data['content_type'], 'charset') == false) {
-//            $content = trim($content);
-//            list($ct, $trash) = explode(';', $data['content_type']);
-//            $data['content_type'] = trim($ct) . '; charset=utf-8';
-//        }
-//        
-        // set headers then output response
-        header('Content-Type: ' . $data['content_type']);
+        curl_close($this->ch);
 
-        //Response size
-        header("Content-Length: " . strlen($content));
-
-        //Optional parameters to overwrite header informations
-        if (isset($this->fileextension)) {
-            header('Content-Type: application/octetstream; name="' . $this->fileextension . '"');
-        }
-        if (isset($this->filename)) {
-            header('Content-Disposition: attachement; filename="' . $this->filename . '"');
-        }
-        echo $content;
+        //echo $content;
         die();
     }
 
+    /*
+     * Callback function for CURL header read : CURLOPT_HEADERFUNCTION
+     * Return the number of bytes actually written or return -1 to signal error to
+     * the library (it will  cause it to abort the transfer with a CURLE_WRITE_ERROR
+     * return code).
+     */
+
+    private function curlCB_readHeader($ch, $string) {
+
+        //process header if protocol is HTTP(S)
+        if (strpos($this->protocol, 'http') !== false) {
+
+            //get curl infos
+            $infos = curl_getinfo($ch);
+
+            //check HTTP code, force fail in case of error code
+            if ($infos['http_code'] < 200 || $infos['http_code'] >= 400) {
+                return -1;
+            }
+
+            //update content_type if any
+            if (isset($infos['content_type'])) {
+                $this->contentType = $infos['content_type'];
+            }
+        }
+
+        return strlen($string);
+    }
+
+    /*
+     * Callback function for CURL body write : CURLOPT_WRITEFUNCTION
+     * Return the number of bytes actually taken care of.  If that amount differs 
+     * from the amount passed to your function, it'll signal an error to the 
+     * library and it will abort the transfer and return CURLE_WRITE_ERROR.
+     */
+
+    private function curlCB_readBody($ch, $string) {
+        //at first call, sent headers to client
+        if (!$this->headersAlreadySent) {
+            $this->sendHeaders();
+        }
+
+        //dump content to client
+        echo $string;
+        @ob_flush();  // flush output
+        @flush();
+
+        return strlen($string);
+    }
+
+    /**
+     * Send HTTP headers to client (if set) :
+     * Content-Type, Content-Length and Content-Disposition
+     */
+    private function sendHeaders() {
+
+        //if there is no content type, and protocol is not HTTP(S) force 'application/octetstream'
+        //to avoid having the browser wanting to interpret a potentially binary file
+        if (!isset($this->contentType) && strpos($this->protocol, 'http') == false) {
+            $this->contentType = 'application/octetstream';
+        }
+
+        //if we have a content type, set it
+        if (isset($this->contentType)) {
+            header('Content-Type: ' . $this->contentType);
+        }
+
+        //Optional parameters to overwrite header filename, force attachement disposition
+        if (isset($this->filename)) {
+            header('Content-Disposition: attachement; filename="' . $this->filename . '"');
+        }
+
+        $this->headersAlreadySent = true;
+        
+        //close joomla session to unblock navigation
+        //we don't have to read/write session infos from now
+        $session = JFactory::getSession();
+        $session->close();
+    }
+
+    /**
+     * Gets the cookies from the request
+     */
     private function getCookies() {
-        if (!isset($this->jInput))
+        if (!isset($this->jInput)) {
             return;
+        }
         $data = array();
         foreach ($this->jInput->cookie->getArray() as $cookieName => $cookieValue) {
             array_push($data, $cookieName . '=' . $cookieValue);
@@ -364,8 +428,8 @@ class CurlHelper {
             unset($data['password']);
         }
 
-        if (is_array($authentication)) {
-            $this->authentication['authtype'] = isset($data['authtype']) ? $data['authtype'] : true;
+        if (is_array($this->authentication) && isset($data['authtype'])) {
+            $this->authentication['authtype'] = $data['authtype'];
         }
 
         if (isset($data['method'])) {
@@ -376,11 +440,6 @@ class CurlHelper {
         if (isset($data['filename'])) {
             $this->filename = $data['filename'];
             unset($data['filename']);
-        }
-
-        if (isset($data['fileextension'])) {
-            $this->fileextension = $data['fileextension'];
-            unset($data['fileextension']);
         }
     }
 
