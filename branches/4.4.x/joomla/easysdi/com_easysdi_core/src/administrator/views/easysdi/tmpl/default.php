@@ -10,7 +10,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
+$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <div class="row-fluid">
     <?php if (!empty($this->sidebar)): ?>

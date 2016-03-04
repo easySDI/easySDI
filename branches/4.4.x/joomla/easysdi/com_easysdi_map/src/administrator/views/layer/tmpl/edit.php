@@ -17,9 +17,9 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
-$document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
-$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js');
+$document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();

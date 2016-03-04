@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_processing/assets/css/easysdi_processing.css');
+$document->addStyleSheet('components/com_easysdi_processing/assets/css/easysdi_processing.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
     Joomla.submitbutton = function(task)

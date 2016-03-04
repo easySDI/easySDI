@@ -41,13 +41,13 @@ JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE');
 JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE_TITLE');
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js');
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js?v=' . sdiFactory::getSdiFullVersion());
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
 //$document->addScript('components/com_easysdi_shop/helpers/helper.js');
-$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
+$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css?v=' . sdiFactory::getSdiFullVersion());
 Easysdi_shopHelper::addMapShopConfigToDoc();
 
 $perimeterScript = "";

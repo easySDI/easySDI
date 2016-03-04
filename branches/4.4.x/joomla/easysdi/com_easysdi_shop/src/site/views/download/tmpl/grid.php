@@ -13,8 +13,8 @@ defined('_JEXEC') or die;
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
-$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/download/tmpl/grid.js');
-$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js');
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/download/tmpl/grid.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js?v=' . sdiFactory::getSdiFullVersion());
 
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>

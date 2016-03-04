@@ -119,19 +119,19 @@ if (JDEBUG) {
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
 }else{
     $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/leaflet/leaflet.css');
-    $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/main.css');
+    $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/main.css?v=' . sdiFactory::getSdiFullVersion());
 
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet/leaflet.js');
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4-compressed.js');
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
 
 
-    $doc->addScript($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js');
+    $doc->addScript($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js?v=' . sdiFactory::getSdiFullVersion());
     $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
 }
 
 //****************
-$doc->addScript($base_url . '/js/easysdi_processing.js');
+$doc->addScript($base_url . '/js/easysdi_processing.js?v=' . sdiFactory::getSdiFullVersion());
 
 $dispatcher = JDispatcher::getInstance();
 $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($order));

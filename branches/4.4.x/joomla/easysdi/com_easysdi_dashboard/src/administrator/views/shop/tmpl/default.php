@@ -17,8 +17,8 @@ JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS and JS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_dashboard/assets/css/easysdi_dashboard.css');
-$document->addScript('components/com_easysdi_dashboard/assets/js/com_easysdi_dashboard.js');
+$document->addStyleSheet('components/com_easysdi_dashboard/assets/css/easysdi_dashboard.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_dashboard/assets/js/com_easysdi_dashboard.js?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript('components/com_easysdi_dashboard/libraries/flot/jquery.flot.min.js');
 $document->addScript('components/com_easysdi_dashboard/libraries/flot/jquery.flot.pie.js');
 $document->addScript('components/com_easysdi_dashboard/libraries/flot/jquery.flot.tooltip.min.js');

@@ -16,14 +16,14 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 //JHtml::_('formbehavior.chosen', 'select');
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_monitor/assets/css/easysdi_monitor.css');
+$document->addStyleSheet('components/com_easysdi_monitor/assets/css/easysdi_monitor.css?v=' . sdiFactory::getSdiFullVersion());
 
 //Load css files
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/resources/css/ext-all.css');
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/resources/css/xtheme-gray.css');
 //$document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/shared/examples.css');
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/ux/css/RowEditor.css');
-$document->addStyleSheet('components/com_easysdi_monitor/assets/css/monitor.css');
+$document->addStyleSheet('components/com_easysdi_monitor/assets/css/monitor.css?v=' . sdiFactory::getSdiFullVersion());
 
 //Common js lib
 $document->addScript('components/com_easysdi_monitor/libraries/jquery/jquery.min.js');
@@ -33,11 +33,11 @@ $document->addScript('components/com_easysdi_monitor/libraries/Highcharts-2.0.3/
 $document->addScript('components/com_easysdi_monitor/libraries/Highcharts-2.0.3/js/modules/exporting.js');
 $document->addScript('components/com_easysdi_monitor/libraries/ext/examples/ux/RowEditor.js');
 $document->addScript('components/com_easysdi_monitor/libraries/ext/examples/ux/RowExpander.js');
-$document->addScript('components/com_easysdi_monitor/views/mains/js/ApplicationSettings.js');
+$document->addScript('components/com_easysdi_monitor/views/mains/js/ApplicationSettings.js?v=' . sdiFactory::getSdiFullVersion());
 
 //minified files -> use for prod
-$document->addScript('components/com_easysdi_monitor/views/mains/js/Monitor.js');
-$document->addScript('components/com_easysdi_monitor/views/mains/js/themes.js');
+$document->addScript('components/com_easysdi_monitor/views/mains/js/Monitor.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_monitor/views/mains/js/themes.js?v=' . sdiFactory::getSdiFullVersion());
 
 $user = JFactory::getUser();
 $userId = $user->get('id');

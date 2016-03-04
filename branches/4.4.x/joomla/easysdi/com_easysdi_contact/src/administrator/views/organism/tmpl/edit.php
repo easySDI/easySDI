@@ -17,10 +17,10 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css');
+$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css?v=' . sdiFactory::getSdiFullVersion());
 $document->addStyleSheet('components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
 $document->addScript('components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
-$document->addScript('components/com_easysdi_contact/views/organism/tmpl/contact_organism.js');
+$document->addScript('components/com_easysdi_contact/views/organism/tmpl/contact_organism.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
     orgId = <?php echo(empty($this->item->id) ? '0' : $this->item->id); ?>;

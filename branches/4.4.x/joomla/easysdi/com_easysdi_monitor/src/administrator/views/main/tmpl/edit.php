@@ -18,7 +18,7 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_monitor/assets/css/easysdi_monitor.css');
+$document->addStyleSheet('components/com_easysdi_monitor/assets/css/easysdi_monitor.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
     

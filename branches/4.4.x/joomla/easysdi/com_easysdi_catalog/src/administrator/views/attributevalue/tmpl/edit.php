@@ -18,7 +18,7 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
+$document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();

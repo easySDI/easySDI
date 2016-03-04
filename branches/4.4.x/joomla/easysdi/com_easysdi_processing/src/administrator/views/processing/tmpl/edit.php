@@ -17,8 +17,8 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js');
-$document->addScript('components/com_easysdi_processing/assets/js/params_editor.js');
+$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_processing/assets/js/params_editor.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();

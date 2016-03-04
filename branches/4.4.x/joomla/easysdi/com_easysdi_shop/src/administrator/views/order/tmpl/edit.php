@@ -14,7 +14,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
 
 $document = JFactory::getDocument();
 JHtml::_('jquery.framework'); //ensure jquery is loaded
-JHtml::script(Juri::root(true) . 'components/com_easysdi_shop/helpers/helper.js');
+JHtml::script(Juri::root(true) . 'components/com_easysdi_shop/helpers/helper.js?v=' . sdiFactory::getSdiFullVersion());
 $base_url = Juri::root(true) . 'administrator/components/com_easysdi_core/libraries';
 //TODO : do not include proj here !!
 JHtml::script($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
@@ -24,7 +24,7 @@ JHtml::script($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
 JHtml::script($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
 JHtml::script($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 JHtml::script($base_url . '/filesaver/FileSaver.js');
-$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
+$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css?v=' . sdiFactory::getSdiFullVersion());
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
 <script type="text/javascript">

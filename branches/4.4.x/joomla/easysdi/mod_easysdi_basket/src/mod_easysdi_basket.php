@@ -14,6 +14,8 @@ require_once( dirname(__FILE__).'/helper.php' );
 
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/factory/sdifactory.php';
  
 $basketcontent = modEasysdiBasketHelper::getBasketContent( $params );
 require( JModuleHelper::getLayoutPath( 'mod_easysdi_basket' ) );

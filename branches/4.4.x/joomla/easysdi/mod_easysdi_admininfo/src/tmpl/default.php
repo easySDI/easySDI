@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 $document = JFactory::getDocument();
-$document->addStyleSheet(JURI::base() . 'modules/mod_easysdi_admininfo/assets/css/modeasysdiadmininfo.css');
+$document->addStyleSheet(JURI::base() . 'modules/mod_easysdi_admininfo/assets/css/modeasysdiadmininfo.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <div class="row-striped easysdiadmininfo">
     <?php
