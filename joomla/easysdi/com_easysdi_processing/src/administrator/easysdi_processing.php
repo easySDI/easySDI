@@ -25,6 +25,9 @@ JLoader::registerPrefix('J', JPATH_PLATFORM . '/cms');
 // Load joomla libraries without overwrite
 JLoader::registerPrefix('J', JPATH_PLATFORM . '/joomla',false);
 
+//get sdiFactory
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/factory/sdifactory.php';
+
 // require helper files
 JLoader::register('Easysdi_processingHelper', dirname(__FILE__) . DS . 'helpers' . DS . 'easysdi_processing.php');
 JLoader::register('Easysdi_processingStatusHelper', dirname(__FILE__) . DS . 'helpers' . DS . 'easysdi_processing_status.php');

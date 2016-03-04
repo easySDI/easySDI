@@ -119,12 +119,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery
 $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/jquery.iframe-transport.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/jquery.fileupload.js');
 
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js?v=' . sdiFactory::getSdiFullVersion());
 
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shCore.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shThemeDefault.css');
-$document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
+$document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css?v=' . sdiFactory::getSdiFullVersion());
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/css/jquery.fileupload.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/css/jquery.fileupload-ui.css');
 ?>

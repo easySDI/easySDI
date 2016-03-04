@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 
 JHtml::_('behavior.tooltip');
 
-JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.js');
+JFactory::getDocument()->addScript('components/com_easysdi_shop/helpers/helper.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 
 <div>

@@ -14,7 +14,7 @@ JHTML::_('behavior.modal');
 JHtml::_('behavior.tooltip');
 JHtml::_('formbehavior.chosen', 'select');
 
-JFactory::getDocument()->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js');
+JFactory::getDocument()->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js?v=' . sdiFactory::getSdiFullVersion());
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 ?>
 <div class="shop front-end-edit">

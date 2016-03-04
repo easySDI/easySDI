@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 JHTML::_('behavior.modal');
 
 $doc = JFactory::getDocument();
-$doc->addScript(Juri::base(true) . '/components/com_easysdi_map/views/preview/tmpl/preview.js');
+$doc->addScript(Juri::base(true) . '/components/com_easysdi_map/views/preview/tmpl/preview.js?v=' . sdiFactory::getSdiFullVersion());
 
 if (!empty($this->mapscript)) :
     ?>

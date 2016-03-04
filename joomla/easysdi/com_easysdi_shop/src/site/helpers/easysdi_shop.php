@@ -293,7 +293,7 @@ abstract class Easysdi_shopHelper {
         $paramsarray = $params->toArray();
 
         $document = JFactory::getDocument();
-        $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/order/tmpl/order.js');
+        $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/order/tmpl/order.js?v=' . sdiFactory::getSdiFullVersion());
 
         $mapscript = Easysdi_mapHelper::getMapScript($paramsarray['ordermap'], true);
         ?> <div class="row-fluid" >

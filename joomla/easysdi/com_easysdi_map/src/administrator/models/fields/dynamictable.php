@@ -34,7 +34,7 @@ class JFormFieldDynamicTable extends JFormField
 	protected function getInput()
 	{
                 $doc = JFactory::getDocument();
-                $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/models/fields/dynamictable.js');
+                $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/models/fields/dynamictable.js?v=' . sdiFactory::getSdiFullVersion());
 		// Initialize variables.
 		$html = array();
                 $html[] = '<table class="table  table-striped table-hover" id="tab-dyn">';

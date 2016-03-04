@@ -43,8 +43,8 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet($base_url . '/geoext/resources/css/gxtheme-gray.css');
         $doc->addStyleSheet($base_url . '/ux/geoext/resources/css/printpreview.css');
         $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
-        $doc->addStyleSheet(Juri::root(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
-        $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css');
+        $doc->addStyleSheet(Juri::root(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css?v=' . sdiFactory::getSdiFullVersion());
+        $doc->addStyleSheet($base_url . '/easysdi/js/sdi/widgets/IndoorLevelSlider.css?v=' . sdiFactory::getSdiFullVersion());
 
         //Loadind js files
         if (JDEBUG) {
@@ -59,12 +59,12 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/ux/ext/RowExpander.js');
                 $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js'); 
-            $doc->addScript($base_url . '/easysdi/js/OpenLayers/override-openlayers.js');
-            $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
+            $doc->addScript($base_url . '/easysdi/js/OpenLayers/override-openlayers.js?v=' . sdiFactory::getSdiFullVersion());
+            $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js?v=' . sdiFactory::getSdiFullVersion());
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
             $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
-            $doc->addScript($base_url . '/gxp/script/gxp.js');
-            $doc->addScript($base_url . '/easysdi/js/sdi.js');
+            $doc->addScript($base_url . '/gxp/script/gxp.js?v=' . sdiFactory::getSdiFullVersion());
+            $doc->addScript($base_url . '/easysdi/js/sdi.js?v=' . sdiFactory::getSdiFullVersion());
 
         }else{
             $doc->addScript(JURI::root(true) . '/media/jui/js/jquery.min.js');
@@ -78,12 +78,12 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
                 $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
-            $doc->addScript($base_url . '/easysdi/js/OpenLayers/override-openlayers.js');
-            $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js');
+            $doc->addScript($base_url . '/easysdi/js/OpenLayers/override-openlayers.js?v=' . sdiFactory::getSdiFullVersion());
+            $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js?v=' . sdiFactory::getSdiFullVersion());
             $doc->addScript($base_url . '/geoext/lib/geoextcon.min.js');
             $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
-            $doc->addScript($base_url . '/gxp/script/gxp.min.js');
-            $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
+            $doc->addScript($base_url . '/gxp/script/gxp.min.js?v=' . sdiFactory::getSdiFullVersion());
+            $doc->addScript($base_url . '/easysdi/js/sdi.min.js?v=' . sdiFactory::getSdiFullVersion());
             //$doc->addScript($base_url . '/easysdi/js/sdi.js');
         }
 
@@ -91,7 +91,7 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript(str_replace(JPATH_SITE, JURI::base(true), $file));
         }
 
-        $doc->addScript(JURI::root(true) . '/components/com_easysdi_map/helpers/map.js');
+        $doc->addScript(JURI::root(true) . '/components/com_easysdi_map/helpers/map.js?v=' . sdiFactory::getSdiFullVersion());
 
         $params = JComponentHelper::getParams('com_easysdi_map');
         $proxyhost = JURI::root() . "index.php?option=com_easysdi_core&task=proxy.run&url=";
@@ -270,13 +270,13 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
                 //$doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4-compressed.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
-                $doc->addScript($base_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js');
+                $doc->addScript($base_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js?v=' . sdiFactory::getSdiFullVersion());
             }else{
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
-                $doc->addStyleSheet($base_url . '/leaflet/libs/easySDI_leaflet.pack/main.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/easySDI_leaflet.pack/main.css?v=' . sdiFactory::getSdiFullVersion());
 
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
-                $doc->addScript($base_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js');
+                $doc->addScript($base_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js?v=' . sdiFactory::getSdiFullVersion());
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
             }
 

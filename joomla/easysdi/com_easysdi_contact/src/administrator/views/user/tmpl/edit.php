@@ -17,7 +17,7 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css');
+$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css?v=' . sdiFactory::getSdiFullVersion());
 
 JText::script('COM_EASYSDI_CONTACT_FORM_USER_EDIT_LINK');
 JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');

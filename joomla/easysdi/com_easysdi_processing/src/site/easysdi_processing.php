@@ -19,7 +19,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
 // Set the component css/js
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_processing/assets/css/main.css');
+$document->addStyleSheet('components/com_easysdi_processing/assets/css/main.css?v=' . sdiFactory::getSdiFullVersion());
 
 
 // Require helper file
