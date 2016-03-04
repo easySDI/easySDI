@@ -132,7 +132,7 @@ class Easysdi_contactTableaddress extends sdiTable {
         $data['postalcode'] = $src[$type . '_postalcode'];
         $data['postalbox'] = $src[$type . '_postalbox'];
         $data['locality'] = $src[$type . '_locality'];
-        $data['country_id'] = $src[$type . '_country_id'];
+        $data['country_id'] = ((int)$src[$type . '_country_id'] == 0) ? null : $src[$type . '_country_id'];
         $data['phone'] = $src[$type . '_phone'];
         $data['mobile'] = $src[$type . '_mobile'];
         $data['fax'] = $src[$type . '_fax'];
