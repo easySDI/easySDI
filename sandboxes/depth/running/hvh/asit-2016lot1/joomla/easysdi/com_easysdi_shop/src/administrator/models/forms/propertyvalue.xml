@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+
+        <field name="propertyname" type="text" size="40" class="inputbox" readonly="true"
+              label="COM_EASYSDI_SHOP_FORM_LBL_PROPERTYVALUE_PROPERTY_ID"
+              description="COM_EASYSDI_SHOP_FORM_DESC_PROPERTYVALUE_PROPERTY_ID" 
+              filter="safehtml" /> 
+        
+        <field name="name" type="text"
+                    label="COM_EASYSDI_SHOP_FORM_LBL_PROPERTYVALUE_NAME"
+                    description="COM_EASYSDI_SHOP_FORM_DESC_PROPERTYVALUE_NAME" 
+        /> 
+
+        <field name="alias" type="text"
+              label="COM_EASYSDI_SHOP_FORM_LBL_PROPERTYVALUE_ALIAS"
+              description="COM_EASYSDI_SHOP_FORM_DESC_PROPERTYVALUE_ALIAS" 
+        /> 
+
+        <field name="description" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_PROPERTYVALUE_DESCRIPTION"
+              description="COM_EASYSDI_SHOP_FORM_DESC_PROPERTYVALUE_DESCRIPTION" 
+              filter="safehtml" /> 
+
+        
+
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_SHOP_FORM_LBL_PROPERTYVALUE_LABEL"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PROPERTYVALUE_LABEL" 
+               filter="ARRAY" />
+      
+        <field name="id" type="text" default="0" label="COM_EASYSDI_SHOP_FORM_LBL_PROPERTYVALUE_ID"
+        readonly="true" class="readonly"
+        description="JGLOBAL_FIELD_ID_DESC" /> 
+    
+    </fieldset> 
+
+    <field name="access"
+        type="accesslevel"
+        label="JFIELD_ACCESS_LABEL"
+        description="JFIELD_ACCESS_DESC"
+        class="inputbox span12 small"
+        size="1"
+    />
+    
+    <field name="state"
+           type="list"
+           label="JSTATUS"
+           description="JFIELD_PUBLISHED_DESC"
+           class="inputbox"
+           size="1"
+           default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+    
+    <fieldset name="hidden">
+        <field name="property_id" type="hidden" filter="SAFEHTML" />
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+    
+    <fieldset name="publishing">
+        <field 	name="created_by" 
+                type="createdby" 
+                class="readonly"
+                readonly="true" 
+                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_CREATED_BY"
+                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_CREATED_BY" 
+                filter="unset" /> 
+
+        <field 	name="created" 
+                type="calendar" 
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_CREATED"
+                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_CREATED" 
+                filter="safehtml" /> 
+
+        <field 	name="modified_by" 
+                type="createdby" 
+                class="readonly"
+                readonly="true" 
+                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_MODIFIED_BY"
+                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_MODIFIED_BY" 
+                filter="unset" /> 
+
+        <field 	name="modified" 
+                type="calendar" 
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_MODIFIED"
+                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_MODIFIED" 
+                filter="safehtml" /> 
+    </fieldset>
+    
+    <fieldset  name="accesscontrol">
+        <field name="asset_id" type="hidden" filter="unset" />
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_shop"
+               section="property"
+        />
+    </fieldset>
+</form>
