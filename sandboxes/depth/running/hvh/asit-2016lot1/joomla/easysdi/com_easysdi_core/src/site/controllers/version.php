@@ -19,7 +19,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     private $versions = array();
     private $md_rollback = array();
-    private $md_unknown = array ();
+    private $md_unknown = null;
 
     /** @var Easysdi_coreHelper */
     private $core_helpers;
@@ -29,7 +29,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         parent::__construct();
     }
 
-    public function remove($withCSWorphan = false) {
+    public function remove() {
         // Initialise variables.
         $db = JFactory::getDbo();
         $model = $this->getModel('Version', 'Easysdi_coreModel');
@@ -37,9 +37,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         // Get the user data.
         $data = array();
         $data['id'] = JFactory::getApplication()->input->get('id', null, 'int');
-
+        $cleanup = (bool)JFactory::getApplication()->input->get('cl', false);
         $version = $model->getData($data['id']);
-
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         try {
@@ -55,28 +54,36 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $this->checkVersionOrderHistory($versions);
 
             //Delete metadata 
-            $this->md_rollback  =array();
-            $this->deleteMetadatas($versions);
-            if(count($this->md_unknown) > 0){
+            $this->md_rollback = array();
+            $this->md_unknown = null;
+            if(!$this->deleteMetadatas($versions, $cleanup)){
                 //Some metadata were not found in the remote CSW catalog
                 //Transaction is rolled back
                 //Ask the user what to do with those metadata
                 $db->transactionRollback();
                 $this->metadataRollback();
-                $this->setMessage(JText::_('Metadata not found in CSW catalog. Delete local data?'), 'warning');
-                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources&mduk=', false));
+                $m = JTable::getInstance('metadata', 'Easysdi_catalogTable');
+                $keys = array("version_id" => $data['id']);
+                $m->load($keys);
+                $v = (object) ['v_id' => $data['id'], 'md_id' => $m->id, 'md_guid ' => $m->guid];
+                $app = JFactory::getApplication();
+                $app->setUserState('com_easysdi_core.remove.version.mduk', json_encode($this->md_unknown));
+                $app->setUserState('com_easysdi_core.remove.version.call', json_encode($v));
+                
+                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
+            } else {
+                
             }
-            
+
             //Delete versions
             $this->deleteVersions($versions);
-            
+
             //Everything went fine, commit transaction
             $db->transactionCommit();
             //Dev value
             //$db->transactionRollback();
             //$this->metadataRollback();
-
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -87,6 +94,12 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
+    }
+
+    public function cleanupdeletesession() {
+        $app = JFactory::getApplication();
+        $app->setUserState('com_easysdi_core.remove.version.mduk', null);
+        $app->setUserState('com_easysdi_core.remove.version.call', null);
     }
 
     /*
@@ -592,7 +605,9 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             // if fail, clean metadata 
             foreach ($metadatas as $mddata) {
                 try {
-                    $metadata->delete($mddata);
+                    if(!$metadata->delete($mddata)):
+                        //Geonetwork returned that no metadata has to be deleted
+                    endif;
                 } catch (Exception $ex) {
                     //CSW catalog didn't answered
                 }
@@ -826,17 +841,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * Recursively delete metadata.
      * 
      * @param array $versions
-     * @return array
+     * @param boolean $cleanup
+     * @return boolean
      * @throws Exception
      */
-    private function deleteMetadatas($versions) {
-
-        //$md_rollback = array();        
-
+    private function deleteMetadatas($versions, $cleanup) {
         foreach ($versions as $version) {
             if (!empty($version->children)) {
                 //$md_rollback = array_merge($md_rollback, $this->deleteMetadatas($version->children));
-                if(!$this->deleteMetadatas($version->children))
+                if (!$this->deleteMetadatas($version->children, $cleanup))
                     return false;
             }
             $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
@@ -846,13 +859,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $csw = new sdiMetadata($metadata->id);
             $this->md_rollback[$metadata->id] = $csw->load();
             try {
-                if (!$csw->delete()) {
+                if (!$csw->delete()){
                     //No metadata found to delete in remote CSW catalog
-                    unset($this->md_rollback[$metadata->id]);
-                    $this->md_unknown[$metadata->id] = $metadata;
-                    //Ask user what to do
-                    //throw new Exception(JText::_('No metadata found to delete in remote CSW catalog.'));
-                    return false ;
+                    if(!$cleanup){
+                        unset($this->md_rollback[$metadata->id]);
+                        $this->md_unknown = (object) ['v_id' => $version->id, 'md_id' => $metadata->id, 'md_guid' => $metadata->guid];
+                        return false;
+                    }
                 }
             } catch (Exception $ex) {
                 //CSW catalog didn't answered
@@ -861,7 +874,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             }
             $metadata->delete($metadata->id);
         }
-        return true ;
+        return true;
     }
 
     /**

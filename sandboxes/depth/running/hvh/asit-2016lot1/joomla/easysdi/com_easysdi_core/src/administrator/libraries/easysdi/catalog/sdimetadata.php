@@ -241,7 +241,7 @@ class sdiMetadata extends cswmetadata {
         $deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
 
         if ($deleted <> 1) {
-            JFactory::getApplication()->enqueueMessage('Metadata deletion failed.', 'error');
+            //JFactory::getApplication()->enqueueMessage('Metadata deletion failed.', 'error');
             return false;
         }
 

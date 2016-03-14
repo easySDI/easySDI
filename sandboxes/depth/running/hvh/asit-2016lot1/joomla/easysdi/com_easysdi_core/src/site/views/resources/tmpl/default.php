@@ -18,9 +18,7 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.modal');
 JHtml::_('behavior.calendar');
 
-
 $document = JFactory::getDocument();
-//$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js.php');
 $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <style>
@@ -274,6 +272,28 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
             <div class="modal-footer">
                 <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cleanup modal -->
+<div class="modal fade" id="cleanUpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"><?php echo JText::_('COM_EASYSDI_CORE_CLEANUP_ITEM'); ?></h4>
+            </div>
+            <div id="cleanUpModalBody" class="modal-body">
+                <?php echo JText::_('COM_EAYSDI_CORE_DELETE_PROBLEM'); ?>
+                <span id="missingMetadata"></span>
+                <?php echo JText::_('COM_EAYSDI_CORE_CLEANUP_CONFIRM'); ?>
+                <span id="cleanUpModalChildrenList"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" id="btn_cleanup_cancel" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                <a href="#" id="btn_cleanup"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_CLEANUP_ITEM'); ?></button></a>
             </div>
         </div>
     </div>
