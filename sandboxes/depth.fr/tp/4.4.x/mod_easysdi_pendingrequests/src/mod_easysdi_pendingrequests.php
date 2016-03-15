@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 // Include the helper
 require_once( dirname(__FILE__) . '/helper.php' );
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/factory/sdifactory.php';
 require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiBasket.php';
 require_once JPATH_SITE . '/components/com_asitvd_users/helpers/asitvd_users.php';
 

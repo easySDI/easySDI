@@ -15,8 +15,8 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js?v=' . sdiFactory::getSdiFullVersion());
 if (JDEBUG) {
     $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js');
 } else {

@@ -18,7 +18,7 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css');
+$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)

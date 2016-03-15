@@ -293,7 +293,7 @@ abstract class Easysdi_shopHelper {
         $paramsarray = $params->toArray();
 
         $document = JFactory::getDocument();
-        $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/order/tmpl/order.js');
+        $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/order/tmpl/order.js?v=' . sdiFactory::getSdiFullVersion());
 
         $mapscript = Easysdi_mapHelper::getMapScript($paramsarray['ordermap'], true);
         ?> <div class="row-fluid" >
@@ -1705,13 +1705,8 @@ abstract class Easysdi_shopHelper {
             $curlHelper = new CurlHelper(true);
 
             $curldata['url'] = $orderdiffusion->file;
-            $pos = strrpos($curldata['url'], '.');
-            $extension = ($pos) ? substr($curldata['url'], $pos) : null;
-            if ($extension) {
-                $curldata['fileextension'] = $extension;
-            }
             $curldata['filename'] = $orderdiffusion->displayName;
-            return $curlHelper->get($curldata);
+            $curlHelper->get($curldata);
         }
         //local storage
         else {
@@ -1753,8 +1748,8 @@ abstract class Easysdi_shopHelper {
                 while (!feof($fh)) {
                     $buffer = fread($fh, $chunk);
                     echo $buffer;
-                    ob_flush();  // flush output
-                    //flush();
+                    @ob_flush();  // flush output
+                    @flush();
                 }
             } else {
                 ini_set('zlib.output_compression', 0);

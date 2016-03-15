@@ -16,8 +16,8 @@ JHtml::_('formbehavior.chosen', 'select');
 
 
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js');
-$document->addScript('components/com_easysdi_shop/views/diffusion/tmpl/diffusion.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_shop/views/diffusion/tmpl/diffusion.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 
 <script type="text/javascript">

@@ -17,7 +17,7 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
 $document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
-$document->addScript('components/com_easysdi_core/views/version/tmpl/version.js');
+$document->addScript('components/com_easysdi_core/views/version/tmpl/version.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <?php
 require_once JPATH_BASE.'/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';

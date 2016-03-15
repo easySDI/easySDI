@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 $document = JFactory::getDocument();
-$document->addStyleSheet(JURI::base() . 'modules/mod_easysdi_adminbutton/assets/css/modeasysdiadminbutton.css');
+$document->addStyleSheet(JURI::base() . 'modules/mod_easysdi_adminbutton/assets/css/modeasysdiadminbutton.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <div class="row-fluid">
     <div class="span12 easysdiadminbutton">

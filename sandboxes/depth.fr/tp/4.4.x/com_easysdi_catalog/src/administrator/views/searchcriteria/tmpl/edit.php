@@ -17,10 +17,10 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
-$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
+$document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css?v=' . sdiFactory::getSdiFullVersion());
 
-$document->addScript('components/com_easysdi_catalog/assets/js/searchcriteria.js');
+$document->addScript('components/com_easysdi_catalog/assets/js/searchcriteria.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();

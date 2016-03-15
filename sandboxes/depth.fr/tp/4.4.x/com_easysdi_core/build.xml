@@ -13,12 +13,43 @@
     <target name="sync-package" depends="copy-administrator, copy-site, geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, leaflet-concat, leaflet-minify, leaflet-concat-css, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
     <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
+    
+    <!--
+        Cretae a php file containing version and revision of easySDI in variables.
+        Call with antcall : parameter ${destinationfile} must contain the destination file
+    -->
+    <target name="create-sdi-revision-file">
+        <!-- write revision to a temp file -->
+        <property name="svnrevision.temp.file" value="${root.out.dir}/svnrevisiontemp.txt"/>
+        <exec executable="svnversion" output="${svnrevision.temp.file}">
+            <arg line="${parent.src.out.dir}"/>
+        </exec>
+        <!-- load revision, clean with regex, store in property and delete file -->
+        <loadfile srcfile="${svnrevision.temp.file}" property="php.var.svnrevision">
+            <filterchain>
+                <striplinebreaks/>
+                <replaceregex pattern="[^0-9:]" replace="" flags="gi"/>
+                <replaceregex pattern=":" replace="-" flags="gi"/>
+            </filterchain>
+        </loadfile>
+        <delete file="${svnrevision.temp.file}"/>
+        <!-- write php file -->
+        <echo file="${destinationfile}" append="false">&lt;?php${line.separator}</echo>
+        <echo file="${destinationfile}" append="true">$sdi_build_version=&quot;${version}&quot;;${line.separator}</echo>
+        <echo file="${destinationfile}" append="true">$sdi_build_revision=&quot;${php.var.svnrevision}&quot;;${line.separator}</echo>
+    </target>
+    
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
         Copy the files from the Admin.
     --> 
     <target name="copy-administrator" if="core.admin.exist">
+        
+        <echo>Create sdiBuildInfos.php in source files</echo>
+        <antcall target="core.create-sdi-revision-file">
+            <param name="destinationfile" value="${joomla.administrator.components.dir}/${core.component.name}/libraries/easysdi/common/sdiBuildInfos.php"/>
+        </antcall>
         
         <echo>Copy administrator structure of ${core.component.name} component</echo>
         <copy todir="${core.src.out.dir}/administrator" overwrite="true">
@@ -27,10 +58,12 @@
                 <exclude name="script.*"/>
             </fileset>
         </copy>
+        
         <echo>Copy administrator language file of ${core.component.name} component</echo>
         <copy todir="${core.src.out.dir}/administrator/language" overwrite="true">
             <fileset dir="${joomla.administrator.language.dir}" includes="**/*${core.component.name}.ini **/*${core.component.name}.sys.ini"/>
         </copy>
+        
         <echo>Copy administrator deployement xml file of ${core.component.name} component</echo>
         <copy todir="${core.src.out.dir}">
             <fileset dir="${joomla.administrator.components.dir}/${core.component.name}">
@@ -199,6 +232,12 @@
             <entry key="build" value="${version}-r${svnrevision}"/>
             <entry key="build-owner" value="${user.name}"/>
         </propertyfile>
+        
+        <echo>Create sdiBuildInfos.php in package</echo>
+        <antcall target="core.create-sdi-revision-file">
+            <param name="destinationfile" value="${core.src.out.dir}/administrator/libraries/easysdi/common/sdiBuildInfos.php"/>
+        </antcall>
+        
     </target>
     
     <!-- Compresses the component package. --> 
