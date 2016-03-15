@@ -15,8 +15,11 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
     var now = new Date();
     now = now.toISOString().replace('T', ' ').substr(0, 10);
 
-// #n# are used as placeholder
+    // #n# are used as placeholder
     var Links = {
+        resources:{
+            list : '<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources') ?>'
+        },
         resource: {
             edit: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=#0#') ?>'
         },
@@ -118,11 +121,11 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
             get_roles: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.getRoles&versionId=#0#') ?>',
             publicable_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadePublicableChild&version_id=#0#') ?>',
             inprogress_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getInProgressChildren&resource=#0#') ?>',
-            cleanup_deletesession: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.cleanupdeletesession') ?>'
+            cleanupRemoveSession: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.cleanupRemoveSession') ?>'
         },
         modal: {
             delete: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=#0#') ?>',
-            cleanup: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&cl=1&id=#0#') ?>'
+            removewithorphan: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.removeWithOrphan&id=#0#') ?>'
         }
     };
 
@@ -544,18 +547,18 @@ foreach ($this->items as $item) :
                 js('td#' + resource.id + '_resource_name').empty().html(resource.name);
         };
 
-// Retrieves resource's id from HTML Element's id
+        // Retrieves resource's id from HTML Element's id
         var getResourceId = function (element) {
             var tabId = js(element).attr('id').split('_');
             return tabId[0];
         };
 
-// Retrieves metadata's id from HTML Element's id reading the Resources collection
+        // Retrieves metadata's id from HTML Element's id reading the Resources collection
         var getMetadataId = function (element) {
             return resources.get(getResourceId(element)).currentVersion().metadata().id;
         };
 
-// Retrieves version's id from HTML Element's id reading the Resources collection
+        // Retrieves version's id from HTML Element's id reading the Resources collection
         var getVersionId = function (element) {
             return resources.get(getResourceId(element)).currentVersion().id;
         };
@@ -589,7 +592,7 @@ foreach ($this->items as $item) :
             return false;
         };
 
-// Set the child's number of the current version
+        // Set the child's number of the current version
         var getChildNumber = function (element) {
             if (element.length === 0)
                 return;
@@ -632,7 +635,7 @@ foreach ($this->items as $item) :
             }
         };
 
-// Checks if new version link should be available for the current resource
+        // Checks if new version link should be available for the current resource
         var getNewVersionRight = function (element) {
             if (element.length === 0)
                 return;
@@ -823,7 +826,7 @@ foreach ($this->items as $item) :
             });
         };
 
-        var showCleanUpModal = function (version_id, metadata_id, missing_id, missing_md) {            
+        var showRemoveWithOrphanModal = function (version_id, metadata_id, missing_id, missing_md) {            
             js.ajax({
                 cache: false,
                 type: 'GET',
@@ -834,9 +837,9 @@ foreach ($this->items as $item) :
                     response.versions[version_id].metadata_id = metadata_id;
                     js('#missingMetadata').html(missing_id + ' - ' + missing_md );
                     var ul = buildVersionsTree(response.versions);
-                    js('#cleanUpModalChildrenList').html(ul);
-                    js('#btn_cleanup').attr('href', Links.modal.delete.replace('#0#', version_id)+"&cl=1");
-                    js('#cleanUpModal').modal('show');
+                    js('#removeWithOrphanModalChildrenList').html(ul);
+                    js('#btn_removewithorphan').attr('href', Links.modal.removewithorphan.replace('#0#', version_id));
+                    js('#removeWithOrphanModal').modal('show');
                 }
                 catch (e) {
                     if (window.console) {
@@ -937,7 +940,7 @@ foreach ($this->items as $item) :
 
         };
 
-// Set events
+        // Set events
         js(document).on('click', '#search-reset', resetSearch);
 
         js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', function () {
@@ -954,30 +957,23 @@ foreach ($this->items as $item) :
             showPublishModal(this)
         });
         
-        js(document).on('click', '#btn_cleanup_cancel', function () {
-            js.ajax({
-                cache: false,
-                type: 'GET',
-                url: Links.ajax.cleanup_deletesession
-            }).done(function (data) {
-                
-            });
-            return false;
+        js(document).on('click', '#btn_removewithorphan_cancel', function () {
+            window.location = Links.resources.list;
         });
 
         js(document).on('change', '#publishModalViralPublication', function () {
             js('#publishModal #viral').val(js(this).attr('checked') === 'checked' ? 1 : 0)
         });
 
-// Fix action's link style
+        // Fix action's link style
         js(document).on('hover', 'td[id$=_actions] a', function () {
             js(this).css('cursor', 'pointer')
         });
 
         js(document).ready(function () {
-<?php if (isset($this->vcall) ):  ?>
-        showCleanUpModal(<?php echo $this->vcall->v_id; ?>,<?php echo $this->vcall->md_id; ?>,<?php echo $this->mduk->v_id; ?>,'<?php echo $this->mduk->md_guid; ?>');
-<?php    endif;?>
+            <?php if (isset($this->vcall) ):  ?>
+                showRemoveWithOrphanModal(<?php echo $this->vcall->v_id; ?>,<?php echo $this->vcall->md_id; ?>,'<?php echo $this->mduk->r; ?>','<?php echo $this->mduk->v; ?>');
+            <?php    endif;?>
             // Build resource's lines
             js(resources.get()).each(function (id, resource) {
                 if ('undefined' !== typeof resource) {

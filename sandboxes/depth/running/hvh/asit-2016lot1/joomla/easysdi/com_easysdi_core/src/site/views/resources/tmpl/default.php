@@ -277,23 +277,24 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
     </div>
 </div>
 
-<!-- Cleanup modal -->
-<div class="modal fade" id="cleanUpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- removeWithOrphan modal -->
+<div class="modal fade" id="removeWithOrphanModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title"><?php echo JText::_('COM_EASYSDI_CORE_CLEANUP_ITEM'); ?></h4>
+                <h4 class="modal-title"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></h4>
             </div>
-            <div id="cleanUpModalBody" class="modal-body">
+            <div id="removeWithOrphanModalBody" class="modal-body">
                 <?php echo JText::_('COM_EAYSDI_CORE_DELETE_PROBLEM'); ?>
                 <span id="missingMetadata"></span>
-                <?php echo JText::_('COM_EAYSDI_CORE_CLEANUP_CONFIRM'); ?>
-                <span id="cleanUpModalChildrenList"></span>
+                <span></span>
+                <?php echo JText::_('COM_EAYSDI_CORE_REMOVEWITHORPHAN_CONFIRM'); ?>
+                <span id="removeWithOrphanModalChildrenList"></span>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn" id="btn_cleanup_cancel" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
-                <a href="#" id="btn_cleanup"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_CLEANUP_ITEM'); ?></button></a>
+                <button type="button" class="btn" id="btn_removewithorphan_cancel" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                <a href="#" id="btn_removewithorphan"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_REMOVEWITHORPHAN_ITEM'); ?></button></a>
             </div>
         </div>
     </div>

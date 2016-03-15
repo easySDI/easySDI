@@ -28,16 +28,19 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $this->core_helpers = new Easysdi_coreHelper();
         parent::__construct();
     }
+    
+    public function removeWithOrphan (){
+        return $this->remove(true);
+    }
 
-    public function remove() {
+    public function remove($cleanup = false) {
         // Initialise variables.
         $db = JFactory::getDbo();
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         // Get the user data.
         $data = array();
-        $data['id'] = JFactory::getApplication()->input->get('id', null, 'int');
-        $cleanup = (bool)JFactory::getApplication()->input->get('cl', false);
+        $data['id'] = JFactory::getApplication()->input->get('id', null, 'int');        
         $version = $model->getData($data['id']);
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
@@ -59,18 +62,12 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             if(!$this->deleteMetadatas($versions, $cleanup)){
                 //Some metadata were not found in the remote CSW catalog
                 //Transaction is rolled back
-                //Ask the user what to do with those metadata
                 $db->transactionRollback();
                 $this->metadataRollback();
                 $m = JTable::getInstance('metadata', 'Easysdi_catalogTable');
-                $keys = array("version_id" => $data['id']);
-                $m->load($keys);
-                $v = (object) ['v_id' => $data['id'], 'md_id' => $m->id, 'md_guid ' => $m->guid];
-                $app = JFactory::getApplication();
-                $app->setUserState('com_easysdi_core.remove.version.mduk', json_encode($this->md_unknown));
-                $app->setUserState('com_easysdi_core.remove.version.call', json_encode($v));
-                
-                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                $m->load(array("version_id" => $data['id']));
+                $v = (object) ['v_id' => $data['id'], 'md_id' => $m->id];
+                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources&mduk='.base64_encode(json_encode($this->md_unknown)).'&call='.base64_encode(json_encode($v)), false));
                 return false;
             } else {
                 
@@ -81,9 +78,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
             //Everything went fine, commit transaction
             $db->transactionCommit();
-            //Dev value
-            //$db->transactionRollback();
-            //$this->metadataRollback();
+
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -96,16 +91,17 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         }
     }
 
-    public function cleanupdeletesession() {
-        $app = JFactory::getApplication();
-        $app->setUserState('com_easysdi_core.remove.version.mduk', null);
-        $app->setUserState('com_easysdi_core.remove.version.call', null);
+    /**
+     * Cleanup session variables related to remove version request
+     */
+    public function cleanupRemoveSession() {
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources'));
     }
 
-    /*
+
+    /**
      * 
      */
-
     public function edit() {
         $app = JFactory::getApplication();
 
@@ -863,7 +859,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                     //No metadata found to delete in remote CSW catalog
                     if(!$cleanup){
                         unset($this->md_rollback[$metadata->id]);
-                        $this->md_unknown = (object) ['v_id' => $version->id, 'md_id' => $metadata->id, 'md_guid' => $metadata->guid];
+                        $this->md_unknown = (object) ['v' => $csw->version->name, 'r' => $csw->resource->name];
                         return false;
                     }
                 }

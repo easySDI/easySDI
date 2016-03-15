@@ -40,8 +40,11 @@ class Easysdi_coreViewResources extends JViewLegacy {
             return;
         }
         
-        $this->mduk = json_decode($app->getUserState('com_easysdi_core.remove.version.mduk'), null);
-        $this->vcall = json_decode($app->getUserState('com_easysdi_core.remove.version.call'), null);
+        $this->mduk = json_decode(base64_decode(JFactory::getApplication()->input->get('mduk', null, 'string')), null);      
+        $this->vcall = json_decode(base64_decode(JFactory::getApplication()->input->get('call', null, 'string')), null);      
+        
+//        $this->mduk = json_decode($app->getUserState('com_easysdi_core.remove.version.mduk'), null);
+//        $this->vcall = json_decode($app->getUserState('com_easysdi_core.remove.version.call'), null);
         
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
