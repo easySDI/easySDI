@@ -67,7 +67,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $m = JTable::getInstance('metadata', 'Easysdi_catalogTable');
                 $m->load(array("version_id" => $data['id']));
                 $v = (object) ['v_id' => $data['id'], 'md_id' => $m->id];
-                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources&mduk='.base64_encode(json_encode($this->md_unknown)).'&call='.base64_encode(json_encode($v)), false));
+                $app = JFactory::getApplication();
+                $app->setUserState('com_easysdi_core.remove.version.mduk', json_encode($this->md_unknown));
+                $app->setUserState('com_easysdi_core.remove.version.call', json_encode($v));
+                
+                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
             } else {
                 
@@ -95,7 +99,10 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * Cleanup session variables related to remove version request
      */
     public function cleanupRemoveSession() {
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources'));
+       // $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources'));
+        $app = JFactory::getApplication();
+        $app->setUserState('com_easysdi_core.remove.version.mduk', null);
+        $app->setUserState('com_easysdi_core.remove.version.call', null);
     }
 
 

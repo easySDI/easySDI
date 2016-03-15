@@ -956,10 +956,6 @@ foreach ($this->items as $item) :
         js(document).on('click', 'a[id$=_changepublishdate]', function () {
             showPublishModal(this)
         });
-        
-        js(document).on('click', '#btn_removewithorphan_cancel', function () {
-            window.location = Links.resources.list;
-        });
 
         js(document).on('change', '#publishModalViralPublication', function () {
             js('#publishModal #viral').val(js(this).attr('checked') === 'checked' ? 1 : 0)
