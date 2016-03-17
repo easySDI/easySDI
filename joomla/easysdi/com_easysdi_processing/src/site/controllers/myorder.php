@@ -250,7 +250,8 @@ class Easysdi_processingControllerMyOrder extends Easysdi_processingController {
             }
         }
 
-
+        $user = sdiFactory::getSdiUser();
+        $data['user_id']=$user->id;
         // Attempt to save the data.
         $return = $model->save($data);
 
