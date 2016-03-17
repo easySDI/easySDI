@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing` (
   `ordering` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `#__sdi_processing_fk1` (`contact_id`),
-  CONSTRAINT `#__sdi_processing_fk1` FOREIGN KEY (`contact_id`) REFERENCES `#__sdi_contact` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `#__sdi_processing_fk1` FOREIGN KEY (`contact_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_processing_obs` (
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_obs` (
   KEY `#__sdi_processing_obs_fk1` (`processing_id`),
   KEY `#__sdi_processing_obs_fk2` (`sdi_user_id`),
   CONSTRAINT `#__sdi_processing_obs_fk1` FOREIGN KEY (`processing_id`) REFERENCES `#__sdi_processing` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_processing_obs_fk2` FOREIGN KEY (`sdi_user_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `#__sdi_processing_obs_fk2` FOREIGN KEY (`sdi_user_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   PRIMARY KEY (`id`),
   KEY `processing_id` (`processing_id`),
   CONSTRAINT `#__sdi_processing_order_fk1` FOREIGN KEY (`processing_id`) REFERENCES `#__sdi_processing` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_processing_order_fk2` FOREIGN KEY (`user_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `#__sdi_processing_order_fk2` FOREIGN KEY (`user_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE `#__sdi_category` ADD COLUMN `backend_only` TINYINT(1) NOT NULL DEFAULT 0 ;
