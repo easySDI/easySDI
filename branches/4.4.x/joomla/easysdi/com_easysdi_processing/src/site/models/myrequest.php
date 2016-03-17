@@ -95,8 +95,8 @@ class Easysdi_processingModelmyrequest extends Easysdi_processingModelorder {
             }else{
                 JFactory::getApplication()->setUserState('com_easysdi_processing.edit.myrequest.processing.id', $this->_item->processing_id);
             }  
-            $user = sdiFactory::getSdiUser();
-            $this->_item->user_id=$user->id;
+            //$user = sdiFactory::getSdiUser();
+            //$this->_item->user_id=$user->id;
         }
 
         return $this->_item;
