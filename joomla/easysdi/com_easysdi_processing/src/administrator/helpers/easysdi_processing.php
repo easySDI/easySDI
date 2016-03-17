@@ -186,7 +186,8 @@ public static function getUserProcesses(){
     $query = $db->getQuery(true);
 
     $query->select('p.*')
-    ->from('#__sdi_processing AS p');
+    ->from('#__sdi_processing AS p')
+    ->where('p.state = 1');
 
 
     $query->select("GROUP_CONCAT( sdi_user_id SEPARATOR ',' ) AS processing_obs")
