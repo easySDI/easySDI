@@ -278,7 +278,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
 </div>
 
 <!-- removeWithOrphan modal -->
-<div class="modal fade" id="removeWithOrphanModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="removeWithOrphanModal" tabindex="-1" role="dialog" aria-labelledby="removeWithOrphanModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
