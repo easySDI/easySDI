@@ -89,7 +89,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         } catch (Exception $exc) {
             $db->transactionRollback();
             $this->metadataRollback();
-            $this->setMessage(JText::_('Metadata can not be deleted.') . $exc->getMessage(), 'error');
+            $this->setMessage($exc->getMessage(), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
@@ -783,7 +783,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
                 if (intval($count_order_diffusion) > 0) {
                     //can't be deleted
-                    throw new Exception('Can not be deleted because of order history', null, null);
+                    throw new Exception( sprintf(JText::_('COM_EASYSDI_CORE_DELETE_RESOURCE_ERROR'),$version->resourcename, $version->name), null, null);
                 }
             } catch (Exception $exc) {
                 throw $exc;
@@ -873,7 +873,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             } catch (Exception $ex) {
                 //CSW catalog didn't answered
                 unset($this->md_rollback[$metadata->id]);
-                throw new Exception(JText::_('CSW catalog didn\'t answered.'));
+                throw new Exception(sprintf(JText::_('COM_EASYSDI_CORE_DELETE_METADATA_CSW_ERROR'), $version->resourcename, $version->name));
             }
             $metadata->delete($metadata->id);
         }

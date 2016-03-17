@@ -288,7 +288,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
             <div id="removeWithOrphanModalBody" class="modal-body">
                 <?php echo JText::_('COM_EAYSDI_CORE_DELETE_PROBLEM'); ?>
                 <span id="missingMetadata"></span>
-                <span></span>
+                <br>
                 <?php echo JText::_('COM_EAYSDI_CORE_REMOVEWITHORPHAN_CONFIRM'); ?>
                 <span id="removeWithOrphanModalChildrenList"></span>
             </div>
