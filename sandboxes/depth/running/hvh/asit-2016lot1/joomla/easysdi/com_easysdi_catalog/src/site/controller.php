@@ -59,14 +59,10 @@ class Easysdi_catalogController extends JControllerLegacy {
                 endif;
                 if ($resource->accessscope_id == 3)://Access scope organism                    
                     $organisms = sdiModel::getAccessScopeOrganism($resource->guid);
-                    //Is the user member of one of the authorized organism?
-                    $organism = $sdiUser->getMemberOrganisms();
-                     //Is the user editor of one of the authorized organism?
-                    $organism = array_merge($organism,$sdiUser->getMetadataEditorOrganisms());
-                    //Is the user responsible of one of the authorized organism?
-                    $organism = array_merge($organism,$sdiUser->getMetadataResponsibleOrganisms());
+                    //Is the user member, editor or responsible of one of the authorized organism?
+                    $authorg = array_merge($sdiUser->getMemberOrganisms(),$sdiUser->getMetadataEditorOrganisms(),$sdiUser->getMetadataResponsibleOrganisms());
                     $ids = array();
-                    foreach ($organism as $o){
+                    foreach ($authorg as $o){
                         array_push($ids, $o->id);
                     }                    
                     if (count(array_intersect($ids, $organisms)) == 0):
