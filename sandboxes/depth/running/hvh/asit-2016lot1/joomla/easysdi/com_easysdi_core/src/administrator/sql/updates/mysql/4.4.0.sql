@@ -69,6 +69,3 @@ ALTER TABLE `#__sdi_order` ADD COLUMN `validation_token` VARCHAR(64) NULL       
 
 UPDATE `#__sdi_order` SET `access_token`     = CONCAT(MD5(UUID()), MD5(RAND()));
 UPDATE `#__sdi_order` SET `validation_token` = CONCAT(MD5(UUID()), MD5(RAND()));
-
-ALTER TABLE `#__sdi_diffusion_download` DROP FOREIGN KEY `#__sdi_diffusion_download_fk2`;
-ALTER TABLE `#__sdi_diffusion_download` ADD CONSTRAINT `#__sdi_diffusion_download_fk2` FOREIGN KEY (user_id) REFERENCES #__sdi_user(id) ON DELETE SET NULL ON UPDATE NO ACTION;

@@ -106,8 +106,7 @@ if (!$showActions) {
         </div>
 
         <?php
-        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_ARCHIVED ||
-                $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_HISTORIZED ||
+        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_HISTORIZED ||
                 $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH):
             ?>
             <div id="sdi-order-recap-completed" class="row-fluid" >

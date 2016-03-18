@@ -37,7 +37,6 @@ abstract class Easysdi_shopHelper {
     const ROLE_PRICINGMANAGER = 9;
     const ROLE_VALIDATIONMANAGER = 10;
     // ORDERSTATE
-    const ORDERSTATE_ARCHIVED = 1;
     const ORDERSTATE_HISTORIZED = 2;
     const ORDERSTATE_FINISH = 3;
     const ORDERSTATE_AWAIT = 4;
@@ -1546,7 +1545,6 @@ abstract class Easysdi_shopHelper {
         }
 
         switch ($order->orderstate_id) {
-            case self::ORDERSTATE_ARCHIVED:
             case self::ORDERSTATE_HISTORIZED:
             case self::ORDERSTATE_FINISH:
                 $labelClass = 'label-success';
