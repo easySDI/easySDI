@@ -1,6 +1,12 @@
 CALL drop_column('sdi_map', 'type');
 ALTER TABLE `#__sdi_map`
-ADD COLUMN `type` VARCHAR(10) DEFAULT 'geoext' AFTER `title`;
+ADD COLUMN `type` VARCHAR(10) NOT NULL DEFAULT 'geoext' AFTER `title`;
+
+ALTER TABLE `#__sdi_maplayer`
+MODIFY COLUMN `attribution`  text;
+
+ALTER TABLE `#__sdi_organism`
+MODIFY COLUMN `perimeter`  longtext;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_processing` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -58,6 +64,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   `modified_by` int(10) NOT NULL,
   `modified` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `sent` timestamp NULL DEFAULT NULL,
+  `access_key` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `processing_id` (`processing_id`),
   CONSTRAINT `#__sdi_processing_order_fk1` FOREIGN KEY (`processing_id`) REFERENCES `#__sdi_processing` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
