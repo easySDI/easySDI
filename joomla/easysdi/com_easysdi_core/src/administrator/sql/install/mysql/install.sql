@@ -3243,7 +3243,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `guid` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `user_id` int(10) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
   `processing_id` int(10) unsigned NOT NULL,
   `parameters` text NOT NULL,
   `filestorage` varchar(20) NOT NULL,
