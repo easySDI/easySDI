@@ -1,5 +1,5 @@
 /**
- * @version     4.0.0
+ * @version     4.3.2
 * * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -84,42 +84,42 @@ sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
         return tree;        
     },
     
-//    /** private: method[configureLayerNode] */
-//    configureLayerNode: function(loader, attr) {
-//        sdi.gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
-//        var legendXType;
-//        // add a WMS legend to each node created
-//        if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
-//            legendXType = "gx_wmslegend";
-//        } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
-//            legendXType = "gx_vectorlegend";
-//        }
-//        if (legendXType) {
-//            var baseParams;
-//            if (loader && loader.baseAttrs && loader.baseAttrs.baseParams) {
-//                baseParams = loader.baseAttrs.baseParams;
-//            }
-//            Ext.apply(attr, {
-//                component: {
-//                    xtype: legendXType,
-//                    // TODO these baseParams were only tested with GeoServer,
-//                    // so maybe they should be configurable - and they are
-//                    // only relevant for gx_wmslegend.
-//                    hidden: !attr.layer.getVisibility(),
-//                    baseParams: Ext.apply({
-//                        transparent: true,
-//                        format: "image/png",
-//                        legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
-//                    }, baseParams),
-//                    layerRecord: this.target.mapPanel.layers.getByLayer(attr.layer),
-//                    showTitle: false,
-//                    // custom class for css positioning
-//                    // see tree-legend.html
-//                    cls: "legend"
-//                }
-//            });
-//        }
-//    }
+    /** private: method[configureLayerNode] */
+    configureLayerNode: function(loader, attr) {
+        sdi.gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
+        var legendXType;
+        // add a WMS legend to each node created
+        if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
+            legendXType = "gx_wmslegend";
+        } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
+            legendXType = "gx_vectorlegend";
+        }
+        if (legendXType) {
+            var baseParams;
+            if (loader && loader.baseAttrs && loader.baseAttrs.baseParams) {
+                baseParams = loader.baseAttrs.baseParams;
+            }
+            Ext.apply(attr, {
+                component: {
+                    xtype: legendXType,
+                    // TODO these baseParams were only tested with GeoServer,
+                    // so maybe they should be configurable - and they are
+                    // only relevant for gx_wmslegend.
+                    hidden: !attr.layer.getVisibility(),
+                    baseParams: Ext.apply({
+                        transparent: true,
+                        format: "image/png",
+                        legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
+                    }, baseParams),
+                    layerRecord: this.target.mapPanel.layers.getByLayer(attr.layer),
+                    showTitle: false,
+                    // custom class for css positioning
+                    // see tree-legend.html
+                    cls: "legend"
+                }
+            });
+        }
+    }
     
 });
 

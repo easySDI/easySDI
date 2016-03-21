@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -44,6 +44,14 @@ class Easysdi_coreViewResources extends JViewLegacy {
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_core');
+        
+        $this->userOrganisms = $this->user->getOrganisms(array(sdiUser::resourcemanager, 
+                                                               sdiUser::metadataresponsible, 
+                                                               sdiUser::metadataeditor,
+                                                               sdiUser::diffusionmanager, 
+                                                               sdiUser::viewmanager, 
+                                                               sdiUser::extractionresponsible, 
+                                                               sdiUser::organismmanager) );
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
@@ -114,12 +122,7 @@ class Easysdi_coreViewResources extends JViewLegacy {
             $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
             $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
             $query->leftJoin('#__sdi_versionlink vl ON vl.child_id = v.id');
-            if (!empty($this->state->parentid)) {
-                $query->where('vl.parent_id='.(int)$this->state->parentid);
-            }
-            else{
-                $query->where('v.resource_id = ' . (int) $item->id);
-            }
+            $query->where('v.resource_id = ' . (int) $item->id);
             $query->order('v.name DESC');
 
             // Check if resource has a "unpublish" version

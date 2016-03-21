@@ -1,15 +1,12 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of EText
- *
- * @author Administrator
+ * @version     4.3.2
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 class EText {
 
     public static function _($guid, $text = 1, $default = '') {

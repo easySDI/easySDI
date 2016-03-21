@@ -1,11 +1,12 @@
 ﻿<?php
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 // No direct access
 defined('_JEXEC') or die;
 
@@ -15,9 +16,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
-/**
- * Version controller class.
- */
 class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     private $versions = array();
@@ -119,19 +117,12 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state, r.id as ressource_id')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                 ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
                 ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id');
-        
-        $version = $inputs->getString('searchlast','all');
-        
-        if($version == 'last'){
-            $query->group('r.id');
-            $query->order('m.created DESC');
-        }
         
         $where = 'v.id <> ' . (int) $id . ' AND v.id NOT IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id=' . (int) $id . ') AND rt.id IN (' . $resourcetypechild . ')';
 
@@ -189,7 +180,20 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         }
 
         $query->where($where);
-        $db->setQuery($query)->execute();
+        
+        $version = $inputs->getString('searchlast','all');
+        if($version == 'last'){
+            $query->order('m.created DESC');
+            $upquery = $db->getQuery(true);
+            $upquery->select('*')
+                        ->from( '(' . $query->__toString() . ') as up')
+                        ->group('up.ressource_id');
+            $db->setQuery($upquery)->execute();
+            
+        }else{
+            $db->setQuery($query)->execute();
+        }
+        
         $rows = $db->getNumRows();
         $results = $db->loadObjectList();
 
@@ -914,13 +918,19 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $jform = JFactory::getApplication()->input->get('jform', array(), 'array');
             $id = $jform['id'];
         }
-        $data = array();
-        $data['id'] = $id;
 
-        $version = $model->getData($data['id']);
-        $version->resource_name = $version->resourcename;
-        $version->version_name = $version->name;
-
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        
+        $query->select('m.id as metadata_id,v.*,v.name as version_name,r.name as resource_name, r.id as resource_id');
+        $query->from('#__sdi_version v');
+        $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+        $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
+        $query->where('v.id = '.(int)$id);
+        
+        $db->setQuery($query);
+        $version = $db->loadObject();
+        
         $response = array();
         $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished);
 

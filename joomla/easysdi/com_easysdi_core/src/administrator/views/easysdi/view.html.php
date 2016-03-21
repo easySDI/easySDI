@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.3.2
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -27,75 +27,15 @@ class Easysdi_coreViewEasysdi extends JViewLegacy {
         // Assign data to the view
         $this->form = $this->get('Form');
 
-        //Check if others easysdi components are installed
-        $app = JFactory::getApplication();
         // Get the user object to verify permissions
         $user = JFactory::getUser();
 
-        $this->navLinks = array();
-
-        //com_easysdi_user
-        if ($app->getUserState('com_easysdi_contact-installed') && $user->authorise('core.manage', 'com_easysdi_contact')) {
-            array_push($this->navLinks, array(
-                'link' => JRoute::_('index.php?option=com_easysdi_contact'),
-                'text' => '<i class="icon-user"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_CONTACT')
-            ));
-        }
-
-        //com_easysdi_catalog
-        if ($app->getUserState('com_easysdi_catalog-installed') && $user->authorise('core.manage', 'com_easysdi_catalog')) {
-            array_push($this->navLinks, array(
-                'link' => JRoute::_('index.php?option=com_easysdi_catalog'),
-                'text' => '<i class="icon-grid-view"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_CATALOG')
-            ));
-        }
-
-        //com_easysdi_shop
-        if ($app->getUserState('com_easysdi_shop-installed') && $user->authorise('core.manage', 'com_easysdi_shop')) {
-            array_push($this->navLinks, array(
-                'link' => JRoute::_('index.php?option=com_easysdi_shop'),
-                'text' => '<i class="icon-basket"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_SHOP')
-            ));
-        }
-
-        //com_easysdi_service
-        if ($app->getUserState('com_easysdi_service-installed') && $user->authorise('core.manage', 'com_easysdi_service')) {
-            array_push($this->navLinks, array(
-                'link' => JRoute::_('index.php?option=com_easysdi_service'),
-                'text' => '<i class="icon-wrench"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_SERVICE')
-            ));
-        }
-
-        //com_easysdi_map
-        if ($app->getUserState('com_easysdi_map-installed') && $user->authorise('core.manage', 'com_easysdi_map')) {
-            array_push($this->navLinks, array(
-                'link' => JRoute::_('index.php?option=com_easysdi_map'),
-                'text' => '<i class="icon-location"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_MAP')
-            ));
-        }
-
-        //com_easysdi_monitor
-        if ($app->getUserState('com_easysdi_monitor-installed') && $user->authorise('core.manage', 'com_easysdi_monitor')) {
-            array_push($this->navLinks, array(
-                'link' => JRoute::_('index.php?option=com_easysdi_monitor'),
-                'text' => '<i class="icon-health"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_MONITOR')
-            ));
-        }
-
-        //com_easysdi_dashboard
-        if ($app->getUserState('com_easysdi_dashboard-installed') && $user->authorise('core.manage', 'com_easysdi_dashboard')) {
-            array_push($this->navLinks, array(
-                'link' => JRoute::_('index.php?option=com_easysdi_dashboard'),
-                'text' => '<i class="icon-dashboard"></i> ' . JText::_('COM_EASYSDI_CORE_ICON_SDI_DASHBOARD')
-            ));
-        }
-
+        Easysdi_coreHelper::addSubmenu();
 
         $this->addToolbar();
 
         $this->moduleseasysdi_left = JModuleHelper::getModules('easysdi_adm_home_left');
-        $this->moduleseasysdi_right  = JModuleHelper::getModules('easysdi_adm_home_right');
-
+        $this->moduleseasysdi_right = JModuleHelper::getModules('easysdi_adm_home_right');
 
         // Display the view
         parent::display($tpl);

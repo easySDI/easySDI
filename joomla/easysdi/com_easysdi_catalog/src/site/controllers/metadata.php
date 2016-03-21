@@ -403,13 +403,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid');
         $query->innerJoin('#__sdi_language AS l ON t.language_id = l.id');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
-        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
+        $query->innerJoin('(SELECT * FROM #__sdi_metadata ORDER BY created DESC)  m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
         $query->where('l.code = ' . $query->quote($lang->getTag()));
         if (array_key_exists('version', $_POST)) {
             if ($_POST['version'] == 'last') {
-                $query->group('r.id, m.id, r.name, v.name, m.guid, t.text1, ms.value, m.created');
-                $query->order('m.created DESC');
+                $query->group(' r.name');                
             }
         }
 
@@ -1005,11 +1004,32 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             foreach ($versions[$version->id]->children as $children) {
                 if ($children->metadatastate_id == sdiMetadata::VALIDATED) {
-                    $this->changeStatus($children->metadata_id, $metadatastate_id, $published);
+                    if($this->changeStatus($children->metadata_id, $metadatastate_id, $published)){
+                        
+                        
+                        $data = array();
+                        $data['id'] = $children->metadata_id;
+                        $data['published'] = $published;
+                        
+                        $child = new sdiMetadata($children->metadata_id);
+                        $childDom = $child->load();
+                        $childXPath = new DOMXpath($childDom);
+
+                        $nsdao = new SdiNamespaceDao();
+                        
+                        foreach ($nsdao->getAll() as $ns) {
+                            $childXPath->registerNamespace($ns->prefix, $ns->uri);
+                        }
+                        $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
+                        
+                        $xml = $this->CreateUpdateBody($childXPath->query('/*/*')->item(0), $children->fileidentifier);
+                        $model->save($data, $xml->saveXML());
+                       
+                    }
                 }
             }
-            $this->changeStatus($id, $metadatastate_id, $published);
             $this->db->transactionCommit();
+            
             return true;
         } catch (Exception $ex) {
             $this->db->transactionRollback();

@@ -358,6 +358,9 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 if (!$CSWmetadata->update($xml)) {
                     throw new Exception('Echec de mise à jour du catalog');
                 }
+                if(!$CSWmetadata->updateSDIElement()){
+                    throw new Exception('Echec de mise à jour du catalog');
+                }
             }
 
             if (empty($id)) {

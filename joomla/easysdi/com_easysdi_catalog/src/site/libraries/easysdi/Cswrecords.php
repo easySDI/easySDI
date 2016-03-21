@@ -444,8 +444,11 @@ class Cswrecords extends SearchForm {
     }
 
     private function getVersions($literal) {
-        
-        return $this->ogcFilters->getIsLessOrEqual('endpublished', '0000-00-01');
+        $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
+        $or->appendChild($this->ogcFilters->getIsLessOrEqual('endpublished', '0000-00-01'));
+        $datetime = new DateTime();
+        $or->appendChild($this->ogcFilters->getIsGreatherOrEqual('endpublished', $datetime->format('Y-m-d')));
+        return $or;
                 
     }
 

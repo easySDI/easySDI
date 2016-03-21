@@ -279,10 +279,11 @@ class SearchJForm extends SearchForm {
     }
 
     private function getName($searchCriteria) {
-        if (isset($searchCriteria->relation_guid)) {
-            return $searchCriteria->id . '_' . $this->getOgcSearchFilter($searchCriteria);
-        } else {
-            return $searchCriteria->id . '_' . $searchCriteria->name;
+        switch ($searchCriteria->criteriatype_id) {
+            case CriteriaType::System:
+                return $searchCriteria->id . '_' . $searchCriteria->name;
+            default:
+                return $searchCriteria->id . '_' . $this->getOgcSearchFilter($searchCriteria);
         }
     }
 
