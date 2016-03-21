@@ -115,17 +115,26 @@ if (!$showActions) {
                 </div>
                 <div class="span10 order-edit-value" >
                     <?php echo JHtml::date($item->completed, JText::_('DATE_FORMAT_LC2')); ?>
-                </div>
-            </div>
+                </div>                
+            </div>            
         <?php endif; ?>
 
         <div id="sdi-order-recap-orderstate" class="row-fluid">
             <div class="span2 order-edit-label" >
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
+
             </div>
-            <div class="span10 order-edit-value" >
+            <div class="span1 order-edit-value " >
                 <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true); ?>
-            </div>
+
+            </div>       
+            <?php if ($item->archived == 1): ?>
+                <div class="span9 order-edit-value " >
+                    <div class="order-archived-label label label-important" >
+                        <?php echo JText::_('ARCHIVED'); ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div id="sdi-order-recap-ordertype" class="row-fluid">
@@ -482,12 +491,12 @@ if (!$showActions) {
                                         // product need a response
                                         ?>
                                         <button class="btn btn-success sdi-btn-upload-order-response" onclick="checkAndSendProduct(<?php echo $productItem->id; ?>);
-                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             <span class="icon icon-upload"></span>
                                             Envoyer</button><br/>
                                         <button class="btn btn-danger btn-mini sdi-btn-cancel-order-response" onclick="enableCurrentProduct(<?php echo $productItem->id; ?>);
-                                                jQuery('#rejectModal').modal();
-                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                                jQuery('#rejectModal').modal();
+                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             Annuler</button>
 
                                         <!--

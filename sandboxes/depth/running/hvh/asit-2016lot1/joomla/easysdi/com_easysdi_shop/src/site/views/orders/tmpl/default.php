@@ -25,7 +25,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                 <div class="btn-toolbar">
                     <div class="btn-group pull-right">
                         <fieldset class="radio btn-group btn-group-yesno" id="filterarchive">
-                            <input type="radio" id="archived1" name="filter_archived" value="0" <?php if ($this->state->get('filter.archived') == 0 || $this->state->get('filter.archived')== null): ?> checked='checked'<?php endif; ?> onClick="this.form.submit();">
+                            <input type="radio" id="archived1" name="filter_archived" value="0" <?php if ($this->state->get('filter.archived') == 0): ?> checked='checked'<?php endif; ?> onClick="this.form.submit();">
                             <label for="archived1" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_REQUESTS_ARCHIVED'); ?></label>
                             <input type="radio" id="archived0" name="filter_archived" value="1" <?php if ($this->state->get('filter.archived') == 1): ?> checked='checked'<?php endif; ?> onClick="this.form.submit();">
                             <label for="archived0" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_REQUESTS_ACTIVE'); ?></label>

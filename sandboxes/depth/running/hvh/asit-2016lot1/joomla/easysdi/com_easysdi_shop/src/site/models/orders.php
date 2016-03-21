@@ -125,8 +125,6 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->leftJoin("#__sdi_user AS uvalid ON a.validated_by = uvalid.id");
         $query->leftJoin('#__users AS juvalid ON juvalid.id = uvalid.user_id');
 
-
-
         // Filter by type
         $type = $this->getState('layout.validation') ? Easysdi_shopHelper::ORDERTYPE_ORDER : $this->getState('filter.type');
         if (is_numeric($type)) {
@@ -200,14 +198,9 @@ class Easysdi_shopModelOrders extends JModelList {
                 $query->where('a.archived = ' . $archived);
             }
         }
-
-
-
         //Don't include historized item
         $query->where('a.orderstate_id <> 2');
-
-        $query->order('a.sent DESC');
-        
+        $query->order('a.sent DESC');        
         $query->group('a.id');
         $query->group('a.guid');
         $query->group('a.alias');
