@@ -2324,6 +2324,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `name` VARCHAR(255)  NOT NULL ,
 `ordertype_id` INT(11) UNSIGNED NULL ,
 `orderstate_id` INT(11) UNSIGNED NOT NULL ,
+`archived` tinyint(1) NOT NULL DEFAULT 0,
 `user_id` INT(11) UNSIGNED  NOT NULL ,
 `thirdparty_id` INT(11) UNSIGNED  NULL ,
 `validated` TINYINT(1) DEFAULT NULL,
