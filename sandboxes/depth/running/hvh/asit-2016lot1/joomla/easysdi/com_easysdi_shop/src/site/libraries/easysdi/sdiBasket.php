@@ -164,7 +164,7 @@ class sdiBasket {
                 $ex->file = $extraction->file;
                 $ex->displayname = $extraction->displayname;
                 $ex->size = $extraction->size;
-                $ex->created_by = sdiFactory::getSdiUser($extraction->created_by)->name;
+                $ex->created_by = sdiFactory::getSdiUserByJoomlaId($extraction->created_by)->name;
                 $this->addExtraction($ex);
                 $this->setPerimeters($ex->perimeters);
             endforeach;
