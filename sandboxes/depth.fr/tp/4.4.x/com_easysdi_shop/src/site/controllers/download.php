@@ -24,7 +24,9 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
     private function stop($url = '', $message = 'COM_EASYSDI_SHOP_DOWNLOAD_NO_RIGHT', $type = 'warning') {
         //If the call came from another client than Joomla :
         //Return an http code 401
-        if (!JSession::checkToken('get')) {
+        $jinput = JFactory::getApplication()->input;
+        $origin = $jinput->get('origin');
+        if (!JSession::checkToken('get') && $origin<>'map') {
             $this->stopOnUnAuthorize();
             return false;
         }
@@ -33,7 +35,10 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         if (empty($url)) {
             $uri = JUri::getInstance()->toString();
             $u64 = base64_encode($uri);
-            $url = '/index.php?option=com_users&view=login&return=' . $u64;
+            $url = 'index.php?option=com_users&view=login&return=' . $u64;
+            
+            if ($jinput->get('tmpl'))
+                $url .= "&tmpl=".$jinput->get('tmpl');
         }
         $this->setMessage(JText::_($message), $type);
         $this->setRedirect(JRoute::_($url, false));
@@ -188,23 +193,6 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             error_reporting(0);
 
             if (!empty($diffusion->file)) { //Download local file
-                /*$pos = strrpos($diffusion->file, '.');
-                $extension = substr($diffusion->file, $pos);
-                $file = @file_get_contents($fileFolder . '/' . $diffusion->file);
-                // If cannot DL the file, it returns an error msg to the client
-                if ($file === false) {
-                    throw new Exception();
-                }
-                ini_set('zlib.output_compression', 0);
-                header('Pragma: public');
-                header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-                header('Content-Transfer-Encoding: none');
-                header("Content-Length: " . strlen($file));
-                header('Content-Type: application/octetstream; name="' . $extension . '"');
-                header('Content-Disposition: attachement; filename="' . $diffusion->name . $extension . '"');
-                echo $file;
-                die();*/
-                
                 $file = $fileFolder . '/' . $diffusion->file;
                 $pos = strrpos($diffusion->file, '.');
                 $extension = substr($diffusion->file, $pos);
