@@ -5,3 +5,5 @@ ALTER TABLE `#__sdi_order` ADD COLUMN `archived` tinyint(1) NOT NULL DEFAULT 0 A
 UPDATE `#__sdi_order` SET `archived`=1 WHERE `orderstate_id`=1;
 UPDATE `#__sdi_order` SET `orderstate_id`=3 WHERE `orderstate_id`=1;
 DELETE FROM `#__sdi_sys_orderstate` WHERE `id`=1;
+
+ALTER TABLE `#__sdi_order_diffusion` DROP COLUMN `fee`;
