@@ -27,25 +27,8 @@ class Easysdi_shopModelorders extends JModelList {
 
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                /* 'id', 'a.id',
-                  'guid', 'a.guid',
-                  'alias', 'a.alias',
-                  'created_by', 'a.created_by', */
-                'created', 'a.created', /*
-                  'modified_by', 'a.modified_by',
-                  'modified', 'a.modified',
-                  'ordering', 'a.ordering',
-                  'state', 'a.state', */
+                'created', 'a.created', 
                 'name', 'a.name',
-                /* 'access', 'a.access',
-                  'asset_id', 'a.asset_id',
-                  'ordertype_id', 'a.ordertype_id',
-                  'orderstate_id', 'a.orderstate_id',
-                  'user_id', 'a.user_id',
-                  'thirdparty_id', 'a.thirdparty_id',
-                  'buffer', 'a.buffer',
-                  'surface', 'a.surface',
-                  'remark', 'a.remark', */
                 'sent', 'a.sent',
                 'completed', 'a.completed',
                 'user', 'user',

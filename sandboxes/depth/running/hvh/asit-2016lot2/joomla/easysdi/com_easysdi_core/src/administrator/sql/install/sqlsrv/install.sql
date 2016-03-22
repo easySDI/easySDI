@@ -687,8 +687,7 @@ CREATE TABLE [#__sdi_diffusion_perimeter] (
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
-	[perimeter_id] [bigint] NOT NULL,
-	[buffer] [smallint] NOT NULL,
+	[perimeter_id] [bigint] NOT NULL,	
  CONSTRAINT [PK_#__sdi_diffusion_perimeter_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1145,7 +1144,6 @@ CREATE TABLE [#__sdi_order] (
         [validated_date] [datetime2](0) ,
         [validated_reason] [nvarchar](500) ,
 	[validated_by] [int] NULL,
-	[buffer] [numeric](38, 18) NULL,
 	[surface] [numeric](38, 18) NULL,
 	[remark] [nvarchar](4000) NULL,
         [mandate_ref] [nvarchar](500) NULL,

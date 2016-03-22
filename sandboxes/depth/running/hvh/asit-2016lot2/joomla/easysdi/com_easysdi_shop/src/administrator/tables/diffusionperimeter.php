@@ -29,7 +29,7 @@ class Easysdi_shopTablediffusionperimeter extends JTable {
     public function loadByDiffusionID($id = null) {
         // Initialise the query.
         $query = $this->_db->getQuery(true);
-        $query->select('perimeter_id, buffer ');
+        $query->select('perimeter_id ');
         $query->from($this->_tbl.' as p');
         $query->innerjoin('#__sdi_perimeter per ON per.id = p.perimeter_id');
         $query->where($this->_db->quoteName('p.diffusion_id') . ' = ' . (int) $id);

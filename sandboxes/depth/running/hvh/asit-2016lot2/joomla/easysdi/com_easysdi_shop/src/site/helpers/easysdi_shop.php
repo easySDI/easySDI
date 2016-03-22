@@ -133,19 +133,19 @@ abstract class Easysdi_shopHelper {
                 foreach ($extraction->perimeters as $perimeter):
                     foreach ($basket->perimeters as $bperimeter):
                         if ($bperimeter->id == $perimeter->id):
-                            foreach ($common as $cperimeter):
-                                if ($bperimeter->id == $cperimeter->id):
-                                    if ($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
-                                        $cperimeter->allowedbuffer = 0;
-                                        continue 2;
-                                    endif;
-                                endif;
-                            endforeach;
-                            if ($bperimeter->allowedbuffer == 0):
+//                            foreach ($common as $cperimeter):
+//                                if ($bperimeter->id == $cperimeter->id):
+//                                    if ($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
+//                                        $cperimeter->allowedbuffer = 0;
+//                                        continue 2;
+//                                    endif;
+//                                endif;
+//                            endforeach;
+//                            if ($bperimeter->allowedbuffer == 0):
                                 $common[] = $bperimeter;
-                            else:
-                                $common[] = $perimeter;
-                            endif;
+//                            else:
+//                                $common[] = $perimeter;
+//                            endif;
                         endif;
                     endforeach;
                 endforeach;
@@ -218,14 +218,14 @@ abstract class Easysdi_shopHelper {
             $common = array();
             foreach ($basket->extractions as $extraction):
                 foreach ($extraction->perimeters as $perimeter):
-                    foreach ($common as $cperimeter):
-                        if ($perimeter->id == $cperimeter->id):
-                            if ($perimeter->allowedbuffer == 0 || $cperimeter->allowedbuffer == 0):
-                                $cperimeter->allowedbuffer = 0;
-                                continue 2;
-                            endif;
-                        endif;
-                    endforeach;
+//                    foreach ($common as $cperimeter):
+//                        if ($perimeter->id == $cperimeter->id):
+//                            if ($perimeter->allowedbuffer == 0 || $cperimeter->allowedbuffer == 0):
+//                                $cperimeter->allowedbuffer = 0;
+//                                continue 2;
+//                            endif;
+//                        endif;
+//                    endforeach;
                     $common[] = $perimeter;
                 endforeach;
             endforeach;
@@ -234,10 +234,6 @@ abstract class Easysdi_shopHelper {
         endif;
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
-
-//        $return['COUNT'] = count($basket->extractions);
-//        echo json_encode($return);
-//        die();
     }
 
     /**
@@ -326,11 +322,6 @@ abstract class Easysdi_shopHelper {
                         </div>                
                     </div>
                     <div  class="value-recap span4" >
-                        <!--<div id="perimeter-buffer" class="row-fluid" >
-                            <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h4>
-                                <span><?php if (!empty($item->basket->buffer)) echo (float) $item->basket->buffer; ?></span>                            
-                            </div>                                
-                        </div>   -->                 
                         <?php if (!empty($item->basket->extent->level)) : ?>
                             <div id="indoor-level" class="row-fluid" >
                                 <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
