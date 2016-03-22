@@ -1,0 +1,17 @@
+.easysdiadminbutton .btn .badge {
+    margin-right: -20px;
+    margin-top: -10px;
+}
+.easysdiadminbutton .btn{
+    height: 30px;
+    margin-right:10px;
+    margin-bottom: 15px;
+}
+.easysdiadminbutton .text{
+    margin-top: 8px;
+    font-size: medium;
+    font-weight: 600;
+}
+.easysdiadminbutton{
+    margin-top: 10px;
+}
