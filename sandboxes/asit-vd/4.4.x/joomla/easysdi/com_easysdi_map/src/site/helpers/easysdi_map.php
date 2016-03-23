@@ -88,7 +88,7 @@ abstract class Easysdi_mapHelper {
         }
 
             foreach (glob(JPATH_SITE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
-                $doc->addScript(str_replace(JPATH_SITE, JURI::base(true), $file));
+                $doc->addScript(str_replace(JPATH_SITE, JURI::root(true), $file));
         }
 
         $doc->addScript(JURI::root(true) . '/components/com_easysdi_map/helpers/map.js?v=' . sdiFactory::getSdiFullVersion());
