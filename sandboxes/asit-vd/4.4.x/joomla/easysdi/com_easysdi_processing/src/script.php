@@ -11,13 +11,10 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.installer.installer');
-jimport('joomla.installer.helper');
-
 /**
  * Script file of Processing component
  */
-class com_cadastreInstallerScript
+class com_easysdi_processingInstallerScript
 {
 	/**
 	 * method to install the component
@@ -57,6 +54,19 @@ class com_cadastreInstallerScript
 	 */
 	function preflight($type, $parent)
 	{
+            //Check if com_easysdi_core is installed
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('COUNT(*)');
+            $query->from('#__extensions');
+            $query->where('name = '.$db->quote('com_easysdi_core'));
+            $db->setQuery($query);
+            $install = $db->loadResult();
+
+            if($install == 0){
+                    JError::raiseWarning(null, JText::_('COM_EASYSDI_MAP_INSTALL_SCRIPT_CORE_ERROR'));
+                    return false;
+            }
 
 	}
 
@@ -67,6 +77,13 @@ class com_cadastreInstallerScript
 	 */
 	function postflight($type, $parent)
 	{
+            //remove general admin menu
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->delete('#__menu');
+            $query->where('title = '.$db->quote('com_easysdi_processing'));
+            $db->setQuery($query);
+            $db->query();
 
 	}
 }
