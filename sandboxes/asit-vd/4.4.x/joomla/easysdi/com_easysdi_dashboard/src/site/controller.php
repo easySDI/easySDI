@@ -10,7 +10,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.filesystem.file');
+jimport('joomla.application.component.controller');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_dashboard/helpers/easysdi_dashboard.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_dashboard/indicators/sdiIndicator.php';
@@ -18,24 +18,9 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_dashboard/indicators
 class Easysdi_dashboardController extends JControllerLegacy {
 
     /**
-     * Method to display a view.
-     *
-     * @param	boolean			$cachable	If true, the view output will be cached
-     * @param	array			$urlparams	An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-     *
-     * @return	JController		This object to support chaining.
-     * @since	1.5
+     * Get the data from th indicator
+     * @return mixed data in requested format (JSON, CSV or PDF)
      */
-    public function display($cachable = false, $urlparams = false) {
-
-
-        $view = JFactory::getApplication()->input->getCmd('view', 'shop');
-        JFactory::getApplication()->input->set('view', $view);
-
-        parent::display($cachable, $urlparams);
-        return $this;
-    }
-
     public function getData() {
         $indicator = JFactory::getApplication()->input->get('indicator');
         $organism = JFactory::getApplication()->input->get('organism');
@@ -44,7 +29,15 @@ class Easysdi_dashboardController extends JControllerLegacy {
         $dataformat = JFactory::getApplication()->input->get('dataformat');
         $limit = JFactory::getApplication()->input->get('limit', 0);
 
+        //check input sanity
         if (!Easysdi_dashboardHelper::checkFiltersInput($indicator, $organism, $timestart, $timeend, $dataformat, $limit)) {
+            $this->setRedirect('index.php?option=com_easysdi_dashboard');
+            return;
+        }
+
+        //check if user has access to this organism
+        if (!(is_numeric($organism) && $this->userCanAccessOrgData($organism))) {
+            JFactory::getApplication()->enqueueMessage('Cannot access this organism data', 'error');
             $this->setRedirect('index.php?option=com_easysdi_dashboard');
             return;
         }
@@ -54,6 +47,19 @@ class Easysdi_dashboardController extends JControllerLegacy {
         $ind = new $indClassName();
 
         $ind->sendResponse($organism, $timestart, $timeend, $dataformat, $limit);
+    }
+
+    /**
+     * Check the user access based on session array
+     * created by Easysdi_dashboardViewShop::hasDashboardAccess($sdiUser)
+     * @param type $organismID
+     * @return boolean
+     * @see Easysdi_dashboardViewShop
+     */
+    private function userCanAccessOrgData($organismID) {
+        $session = JFactory::getSession();
+        $dashboardAccessList = $session->get('organismDashboardAccess');
+        return isset($dashboardAccessList[$organismID]);
     }
 
 }
