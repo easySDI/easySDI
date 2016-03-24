@@ -124,17 +124,10 @@ if (!$showActions) {
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
 
             </div>
-            <div class="span1 order-edit-value " >
-                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true); ?>
+            <div class="span10 order-edit-value " >
+                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true, true); ?>
 
-            </div>       
-            <?php if ($item->archived == 1): ?>
-                <div class="span9 order-edit-value " >
-                    <div class="order-archived-label label label-important" >
-                        <?php echo JText::_('ARCHIVED'); ?>
-                    </div>
-                </div>
-            <?php endif; ?>
+            </div>                   
         </div>
 
         <div id="sdi-order-recap-ordertype" class="row-fluid">
