@@ -142,7 +142,7 @@ abstract class Easysdi_shopHelper {
 //                                endif;
 //                            endforeach;
 //                            if ($bperimeter->allowedbuffer == 0):
-                            $common[] = $bperimeter;
+                                $common[] = $bperimeter;
 //                            else:
 //                                $common[] = $perimeter;
 //                            endif;
@@ -1501,7 +1501,7 @@ abstract class Easysdi_shopHelper {
      * @param type $basket an easysdi basket (matching the order)
      * @return string A bootstrap styled label element
      */
-    public static function getOrderStatusLabel($order, $basket, $isGroupedBySupplier = false, $witharchivedstate = false) {
+    public static function getOrderStatusLabel($order, $basket, $isGroupedBySupplier = false) {
 
         //for drafts, return the order type
         if ($order->ordertype_id == 3) {
@@ -1567,13 +1567,7 @@ abstract class Easysdi_shopHelper {
                 break;
         }
 
-        $result = '<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl .'</span>';
-        if ($witharchivedstate && $order->archived == 1) {
-            $result .= '<span class="order-archived-label label label-important" >' . JText::_('ARCHIVED') . '</span>';
-        };
-        
-
-        return $result;
+        return'<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
     }
 
     /**
@@ -1593,7 +1587,7 @@ abstract class Easysdi_shopHelper {
             return $string;
         }
     }
-
+    
     /**
      * getCleanFilename - Remove path information and dots around the filename, to prevent uploading
      * into different directories or replacing hidden system files.
@@ -1609,7 +1603,7 @@ abstract class Easysdi_shopHelper {
             $name = str_replace('.', '-', microtime(true));
         }
         return $name;
-    }
+    }    
 
     /**
      * Return a human readable filesize

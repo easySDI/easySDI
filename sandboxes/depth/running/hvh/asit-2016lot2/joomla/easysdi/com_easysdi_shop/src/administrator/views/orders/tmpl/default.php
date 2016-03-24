@@ -196,8 +196,15 @@ if (!empty($this->extra_sidebar)) {
                             <td class="orderstate">							
                                 <div class="row-fluid">
                                     <div class="span5" >
-                                        <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket, false, true); ?>
-                                    </div>                                   
+                                        <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket); ?>
+                                    </div>
+                                    <?php if ($item->archived == 1): ?>
+                                        <div class="span4" >
+                                            <div class="order-archived-label label label-important" >
+                                                <?php echo JText::_('ARCHIVED'); ?>
+                                            </div>
+                                        </div>                                    
+                                    <?php endif; ?>
                                 </div>
                             </td>
                             <td>
