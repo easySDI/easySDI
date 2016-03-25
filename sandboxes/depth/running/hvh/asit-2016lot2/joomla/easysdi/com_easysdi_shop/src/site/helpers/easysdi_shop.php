@@ -133,14 +133,14 @@ abstract class Easysdi_shopHelper {
                 foreach ($extraction->perimeters as $perimeter):
                     foreach ($basket->perimeters as $bperimeter):
                         if ($bperimeter->id == $perimeter->id):
-//                            foreach ($common as $cperimeter):
-//                                if ($bperimeter->id == $cperimeter->id):
+                            foreach ($common as $cperimeter):
+                                if ($bperimeter->id == $cperimeter->id):
 //                                    if ($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
 //                                        $cperimeter->allowedbuffer = 0;
-//                                        continue 2;
+                                        continue 2;
 //                                    endif;
-//                                endif;
-//                            endforeach;
+                                endif;
+                            endforeach;
 //                            if ($bperimeter->allowedbuffer == 0):
                                 $common[] = $bperimeter;
 //                            else:
