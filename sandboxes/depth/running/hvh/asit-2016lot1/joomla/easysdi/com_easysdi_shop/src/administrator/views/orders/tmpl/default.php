@@ -195,7 +195,7 @@ if (!empty($this->extra_sidebar)) {
                                 ?></td>
                             <td class="orderstate">							
                                 <div class="row-fluid">
-                                    <div class="span5" >
+                                    <div class="span10" >
                                         <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket, false, true); ?>
                                     </div>                                   
                                 </div>
