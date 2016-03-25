@@ -2,8 +2,8 @@
 <form>
     <fieldset name="details">
         <field name="name" type="text" readonly="true" class="inputbox input-xlarge"
-              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NAME"
-              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NAME" 
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NAME"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NAME" 
         /> 
 
         <field
@@ -88,21 +88,21 @@
     <fieldset name="download">
         <field name="hasdownload" type="checkbox"  onclick="enableDownload()" label="Show title" description="Show the title of the item" value="1" default="0" />
 
-         <field name="productstorage_id" 
-               type="sql" 
-              class="inputbox input-xlarge"
+        <field name="productstorage_id" 
+                type="sql" 
+                class="inputbox input-xlarge"
                 onchange="onProductStorageChange()"
-               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTSTORAGE_ID"
-               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRODUCTSTORAGE_ID" 
-               query="SELECT id, value FROM #__sdi_sys_productstorage WHERE state=1 ORDER BY ordering" 
-               key_field="id" 
-               value_field="value"
-               translate="true" />
+                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTSTORAGE_ID"
+                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRODUCTSTORAGE_ID" 
+                query="SELECT id, value FROM #__sdi_sys_productstorage WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="value"
+                translate="true" />
         
         <field name="fileurl" type="text" size="40" class="inputbox input-xlarge"
-              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILEURL"
-              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILEURL" 
-              filter="safehtml" /> 
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILEURL"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILEURL" 
+               filter="safehtml" /> 
         
         <field name="perimeter_id" 
                type="sqlperimeterwithaccessscope" 
@@ -124,14 +124,14 @@
                filter="safehtml" /> 
         
         <field name="userurl" type="text" size="10" class="inputbox input-xlarge"
-              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_USERURL"
-              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_USERURL" 
-              filter="safehtml" /> 
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_USERURL"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_USERURL" 
+               filter="safehtml" /> 
         
         <field name="passurl" type="text" size="10" class="inputbox input-xlarge"
-              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PASSURL"
-              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PASSURL" 
-              filter="safehtml" /> 
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PASSURL"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PASSURL" 
+               filter="safehtml" /> 
 
         <field 	name="testurlauthentication" 
                 id="testurlauthentication" 
@@ -155,9 +155,9 @@
         <field name="hasextraction" type="checkbox" onclick="enableExtraction()" label="Show title" description="Show the title of the item" value="1" default="0" />
     
         <field name="deposit" type="file" class="inputbox input-xlarge"
-              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DEPOSIT"
-              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_DEPOSIT" 
-              filter="raw" /> 
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DEPOSIT"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_DEPOSIT" 
+               filter="raw" /> 
         
         <field name="productmining_id" 
                type="sql" 
@@ -169,26 +169,25 @@
                value_field="value"
                translate="true" />
         
-        <!--<field name="notifieduser_id" 
-               type="sql" 
-               class="inputbox input-xlarge"
-               multiple="true"
-               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NOTIFIEDUSER_ID"
-               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NOTIFIEDUSER_ID" 
-               query="SELECT sdi.id as id, u.name as value FROM #__sdi_user sdi INNER JOIN #__users u ON u.id = sdi.user_id WHERE sdi.state=1 ORDER BY sdi.ordering" 
-               key_field="id" 
-               value_field="value"
-               translate="false" />-->
+        <field name="managers_id" 
+                   type="sql" 
+                   class="inputbox input-xlarge"
+                   multiple="true"
+                   label="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_7_LABEL"
+                   description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_7_DESC" 
+                   key_field="id" 
+                   value_field="value"
+                   translate="false" />
                
-            <field name="notifieduser_id" 
-               type="sql" 
-               class="inputbox input-xlarge"
-               multiple="true"
-               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NOTIFIEDUSER_ID"
-               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NOTIFIEDUSER_ID" 
-               key_field="id" 
-               value_field="value"
-               translate="false" />
+        <field name="notifieduser_id" 
+                   type="sql" 
+                   class="inputbox input-xlarge"
+                   multiple="true"
+                   label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NOTIFIEDUSER_ID"
+                   description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NOTIFIEDUSER_ID" 
+                   key_field="id" 
+                   value_field="value"
+                   translate="false" />
         
         <field name="surfacemin" type="text" size="40" class="inputbox input-xlarge"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_SURFACEMIN"
@@ -200,10 +199,11 @@
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_SURFACEMAX" 
                filter="safehtml" /> 
     
-     <field name="restrictedperimeter" type="radio"  default="0"
-               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_RESTRICTEDPERIMETER"
-               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_RESTRICTEDPERIMETER" 
-        >   <option value="0">JNO</option>
+        <field name="restrictedperimeter" type="radio"  default="0"
+            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_RESTRICTEDPERIMETER"
+            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_RESTRICTEDPERIMETER" 
+        >   
+            <option value="0">JNO</option>
             <option value="1" >JYES</option>
             
         </field>
@@ -211,6 +211,7 @@
     
     <fieldset name="hidden">
         <field name="version_id" type="hidden" filter="safehtml" />
+        <field name="resource_id" type="hidden" filter="safehtml" />
         <field name="checked_out" type="hidden" filter="safehtml" />
         <field name="checked_out_time" type="hidden" filter="safehtml" /> 
         <field name="ordering" type="hidden" filter="safehtml" /> 

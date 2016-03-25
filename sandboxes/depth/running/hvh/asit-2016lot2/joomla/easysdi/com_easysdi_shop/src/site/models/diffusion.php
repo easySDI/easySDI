@@ -16,6 +16,8 @@ jimport('joomla.event.dispatcher');
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/userroleresource.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_contact/tables/role.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
@@ -92,7 +94,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $this->_item->perimeter = array();
                 if ($perimeters) {
                     foreach ($perimeters as $perimeter) {
-                        array_push($this->_item->perimeter , $perimeter->perimeter_id);
+                        array_push($this->_item->perimeter, $perimeter->perimeter_id);
                     }
                 }
                 //Parse fileurl/packageurl to retrieve user/pwd
@@ -115,14 +117,25 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $this->setError($error);
             }
         }
+
+        //Load linked object to fill field(s)
+        $version = JTable::getInstance('version', 'Easysdi_coreTable');
+        $version->load($this->_item->version_id);
+        $this->_item->version_id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusionversion.id');
+        $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
+        $resource->load($version->resource_id);
+        $this->_item->resource_id = $resource->id;
+        
         if (empty($id)) {
-            $this->_item->version_id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusionversion.id');
-            $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
-            $version = JTable::getInstance('version', 'Easysdi_coreTable');
-            $version->load($this->_item->version_id);
-            $resource->load($version->resource_id);
             $this->_item->name = $resource->name;
         }
+        $this->_item->organism_id = $resource->organism_id;
+
+        //Load extraction managers
+        $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
+        $this->_item->managers_id = $userroleresource->loadByResourceId($version->resource_id, 'role_id = ' . Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE);
+
+
 
         return $this->_item;
     }
@@ -232,6 +245,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
         $form->setFieldAttribute('notifieduser_id', 'query', $this->getNotifieduserListQuery());
 
+        $form->setFieldAttribute('managers_id', 'query', $this->getExtractionManagerListQuery());
+
         return $form;
     }
 
@@ -314,7 +329,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $array = array();
                 $array['diffusion_id'] = $id;
                 $array['perimeter_id'] = $key;
-//                ($perimeter == 1) ? $array['buffer'] = 0 : $array['buffer'] = 1;
                 if (!$diffusionperimeter->save($array))
                     return false;
 
@@ -344,6 +358,18 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             //Delete entries no more usefull
             if (!$this->cleanTable($id, '#__sdi_diffusion_propertyvalue', $ids))
                 return false;
+
+            //Extraction Manager
+            $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
+            $userroleresource->deleteByResourceId($data['resource_id'], Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE);
+            $users = $data['managers_id'];
+            foreach ($users as $user) {
+                $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');                        
+                $userroleresource->user_id = $user;
+                $userroleresource->role_id = Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE;
+                $userroleresource->resource_id = $data['resource_id'];
+                $userroleresource->store();
+            }
 
             //Update the metadata stored in the remote catalog 
             if (!$this->updateCSWMetadata($table->version_id)):
@@ -442,6 +468,23 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         }
 
         return true;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    private function getExtractionManagerListQuery() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('uro.user_id as id, ju.name as value')
+                ->from('#__sdi_user_role_organism as uro')
+                ->innerJoin('#__sdi_user as u on u.id = uro.user_id')
+                ->innerJoin('#__users as ju on ju.id = u.user_id')
+                ->where('organism_id=' . (int) $this->_item->organism_id)
+                ->where('role_id = ' . (int) Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE);
+
+        return $query->__toString();
     }
 
     /**
