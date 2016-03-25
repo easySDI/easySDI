@@ -172,7 +172,14 @@ class CurlHelper {
     private function initSSL() {
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($this->ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_DEFAULT);
+        curl_setopt($this->ch, CURLOPT_SSLVERSION, 0);
+
+        //Note that prior to PHP 5.5 following constants were missing and were available only through their numeric values:
+        //
+        //CURL_SSLVERSION_DEFAULT // 0
+        //CURL_SSLVERSION_TLSv1  // 1
+        //CURL_SSLVERSION_SSLv2 // 2
+        //CURL_SSLVERSION_SSLv3 // 3
     }
 
     private function initFTP() {
@@ -287,9 +294,9 @@ class CurlHelper {
 
         //Set callbakc functions last (dependency on other params), except for sftp head
         //if ($this->protocol !== 'sftp' && $this->method !== 'HEAD') {
-            curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, false);
-            curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array($this, 'curlCB_readHeader'));
-            curl_setopt($this->ch, CURLOPT_WRITEFUNCTION, array($this, 'curlCB_readBody'));
+        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array($this, 'curlCB_readHeader'));
+        curl_setopt($this->ch, CURLOPT_WRITEFUNCTION, array($this, 'curlCB_readBody'));
         //}
 
         if (!curl_exec($this->ch)) {
@@ -383,7 +390,7 @@ class CurlHelper {
         }
 
         $this->headersAlreadySent = true;
-        
+
         //close joomla session to unblock navigation
         //we don't have to read/write session infos from now
         $session = JFactory::getSession();
