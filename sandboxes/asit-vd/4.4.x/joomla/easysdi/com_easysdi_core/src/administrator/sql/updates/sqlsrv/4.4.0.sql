@@ -67,3 +67,8 @@ ALTER TABLE [#__sdi_order] ADD  [validation_token] [nvarchar](64) NULL;
 
 UPDATE [#__sdi_order] SET [access_token]     = LOWER( CONVERT(NVARCHAR(64), HASHBYTES('SHA2_512', CONVERT(NVARCHAR(36),NEWID()) ),2));
 UPDATE [#__sdi_order] SET [validation_token] = LOWER( CONVERT(NVARCHAR(64), HASHBYTES('SHA2_512', CONVERT(NVARCHAR(36),NEWID()) ),2));
+
+ALTER TABLE [#__sdi_diffusion_download] DROP CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk2];
+ALTER TABLE [#__sdi_diffusion_download]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk2] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id])
+ON DELETE SET NULL;
