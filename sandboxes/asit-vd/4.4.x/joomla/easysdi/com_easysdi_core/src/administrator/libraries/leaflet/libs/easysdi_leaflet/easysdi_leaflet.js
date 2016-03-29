@@ -3,20 +3,32 @@ var easySDImap;
 jQuery(document).ready(function ($) {
 
     var script_path = 'libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js';
-    if (jQuery('script[src$="' + script_path + '"]').length) {
-        console.log(jQuery('script[src$="' + script_path + '"]'));
-        var local_url = jQuery('script[src$="' + script_path + '"]').attr('src').replace(script_path, '');
-    } else {
-        script_path = 'libs/easysdi_leaflet/easysdi_leaflet.js';
-        var local_url = jQuery('script[src$="' + script_path + '"]').attr('src').replace(script_path, '');
-    }
+    
+    var scripts = document.getElementsByTagName("script");
+    
+    var local_url='';
 
+    // Look through them trying to find ourselves
+    for(var i=0; i<scripts.length; i++) {
+      if(scripts[i].src.indexOf(script_path) > -1) {
+          var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
+      }
+    }
+    
+    if (local_url.length==0)
+    {
+        script_path = 'libs/easysdi_leaflet/easysdi_leaflet.js';
+        // Look through them trying to find ourselves
+        for(var i=0; i<scripts.length; i++) {
+          if(scripts[i].src.indexOf(script_path) > -1) {
+              var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
+          }
+        }
+    }
 
     var isset = function (variable) {
         return typeof (variable) != "undefined" && variable !== null;
     };
-
-
 
     var addIfSet = function (obj, name, value) {
         if (isset(value)) {
@@ -1418,7 +1430,29 @@ jQuery(document).ready(function ($) {
                         context_url = base_url + context_url;
                     }
                     var context = _easySDImap.getContext();
-                    //var local_url = jQuery('script[src$="easySDI_leaflet.pack.js"],script[src$="easysdi_leaflet.js"]').attr('src').replace('libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js', '');
+                    var script_path = 'libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js';
+    
+                    var scripts = document.getElementsByTagName("script");
+
+                    var local_url='';
+
+                    // Look through them trying to find ourselves
+                    for(var i=0; i<scripts.length; i++) {
+                      if(scripts[i].src.indexOf(script_path) > -1) {
+                          var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
+                      }
+                    }
+
+                    if (local_url.length==0)
+                    {
+                        script_path = 'libs/easysdi_leaflet/easysdi_leaflet.js';
+                        // Look through them trying to find ourselves
+                        for(var i=0; i<scripts.length; i++) {
+                          if(scripts[i].src.indexOf(script_path) > -1) {
+                              var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
+                          }
+                        }
+                    }
 
 
                     code = '';

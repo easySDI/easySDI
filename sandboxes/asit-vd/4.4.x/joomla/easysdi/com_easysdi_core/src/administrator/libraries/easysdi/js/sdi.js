@@ -1656,7 +1656,7 @@ sdi.plugins.LayerDownload = Ext.extend(gxp.plugins.Tool, {
                var record = selectedLayer;
                SqueezeBox.initialize({});
                SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
-               SqueezeBox.setContent('iframe', record.json.download);
+               SqueezeBox.setContent('iframe', record.json.download + '&origin=map');
                
             },
             scope: this

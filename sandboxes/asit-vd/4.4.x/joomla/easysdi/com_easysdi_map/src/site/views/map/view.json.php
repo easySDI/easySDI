@@ -30,7 +30,7 @@ class Easysdi_mapViewMap extends JViewLegacy {
         JResponse::sendHeaders();
 
         $response_array=compact('status');
-        foreach (['data','message','code'] as $param) {
+        foreach (array('data','message','code') as $param) {
             if (isset($$param)) $response_array[$param]=$$param;
         }
         return json_encode($response_array);
