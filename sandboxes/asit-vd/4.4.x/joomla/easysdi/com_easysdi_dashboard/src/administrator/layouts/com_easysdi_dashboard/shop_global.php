@@ -98,7 +98,7 @@ $indicator_name = 'shop_global';
 
 
                 /* values */
-                var totalWithExtraction = json.data.total_diff_hasextraction + json.data.total_diff_hasdownandext;
+                var totalWithExtraction = parseInt(json.data.total_diff_hasextraction) + parseInt(json.data.total_diff_hasdownandext);
                 var pctManu = Math.round(100 * json.data.total_diff_manual / totalWithExtraction);
                 var pctAuto = 100 - pctManu;
 
