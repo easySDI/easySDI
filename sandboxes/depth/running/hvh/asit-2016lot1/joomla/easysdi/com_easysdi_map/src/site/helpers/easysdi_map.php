@@ -76,7 +76,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ext/ext-all.js');
             $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
-                $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
+            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
             $doc->addScript($base_url . '/easysdi/js/OpenLayers/override-openlayers.js?v=' . sdiFactory::getSdiFullVersion());
             $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js?v=' . sdiFactory::getSdiFullVersion());

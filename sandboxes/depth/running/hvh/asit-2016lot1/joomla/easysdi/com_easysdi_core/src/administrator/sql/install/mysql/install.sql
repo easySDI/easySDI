@@ -1985,7 +1985,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `title` VARCHAR(255)  NOT NULL ,
-`type` VARCHAR(10)  NOT NULL ,
+`type` VARCHAR(10)  NOT NULL DEFAULT 'geoext',
 `rootnodetext` VARCHAR(255)  ,
 `srs` VARCHAR(255)  NOT NULL ,
 `unit_id` INT(11) UNSIGNED NOT NULL ,
@@ -3225,16 +3225,18 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing` (
   `modified` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `ordering` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `contact_id` (`contact_id`),
-  KEY `state` (`state`)
+  KEY `#__sdi_processing_fk1` (`contact_id`),
+  CONSTRAINT `#__sdi_processing_fk1` FOREIGN KEY (`contact_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `#__sdi_processing_obs`;
 CREATE TABLE IF NOT EXISTS `#__sdi_processing_obs` (
   `processing_id` int(10) unsigned NOT NULL,
   `sdi_user_id` int(10) unsigned NOT NULL,
-  KEY `processing_id` (`processing_id`),
-  KEY `sdi_user_id` (`sdi_user_id`)
+  KEY `#__sdi_processing_obs_fk1` (`processing_id`),
+  KEY `#__sdi_processing_obs_fk2` (`sdi_user_id`),
+  CONSTRAINT `#__sdi_processing_obs_fk1` FOREIGN KEY (`processing_id`) REFERENCES `#__sdi_processing` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_processing_obs_fk2` FOREIGN KEY (`sdi_user_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `#__sdi_processing_order`;
@@ -3242,7 +3244,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `guid` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `user_id` int(10) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
   `processing_id` int(10) unsigned NOT NULL,
   `parameters` text NOT NULL,
   `filestorage` varchar(20) NOT NULL,
@@ -3261,7 +3263,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
   `access_key` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `processing_id` (`processing_id`),
-  KEY `created_by` (`created_by`)
+  CONSTRAINT `#__sdi_processing_order_fk1` FOREIGN KEY (`processing_id`) REFERENCES `#__sdi_processing` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_processing_order_fk2` FOREIGN KEY (`user_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 
