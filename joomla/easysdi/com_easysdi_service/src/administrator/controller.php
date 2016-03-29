@@ -36,10 +36,8 @@ class Easysdi_serviceController extends JControllerLegacy
 	public function negotiation ()
 	{
 		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
-		Easysdi_serviceHelper::negotiation(JRequest::get( 'get' ));
-                // TODO replace by  $jinput = JFactory::getApplication()->input; 
-                // Easysdi_serviceHelper::negotiation($jinput);
-                // $jinput->get('service');$jinput->get('resurl');$jinput->get('resuser');
+                 $jinput = JFactory::getApplication()->input;
+                 Easysdi_serviceHelper::negotiation($jinput->getArray());
 	}
 	
 	/**
