@@ -141,14 +141,13 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                         ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-												<label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>"><?php echo $orderperimeterlabel; ?></label>                                                
+						<label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>"><?php echo $orderperimeterlabel; ?></label>                                                
                                             </div>
                                             <div class="controls">
-                                                <?php //var_dump($this->item->perimeter[$orderperimeter->id]); ?>
                                                 <fieldset id="jform_perimeter<?php echo $orderperimeter->id ?>" class="radio btn-group btn-group-yesno">
-                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_0" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="0" <?php if (!array_key_exists($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_0" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="0" <?php if (!in_array($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
                                                     <label for="jform_perimeter<?php echo $orderperimeter->id ?>_0" <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JNO'); ?></label>                                            
-                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_1" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="1" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_1" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="1" <?php if (in_array($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
                                                     <label for="jform_perimeter<?php echo $orderperimeter->id ?>_1" <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JYES'); ?></label>
                                                 </fieldset>
                                             </div>
