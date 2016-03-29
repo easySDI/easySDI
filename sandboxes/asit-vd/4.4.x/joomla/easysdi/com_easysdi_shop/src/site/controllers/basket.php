@@ -35,7 +35,6 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
 
     public function saveBasketToSession($recalculatePricing = true) {
         $jinput = JFactory::getApplication()->input;
-        $buffer = $jinput->get('buffer', '', 'float');
         $ordername = $jinput->get('ordername', '', 'string');
         $thirdparty = $jinput->get('thirdparty', '', 'int');
         $mandate_ref = $jinput->get('mandate_ref', null, 'string');
@@ -44,7 +43,6 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
 
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         $basket->name = $ordername;
-        $basket->buffer = $buffer;
         $basket->thirdparty = $thirdparty;
         $basket->mandate_ref = $mandate_ref;
         $basket->mandate_contact = $mandate_contact;

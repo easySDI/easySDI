@@ -219,7 +219,6 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->group('a.orderstate_id');
         $query->group('a.user_id');
         $query->group('a.thirdparty_id');
-        $query->group('a.buffer');
         $query->group('a.surface');
         $query->group('a.remark');
         $query->group('a.sent');

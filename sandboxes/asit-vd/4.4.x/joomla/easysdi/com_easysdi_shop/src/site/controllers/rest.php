@@ -581,12 +581,6 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         return $categories;
     }
 
-    private function getBuffer() {
-        $buffer = $this->response->createElementNS($this->nsEasysdi, 'easysdi:BUFFER');
-
-        return $buffer;
-    }
-
     /**
      * get a PRODUCTS node with many PRODUCT child
      * 

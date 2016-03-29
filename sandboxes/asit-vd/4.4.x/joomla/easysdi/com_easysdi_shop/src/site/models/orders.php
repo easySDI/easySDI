@@ -218,7 +218,6 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->group('a.archived');
         $query->group('a.user_id');
         $query->group('a.thirdparty_id');
-        $query->group('a.buffer');
         $query->group('a.surface');
         $query->group('a.remark');
         $query->group('a.sent');
