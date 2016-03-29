@@ -60,7 +60,7 @@ Easysdi_shopHelper::basketReloadSavedPricing($this->item->basket);
     <input type = "hidden" name = "task" value = "" />
     <input type = "hidden" name = "id" value = "<?php echo $this->item->id; ?>" />
     <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-    <input type = "hidden" name = "sdiUserId" value = "<?php echo $this->user->id; ?>" />            
+    <input type = "hidden" name = "sdiUserId" value = "<?php echo $item->user_id; ?>" />            
     <?php echo JHtml::_('form.token'); ?>
 
     <script>

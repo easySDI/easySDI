@@ -75,7 +75,8 @@ class Easysdi_shopModelorders extends JModelList {
             'orderprovider',
             'orderdiffusion',
             'ordersent',
-            'ordercompleted'
+            'ordercompleted',
+            'orderarchived'
         ) as $key) {
             $state = $app->getUserStateFromRequest($this->context . '.filter.' . $key, 'filter_' . $key, '', 'string');
             $this->setState('filter.' . $key, $state);
@@ -159,7 +160,7 @@ class Easysdi_shopModelorders extends JModelList {
         $query->select('ordertype.value AS ordertype')
                 ->innerJoin('#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
 
-        // Filter by ordertype state
+        // Filter by ordertype type
         $ordertype = $this->getState('filter.ordertype');
         if (is_numeric($ordertype)) {
             $query->where('a.ordertype_id = ' . (int) $ordertype);
@@ -169,6 +170,12 @@ class Easysdi_shopModelorders extends JModelList {
         $orderstate = $this->getState('filter.orderstate');
         if (is_numeric($orderstate)) {
             $query->where('a.orderstate_id = ' . (int) $orderstate);
+        }
+        
+        // Filter by order archived state
+        $orderarchived = $this->getState('filter.orderarchived');
+        if (is_numeric($orderarchived)) {
+            $query->where('a.archived = ' . (int) $orderarchived);
         }
 
         // Filter by orderstate state
@@ -382,6 +389,14 @@ class Easysdi_shopModelorders extends JModelList {
             return false;
         }
         return $items;
+    }
+    
+    /**
+     * get array of order archived status
+     * @return array [array('id'=>id,'value'=>value)]
+     */
+    public function getOrderArchived() {
+        return array(array('id' => 0, 'value'=>'active'),array('id' => 1, 'value'=>'archived'));
     }
 
     /**

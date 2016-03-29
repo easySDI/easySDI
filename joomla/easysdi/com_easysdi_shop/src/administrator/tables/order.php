@@ -17,7 +17,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
  */
 class Easysdi_shopTableorder extends sdiTable {
     
-    const orderstate_1 = 'archived';
     const orderstate_2 = 'historized';
     const orderstate_3 = 'finish';
     const orderstate_4 = 'await';
