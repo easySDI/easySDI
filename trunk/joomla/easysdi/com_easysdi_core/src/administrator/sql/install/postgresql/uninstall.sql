@@ -190,3 +190,8 @@ DROP TABLE IF EXISTS "users" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_category" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_organism_category" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_policy_category" CASCADE;
+
+DROP TABLE IF EXISTS `#__sdi_processing` CASCADE;
+DROP TABLE IF EXISTS `#__sdi_processing_obs` CASCADE;
+DROP TABLE IF EXISTS `#__sdi_processing_order` CASCADE;
+

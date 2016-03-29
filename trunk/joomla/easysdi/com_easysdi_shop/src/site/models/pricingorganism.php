@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -76,6 +76,7 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
                     ->from($db->quoteName('#__sdi_category') . ' as c')
                     ->join('LEFT', '#__sdi_organism_category_pricing_rebate ocpr ON ocpr.category_id=c.id AND ocpr.organism_id=' . (int) $id)
                     ->where('c.state = 1')
+                    ->where('c.backend_only = 0')
                     ->order('c.ordering');
             $db->setQuery($query);
             $this->_item->categories = $db->loadObjectList();

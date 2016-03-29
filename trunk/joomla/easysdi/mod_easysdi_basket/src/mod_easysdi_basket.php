@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.4.0
  * @package     mod_easysdi_basket
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -14,6 +14,8 @@ require_once( dirname(__FILE__).'/helper.php' );
 
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/factory/sdifactory.php';
  
 $basketcontent = modEasysdiBasketHelper::getBasketContent( $params );
 require( JModuleHelper::getLayoutPath( 'mod_easysdi_basket' ) );

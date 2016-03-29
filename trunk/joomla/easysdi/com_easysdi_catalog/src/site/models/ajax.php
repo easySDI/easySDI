@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -54,7 +54,9 @@ class Easysdi_catalogModelAjax extends JModelForm {
             $id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.metadata.id');
         } else {
             $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.metadata.id', $id);
+            if(isset($id)){
+                JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.metadata.id', $id);
+            }
         }
         $this->setState('metadata.id', $id);
 

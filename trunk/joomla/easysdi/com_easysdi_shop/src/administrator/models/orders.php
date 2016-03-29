@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -45,8 +45,8 @@ class Easysdi_shopModelorders extends JModelList {
                   'thirdparty_id', 'a.thirdparty_id',
                   'buffer', 'a.buffer',
                   'surface', 'a.surface',
-                  'remark', 'a.remark',
-                  'sent', 'a.sent', */
+                  'remark', 'a.remark', */
+                'sent', 'a.sent',
                 'completed', 'a.completed',
                 'user', 'user',
             );
@@ -138,50 +138,26 @@ class Easysdi_shopModelorders extends JModelList {
                         'list.select', ' a.*'
                 )
         );
-        $query->from('#__sdi_order AS a');
 
+        $query->from('#__sdi_order AS a');
 
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
-
-
         // Join over the user field 'user'
         $query->select($db->quoteName('users2.name', 'user'))
-                ->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id=a.user_id')
-                ->join('LEFT', '#__users AS users2 ON users2.id=sdi_user.user_id');
+                ->select($db->quoteName('users2.username', 'username'))
+                ->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id=a.user_id')
+                ->innerJoin('#__users AS users2 ON users2.id=sdi_user.user_id');
 
         // Join over the orderstate field 'orderstate'
         $query->select('orderstate.value AS orderstate')
-                ->join('LEFT', '#__sdi_sys_orderstate AS orderstate ON orderstate.id = a.orderstate_id');
+                ->innerJoin('#__sdi_sys_orderstate AS orderstate ON orderstate.id = a.orderstate_id');
 
         // Join over the ordertype field 'ordertype'
         $query->select('ordertype.value AS ordertype')
-                ->join('LEFT', '#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
-
-        // Join over the diffusion field 'products'
-        $query->select("diffusion.name AS product")
-                ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
-                ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id');
-
-        // product with provider
-        /* $query->select("GROUP_CONCAT(CONCAT(organism.name,' - ',diffusion.name) SEPARATOR '<br/>".PHP_EOL."') AS products")
-          ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
-          ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
-          ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
-          ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
-          ->group('a.id'); */
-
-        // Filter by published state
-        $published = $this->getState('filter.state');
-        if (is_numeric($published)) {
-            $query->where('a.state = ' . (int) $published);
-        } else if ($published === '') {
-            $query->where('(a.state IN (0, 1))');
-        }
-
-
+                ->innerJoin('#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
 
         // Filter by ordertype state
         $ordertype = $this->getState('filter.ordertype');
@@ -206,9 +182,9 @@ class Easysdi_shopModelorders extends JModelList {
         if (is_numeric($orderprovider)) {
             //   $query->where('a.provider_id = '.(int) $orderprovider); !TODO
             $query
-                    ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion2 ON order_diffusion2.order_id =a.id')
-                    ->join('LEFT', '#__sdi_diffusion AS diffusion2 ON diffusion2.id=order_diffusion2.diffusion_id')
-                    ->join('LEFT', '#__sdi_resource AS resource2 ON resource2.id=diffusion2.version_id')
+                    ->innerJoin('#__sdi_order_diffusion AS order_diffusion2 ON order_diffusion2.order_id =a.id')
+                    ->innerJoin('#__sdi_diffusion AS diffusion2 ON diffusion2.id=order_diffusion2.diffusion_id')
+                    ->innerJoin('#__sdi_resource AS resource2 ON resource2.id=diffusion2.version_id')
                     ->where('resource2.organism_id = ' . (int) $orderprovider);
         }
 
@@ -216,10 +192,9 @@ class Easysdi_shopModelorders extends JModelList {
         $orderdiffusion = $this->getState('filter.orderdiffusion');
         if (is_numeric($orderdiffusion)) {
             $query
-                    ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion2 ON order_diffusion2.order_id =a.id')
-                    ->where('order_diffusion2.diffusion_id = ' . (int) $orderdiffusion);
+                    ->innerJoin('#__sdi_order_diffusion AS order_diffusion3 ON order_diffusion3.order_id =a.id')
+                    ->where('order_diffusion3.diffusion_id = ' . (int) $orderdiffusion);
         }
-
 
         // Filter by ordersent state
         $ordersent = $this->getState('filter.ordersent');
@@ -267,15 +242,16 @@ class Easysdi_shopModelorders extends JModelList {
 
             if ($ordersent == 'post_year') {
                 $query->where(
-                        'a.created < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
+                        'a.sent < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
                 );
             } else {
                 $query->where(
-                        'a.created >= ' . $db->quote($dStart->format('Y-m-d H:i:s')) .
-                        ' AND a.created <=' . $db->quote($dNow->format('Y-m-d H:i:s'))
+                        'a.sent >= ' . $db->quote($dStart->format('Y-m-d H:i:s')) .
+                        ' AND a.sent <=' . $db->quote($dNow->format('Y-m-d H:i:s'))
                 );
             }
-        } // end ($ordersent!=='')
+        }
+
         // Filter by ordercompleted state
         $ordercompleted = $this->getState('filter.ordercompleted');
         if ($ordercompleted !== '') {
@@ -322,7 +298,7 @@ class Easysdi_shopModelorders extends JModelList {
 
             if ($ordercompleted == 'post_year') {
                 $query->where(
-                        'a.created < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
+                        'a.completed < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
                 );
             } else {
                 $query->where(
@@ -330,7 +306,8 @@ class Easysdi_shopModelorders extends JModelList {
                         ' AND a.completed <=' . $db->quote($dNow->format('Y-m-d H:i:s'))
                 );
             }
-        } // end ($ordersent!=='')
+        }
+
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {
@@ -342,9 +319,6 @@ class Easysdi_shopModelorders extends JModelList {
             $query->where('(( a.name LIKE ' . $search . ' ) ' . $searchOnId . ' )');
         }
 
-
-
-
         // Add the list ordering clause.
         $orderCol = $this->state->get('list.ordering');
         $orderDirn = $this->state->get('list.direction');
@@ -352,28 +326,14 @@ class Easysdi_shopModelorders extends JModelList {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
 
+        //group by order_id
+        $query->group('a.id');
+
         return $query;
     }
 
     public function getItems() {
-        $items = parent::getItems();
-
-        $products = array();
-
-        foreach ($items as $item) {
-            $item->products_array = array();
-            $products[$item->id] = $item;
-        }
-
-        foreach ($items as $item) {
-            $products[$item->id]->products_array[] = $item->product;
-        }
-
-        foreach ($products as $product) {
-            $product->products = implode('</br>' . PHP_EOL, $product->products_array);
-        }
-
-        return $products;
+        return parent::getItems();
     }
 
     /**
@@ -434,13 +394,12 @@ class Easysdi_shopModelorders extends JModelList {
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.
-        $query->select('distinct o.user_id as id, #__users.name as name');
+        $query->select('o.user_id as id, #__users.name as name');
         $query->from('#__sdi_order AS o');
-        $query->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id = o.user_id');
-        $query->join('LEFT', '#__users AS #__users ON #__users.id = sdi_user.user_id');
-
-        $query->where('sdi_user.state = 1');
+        $query->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id = o.user_id');
+        $query->innerJoin('#__users    AS #__users ON #__users.id = sdi_user.user_id');
         $query->order('#__users.name');
+        $query->group('#__users.id');
 
 
         try {
@@ -464,10 +423,11 @@ class Easysdi_shopModelorders extends JModelList {
         // Select the required fields from the table.
         $query->select('distinct organism.id as id, organism.name as name')
                 ->from('#__sdi_order AS o')
-                ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =o.id')
-                ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
-                ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
-                ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id');
+                ->innerJoin('#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =o.id')
+                ->innerJoin('#__sdi_diffusion       AS diffusion       ON diffusion.id=order_diffusion.diffusion_id')
+                ->innerJoin('#__sdi_version         AS vers            ON vers.id = diffusion.version_id')
+                ->innerJoin('#__sdi_resource        AS resource        ON resource.id=vers.resource_id')
+                ->innerJoin('#__sdi_organism        AS organism        ON organism.id=resource.organism_id');
 
 
         try {
@@ -491,11 +451,11 @@ class Easysdi_shopModelorders extends JModelList {
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.
-        $query->select('distinct d.id as id, d.name as name');
+        $query->select('d.id as id, d.name as name');
         $query->from('#__sdi_diffusion AS d');
         $query->innerJoin('#__sdi_order_diffusion AS sdi_order_diffusion ON sdi_order_diffusion.diffusion_id = d.id');
-        $query->innerJoin('#__sdi_order AS o ON o.id = sdi_order_diffusion.order_id');
         $query->order('d.name');
+        $query->group('d.id');
 
         try {
             $items = $this->_getList($query);

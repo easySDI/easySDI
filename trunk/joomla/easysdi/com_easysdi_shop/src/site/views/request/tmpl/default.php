@@ -1,18 +1,21 @@
 <?php
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js?v=' . sdiFactory::getSdiFullVersion());
 $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
 //TODO : do not include proj here !!
 $document->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
@@ -22,7 +25,7 @@ $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
 $document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
 $document->addScript($base_url . '/filesaver/FileSaver.js');
-$document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
+$document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css?v=' . sdiFactory::getSdiFullVersion());
 Easysdi_shopHelper::addMapShopConfigToDoc();
 JText::script('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_PRICE');
 JText::script('COM_EASYSDI_SHOP_REQUEST_REJECT_MODAL_MESSAGE_FILE_OR_REMARK');
@@ -34,7 +37,7 @@ if ($this->item) :
     Easysdi_shopHelper::basketReloadSavedPricing($this->item->basket);
     ?>
 
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_REQUEST_TITLE'); ?> <span id="sdi-order-title-id"><?php echo $this->item->id; ?></span></h1>
 
     <div class="order-edit front-end-edit">
         <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">

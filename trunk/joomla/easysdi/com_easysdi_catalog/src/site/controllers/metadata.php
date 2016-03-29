@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -403,13 +403,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid');
         $query->innerJoin('#__sdi_language AS l ON t.language_id = l.id');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
-        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
+        $query->innerJoin('(SELECT * FROM #__sdi_metadata ORDER BY created DESC)  m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
         $query->where('l.code = ' . $query->quote($lang->getTag()));
         if (array_key_exists('version', $_POST)) {
             if ($_POST['version'] == 'last') {
-                $query->group('r.id, m.id, r.name, v.name, m.guid, t.text1, ms.value, m.created');
-                $query->order('m.created DESC');
+                $query->group(' r.name');                
             }
         }
 
@@ -429,7 +428,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $user = new sdiUser();
         //user's organism's categories
         $categories = $user->getMemberOrganismsCategoriesIds();
-        if(is_null($caegories) || count($categories)==0){
+        if (is_null($caegories) || count($categories) == 0) {
             $categories = array(0);
         }
 
@@ -680,7 +679,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 $eastBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal')->item(0);
                 $westBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal')->item(0);
 
-                $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype('', $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
+                $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype(null, $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
             }
         }
     }
@@ -845,7 +844,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         else
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_WARNING'), 'warning');
 
-        if (count($success)) {
+        $notificationsenabled = JComponentHelper::getParams('com_easysdi_catalog')->get('notificationsenabled', 1);
+        if (count($success) && $notificationsenabled) {
             $byUser = new sdiUser($data['assigned_by']);
             $toUser = new sdiUser($data['assigned_to']);
 
@@ -1261,12 +1261,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             $users = $this->db->loadColumn();
 
-            foreach ($users as $user) {
-                $sdiUser = new sdiUser($user);
+            $notificationsenabled = JComponentHelper::getParams('com_easysdi_catalog')->get('notificationsenabled', 1);
+            if ($notificationsenabled) {
+                foreach ($users as $user) {
+                    $sdiUser = new sdiUser($user);
 
-                $sdiUser->sendMail(
-                        JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $sdiUser->juser->name)
-                );
+                    $sdiUser->sendMail(
+                            JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $sdiUser->juser->name)
+                    );
+                }
             }
         }
     }
@@ -1338,7 +1341,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $supportedIds = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
 
         $results = array();
-        $results['supported'] = array(); 
+        $results['supported'] = array();
 
         // Only if multiple languages supported
         if ($supportedIds) {
@@ -1353,7 +1356,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $this->db->setQuery($query);
 
             $results['supported'] = $this->db->loadObjectList('iso3166-1-alpha2');
-        } 
+        }
 
         $query = $this->db->getQuery(true);
         $query->select('t.text2, ' . $query->quoteName('iso3166-1-alpha2'));

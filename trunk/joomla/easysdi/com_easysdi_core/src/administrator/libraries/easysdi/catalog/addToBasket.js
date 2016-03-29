@@ -1,17 +1,26 @@
+/**
+ * @version     4.4.0
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
+
 var request;
 
-Joomla.submitbutton = function(task)
+Joomla.submitbutton = function(id)
 {
-    if (document.formvalidator.isValid(document.id('adminForm'))) {
+    if (document.formvalidator.isValid(document.id('adminForm'+id))) {
         jQuery('#system-message-container').empty();
-        addtobasket();
+        addtobasket(id);
     }
 
 }
 
-function addtobasket() {
+function addtobasket(id) {
 
-    var diffusion = jQuery('#diffusion_id').val();
+    //var diffusion = jQuery('#diffusion_id').val();
+    var diffusion = id;
     var cmd = {"id": diffusion, "properties": []};
 
     //templates JSON
@@ -24,7 +33,7 @@ function addtobasket() {
     //                     };
 
 
-    jQuery(".sdi-shop-property-list").each(function() {
+     jQuery('#adminForm'+id).find(".sdi-shop-property-list").each(function() {
         var count = jQuery(this).find(":selected").length;
         if (count === 0) {
             return;
@@ -38,13 +47,13 @@ function addtobasket() {
         cmd.properties.push(value);
     });
 
-    jQuery(".sdi-shop-property-text").each(function() {
+    jQuery('#adminForm'+id).find(".sdi-shop-property-text").each(function() {
         var currentId = jQuery(this).attr('id');
         var value = {"id": currentId, values: [{"id": jQuery(this).attr('propertyvalue_id'), "value": jQuery(this).val()}]};
         cmd.properties.push(value);
     });
 
-    jQuery(".sdi-shop-property-checkbox").each(function() {
+     jQuery('#adminForm'+id).find(".sdi-shop-property-checkbox").each(function() {
         var count = jQuery(this).find(":checked").length;
         if (count === 0) {
             return;

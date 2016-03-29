@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.4.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -18,18 +18,215 @@ class com_easysdi_coreInstallerScript {
      * If preflight returns false, Joomla will abort the update and undo everything already done.
      */
 
-    /*function preflight($type, $parent) {
-        // Installing component manifest file version
+     function preflight($type, $parent) {
+
+		// Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
         
         // Alter joomla 3.1.1 schema to reflect the MySql version
         $db = JFactory::getDbo();
         if($db->name == 'sqlsrv'){
+			if( $this->release == '4.1.0'){
+				$sqls = array();
+				$sqls[] = "ALTER TABLE [#__extensions] ADD  DEFAULT ('') FOR [custom_data];";
+				$sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [path];";
+				$sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [img];";
+				$sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [params];";
+				
+				foreach ($sqls as $sql) {
+					$query = $db->getQuery(true);
+					$db->setQuery($sql);
+					$db->execute();
+				}
+			}
+
+			//Clean sqlserver default constraints on pricing management
+			if( $type == 'update' && $this->release == '4.3.2' && version_compare($this->getParam('version'),$this->release) == -1){
+				//DROP default constraints from #__sdi_pricing_order
+				$sqls = array();
+				$sqls[] = "DECLARE @SchemaName NVARCHAR(256),
+									@TableName NVARCHAR(256),
+									@SQL NVARCHAR(MAX),
+									@NewLine CHAR(1)
+	 
+							SELECT  @SchemaName = N'dbo',
+									@TableName = N'".$db->getPrefix()."sdi_pricing_order',
+									@NewLine = CHAR(10)
+
+							SELECT  @SQL = ISNULL(@SQL + @NewLine, '') + 
+										'ALTER TABLE [' + S.name + '].[' + T.name + '] ' +
+											'DROP CONSTRAINT [' + D.name + ']'
+							FROM    sys.tables T
+								INNER JOIN sys.default_constraints D
+									ON D.parent_object_id = T.object_id
+								INNER JOIN sys.columns C
+									ON C.object_id = T.object_id
+										AND C.column_id = D.parent_column_id
+								INNER JOIN sys.schemas S
+									ON T.schema_id = S.schema_id
+							WHERE   S.name = @SchemaName
+							  AND   T.name = @TableName
+
+							EXECUTE (@SQL)";
+				
+				//DROP default constraints from #_sdi_pricing_order_supplier
+				$sqls[] = "DECLARE @SchemaName NVARCHAR(256),
+									@TableName NVARCHAR(256),
+									@SQL NVARCHAR(MAX),
+									@NewLine CHAR(1)
+	 
+							SELECT  @SchemaName = N'dbo',
+									@TableName = N'".$db->getPrefix()."sdi_pricing_order_supplier',
+									@NewLine = CHAR(10)
+
+							SELECT  @SQL = ISNULL(@SQL + @NewLine, '') + 
+										'ALTER TABLE [' + S.name + '].[' + T.name + '] ' +
+											'DROP CONSTRAINT [' + D.name + ']'
+							FROM    sys.tables T
+								INNER JOIN sys.default_constraints D
+									ON D.parent_object_id = T.object_id
+								INNER JOIN sys.columns C
+									ON C.object_id = T.object_id
+										AND C.column_id = D.parent_column_id
+								INNER JOIN sys.schemas S
+									ON T.schema_id = S.schema_id
+							WHERE   S.name = @SchemaName
+							  AND   T.name = @TableName
+
+							EXECUTE (@SQL)";
+				
+				 //DROP default constraints from #_sdi_pricing_order_supplier_product
+				$sqls[] = "DECLARE @SchemaName NVARCHAR(256),
+									@TableName NVARCHAR(256),
+									@SQL NVARCHAR(MAX),
+									@NewLine CHAR(1)
+	 
+							SELECT  @SchemaName = N'dbo',
+									@TableName = N'".$db->getPrefix()."sdi_pricing_order_supplier_product',
+									@NewLine = CHAR(10)
+
+							SELECT  @SQL = ISNULL(@SQL + @NewLine, '') + 
+										'ALTER TABLE [' + S.name + '].[' + T.name + '] ' +
+											'DROP CONSTRAINT [' + D.name + ']'
+							FROM    sys.tables T
+								INNER JOIN sys.default_constraints D
+									ON D.parent_object_id = T.object_id
+								INNER JOIN sys.columns C
+									ON C.object_id = T.object_id
+										AND C.column_id = D.parent_column_id
+								INNER JOIN sys.schemas S
+									ON T.schema_id = S.schema_id
+							WHERE   S.name = @SchemaName
+							  AND   T.name = @TableName
+
+							EXECUTE (@SQL)";
+				
+				//DROP default constraints from #_sdi_pricing_order_supplier_product_profile
+				$sqls[] = "DECLARE @SchemaName NVARCHAR(256),
+									@TableName NVARCHAR(256),
+									@SQL NVARCHAR(MAX),
+									@NewLine CHAR(1)
+	 
+							SELECT  @SchemaName = N'dbo',
+									@TableName = N'".$db->getPrefix()."sdi_pricing_order_supplier_product_profile',
+									@NewLine = CHAR(10)
+
+							SELECT  @SQL = ISNULL(@SQL + @NewLine, '') + 
+										'ALTER TABLE [' + S.name + '].[' + T.name + '] ' +
+											'DROP CONSTRAINT [' + D.name + ']'
+							FROM    sys.tables T
+								INNER JOIN sys.default_constraints D
+									ON D.parent_object_id = T.object_id
+								INNER JOIN sys.columns C
+									ON C.object_id = T.object_id
+										AND C.column_id = D.parent_column_id
+								INNER JOIN sys.schemas S
+									ON T.schema_id = S.schema_id
+							WHERE   S.name = @SchemaName
+							  AND   T.name = @TableName
+
+							EXECUTE (@SQL)";
+				
+				//DROP default constraints from #_sdi_order
+				$sqls[] = "DECLARE @SchemaName NVARCHAR(256),
+									@TableName NVARCHAR(256),
+									@SQL NVARCHAR(MAX),
+									@NewLine CHAR(1)
+	 
+							SELECT  @SchemaName = N'dbo',
+									@TableName = N'".$db->getPrefix()."sdi_order',
+									@NewLine = CHAR(10)
+
+							SELECT  @SQL = ISNULL(@SQL + @NewLine, '') + 
+										'ALTER TABLE [' + S.name + '].[' + T.name + '] ' +
+											'DROP CONSTRAINT [' + D.name + ']'
+							FROM    sys.tables T
+								INNER JOIN sys.default_constraints D
+									ON D.parent_object_id = T.object_id
+								INNER JOIN sys.columns C
+									ON C.object_id = T.object_id
+										AND C.column_id = D.parent_column_id
+								INNER JOIN sys.schemas S
+									ON T.schema_id = S.schema_id
+							WHERE   S.name = @SchemaName
+							  AND   T.name = @TableName
+							  AND D.name LIKE '%valid%'
+
+							EXECUTE (@SQL)";
+				
+				foreach ($sqls as $sql) {
+					$db->getQuery(true);
+					$db->setQuery($sql);
+					$db->execute();
+				}
+			}
+        }
+                
+        // Create stored procedure drop_foreign_key 
+        $db = JFactory::getDbo();
+        if(($db->name == 'mysqli') || ($db->name == 'mysql')){
             $sqls = array();
-            $sqls[] = "ALTER TABLE [#__extensions] ADD  DEFAULT ('') FOR [custom_data];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [path];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [img];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [params];";
+            $sqls[] = "DROP PROCEDURE IF EXISTS drop_foreign_key;";
+            $sqls[] = "CREATE PROCEDURE drop_foreign_key(IN tableName VARCHAR(64), IN constraintName VARCHAR(64))
+                BEGIN
+                    IF EXISTS(
+                        SELECT * FROM information_schema.table_constraints
+                        WHERE 
+                            table_schema    = DATABASE()     AND
+                            table_name      = CONCAT('".$db->getPrefix()."',tableName) AND
+                            constraint_name = CONCAT('".$db->getPrefix()."',constraintName) AND
+                            constraint_type = 'FOREIGN KEY')
+                    THEN
+                        SET @query = CONCAT('ALTER TABLE ','".$db->getPrefix()."',tableName, ' DROP FOREIGN KEY ','".$db->getPrefix()."',constraintName, ';');
+                        PREPARE stmt FROM @query; 
+                        EXECUTE stmt; 
+                        DEALLOCATE PREPARE stmt; 
+                    END IF; 
+                END";
+            
+            foreach ($sqls as $sql) {
+                $query = $db->getQuery(true);
+                $db->setQuery($sql);
+                $db->execute();
+            }
+            
+            $sqls = array();
+            $sqls[] = "DROP PROCEDURE IF EXISTS drop_column;";
+            $sqls[] = "CREATE PROCEDURE drop_column(IN tableName VARCHAR(64), IN columnName VARCHAR(64))
+                BEGIN
+                    IF EXISTS(
+                        SELECT * FROM information_schema.COLUMNS
+                        WHERE 
+                            table_schema    = DATABASE()     AND
+                            table_name      = CONCAT('".$db->getPrefix()."',tableName) AND
+                            column_name = columnName)
+                    THEN
+                        SET @query = CONCAT('ALTER TABLE ','".$db->getPrefix()."',tableName, ' DROP COLUMN ',columnName, ';');
+                        PREPARE stmt FROM @query; 
+                        EXECUTE stmt; 
+                        DEALLOCATE PREPARE stmt; 
+                    END IF; 
+                END";
             
             foreach ($sqls as $sql) {
                 $query = $db->getQuery(true);
@@ -39,11 +236,11 @@ class com_easysdi_coreInstallerScript {
         }
         
         // Show the essential information at the install/update back-end
-        echo '<p>EasySDI component Core [com_easysdi_core]';
-        echo '<br />' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
-    }*/
-
-    /*
+        //echo '<p>EasySDI component Core [com_easysdi_core]';
+        //echo '<br />' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
+    }    
+	
+	/*
      * $parent is the class calling this method.
      * install runs after the database scripts are executed.
      * If the extension is new, the install method is run.
@@ -130,9 +327,10 @@ class com_easysdi_coreInstallerScript {
             // read the existing component value(s)
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
-            $query->select('manifest_cache');
+            $query->select('params');
             $query->from('#__extensions');
-            $query->where('name = '.$db->quote('com_easysdi_core'));
+            $query->where('name = ' . $db->quote('com_easysdi_core'));
+
             $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
@@ -142,12 +340,13 @@ class com_easysdi_coreInstallerScript {
             // store the combined new and existing values back as a JSON string
             $paramsString = json_encode($params);
             $query = $db->getQuery(true);
-            $query->select('params');
-            $query->from('#__extensions');
-            $query->where('name = '.$db->quote('com_easysdi_core'));
+            $query->update('#__extensions');
+            $query->set('params = ' . $db->quote($paramsString));
+            $query->where('name = ' . $db->quote('com_easysdi_core'));
             $db->setQuery($query);
             $db->query();
         }
     }
 
 }
+

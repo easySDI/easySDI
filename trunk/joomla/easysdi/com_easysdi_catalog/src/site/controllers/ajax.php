@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -161,6 +161,18 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         echo json_encode($resourcetype);
         die();
     }
+    
+    /**
+     * Return the current metadata id in session
+     */
+    public function getCurrentEditId() {
+        $app = JFactory::getApplication();
+        $response = array();
+        $response['success'] = true;
+        $response['id'] = $app->getUserState('com_easysdi_catalog.edit.metadata.id');
+        echo json_encode($response);
+        die();
+    }    
 
     /**
      * Check Url from file popup

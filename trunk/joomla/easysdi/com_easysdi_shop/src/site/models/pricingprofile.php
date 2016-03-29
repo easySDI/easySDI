@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -73,6 +73,7 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
                         ->select('c.id, c.name, 0 as isFree')
                         ->from($db->quoteName('#__sdi_category') . ' as c')
                         ->where('c.state = 1')
+                        ->where('c.backend_only = 0')
                         ->order('c.ordering');
                 $db->setQuery($query);
                 $this->_item->categories = $db->loadObjectList();
@@ -91,6 +92,7 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
                         ->from($db->quoteName('#__sdi_category') . ' as c')
                         ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate ppcpr ON ppcpr.category_id=c.id AND ppcpr.pricing_profile_id=' . (int) $id)
                         ->where('c.state = 1')
+                        ->where('c.backend_only = 0')
                         ->group('c.id, c.name')
                         ->order('c.ordering');
                 $db->setQuery($query);
