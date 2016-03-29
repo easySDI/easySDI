@@ -1578,7 +1578,7 @@ abstract class Easysdi_shopHelper {
 
         $result = '<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl .'</span>';
         if ($witharchivedstate && $order->archived == 1) {
-            $result .= '<span class="order-archived-label label label-important" >' . JText::_('ARCHIVED') . '</span>';
+            $result .= ' <span class="order-archived-label label label-important" >' . JText::_('ARCHIVED') . '</span>';
         };
         
 
