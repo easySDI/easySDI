@@ -165,18 +165,31 @@ class sdiUser {
     private function getUserById($sdiId) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('u.*, o.perimeter, juser.id as jid')
+                ->select('u.*, uro.role_id')
                 ->from('#__sdi_user AS u')
-                ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id")
-                ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
-                ->innerJoin("#__users juser ON juser.id = u.user_id")
-                ->where("uro.role_id = 1")
+                ->leftJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id")
                 ->where('u.id = ' . (int) $sdiId) //use the easySDI id
         ;
         $db->setQuery($query);
-        $user = $db->loadObject();
+        $users = $db->loadObjectList();
+        if (count($users) == 1 && is_null($users[0]->role_id)) {
+            //User roles weren't define yet
+            //Keep this record as user definition
+            $user = $users[0];
+        } else {
+            $query = $db->getQuery(true)
+                    ->select('u.*, o.perimeter')
+                    ->from('#__sdi_user AS u')
+                    ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id")
+                    ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
+                    ->where("uro.role_id = 1")
+                    ->where('u.id = ' . (int) $sdiId) //use the easySDI id
+            ;
+            $db->setQuery($query);
+            $user = $db->loadObject();
+        }
 
-        $this->juser = JFactory::getUser($user->jid);
+        $this->juser = JFactory::getUser($user->user_id);
         $this->name = $this->juser->name;
 
         return $user;
