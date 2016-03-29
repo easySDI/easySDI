@@ -230,8 +230,9 @@ class sdiMetadata extends cswmetadata {
         $xml = $this->dom->saveXML();
         $result = $this->CURLRequest("POST", $this->catalogurl, $xml);
 
-        if (empty($result))
-            return false;
+        if (empty($result)){
+            throw new Exception ('CSW catalog doesn\'t answered', null, null);
+        }
 
         $insertDom = new DOMDocument();
         $insertDom->loadXML($result);
