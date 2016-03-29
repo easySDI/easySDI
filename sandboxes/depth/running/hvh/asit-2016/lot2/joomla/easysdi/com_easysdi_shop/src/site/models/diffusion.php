@@ -90,11 +90,11 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
                 $perimeters = $diffusionperimeter->loadBydiffusionID($this->_item->id);
                 $this->_item->perimeter = array();
-                if ($perimeters) {
-                    foreach ($perimeters as $perimeter) {
-                        $this->_item->perimeter [$perimeter->perimeter_id] = $perimeter->buffer;
-                    }
-                }
+//                if ($perimeters) {
+//                    foreach ($perimeters as $perimeter) {
+//                        $this->_item->perimeter [$perimeter->perimeter_id] = $perimeter->buffer;
+//                    }
+//                }
                 //Parse fileurl/packageurl to retrieve user/pwd
                 if(isset($this->_item->fileurl))
                     $this->_item->fileurl = $this->unparseurl($this->_item->fileurl);
@@ -314,7 +314,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $array = array();
                 $array['diffusion_id'] = $id;
                 $array['perimeter_id'] = $key;
-                ($perimeter == 1) ? $array['buffer'] = 0 : $array['buffer'] = 1;
+//                ($perimeter == 1) ? $array['buffer'] = 0 : $array['buffer'] = 1;
                 if (!$diffusionperimeter->save($array))
                     return false;
 

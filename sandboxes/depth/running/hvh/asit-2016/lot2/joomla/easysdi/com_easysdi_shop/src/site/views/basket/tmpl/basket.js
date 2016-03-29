@@ -622,8 +622,6 @@ function savePerimeter() {
         var extent = {"id": jQuery('#t-perimeter').val(),
             "name": jQuery('#t-perimetern').val(),
             "surface": jQuery('#t-surface').val(),
-            "allowedbuffer": jQuery('#allowedbuffer').val(),
-            "buffer": jQuery('#buffer').val(),
             "level": jQuery('#t-level').val(),
             "features": jQuery('#t-features').val(),
             "freeperimetertool": jQuery('#t-freeperimetertool').val()};
@@ -916,10 +914,6 @@ jQuery(document).ready(function () {
                     );
             return false;
         } else {
-            if (jQuery('#allowedbuffer').val() == 0) {
-                jQuery('#perimeter-buffer').val('');
-            }
-
             var format = new OpenLayers.Format.WMC({'layerOptions': {buffer: 0}});
             var text = format.write(minimap);
             jQuery('#wmc').val(text);
