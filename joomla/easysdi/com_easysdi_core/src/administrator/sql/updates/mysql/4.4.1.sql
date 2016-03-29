@@ -7,3 +7,5 @@ UPDATE `#__sdi_order` SET `orderstate_id`=3 WHERE `orderstate_id`=1;
 DELETE FROM `#__sdi_sys_orderstate` WHERE `id`=1;
 
 ALTER TABLE `#__sdi_order_diffusion` DROP COLUMN `fee`;
+
+ALTER TABLE `#__sdi_order` DROP COLUMN `buffer`;

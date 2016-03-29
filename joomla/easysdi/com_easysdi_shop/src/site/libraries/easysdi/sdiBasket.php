@@ -20,7 +20,6 @@ class sdiBasket {
 
     public $id;
     public $name;
-    public $buffer;
     public $thirdparty;
     public $extractions = array();
     public $perimeters = array();
@@ -60,7 +59,6 @@ class sdiBasket {
                             . 'o.mandate_contact as mandate_contact, '
                             . 'o.mandate_email as mandate_email, '
                             . 'org.name as thirdorganism, '
-                            . 'o.buffer as buffer , '
                             . 'o.surface as surface, '
                             . 'o.level as level, '
                             . 'o.freeperimetertool as freeperimetertool, '
@@ -181,7 +179,6 @@ class sdiBasket {
             $extent->id = $perimeters[0]->perimeter_id;
             $extent->name = $perimeters[0]->perimeter_name;
             $extent->surface = $order->surface;
-            $extent->buffer = $order->buffer;
             $extent->level = $order->level;
             $extent->features = array();
             foreach ($perimeters as $perimeter):
@@ -240,9 +237,9 @@ class sdiBasket {
      */
     function setPerimeters($perimeters) {
         $this->perimeters = $perimeters;
-        foreach ($this->perimeters as $perimeter):
-            $perimeter->setAllowedBuffer($this->extractions);
-        endforeach;
+//        foreach ($this->perimeters as $perimeter):
+//            $perimeter->setAllowedBuffer($this->extractions);
+//        endforeach;
     }
 
     /**
