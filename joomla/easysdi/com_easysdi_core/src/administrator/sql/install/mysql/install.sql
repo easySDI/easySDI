@@ -2559,7 +2559,7 @@ PRIMARY KEY (`id`),
   CONSTRAINT `#__sdi_diffusion_download_fk2`
     FOREIGN KEY (`user_id`)
     REFERENCES `#__sdi_user` (`id`)
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
