@@ -182,7 +182,6 @@ class Easysdi_serviceHelper {
 
         //Get the implemented version of the requested ServiceConnector
         $db = JFactory::getDBO();
-
         $query = $db->getQuery(true);
         $query->select('c.id as id, sv.value as value');
         $query->from('#__sdi_sys_serviceconnector sc');
@@ -190,7 +189,6 @@ class Easysdi_serviceHelper {
         $query->innerJoin('#__sdi_sys_serviceversion sv ON c.serviceversion_id = sv.id');
         $query->where('c.implemented = 1');
         $query->where('sc.value = ' . $query->quote($service));
-
         $db->setQuery($query);
         $implemented_versions = $db->loadObjectList();
 
@@ -198,38 +196,70 @@ class Easysdi_serviceHelper {
         foreach ($implemented_versions as $version) {
             $service = $service == 'WMSC' ? 'WMS' : $service;
             $completeurl = $url . $separator . "REQUEST=GetCapabilities&SERVICE=" . $service . "&VERSION=" . $version->value;
-            $session = curl_init($completeurl);
-            $httpHeader[] = 'Expect:';
-            if (!empty($user) && !empty($password)) {
-                $httpHeader[] = 'Authorization: Basic ' . base64_encode($user . ':' . $password);
-            }
-            curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
-            curl_setopt($session, CURLOPT_HEADER, false);
-            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
-            $response = curl_exec($session);
-            curl_close($session);
+            $response = Easysdi_serviceHelper::requestWithCurl($completeurl, $user, $password);
 
+            //Avoid PHP Warning to be returned 
+            libxml_use_internal_errors(true);
             $xmlCapa = simplexml_load_string($response);
+            
             if ($xmlCapa === false) {
-                $supported_versions['ERROR'] = JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
-                echo json_encode($supported_versions);
-                die();
-            } else {
-                if ($xmlCapa->getName() == "ServiceExceptionReport") {
-                    continue;
-                }
-                foreach ($xmlCapa->attributes() as $key => $value) {
-                    if ($key == 'version') {
-                        if ($value[0] == $version->value)
-                            $supported_versions[$version->id] = $version->value;
+                if ($service == "WMTS") {
+                    //Try a REST request
+                    $completeurl = $url . "/" . $version->value . "/WMTSCapabilities.xml";
+                    $response = Easysdi_serviceHelper::requestWithCurl($completeurl, $user, $password);
+
+                    $xmlCapa = simplexml_load_string($response);
+                    if ($xmlCapa === false) {
+                        Easysdi_serviceHelper::sendBackError();
                     }
+                } else {
+                    Easysdi_serviceHelper::sendBackError();
                 }
             }
+            if ($xmlCapa->getName() == "ServiceExceptionReport") {
+                continue;
+            }
+            foreach ($xmlCapa->attributes() as $key => $value) {
+                if ($key == 'version') {
+                    if ($value[0] == $version->value)
+                        $supported_versions[$version->id] = $version->value;
+                }
+            }
+            libxml_clear_errors();
         }
-
         $encoded = json_encode($supported_versions);
         echo $encoded;
+        die();
+    }
+
+    /**
+     * Perform a request with CURL
+     * @param type $completeurl
+     * @param type $user
+     * @param type $password
+     * @return type
+     */
+    private static function requestWithCurl($completeurl, $user, $password) {
+        $session = curl_init($completeurl);
+        $httpHeader[] = 'Expect:';
+        if (!empty($user) && !empty($password)) {
+            $httpHeader[] = 'Authorization: Basic ' . base64_encode($user . ':' . $password);
+        }
+        curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
+        curl_setopt($session, CURLOPT_HEADER, false);
+        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($session);
+        curl_close($session);
+        return $response;
+    }
+
+    /**
+     * Return a JSON formated error to the caller of the negociation
+     */
+    private static function sendBackError() {
+        $supported_versions['ERROR'] = JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
+        echo json_encode($supported_versions);
         die();
     }
 
