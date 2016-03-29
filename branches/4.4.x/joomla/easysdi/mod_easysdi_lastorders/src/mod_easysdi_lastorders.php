@@ -33,6 +33,7 @@ foreach (get_object_vars($ordersModel->getState()) as $key => $value) {
         $ordersModel->setState($key, "");
     }
 }
+$ordersModel->setState("filter.archived", 1);
 $totalOrders = $ordersModel->getTotal();
 $ordersModel->setState('list.limit', $nbOrders);
 $ordersModel->setState('list.start', 0);
