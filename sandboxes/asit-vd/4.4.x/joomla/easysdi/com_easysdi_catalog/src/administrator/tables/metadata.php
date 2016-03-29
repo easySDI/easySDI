@@ -62,39 +62,18 @@ class Easysdi_catalogTablemetadata extends sdiTable {
     }
 
     /**
-     * Overriden JTable::store to set modified data and user id.
-     *
-     * @param	boolean	True to update fields even if they are null.
-     * @return	boolean	True on success.
-     * @since	1.6
+     * 
+     * @param type $pk
+     * @return boolean
      */
-//    public function store($updateNulls = true) {
-//        (empty($this->id) ) ? $new = true : $new = false;
-//
-//        if (parent::store($updateNulls)) {
-//            $CSWmetadata = new sdiMetadata($this->id);
-//            if ($new) {
-//                if(!$CSWmetadata->insert()){
-//                    return false;
-//                }
-//            }else{
-//                if(!$CSWmetadata->update()){
-//                    return false;
-//                }
-//            }
+//    public function delete($pk = null) {
+//        
+//        //$CSWmetadata = new sdiMetadata($pk);
+//        
+//        if(parent::delete($pk)){
+////            return $CSWmetadata->delete();
 //            return true;
 //        }
 //        return false;
 //    }
-
-    public function delete($pk = null) {
-        
-        $CSWmetadata = new sdiMetadata($pk);
-        
-        if(parent::delete($pk)){
-//            return $CSWmetadata->delete();
-            return true;
-        }
-        return false;
-    }
 }
