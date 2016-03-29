@@ -182,7 +182,6 @@ class Easysdi_serviceHelper {
 
         //Get the implemented version of the requested ServiceConnector
         $db = JFactory::getDBO();
-
         $query = $db->getQuery(true);
         $query->select('c.id as id, sv.value as value');
         $query->from('#__sdi_sys_serviceconnector sc');
@@ -190,7 +189,6 @@ class Easysdi_serviceHelper {
         $query->innerJoin('#__sdi_sys_serviceversion sv ON c.serviceversion_id = sv.id');
         $query->where('c.implemented = 1');
         $query->where('sc.value = ' . $query->quote($service));
-
         $db->setQuery($query);
         $implemented_versions = $db->loadObjectList();
 
@@ -198,7 +196,7 @@ class Easysdi_serviceHelper {
         foreach ($implemented_versions as $version) {
             $service = $service == 'WMSC' ? 'WMS' : $service;
             $completeurl = $url . $separator . "REQUEST=GetCapabilities&SERVICE=" . $service . "&VERSION=" . $version->value;
-            $response = Easysdi_serviceHelper::callCurl($completeurl, $user, $password);
+            $response = Easysdi_serviceHelper::requestWithCurl($completeurl, $user, $password);
 
             //Avoid PHP Warning to be returned 
             libxml_use_internal_errors(true);
@@ -208,7 +206,7 @@ class Easysdi_serviceHelper {
                 if ($service == "WMTS") {
                     //Try a REST request
                     $completeurl = $url . "/" . $version->value . "/WMTSCapabilities.xml";
-                    $response = Easysdi_serviceHelper::callCurl($completeurl, $user, $password);
+                    $response = Easysdi_serviceHelper::requestWithCurl($completeurl, $user, $password);
 
                     $xmlCapa = simplexml_load_string($response);
                     if ($xmlCapa === false) {
@@ -234,7 +232,14 @@ class Easysdi_serviceHelper {
         die();
     }
 
-    private static function callCurl($completeurl, $user, $password) {
+    /**
+     * Perform a request with CURL
+     * @param type $completeurl
+     * @param type $user
+     * @param type $password
+     * @return type
+     */
+    private static function requestWithCurl($completeurl, $user, $password) {
         $session = curl_init($completeurl);
         $httpHeader[] = 'Expect:';
         if (!empty($user) && !empty($password)) {
@@ -249,6 +254,9 @@ class Easysdi_serviceHelper {
         return $response;
     }
 
+    /**
+     * Return a JSON formated error to the caller of the negociation
+     */
     private static function sendBackError() {
         $supported_versions['ERROR'] = JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
         echo json_encode($supported_versions);
