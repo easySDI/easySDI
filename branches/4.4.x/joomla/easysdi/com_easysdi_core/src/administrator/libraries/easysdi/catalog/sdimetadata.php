@@ -240,8 +240,11 @@ class sdiMetadata extends cswmetadata {
         $xpathDelete->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
         $deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
 
+        if (is_null($deleted)) {
+            throw new Exception ('CSW catalog doesn\'t answered', null, null);
+        }
+        
         if ($deleted <> 1) {
-            JFactory::getApplication()->enqueueMessage('Metadata deletion failed.', 'error');
             return false;
         }
 
