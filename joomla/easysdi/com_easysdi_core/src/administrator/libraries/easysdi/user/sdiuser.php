@@ -411,7 +411,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[1];
+        return $this->role[1];        
     }
 
     /**
@@ -444,7 +444,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[2];
+        return isset($this->role[self::resourcemanager]) ? $this->role[self::resourcemanager] : array(); 
     }
 
     /**
@@ -455,7 +455,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[3];
+        return isset($this->role[self::metadataresponsible]) ? $this->role[self::metadataresponsible] : array();        
     }
 
     /**
@@ -466,7 +466,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[4];
+        return isset($this->role[self::metadataeditor]) ? $this->role[self::metadataeditor] : array();            
     }
 
     /**
@@ -477,7 +477,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[5];
+        return isset($this->role[self::diffusionmanager]) ? $this->role[self::diffusionmanager] : array(); 
     }
 
     /**
@@ -488,7 +488,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[6];
+        return isset($this->role[self::viewmanager]) ? $this->role[self::viewmanager] : array();
     }
 
     /**
@@ -499,7 +499,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[7];
+        return isset($this->role[self::extractionresponsible]) ? $this->role[self::extractionresponsible] : array();
     }
 
     /**
@@ -510,9 +510,14 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[self::pricingmanager];
+        return isset($this->role[self::pricingmanager]) ? $this->role[self::pricingmanager] : array();        
     }
 
+    /**
+     * Is the user pricing manager for the organism $id
+     * @param type $id Id of the organism
+     * @return type boolean
+     */
     public function isPricingManager($id) {
         return in_array($id, $this->getOrganisms(self::pricingmanager, true));
     }
