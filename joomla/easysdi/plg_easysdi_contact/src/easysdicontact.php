@@ -1,8 +1,8 @@
 <?php
 /**
-* @version     4.0.0
+* @version     4.4.0
 * @package     plg_easysdi_user
-* @copyright   Copyright (C) 2013. All rights reserved.
+* @copyright   Copyright (C) 2013-2016. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
@@ -90,7 +90,7 @@ class plgUserEasysdicontact extends JPlugin {
 		$dbo->setQuery($query);
 		$id = $dbo->loadResult();
                 
-		if(isset($id)){
+		if(!empty($id)){
 			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'), 'error');
                         $app->redirect(JRoute::_('index.php?option=com_users&view=profile&layout=edit'));
                         jExit();

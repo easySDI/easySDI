@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.4.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -36,7 +36,8 @@ class sdiMetadata extends cswmetadata {
     const VALIDATED = 2;
     const PUBLISHED = 3;
     const ARCHIVED = 4;
-    const TRASHED = 5;
+
+    //namespaces uri
     const sdi_uri = 'http://www.easysdi.org/2011/sdi';
     const xmlns_uri = 'http://www.w3.org/2000/xmlns/';
     const csw_uri = 'http://www.opengis.net/cat/csw/2.0.2';

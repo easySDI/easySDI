@@ -1,10 +1,10 @@
 /**
-* @version     4.0.0
-* @package     com_easysdi_core
-* @copyright   Copyright (C) 2012. All rights reserved.
-* @license     GNU General Public License version 3 or later; see LICENSE.txt
-* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
-*/
+ * @version     4.4.0
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 Ext.namespace("sdi.gxp.plugins");
 
 /** api: constructor
@@ -62,7 +62,10 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
      */
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.WMSSource.superclass.createLayerRecord.apply(this, arguments);
-        record.data.layer.attribution = config.attribution;
+        if(!jQuery.isEmptyObject(record)){
+	 record.data.layer.attribution = config.attribution;
+	 }
+        record.data.layer.isindoor = config.isindoor;
         record.data.layer.levelfield = config.levelfield;
         record.data.layer.servertype = config.servertype;
         return record;

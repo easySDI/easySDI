@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -13,8 +13,8 @@ defined('_JEXEC') or die;
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/views/download/tmpl/grid.js');
-$document->addScript('components/com_easysdi_shop/helpers/helper.js');
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/download/tmpl/grid.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js?v=' . sdiFactory::getSdiFullVersion());
 
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
@@ -56,7 +56,7 @@ Easysdi_shopHelper::addMapShopConfigToDoc();
                                 </label>
                                 <br/>
                                 <br/>
-                                <a href="#" id="saveSubmit" onclick="return false;" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');?></b></a>                            
+                                <a href="#" id="saveSubmit" onclick="return false;" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL'); ?></b></a>                            
                             </div>
                         </div>
                     </div><!--/span-->
@@ -73,14 +73,14 @@ Easysdi_shopHelper::addMapShopConfigToDoc();
                 js('#featurecode').change(enableSave);
             });
             function tokenize() {
-                js('#saveSubmit').attr('href', js('#saveSubmit').attr('href') + '&' + js('#id').next().attr('name') + '=' + js('#id').next().attr('value'));                
+                js('#saveSubmit').attr('href', js('#saveSubmit').attr('href') + '&' + js('#id').next().attr('name') + '=' + js('#id').next().attr('value'));
             }
         </script>
         <input type = "hidden" name = "task" value = "download.download" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
         <input type = "hidden" name = "featurecode" id="featurecode" value = "" />        
         <input type = "hidden" name = "id" id = "id" value = "<?php echo $this->item->id; ?>" />      
-    <?php echo JHtml::_('form.token'); ?>
+        <?php echo JHtml::_('form.token'); ?>
     </form>
 
     <?php

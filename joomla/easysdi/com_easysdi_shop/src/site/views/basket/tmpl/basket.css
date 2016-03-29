@@ -70,3 +70,7 @@ div.modal.fade {
     width:100%;
     min-height: 200px;
 }
+/* limit recap size in backend */
+.order-edit.back-end-edit #sdi-order-recap-layout{
+    max-width: 1200px; 
+}

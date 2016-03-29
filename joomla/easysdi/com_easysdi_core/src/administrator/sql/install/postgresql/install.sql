@@ -756,6 +756,9 @@ CREATE TABLE #__sdi_order (
     freeperimetertool VARCHAR(100) NULL,
     sent timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
+    usernotified smallint(1) DEFAULT 0 NOT NULL,
+    access_token character varying(64) NULL,
+    validation_token character varying(64) NULL,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
@@ -849,7 +852,8 @@ CREATE TABLE IF NOT EXISTS #__sdi_category (
     name character varying(255) NOT NULL,
     access integer NOT NULL,
     asset_id integer NOT NULL,
-    overall_fee DECIMAL(6,2) UNSIGNED DEFAULT NULL
+    overall_fee DECIMAL(6,2) UNSIGNED DEFAULT NULL,
+    backend_only smallint DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS #__sdi_organism_category (
@@ -2495,4 +2499,59 @@ CREATE TABLE IF NOT EXISTS #__sdi_sys_extractstorage (
     state int(11) not null default '1',
     value varchar(255) not null,
     PRIMARY KEY (id)
+);
+
+
+-- com_easysdi_processing
+CREATE TABLE IF NOT EXISTS `#__sdi_processing` (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  guid varchar(255) NOT NULL,
+  alias varchar(50) NOT NULL,
+  name varchar(255) NOT NULL,
+  contact_id int(10) unsigned NOT NULL,
+  description text NOT NULL,
+  auto tinyint(1) NOT NULL DEFAULT 0,
+  state tinyint(1) NOT NULL DEFAULT 1,
+  checked_out int(11) NOT NULL,
+  checked_out_time datetime NOT NULL,
+  accessscope_id int(11) NOT NULL,
+  command text,
+  map_id int(10) NOT NULL,
+  parameters text,
+  access int(10) unsigned NOT NULL DEFAULT '1',
+  access_id int(10) DEFAULT NULL,
+  created_by int(10) unsigned DEFAULT NULL,
+  created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modified_by int(11) NOT NULL,
+  modified timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  ordering int(11) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS `#__sdi_processing_obs` (
+  processing_id int(10) unsigned NOT NULL,
+  sdi_user_id int(10) unsigned NOT NULL,
+);
+
+CREATE TABLE IF NOT EXISTS `#__sdi_processing_order` (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  guid varchar(255) NOT NULL,
+  name varchar(255) NOT NULL,
+  user_id int(10) NOT NULL,
+  processing_id int(10) unsigned NOT NULL,
+  parameters text NOT NULL,
+  filestorage varchar(20) NOT NULL,
+  file text,
+  fileurl text NOT NULL,
+  output text,
+  outputpreview text NOT NULL,
+  exec_pid int(11) unsigned DEFAULT NULL,
+  status varchar(255) NOT NULL DEFAULT '',
+  info text NOT NULL,
+  created_by int(10) unsigned DEFAULT NULL,
+  created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modified_by int(10) NOT NULL,
+  modified timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  sent timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (id)
 );

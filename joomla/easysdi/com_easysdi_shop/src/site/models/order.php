@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -32,6 +32,12 @@ class Easysdi_shopModelOrder extends JModelForm {
         $app = JFactory::getApplication('com_easysdi_shop');
         $layout = $app->input->get('layout');
 
+        //user accesing the order with token, set token and id
+        if ($app->input->getString('a_token')) {
+            $this->setState('access_token', $app->input->getString('a_token'));
+            $id = $app->input->getInt('id');
+            $app->setUserState('com_easysdi_shop.edit.order.id', $id);
+        }
 
         // Load state from the request userState on edit or from the passed variable on default
         if ($layout == 'edit') {
@@ -39,11 +45,14 @@ class Easysdi_shopModelOrder extends JModelForm {
         } else {
             if ($layout == 'validation') {
                 $this->setState('layout.validation', true);
-                if ($app->input->get('vm')) {
-                    $this->setState('validation.manager', $app->input->get('vm'));
+                if ($app->input->getInt('vm')) {
+                    $this->setState('validation.manager', $app->input->getInt('vm'));
+                }
+                if ($app->input->getString('v_token')) {
+                    $this->setState('validation_token', $app->input->getString('v_token'));
                 }
             }
-            $id = $app->input->get('id');
+            $id = $app->input->getInt('id');
             $app->setUserState('com_easysdi_shop.edit.order.id', $id);
         }
         $this->setState('order.id', $id);
@@ -87,9 +96,9 @@ class Easysdi_shopModelOrder extends JModelForm {
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
-            
+
             //if a validator is set, loat it
-            if(isset($this->_item->validated_by)){
+            if (isset($this->_item->validated_by)) {
                 $validator = new sdiUser($this->_item->validated_by);
                 $this->_item->validator = $validator->name;
             }
@@ -266,7 +275,9 @@ class Easysdi_shopModelOrder extends JModelForm {
         $table->validated_reason = $reason;
         $table->validated_by = $validatorId;
 
-        if (($orderStored = $table->store()) === true) {
+        $orderStored = $table->store();
+
+        if (($orderStored) === true) {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->update('#__sdi_order_diffusion')
@@ -274,9 +285,6 @@ class Easysdi_shopModelOrder extends JModelForm {
                     ->where('order_id = ' . (int) $id);
             $db->setQuery($query);
             $db->execute();
-
-            // Notify customer
-            Easysdi_shopHelper::notifyCustomer($table->name);
         }
 
         return $orderStored;
