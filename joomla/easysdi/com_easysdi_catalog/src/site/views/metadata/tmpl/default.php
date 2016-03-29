@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -34,6 +34,8 @@ JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_VERSION');
 JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_PUBLISHING_RIGHT');
 JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_IMPORT_REF');
 JText::script('COM_EASYSDI_CATALOG_ERROR_REMOVE');
+JText::script('COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_TITLE');
+JText::script('COM_EASYSDI_CATALOG_ERROR_MD_LOCKED_MESSAGE');
 JText::script('COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE');
 JText::script('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN');
 
@@ -70,6 +72,10 @@ JText::script('COM_EASYSDI_CATALOG_FILE_UPLOAD_SUCCES');
 JText::script('JGLOBAL_SELECT_SOME_OPTIONS');
 JText::script('JGLOBAL_SELECT_AN_OPTION');
 JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
+
+JText::script('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_OK');
+JText::script('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CANCEL');
+JText::script('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CONFIRM');
 
 /* bootbox language */
 $ldao = new SdiLanguageDao();
@@ -113,12 +119,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery
 $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/jquery.iframe-transport.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/jquery.fileupload.js');
 
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js?v=' . sdiFactory::getSdiFullVersion());
 
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shCore.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shThemeDefault.css');
-$document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
+$document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css?v=' . sdiFactory::getSdiFullVersion());
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/css/jquery.fileupload.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/css/jquery.fileupload-ui.css');
 ?>
@@ -130,6 +136,13 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQ
     var iframeheight = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight'); ?>";
     js = jQuery.noConflict();
     js('document').ready(function () {
+        //override or create locale
+        bootbox.addLocale('<?php echo $bbLanguage; ?>' , {
+            OK      : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_OK', 'OK'),
+            CANCEL  : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CANCEL', 'Cancel'),
+            CONFIRM : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CONFIRM', 'Confirm')
+        });
+        //set locale
         bootbox.setLocale("<?php echo $bbLanguage; ?>");
 <?php if ($this->params->get('editmetadatafieldsetstate') == "allopen") { ?>
             toogleAll(js('#btn_toggle_all'));
@@ -176,8 +189,10 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
         <div>
 
-            <?php if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();
-            endif; ?>
+            <?php
+            if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();
+            endif;
+            ?>
 
 <?php echo JHtml::_('form.token'); ?>
         </div>

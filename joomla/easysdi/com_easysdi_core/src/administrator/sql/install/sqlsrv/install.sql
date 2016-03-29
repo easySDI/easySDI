@@ -1154,6 +1154,9 @@ CREATE TABLE [#__sdi_order] (
         [freeperimetertool] [nvarchar](100) NULL,
 	[sent] [datetime2](0) NOT NULL,
 	[completed] [datetime2](0) NOT NULL,
+	[usernotified] [tinyint] NOT NULL,
+	[access_token] [nvarchar](64) NULL,
+	[validation_token] [nvarchar](64) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_order_id] PRIMARY KEY CLUSTERED 
@@ -1288,6 +1291,7 @@ CREATE TABLE [#__sdi_category] (
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
         [overall_fee] decimal(6,2)  NULL,
+        [backend_only] [tinyint] NOT NULL,
  CONSTRAINT [PK_#__sdi_category_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -3679,6 +3683,65 @@ CREATE TABLE [#__sdi_sys_server_serviceconnector](
 ) ON [PRIMARY];
 SET ANSI_NULLS ON;
 
+CREATE TABLE [#__sdi_processing] (
+  [id] [bigint] IDENTITY(12,1) NOT NULL,
+  [guid] [nvarchar](255) NOT NULL,
+  [alias] [nvarchar](50) NOT NULL,
+  [name] [nvarchar](255) NOT NULL,
+  [contact_id] [int] NOT NULL,
+  [description] [varchar](1000) NOT NULL,
+  [auto] [int] NOT NULL,
+  [state] [int] NOT NULL,
+  [checked_out] [int] NOT NULL,
+  [checked_out_time] [nvarchar](45) NOT NULL,
+  [accessscope_id] [int] NOT NULL,
+  [command] [varchar](1000) NOT NULL,
+  [map_id] [int] NOT NULL,
+  [parameters] [varchar](1000) NOT NULL,
+  [access] [int] NOT NULL,
+  [access_id] [int] NULL,
+  [created_by] [int] NULL,
+  [created] [nvarchar](45) NOT NULL,
+  [modified_by] [int] NULL,
+  [modified] [nvarchar](45) NOT NULL,
+  [ordering] [int] NOT NULL,
+  CONSTRAINT [PK_#__sdi_processing] PRIMARY KEY CLUSTERED (
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY];
+SET ANSI_NULLS ON;
+
+CREATE TABLE [#__sdi_processing_obs] (
+  [processing_id] [bigint] IDENTITY(12,1) NOT NULL,
+  [sdi_user_id] [bigint] IDENTITY(12,1) NOT NULL,
+) SET ANSI_NULLS ON;
+
+CREATE TABLE IF NOT EXISTS [#__sdi_processing_order] (
+  [id] [bigint] IDENTITY(12,1) NOT NULL,
+  [guid] [nvarchar](255) NOT NULL,
+  `name` [nvarchar](255) NOT NULL,
+  `user_id` [int] NOT NULL,
+  `processing_id`[int] NOT NULL,
+  `parameters` [varchar](1000) NOT NULL,
+  `filestorage` [nvarchar](20) NOT NULL,
+  `file` [varchar](1000),
+  `fileurl` [varchar](1000) NOT NULL,
+  `output` [varchar](1000),
+  `outputpreview` [varchar](1000) NOT NULL,
+  `exec_pid` [nvarchar](255) NOT NULL,
+  `status` [int] NOT NULL,
+  `info` [varchar](1000),
+  `created_by` [int] NULL,
+  `created` [nvarchar](45) NOT NULL,
+  `modified_by` [int] NOT NULL,
+  `modified` [nvarchar](45) NULL,
+  `sent` [nvarchar](45) NULL,
+    CONSTRAINT [PK_#__sdi_processing_order] PRIMARY KEY CLUSTERED (
+            [id] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+    ) ON [PRIMARY];
+    SET ANSI_NULLS ON;
+
 
 ALTER TABLE [job_agg_hour_log_entries] ADD  DEFAULT '0' FOR [H1_MAX_RESP_TIME];
 
@@ -3827,6 +3890,8 @@ ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT '1' FOR [state];
 ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT '1' FOR [state];
 
 ALTER TABLE [#__sdi_category] ADD  DEFAULT '0' FOR [asset_id];
+
+ALTER TABLE [#__sdi_category] ADD  DEFAULT '0' FOR [backend_only];
 
 ALTER TABLE [#__sdi_class] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
@@ -3985,6 +4050,8 @@ ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_o
 ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [sent];
 
 ALTER TABLE [#__sdi_order] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [completed];
+
+ALTER TABLE [#__sdi_order] ADD  DEFAULT '0' FOR [usernotified];
 
 ALTER TABLE [#__sdi_order] ADD  DEFAULT '1' FOR [access];
 

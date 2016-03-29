@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.0.0
+ * @version     4.4.0
  * @package     mod_easysdi_basket
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -11,7 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 JText::script('COM_EASYSDI_SHOP_BASKET_SUCCESSFULLY_UPDATED');
 $document = JFactory::getDocument();
-$document->addStyleSheet(JURI::root() . '/administrator/components/com_easysdi_core/assets/css/easysdi_loader.css');
+$document->addStyleSheet(JURI::root(true) . '/administrator/components/com_easysdi_core/assets/css/easysdi_loader.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script>
     var request;

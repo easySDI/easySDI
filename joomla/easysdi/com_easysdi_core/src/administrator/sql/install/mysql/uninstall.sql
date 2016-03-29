@@ -192,4 +192,9 @@ DROP TABLE IF EXISTS `sla`;
 DROP TABLE IF EXISTS `statuses`;
 DROP TABLE IF EXISTS `users`;
 
+-- com_easysdi_processing
+DROP TABLE IF EXISTS `#__sdi_processing`;
+DROP TABLE IF EXISTS `#__sdi_processing_obs`;
+DROP TABLE IF EXISTS `#__sdi_processing_order`;
+
 SET foreign_key_checks = 1;

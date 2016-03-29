@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -35,7 +35,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		Easysdi_shopHelper::addSubmenu('orders');
+		Easysdi_shopAdminHelper::addSubmenu('orders');
 
 		$this->addToolbar();
 
@@ -53,7 +53,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 		require_once JPATH_COMPONENT.'/helpers/easysdi_shop.php';
 
 		$state	= $this->get('State');
-		$canDo	= Easysdi_shopHelper::getActions($state->get('filter.category_id'));
+		$canDo	= Easysdi_shopAdminHelper::getActions($state->get('filter.category_id'));
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'), 'orders.png');
 
@@ -161,7 +161,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 
 
         //add Filter sent INPUT
-        $ordersent= Easysdi_shopHelper::getRangeOptions();
+        $ordersent= Easysdi_shopAdminHelper::getRangeOptions();
         JHtmlSidebar::addFilter(
             JText::_('COM_EASYSDI_SHOP_FILTER_SELECT_ORDERS_SENT'),
             'filter_ordersent',
@@ -170,7 +170,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
 
 
         //add Filter completed INPUT
-        $ordercompleted= Easysdi_shopHelper::getRangeOptions();
+        $ordercompleted= Easysdi_shopAdminHelper::getRangeOptions();
         JHtmlSidebar::addFilter(
             JText::_('COM_EASYSDI_SHOP_FILTER_SELECT_ORDERS_COMPLETED'),
             'filter_ordercompleted',
@@ -207,7 +207,7 @@ class Easysdi_shopViewOrders extends JViewLegacy
         'a.name' => JText::_('COM_EASYSDI_SHOP_ORDERS_NAME'),
         'user' => JText::_('COM_EASYSDI_SHOP_ORDERS_USER'),
         'thirdparty' => JText::_('COM_EASYSDI_SHOP_ORDERS_THIRDPARTY'),
-        'a.created' => JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED'),
+        'a.sent' => JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED'),
         'a.completed' => JText::_('COM_EASYSDI_SHOP_ORDERS_COMPLETED'),
 		);
 	}
