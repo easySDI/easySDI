@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -37,15 +37,17 @@ JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING_TITLE');
+JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE');
+JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE_TITLE');
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js');
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
-$document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js?v=' . sdiFactory::getSdiFullVersion());
 //$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
 //$document->addScript('components/com_easysdi_shop/helpers/helper.js');
-$document->addStyleSheet(Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css');
+$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css?v=' . sdiFactory::getSdiFullVersion());
 Easysdi_shopHelper::addMapShopConfigToDoc();
 
 $perimeterScript = "";
@@ -354,7 +356,7 @@ if ($this->item && $this->item->extractions) :
                                     <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE') ?></button>
                                 </div>
                                 <div class="btn-wrapper" id="toolbar-estimate">
-                                    <button class="btn btn-small" rel="basket.estimate" <?php if (isset($this->item->pricing->cal_total_amount_ti)): echo 'style="display: none;"'; else : echo 'style="display: inline-block;"'; endif;?>><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
+                                    <button class="btn btn-small" rel="basket.estimate" <?php if (isset($this->item->pricing->cal_total_amount_ti)||!$this->item->pricing->isActivated): echo 'style="display: none;"'; else : echo 'style="display: inline-block;"'; endif;?>><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
                                 </div>
                                 <div class="btn-wrapper" id="toolbar-order">
                                     <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER') ?></button>
@@ -490,8 +492,7 @@ if ($this->item && $this->item->extractions) :
 
                                                     <?php
                                                     if ($this->item->isrestrictedbyperimeter && $this->params->get('userperimeteractivated') == 1):
-                                                        $perimeterScript.="var userperimeter = '" . $this->user->perimeter;
-                                                        ".';\n";
+                                                        $perimeterScript.="var userperimeter = '" . $this->user->perimeter . "';\n";
                                                     endif;
                                                     $perimeterScript.="function selectPerimeter" . $perimeter->id . "() {\n" .
                                                             "    return selectPerimeter(" . json_encode($perimeter) . "," . (($this->item->isrestrictedbyperimeter && $this->user->isEasySDI && $this->params->get('userperimeteractivated') == 1) ? "1" : "0") . ");\n" .
@@ -597,6 +598,7 @@ if ($this->item && $this->item->extractions) :
                 initDraw();
                 initMyPerimeter();
                 addAlertControl(window.appname.mapPanel.map);
+                addVisibilityChecks(window.appname.mapPanel.map);
                 slider = window.appname.mapPanel.map.indoorlevelslider;
                 if (slider) {
                     slider.on("indoorlevelchanged", function () {

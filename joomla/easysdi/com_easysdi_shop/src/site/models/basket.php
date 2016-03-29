@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -83,12 +83,13 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $joomlaUser = JFactory::getUser();
             $dateForName = JFactory::getDate();
             $dateForName->setTimeZone(new DateTimeZone($joomlaUser->getParam('timezone', $systemConfig->get('offset'))));
-            $data['name'] = JFactory::getUser()->name . ' - ' . $dateForName;
+            $data['name'] = JFactory::getUser()->name . JHtml::date($dateForName, JText::_('COM_EASYSDI_SHOP_BASKET_DATE_IN_NAME_FORMAT'));
+            ;
         else:
             $data['name'] = $basket->name;
         endif;
 
-        $data['sent'] = date('Y-m-d H:i:s');
+        $data['sent'] = '0000-00-00 00:00:00';
         $data['created'] = $basket->created;
         $data['created_by'] = $basket->created_by;
         $data['buffer'] = $basket->buffer;
@@ -99,6 +100,8 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['mandate_contact'] = $basket->mandate_contact;
         $data['mandate_email'] = $basket->mandate_email;
         $data['freeperimetertool'] = $basket->freeperimetertool;
+        $data['access_token'] = JUserHelper::genRandomPassword(64);
+        $data['validation_token'] = JUserHelper::genRandomPassword(64);
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
                 $data['ordertype_id'] = Easysdi_shopHelper::ORDERTYPE_ORDER;
@@ -314,6 +317,27 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $this->pushProductsToSession($supplier->products, $pricingOrderSupplier->id);
     }
 
+    /**
+     * Save the sent date when all items, perimeter and pricing have been saved
+     * https://forge.easysdi.org/issues/1252
+     * @param array $basketData Session basket data
+     * @return boolean Save state
+     */
+    public function finalSave($basketData) {
+
+        //when everything is saved, change the sent date, to the order can be grabbed by services
+        $data['sent'] = date('Y-m-d H:i:s');
+        $table = $this->getTable();
+        $table->load($basketData['order_id'], false);
+        return $table->save($data);
+    }
+
+    /**
+     * Push back product list to session
+     * 
+     * @param array $products
+     * @param type $posId pricingOrderSupplier item ID
+     */
     private function pushProductsToSession($products, $posId = null) {
         $session = JFactory::getSession();
         $basketProducts = $session->get('basketProducts');
@@ -420,6 +444,11 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $session->set('basketProcess', $basketProcess);
     }
 
+    /**
+     * Clean old items in tables
+     * @param int $order_id id of the order to clenup
+     * @return boolean
+     */
     private function cleanTables($order_id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -473,6 +502,14 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         return true;
     }
 
+    /**
+     * Returns a reference to the a Table object, always creating it.
+     *
+     * @param	type	The table type to instantiate
+     * @param	string	A prefix for the table class name. Optional.
+     * @param	array	Configuration array for model. Optional.
+     * @return	JTable	A database object
+     */
     public function getTable($type = 'Order', $prefix = 'Easysdi_shopTable', $config = array()) {
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR . '/tables');
         return JTable::getInstance($type, $prefix, $config);

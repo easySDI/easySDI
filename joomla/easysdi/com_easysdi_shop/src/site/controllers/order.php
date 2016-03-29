@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -13,9 +13,8 @@ defined('_JEXEC') or die;
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
-require_once JPATH_COMPONENT . '/models/order.php';
-require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/models/order.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 /**
  * Order controller class.
@@ -82,20 +81,10 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             $app->setUserState('com_easysdi_shop.edit.order.id', null);
 
             // Notify notifiedusers and extractionresponsible for each orderdiffusion of the current order
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true)
-                    ->select('diffusion_id as id')
-                    ->from('#__sdi_order_diffusion')
-                    ->where('order_id=' . (int) $validateId);
-            $db->setQuery($query);
-            $diffusions = $db->loadObjectList();
-            foreach ($diffusions as $diffusion) {
-                Easysdi_shopHelper::notifyNotifiedUsers($diffusion->id);
-                Easysdi_shopHelper::notifyExtractionResponsible($diffusion->id);
-            }
+            Easysdi_shopHelper::notifyExtractionResponsibleAndNotifiedUsers($validateId);
 
             //Notify validation managers
-            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_VALIDATION);
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId);
 
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
@@ -153,8 +142,10 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTED_SUCCESSFULLY'));
 
+            //Notify customer
+            Easysdi_shopHelper::notifyCustomerOnOrderUpdate($validateId);
             //Notify validation managers
-            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_REJECTED);
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId);
         }
 
         // Redirect to the list screen. (if user is logged in)
@@ -166,11 +157,12 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     }
 
     /**
-     * 
+     * check rights and download an order file
      */
     function download() {
         $diffusion_id = JFactory::getApplication()->input->getInt('id', null, 'int');
         $order_id = JFactory::getApplication()->input->getInt('order', null, 'int');
+        $access_token = JFactory::getApplication()->input->getString('a_token');
 
         if (empty($diffusion_id)):
             $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_EMPTY_ID');
@@ -196,6 +188,9 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         //the user is the client
         if ($order->user_id == $currentUser->id):
             $downloadAllowed = true;
+        //user has access token from mail
+        elseif (strlen($access_token) >= 64 && $order->access_token == $access_token):
+            $downloadAllowed = true;
         //the user is extraction responsible of the product
         elseif (in_array($diffusion_id, $userExtrationsResponsible)):
             $downloadAllowed = true;
@@ -206,7 +201,6 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         elseif ($currentUser->isOrganismManager($organisms[0]->id)):
             $downloadAllowed = true;
         endif;
-
 
         if (!$downloadAllowed) {
             $return['ERROR'] = JText::_('JERROR_ALERTNOAUTHOR');
@@ -221,40 +215,10 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $keys['diffusion_id'] = $diffusion_id;
         $orderdiffusion->load($keys);
 
-        //remote stroage, use curl
-        if ($orderdiffusion->storage_id == Easysdi_shopHelper::EXTRACTSTORAGE_REMOTE) {
-
-            $curlHelper = new CurlHelper(true);
-
-            $curldata['url'] = $orderdiffusion->file;
-            $pos = strrpos($url, '.');
-            $extension = ($pos) ? substr($url, $pos) : null;
-            if ($extension) {
-                $curldata['fileextension'] = $extension;
-            }
-            $curldata['filename'] = $orderdiffusion->displayName;
-            return $curlHelper->get($curldata);
-        }
-        //local storage
-        else {
-            $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
-            $file = JPATH_BASE . '/' . $folder . '/' . $order_id . '/' . $diffusion_id . '/' . $orderdiffusion->file;
-
-            error_reporting(0);
-
-            ini_set('zlib.output_compression', 0);
-            header('Pragma: public');
-            header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-            header('Content-Transfer-Encoding: none');
-            header("Content-Length: " . filesize($file));
-            header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
-            header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
-
-            readfile($file);
-            die();
-        }
+        Easysdi_shopHelper::downloadOrderFile($orderdiffusion);
     }
 
+        
     function cancel() {
         JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));

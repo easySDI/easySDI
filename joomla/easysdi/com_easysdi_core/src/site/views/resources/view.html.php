@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.0.0
+ * @version     4.4.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -44,6 +44,14 @@ class Easysdi_coreViewResources extends JViewLegacy {
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_core');
+        
+        $this->userOrganisms = $this->user->getOrganisms(array(sdiUser::resourcemanager, 
+                                                               sdiUser::metadataresponsible, 
+                                                               sdiUser::metadataeditor,
+                                                               sdiUser::diffusionmanager, 
+                                                               sdiUser::viewmanager, 
+                                                               sdiUser::extractionresponsible, 
+                                                               sdiUser::organismmanager) );
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

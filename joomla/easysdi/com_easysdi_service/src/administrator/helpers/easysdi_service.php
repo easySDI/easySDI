@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -24,6 +24,7 @@ class Easysdi_serviceHelper {
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_user');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
+        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_processing');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
         JHtmlSidebar::addEntry(
                 Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'), 'index.php?option=com_easysdi_service&view=physicalservices', $vName == 'physicalservices'

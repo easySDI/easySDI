@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -14,7 +14,9 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiBas
 require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiExtraction.php';
 require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPerimeter.php';
 require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPricingProfile.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/basket_string_parser.php';
 require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
 
 jimport('joomla.application.component.helper');
 
@@ -61,12 +63,13 @@ abstract class Easysdi_shopHelper {
     const ORDERVIEW_ORDER = 1; //client
     const ORDERVIEW_REQUEST = 2; //provider -> extraction
     const ORDERVIEW_VALIDATION = 3; // for validation
+    const ORDERVIEW_ADMIN = 4; // backend view
     // Order productmining
     const PRODUCTMININGAUTO = 1; //auto
     const PRODUCTMININGMANUAL = 2; //manual
     // Extract storage
     const EXTRACTSTORAGE_LOCAL = 1;
-    const EXTRACTSTORAGE_REMOTE = 2;    
+    const EXTRACTSTORAGE_REMOTE = 2;
 
     /**
      * Add a product to basket in session
@@ -286,11 +289,11 @@ abstract class Easysdi_shopHelper {
      * @param order $item
      */
     public static function getHTMLOrderPerimeter($item, $allowDownload = false) {
-        $params = JFactory::getApplication()->getParams('com_easysdi_shop');
+        $params = JComponentHelper::getParams('com_easysdi_shop');
         $paramsarray = $params->toArray();
 
         $document = JFactory::getDocument();
-        $document->addScript('components/com_easysdi_shop/views/order/tmpl/order.js');
+        $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/views/order/tmpl/order.js?v=' . sdiFactory::getSdiFullVersion());
 
         $mapscript = Easysdi_mapHelper::getMapScript($paramsarray['ordermap'], true);
         ?> <div class="row-fluid" >
@@ -350,8 +353,8 @@ abstract class Easysdi_shopHelper {
                                         <?php
                                     endforeach;
                                     ?> </div>   <?php
-                                endif;
-                                ?>
+                            endif;
+                            ?>
                             <?php if ($allowDownload): ?>
                                 <div id="perimeter-recap-details-download">
                                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS'); ?>
@@ -385,10 +388,11 @@ abstract class Easysdi_shopHelper {
             $objects = scandir($dir);
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
-                    if (filetype($dir . "/" . $object) == "dir")
+                    if (filetype($dir . "/" . $object) == "dir") {
                         Easysdi_shopHelper::rrmdir($dir . "/" . $object);
-                    else
+                    } else {
                         unlink($dir . "/" . $object);
+                    }
                 }
             }
             reset($objects);
@@ -507,7 +511,6 @@ abstract class Easysdi_shopHelper {
 
 
             // get the surface ordered - default to 0
-            //TODO
             $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface / 1000000 : 0;
 
 
@@ -699,19 +702,19 @@ abstract class Easysdi_shopHelper {
             $prices->hasFeeWithoutPricingProfileProduct = false;
             foreach ($basket->extractions as $supplier_id => $supplier) {
                 $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
-                if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct){
+                if ($prices->suppliers[$supplier_id]->hasFeeWithoutPricingProfileProduct) {
                     $prices->hasFeeWithoutPricingProfileProduct = true;
-                }else{
+                } else {
                     $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
                 }
             }
 
             // set the platform tax
-            if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee){
+            if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee) {
                 $prices->cal_fee_ti = 0;
-            }else {
+            } else {
                 $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
-                
+
                 //Current user categories are used to defined platform fee.
                 $db = JFactory::getDbo();
                 $query = $db->getQuery(true)
@@ -721,7 +724,7 @@ abstract class Easysdi_shopHelper {
                         ->where('oc.organism_id=' . (int) $basket->sdiUser->role[self::ROLE_MEMBER][0]->id);
                 $db->setQuery($query);
                 $currentcategories = $db->loadColumn();
-            
+
                 if (count($currentcategories)) {
                     $db = JFactory::getDbo();
                     $query = $db->getQuery(true)
@@ -743,9 +746,9 @@ abstract class Easysdi_shopHelper {
             $prices->cal_fee_ti = self::rounding($prices->cal_fee_ti, $prices->cfg_rounding);
 
             // total amount for the platform
-            if ($prices->hasFeeWithoutPricingProfileProduct){
+            if ($prices->hasFeeWithoutPricingProfileProduct) {
                 $prices->cal_total_amount_ti = null;
-            }else{
+            } else {
                 $prices->cal_total_amount_ti += $prices->cal_fee_ti;
             }
         }
@@ -828,8 +831,9 @@ abstract class Easysdi_shopHelper {
         if ($provider->hasFeeWithoutPricingProfileProduct) {
             unset($provider->cal_total_amount_ti);
             unset($provider->cal_total_rebate_ti);
-        } else
+        } else {
             $provider->cal_total_amount_ti += $provider->cal_fee_ti;
+        }
 
         return $provider;
     }
@@ -854,8 +858,9 @@ abstract class Easysdi_shopHelper {
             $price->cal_total_rebate_ti = 0;
         }
 
-        if ($price->cfg_pricing_type != self::PRICING_FEE_WITH_PROFILE)
+        if ($price->cfg_pricing_type != self::PRICING_FEE_WITH_PROFILE) {
             return $price;
+        }
 
         // get base parameters to calculate product price
         $pricingProfile = new sdiPricingProfile($product->pricing_profile);
@@ -1147,123 +1152,35 @@ abstract class Easysdi_shopHelper {
         return null;
     }
 
-    /*     * *********************** */
-    /** NOTIFICATION METHODS * */
-    /*     * *********************** */
+    /* -------------------- * 
+     * NOTIFICATION METHODS * 
+     * -------------------- */
 
     /**
      * notifyCustomer - notify the customer of its order
      * 
-     * @param string $orderName
+     * @param string $orderId
      * @return void
      * @since 4.3.0
      */
-    public static function notifyCustomer($orderName) {
+    public static function notifyCustomer($orderId) {
         $user = sdiFactory::getSdiUser();
-        if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_BODY', $orderName)))
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-    }
 
-    /**
-     * notifyNotifiedUsers - notify the defined notified users for a diffusion
-     * 
-     * @param integer $diffusionId
-     * @return void
-     * @since 4.3.0
-     */
-    public static function notifyNotifiedUsers($diffusionId) {
-        //Get the user to notified when the order is saved
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-                ->select('user_id')
-                ->from('#__sdi_diffusion_notifieduser')
-                ->where('diffusion_id = ' . (int) $diffusionId);
-        $db->setQuery($query);
-        $notifiedusers = $db->loadColumn();
-
-        $diffusiontable = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-        $diffusiontable->load($diffusionId);
-
-        //Send mail to notifieduser
-        foreach ($notifiedusers as $notifieduser) {
-            $user = sdiFactory::getSdiUser($notifieduser);
-            if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_BODY', $diffusiontable->name)))
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-        }
-    }
-
-    /**
-     * notifyExtractionResponsible - notify the extraction responsible
-     * 
-     * @param integer $diffusionId
-     * @return void
-     * @since 4.3.0
-     */
-    public static function notifyExtractionResponsible($diffusionId) {
-        $diffusiontable = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-        $diffusiontable->load($diffusionId);
-
-        //Do not sent notifications for automatic mining
-        if ($diffusiontable->productmining_id == Easysdi_shopHelper::PRODUCTMININGAUTO) {
+        //do not send notifications if disabled by user:
+        if (!$user->user->notificationrequesttreatment) {
             return;
         }
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-                ->select('rr.user_id')
-                ->from('#__sdi_user_role_resource rr')
-                ->where('rr.role_id = 7')
-                ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . (int) $diffusiontable->version_id . ')');
-        $db->setQuery($query);
-        $responsibles = $db->loadColumn();
+        $basket = new sdiBasket();
+        $basket->loadOrder((int) $orderId);
+        $stringParser = new Easysdi_shopBasketStringParser($basket);
 
-        //Send mail to extraction responsibles
-        foreach ($responsibles as $responsible) {
-            $user = sdiFactory::getSdiUser($responsible);
-            if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusiontable->name)))
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-        }
-    }
+        $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_NEW_ORDER_SUBJECT');
+        $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_NEW_ORDER_BODY');
 
-    /**
-     * notifyValidationManager - notify the validation managers that order has been validated
-     * 
-     * @param integer $order_id
-     * @return void
-     * @since 4.3.2
-     */
-    public static function notifyAfterValidationManager($orderId, $thirdpartyId, $state_id) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
 
-        //Select orderdiffusion_id
-        $query->select('user_id')
-                ->from('#__sdi_user_role_organism')
-                ->where('role_id=' . Easysdi_shopHelper::ROLE_VALIDATIONMANAGER . ' AND organism_id=' . (int) $thirdpartyId);
-        $db->setQuery($query);
-        $users_ids = $db->loadColumn();
-
-        $url = JRoute::_(JURI::base() . 'index.php?option=com_easysdi_shop&view=order&layout=validation&id=' . $orderId . '&vm=%s');
-
-        //Select message regarding order state_id
-        switch ($state_id):
-            case Easysdi_shopHelper::ORDERSTATE_VALIDATION :
-                $subject = JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERVALIDATION_VALIDATIONMANAGER_SUBJECT');
-                $bodytext = 'COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERVALIDATION_VALIDATIONMANAGER_BODY';
-                break;
-            case Easysdi_shopHelper::ORDERSTATE_REJECTED :
-                $subject = JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERREJECT_VALIDATIONMANAGER_SUBJECT');
-                $bodytext = 'COM_EASYSDI_SHOP_BASKET_SEND_MAIL_AFTERREJECT_VALIDATIONMANAGER_BODY';
-                break;
-        endswitch;
-
-        //Send email
-        foreach ($users_ids as $user_id) {
-            $user = sdiFactory::getSdiUser($user_id);
-            $url = sprintf($url, $user_id);
-            if (!$user->sendMail($subject, JText::sprintf($bodytext, $orderId, $url))) {
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-            }
+        if (!$user->sendMail($stringParser->getReplacedStringForClient($subject), $stringParser->getReplacedStringForClient($bodytext))) {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
         }
     }
 
@@ -1277,39 +1194,250 @@ abstract class Easysdi_shopHelper {
      */
     public static function notifyCustomerOnOrderUpdate($orderId, $silentFail = false) {
 
-        $orderModel = JModelLegacy::getInstance('order', 'Easysdi_shopModel', array());
-        $order = $orderModel->getTable();
-        $order->load(array('id' => (int) $orderId));
+        $basket = new sdiBasket();
+        $basket->loadOrder($orderId);
+
+        //do not send notifications if disabled by user:
+        if (!$basket->sdiUser->user->notificationrequesttreatment) {
+            return;
+        }
+
+        //do not sent multiple notifications on the same order
+        if ($basket->orderstate_id == Easysdi_shopHelper::ORDERSTATE_PROGRESS && $basket->usernotified) {
+            return;
+        }
+
+        $stringParser = new Easysdi_shopBasketStringParser($basket);
 
         $errors = false;
 
-        if (isset($order)) {
+        if (isset($basket->id)) {
 
-            $sdiUser = sdiFactory::getSdiUser($order->user_id);
-
-            switch ($order->orderstate_id) {
+            switch ($basket->orderstate_id) {
                 case Easysdi_shopHelper::ORDERSTATE_FINISH:
-                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_BODY', $order->name))):
-                        $errors = true;
-                    endif;
+                    $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_ORDER_FINISH_SUBJECT');
+                    $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_ORDER_FINISH_BODY');
                     break;
                 case Easysdi_shopHelper::ORDERSTATE_PROGRESS:
-                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_BODY', $order->name))):
-                        $errors = true;
-                    endif;
+                    $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_ORDER_FIRST_PRODUCT_SUBJECT');
+                    $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_ORDER_FIRST_PRODUCT_BODY');
                     break;
                 case Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER:
-                    if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_REJECTED_SUPPLIER_BODY', $order->name))):
-                        $errors = true;
-                    endif;
+                    $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_ORDER_REJECTED_SUPPLIER_SUBJECT');
+                    $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_ORDER_REJECTED_SUPPLIER_BODY');
+                    break;
+                case Easysdi_shopHelper::ORDERSTATE_REJECTED:
+                    $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_ORDER_REJECTED_THIRD_PARTY_SUBJECT');
+                    $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_CLIENT_ORDER_REJECTED_THIRD_PARTY_BODY');
                     break;
             }
-        }else {
+
+            $subject = $stringParser->getReplacedStringForClient($subject);
+            $bodytext = $stringParser->getReplacedStringForClient($bodytext);
+
+            if (!$basket->sdiUser->sendMail($subject, $bodytext)) {
+                $errors = true;
+            }
+
+            self::setUserNotified($basket->id);
+        } else {
             $errors = true;
         }
 
-        if ($errors == !$silentFail) {
+        if ($errors && !$silentFail) {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+        }
+    }
+
+    /**
+     * set the usernotified flog to true on an order to avoid the user beein notified on every product
+     * @param integer $order_id
+     */
+    private static function setUserNotified($order_id) {
+        $db = JFactory::getDbo();
+        if (is_numeric($order_id)) {
+            $query = $db->getQuery(true)
+                    ->update('#__sdi_order')
+                    ->set('usernotified = 1')
+                    ->where('id=' . (int) $order_id);
+            $db->setQuery($query);
+            $db->execute();
+        }
+    }
+
+    /**
+     * notifyExtractionResponsibleAndNotifiedUsers - notify the extraction responsible 
+     * and defined notified users for each products of the order
+     * 
+     * @param integer $orderId
+     * @return void
+     * @since 4.4.0
+     */
+    public static function notifyExtractionResponsibleAndNotifiedUsers($orderId) {
+        $basket = new sdiBasket();
+        $basket->loadOrder((int) $orderId);
+        $stringParser = new Easysdi_shopBasketStringParser($basket, $stringParser);
+        self::notifyNotifiedUsers($basket, $stringParser);
+        self::notifyExtractionResponsible($basket, $stringParser);
+    }
+
+    /**
+     * notifyNotifiedUsers - notify the defined notified users for a diffusion
+     * 
+     * @param sdiBasket $basket
+     * @param Easysdi_shopBasketStringParser $stringParser
+     * @since 4.4.0
+     */
+    private static function notifyNotifiedUsers($basket, $stringParser) {
+        //notified users
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select($db->qn('dnu.user_id', 'user_id'))
+                ->select($db->qn('d.id', 'diffusion_id'))
+                ->from($db->qn('#__sdi_order', 'o'))
+                ->innerJoin($db->qn('#__sdi_order_diffusion', 'od') . ' ON od.order_id = o.id')
+                ->innerJoin($db->qn('#__sdi_diffusion', 'd') . ' ON od.diffusion_id = d.id')
+                ->innerJoin($db->qn('#__sdi_diffusion_notifieduser', 'dnu') . ' ON dnu.diffusion_id = d.id')
+                ->where('od.productstate_id = ' . self::PRODUCTSTATE_SENT)
+                ->where('o.id = ' . (int) $basket->id);
+        $db->setQuery($query);
+        $notifiedUsers = $db->loadRowList();
+
+        //group diffusions by users
+        $grouppedNotifiedUsers = array();
+        foreach ($notifiedUsers as $nf) {
+            $grouppedNotifiedUsers[$nf[0]][] = $nf[1];
+        }
+
+        foreach ($grouppedNotifiedUsers as $nUserId => $nUserDiffusions) {
+            $user = new sdiUser($nUserId);
+            $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_NOTIFIEDUSER_NEW_ORDER_SUBJECT');
+            $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_NOTIFIEDUSER_NEW_ORDER_BODY');
+
+            if (!$user->sendMail($stringParser->getReplacedStringForSupplier($subject, $nUserDiffusions), $stringParser->getReplacedStringForSupplier($bodytext, $nUserDiffusions))) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            }
+        }
+    }
+
+    /**
+     * notifyExtractionResponsible - notify the extraction responsible
+     * 
+     * @param sdiBasket $basket
+     * @param Easysdi_shopBasketStringParser $stringParser
+     * @since 4.4.0
+     */
+    private static function notifyExtractionResponsible($basket, $stringParser) {
+        //extraction responsible users
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select($db->qn('uro.user_id', 'user_id'))
+                ->select($db->qn('d.id', 'diffusion_id'))
+                ->from($db->qn('#__sdi_order', 'o'))
+                ->innerJoin($db->qn('#__sdi_order_diffusion', 'od') . ' ON od.order_id = o.id')
+                ->innerJoin($db->qn('#__sdi_diffusion', 'd') . ' ON od.diffusion_id = d.id')
+                ->innerJoin($db->qn('#__sdi_version', 'v') . ' ON d.version_id = v.id')
+                ->innerJoin($db->qn('#__sdi_user_role_resource', 'uro') . ' ON v.resource_id = uro.resource_id AND uro.role_id = ' . self::ROLE_EXTRACTIONRESPONSIBLE)
+                ->where('o.id = ' . (int) $basket->id)
+                ->where('od.productstate_id = ' . self::PRODUCTSTATE_SENT)
+                ->where('d.productmining_id = ' . self::PRODUCTMININGMANUAL);
+        $db->setQuery($query);
+        $extractionResponsibles = $db->loadRowList();
+
+        //group diffusions by users
+        $grouppedExtractionResponsibles = array();
+        foreach ($extractionResponsibles as $nf) {
+            $grouppedExtractionResponsibles[$nf[0]][] = $nf[1];
+        }
+
+        foreach ($grouppedExtractionResponsibles as $erUserId => $erUserDiffusions) {
+            $user = new sdiUser($erUserId);
+            $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_EXTRACTION_RESPONSIBLE_NEW_ORDER_SUBJECT');
+            $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_EXTRACTION_RESPONSIBLE_NEW_ORDER_BODY');
+
+            if (!$user->sendMail($stringParser->getReplacedStringForSupplier($subject, $erUserDiffusions), $stringParser->getReplacedStringForSupplier($bodytext, $erUserDiffusions))) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            }
+        }
+    }
+
+    /**
+     * notifyTPValidationManager - notify the thirdparty validation manager after an order
+     * 
+     * @param integer $orderId
+     * @param integer $thirdpartyId
+     * @since 4.4.0
+     */
+    public static function notifyTPValidationManager($orderId, $thirdpartyId) {
+        $db = JFactory::getDbo();
+
+        $basket = new sdiBasket();
+        $basket->loadOrder($orderId);
+        $stringParser = new Easysdi_shopBasketStringParser($basket);
+
+        //Select orderdiffusion_id
+        $query = $db->getQuery(true);
+        $query->select('user_id')
+                ->from('#__sdi_user_role_organism')
+                ->where('role_id=' . Easysdi_shopHelper::ROLE_VALIDATIONMANAGER . ' AND organism_id=' . (int) $thirdpartyId);
+        $db->setQuery($query);
+        $users_ids = $db->loadColumn();
+
+        foreach ($users_ids as $user_id) {
+            $user = sdiFactory::getSdiUser($user_id);
+            $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_VALIDATIONMANAGER_NEW_ORDER_SUBJECT');
+            $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_VALIDATIONMANAGER_NEW_ORDER_BODY');
+
+            if (!$user->sendMail($stringParser->getReplacedStringForValidator($subject, $user_id), $stringParser->getReplacedStringForValidator($bodytext, $user_id))) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            }
+        }
+    }
+
+    /**
+     * notifyValidationManager - notify the validation managers that order has been validated
+     * 
+     * @param integer $order_id
+     * @return void
+     * @since 4.3.2
+     */
+    public static function notifyAfterValidationManager($orderId) {
+        $db = JFactory::getDbo();
+
+        $basket = new sdiBasket();
+        $basket->loadOrder($orderId);
+        $stringParser = new Easysdi_shopBasketStringParser($basket);
+
+        //Select orderdiffusion_id
+        $query = $db->getQuery(true);
+        $query->select('user_id')
+                ->from('#__sdi_user_role_organism')
+                ->where('role_id=' . Easysdi_shopHelper::ROLE_VALIDATIONMANAGER . ' AND organism_id=' . (int) $basket->thirdparty);
+        $db->setQuery($query);
+        $users_ids = $db->loadColumn();
+
+        //Select message regarding order state_id
+        switch ($basket->orderstate_id):
+            case Easysdi_shopHelper::ORDERSTATE_SENT :
+                $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_VALIDATIONMANAGER_VALIDATED_SUBJECT');
+                $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_VALIDATIONMANAGER_VALIDATED_BODY');
+                break;
+            case Easysdi_shopHelper::ORDERSTATE_REJECTED :
+                $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_VALIDATIONMANAGER_REJECTED_SUBJECT');
+                $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_VALIDATIONMANAGER_REJECTED_BODY');
+                break;
+        endswitch;
+
+        //Send email
+        foreach ($users_ids as $user_id) {
+            $user = sdiFactory::getSdiUser($user_id);
+
+            $subject = $stringParser->getReplacedStringForValidator($subject, $user_id);
+            $bodytext = $stringParser->getReplacedStringForValidator($bodytext, $user_id);
+
+            if (!$user->sendMail($subject, $bodytext)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            }
         }
     }
 
@@ -1352,6 +1480,7 @@ abstract class Easysdi_shopHelper {
 
     /**
      * Get a phrase like "2 hours ago" from a date. Units are: Year, Month, day, hour, minute, seconds
+     * 
      * @param DateTime $date
      * @return String "xx timeUnit ago"
      */
@@ -1365,7 +1494,7 @@ abstract class Easysdi_shopHelper {
             "MINUTE" => $diff->format("%i"),
             "SECOND" => $diff->format("%s"),
         );
-        $out = JText::_('MOD_EASYSDI_LASTORDERS_TIME_NOW');
+        $out = JText::_('COM_EASYSDI_SHOP_TIME_NOW');
         foreach ($units as $unit => $amount) {
             if (empty($amount)) {
                 continue;
@@ -1377,7 +1506,7 @@ abstract class Easysdi_shopHelper {
     }
 
     /**
-     * 
+     * Return a bootstrap html label depending on a basket status
      * @param type $order an order element
      * @param type $basket an easysdi basket (matching the order)
      * @return string A bootstrap styled label element
@@ -1469,6 +1598,23 @@ abstract class Easysdi_shopHelper {
             return $string;
         }
     }
+    
+    /**
+     * getCleanFilename - Remove path information and dots around the filename, to prevent uploading
+     * into different directories or replacing hidden system files.
+     * Also remove control characters and spaces (\x00..\x20) around the filename.
+     * If filename is empty before or after cleaning, a guid is returned.
+     * 
+     * @param string $name
+     * @return string new clean filename
+     */
+    public static function getCleanFilename($name) {
+        $name = trim(basename(stripslashes($name)), ".\x00..\x20");
+        if (!$name) {
+            $name = str_replace('.', '-', microtime(true));
+        }
+        return $name;
+    }    
 
     /**
      * Return a human readable filesize
@@ -1544,6 +1690,81 @@ abstract class Easysdi_shopHelper {
             return null;
         }
         return $posp;
+    }
+
+    /**
+     * downloadOrderFile get the file from local or remote storage,
+     * rights must have been checked before
+     * @param type $orderdiffusion easySDI order diffusion
+     * @return type
+     */
+    public static function downloadOrderFile($orderdiffusion) {
+        //remote stroage, use curl
+        if ($orderdiffusion->storage_id == Easysdi_shopHelper::EXTRACTSTORAGE_REMOTE) {
+
+            $curlHelper = new CurlHelper(true);
+
+            $curldata['url'] = $orderdiffusion->file;
+            $curldata['filename'] = $orderdiffusion->displayName;
+            $curlHelper->get($curldata);
+        }
+        //local storage
+        else {
+            $folder = JComponentHelper::getParams('com_easysdi_shop')->get('orderresponseFolder');
+            $file = JPATH_ROOT . '/' . $folder . '/' . $orderdiffusion->order_id . '/' . $orderdiffusion->diffusion_id . '/' . $orderdiffusion->file;
+
+            error_reporting(0);
+
+            $chunk = 8 * 1024 * 1024; // bytes per chunk (10 MB)
+
+            $size = filesize($file);
+            if ($size > $chunk) {
+                set_time_limit(0);
+                ignore_user_abort(false);
+                ini_set('output_buffering', 0);
+                ini_set('zlib.output_compression', 0);
+
+                $fh = fopen($file, "rb");
+
+                if ($fh === false) {
+                    $this->setMessage(JText::_('RESOURCE_LOCATION_UNAVAILABLE'), 'error');
+                    die();
+                }
+
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header("Accept-Ranges: bytes");
+                header('Content-Disposition: attachment; filename="' . $orderdiffusion->file . '"');
+                header('Expires: -1');
+                header('Cache-Control: no-cache');
+                header("Cache-Control: public, must-revalidate, post-check=0, pre-check=0");
+                header('Pragma: public');
+                //do not check filesize on 32bits integer systems : http://php.net/manual/en/function.filesize.php#refsect1-function.filesize-returnvalues
+                if (PHP_INT_SIZE >= 8) {
+                    header('Content-Length: ' . filesize($file));
+                }
+
+                // Repeat reading until EOF
+                while (!feof($fh)) {
+                    $buffer = fread($fh, $chunk);
+                    echo $buffer;
+                    @ob_flush();  // flush output
+                    @flush();
+                }
+            } else {
+                ini_set('zlib.output_compression', 0);
+                header('Pragma: public');
+                header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+                header('Content-Transfer-Encoding: none');
+                header("Content-Length: " . filesize($file));
+                header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
+                header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
+
+                readfile($file);
+            }
+
+            die();
+        }
     }
 
 }

@@ -170,6 +170,8 @@ svg {
 #searchModal{
     width: 60%;
     left: 60%;
+    position:absolute;
+    overflow:scroll;
 }
 
 #searchModal .modal-body{

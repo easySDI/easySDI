@@ -1,13 +1,15 @@
 <?php
 /**
- * @version     4.3.2
+ * @version     4.4.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2015. All rights reserved.
+ * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 // no direct access
 defined('_JEXEC') or die;
+
+require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
@@ -16,7 +18,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_shop/assets/css/easysdi_shop.css');
+$document->addStyleSheet('components/com_easysdi_shop/assets/css/easysdi_shop.css?v=' . sdiFactory::getSdiFullVersion());
 
 $user = JFactory::getUser();
 $userId = $user->get('id');
@@ -114,7 +116,7 @@ if (!empty($this->extra_sidebar)) {
                         <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ORDERTYPE'); ?></th>
                         <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_STATE'); ?></th>
                         <th class='left'><?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_ORDERS_USER', 'user', $listDirn, $listOrder); ?></th>
-                        <th class='left'><?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_ORDERS_CREATED', 'a.created', $listDirn, $listOrder); ?></th>
+                        <th class='left'><?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_ORDERS_CREATED', 'a.sent', $listDirn, $listOrder); ?></th>
                         <th class='left'><?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_ORDERS_COMPLETED', 'a.completed', $listDirn, $listOrder); ?></th>
                         <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_PRODUCTS'); ?></th>
 
@@ -147,10 +149,13 @@ if (!empty($this->extra_sidebar)) {
                     <?php
                     foreach ($this->items as $i => $item) :
                         $ordering = ($listOrder == 'a.ordering');
-                        $canCreate = $user->authorise('core.create', 'com_easysdi_shop');
+                        //$canCreate = $user->authorise('core.create', 'com_easysdi_shop');
                         $canEdit = $user->authorise('core.edit', 'com_easysdi_shop');
                         $canCheckin = $user->authorise('core.manage', 'com_easysdi_shop');
                         $canChange = $user->authorise('core.edit.state', 'com_easysdi_shop');
+
+                        $basket = new sdiBasket();
+                        $basket->loadOrder($item->id);
                         ?>
                         <tr class="row<?php echo $i % 2; ?>">
 
@@ -207,39 +212,33 @@ if (!empty($this->extra_sidebar)) {
                                 <?php endif; ?>
                             </td>
                             <td><?php
-                                if ('order' === $item->ordertype) {
-                                    echo '<i class="icon-cart"></i>&nbsp;';
-                                }
                                 echo JText::_($item->ordertype);
+                                if ('estimate' === $item->ordertype) {
+                                    echo '&nbsp;<i class="icon-lamp"></i>';
+                                }
                                 ?></td>
-                            <td><?php
-                                if ($item->ordertype_id != 3):
-                                    if ($item->orderstate_id == 1):
-                                        $classlabel = '';
-                                    elseif ($item->orderstate_id == 2):
-                                        $classlabel = '';
-                                    elseif ($item->orderstate_id == 3):
-                                        $classlabel = 'label-success';
-                                    elseif ($item->orderstate_id == 4):
-                                        $classlabel = 'label-warning';
-                                    elseif ($item->orderstate_id == 5):
-                                        $classlabel = 'label-info';
-                                    elseif ($item->orderstate_id == 6):
-                                        $classlabel = 'label-inverse';
-                                    endif;
-                                    ?>
-                                    <span class="label <?php echo $classlabel; ?> "><?php
-                                        echo JText::_($item->orderstate);
-                                        ?></span><?php
-                                endif;
-                                ?></td>
-                            <td><?php echo $item->user; ?></td>
-                            <td><?php echo $item->created; ?></td>
+                            <td class="orderstate">
+                                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $basket); ?>
+                            </td>
+                            <td>
+                                <span class="hasTooltip" title="<?php echo $item->username ?>">
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_contact&task=user.edit&id=' . (int) $item->user_id); ?>">
+                                        <?php echo $item->user; ?>
+                                    </a>
+                                </span>
+                            </td>
+                            <td>
+                                <?php echo JHtml::date($item->sent, 'Y-m-d H:i:s'); ?>
+                            </td>
                             <td><?php
                                 if ('0000-00-00 00:00:00' != $item->completed)
-                                    echo $item->completed;
+                                    echo JHtml::date($item->completed, 'Y-m-d H:i:s');
                                 ?></td>
-                            <td><?php echo $item->products; ?></td>
+                            <td><?php
+                                foreach ($basket->extractions as $extraction):
+                                    echo($extraction->name . '<br/>');
+                                endforeach;
+                                ?></td>
 
                         </tr>
                     <?php endforeach; ?>
