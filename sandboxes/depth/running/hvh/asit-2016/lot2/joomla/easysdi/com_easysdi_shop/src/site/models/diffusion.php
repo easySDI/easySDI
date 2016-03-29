@@ -25,7 +25,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
 class Easysdi_shopModelDiffusion extends JModelForm {
 
     var $_item = null;
-    
+
     /**
      * Method to auto-populate the model state.
      *
@@ -90,16 +90,17 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
                 $perimeters = $diffusionperimeter->loadBydiffusionID($this->_item->id);
                 $this->_item->perimeter = array();
-//                if ($perimeters) {
-//                    foreach ($perimeters as $perimeter) {
-//                        $this->_item->perimeter [$perimeter->perimeter_id] = $perimeter->buffer;
-//                    }
-//                }
+                if ($perimeters) {
+                    foreach ($perimeters as $perimeter) {
+                        array_push($this->_item->perimeter , $perimeter->perimeter_id);
+                    }
+                }
                 //Parse fileurl/packageurl to retrieve user/pwd
-                if(isset($this->_item->fileurl))
+                if (isset($this->_item->fileurl)) {
                     $this->_item->fileurl = $this->unparseurl($this->_item->fileurl);
-                elseif(isset($this->_item->packageurl))
+                } elseif (isset($this->_item->packageurl)) {
                     $this->_item->packageurl = $this->unparseurl($this->_item->packageurl);
+                }
 
                 //Load properties and properties values
                 $diffusionpropertyvalue = JTable::getInstance('diffusionpropertyvalue', 'Easysdi_shopTable');
@@ -116,7 +117,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         }
         if (empty($id)) {
             $this->_item->version_id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusionversion.id');
-
             $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
             $version = JTable::getInstance('version', 'Easysdi_coreTable');
             $version->load($this->_item->version_id);
@@ -129,7 +129,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
     private function unparseurl($sourceurl) {
         //Parse fileurl to retrieve user/pwd
-        if(!$url = parse_url($sourceurl)){
+        if (!$url = parse_url($sourceurl)) {
             return false;
         }
         $this->_item->userurl = isset($url['user']) ? $url['user'] : '';
@@ -271,7 +271,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
         //Save
         $table = $this->getTable();
-                
+
         if ($table->save($data) === true) {
             $data['guid'] = $table->guid;
             $id = $table->id;
@@ -453,8 +453,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
     private function getNotifieduserListQuery() {
         $user = sdiFactory::getSdiUser();
         $data = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusion.data', array());
-        $version_id = (isset($this->_item))?$this->_item->version_id : $data['version_id'] ;
-        
+        $version_id = (isset($this->_item)) ? $this->_item->version_id : $data['version_id'];
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('o.organism_id');
