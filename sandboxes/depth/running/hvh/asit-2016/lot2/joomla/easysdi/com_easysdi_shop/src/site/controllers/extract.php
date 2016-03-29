@@ -1393,7 +1393,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         //set fee
         if ($this->product->getElementsByTagNameNS(self::nsSdi, 'fee')->length > 0) {
-            $this->setFee($query, $posp, $updatePricing, (float) $this->product->getElementsByTagNameNS(self::nsSdi, 'fee')->item(0)->nodeValue);
+            $this->setFee($posp, $updatePricing, (float) $this->product->getElementsByTagNameNS(self::nsSdi, 'fee')->item(0)->nodeValue);
         }
 
         //set storage
@@ -1494,9 +1494,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @return void
      * @since 4.3.0
      */
-    private function setFee(&$query, &$posp, &$updatePricing, $fee) {
-        $query->set('fee=' . $fee);
-
+    private function setFee(&$posp, &$updatePricing, $fee) {
         // update pricing data if exist
         if ($posp !== null) {
             $updatePricing = true;
