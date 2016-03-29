@@ -263,7 +263,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             $orderdiffusion->completed = date('Y-m-d H:i:s');
             $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
         endif;
-        $orderdiffusion->created_by = (int) sdiFactory::getSdiUser()->id;
+        $orderdiffusion->created_by = (int) sdiFactory::getSdiUser()->juser->id;
         $orderdiffusion->store();
 
         //store pricing in pricing tables if pricing is enabled
