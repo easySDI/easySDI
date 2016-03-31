@@ -114,15 +114,6 @@ js('document').ready(function () {
                     Joomla.submitform(task, form);
                     return true;
                     break;
-                case 'control':
-                    if (document.formvalidator.isValid(form)) {
-                        js('#system-message-container').remove();
-                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK', 'COM_EASYSDI_CATALOG_METADATA_CONTROL_OK'));
-                        break;
-                    } else {
-                        js('html, body').animate({scrollTop: 0}, 'slow');
-                    }
-                    break;
                 case 'valid':
                 case 'validAndClose':
                     if (document.formvalidator.isValid(form)) {
@@ -262,6 +253,9 @@ js('document').ready(function () {
                     if (document.formvalidator.isValid(form_csw_import)) {
                         Joomla.submitform('metadata.edit', form_csw_import);
                     }
+                    break;
+                case 'reset':
+                    document.location = resetMetadataUrl;
                     break;
 
             }
