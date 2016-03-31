@@ -7,7 +7,6 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 class sdiIndicatorShop_global extends sdiIndicator {
@@ -36,7 +35,8 @@ class sdiIndicatorShop_global extends sdiIndicator {
                 ->from($db->quoteName('#__sdi_diffusion', 'dif'))
                 ->join('INNER', $db->quoteName('#__sdi_version', 'v') . ' ON (' . $db->quoteName('dif.version_id') . ' = ' . $db->quoteName('v.id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_resource', 'r') . ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
-                ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')');
+                ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
+                ->where('(dif.hasdownload = 1 OR dif.hasextraction = 1)');
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
         }
@@ -95,7 +95,8 @@ class sdiIndicatorShop_global extends sdiIndicator {
                 ->join('INNER', $db->quoteName('#__sdi_version', 'v') . ' ON (' . $db->quoteName('dif.version_id') . ' = ' . $db->quoteName('v.id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_resource', 'r') . ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
-                ->where('dif.pricing_id = 1');
+                ->where('(dif.hasdownload = 1 OR dif.hasextraction = 1)')
+                ->where('dif.pricing_id = ' . Easysdi_shopHelper::PRICING_FREE);
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
         }
@@ -109,7 +110,8 @@ class sdiIndicatorShop_global extends sdiIndicator {
                 ->join('INNER', $db->quoteName('#__sdi_version', 'v') . ' ON (' . $db->quoteName('dif.version_id') . ' = ' . $db->quoteName('v.id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_resource', 'r') . ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
-                ->where('dif.pricing_id = 2');
+                ->where('(dif.hasdownload = 1 OR dif.hasextraction = 1)')
+                ->where('dif.pricing_id <> ' . Easysdi_shopHelper::PRICING_FREE);
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
         }
@@ -124,7 +126,7 @@ class sdiIndicatorShop_global extends sdiIndicator {
                 ->join('INNER', $db->quoteName('#__sdi_resource', 'r') . ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
                 ->where('dif.hasextraction = 1')
-                ->where('dif.productmining_id = 2');
+                ->where('dif.productmining_id = ' . Easysdi_shopHelper::PRODUCTMININGMANUAL);
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
         }
@@ -139,7 +141,7 @@ class sdiIndicatorShop_global extends sdiIndicator {
                 ->join('INNER', $db->quoteName('#__sdi_resource', 'r') . ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
                 ->where('dif.hasextraction = 1')
-                ->where('dif.productmining_id = 1');
+                ->where('dif.productmining_id = ' . Easysdi_shopHelper::PRODUCTMININGAUTO);
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
         }

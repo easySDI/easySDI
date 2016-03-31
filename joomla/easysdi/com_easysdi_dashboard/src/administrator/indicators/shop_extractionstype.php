@@ -87,7 +87,7 @@ class sdiIndicatorShop_extractionstype extends sdiIndicator {
                             Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,
                         )) . ')')
                 ->where('odif.completed between \'' . date("c", $timestart) . '\' and  \'' . date("c", $timeend) . '\' ')
-                ->where('o.ordertype_id = 1')
+                ->where('o.ordertype_id = ' . Easysdi_shopHelper::ORDERTYPE_ORDER)
                 ->where('dif.productmining_id = 1');
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
@@ -109,8 +109,8 @@ class sdiIndicatorShop_extractionstype extends sdiIndicator {
                             Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,
                         )) . ')')
                 ->where('odif.completed between \'' . date("c", $timestart) . '\' and  \'' . date("c", $timeend) . '\' ')
-                ->where('o.ordertype_id = 1')
-                ->where('dif.pricing_id = 2');
+                ->where('o.ordertype_id = ' . Easysdi_shopHelper::ORDERTYPE_ORDER)
+                ->where('dif.pricing_id <> ' . Easysdi_shopHelper::PRICING_FREE);
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
         }
@@ -131,8 +131,8 @@ class sdiIndicatorShop_extractionstype extends sdiIndicator {
                             Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,
                         )) . ')')
                 ->where('odif.completed between \'' . date("c", $timestart) . '\' and  \'' . date("c", $timeend) . '\' ')
-                ->where('o.ordertype_id = 1')
-                ->where('dif.pricing_id = 1');
+                ->where('o.ordertype_id = ' . Easysdi_shopHelper::ORDERTYPE_ORDER)
+                ->where('dif.pricing_id = ' . Easysdi_shopHelper::PRICING_FREE);
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
         }
