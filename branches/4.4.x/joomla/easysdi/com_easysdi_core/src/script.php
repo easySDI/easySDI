@@ -448,7 +448,14 @@ class com_easysdi_coreInstallerScript {
             '/administrator/components/com_easysdi_shop/sql/install/postgresql/uninstall.sql',
             '/administrator/components/com_easysdi_shop/sql/install/postgresql/index.html',
             '/administrator/components/com_easysdi_shop/sql/updates/postgresql/4.0.0.sql',
-            '/administrator/components/com_easysdi_shop/sql/updates/postgresql/index.html'
+            '/administrator/components/com_easysdi_shop/sql/updates/postgresql/index.html',
+            //Dashboard: old indicator layouts
+            '/administrator/components/com_easysdi_dashboard/indicators/shop_extractionstype.html.php',
+            '/administrator/components/com_easysdi_dashboard/indicators/shop_global.html.php',
+            '/administrator/components/com_easysdi_dashboard/indicators/shop_responsetimeproduct.html.php',
+            '/administrator/components/com_easysdi_dashboard/indicators/shop_topdownloads.html.php',
+            '/administrator/components/com_easysdi_dashboard/indicators/shop_topextractions.html.php',
+            '/administrator/components/com_easysdi_dashboard/indicators/shop_topusers.html.php'
         );
 
         $folders = array(
