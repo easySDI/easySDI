@@ -325,7 +325,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
     public function finalSave($basketData) {
 
         //when everything is saved, change the sent date, to the order can be grabbed by services
-        $data['sent'] = date('Y-m-d H:i:s');
+        $data['sent'] = JFactory::getDate()->toSql();
         $table = $this->getTable();
         $table->load($basketData['order_id'], false);
         return $table->save($data);
