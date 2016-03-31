@@ -134,13 +134,14 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/jQ
     var baseUrl = "<?php echo JUri::base(); ?>index.php?";
     var iframewidth = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth'); ?>";
     var iframeheight = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight'); ?>";
+    var resetMetadataUrl = "<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id='.$this->item->id); ?>";
     js = jQuery.noConflict();
     js('document').ready(function () {
         //override or create locale
-        bootbox.addLocale('<?php echo $bbLanguage; ?>' , {
-            OK      : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_OK', 'OK'),
-            CANCEL  : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CANCEL', 'Cancel'),
-            CONFIRM : Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CONFIRM', 'Confirm')
+        bootbox.addLocale('<?php echo $bbLanguage; ?>', {
+            OK: Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_OK', 'OK'),
+            CANCEL: Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CANCEL', 'Cancel'),
+            CONFIRM: Joomla.JText._('COM_EASYSDI_CORE_BOOTBOX_OVERRIDE_CONFIRM', 'Confirm')
         });
         //set locale
         bootbox.setLocale("<?php echo $bbLanguage; ?>");
@@ -162,7 +163,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 <div class="metadata-edit front-end-edit">
 
     <?php
-    echo $this->getTopActionBar();
+    echo $this->getActionToolbar();
     $title = $this->getTitle();
     ?>
 
@@ -173,8 +174,9 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
     <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
 
-
         <div class ="well">
+
+            <?php echo $this->getToggleCollapseButton(); ?>
             <?php echo $this->formHtml; ?>
 
             <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
@@ -188,15 +190,11 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
         </div>
 
         <div>
-
-            <?php
-            if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();
-            endif;
-            ?>
-
-<?php echo JHtml::_('form.token'); ?>
+            <?php echo JHtml::_('form.token'); ?>
         </div>
     </form>
+
+    <?php echo $this->getActionToolbar(); ?>
 
     <!-- Preview XML or XHTML Modal -->
     <div class="modal fade hide" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -234,7 +232,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                     <select id="resourcetype_id" name="resourcetype_id">
                                         <?php foreach ($this->getResourceType() as $resource) { ?>
                                             <option value="<?php echo $resource->id; ?>"<?php if ($this->item->resourcetype_id == $resource->id): ?> selected="selected"<?php endif; ?>><?php echo EText::_($resource->guid, 1, JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
-<?php } ?>
+                                        <?php } ?>
                                     </select>
                                 </div>
                             </div>
@@ -250,7 +248,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                     <select id="status_id" name="status_id">
                                         <?php foreach ($this->getStatusList() as $status) { ?>
                                             <option value="<?php echo $status->id; ?>"><?php echo JText::_($status->value); ?></option>
-<?php } ?>
+                                        <?php } ?>
                                     </select>
                                 </div>
                             </div>
@@ -277,7 +275,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                             <option value="<?php echo $organism->id; ?>"
                                                     <?php if ($organism->id === $userOrganism[0]->id): ?>selected="selected"<?php endif; ?>
                                                     ><?php echo $organism->name; ?></option>
-<?php endforeach; ?>
+                                                <?php endforeach; ?>
 
                                     </select>
                                 </div>
@@ -392,7 +390,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                 </div>
                             </div>
                         </div>
-<?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
+                        <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
                         <span id="publishModalCurrentMetadata"></span>
                         <div id="publishModalChildrenDiv" style="display:none">
                             <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?>
@@ -444,7 +442,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                                 </div>
                             </div>
                             <div class="tab-pane fade url" id="url">
-
 
                                 <div class="control-group">
                                     <div class="control-label">
