@@ -373,7 +373,7 @@ abstract class Easysdi_shopHelper {
      * @param string $dir directory path
      * See : http://php.net/manual/fr/function.rmdir.php
      */
-    function rrmdir($dir) {
+    public static function rrmdir($dir) {
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
