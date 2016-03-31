@@ -10,9 +10,9 @@
     <available file="${joomla.site.components.dir}/${dashboard.component.name}" type="dir" property="dashboard.site.exist"/>
     
     <target name="package" depends="write-xml, build-info, zip-package" description="Main target" />
-    <target name="sync-package" depends="copy-administrator, write-xml, build-info, zip-package" description="Main target" />
-    <target name="dev-package" depends="copy-administrator, write-xml, build-info, zip-dev-package" description="Main target" />
-    <target name="sync" depends="copy-administrator" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
+    <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
@@ -39,6 +39,25 @@
             </fileset>
         </copy>
     </target>
+    
+    <!-- 
+        Create the site folder if necessary.
+        Empty the site folder, except svn files.
+        Copy the files from the site.
+    --> 
+    <target name="copy-site" if="dashboard.site.exist">
+       
+        <echo>Copy site structure of ${dashboard.component.name} component</echo>
+        
+        <copy todir="${dashboard.src.out.dir}/site" overwrite="true">
+            <fileset dir="${joomla.site.components.dir}/${dashboard.component.name}"/>
+        </copy>
+        <echo>Copy site language file of ${dashboard.component.name} component</echo>
+        <copy todir="${dashboard.src.out.dir}/site/language" overwrite="true">
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${dashboard.component.name}.ini"/>
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${dashboard.component.name}.sys.ini"/>
+        </copy>
+    </target>    
      
     <target name="write-xml">
         <echoxml file="${dashboard.src.out.dir}/easysdi_dashboard.xml">
@@ -57,9 +76,9 @@
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
 
-			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
 			
-			<file driver="postgresql" charset="utf8">sql/install/postgresql/install.sql</file>
+                        <file driver="postgresql" charset="utf8">sql/install/postgresql/install.sql</file>
                         
                     </sql>
                 </install>
@@ -67,20 +86,29 @@
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
 			
-			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
 			
-			<file driver="postgresql" charset="utf8">sql/install/postgresql/uninstall.sql</file>
+                        <file driver="postgresql" charset="utf8">sql/install/postgresql/uninstall.sql</file>
                     </sql>
                 </uninstall>
                 <!-- SQL files to run on update -->
                 <update>
-                        <schemas>
-                                <schemapath type="mysql">sql/updates/mysql</schemapath>
-                                <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
-                                <schemapath type="postgresql">sql/updates/postgresql</schemapath>
-                        </schemas>
+                    <schemas>
+                        <schemapath type="mysql">sql/updates/mysql</schemapath>
+                        <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
+                        <schemapath type="postgresql">sql/updates/postgresql</schemapath>
+                    </schemas>
                 </update>
-
+                <files folder="site">
+                    <filename>index.html</filename>
+                    <filename>easysdi_dashboard.php</filename>
+                    <filename>controller.php</filename>                    
+                    <folder>assets</folder>
+                    <folder>views</folder>
+                    <folder>models</folder>
+                    <folder>controllers</folder>
+                    <folder>libraries</folder>
+                </files>
                 <administration>
                     <files folder="administrator">
                         <filename>access.xml</filename>
@@ -88,15 +116,13 @@
                         <filename>controller.php</filename>
                         <filename>index.html</filename>
                         <filename>easysdi_dashboard.php</filename>
-                    <folder>assets</folder>
-                    <folder>controllers</folder>
-                    <folder>helpers</folder>
-                    <folder>indicators</folder>
-                    <folder>layouts</folder>
-                    <folder>libraries</folder>
-                    <folder>models</folder>
-                    <folder>sql</folder>
-                    <folder>views</folder>
+                        <folder>controllers</folder>
+                        <folder>helpers</folder>
+                        <folder>indicators</folder>
+                        <folder>layouts</folder>
+                        <folder>models</folder>
+                        <folder>sql</folder>
+                        <folder>views</folder>
                     </files>
                     <languages folder="administrator">
                         <language tag="en-GB">language/en-GB/en-GB.com_easysdi_dashboard.ini</language>
