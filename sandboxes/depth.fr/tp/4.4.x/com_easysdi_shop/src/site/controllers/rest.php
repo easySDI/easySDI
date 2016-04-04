@@ -240,6 +240,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
                 if ($size = file_put_contents(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId . '/' . $filename, $content)) {
                     if ($this->updateOrderDiffusion($orderdiffusionId, $remark, $amount, $filename, $size)) {
                         $this->changeState($orderdiffusionId, Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE);
+                        //notify user if needed
+                        Easysdi_shopHelper::notifyCustomerOnOrderUpdate($orderId, true);
                         return $this->getSuccess('File sended');
                     } else {
                         return $this->getException('UnableToUpdateTable', 'Unable to update values into database table.');

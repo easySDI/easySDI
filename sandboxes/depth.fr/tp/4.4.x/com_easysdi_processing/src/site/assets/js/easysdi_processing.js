@@ -2,8 +2,16 @@ var easySDI_processing = {};
 
 jQuery(function () {
     var script_path = '/components/com_easysdi_processing/assets/js/easysdi_processing.js';
-    var base_url = jQuery('script[src$="' + script_path + '"]').attr('src').replace(script_path, '');
-
+    
+    // Find all script tags
+  var scripts = document.getElementsByTagName("script");
+  
+  // Look through them trying to find ourselves
+  for(var i=0; i<scripts.length; i++) {
+    if(scripts[i].src.indexOf(script_path) > -1) {
+        var base_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));//jQuery('script[src$="' + script_path + '"]').attr('src').replace(script_path, '');
+    }
+  }
 
     var loadVisu = function () {
         jQuery('[data-visu]').each(function () {
@@ -18,9 +26,6 @@ jQuery(function () {
 
         });
     }
-
-
-
 
     var loadVisu_geojson = function (obj) {
         var data = obj.data();
