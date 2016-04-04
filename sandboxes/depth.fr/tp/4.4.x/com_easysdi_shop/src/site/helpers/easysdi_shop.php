@@ -37,7 +37,6 @@ abstract class Easysdi_shopHelper {
     const ROLE_PRICINGMANAGER = 9;
     const ROLE_VALIDATIONMANAGER = 10;
     // ORDERSTATE
-    const ORDERSTATE_ARCHIVED = 1;
     const ORDERSTATE_HISTORIZED = 2;
     const ORDERSTATE_FINISH = 3;
     const ORDERSTATE_AWAIT = 4;
@@ -136,17 +135,17 @@ abstract class Easysdi_shopHelper {
                         if ($bperimeter->id == $perimeter->id):
                             foreach ($common as $cperimeter):
                                 if ($bperimeter->id == $cperimeter->id):
-                                    if ($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
-                                        $cperimeter->allowedbuffer = 0;
+//                                    if ($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
+//                                        $cperimeter->allowedbuffer = 0;
                                         continue 2;
-                                    endif;
+//                                    endif;
                                 endif;
                             endforeach;
-                            if ($bperimeter->allowedbuffer == 0):
-                                $common[] = $bperimeter;
-                            else:
-                                $common[] = $perimeter;
-                            endif;
+//                            if ($bperimeter->allowedbuffer == 0):
+                            $common[] = $bperimeter;
+//                            else:
+//                                $common[] = $perimeter;
+//                            endif;
                         endif;
                     endforeach;
                 endforeach;
@@ -219,14 +218,14 @@ abstract class Easysdi_shopHelper {
             $common = array();
             foreach ($basket->extractions as $extraction):
                 foreach ($extraction->perimeters as $perimeter):
-                    foreach ($common as $cperimeter):
-                        if ($perimeter->id == $cperimeter->id):
-                            if ($perimeter->allowedbuffer == 0 || $cperimeter->allowedbuffer == 0):
-                                $cperimeter->allowedbuffer = 0;
-                                continue 2;
-                            endif;
-                        endif;
-                    endforeach;
+//                    foreach ($common as $cperimeter):
+//                        if ($perimeter->id == $cperimeter->id):
+//                            if ($perimeter->allowedbuffer == 0 || $cperimeter->allowedbuffer == 0):
+//                                $cperimeter->allowedbuffer = 0;
+//                                continue 2;
+//                            endif;
+//                        endif;
+//                    endforeach;
                     $common[] = $perimeter;
                 endforeach;
             endforeach;
@@ -235,10 +234,6 @@ abstract class Easysdi_shopHelper {
         endif;
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
-
-//        $return['COUNT'] = count($basket->extractions);
-//        echo json_encode($return);
-//        die();
     }
 
     /**
@@ -327,11 +322,6 @@ abstract class Easysdi_shopHelper {
                         </div>                
                     </div>
                     <div  class="value-recap span4" >
-                        <!--<div id="perimeter-buffer" class="row-fluid" >
-                            <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h4>
-                                <span><?php if (!empty($item->basket->buffer)) echo (float) $item->basket->buffer; ?></span>                            
-                            </div>                                
-                        </div>   -->                 
                         <?php if (!empty($item->basket->extent->level)) : ?>
                             <div id="indoor-level" class="row-fluid" >
                                 <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_LEVEL'); ?></h4>
@@ -383,7 +373,7 @@ abstract class Easysdi_shopHelper {
      * @param string $dir directory path
      * See : http://php.net/manual/fr/function.rmdir.php
      */
-    function rrmdir($dir) {
+    public static function rrmdir($dir) {
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
@@ -1511,7 +1501,7 @@ abstract class Easysdi_shopHelper {
      * @param type $basket an easysdi basket (matching the order)
      * @return string A bootstrap styled label element
      */
-    public static function getOrderStatusLabel($order, $basket, $isGroupedBySupplier = false) {
+    public static function getOrderStatusLabel($order, $basket, $isGroupedBySupplier = false, $witharchivedstate = false) {
 
         //for drafts, return the order type
         if ($order->ordertype_id == 3) {
@@ -1546,7 +1536,6 @@ abstract class Easysdi_shopHelper {
         }
 
         switch ($order->orderstate_id) {
-            case self::ORDERSTATE_ARCHIVED:
             case self::ORDERSTATE_HISTORIZED:
             case self::ORDERSTATE_FINISH:
                 $labelClass = 'label-success';
@@ -1578,7 +1567,13 @@ abstract class Easysdi_shopHelper {
                 break;
         }
 
-        return'<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
+        $result = '<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl .'</span>';
+        if ($witharchivedstate && $order->archived == 1) {
+            $result .= ' <span class="order-archived-label label label-important" >' . JText::_('ARCHIVED') . '</span>';
+        };
+        
+
+        return $result;
     }
 
     /**
@@ -1598,7 +1593,7 @@ abstract class Easysdi_shopHelper {
             return $string;
         }
     }
-    
+
     /**
      * getCleanFilename - Remove path information and dots around the filename, to prevent uploading
      * into different directories or replacing hidden system files.
@@ -1614,7 +1609,7 @@ abstract class Easysdi_shopHelper {
             $name = str_replace('.', '-', microtime(true));
         }
         return $name;
-    }    
+    }
 
     /**
      * Return a human readable filesize

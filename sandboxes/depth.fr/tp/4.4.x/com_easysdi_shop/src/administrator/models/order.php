@@ -23,6 +23,8 @@ class Easysdi_shopModelorder extends JModelAdmin {
      * @since	1.6
      */
     protected $text_prefix = 'COM_EASYSDI_SHOP';
+    
+    public $item;
 
     /**
      * Returns a reference to the a Table object, always creating it.

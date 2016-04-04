@@ -2324,13 +2324,13 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `name` VARCHAR(255)  NOT NULL ,
 `ordertype_id` INT(11) UNSIGNED NULL ,
 `orderstate_id` INT(11) UNSIGNED NOT NULL ,
+`archived` tinyint(1) NOT NULL DEFAULT 0,
 `user_id` INT(11) UNSIGNED  NOT NULL ,
 `thirdparty_id` INT(11) UNSIGNED  NULL ,
 `validated` TINYINT(1) DEFAULT NULL,
 `validated_date` DATETIME DEFAULT NULL,
 `validated_reason` VARCHAR(500),
 `validated_by` INT(11) UNSIGNED NULL DEFAULT NULL,
-`buffer` FLOAT(40,20)  NULL ,
 `surface` FLOAT(40,20)  NULL ,
 `remark` VARCHAR(4000)  NULL ,
 `mandate_ref` VARCHAR(500) NULL,
@@ -2395,7 +2395,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `diffusion_id` INT(11) UNSIGNED NOT NULL ,
 `productstate_id` INT(11) UNSIGNED NOT NULL ,
 `remark` VARCHAR(4000)  NULL ,
-`fee` DECIMAL(10)  NULL ,
 `completed` DATETIME NULL DEFAULT '0000-00-00 00:00:00',
 `storage_id` INT(11) UNSIGNED NULL ,
 `file` VARCHAR(4000)  NULL ,
@@ -2506,7 +2505,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion_perimeter` (
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `diffusion_id` int(11) UNSIGNED NOT NULL ,
 `perimeter_id` int(11) UNSIGNED NOT NULL ,
-`buffer` TINYINT(1)  NOT NULL ,
 PRIMARY KEY (`id`),
     INDEX `#__sdi_diffusion_perimeter_fk1` (`diffusion_id` ASC) ,
     INDEX `#__sdi_diffusion_perimeter_fk2` (`perimeter_id` ASC) ,
@@ -2559,7 +2557,7 @@ PRIMARY KEY (`id`),
   CONSTRAINT `#__sdi_diffusion_download_fk2`
     FOREIGN KEY (`user_id`)
     REFERENCES `#__sdi_user` (`id`)
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

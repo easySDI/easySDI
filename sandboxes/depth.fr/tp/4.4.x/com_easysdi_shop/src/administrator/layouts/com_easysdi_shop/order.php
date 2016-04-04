@@ -106,8 +106,7 @@ if (!$showActions) {
         </div>
 
         <?php
-        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_ARCHIVED ||
-                $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_HISTORIZED ||
+        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_HISTORIZED ||
                 $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH):
             ?>
             <div id="sdi-order-recap-completed" class="row-fluid" >
@@ -123,9 +122,11 @@ if (!$showActions) {
         <div id="sdi-order-recap-orderstate" class="row-fluid">
             <div class="span2 order-edit-label" >
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
+
             </div>
             <div class="span10 order-edit-value" >
-                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true); ?>
+                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true, true); ?>
+
             </div>
         </div>
 

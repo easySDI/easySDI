@@ -261,7 +261,34 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     }
 
     function archive() {
-        $this->saveState(Easysdi_shopHelper::ORDERSTATE_ARCHIVED);
+        $model = $this->getModel('Order', 'Easysdi_shopModel');
+
+        $id = JFactory::getApplication()->input->getInt('id', null, 'array');
+
+        if (empty($id)):
+            // Redirect back to the list screen.
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDERS_ERROR_MSG_CANT_ARCHIVE'), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+            return false;
+        endif;
+
+        // Attempt to save order state.
+        $return = $model->archive($id);
+
+        // Check for errors.
+        if ($return === false) {
+            // Redirect back to the list screen.
+            $this->setMessage(JText::sprintf('COM_EASYSDI_SHOP_ORDER_ARCHIVED_FAILED', $model->getError()), 'warning');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+            return false;
+        }
+
+        // Clear the profile id from the session.
+        JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
+
+        // Redirect to the list screen.
+        $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_ARCHIVED_SUCCESSFULLY'));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
     }
 
     function saveState($state) {

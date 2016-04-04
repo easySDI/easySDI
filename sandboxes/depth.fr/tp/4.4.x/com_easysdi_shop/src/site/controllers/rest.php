@@ -274,7 +274,6 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query->update('#__sdi_order_diffusion');
         $query->set('remark = ' . $query->quote($remark));
-        $query->set('fee = '. $query->quote($amount));
         $query->set('completed = ' . $query->quote($now));
         $query->set('file = ' . $query->quote($filename));
         $query->set('size = ' . $size);
@@ -582,12 +581,6 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         }
         
         return $categories;
-    }
-
-    private function getBuffer() {
-        $buffer = $this->response->createElementNS($this->nsEasysdi, 'easysdi:BUFFER');
-
-        return $buffer;
     }
 
     /**

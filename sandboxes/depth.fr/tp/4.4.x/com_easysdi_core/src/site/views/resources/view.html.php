@@ -39,7 +39,12 @@ class Easysdi_coreViewResources extends JViewLegacy {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             return;
         }
-
+       
+        $this->mduk = json_decode($app->getUserState('com_easysdi_core.remove.version.mduk'), null);
+        $app->setUserState('com_easysdi_core.remove.version.mduk', null);
+        $this->vcall = json_decode($app->getUserState('com_easysdi_core.remove.version.call'), null);
+        $app->setUserState('com_easysdi_core.remove.version.call', null);
+        
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
