@@ -45,8 +45,6 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js?v=
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js?v=' . sdiFactory::getSdiFullVersion());
-//$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js');
-//$document->addScript('components/com_easysdi_shop/helpers/helper.js');
 $document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css?v=' . sdiFactory::getSdiFullVersion());
 Easysdi_shopHelper::addMapShopConfigToDoc();
 
