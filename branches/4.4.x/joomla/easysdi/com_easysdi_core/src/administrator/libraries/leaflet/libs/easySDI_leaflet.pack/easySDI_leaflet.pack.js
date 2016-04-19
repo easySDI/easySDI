@@ -9564,11 +9564,11 @@ L.Control.Sidebar = L.Control.extend({
         for (i = this._sidebar.children.length - 1; i >= 0; i--) {
             child = this._sidebar.children[i];
             if (child.tagName == 'UL' &&
-                    L.DomUtil.hasClass(child, 'sidebar-tabs'))
+                L.DomUtil.hasClass(child, 'sidebar-tabs'))
                 this._tabs = child;
 
             else if (child.tagName == 'DIV' &&
-                    L.DomUtil.hasClass(child, 'sidebar-content'))
+                L.DomUtil.hasClass(child, 'sidebar-content'))
                 this._container = child;
         }
 
@@ -9619,7 +9619,7 @@ L.Control.Sidebar = L.Control.extend({
         return this;
     },
 
-    open: function(id) {
+    open: function (id) {
         var i, child;
 
         // hide old active contents and show new content
@@ -9640,7 +9640,9 @@ L.Control.Sidebar = L.Control.extend({
                 L.DomUtil.removeClass(child, 'active');
         }
 
-        this.fire('content', { id: id });
+        this.fire('content', {
+            id: id
+        });
 
         // open sidebar (if necessary)
         if (L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
@@ -9651,7 +9653,7 @@ L.Control.Sidebar = L.Control.extend({
         return this;
     },
 
-    close: function() {
+    close: function () {
         // remove old active highlights
         for (var i = this._tabitems.length - 1; i >= 0; i--) {
             var child = this._tabitems[i];
@@ -9668,7 +9670,7 @@ L.Control.Sidebar = L.Control.extend({
         return this;
     },
 
-    _onClick: function(e) {
+    _onClick: function (e) {
         e.preventDefault();
         if (L.DomUtil.hasClass(this, 'active'))
             this._sidebar.close();
@@ -9681,7 +9683,6 @@ L.Control.Sidebar = L.Control.extend({
 L.control.sidebar = function (sidebar, options) {
     return new L.Control.Sidebar(sidebar, options);
 };
-
  easyLayer = function (map, params) {
 
      var options = {
@@ -10729,26 +10730,25 @@ var easySDImap;
 jQuery(document).ready(function ($) {
 
     var script_path = 'libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js';
-    
+
     var scripts = document.getElementsByTagName("script");
-    
-    var local_url='';
+
+    var local_url = '';
 
     // Look through them trying to find ourselves
-    for(var i=0; i<scripts.length; i++) {
-      if(scripts[i].src.indexOf(script_path) > -1) {
-          var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
-      }
+    for (var i = 0; i < scripts.length; i++) {
+        if (scripts[i].src.indexOf(script_path) > -1) {
+            var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
+        }
     }
-    
-    if (local_url.length==0)
-    {
+
+    if (local_url.length == 0) {
         script_path = 'libs/easysdi_leaflet/easysdi_leaflet.js';
         // Look through them trying to find ourselves
-        for(var i=0; i<scripts.length; i++) {
-          if(scripts[i].src.indexOf(script_path) > -1) {
-              var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
-          }
+        for (var i = 0; i < scripts.length; i++) {
+            if (scripts[i].src.indexOf(script_path) > -1) {
+                var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
+            }
         }
     }
 
@@ -11271,6 +11271,13 @@ jQuery(document).ready(function ($) {
 
         };
         var container;
+
+        if (options.mapoptions == undefined) {
+            options.mapoptions = {};
+        }
+
+        mapOptions = jQuery.extend(true, mapOptions, options.mapoptions);
+
 
         var controlLayer, controlLegend, controlFeature;
         var serviceConnector;
@@ -12079,7 +12086,7 @@ jQuery(document).ready(function ($) {
             }));
             jQuery.extend(options, params);
 
-            var sidebar_html = jQuery('<div id="sidebar" class="sidebar collapsed">' +
+            var sidebar_html = jQuery('<div id="easysdi_leaflet_sidebar" class="sidebar collapsed">' +
                 '<ul class="sidebar-tabs sidebar-tabs-top" role="tablist"></ul>' +
                 '<ul class="sidebar-tabs sidebar-tabs-bottom" role="tablist"></ul>' +
                 '<div class="sidebar-content active"></div>' +
@@ -12157,26 +12164,25 @@ jQuery(document).ready(function ($) {
                     }
                     var context = _easySDImap.getContext();
                     var script_path = 'libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js';
-    
+
                     var scripts = document.getElementsByTagName("script");
 
-                    var local_url='';
+                    var local_url = '';
 
                     // Look through them trying to find ourselves
-                    for(var i=0; i<scripts.length; i++) {
-                      if(scripts[i].src.indexOf(script_path) > -1) {
-                          var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
-                      }
+                    for (var i = 0; i < scripts.length; i++) {
+                        if (scripts[i].src.indexOf(script_path) > -1) {
+                            var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
+                        }
                     }
 
-                    if (local_url.length==0)
-                    {
+                    if (local_url.length == 0) {
                         script_path = 'libs/easysdi_leaflet/easysdi_leaflet.js';
                         // Look through them trying to find ourselves
-                        for(var i=0; i<scripts.length; i++) {
-                          if(scripts[i].src.indexOf(script_path) > -1) {
-                              var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
-                          }
+                        for (var i = 0; i < scripts.length; i++) {
+                            if (scripts[i].src.indexOf(script_path) > -1) {
+                                var local_url = scripts[i].src.substring(0, scripts[i].src.indexOf(script_path));
+                            }
                         }
                     }
 
@@ -12240,7 +12246,7 @@ jQuery(document).ready(function ($) {
             }
 
 
-            _this.sidebar = L.control.sidebar('sidebar', options);
+            _this.sidebar = L.control.sidebar('easysdi_leaflet_sidebar', options);
             _this.sidebar.addTo(map);
 
 
