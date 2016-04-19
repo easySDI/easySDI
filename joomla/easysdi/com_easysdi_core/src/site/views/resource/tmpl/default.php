@@ -15,7 +15,7 @@ JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 
 <!-- Styling for making front end forms look OK -->
@@ -173,7 +173,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_NEW_RESOURCE'); ?></h1>
     <?php endif; ?>
     <div id="loader" style="">
-        <img id="loader_image"  src="administrator/components/com_easysdi_core/assets/images/loader.gif" alt="">
+        <img id="loader_image"  src="components/com_easysdi_core/assets/images/loader.gif" alt="">
     </div>
     <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
