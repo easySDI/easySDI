@@ -99,7 +99,6 @@
                     <folder>views</folder>
                     <folder>models</folder>
                     <folder>controllers</folder>
-                    <folder>libraries</folder>
                 </files>
                 <administration>
                     <files folder="administrator">
