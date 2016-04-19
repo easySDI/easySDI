@@ -11,7 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 JText::script('COM_EASYSDI_SHOP_BASKET_SUCCESSFULLY_UPDATED');
 $document = JFactory::getDocument();
-$document->addStyleSheet(JURI::root(true) . '/components/com_easysdi_core/assets/css/easysdi_loader.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet(JURI::root(true) . '/administrator/components/com_easysdi_core/assets/css/easysdi_loader.css?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script>
     var request;

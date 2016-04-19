@@ -139,7 +139,7 @@ class Easysdi_mapModellayers extends JModelList
 		$query->select(
 				$this->getState(
 						'list.select',
-						'a.id, a.alias, a.checked_out, a.checked_out_time, a.state, a.ordering, a.name, a.access, a.created_by'
+						'a.id, a.alias, a.checked_out, a.checked_out_time, a.state, a.ordering, a.name, a.access'
 				)
 		);
 		$query->from('#__sdi_maplayer AS a');
@@ -149,8 +149,8 @@ class Easysdi_mapModellayers extends JModelList
 		$query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
 		// Join over the created by field 'created_by'
-		/*$query->select('created_by.name AS created_by');
-		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');*/
+		$query->select('created_by.name AS created_by');
+		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
  		// Join over the foreign key 'physicalservice_id'
 		$query->select('#__sdi_physicalservice22.name AS physicalservice_name');

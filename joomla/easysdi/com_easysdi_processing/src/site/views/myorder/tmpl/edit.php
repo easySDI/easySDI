@@ -22,8 +22,8 @@ JHtml::_('behavior.keepalive');
 
 // Import JS
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript('components/com_easysdi_processing/assets/js/params_editor.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('administrator/components/com_easysdi_processing/assets/js/params_editor.js?v=' . sdiFactory::getSdiFullVersion());
 $app = JFactory::getApplication();
 $processing=Easysdi_processingHelper::getProcessById($app->input->get('processing', '', 'INT'));
 $processing_parameters=json_decode($processing->parameters);

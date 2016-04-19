@@ -14,18 +14,13 @@
                     required="true"/>
             
             
-        <field name="monitorUser"
-             type="text"
-             class="input"
-             label="COM_EASYSDI_MONITOR_USER_LABEL"
-             description="COM_EASYSDI_MONITOR_USER_DESC">
-         </field>
-         
-         <field name="monitorPassword"
-             type="password"
-             class="input"
-             label="COM_EASYSDI_MONITOR_PASSWORD_LABEL"
-             description="COM_EASYSDI_MONITOR_PASSWORD_DESC">
+        <field name="test"
+             type="radio"
+             default="1"
+             label="COM_EASYSDI_MONITOR_TEST_LABEL"
+             description="COM_EASYSDI_MONITOR_TEST_DESC">
+                 <option value="0">JHIDE</option>
+                 <option value="1">JSHOW</option>
          </field>
 
 	</fieldset>
