@@ -280,7 +280,7 @@ Ext.namespace("EasySDI_Mon");
 Ext.onReady(function(){
 	Ext.QuickTips.init();
 
-	var url = String.format("./components/com_easysdi_monitor/libraries/ext/src/locale/ext-lang-{0}.js", EasySDI_Mon.locale);
+	var url = String.format("../components/com_easysdi_core/libraries/ext/src/locale/ext-lang-{0}.js", EasySDI_Mon.locale);
 	Ext.Ajax.request({
 		url: url,
 		success: function(response, opts){
@@ -630,7 +630,7 @@ Ext.extend(Ext.App, Ext.util.Observable, {
  */
 Ext.namespace("EasySDI_Mon");
 
-Ext.BLANK_IMAGE_URL = './components/com_easysdi_monitor/libraries/ext/resources/images/default/s.gif';	
+Ext.BLANK_IMAGE_URL = '../components/com_easysdi_core/libraries/ext/resources/images/default/s.gif';	
 //use not utc time to prevent time shift in graphs
 Highcharts.setOptions({
 	global: {
@@ -950,7 +950,13 @@ Ext.onReady(function() {
 
 	var proxy = new Ext.data.HttpProxy({
 		
-		url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection
+		//url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection
+                api:{
+                read: { url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection, method: 'GET' },
+                create: { url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection, method: 'POST' },
+                update: { url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection, method: 'POST' },
+                destroy: { url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection, method: 'DELETE' }
+            }
 	});
 
 	var writer = new Ext.data.JsonWriter({
@@ -4056,9 +4062,9 @@ Ext.onReady(function() {
 			}),
 			width: 200
 		},
-		{
+		/*{
 			html:EasySDI_Mon.lang.getLocal('report sla')+':'
-		},
+		},*/
 		{
 			// New sla store
 			items:[{
@@ -4067,6 +4073,7 @@ Ext.onReady(function() {
 				id:             'repCbSla',
 				triggerAction:  'all',
 				forceSelection: true,
+                                hidden: true,
 				editable:       false,
 				fieldLabel:     'Sla',
 				name:           'slaComboFilter',
@@ -6608,8 +6615,8 @@ Ext.onReady(function() {
 		       jobPanel,
 		       reportPanel,
 		       alertPanel,
-		       maintenancePanel,
-		       slaPanel
+		       maintenancePanel/*,
+		       slaPanel*/
 		       ]
 	});
 
