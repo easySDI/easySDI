@@ -17,11 +17,11 @@ L.Control.Sidebar = L.Control.extend({
         for (i = this._sidebar.children.length - 1; i >= 0; i--) {
             child = this._sidebar.children[i];
             if (child.tagName == 'UL' &&
-                    L.DomUtil.hasClass(child, 'sidebar-tabs'))
+                L.DomUtil.hasClass(child, 'sidebar-tabs'))
                 this._tabs = child;
 
             else if (child.tagName == 'DIV' &&
-                    L.DomUtil.hasClass(child, 'sidebar-content'))
+                L.DomUtil.hasClass(child, 'sidebar-content'))
                 this._container = child;
         }
 
@@ -72,7 +72,7 @@ L.Control.Sidebar = L.Control.extend({
         return this;
     },
 
-    open: function(id) {
+    open: function (id) {
         var i, child;
 
         // hide old active contents and show new content
@@ -93,7 +93,9 @@ L.Control.Sidebar = L.Control.extend({
                 L.DomUtil.removeClass(child, 'active');
         }
 
-        this.fire('content', { id: id });
+        this.fire('content', {
+            id: id
+        });
 
         // open sidebar (if necessary)
         if (L.DomUtil.hasClass(this._sidebar, 'collapsed')) {
@@ -104,7 +106,7 @@ L.Control.Sidebar = L.Control.extend({
         return this;
     },
 
-    close: function() {
+    close: function () {
         // remove old active highlights
         for (var i = this._tabitems.length - 1; i >= 0; i--) {
             var child = this._tabitems[i];
@@ -121,7 +123,7 @@ L.Control.Sidebar = L.Control.extend({
         return this;
     },
 
-    _onClick: function(e) {
+    _onClick: function (e) {
         e.preventDefault();
         if (L.DomUtil.hasClass(this, 'active'))
             this._sidebar.close();
