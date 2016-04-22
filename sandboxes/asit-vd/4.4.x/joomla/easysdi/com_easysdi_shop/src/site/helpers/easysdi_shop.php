@@ -137,7 +137,7 @@ abstract class Easysdi_shopHelper {
                                 if ($bperimeter->id == $cperimeter->id):
 //                                    if ($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
 //                                        $cperimeter->allowedbuffer = 0;
-                                        continue 2;
+                                    continue 2;
 //                                    endif;
                                 endif;
                             endforeach;
@@ -353,7 +353,7 @@ abstract class Easysdi_shopHelper {
                                     <span id ="perimeter-recap-details-download-kml"><a href="#" onclick="downloadPerimeter('KML',<?php echo $item->id; ?>);
                                             return false;" >KML</a>, </span>
                                     <span id ="perimeter-recap-details-download-dxf"><a href="#" onclick="downloadPerimeter('DXF',<?php echo $item->id; ?>);
-                                            return false;" >DXF</a> ,</span>
+                                            return false;" >DXF</a>, </span>
                                     <span id ="perimeter-recap-details-download-geojson"><a href="#" onclick="downloadPerimeter('GeoJSON',<?php echo $item->id; ?>);
                                             return false;" >GeoJSON</a></span>                                    
                                 </div>
@@ -1567,11 +1567,11 @@ abstract class Easysdi_shopHelper {
                 break;
         }
 
-        $result = '<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl .'</span>';
+        $result = '<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
         if ($witharchivedstate && $order->archived == 1) {
             $result .= ' <span class="order-archived-label label label-important" >' . JText::_('ARCHIVED') . '</span>';
         };
-        
+
 
         return $result;
     }
