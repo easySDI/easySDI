@@ -349,13 +349,13 @@ abstract class Easysdi_shopHelper {
                                 <div id="perimeter-recap-details-download">
                                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS'); ?>
                                     <span id ="perimeter-recap-details-download-gml"><a href="#" onclick="downloadPerimeter('GML',<?php echo $item->id; ?>);
-                                            return false;" >GML</a>, </span>
+                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GML'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-kml"><a href="#" onclick="downloadPerimeter('KML',<?php echo $item->id; ?>);
-                                            return false;" >KML</a>, </span>
+                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_KML'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-dxf"><a href="#" onclick="downloadPerimeter('DXF',<?php echo $item->id; ?>);
-                                            return false;" >DXF</a>, </span>
+                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_DXF'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-geojson"><a href="#" onclick="downloadPerimeter('GeoJSON',<?php echo $item->id; ?>);
-                                            return false;" >GeoJSON</a></span>                                    
+                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GEOJSON'); ?></a></span>                                    
                                 </div>
                             <?php endif; ?>
                         </div>
