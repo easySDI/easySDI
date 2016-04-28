@@ -142,10 +142,12 @@ if (!empty($this->extra_sidebar)) {
 		<tbody>
 			<?php foreach ($this->items as $i => $item) :
 			$ordering	= ($listOrder == 'a.ordering');
-			$canCreate	= $user->authorise('core.create',		'com_easysdi_map');
-			$canEdit	= $user->authorise('core.edit',			'com_easysdi_map');
-			$canCheckin	= $user->authorise('core.manage',		'com_easysdi_map');
-			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_map');
+			$canCreate	= $user->authorise('core.create', 'com_easysdi_map');
+			$canEdit	= $user->authorise('core.edit',	'com_easysdi_map.map.'. $item->id);
+			//$canCheckin	= $user->authorise('core.manage', 'com_easysdi_map');
+                        $canCheckin     = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
+                        $canEditOwn     = $user->authorise('core.edit.own',   'com_easysdi_map.map.' . $item->id) && $item->created_by == $userId;
+			$canChange	= $user->authorise('core.edit.state', 'com_easysdi_map');
 			?>
 			<tr class="row<?php echo $i % 2; ?>" >
 			<?php if (isset($item->ordering)): ?>
