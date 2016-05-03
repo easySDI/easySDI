@@ -21,7 +21,18 @@ $user_roles=Easysdi_processingHelper::getCurrentUserRolesOnData($order);
 
 $doc = JFactory::getDocument();
 $base_url=Juri::base(true) . '/components/com_easysdi_processing/assets';
-$base_easysdiMap_url = Juri::base(true) . '/components/com_easysdi_core/libraries';
+$base_easysdiMap_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
+
+/*$doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/leaflet/leaflet.css');
+$doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/main.css');
+
+$doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
+$doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
+$doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet/leaflet.js');
+//$doc->addScript($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js');
+$doc->addScript($base_easysdiMap_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js');
+$doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
+*/
 
 JHtml::_('jquery.framework');
 if (JDEBUG) {

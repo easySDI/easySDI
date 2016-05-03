@@ -22,13 +22,7 @@ Ext.onReady(function() {
 
 	var proxy = new Ext.data.HttpProxy({
 		
-		//url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection
-                api:{
-                read: { url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection, method: 'GET' },
-                create: { url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection, method: 'POST' },
-                update: { url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection, method: 'POST' },
-                destroy: { url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection, method: 'DELETE' }
-            }
+		url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection
 	});
 
 	var writer = new Ext.data.JsonWriter({

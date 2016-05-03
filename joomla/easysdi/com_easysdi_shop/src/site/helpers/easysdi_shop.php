@@ -1443,7 +1443,7 @@ abstract class Easysdi_shopHelper {
                 mapStrokeWidth = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_width', 2) . ',
                 mapPointStrokeWidth = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_point_stroke_width', 2) . ',
                 mapPointRadius = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5) . ',
-                mapRotateIconURL = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', Juri::base(true) .'/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png') . '",
+                mapRotateIconURL = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png') . '",
                 mapMinSurfaceRectangle = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0) . ',
                 mapMinSurfaceRectangleBorder = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100) . ';');
     }
