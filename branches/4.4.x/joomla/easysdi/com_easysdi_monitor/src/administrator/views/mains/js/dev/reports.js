@@ -244,9 +244,9 @@ Ext.onReady(function() {
 			}),
 			width: 200
 		},
-		/*{
+		{
 			html:EasySDI_Mon.lang.getLocal('report sla')+':'
-		},*/
+		},
 		{
 			// New sla store
 			items:[{
@@ -255,7 +255,6 @@ Ext.onReady(function() {
 				id:             'repCbSla',
 				triggerAction:  'all',
 				forceSelection: true,
-                                hidden: true,
 				editable:       false,
 				fieldLabel:     'Sla',
 				name:           'slaComboFilter',

@@ -10,25 +10,29 @@
 defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
-
+//JHtml::_('bootstrap.tooltip');
+//JHtml::_('behavior.tooltip');
+//JHtml::_('behavior.multiselect');
+//JHtml::_('formbehavior.chosen', 'select');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_monitor/assets/css/easysdi_monitor.css?v=' . sdiFactory::getSdiFullVersion());
 
 //Load css files
-$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
-$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css');
-$document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_core/libraries/ext/examples/ux/css/RowEditor.css');
+$document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/resources/css/ext-all.css');
+$document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/resources/css/xtheme-gray.css');
+//$document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/shared/examples.css');
+$document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/ux/css/RowEditor.css');
 $document->addStyleSheet('components/com_easysdi_monitor/assets/css/monitor.css?v=' . sdiFactory::getSdiFullVersion());
 
 //Common js lib
 $document->addScript('components/com_easysdi_monitor/libraries/jquery/jquery.min.js');
-$document->addScript(Juri::root(true) . '/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
-$document->addScript(Juri::root(true) . '/components/com_easysdi_core/libraries/ext/ext-all.js');
+$document->addScript('components/com_easysdi_monitor/libraries/ext/adapter/ext/ext-base.js');
+$document->addScript('components/com_easysdi_monitor/libraries/ext/ext-all.js');
 $document->addScript('components/com_easysdi_monitor/libraries/Highcharts-2.0.3/js/highcharts.js');
 $document->addScript('components/com_easysdi_monitor/libraries/Highcharts-2.0.3/js/modules/exporting.js');
-$document->addScript(Juri::root(true) . '/components/com_easysdi_core/libraries/ext/examples/ux/RowEditor.js');
-$document->addScript(Juri::root(true) . '/components/com_easysdi_core/libraries/ext/examples/ux/RowExpander.js');
+$document->addScript('components/com_easysdi_monitor/libraries/ext/examples/ux/RowEditor.js');
+$document->addScript('components/com_easysdi_monitor/libraries/ext/examples/ux/RowExpander.js');
 $document->addScript('components/com_easysdi_monitor/views/mains/js/ApplicationSettings.js?v=' . sdiFactory::getSdiFullVersion());
 
 //minified files -> use for prod
@@ -68,14 +72,14 @@ require_once( JPATH_COMPONENT_ADMINISTRATOR . '/' . 'i18n' . '/' . 'lang.php' );
     var link = $.createElement('link');
     link.rel = 'stylesheet';
     link.type = 'text/css';
-    link.href = '../components/com_easysdi_core/libraries/ext/resources/css/ext-all.css';
+    link.href = 'components/com_easysdi_monitor/libraries/ext/resources/css/ext-all.css';
     link.media = 'all';
     // head.appendChild(link);
 
     var link = $.createElement('link');
     link.rel = 'stylesheet';
     link.type = 'text/css';
-    link.href = '../components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css';
+    link.href = 'components/com_easysdi_monitor/libraries/ext/resources/css/xtheme-gray.css';
     link.media = 'all';
     //head.appendChild(link);
 </script>

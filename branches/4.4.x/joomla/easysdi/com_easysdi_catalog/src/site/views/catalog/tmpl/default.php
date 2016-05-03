@@ -15,12 +15,12 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript('components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js?v=' . sdiFactory::getSdiFullVersion());
 if (JDEBUG) {
-    $document->addScript('components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js');
 } else {
-    $document->addScript('components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
 }
 ?>
 <style>

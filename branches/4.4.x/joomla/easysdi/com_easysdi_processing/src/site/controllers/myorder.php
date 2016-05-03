@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_processing/helpers/easysdi_processing.php';
-jimport( 'joomla.filesystem.file' );
 
 /**
  * MyOrder controller class.

@@ -19,10 +19,10 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet(JURI::root(true) . '/components/com_easysdi_dashboard/assets/css/easysdi_dashboard.css?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript(JURI::root(true) . '/components/com_easysdi_dashboard/assets/js/com_easysdi_dashboard.js?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript(JURI::root(true) . '/components/com_easysdi_core/libraries/flot-0.8.3/jquery.flot.min.js');
-$document->addScript(JURI::root(true) . '/components/com_easysdi_core/libraries/flot-0.8.3/jquery.flot.pie.js');
-$document->addScript(JURI::root(true) . '/components/com_easysdi_core/libraries/flot-0.8.3/jquery.flot.tooltip.min.js');
-$document->addScript(JURI::root(true) . '/components/com_easysdi_core/libraries/flot-0.8.3/jquery.flot.stack.min.js');
+$document->addScript(JURI::root(true) . '/components/com_easysdi_dashboard/libraries/flot-0.8.3/jquery.flot.min.js');
+$document->addScript(JURI::root(true) . '/components/com_easysdi_dashboard/libraries/flot-0.8.3/jquery.flot.pie.js');
+$document->addScript(JURI::root(true) . '/components/com_easysdi_dashboard/libraries/flot-0.8.3/jquery.flot.tooltip.min.js');
+$document->addScript(JURI::root(true) . '/components/com_easysdi_dashboard/libraries/flot-0.8.3/jquery.flot.stack.min.js');
 $document->addScriptDeclaration('com_easysdi_dahboard_graphcolours=[' . $this->graphcolours . ']');
 
 $user = JFactory::getUser();
