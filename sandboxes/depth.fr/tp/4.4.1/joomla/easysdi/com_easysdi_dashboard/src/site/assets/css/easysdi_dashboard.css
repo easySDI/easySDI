@@ -1,0 +1,27 @@
+/*container size for graph*/
+.indicator-graph{
+    min-height: 120px;
+}
+
+/*first word uppercase*/
+.com_easysdi_dashboard #div_global_dates .sdi-dashboard-header-from{
+    text-transform: capitalize;
+}
+
+/*correct margins*/
+.com_easysdi_dashboard .sdi-dashboard-export-buttons [class^="icon-"], [class*=" icon-"] {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+/** admin only **/
+
+/*little top margin for filter*/
+.admin.com_easysdi_dashboard .sdi-dashboard-custom-dates{
+    margin-top: 10px;
+}
+
+/*align dates with other filters in BE*/
+.admin.com_easysdi_dashboard .sdi-dashboard-custom-dates input{
+    width: 164px;
+}

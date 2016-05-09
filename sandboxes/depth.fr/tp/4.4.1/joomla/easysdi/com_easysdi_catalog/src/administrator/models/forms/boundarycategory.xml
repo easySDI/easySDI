@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset>
+
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+
+        <field name="alias" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_ALIAS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_ALIAS" 
+               filter="safehtml" /> 
+        
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+               filter="ARRAY" /> 
+
+        <field name="created_by" type="createdby" default=""   class="readonly"
+               readonly="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_CREATED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_CREATED_BY"  /> 
+
+        <field name="created" type="timecreated" default=""   class="readonly"
+               readonly="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_CREATED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_CREATED"  /> 
+
+        <field name="modified_by" type="createdby" size="40"  class="readonly"
+               readonly="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_MODIFIED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_MODIFIED_BY" 
+               default="0" 
+               filter="safehtml" /> 
+
+        <field name="modified" type="timeupdated" default=""   class="readonly"
+               readonly="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_MODIFIED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_MODIFIED"  /> 
+
+        <field name="name" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_NAME"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_NAME" 
+               filter="safehtml" /> 
+
+        <field 	name="parent_id" 
+                type="sql" 
+                class="inputbox"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_PARENT_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_PARENT_ID" 
+                query=" SELECT NULL AS id, '' AS name 
+                        UNION SELECT id, name FROM #__sdi_boundarycategory 
+                        WHERE state=1 ORDER BY name" 
+                key_field="id" 
+                value_field="name"
+        /> 
+
+        <field name="access"
+               type="accesslevel"
+               label="JFIELD_ACCESS_LABEL"
+               description="JFIELD_ACCESS_DESC"
+               class="inputbox span12 small"
+               size="1"
+        />
+        
+        <field
+            name="state"
+            type="list"
+            label="JSTATUS"
+            description="JFIELD_PUBLISHED_DESC"
+            class="inputbox"
+            size="1"
+            default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field> 
+        
+       
+
+    </fieldset> 
+    
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+
+    <fieldset 
+        name="accesscontrol">
+       
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="boundarycategory"
+        />
+
+    </fieldset>
+
+</form>
