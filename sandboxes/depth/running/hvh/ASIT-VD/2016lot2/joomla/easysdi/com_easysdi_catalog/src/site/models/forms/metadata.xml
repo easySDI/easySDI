@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="hidden">
+        <field name="id" type="hidden" filter="safehtml" />
+        <field name="guid" type="hidden" filter="safehtml" />
+        <field name="alias" type="hidden" filter="safehtml" />
+        <field name="created_by" type="hidden" filter="safehtml" />
+        <field name="created" type="hidden" filter="safehtml" />
+        <field name="modified_by" type="hidden" filter="safehtml" />
+        <field name="modified" type="hidden" filter="safehtml" />
+        <field name="metadatastate_id" type="hidden" filter="safehtml" />
+        <field name="accessscope_id" type="hidden" filter="safehtml" />
+        <field name="name" type="hidden" filter="safehtml" />
+        <field name="published" type="hidden" filter="safehtml" />
+        <field name="archived" type="hidden" filter="safehtml" />
+        <field name="lastsynchronization" type="hidden" filter="safehtml" />
+        <field name="synchronized_by" type="hidden" filter="safehtml" />
+        <field name="notification" type="hidden" filter="safehtml" />
+        <field name="version_id" type="hidden" filter="safehtml" />
+        <field name="checked_out" type="hidden" filter="safehtml" />
+        <field name="checked_out_time" type="hidden" filter="safehtml" /> 
+    </fieldset> 
+</form>
