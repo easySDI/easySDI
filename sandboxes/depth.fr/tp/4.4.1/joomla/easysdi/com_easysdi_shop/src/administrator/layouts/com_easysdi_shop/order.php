@@ -115,8 +115,8 @@ if (!$showActions) {
                 </div>
                 <div class="span10 order-edit-value" >
                     <?php echo JHtml::date($item->completed, JText::_('DATE_FORMAT_LC2')); ?>
-                </div>                
-            </div>            
+                </div>
+            </div>
         <?php endif; ?>
 
         <div id="sdi-order-recap-orderstate" class="row-fluid">
@@ -124,10 +124,10 @@ if (!$showActions) {
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
 
             </div>
-            <div class="span10 order-edit-value " >
+            <div class="span10 order-edit-value" >
                 <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true, true); ?>
 
-            </div>                   
+            </div>
         </div>
 
         <div id="sdi-order-recap-ordertype" class="row-fluid">
@@ -484,12 +484,12 @@ if (!$showActions) {
                                         // product need a response
                                         ?>
                                         <button class="btn btn-success sdi-btn-upload-order-response" onclick="checkAndSendProduct(<?php echo $productItem->id; ?>);
-                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             <span class="icon icon-upload"></span>
                                             Envoyer</button><br/>
                                         <button class="btn btn-danger btn-mini sdi-btn-cancel-order-response" onclick="enableCurrentProduct(<?php echo $productItem->id; ?>);
-                                                                jQuery('#rejectModal').modal();
-                                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
+                                                jQuery('#rejectModal').modal();
+                                                return false;" <?php if (!$editMode): ?>disabled="disabled"<?php endif; ?>>
                                             Annuler</button>
 
                                         <!--
@@ -547,23 +547,23 @@ if (!$showActions) {
                         <?php endforeach; ?>
                     </tbody>
                     <?php if ($showPricing) : ?>
-                        <tfoot>
-                            <tr class="supplier_fixed_fee_row">
-                                <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
-                                <td class="price_column supplier_cal_fee_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti); ?></td>
-                                <td class="action_column action_column_recap">&nbsp;</td>
-                            </tr>
-                            <tr class="supplier_total_row" style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
-                                <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
-                                <td class="price_column supplier_cal_total_amount_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti); ?></td>
-                                <td class="action_column action_column_recap">&nbsp;</td>
-                            </tr>
-                            <tr class="supplier_rebate_row" style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
-                                <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
-                                <td class="price_column supplier_cal_total_rebate_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti); ?></td>
-                                <td class="action_column action_column_recap">&nbsp;</td>
-                            </tr>
-                        </tfoot>
+                    <tfoot>
+                        <tr class="supplier_fixed_fee_row">
+                            <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
+                            <td class="price_column supplier_cal_fee_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti); ?></td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
+                        </tr>
+                        <tr class="supplier_total_row" style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
+                            <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
+                            <td class="price_column supplier_cal_total_amount_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti); ?></td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
+                        </tr>
+                        <tr class="supplier_rebate_row" style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
+                            <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
+                            <td class="price_column supplier_cal_total_rebate_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti); ?></td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
+                        </tr>
+                    </tfoot>
                     <?php endif; ?>
                 </table>
             <?php endif; ?>
