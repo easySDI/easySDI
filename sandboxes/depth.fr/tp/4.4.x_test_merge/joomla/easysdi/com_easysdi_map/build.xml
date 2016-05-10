@@ -1,0 +1,194 @@
+<?xml version="1.0" ?>
+
+<project default="com_easysdi_map" basedir="../../../">
+    
+    <property name="map.component.name" value="com_easysdi_map"/>
+    <property name="map.src.out.dir" value="${root.out.dir}/${map.component.name}/src"/>
+    <property name="map.package.out.dir" value="${root.out.dir}/${map.component.name}/target"/>
+    
+    <available file="${joomla.administrator.components.dir}/${map.component.name}" type="dir" property="map.admin.exist"/>
+    <available file="${joomla.site.components.dir}/${map.component.name}" type="dir" property="map.site.exist"/>
+    
+    <target name="package" depends="write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
+    <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
+
+    <!-- 
+        Create the administrator folder if necessary.
+        Empty the administrator folder, except svn files.
+        Copy the files from the Admin.
+    --> 
+    <target name="copy-administrator" if="map.admin.exist">
+        
+        <echo>Copy administrator structure of ${map.component.name} component</echo>
+        <copy todir="${map.src.out.dir}/administrator" overwrite="true">
+            <fileset dir="${joomla.administrator.components.dir}/${map.component.name}">
+                <exclude name="easysdi_*.xml"/>
+                <exclude name="script.*"/>
+            </fileset>
+        </copy>
+        <echo>Copy administrator language file of ${map.component.name} component</echo>
+        <copy todir="${map.src.out.dir}/administrator/language" overwrite="true">
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${map.component.name}.ini **/*${map.component.name}.sys.ini"/>
+        </copy>
+        <echo>Copy administrator deployement xml file of ${map.component.name} component</echo>
+        <copy todir="${map.src.out.dir}" overwrite="true">
+            <fileset dir="${joomla.administrator.components.dir}/${map.component.name}">
+                <include name="easysdi_*.xml"/>
+                <include name="script.*"/>
+            </fileset>
+        </copy>
+    </target>
+ 
+    <!-- 
+        Create the site folder if necessary.
+        Empty the site folder, except svn files.
+        Copy the files from the site.
+    --> 
+    <target name="copy-site" if="map.site.exist">
+       
+        <echo>Copy site structure of ${map.component.name} component</echo>
+        
+        <copy todir="${map.src.out.dir}/site" overwrite="true">
+            <fileset dir="${joomla.site.components.dir}/${map.component.name}"/>
+        </copy>
+        <echo>Copy site language file of ${map.component.name} component</echo>
+        <copy todir="${map.src.out.dir}/site/language" overwrite="true">
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${map.component.name}.ini"/>
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${map.component.name}.sys.ini"/>
+        </copy>
+    </target>
+    
+    <target name="write-xml">
+        <echoxml file="${map.src.out.dir}/easysdi_map.xml">
+            <extension type="component" version="3.0.0" method="upgrade">
+                <name>com_easysdi_map</name>
+                <creationDate>${xml.releaseDate}</creationDate>
+                <copyright>${xml.copyright}</copyright>
+                <license>${xml.license}</license>
+                <author>${xml.author}</author>
+                <authorEmail>${xml.authorEmail}</authorEmail>
+                <authorUrl>${xml.authorUrl}</authorUrl>
+                <version>${version}</version>
+                <description></description>
+                <scriptfile>script.php</scriptfile>
+                <install> <!-- Runs on install -->
+                    <sql>
+                        <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
+			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
+                    </sql>
+                </install>
+                <uninstall> <!-- Runs on uninstall -->
+                    <sql>
+                        <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
+			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
+                    </sql>
+                </uninstall>
+                <!-- SQL files to run on update -->
+                <update>
+                        <schemas>
+                                <schemapath type="mysql">sql/updates/mysql</schemapath>
+                                <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
+                        </schemas>
+                </update>
+
+                <files folder="site">
+                    <filename>index.html</filename>
+                    <filename>easysdi_map.php</filename>
+                    <filename>controller.php</filename>
+                    <filename>router.php</filename>
+                    <folder>views</folder>
+                    <folder>models</folder>
+                    <folder>controllers</folder>
+                    <folder>helpers</folder>
+                </files>
+                <languages folder="site">
+                    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_map.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_map.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.com_easysdi_map.ini</language>
+                </languages>
+                <administration>
+                    <files folder="administrator">
+                        <filename>access.xml</filename>
+                        <filename>config.xml</filename>
+                        <filename>controller.php</filename>
+                        <filename>index.html</filename>
+                        <filename>easysdi_map.php</filename>
+                        <folder>controllers</folder>
+                        <folder>assets</folder>
+                        <folder>helpers</folder>
+                        <folder>models</folder>
+                        <folder>sql</folder>
+                        <folder>tables</folder>
+                        <folder>views</folder>
+                    </files>
+                    <languages folder="administrator">
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_map.ini</language>
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_map.sys.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_map.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_map.sys.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_map.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_map.sys.ini</language>
+                    </languages>
+                </administration>
+            </extension>
+        </echoxml>
+    </target>
+    
+    <!-- Create the build description file. --> 
+    <target name="build-info">
+        
+        <echo>Create buid info file for ${map.component.name} component</echo>
+        <mkdir dir="${map.src.out.dir}/META-INF"/>
+        <tstamp>
+            <format property="buildtime" pattern="dd.MM.yyyy hh:mm:ss aa" />
+        </tstamp>
+        <exec executable="svnversion" outputproperty="svnrevision">
+            <arg line="${map.src.out.dir}"/>
+        </exec>
+        
+        <propertyfile file="${map.src.out.dir}/META-INF/build-info.properties" comment="This file is automatically generated - DO NOT EDIT">
+            <entry key="build-datetime" value="${buildtime}"/>
+            <entry key="component" value="${map.component.name}"/>
+            <entry key="build" value="${version}-r${svnrevision}"/>
+            <entry key="build-owner" value="${user.name}"/>
+        </propertyfile>
+    </target>
+    
+    <!-- Compresses the component package. --> 
+    <target name="zip-package">
+        
+        <echo>Zip package ${map.component.name}.zip</echo>
+        
+        <mkdir dir="${map.package.out.dir}"/>
+        <delete>
+            <fileset dir="${map.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${map.package.out.dir}/${map.component.name}.zip">
+            <fileset dir="${map.src.out.dir}" excludes="
+                                        site/views/group/** ;
+					site/views/groupform/** ;
+					site/views/groups/** ;
+					site/views/layer/** ;
+					site/views/layerform/** ;
+					site/views/layers/** ;
+					site/views/maps/** ;
+					site/views/mapform/** ;"/>
+        </jar>
+    </target>
+    
+    <target name="zip-dev-package">
+        
+        <echo>Zip package ${map.component.name}.zip</echo>
+        
+        <mkdir dir="${map.package.out.dir}"/>
+        <delete>
+            <fileset dir="${map.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${map.package.out.dir}/${map.component.name}.zip">
+            <fileset dir="${map.src.out.dir}"/>
+        </jar>
+    </target>
+    
+</project>
