@@ -152,7 +152,7 @@ class Easysdi_mapModelgroups extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.alias, a.state, a.ordering, a.name, a.access, a.checked_out, a.checked_out_time'
+                        'list.select', 'a.id, a.alias, a.state, a.ordering, a.name, a.access, a.created_by, a.checked_out, a.checked_out_time'
                 )
         );
         $query->from('#__sdi_layergroup AS a');
