@@ -64,9 +64,10 @@
          container.on('click', '.removeLayer', function (event) {
              event.preventDefault();
              layertree.switchLayer(jQuery(this).data('layerid'), 'off');
+             layertree.update();
          });
 
-        container.on('click', '.zoomlink', function (event) {
+         container.on('click', '.zoomlink', function (event) {
              event.preventDefault();
              var bb = jQuery(this).data('bbox').split(',');
              bb = L.latLngBounds([
