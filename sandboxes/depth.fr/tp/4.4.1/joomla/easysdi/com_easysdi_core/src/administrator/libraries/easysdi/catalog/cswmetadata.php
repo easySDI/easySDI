@@ -753,6 +753,8 @@ class cswmetadata {
         $this->db->setQuery($query);
         $properties = $this->db->loadObjectList();
 
+
+//        $html = '<script src="' . JURI::root() . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>';
         $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm' . $this->diffusion->id . '" name="adminForm" enctype="multipart/form-data">';
         $html .= '<div class="sdi-shop-order well">';
         $html .= '<div class="sdi-shop-properties" >';

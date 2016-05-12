@@ -1,27 +1,27 @@
 var i = 1;
-jQuery(document).ready(function () {
+jQuery(document).ready(function() {
     if (jQuery("#jform_level").val().length > 0) {
         var levels = jQuery.parseJSON(jQuery("#jform_level").val());
-        jQuery.each(levels, function (index, object) {
+        jQuery.each(levels, function(index, object) {
             addRow(object.code, object.label, object.defaultlevel);
         })
     }
 
-    jQuery("#add_row").click(function () {
+    jQuery("#add_row").click(function() {
         addRow('', '');
     });
-
-    jQuery("#jform_type").click(function () {
+    
+    jQuery("#jform_type").click(function() {
         displayMapTypeOptions();
         jQuery('.nav-tabs a[href="#misc"]').tab('show');
     });
-
-    jQuery(document).on('click', '[id^="delete_row"]', function () {
+    
+    jQuery(document).on('click', '[id^="delete_row"]', function() {
         jQuery(this).closest('tr').html('');
     });
 
-    jQuery(document).on('click', '[id^="jform[defaultlevel"]', function () {
-        jQuery('[id^="jform[defaultlevel"]').each(function () {
+    jQuery(document).on('click', '[id^="jform[defaultlevel"]', function() {
+        jQuery('[id^="jform[defaultlevel"]').each(function() {
             jQuery(this).attr('checked', false);
         });
         jQuery(this).attr('checked', true);
@@ -43,13 +43,13 @@ function addRow(code, label, dflt) {
     jQuery('#tab-dyn').append('<tr id="level' + (i + 1) + '"></tr>');
 
     i++;
-
+    
     //
     jQuery("#tab-dyn").tableDnD();
 }
 
 function displayMapTypeOptions() {
-    if (jQuery("input[name='jform[type]']:checked").val() == 'leaflet') {
+    if (jQuery("input[name='jform[type]']:checked").val()=='leaflet') {
         jQuery("#jform_tool1-lbl").parent().parent().hide();
         jQuery("#jform_tool4-lbl").parent().parent().hide();
         jQuery("#jform_tool5-lbl").parent().parent().hide();
@@ -57,10 +57,10 @@ function displayMapTypeOptions() {
         jQuery("#jform_tool11-lbl").parent().parent().hide();
         jQuery("#jform_tool15-lbl").parent().parent().hide();
         jQuery("#jform_tool17-lbl").parent().parent().hide();
-        jQuery("#scaletab").show();
+        jQuery("#scaletab").hide();
         jQuery("#wfstab").hide();
         jQuery("#indoortab").hide();
-    } else {
+    }else{
         jQuery("#jform_tool1-lbl").parent().parent().show();
         jQuery("#jform_tool4-lbl").parent().parent().show();
         jQuery("#jform_tool5-lbl").parent().parent().show();

@@ -312,7 +312,7 @@ function getMapConfig() {
             case 'googlegeocoder':
                 config.tools.push({actions: ["-"], actionTarget: "map.tbar"});
                 var tool = {
-                    ptype: "sdi_gxp_googlegeocoder",
+                    ptype: "gxp_googlegeocoder",
                     outputTarget: "map.tbar"
                 };
                 config.tools.push(tool);

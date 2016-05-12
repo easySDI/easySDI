@@ -29,6 +29,7 @@ class Easysdi_shopModelorders extends JModelList {
             $config['filter_fields'] = array(
                 'created', 'a.created', 
                 'name', 'a.name',
+                'sent', 'a.sent',
                 'completed', 'a.completed',
                 'user', 'user',
             );
@@ -117,10 +118,10 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select(
-          $this->getState('DISTINCT ' .
+                $this->getState('DISTINCT ' .
                         'list.select', ' a.id, a.ordering,a.name, a.ordertype_id, a.orderstate_id, a.archived, a.user_id, a.sent, a.completed'
-          )
-          );
+                )
+        );
 
         $query->from('#__sdi_order AS a');
 
@@ -153,7 +154,7 @@ class Easysdi_shopModelorders extends JModelList {
         if (is_numeric($orderstate)) {
             $query->where('a.orderstate_id = ' . (int) $orderstate);
         }
-
+        
         // Filter by order archived state
         $orderarchived = $this->getState('filter.orderarchived');
         if (is_numeric($orderarchived)) {
@@ -240,7 +241,7 @@ class Easysdi_shopModelorders extends JModelList {
                 );
             }
         }
-        
+
         // Filter by ordercompleted state
         $ordercompleted = $this->getState('filter.ordercompleted');
         if ($ordercompleted !== '') {
@@ -372,7 +373,7 @@ class Easysdi_shopModelorders extends JModelList {
         }
         return $items;
     }
-
+    
     /**
      * get array of order archived status
      * @return array [array('id'=>id,'value'=>value)]

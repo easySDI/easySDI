@@ -16,7 +16,7 @@ abstract class Easysdi_mapHelper {
     public static function getMapScript($mapid, $cleared = false, $appname = "app", $renderto = "sdimapcontainer") {
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
         $item = $model->getData($mapid);
-        $base_url = Juri::base(true) . '/components/com_easysdi_core/libraries';
+        $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
         $doc = JFactory::getDocument();
 
         if ($item->type=='geoext'){
@@ -34,7 +34,7 @@ abstract class Easysdi_mapHelper {
 
         //Loading css files
         $doc = JFactory::getDocument();
-        $base_url = Juri::root(true) . '/components/com_easysdi_core/libraries';
+        $base_url = Juri::root(true) . '/administrator/components/com_easysdi_core/libraries';
         $doc->addStyleSheet($base_url . '/ext/resources/css/ext-all.css');
         $doc->addStyleSheet($base_url . '/ext/resources/css/xtheme-gray.css');
         $doc->addStyleSheet($base_url . '/OpenLayers-2.13.1/theme/default/style.css');
@@ -52,13 +52,13 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(Juri::root(true) . '/media/jui/js/jquery-noconflict.js');
             $doc->addScript(Juri::root(true) . '/media/jui/js/bootstrap.js');
             $doc->addScript(JURI::root(true) . '/media/system/js/mootools-core-uncompressed.js');
-            $doc->addScript(JURI::root(true) . '/media/system/js/core-uncompressed.js');
+            $doc->addScript(JURI::root(true) . '/media/system/js/core-uncompressed.js');            
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
             $doc->addScript($base_url . '/ext/ext-all-debug.js');
             $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
                 $doc->addScript($base_url . '/ux/ext/RowExpander.js');
                 $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
-            $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');
+            $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js'); 
             $doc->addScript($base_url . '/easysdi/js/OpenLayers/override-openlayers.js?v=' . sdiFactory::getSdiFullVersion());
             $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js?v=' . sdiFactory::getSdiFullVersion());
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
@@ -87,7 +87,7 @@ abstract class Easysdi_mapHelper {
             //$doc->addScript($base_url . '/easysdi/js/sdi.js');
         }
 
-            foreach (glob(JPATH_SITE . '/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
+            foreach (glob(JPATH_SITE . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.js') as $file) {
                 $doc->addScript(str_replace(JPATH_SITE, JURI::root(true), $file));
         }
 
@@ -249,7 +249,6 @@ abstract class Easysdi_mapHelper {
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-Easy/easyLeaflet.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/font-awesome-4.3.0/css/font-awesome.css');
-                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-graphicscale/Leaflet.GraphicScale.min.css');
 
                 $doc->addScript($base_url . '/leaflet/libs/i18next-1.9.0/i18next-1.9.0.min.js');
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
@@ -267,8 +266,9 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyLegend/easyLegend.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.js');
                 $doc->addScript($base_url . '/leaflet/libs/wms-capabilities/wms-capabilities.min.js');
-                $doc->addScript($base_url . '/leaflet/libs/leaflet-graphicscale/Leaflet.GraphicScale.min.js');
+                //$doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
                 $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
+                //$doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4-compressed.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
                 $doc->addScript($base_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js?v=' . sdiFactory::getSdiFullVersion());
             }else{
