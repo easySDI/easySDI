@@ -180,6 +180,7 @@
 
          if ((layerObj.on && mode !== 'on') || mode === 'off') {
              _this.map.removeLayer(layerObj.layer);
+
          } else {
              _this.map.addLayer(layerObj.layer);
          }
