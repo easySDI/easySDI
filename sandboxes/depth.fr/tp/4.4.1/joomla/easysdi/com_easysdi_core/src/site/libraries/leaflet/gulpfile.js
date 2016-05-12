@@ -26,6 +26,7 @@ gulp.task('default', function () {
         'libs/leaflet-EasyAddLayer/easyAddLayer.js',
         'libs/leaflet-EasyLegend/easyLegend.js',
         'libs/leaflet-EasyGetFeature/easyGetFeature.js',
+        'libs/leaflet-graphicscale/Leaflet.GraphicScale.min.js',
         'libs/easysdi_leaflet/easysdi_leaflet.js'
     ], {
         base: 'libs'
