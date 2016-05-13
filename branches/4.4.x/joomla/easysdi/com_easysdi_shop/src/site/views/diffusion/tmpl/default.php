@@ -16,7 +16,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript('components/com_easysdi_shop/views/diffusion/tmpl/diffusion.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 
@@ -85,7 +85,7 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                             <?php echo $field->input; ?>
                                             <?php if($field->fieldname == 'file'):?>
                                                 <?php if(!empty($this->item->file)):?>
-                                                    <a id="jform_file_hidden_href" href="<?php echo JRoute::_($this->params->get('fileFolder') . '/' . $this->item->file, false); ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
+                                                    <a id="jform_file_hidden_href" href="<?php echo Juri::base(true) ."/component/easysdi_shop/download/download?id=".$this->item->id; ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
                                                 <?php endif;?>
                                                 <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />
                                             <?php endif;?>
