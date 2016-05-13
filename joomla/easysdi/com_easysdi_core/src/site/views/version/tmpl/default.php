@@ -15,8 +15,8 @@ JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
-$document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
+$document->addStyleSheet('components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
+$document->addScript('components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
 $document->addScript('components/com_easysdi_core/views/version/tmpl/version.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <?php

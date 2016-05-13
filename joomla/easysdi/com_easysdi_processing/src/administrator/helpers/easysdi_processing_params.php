@@ -214,18 +214,18 @@ abstract class Easysdi_processingParamsHelper
         $t.='</span>';
       }else{
         if (!is_null($order->file)){
-        $path_parts = pathinfo($order->file);
-        $t='<span class="file" data-extension="'.$path_parts['extension'].'">';
+            $path_parts = pathinfo($order->file);
+            $t='<span class="file" data-extension="'.$path_parts['extension'].'">';
             $t.=substr($order->file,strpos($order->file,'-')+1,strlen($order->file)-strpos($order->file,'-'));
-        $filepath=JComponentHelper::getParams('com_easysdi_processing')->get('upload_path'). '/' . $order->file;
-        if (!file_exists($filepath)) {
-          $t.=' <strong>fichier introuvable</strong>';// /*DEBUG*/.$filepath;
-        } else {
-          $t.='&nbsp;<small>'.self::human_filesize(filesize($filepath)).'</small>';
-        }$t.='</span>';
+            $filepath=JComponentHelper::getParams('com_easysdi_processing')->get('upload_path'). '/' . $order->file;
+            if (!file_exists($filepath)) {
+              $t.=' <strong>fichier introuvable</strong>';// /*DEBUG*/.$filepath;
+            } else {
+              $t.='&nbsp;<small>'.self::human_filesize(filesize($filepath)).'</small>';
+            }$t.='</span>';
         }else{
             $t.=' <strong>fichier introuvable</strong>';
-      }
+        }
       }
       break;
       case 'output' :
@@ -284,7 +284,7 @@ abstract class Easysdi_processingParamsHelper
     $pathinfo=pathinfo($file);
     $proxy_link=self::file_url($order, $type, $pathinfo['basename'], $file);
     if ($proxy_link<>""){
-    $res='<a href="'.$proxy_link.'">'.self::file_span($file, $order, $type).'</a>';
+        $res='<a href="'.$proxy_link.'">'.self::file_span($file, $order, $type).'</a>';
     }else{
         $res='<a >'.self::file_span($file, $order, $type).'</a>';
     }
