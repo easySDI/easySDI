@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+        <field name="parent_id"  required="true"
+                type="sql" 
+                class="inputbox"
+                query=" SELECT null AS id, '' AS name UNION SELECT id, name FROM #__sdi_resourcetype WHERE state=1  ORDER BY name" 
+                key_field="id" 
+                value_field="name"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_PARENT_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_PARENT_ID" 
+        /> 
+
+        <field name="child_id"  required="true"
+                type="sql" 
+                class="inputbox"
+                query=" SELECT null AS id, '' AS name UNION SELECT id, name FROM #__sdi_resourcetype WHERE state=1  ORDER BY name" 
+                key_field="id" 
+                value_field="name"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CHILD_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CHILD_ID" 
+        /> 
+        
+        
+        
+        
+
+    </fieldset>
+    
+    <field name="parentboundlower" type="text" size="40" class="inputbox" required="true"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_PARENTBOUNDLOWER"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_PARENTBOUNDLOWER" 
+           filter="safehtml" /> 
+
+    <field name="parentboundupper" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_PARENTBOUNDUPPER"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_PARENTBOUNDUPPER" 
+               filter="safehtml" /> 
+
+    <field name="childboundlower" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CHILDBOUNDLOWER"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CHILDBOUNDLOWER" 
+               filter="safehtml" /> 
+
+    <field name="childboundupper" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CHILDBOUNDUPPER"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CHILDBOUNDUPPER" 
+               filter="safehtml" /> 
+    
+    <field name="viralversioning" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_VIRALVERSIONING"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_VIRALVERSIONING" 
+    > 
+        <option value="1">JYES</option>
+        <option value="0">JNO</option>
+    </field>
+        
+    <field name="inheritance" type="radio" class="btn-group" default="0" 
+              label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_INHERITANCE"
+              description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_INHERITANCE" 
+    > 
+        <option value="1" onclick="onChangeInheritance()">JYES</option>
+        <option value="0" onclick="onChangeInheritance()">JNO</option>
+    </field>
+    
+    <field 	name="addxpath" 
+                id="addxpath" 
+                type="addbutton" 
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_ADDXPATH"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_ADDXPATH" 
+                filter="safehtml" />
+    
+    <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_ID"
+           readonly="true" class="readonly"
+           description="JGLOBAL_FIELD_ID_DESC" /> 
+    
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+ 
+    <field name="created" type="calendar" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CREATED"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CREATED" 
+           filter="safehtml" /> 
+
+    <field name="modified_by" type="text" size="40" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_MODIFIED_BY"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_MODIFIED_BY" 
+           filter="safehtml" /> 
+
+    <field name="modified" type="calendar" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_MODIFIED"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_MODIFIED" 
+           filter="safehtml" /> 
+    
+    <field name="created_by" type="createdby" default="" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CREATED_BY"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CREATED_BY"  /> 
+
+    <field name="asset_id" type="text" size="40" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_ASSET_ID"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_ASSET_ID" 
+           default="0" 
+           filter="safehtml" /> 
+
+    <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+        
+    <fieldset name="accesscontrol">
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="resourcetype"
+        />
+    </fieldset>
+
+    <field name="access" type="accesslevel"
+           label="JFIELD_ACCESS_LABEL"
+           description="JFIELD_ACCESS_DESC" 
+           filter="raw" /> 
+</form>

@@ -1,0 +1,1 @@
+ALTER TABLE `#__sdi_category` ALTER COLUMN overall_fee SET DEFAULT NULL;

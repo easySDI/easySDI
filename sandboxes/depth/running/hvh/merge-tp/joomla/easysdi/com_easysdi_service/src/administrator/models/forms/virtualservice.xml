@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+        <field 	name="name" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME"
+                filter="safehtml" 
+                required="true" />
+				
+        <field 	name="alias" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_ALIAS"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_ALIAS"
+                filter="safehtml" />
+		         
+        <field 	name="serviceconnector" 
+                type="text" 
+                size="70" 
+                class="inputbox"
+                readonly="true"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICECONNECTOR_ID"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICECONNECTOR_ID"
+                filter="safehtml" /> 
+				
+        <field 	name="supportedversions" 
+                type="supportedversions" 
+                class="readonly"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_VERSION"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_VERSION"
+                filter="unset" />
+		
+        <field 	name="servicescope_id" 
+                onchange="enableOrganism();"
+                type="sql" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICESCOPE_ID"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICESCOPE_ID" 
+                query="SELECT id, value FROM #__sdi_sys_servicescope" 
+                key_field="id" 
+                value_field="value"
+        /> 
+                 
+        <field 	name="organisms" 
+                type="sql" 
+                class="multiselect input-xxlarge"
+                multiple="true"
+                label=""
+                description="" 
+                query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
+                key_field="id" 
+                value_field="name"
+        /> 
+        <field 	name="reflectedurl" 
+                type="text" 
+                size="255" 
+                class="input-xxlarge"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDURL"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDURL"
+                filter="safehtml" />
+			
+        <field 	name="exceptionlevel_id" 
+                type="sql" 
+                class="inputbox"  
+                required="true"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_EXCEPTIONLEVEL_ID"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_EXCEPTIONLEVEL_ID"
+                query="SELECT id, value FROM #__sdi_sys_exceptionlevel WHERE state=1 ORDER BY ordering"
+                key_field="id" 
+                value_field="value" />
+			
+        <field 	name="xsltfilename" 
+                type="text" 
+                size="255" 
+                class="input-xxlarge"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_XSLTFILENAME"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_XSLTFILENAME"
+                filter="safehtml" />
+			
+        <field 	name="id" 
+                type="text" 
+                default="0" 
+                label="JGLOBAL_FIELD_ID_LABEL"
+                readonly="true" 
+                class="readonly"
+                description="JGLOBAL_FIELD_ID_DESC" /> 
+    </fieldset>
+	
+    <fieldset name="WMS">
+        <field 	name="physicalservice_id" 
+                type="physicalserviceSQL" 
+                class="multiselect input-xxlarge"
+                multiple="true" 
+                onchange="updateAgregatedVersion();"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
+                serviceconnectorField = "WMS"	
+                key_field="id" 
+                value_field="value" 
+                required="true" />
+    </fieldset>
+
+    <fieldset name="WMSC">
+        <field 	name="physicalservice_id" 
+                type="physicalserviceSQL" 
+                class="multiselect input-xxlarge"
+                multiple="true" 
+                onchange="updateAgregatedVersion();"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
+                serviceconnectorField = "WMSC"	
+                key_field="id" 
+                value_field="value" 
+                required="true" />
+    </fieldset>
+	
+    <fieldset name="wfs">
+        <field 	name="physicalservice_id" 
+                type="physicalserviceSQL"  
+                class="multiselect input-xxlarge"
+                multiple="true" 
+                onchange="updateAgregatedVersion();"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
+                serviceconnectorField = "WFS"		
+                key_field="id" 
+                value_field="value" 
+                required="true" />
+    </fieldset>
+	
+    <fieldset name="csw">
+        <field 	name="physicalservice_id" 
+                type="physicalserviceSQL"  
+                class="multiselect input-xxlarge"
+                multiple="true" 
+                onchange="updateAgregatedVersion();"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
+                serviceconnectorField = "CSW"				
+                key_field="id" 
+                value_field="value" 
+                required="true" />
+        <field 	name="harvester" 
+                type="checkbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_HARVESTER"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_HARVESTER"
+                value="1" default="0" />
+        <field 	name="maximumrecords" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_MAXIMUMRECORDS"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_MAXIMUMRECORDS"
+                filter="safehtml" />
+        <field 	name="identifiersearchattribute" 
+                type="text" 
+                size="255"
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE"
+                filter="safehtml" />
+    </fieldset>
+	
+    <fieldset name="contact_csw">
+        <field 	name="contacturl" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_LINKAGE" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_LINKAGE"
+                filter="safehtml" />
+        <field 	name="contactavailability" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_HOURS" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_HOURS"
+                filter="safehtml" />
+        <field 	name="contactinstruction" 
+                type="textarea" 
+                rows="3" 
+                cols="30"
+                size="255" 
+                class="inputbox" 
+                label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_INSTRUCTIONS"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_INSTRUCTIONS" 
+                filter="safehtml" />
+    </fieldset>
+	
+    <fieldset name="wmts">
+        <field 	name="physicalservice_id" 
+                type="physicalserviceSQL" 
+                class="multiselect input-xxlarge"
+                multiple="true" 
+                onchange="updateAgregatedVersion();"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
+                serviceconnectorField = "WMTS"	
+                key_field="id" 
+                value_field="value" 
+                required="true" />
+    </fieldset>
+
+    <fieldset name="log_config">
+        <field 	name="logpath" 
+                type="text" 
+                size="255" 
+                class="input-xxlarge"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGPATH"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGPATH"
+                filter="safehtml" 
+                required="true" />
+        <field 	name="loglevel_id" 
+                type="sql" 
+                class="inputbox" 
+                default="3"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGLEVEL_ID"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGLEVEL_ID"
+                query="SELECT id, value FROM #__sdi_sys_loglevel"
+                key_field="id" 
+                value_field="value" 
+                required="true" />
+        <field 	name="logroll_id" 
+                type="sql" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGROLL_ID"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGROLL_ID"
+                query="SELECT id, value FROM #__sdi_sys_logroll"
+                key_field="id" 
+                value_field="value" 
+                required="true" />
+    </fieldset>
+
+    <fieldset name="contact_wmts">
+        <field 	name="contactrole" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_ROLE" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_ROLE"
+                filter="safehtml" />
+        <field 	name="contacturl" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_LINKAGE" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_LINKAGE"
+                filter="safehtml" />
+        <field 	name="contactavailability" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_HOURS" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_HOURS"
+                filter="safehtml" />
+        <field 	name="contactinstruction" 
+                type="textarea" 
+                rows="3" 
+                cols="30"
+                size="255" 
+                class="inputbox" 
+                label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_INSTRUCTIONS"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_INSTRUCTIONS" 
+                filter="safehtml" />
+    </fieldset>
+	
+    <fieldset name="contact">
+        <field 	name="inheritedcontact" 
+                type="checkbox" 
+                onclick="changeInheritedContact()"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDCONTACT"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDCONTACT"
+                value="1" 
+                default="0"
+                filter="intval"/>
+        <field 	name="contactorganization" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_ORGANIZATION"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_ORGANIZATION" 
+                filter="safehtml" />
+        <field 	name="contactname" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_PERSON" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_PERSON"
+                filter="safehtml" />
+        <field 	name="contactposition" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_POSITION" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_POSITION"
+                filter="safehtml" />
+        <field 	name="contactaddress" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_ADDRESS" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_ADDRESS"
+                filter="safehtml" />
+        <field 	name="contactlocality" 
+                type="text" 
+                size="255" 
+                class="input-medium"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_CITY" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_CITY"
+                filter="safehtml" />
+        <field 	name="contactstate" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_STATE" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_STATE"
+                filter="safehtml" />
+        <field 	name="country_id" 
+                type="sql" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_COUNTRY"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_COUNTRY" 
+                translate="true" 
+                query="SELECT null AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_sys_country" key_field="id" value_field="value"
+        />
+        <field name="contactphone" type="text" size="255" class="inputbox"
+               validate="tel"
+               label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_PHONE" description=""
+               filter="safehtml" />
+        <field name="contactfax" type="text" size="255" class="inputbox"
+               validate="tel"
+               label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_FAX" description=""
+               filter="safehtml" />
+        <field name="contactemail" type="text" size="255" class="inputbox"
+               validate="email"
+               label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_MAIL" description=""
+               filter="safehtml" />
+    </fieldset>
+
+    <field name="contactpostalcode" type="text" size="10" class="input-mini"
+           label="COM_EASYSDI_SERVICE_METADATA_CONTACT_CITY" description=""
+           filter="safehtml" />
+			
+    <field 	name="contactaddresstype" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_ADDRESSTYPE" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_ADDRESSTYPE"
+                filter="safehtml" />
+			
+    <field 	name="reflectedmetadata" 
+                type="checkbox" 
+                onclick="changeReflectedMetadata()"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA"
+                value="1" 
+                default="1" 
+                filter="intval"/>
+				
+    <fieldset name="metadata">
+        <field 	name="title" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_METADATA_TITLE" 
+                description="" 
+                filter="safehtml"
+                required="false" />
+        <field 	name="summary" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_METADATA_ABSTRACT" 
+                description="" 
+                filter="safehtml" />
+        <field 	name="keyword" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_METADATA_KEYWORD" 
+                description="" 
+                filter="safehtml" />
+        <field 	name="fee" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_FEES" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_FEES" 
+                filter="safehtml" />
+        <field 	name="accessconstraint" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONSTRAINTS" 
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONSTRAINTS"
+                filter="safehtml" />
+    </fieldset>
+	
+    <field 	name="inheritedtitle" 
+                type="checkbox" 
+                onclick="changeMetadataServiceField('title')"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDTITLE"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDTITLE"
+                value="1" 
+                filter="intval"/>
+    <field 	name="inheritedsummary" 
+                type="checkbox" 
+                onclick="changeMetadataServiceField('summary')"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDABSTRACT"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDABSTRACT"
+                value="1" 
+                filter="intval"/>
+    <field 	name="inheritedkeyword" 
+                type="checkbox" 
+                onclick="changeMetadataServiceField('keyword')"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDKEYWORD"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDKEYWORD"
+                value="1" 
+                filter="intval"/>
+    <field 	name="inheritedfee" 
+                type="checkbox" 
+                onclick="changeMetadataServiceField('fee')"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDFEE"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDFEE"
+                value="1" 
+                filter="intval"/>
+    <field 	name="inheritedaccessconstraint" 
+                type="checkbox" 
+                onclick="changeMetadataServiceField('accessconstraint')"
+                label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDACCESSCONSTRAINT"
+                description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDACCESSCONSTRAINT"
+                value="1" 
+                filter="intval"/>
+	
+    <fieldset name="hidden">
+        <field name="serviceconnector_id" type="hidden" filter="SAFEHTML" />
+        <field name="compliance" id="compliance" type="hidden" filter="SAFEHTML" />
+        <field name="proxytype_id" type="hidden" default="1" />
+        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="guid" type="hidden" filter="unset" />
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+    </fieldset>
+
+    <fieldset name="publishing">
+        <field name="created_by" type="user" class="readonly" readonly="true"
+               label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_CREATED_BY"
+               description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_CREATED_BY"
+               filter="unset" />
+        <field name="created" type="calendar" class="readonly" readonly="true"
+               label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_CREATED"
+               description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_CREATED"
+               filter="safehtml" />
+        <field name="modified_by" type="user" class="readonly" readonly="true"
+               label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED_BY"
+               description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED_BY"
+               filter="unset" />
+        <field name="modified" type="calendar" class="readonly"
+               readonly="true" label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED"
+               description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED"
+               filter="safehtml" />
+    </fieldset>
+
+    <field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
+           description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />
+
+    <field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC"
+           class="inputbox" size="1" default="0">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+        <option value="2">JARCHIVED</option>
+        <option value="-2">JTRASHED</option>
+    </field>
+
+    <fieldset name="rulesdefinition">
+        <field name="rules" type="rules" label="JFIELD_RULES_LABEL"
+               translate_label="true" class="inputbox" filter="rules" component="com_easysdi_service"
+               section="virtualservice" validate="rules" />
+    </fieldset>
+</form>
