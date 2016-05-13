@@ -1,1 +1,0 @@
-ALTER TABLE [#__sdi_category] ALTER COLUMN [overall_fee] decimal(6,2) NULL;
