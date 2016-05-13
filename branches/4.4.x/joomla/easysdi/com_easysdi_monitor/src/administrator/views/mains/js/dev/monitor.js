@@ -150,8 +150,8 @@ Ext.onReady(function() {
 		       jobPanel,
 		       reportPanel,
 		       alertPanel,
-		       maintenancePanel,
-		       slaPanel
+		       maintenancePanel/*,
+		       slaPanel*/
 		       ]
 	});
 
