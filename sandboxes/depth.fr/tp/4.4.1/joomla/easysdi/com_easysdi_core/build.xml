@@ -524,6 +524,7 @@
                         leaflet-EasyLayer/easyLayer.js,
                         leaflet-EasyAddLayer/easyAddLayer.js,
                         leaflet-EasyLegend/easyLegend.js,
+                        leaflet-graphicscale/Leaflet.GraphicScale.min.js,
                         leaflet-EasyGetFeature/easyGetFeature.js,
                         easysdi_leaflet/easysdi_leaflet.js" />
         </concat>
@@ -550,6 +551,7 @@
                              leaflet-EasyAddLayer/easyAddLayer.css,
                              leaflet-EasyLegend/easyLegend.css,
                              leaflet-EasyGetFeature/easyGetFeature.css,
+                             leaflet-graphicscale/Leaflet.GraphicScale.min.css,
                              leaflet-Easy/easyLeaflet.css" />
         </concat>
     </target>
