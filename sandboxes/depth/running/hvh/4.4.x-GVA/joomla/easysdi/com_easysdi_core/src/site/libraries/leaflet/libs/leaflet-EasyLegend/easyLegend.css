@@ -1,0 +1,74 @@
+#legend>h4 {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.clearfix {
+    clear: both;
+}
+
+.easyLegend, .easyLegend ul {
+  list-style: none;
+  padding-left:0;
+}
+
+ul.easyLegend>li a {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+}
+
+.easyLegend ul li {
+    box-shadow: 0px 0px 0px rgba(0,0,0,0);
+    margin:5px 10px;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+
+    -o-transition: all 0.25s ease;
+    -webkit-transition: all 0.25s ease;
+    -ms-transition: all 0.25s ease;
+    -moz-transition: all 0.25s ease;
+    transition: all 0.25s ease;
+}
+
+.easyLegend ul li:hover {
+    background: #fff;
+    box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.075);
+    border-color: rgba(0,0,0,0.15);
+}
+
+.easyLegend ul li>a {
+    display: block;
+    overflow: hidden;
+    /*max-height: 200px;*/
+    -o-transition: all 1s ease;
+    -webkit-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    transition: all 1s ease;
+    position: relative;
+    max-width: 100%;
+}
+
+.easyLegend ul li>a>img {
+    max-width: 100%;
+    padding: 10px;
+}
+
+/*.easyLegend ul li>a:hover {
+    max-height: 3000px;
+    }*/
+
+    .easyLegend .action_btns {
+        float: right;
+    }
+
+    .easyLegend .action_btns a {
+        color: #000;
+        padding: 3px;
+    }
+
+
+    .leaflet-control-attribution img { /* a deplacer dans le css principal */
+        max-height: 30px;
+    }
