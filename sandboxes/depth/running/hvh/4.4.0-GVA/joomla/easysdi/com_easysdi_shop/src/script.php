@@ -109,7 +109,7 @@ class com_easysdi_shopInstallerScript {
             $this->setParams($params);
         }
                 
-        if ($type == 'update' && $this->release == '4.3.2') {
+        if ($type == 'update' && $this->release <= '4.3.2') {
             $archiveorderdelay = $this->getParamValue("archiveorderdelay");
             if(!empty($archiveorderdelay)){
                $this->setParams(array("cleanuporderdelay" => $archiveorderdelay));
