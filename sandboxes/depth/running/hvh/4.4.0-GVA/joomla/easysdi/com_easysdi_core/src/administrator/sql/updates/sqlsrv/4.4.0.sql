@@ -1,4 +1,5 @@
-ALTER TABLE [#__sdi_map] ADD [type] [nvarchar](10) NULL;
+ALTER TABLE [#__sdi_map] ADD [type] [nvarchar](10)  NOT NULL DEFAULT 'geoext';
+UPDATE [#__sdi_map] SET [type] = 'geoext';
 
 CREATE TABLE [#__sdi_processing] (
   [id] [bigint] IDENTITY(12,1) NOT NULL,
