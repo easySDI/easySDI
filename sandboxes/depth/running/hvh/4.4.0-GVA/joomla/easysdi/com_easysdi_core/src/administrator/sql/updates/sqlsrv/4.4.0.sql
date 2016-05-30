@@ -30,29 +30,29 @@ SET ANSI_NULLS ON;
 
 CREATE TABLE [#__sdi_processing_obs] (
   [processing_id] [bigint] IDENTITY(12,1) NOT NULL,
-  [sdi_user_id] [bigint] IDENTITY(12,1) NOT NULL,
+  [sdi_user_id] [bigint]  NOT NULL,
 ) SET ANSI_NULLS ON;
 
-CREATE TABLE IF NOT EXISTS [#__sdi_processing_order] (
+CREATE TABLE [#__sdi_processing_order] (
   [id] [bigint] IDENTITY(12,1) NOT NULL,
   [guid] [nvarchar](255) NOT NULL,
-  `name` [nvarchar](255) NOT NULL,
-  `user_id` [int] NOT NULL,
-  `processing_id`[int] NOT NULL,
-  `parameters` [varchar](1000) NOT NULL,
-  `filestorage` [nvarchar](20) NOT NULL,
-  `file` [varchar](1000),
-  `fileurl` [varchar](1000) NOT NULL,
-  `output` [varchar](1000),
-  `outputpreview` [varchar](1000) NOT NULL,
-  `exec_pid` [nvarchar](255) NOT NULL,
-  `status` [int] NOT NULL,
-  `info` [varchar](1000),
-  `created_by` [int] NULL,
-  `created` [nvarchar](45) NOT NULL,
-  `modified_by` [int] NOT NULL,
-  `modified` [nvarchar](45) NULL,
-  `sent` [nvarchar](45) NULL,
+  [name] [nvarchar](255) NOT NULL,
+  [user_id] [int] NOT NULL,
+  [processing_id] [int] NOT NULL,
+  [parameters] [varchar](1000) NOT NULL,
+  [filestorage] [nvarchar](20) NOT NULL,
+  [file] [varchar](1000),
+  [fileurl] [varchar](1000) NOT NULL,
+  [output] [varchar](1000),
+  [outputpreview] [varchar](1000) NOT NULL,
+  [exec_pid] [nvarchar](255) NOT NULL,
+  [status] [int] NOT NULL,
+  [info] [varchar](1000),
+  [created_by] [int] NULL,
+  [created] [nvarchar](45) NOT NULL,
+  [modified_by] [int] NOT NULL,
+  [modified] [nvarchar](45) NULL,
+  [sent] [nvarchar](45) NULL,
     CONSTRAINT [PK_#__sdi_processing_order] PRIMARY KEY CLUSTERED (
             [id] ASC
     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -67,3 +67,7 @@ ALTER TABLE [#__sdi_order] ADD  [validation_token] [nvarchar](64) NULL;
 
 UPDATE [#__sdi_order] SET [access_token]     = LOWER( CONVERT(NVARCHAR(64), HASHBYTES('SHA2_512', CONVERT(NVARCHAR(36),NEWID()) ),2));
 UPDATE [#__sdi_order] SET [validation_token] = LOWER( CONVERT(NVARCHAR(64), HASHBYTES('SHA2_512', CONVERT(NVARCHAR(36),NEWID()) ),2));
+
+ALTER TABLE [#__sdi_maplayer] ALTER COLUMN [attribution]  [nvarchar](MAX);
+
+ALTER TABLE [#__sdi_organism] ALTER COLUMN [perimeter]  [nvarchar](MAX);
