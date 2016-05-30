@@ -36,16 +36,10 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
                     property: 'metadata',
                     html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_EDIT_METADATA') ?>"
                 },
-                publish: {
-                    html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA') ?>"
-                },
                 inprogress: {
                     href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=#0#') ?>',
                     property: 'metadata',
                     html: "<?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM') ?>"
-                },
-                changepublishdate: {
-                    html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA') ?>"
                 },
                 archive: {
                     href: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=#0#') ?>',
@@ -115,7 +109,6 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
             child_number: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getChildren&parentId=#0#') ?>',
             new_version: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getNewVersionRight&metadata_id=#0#') ?>',
             synchronization: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.getSynchronisationInfo&metadata_id=#0#') ?>',
-            publish_right: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getPublishRight&metadata_id=#0#') ?>',
             inprogress_right: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getParent&versionId=#0#&parentState=#1#') ?>',
             delete_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadeDeleteChild&version_id=#0#') ?>',
             get_roles: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.getRoles&versionId=#0#') ?>',
@@ -369,12 +362,10 @@ foreach ($this->items as $item) :
                 switch (metadata.state) {
                     case metadataState.VALIDATED:
                         section.push(buildDropDownItem(resource, 'metadata.inprogress'));
-                        section.push(buildDropDownItem(resource, 'metadata.publish'));
                         break;
 
                     case metadataState.PUBLISHED:
                         section.push(buildDropDownItem(resource, 'metadata.inprogress'));
-                        section.push(buildDropDownItem(resource, 'metadata.changepublishdate'));
                         section.push(buildDropDownItem(resource, 'metadata.archive'));
                         break;
 
@@ -934,7 +925,6 @@ foreach ($this->items as $item) :
             // Performs some action on dropdowns links
             js('a#' + resource.id + '_child_list').length > 0 ? getChildNumber(js('a#' + resource.id + '_child_list')) : getSynchronizationInfo(js('a#' + resource.id + '_synchronize'));
             getNewVersionRight(js('a#' + resource.id + '_new_version'));
-            getPublishRight(js('a#' + resource.id + '_publish'));
             getSetInProgressRight(js('a#' + resource.id + '_inprogress'));
             SqueezeBox.assign(js('a#' + resource.id + '_preview'));
 
