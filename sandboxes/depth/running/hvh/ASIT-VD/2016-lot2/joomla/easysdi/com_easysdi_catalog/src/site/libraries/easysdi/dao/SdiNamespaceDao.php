@@ -1,6 +1,6 @@
 <?php
 
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiDao.php';
+require_once JPATH_SITE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiDao.php';
 
 /**
  * @version     4.4.0
