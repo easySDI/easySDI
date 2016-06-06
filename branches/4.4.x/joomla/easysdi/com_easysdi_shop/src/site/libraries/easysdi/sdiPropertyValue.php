@@ -35,14 +35,20 @@ class sdiPropertyValue {
                     ->from('#__sdi_translation t')
                     ->innerJoin('#__sdi_propertyvalue p ON p.guid = t.element_guid')
                     ->where('p.id = ' . (int)$this->id)
-                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $db->quote($lang->getTag()) . ')');
+                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $db->quote($lang->getTag()) . ')')
+                    ->group('t.text1');
+            
 
             $db->setQuery($query);
             $item = $db->loadObject();
-            $params = get_object_vars($item);
-            foreach ($params as $key => $value){
-                $this->$key = $value;
+            if(isset($item)){
+                $params = get_object_vars($item);
+
+                foreach ($params as $key => $value){
+                    $this->$key = $value;
+                }
             }
+            
             
         } catch (JDatabaseException $e) {
             
