@@ -62,7 +62,7 @@ gxp.Viewer.prototype.reactivate = function() {
         }
   
         var panel = this.mapPanel;
-        extent = record.getLayer().maxExtent.clone();
+        //extent = record.getLayer().maxExtent.clone();
 
         var records = baseRecords.concat(overlayRecords);
         if (records.length) {
