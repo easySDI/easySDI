@@ -376,6 +376,7 @@ class SearchJForm extends SearchForm {
                 $query->select('t.id, t.value, t.guid, t.name');
                 $query->from('#__sdi_attributevalue t');
                 $query->where('t.attribute_id = ' . $searchCriteria->attributechild_id);
+                $query->order('t.ordering');
                 break;
         }
 
