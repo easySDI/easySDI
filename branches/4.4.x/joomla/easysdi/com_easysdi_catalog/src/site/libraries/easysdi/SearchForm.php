@@ -7,6 +7,12 @@
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 
+abstract class CriteriaType{
+    const System = 1;
+    const Relation = 2;
+    const Csw = 3;
+}
+
 class SearchForm {
 
     /** Tab value list */
@@ -64,7 +70,7 @@ class SearchForm {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('sc.id, sc.guid, sc.name, sc.alias, sc.rendertype_id');
+        $query->select('sc.id, sc.guid, sc.criteriatype_id, sc.name, sc.alias, sc.rendertype_id');
         $query->select('csc.searchtab_id, csc.defaultvalue, csc.defaultvaluefrom, csc.defaultvalueto, csc.params');
         $query->select('st.value as tab_value');
         $query->select('r.rendertype_id as rel_rendertype_id, r.attributechild_id, r.guid as relation_guid');
