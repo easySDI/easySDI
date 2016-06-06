@@ -557,7 +557,7 @@ INSERT [#__sdi_sys_operationcompliance] ([id], [ordering], [state], [servicecomp
 INSERT [#__sdi_sys_operationcompliance] ([id], [ordering], [state], [servicecompliance_id], [serviceoperation_id], [implemented]) VALUES (49, 49, 1, 5, 12, 1);
 SET IDENTITY_INSERT [#__sdi_sys_operationcompliance] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_orderstate] ON;
-INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (1, 7, 1, N'archived');
+
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (2, 8, 1, N'historized');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (3, 6, 1, N'finish');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'await');
