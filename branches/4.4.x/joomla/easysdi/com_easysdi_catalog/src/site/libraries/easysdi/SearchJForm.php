@@ -289,7 +289,7 @@ class SearchJForm extends SearchForm {
 
     private function getLabel($searchCriteria) {
         if (isset($searchCriteria->relation_guid)) {
-            return EText::_($searchCriteria->relation_guid);
+            return EText::_($searchCriteria->catalogsearchcriteriaguid);
         } else {
             return EText::_($searchCriteria->guid);
         }

@@ -71,7 +71,7 @@ class SearchForm {
         $query = $this->db->getQuery(true);
 
         $query->select('sc.id, sc.guid, sc.criteriatype_id, sc.name, sc.alias, sc.rendertype_id');
-        $query->select('csc.searchtab_id, csc.defaultvalue, csc.defaultvaluefrom, csc.defaultvalueto, csc.params');
+        $query->select('csc.searchtab_id, csc.defaultvalue, csc.defaultvaluefrom, csc.defaultvalueto, csc.params, csc.guid as catalogsearchcriteriaguid');
         $query->select('st.value as tab_value');
         $query->select('r.rendertype_id as rel_rendertype_id, r.attributechild_id, r.guid as relation_guid');
         $query->select('a.guid as attribute_guid');
