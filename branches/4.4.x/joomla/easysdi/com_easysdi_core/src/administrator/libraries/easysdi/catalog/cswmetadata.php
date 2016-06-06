@@ -492,10 +492,12 @@ class cswmetadata {
                                 break;
                             case 3 :
                                 $layerConfig .= 'type: "OpenLayers.Layer.WMTS",';
+                                $layerConfig .= 'group: "autre",';
                                 $layerConfig .= ' name: "' . $maplayer->layername . '",';
                                 $layerConfig .= ' href: "' . $href . '",';
                                 $layerConfig .= ' download: "' . $downloadurl . '",';
                                 $layerConfig .= ' order: "' . $orderurl . '",';
+                                $layerConfig .= ' opacity: 1,';
                                 $layerConfig .= 'source : "' . $service->alias . '",';
                                 $layerConfig .= 'title : "' . $maplayer->name . '",';
                                 $layerConfig .= 'args: [{';
@@ -504,7 +506,17 @@ class cswmetadata {
                                 $layerConfig .= 'matrixSet: "' . $maplayer->asOLmatrixset . '",';
                                 $layerConfig .= 'url: "' . $service->resourceurl . '",';
                                 $layerConfig .= 'style : "' . $maplayer->asOLstyle . '",';
-                                $layerConfig .= $maplayer->asOLoptions;
+                                foreach (json_decode($maplayer->asOLoptions) as $key => $value){
+                                    if ($key=="matrixIds"){
+                                        $layerConfig .= $key.' : ["' . implode('","',$value) . '"],';
+                                    }elseif ($key=="resolutions"){
+                                        $layerConfig .= $key.' : [' . implode(",",$value) . '],';
+                                    }elseif ($key=="maxExtent"){
+                                        //$layerConfig .= '"maxExtent" : ' . $value . ',';
+                                    }else{
+                                        $layerConfig .= $key.' : "' . $value . '",';
+                                    }
+                                }
                                 $layerConfig .= '}]}';
                                 break;
                         endswitch;
