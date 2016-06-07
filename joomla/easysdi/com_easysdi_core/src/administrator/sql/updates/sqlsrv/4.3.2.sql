@@ -47,7 +47,6 @@ UPDATE [#__sdi_diffusion] SET [packageurl] ='{CODE}' WHERE [id] IS NOT NULL;
 
 CREATE NONCLUSTERED INDEX IX_NC_text1 ON [#__sdi_translation] (text1);
 CREATE NONCLUSTERED INDEX IX_NC_text2 ON [#__sdi_translation] (text2);
-ALTER TABLE  [#__sdi_order] DROP CONSTRAINT DF__sdi_sdi_o__valid__2F650636;
 ALTER TABLE [#__sdi_order] DROP COLUMN [validate];
 ALTER TABLE [#__sdi_order] ADD [validated] [smallint];
 
