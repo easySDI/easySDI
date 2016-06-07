@@ -79,7 +79,9 @@ class sdiBasket {
 
             //Load extractions of the order
             $extractions = $this->loadOrderExtractions();
-
+            
+            //Handle perimeter modification
+            $isPerimeterChanged = false;
             foreach ($extractions as $extraction) :
                 //Try to build the object {"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}
 
@@ -146,8 +148,8 @@ class sdiBasket {
                     endforeach;
                     if (!$hasPerimeter) {
                         //Perimeter is no more available
-                        JFactory::getApplication()->enqueueMessage(JText::_("COM_EASYSDI_SHOP_BASKET_COPY_ORDER_PERIMETER"), 'warning');
-                        //Check if a commmon perimeter is still available
+                        //JFactory::getApplication()->enqueueMessage(JText::_("COM_EASYSDI_SHOP_BASKET_COPY_ORDER_PERIMETER"), 'warning');
+                        $isPerimeterChanged = true;
                     }
                 }
 
@@ -162,6 +164,33 @@ class sdiBasket {
                 $this->addExtraction($ex);
                 $this->perimeters = $ex->perimeters;
             endforeach;
+                        
+            if($copy && $isPerimeterChanged):
+                //Check if a common perimeter is still available
+                $perimeters = array();
+                $hasCommon = false;
+                foreach($this->extractions as $extraction):
+                    foreach($extraction->perimeters as $perimeter):
+                        if(in_array($perimeter->id,$perimeters)):
+                            if($perimeters[$perimeter->id] == count($this->extractions)-1):
+                                //Ok at least one perimeter is common
+                                $hasCommon = true;
+                                break 2;
+                            endif;
+                            $perimeters[$perimeter->id] = $perimeters[$perimeter->id] + 1;
+                        else:
+                            $perimeters[$perimeter->id] = 1;
+                        endif;
+                    endforeach;
+                endforeach;
+                if(!$hasCommon):
+                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_ERROR'), 'error');
+                        JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+                        return false;
+                    else:
+                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_PERIMETER'), 'warning');
+                endif;
+            endif;
         } catch (JDatabaseException $ex) {
             JFactory::getApplication()->enqueueMessage($ex->getMessage(), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
