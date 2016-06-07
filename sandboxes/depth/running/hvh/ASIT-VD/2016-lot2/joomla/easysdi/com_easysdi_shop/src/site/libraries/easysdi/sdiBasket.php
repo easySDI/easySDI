@@ -118,7 +118,7 @@ class sdiBasket {
                         if ($copy) {
                             //Check if all the value are still available
                             try {
-                                if (!$this->isPropertyValueAvailable($properyvalue, $objProperty->mandatory)) {
+                                if (!$this->isPropertyValueAvailable($extraction->id, $properyvalue, $objProperty->mandatory)) {
                                     continue;
                                 }
                             } catch (Exception $ex) {
@@ -319,7 +319,11 @@ class sdiBasket {
 
             if (!isset($organism) || $organism->state != 1 || $organism->selectable_as_thirdparty != 1) {
                 //Third party is no more available : allow copy, remove all third parts information
+                $this->thirdparty = null;
                 $this->thirdorganism = null;
+                $this->mandate_ref = null;
+                $this->mandate_contact = null;
+                $this->mandate_email = null;
                 JFactory::getApplication()->enqueueMessage(JText::_("COM_EASYSDI_SHOP_BASKET_COPY_ORDER_THIRDPARTY"), 'warning');                
             }
         }
@@ -332,7 +336,7 @@ class sdiBasket {
      */
     private function isAvailable($extraction) {
         if ($extraction->metadatastate_id != 3 //Metadata is not published
-                || !sdiModel::checkAccessScope($extraction->mguid, $extraction->mdaccessscope_id, $this->sdiUser)  //Metadata is no more accessible for the user
+                || !sdiModel::checkAccessScope($extraction->rguid, $extraction->raccessscope_id, $this->sdiUser)  //Metadata is no more accessible for the user
                 || $extraction->hasextraction != 1 //Extraction is disabled
                 || $extraction->diffusionstate_id != 1  //Diffusion is unpublished
                 || !sdiModel::checkAccessScope($extraction->guid, $extraction->accessscope_id, $this->sdiUser) //User has no right on this diffusion
@@ -351,8 +355,8 @@ class sdiBasket {
     private function loadOrderExtractions() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('d.id as id, d.state as diffusionstate_id,d.guid as guid,d.hasextraction,m.guid as mguid,'
-                        . ' m.metadatastate_id,m.accessscope_id as mdaccessscope_id,  '
+                ->select('d.id as id, d.state as diffusionstate_id,d.guid as guid,d.hasextraction,r.guid as rguid,'
+                        . ' m.metadatastate_id,r.accessscope_id as raccessscope_id,  '
                         . 'd.accessscope_id as accessscope_id, od.id as orderdiffusion_id, '
                         . 'od.productstate_id, od.remark, od.completed,' . $db->quoteName('od.file') . ' , '
                         . 'od.displayName as displayname, od.size, od.created_by')
@@ -360,6 +364,8 @@ class sdiBasket {
                 ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                 ->innerJoin('#__sdi_order o ON o.id = od.order_id')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = d.version_id')
+                ->innerJoin('#__sdi_version v ON v.id = d.version_id')
+                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                 ->where('o.id = ' . (int) $this->order->id);
         $db->setQuery($query);
         $extractions = $db->loadObjectList();
@@ -466,17 +472,20 @@ class sdiBasket {
 
     /**
      * 
+     * @param type $orderId
      * @param type $properyvalue
      * @param type $isPropMandatory
      * @return boolean
      * @throws Exception
      */
-    private function isPropertyValueAvailable($properyvalue, $isPropMandatory) {
+    private function isPropertyValueAvailable($diffusion_id, $properyvalue, $isPropMandatory) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('pv.state')
-                ->from('#__sdi_propertyvalue pv')
-                ->where('pv.id = ' . (int) $properyvalue->propertyvalue_id);
+                ->select('dpv.id, pv.state')
+                ->from('#__sdi_diffusion_propertyvalue dpv')
+                ->innerJoin('#__sdi_propertyvalue pv ON pv.id = dpv.propertyvalue_id')
+                ->where('dpv.propertyvalue_id = ' . (int) $properyvalue->propertyvalue_id)
+                ->where("dpv.diffusion_id = " . (int) $diffusion_id);
         $db->setQuery($query);
         $prop = $db->loadObject();
         if (!isset($prop) || $prop->state != 1) {
