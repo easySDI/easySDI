@@ -132,7 +132,6 @@ class sdiBasket {
                         $value->value = $properyvalue->propertyvalue;
                         $propertyobject->values[] = $value;
                     endforeach;
-
                     $orderExtractionObject->properties[] = $propertyobject;
                 endforeach;
 
@@ -148,7 +147,6 @@ class sdiBasket {
                     endforeach;
                     if (!$hasPerimeter) {
                         //Perimeter is no more available
-                        //JFactory::getApplication()->enqueueMessage(JText::_("COM_EASYSDI_SHOP_BASKET_COPY_ORDER_PERIMETER"), 'warning');
                         $isPerimeterChanged = true;
                     }
                 }
@@ -168,14 +166,16 @@ class sdiBasket {
             if($copy && $isPerimeterChanged):
                 //Check if a common perimeter is still available
                 $perimeters = array();
+                $orderPerimeters = array();
                 $hasCommon = false;
                 foreach($this->extractions as $extraction):
                     foreach($extraction->perimeters as $perimeter):
-                        if(in_array($perimeter->id,$perimeters)):
+                        if(isset($perimeters[$perimeter->id])):
                             if($perimeters[$perimeter->id] == count($this->extractions)-1):
                                 //Ok at least one perimeter is common
                                 $hasCommon = true;
-                                break 2;
+                                array_push($orderPerimeters, $perimeter);
+                                //break 2;
                             endif;
                             $perimeters[$perimeter->id] = $perimeters[$perimeter->id] + 1;
                         else:
@@ -188,7 +188,11 @@ class sdiBasket {
                         JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
                         return false;
                     else:
+                        $this->extent = null;
+                        $this->surface = null;  
+                        $this->perimeters = $orderPerimeters;
                         JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_PERIMETER'), 'warning');
+                    
                 endif;
             endif;
         } catch (JDatabaseException $ex) {
