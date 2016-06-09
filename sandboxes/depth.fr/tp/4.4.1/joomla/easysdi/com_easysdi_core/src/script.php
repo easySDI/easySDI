@@ -173,13 +173,30 @@ class com_easysdi_coreInstallerScript {
 							  AND D.name LIKE '%valid%'
 
 							EXECUTE (@SQL)";
-
-                foreach ($sqls as $sql) {
+		
+				foreach ($sqls as $sql) {
                     $db->getQuery(true);
                     $db->setQuery($sql);
                     $db->execute();
                 }
-            }
+			}
+			if ($type == 'update'){
+				try{
+					
+					$sql = "DECLARE @ObjectName NVARCHAR(100)
+								SELECT @ObjectName = OBJECT_NAME([default_object_id]) FROM SYS.COLUMNS
+								WHERE [object_id] = OBJECT_ID('[dbo].[" . $db->getPrefix() . "sdi_order]') AND [name] = 'validate';
+								EXEC('ALTER TABLE [dbo].[" . $db->getPrefix() . "sdi_order] DROP CONSTRAINT ' + @ObjectName)";
+			
+					
+						$db->getQuery(true);
+						$db->setQuery($sql);
+						$db->execute();
+					
+				}
+				catch (Exception $ex){
+				}
+			}
         }
 
         // Create stored procedure drop_foreign_key 
