@@ -208,11 +208,14 @@ class FormGenerator {
                     $coll = $this->domXpathStr->query($parent->getNodePath() . '/*[@catalog:dbid="' . $_GET['relid'] . '" and @catalog:childtypeId="2"]');
 
                     //try to set the refNode, depending on the prevSibl existence
-                    $refNode = $coll->item($coll->length - 1)->nextSibling;
-
-                    //add the child to the parent, before the refNode if defined or as last parent's child
-                    isset($refNode) ? $parent->insertBefore($clearNode, $refNode) : $parent->appendChild($clearNode);
-
+                    $item = $coll->item($coll->length - 1);
+                    if(isset($item)){
+                        $refNode = $coll->item($coll->length - 1)->nextSibling;
+                        //add the child to the parent, before the refNode if defined or as last parent's child
+                        isset($refNode) ? $parent->insertBefore($clearNode, $refNode) : $parent->appendChild($clearNode);
+                    }else{
+                        $parent->appendChild($clearNode);
+                    }
                     $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
 
 
@@ -232,7 +235,9 @@ class FormGenerator {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_XML_IMPORT_ERROR'), 'error');
             }
         }
-
+//$x = $this->structure->saveXML();
+//print_r($x);
+//die();
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $this->setDomXpathStr();
@@ -391,7 +396,8 @@ class FormGenerator {
                     //This value will only be used for hidden or visible List stereotype 
                     //because, disabled list will not post the selected default value
                     //and readonly html attribute is not supported on bootstrap list
-                    if (($scope_id == 2 || $scope_id == 3) && $result->stereotype_id == 6) {
+                    if ($result->stereotype_id == 6) {
+                    //if (($scope_id == 2 || $scope_id == 3) && $result->stereotype_id == 6) {
                         $result->defaultvalue = $this->getDefaultValue($result->id, null, true);
                     }
                     foreach ($formStereotype->getStereotype($result) as $st) {

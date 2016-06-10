@@ -72,8 +72,9 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
         $elements = $this->domXpathStr->query($query); //->item(0);
 
-        if ($elements->length)
-            $element = $elements->item(0);
+        if ($elements->length){
+            $element = $elements->item(0);         
+        }
         else { // HACK TO ALLOW FIRST KEYWORD REMOVAL
             $tabQuery = explode('/', $query);
             array_pop($tabQuery);
@@ -85,7 +86,6 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         try {
             $element->parentNode->removeChild($element);
             $response['success'] = 'true';
-
             $this->session->set('structure', serialize($this->structure->saveXML()));
         } catch (Exception $exc) {
             $response['success'] = 'false';

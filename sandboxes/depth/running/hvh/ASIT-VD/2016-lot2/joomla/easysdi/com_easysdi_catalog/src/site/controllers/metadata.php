@@ -602,9 +602,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
 
-        /* echo $this->structure->saveXML();
-          die(); */
-
         $this->removeNoneExist();
         $this->removeEmptyListNode();
         $this->removeCatalogNS();
