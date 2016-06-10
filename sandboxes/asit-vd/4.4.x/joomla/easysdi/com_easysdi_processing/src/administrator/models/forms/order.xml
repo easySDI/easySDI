@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+        <field name="name" type="text"
+            label="COM_EASYSDI_PROCESSING_FORM_LBL_ORDER_NAME"
+            description="COM_EASYSDI_PROCESSING_FORM_DESC_ORDER_NAME" />
+
+        <field name="filestorage"
+                type="list"
+                onchange="onProductStorageChange()"
+                label="COM_EASYSDI_PROCESSING_FORM_LBL_DIFFUSION_PRODUCTSTORAGE"
+                description="COM_EASYSDI_PROCESSING_FORM_DESC_DIFFUSION_PRODUCTSTORAGE"
+                class="inputbox" 
+                size="1"
+                default="upload">
+            <option value="upload">Upload</option>
+            <option value="url">URL (http,ftp)</option>
+        </field>
+
+        <field name="fileurl" type="text" size="40" class="inputbox input-xlarge"
+              label="COM_EASYSDI_PROCESSING_FORM_LBL_DIFFUSION_FILEURL"
+              description="COM_EASYSDI_PROCESSING_FORM_DESC_DIFFUSION_FILEURL"
+              filter="safehtml" />
+
+        <field name="userurl" type="text" size="10" class="inputbox input-xlarge"
+              label="COM_EASYSDI_PROCESSING_FORM_LBL_DIFFUSION_USERURL"
+              description="COM_EASYSDI_PROCESSING_FORM_DESC_DIFFUSION_USERURL"
+              filter="safehtml" />
+
+        <field name="passurl" type="text" size="10" class="inputbox input-xlarge"
+              label="COM_EASYSDI_PROCESSING_FORM_LBL_DIFFUSION_PASSURL"
+              description="COM_EASYSDI_PROCESSING_FORM_DESC_DIFFUSION_PASSURL"
+              filter="safehtml" />
+
+        <field 	name="testurlauthentication"
+                id="testurlauthentication"
+                type="testurlauthentication"
+                label="COM_EASYSDI_PROCESSING_FORM_LBL_DIFFUSION_TESTURLAUTHENTICATION"
+                description="COM_EASYSDI_PROCESSING_FORM_DESC_DIFFUSION_TESTURLAUTHENTICATION"
+                filter="safehtml" />
+
+        <field name="file" type="file"
+               label="COM_EASYSDI_PROCESSING_FORM_LBL_DIFFUSION_FILE" class="inputbox input-xlarge"
+               description="COM_EASYSDI_PROCESSING_FORM_DESC_DIFFUSION_FILE"
+               filter="raw" />
+
+       <field name="sent" type="hidden" class="inputbox"
+         default="0000-00-00 00:00:00"
+         label="COM_EASYSDI_PROCESSING_FORM_LBL_ORDER_SENT"
+         description="COM_EASYSDI_PROCESSING_FORM_DESC_ORDER_SENT"
+         filter="safehtml" />
+
+ </fieldset>
+
+ <fieldset name="hidden">
+        <field name="id" type="hidden" filter="safehtml" />
+        <field name="processing_id" type="hidden" />
+        <field name="processing_label" type="hidden" />
+        <field name="guid" type="hidden"  />
+        <field name="input" type="hidden"  />
+        <field name="parameters" type="hidden" class="params_editor_input_target" />
+        <field name="created_by" type="hidden"  />
+        <field name="created" type="hidden"  />
+        <field name="output" type="hidden" />
+        <field name="exec_pid" type="hidden" />
+        <field name="status" type="hidden" default="new" />
+        <field name="info" type="hidden" />
+        <field name="user_id" type="hidden" />
+        <field name="sent" type="hidden" default="0000-00-00 00:00:00" />
+    </fieldset>
+
+</form>

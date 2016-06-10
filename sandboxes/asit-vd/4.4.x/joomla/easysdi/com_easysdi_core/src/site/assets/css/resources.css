@@ -1,0 +1,17 @@
+
+
+th#resources_name{
+    position: relative;
+    background: transparent url(../../../../components/com_easysdi_core/libraries/DataTables-1.9.4/media/images/sort_both.png) no-repeat right center;
+}
+
+span#resources_ordering{
+    background: transparent url(../../../../components/com_easysdi_core/libraries/DataTables-1.9.4/media/images/sort_asc.png) no-repeat right center;
+    position: absolute;
+    right: 0;
+    width: 1em;
+}
+
+tr[id$=_resource]{
+    display: none;
+}
