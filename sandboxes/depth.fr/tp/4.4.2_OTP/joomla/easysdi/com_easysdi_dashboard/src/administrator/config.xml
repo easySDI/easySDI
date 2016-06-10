@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <fieldset name="component_dashboard" 
+              label="COM_EASYSDI_DASHBOARD_COMPONENT_LABEL"
+              description="COM_EASYSDI_DASHBOARD_COMPONENT_DESC">
+        
+        <field name="graphcolours"
+               type="textarea"
+               default="'#6AA4B6',&#10;'#39676C',&#10;'#5C827D',&#10;'#798E84',&#10;'#647461',&#10;'#22373C',&#10;'#837A5D'"
+               rows="15" cols="20" 
+               required="true"
+               label="COM_EASYSDI_DASHBOARD_GRAPHCOLOURS_LBL"
+               description="COM_EASYSDI_DASHBOARD_GRAPHCOLOURS_DESC" />
+               
+        <field name="reporthtmlheader"
+               type="textarea"
+               filter="raw"
+               default=""
+               rows="15" cols="40" 
+               label="COM_EASYSDI_DASHBOARD_REPORTHTMLHEADER_LBL"
+               description="COM_EASYSDI_DASHBOARD_REPORTHTMLHEADER_DESC" />
+
+        <field name="reportcss"
+               type="textarea"
+               filter="raw"
+               default=""
+               rows="15" cols="40" 
+               label="COM_EASYSDI_DASHBOARD_REPORTCSS_LBL"
+               description="COM_EASYSDI_DASHBOARD_REPORTCSS_DESC" />        
+        
+    </fieldset>
+
+    <fieldset name="permissions"
+              description="JCONFIG_PERMISSIONS_DESC"
+              label="JCONFIG_PERMISSIONS_LABEL"	>
+        
+        <field name="rules" 
+               type="rules"
+               component="com_easysdi_dashboard"
+               filter="rules"
+               validate="rules"
+               label="JCONFIG_PERMISSIONS_LABEL"
+               section="component" />
+        
+    </fieldset>
+</config>
