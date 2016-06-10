@@ -121,7 +121,7 @@ class FormGenerator {
 
             $this->structure->loadXML(unserialize($this->session->get('structure')));
             $this->setDomXpathStr();
-
+//print_r($this->structure->saveXML()); die();
             $parent = $this->domXpathStr->query(FormUtils::unSerializeXpath($_GET['parent_path']))->item(0);
 
             $query = $this->getRelationQuery();
@@ -209,11 +209,11 @@ class FormGenerator {
 
                     //try to set the refNode, depending on the prevSibl existence
                     $item = $coll->item($coll->length - 1);
-                    if(isset($item)){
+                    if (isset($item)) {
                         $refNode = $coll->item($coll->length - 1)->nextSibling;
                         //add the child to the parent, before the refNode if defined or as last parent's child
                         isset($refNode) ? $parent->insertBefore($clearNode, $refNode) : $parent->appendChild($clearNode);
-                    }else{
+                    } else {
                         $parent->appendChild($clearNode);
                     }
                     $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
@@ -235,9 +235,7 @@ class FormGenerator {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_XML_IMPORT_ERROR'), 'error');
             }
         }
-//$x = $this->structure->saveXML();
-//print_r($x);
-//die();
+
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $this->setDomXpathStr();
@@ -416,6 +414,20 @@ class FormGenerator {
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
+
+                    //Dummy node
+//                    if ($result->stereotype_id == 6 && isset($result->defaultvalue) && $result->upperbound > 1) {
+//                        $dummyAttribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
+//                        $result->defaultvalue = null;
+//                        foreach ($formStereotype->getStereotype($result) as $st) {
+//                            $dummyAttribute->appendChild($this->structure->importNode($st, true));
+//                        }
+//                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'scopeId', $scope_id);
+//                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
+//                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
+//                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
+//                        $childs[] = $dummyAttribute;
+//                    }
 
                     $childs[] = $attribute;
 

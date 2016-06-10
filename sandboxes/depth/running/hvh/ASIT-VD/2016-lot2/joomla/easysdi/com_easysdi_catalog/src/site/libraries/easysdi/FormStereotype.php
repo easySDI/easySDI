@@ -77,16 +77,21 @@ class FormStereotype {
         $dom = new DOMDocument('1.0', 'utf-8');
 
         $element = $dom->createElementNS($result->list_ns_uri, $result->list_ns_prefix . ':' . $result->attribute_type_isocode);
-
+        
         if (!empty($result->attribute_codelist)) {
             $element->setAttribute('codeList', $result->attribute_codelist);
-
             //Get default value, only if field is hidden or visible
             if (!empty($result->defaultvalue)) {
                 $element->setAttribute('codeListValue', $result->defaultvalue);
             } else {
                 $element->setAttribute('codeListValue', '');
             }
+        }else{
+            if (!empty($result->defaultvalue)) {
+                $element->nodeValue = "";
+                $item = $dom->createTextNode($result->defaultvalue);
+                $element->appendChild($item);
+            } 
         }
 
         return $element;
