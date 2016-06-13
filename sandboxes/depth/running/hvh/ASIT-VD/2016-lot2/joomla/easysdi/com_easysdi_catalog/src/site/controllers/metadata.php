@@ -408,7 +408,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->where('l.code = ' . $query->quote($lang->getTag()));
         if (array_key_exists('version', $_POST)) {
             if ($_POST['version'] == 'last') {
-                $query->group(' r.name');                
+                $query->group(' r.name');
             }
         }
 
@@ -505,6 +505,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function save($data = null, $commit = true, $continue = false) {
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
+
+        //print_r($xml);die();
 
         if (!isset($data)) {
             $data = $this->data;
@@ -1206,15 +1208,26 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function removeEmptyListNode() {
-        $listNodes = $this->domXpathStr->query('descendant::*[@codeListValue=""]');
 
+        //Remove empty list Node with CodeListValue attribute
+        $listNodes = $this->domXpathStr->query('descendant::*[@codeListValue=""]');
         $toRemove = array();
         foreach ($listNodes as $listNode) {
             $toRemove[] = $listNode->parentNode;
         }
-
         foreach ($toRemove as $remove) {
             $remove->parentNode->removeChild($remove);
+        }
+
+        //Remove empyt list node without CodeListValue attribute
+        $lists = $this->domXpathStr->query('//*[@catalog:stereotypeId="6"]');
+        foreach ($lists as $list) {
+            $code = $list->childNodes->item(0)->getAttribute("codeListValue");
+            if ($code == "") {
+                $defaultChild = trim($list->childNodes->item(0)->nodeValue);
+                if (empty($defaultChild) || $defaultChild == "")
+                    $list->parentNode->removeChild($list);
+            }
         }
     }
 

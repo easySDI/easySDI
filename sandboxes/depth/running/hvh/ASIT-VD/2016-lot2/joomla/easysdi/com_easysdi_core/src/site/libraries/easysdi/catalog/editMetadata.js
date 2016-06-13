@@ -912,7 +912,7 @@ function removeFromStructure(id) {
     var uuid = getUuid('remove-btn-', id);
 
     js.ajax({
-        url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeFromStructure&uuid=' + uuid,
+        url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
         type: "GET",
         async: false,
         cache: false

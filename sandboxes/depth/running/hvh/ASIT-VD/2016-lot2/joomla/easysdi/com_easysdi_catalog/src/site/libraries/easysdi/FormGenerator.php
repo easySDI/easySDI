@@ -121,7 +121,7 @@ class FormGenerator {
 
             $this->structure->loadXML(unserialize($this->session->get('structure')));
             $this->setDomXpathStr();
-//print_r($this->structure->saveXML()); die();
+
             $parent = $this->domXpathStr->query(FormUtils::unSerializeXpath($_GET['parent_path']))->item(0);
 
             $query = $this->getRelationQuery();
@@ -155,7 +155,6 @@ class FormGenerator {
                     $this->getChildTree($root);
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
@@ -193,7 +192,8 @@ class FormGenerator {
 
                     break;
                 case EnumChildtype::$ATTRIBUT:
-                    $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
+                    $v = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]');
+                    $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item($v->length -1);
                     $cloned = $attribute->cloneNode(true);
                     $clearNode = $this->clearNodeValue($cloned);
 
@@ -204,7 +204,6 @@ class FormGenerator {
                             $clearNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
                             break;
                     }
-
                     $coll = $this->domXpathStr->query($parent->getNodePath() . '/*[@catalog:dbid="' . $_GET['relid'] . '" and @catalog:childtypeId="2"]');
 
                     //try to set the refNode, depending on the prevSibl existence
@@ -217,8 +216,6 @@ class FormGenerator {
                         $parent->appendChild($clearNode);
                     }
                     $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-
-
                     $root = $cloned;
                     $this->ajaxXpath = $cloned->getNodePath();
                     break;
@@ -241,7 +238,7 @@ class FormGenerator {
         $this->setDomXpathStr();
 
         $form = $this->buildForm($this->domXpathStr->query($rootXpath)->item(0));
-
+//print_r($this->structure->saveXML()); die();
         return $form;
     }
 
@@ -326,8 +323,6 @@ class FormGenerator {
 
             if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
-
-
                 $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
             }
         }
@@ -414,26 +409,23 @@ class FormGenerator {
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
+                    array_push ($childs,$attribute); 
 
                     //Dummy node
-//                    if ($result->stereotype_id == 6 && isset($result->defaultvalue) && $result->upperbound > 1) {
-//                        $dummyAttribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
-//                        $result->defaultvalue = null;
-//                        foreach ($formStereotype->getStereotype($result) as $st) {
-//                            $dummyAttribute->appendChild($this->structure->importNode($st, true));
-//                        }
-//                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'scopeId', $scope_id);
-//                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
-//                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
-//                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
-//                        $childs[] = $dummyAttribute;
-//                    }
-
-                    $childs[] = $attribute;
-
+                    if ($result->stereotype_id == 6 && isset($result->defaultvalue) && $result->upperbound > 1 && $scope_id == 1) {
+                        $dummyAttribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
+                        $result->defaultvalue = null;
+                        foreach ($formStereotype->getStereotype($result) as $st) {
+                            $dummyAttribute->appendChild($this->structure->importNode($st, true));
+                        }
+                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'scopeId', $scope_id);
+                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
+                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
+                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
+                        array_push ($childs,$dummyAttribute);
+                    }
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->isocode, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
@@ -453,15 +445,10 @@ class FormGenerator {
                         $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':dbid', 0);
                         $relation->appendChild($class);
                     }
-
-
-
                     $childs[] = $relation;
-
                     break;
             }
         }
-
         return $childs;
     }
 

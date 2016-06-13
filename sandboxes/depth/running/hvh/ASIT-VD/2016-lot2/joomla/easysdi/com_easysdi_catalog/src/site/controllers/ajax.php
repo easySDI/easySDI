@@ -62,47 +62,6 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         parent::__construct();
     }
 
-    public function removeFromStructure() {
-        $this->domXpathStr = new DOMXPath($this->structure);
-//print_r($this->structure->saveXML()); die();
-        foreach ($this->nsdao->getAll() as $ns) {
-            $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
-        }
-        $query = FormUtils::unSerializeXpath($_GET['uuid']);
-
-
-        $elements = $this->domXpathStr->query($query); //->item(0);
-
-        if ($elements->length) {
-            $element = $elements->item(0);
-        } else { // HACK TO ALLOW FIRST KEYWORD REMOVAL
-            $tabQuery = explode('/', $query);
-            array_pop($tabQuery);
-            $query = implode('/', $tabQuery);
-            $element = $this->domXpathStr->query($query)->item(0)->childNodes->item(1);
-        }
-
-        $response = array();
-        try {
-            if (strpos($query, '[') !== false) {
-                $element->parentNode->removeChild($element);
-            } else {
-                $new = $element->cloneNode();
-               // $element->parentNode->addChild($new);
-                $element->parentNode->removeChild($element);
-            }
-
-            $response['success'] = 'true';
-            $this->session->set('structure', serialize($this->structure->saveXML()));
-        } catch (Exception $exc) {
-            $response['success'] = 'false';
-            $response['message'] = $exc->getMessage();
-        }
-
-        echo json_encode($response);
-        die();
-    }
-
     public function removeNode() {
         $this->domXpathStr = new DOMXPath($this->structure);
 //print_r($this->structure->saveXML()); die();
