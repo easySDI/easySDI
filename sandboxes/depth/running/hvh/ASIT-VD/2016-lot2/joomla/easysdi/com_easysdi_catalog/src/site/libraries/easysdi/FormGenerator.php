@@ -499,6 +499,7 @@ class FormGenerator {
     private function cleanStructure() {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
+        
         $clone_structure->loadXML($this->structure->saveXML());
         $domXpathClone = new DOMXPath($clone_structure);
 
@@ -629,6 +630,7 @@ class FormGenerator {
         }
 
         //replace the structure with the clone
+        
         $this->structure->loadXML($clone->saveXML());
         $breakpoint = true;
     }

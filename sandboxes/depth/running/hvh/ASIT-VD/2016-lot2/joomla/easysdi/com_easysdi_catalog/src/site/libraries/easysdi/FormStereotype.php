@@ -92,7 +92,6 @@ class FormStereotype {
                 $element->appendChild($item);
             } 
         }
-
         return $element;
     }
 
