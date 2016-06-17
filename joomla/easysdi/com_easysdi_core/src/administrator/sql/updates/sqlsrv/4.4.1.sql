@@ -10,3 +10,5 @@ DELETE FROM [#__sdi_sys_orderstate] WHERE [id]=1;
 ALTER TABLE  [#__sdi_order_diffusion] DROP COLUMN [fee];
 
 ALTER TABLE  [#__sdi_order] DROP COLUMN [buffer];
+
+ALTER TABLE  [#__sdi_diffusion_perimeter] DROP COLUMN [buffer];
