@@ -30,6 +30,7 @@
         <echo>Copy administrator language file of ${monitor.component.name} component</echo>
         <copy todir="${monitor.src.out.dir}/administrator/language" overwrite="true">
             <fileset dir="${joomla.administrator.language.dir}" includes="**/*${monitor.component.name}.ini"/>
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${monitor.component.name}.sys.ini"/>            
         </copy>
         <echo>Copy administrator deployement xml file of ${monitor.component.name} component</echo>
         <copy todir="${monitor.src.out.dir}">
@@ -55,7 +56,6 @@
         <echo>Copy site language file of ${monitor.component.name} component</echo>
         <copy todir="${monitor.src.out.dir}/site/language" overwrite="true">
             <fileset dir="${joomla.site.language.dir}" includes="**/*${monitor.component.name}.ini"/>
-            <fileset dir="${joomla.site.language.dir}" includes="**/*${monitor.component.name}.sys.ini"/>
         </copy>
     </target>
     
