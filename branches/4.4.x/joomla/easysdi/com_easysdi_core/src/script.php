@@ -511,7 +511,21 @@ class com_easysdi_coreInstallerScript {
             '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js',
             '/administrator/components/com_easysdi_core/libraries/easysdi/view/index.html',
             '/administrator/components/com_easysdi_core/libraries/easysdi/view/view.js',
-            '/administrator/components/com_easysdi_core/assets/css/easysdi_loader.css'
+            '/administrator/components/com_easysdi_core/assets/css/easysdi_loader.css',
+            //https://forge.easysdi.org/issues/1344 Remove jQuery-File-Upload servers
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-go/app.yaml',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-go/app/main.go',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-go/static/favicon.ico',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-go/static/robots.txt',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-python/app.yaml',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-python/main.py',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-python/static/favicon.ico',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-python/static/robots.txt',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/node/package.json',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/node/server.js',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/php/index.php',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/php/UploadHandler.php'
+            
         );
 
         $folders = array(
@@ -534,7 +548,7 @@ class com_easysdi_coreInstallerScript {
             '/administrator/components/com_easysdi_shop/sql/install/postgresql',
             '/administrator/components/com_easysdi_shop/sql/updates/postgresql',
             //BE JS libs to FE
-            '/administrator/components/com_easysdi_core/libraries/DataTables-1.9.4'              ,
+            '/administrator/components/com_easysdi_core/libraries/DataTables-1.9.4',
             '/administrator/components/com_easysdi_core/libraries/ext',
             '/administrator/components/com_easysdi_core/libraries/filesaver',
             '/administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0',
@@ -555,7 +569,9 @@ class com_easysdi_coreInstallerScript {
             '/administrator/components/com_easysdi_processing/assets/js',
             '/administrator/components/com_easysdi_monitor/libraries/ext',
             '/administrator/components/com_easysdi_catalog/assets/images',
-            '/administrator/components/com_easysdi_catalog/assets/css'
+            '/administrator/components/com_easysdi_catalog/assets/css',
+            //https://forge.easysdi.org/issues/1344 Remove jQuery-File-Upload servers
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server'
         );
 
         jimport('joomla.filesystem.file');
