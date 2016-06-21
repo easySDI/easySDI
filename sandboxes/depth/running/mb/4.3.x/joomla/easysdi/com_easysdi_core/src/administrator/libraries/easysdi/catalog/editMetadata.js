@@ -190,28 +190,49 @@ js('document').ready(function () {
                                     async: false,
                                     cache: false
                                 }).done(function (data_version) {
-                                    var response = js.parseJSON(data_version);
+                                    
+                                    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getCardinalityError", version : rel.version})
+                                    .done(function(data){
+                                        var errors = JSON.parse(data);
+                                        if(errors.length > 0){
+                                            console.log(errors);
+                                        
+                                            var errorsList = '<ul>';
+                                            js.each(errors, function(i, item) {
+                                                errorsList += '<li>'+errors[i]+'</li>';
+                                            })
 
-                                    var children = response.versions[rel.version].children;
-                                    delete response.versions[rel.version].children;
-                                    js('#publishModalCurrentMetadata').html(buildVersionsTree(response.versions));
+                                            errorsList += '</ul>';
 
-                                    if (js(children).length) {
-                                        js('#publishModalChildrenList').html(buildVersionsTree(children));
-                                        js('#publishModalViralPublication').attr('checked', true).trigger('change');
-                                        js('#publishModalChildrenDiv').show();
-                                    }
-                                    else {
-                                        js('#publishModalViralPublication').attr('checked', false).trigger('change');
-                                    }
+                                            bootbox.alert(errorsList);
+                                        }else{
+                                            var response = js.parseJSON(data_version);
 
-                                    var publish_date = js('#jform_published').val();
-                                    if ('undefined' !== typeof publish_date && '0000-00-00 00:00:00' !== publish_date) {
-                                        var datetime = publish_date.split(' ');
-                                        js('#publish_date').val(datetime[0]);
-                                    }
+                                            var children = response.versions[rel.version].children;
+                                            delete response.versions[rel.version].children;
+                                            js('#publishModalCurrentMetadata').html(buildVersionsTree(response.versions));
 
-                                    js('#publishModal').modal('show');
+                                            if (js(children).length) {
+                                                js('#publishModalChildrenList').html(buildVersionsTree(children));
+                                                js('#publishModalViralPublication').attr('checked', true).trigger('change');
+                                                js('#publishModalChildrenDiv').show();
+                                            }
+                                            else {
+                                                js('#publishModalViralPublication').attr('checked', false).trigger('change');
+                                            }
+
+                                            var publish_date = js('#jform_published').val();
+                                            if ('undefined' !== typeof publish_date && '0000-00-00 00:00:00' !== publish_date) {
+                                                var datetime = publish_date.split(' ');
+                                                js('#publish_date').val(datetime[0]);
+                                            }
+
+                                            js('#publishModal').modal('show');
+                                            
+                                        }
+                                    });
+                                    
+                                    
                                 });
                             }
                         }).fail(function () {

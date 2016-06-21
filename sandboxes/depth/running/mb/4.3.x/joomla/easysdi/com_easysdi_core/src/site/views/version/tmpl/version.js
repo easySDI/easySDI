@@ -44,6 +44,7 @@ js(document).ready(function() {
                 }, sClass: 'center', bSearchable: false, bVisible: !isReadonly }
         ],
         aaSorting: [[3, 'desc']]
+        
     }));
     
     // apply search criteria on available children table
@@ -110,8 +111,8 @@ js(document).ready(function() {
                 }, sClass: 'center', bSearchable: false, bVisible: !isReadonly }
         ]
         ,
-        fnDrawCallback : function(aoData){
-            showCardinality();
+        fnDrawCallback : function(){
+            showChildrenCardinality();
         }
         }));
     
@@ -133,6 +134,10 @@ js(document).ready(function() {
             }, bSearchable: false}
             
         ]
+        ,
+        fnDrawCallback : function(){
+            showParentsCardinality();
+        }
     }));
     
     // to avoid double click event under IE !!
@@ -160,21 +165,44 @@ js(document).ready(function() {
     };*/
 });
 
-function showCardinality(){
+function showChildrenCardinality(){
     
-    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getCardinality", version : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
+    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getChildrenCardinality", version : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
     .done(function(data){
         var cardinality = JSON.parse(data);
         
         js("#child-cardinality").empty();
     
         js.each(cardinality, function(i, item) {
+           
             if(cardinality[i].actual < cardinality[i].childboundlower || cardinality[i].actual > cardinality[i].childboundupper){
                 classes = "alert alert-error";
             }else{
                 classes = "alert alert-success";
             }
-            js("#child-cardinality").html("<div class='"+classes+"'>"+cardinality[i].resourcetype +" ( min: "+ cardinality[i].childboundlower +" | max: "+ cardinality[i].childboundupper+" | actuel : "+cardinality[i].actual+" )</div>");
+            js("<div class='"+classes+"'>"+cardinality[i].resourcetype +" ( min: "+ cardinality[i].childboundlower +" | max: "+ cardinality[i].childboundupper+" | actuel : "+cardinality[i].actual+" )</div>").appendTo("#child-cardinality");
+            
+        }); 
+    });
+}
+
+function showParentsCardinality(){
+    
+    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getParentsCardinality", version : version})
+    .done(function(data){
+        var cardinality = JSON.parse(data);
+        
+        js("#parent-cardinality").empty();
+    
+        js.each(cardinality, function(i, item) {
+           
+            if(cardinality[i].actual < cardinality[i].parentboundlower || cardinality[i].actual > cardinality[i].parentboundupper){
+                classes = "alert alert-error";
+            }else{
+                classes = "alert alert-success";
+            }
+            js("<div class='"+classes+"'>"+cardinality[i].resourcetype +" ( min: "+ cardinality[i].parentboundlower +" | max: "+ cardinality[i].parentboundupper+" | actuel : "+cardinality[i].actual+" )</div>").appendTo("#parent-cardinality");
+
         }); 
     });
 }

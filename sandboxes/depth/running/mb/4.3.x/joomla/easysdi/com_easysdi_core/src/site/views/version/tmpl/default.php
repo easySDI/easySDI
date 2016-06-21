@@ -157,6 +157,7 @@ if ($this->item) :
                     <div class="span12">
                         <div class="well">
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_PARENT'); ?></h3>
+                            <div id="parent-cardinality"></div>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-parents" width="100%">
                                 <thead>
                                     <tr>

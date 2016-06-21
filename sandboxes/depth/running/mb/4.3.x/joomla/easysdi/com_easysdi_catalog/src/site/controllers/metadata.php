@@ -291,6 +291,88 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->changeStatusAndSave(sdiMetadata::VALIDATED, FALSE);
     }
 
+    private function checkCardinality(){
+
+        $query = $this->db->getQuery(true)
+                ->select('v.id as id, r.name as resource, v.name as version, rt.guid as resourcetype, ms.value as state')
+                ->from('#__sdi_version v')
+                ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
+                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
+                ->where('vl.child_id = ' . $this->data['id']);
+        
+        $this->db->setQuery($query)->execute();
+
+        $parents = $this->db->loadObjectList();
+        
+        $query = $this->db->getQuery(true)
+                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state')
+                ->from('#__sdi_version v')
+                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
+                ->where("v.id IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id = ". $this->data['id']);
+
+        $children = $this->db->loadObjectList();
+        
+        $query = $this->db->getQuery(true)
+                ->select("rt.name, rtl.child_id, rtl.childboundlower, rtl.childboundupper, rt.guid as resourcetype, rt.id resourcetype_id")
+                ->from("#__sdi_version v")
+                ->innerJoin("#__sdi_resource r on r.id = v.resource_id")
+                ->innerJoin("#__sdi_resourcetypelink rtl on rtl.parent_id = r.resourcetype_id")
+                ->innerJoin("#__sdi_resourcetype rt on rt.id = rtl.child_id")
+                ->where("v.id = ".$this->data['id']);
+        
+        $this->db->setQuery($query)->execute();
+        $childCardinality = $this->db->loadObjectList();
+        
+        $error = array();
+        
+        foreach ($childCardinality as $childCard) {
+            $countChildren = $this->_countByResourceType($children, $childCard->resourcetype_id);
+            if($countChildren<$childCard->childboundlower || $countChildren>$childCard->childboundupper){
+                $error[] = "le nombre d'enfant n'est pas bon.";
+            }
+        }
+        
+        $query = $this->db->getQuery(true)
+                ->select("rt.name, rtl.child_id, rtl.parentboundlower, rtl.parentboundupper, rt.guid as resourcetype, rt.id resourcetype_id")
+                ->from("#__sdi_version v")
+                ->innerJoin("#__sdi_resource r on r.id = v.resource_id")
+                ->innerJoin("#__sdi_resourcetypelink rtl on rtl.child_id = r.resourcetype_id")
+                ->innerJoin("#__sdi_resourcetype rt on rt.id = rtl.parent_id")
+                ->where("v.id = ".$this->data['id']);
+        
+        $this->db->setQuery($query)->execute();
+        $parentCardinality = $this->db->loadObjectList();
+        
+        foreach ($parentCardinality as $parentCard) {
+            $countParent = $this->_countByResourceType($parents, $parentCard->resourcetype_id);
+            if($countParent<$childCard->parentboundlower || $countParent>$childCard->parentboundupper){
+                $error[] = "le nombre de parent n'est pas bon.";
+            }
+        }
+        
+        if(count($error)>0){
+            JFactory::getApplication()->enqueueMessage("Erreur de cardinalité", 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
+        }
+        
+    }
+    
+    private function _countByResourceType($elements, $resourcetype_id){
+        $nbre=0;
+        foreach ($elements as $child) {
+            if($child->resourcetype_id == $resourcetype_id){
+                $nbre++;
+            }
+        }
+        return $nbre;
+    }
+    
     /**
      * Change metadata status to publish
      */
