@@ -109,7 +109,13 @@ js(document).ready(function() {
                     return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
                 }, sClass: 'center', bSearchable: false, bVisible: !isReadonly }
         ]
-    }));
+        ,
+        fnDrawCallback : function(aoData){
+            showCardinality();
+        }
+        }));
+    
+    
     
     parents = js('#sdi-parents').dataTable(js.extend(true, {}, dtDefaultSettings, {
         "bFilter": true,
@@ -153,6 +159,25 @@ js(document).ready(function() {
         Joomla.submitform(task, document.getElementById('adminForm'));
     };*/
 });
+
+function showCardinality(){
+    
+    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getCardinality", version : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
+    .done(function(data){
+        var cardinality = JSON.parse(data);
+        
+        js("#child-cardinality").empty();
+    
+        js.each(cardinality, function(i, item) {
+            if(cardinality[i].actual < cardinality[i].childboundlower || cardinality[i].actual > cardinality[i].childboundupper){
+                classes = "alert alert-error";
+            }else{
+                classes = "alert alert-success";
+            }
+            js("#child-cardinality").html("<div class='"+classes+"'>"+cardinality[i].resourcetype +" ( min: "+ cardinality[i].childboundlower +" | max: "+ cardinality[i].childboundupper+" | actuel : "+cardinality[i].actual+" )</div>");
+        }); 
+    });
+}
 
 var addChild = function(child){
     if(tmpRemoved.indexOf(child.id) > -1)

@@ -483,10 +483,50 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             'iTotalDisplayRecords' => count($parents),
             'aaData' => array_slice($parents, $start, $length),
             'sEcho' => $inputs->getString('sEcho', '')
+            
         ));
         die();
     }
 
+    public function getCardinality(){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+
+        $id = $inputs->getInt('version', null);
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select("rt.name, rtl.child_id, rtl.childboundlower, rtl.childboundupper, rt.guid as resourcetype, rt.id resourcetype_id")
+                ->from("#__sdi_version v")
+                ->innerJoin("#__sdi_resource r on r.id = v.resource_id")
+                ->innerJoin("#__sdi_resourcetypelink rtl on rtl.parent_id = r.resourcetype_id")
+                ->innerJoin("#__sdi_resourcetype rt on rt.id = rtl.child_id")
+                ->where("v.id = ".(int)$id);
+        
+        $db->setQuery($query)->execute();
+        $results = $db->loadObjectList();
+        
+        $children = $this->_getChildren4DT(true);
+        
+        foreach ($results as $result){
+            $result->resourcetype = EText::_($result->resourcetype);
+            $result->actual = $this->_countByResourceType($children, $result->resourcetype_id);
+        }
+        
+            echo json_encode($results);
+            die();
+    }
+    
+    private function _countByResourceType($children, $resourcetype_id){
+        $nbre=0;
+        foreach ($children as $child) {
+            if($child->resourcetype_id == $resourcetype_id){
+                $nbre++;
+            }
+        }
+        return $nbre;
+    }
+    
     /**
      * 
      */
