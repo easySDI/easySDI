@@ -4,7 +4,7 @@
  * Extract - WebService designed to getOrders and setProduct
  * based on the old webservice (rest)
  * 
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -1393,7 +1393,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         //set fee
         if ($this->product->getElementsByTagNameNS(self::nsSdi, 'fee')->length > 0) {
-            $this->setFee($query, $posp, $updatePricing, (float) $this->product->getElementsByTagNameNS(self::nsSdi, 'fee')->item(0)->nodeValue);
+            $this->setFee($posp, $updatePricing, (float) $this->product->getElementsByTagNameNS(self::nsSdi, 'fee')->item(0)->nodeValue);
         }
 
         //set storage
@@ -1494,9 +1494,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @return void
      * @since 4.3.0
      */
-    private function setFee(&$query, &$posp, &$updatePricing, $fee) {
-        $query->set('fee=' . $fee);
-
+    private function setFee(&$posp, &$updatePricing, $fee) {
         // update pricing data if exist
         if ($posp !== null) {
             $updatePricing = true;

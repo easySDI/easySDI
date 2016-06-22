@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -105,7 +105,7 @@ $displayTitle = isset($displayData['displayTitle']) ? $displayData['displayTitle
                                         <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.remove&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_REMOVE_DRAFT'); ?></a>
                                     </li>
                                 <?php endif; ?>
-                                <?php if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH): ?>
+                                <?php if ($item->archived == 0 && ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH || $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED || $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED_SUPPLIER)): ?>
                                     <li>
                                         <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.archive&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ARCHIVE_ORDER'); ?></a>
                                     </li>

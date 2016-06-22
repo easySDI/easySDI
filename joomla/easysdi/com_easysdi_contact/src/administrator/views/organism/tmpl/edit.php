@@ -1,6 +1,7 @@
 <?php
+
 /**
- * ** @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_contact
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -15,11 +16,13 @@ JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.keepalive');
 
+$base_url = JURI::root() . 'components/com_easysdi_core/libraries';
+
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css?v=' . sdiFactory::getSdiFullVersion());
-$document->addStyleSheet('components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
-$document->addScript('components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
+$document->addStyleSheet($base_url.'/DataTables-1.9.4/media/css/jquery.dataTables.css');
+$document->addScript($base_url.'/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
 $document->addScript('components/com_easysdi_contact/views/organism/tmpl/contact_organism.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <script type="text/javascript">

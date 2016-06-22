@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -14,16 +14,16 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
 
 $document = JFactory::getDocument();
 JHtml::_('jquery.framework'); //ensure jquery is loaded
-JHtml::script(Juri::root(true) . 'components/com_easysdi_shop/helpers/helper.js?v=' . sdiFactory::getSdiFullVersion());
-$base_url = Juri::root(true) . 'administrator/components/com_easysdi_core/libraries';
+$document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/helper.js?v=' . sdiFactory::getSdiFullVersion());
+$base_url = Juri::root(true) . '/components/com_easysdi_core/libraries';
 //TODO : do not include proj here !!
-JHtml::script($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
-JHtml::script($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
-JHtml::script($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
-JHtml::script($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
-JHtml::script($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
-JHtml::script($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
-JHtml::script($base_url . '/filesaver/FileSaver.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG2056.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/defs/EPSG21781.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/somerc.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/merc.js');
+$document->addScript($base_url . '/proj4js-1.1.0/lib/projCode/lcc.js');
+$document->addScript($base_url . '/filesaver/FileSaver.js');
 $document->addStyleSheet(Juri::root(true) . '/components/com_easysdi_shop/views/basket/tmpl/basket.css?v=' . sdiFactory::getSdiFullVersion());
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
@@ -60,7 +60,7 @@ Easysdi_shopHelper::basketReloadSavedPricing($this->item->basket);
     <input type = "hidden" name = "task" value = "" />
     <input type = "hidden" name = "id" value = "<?php echo $this->item->id; ?>" />
     <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-    <input type = "hidden" name = "sdiUserId" value = "<?php echo $this->user->id; ?>" />            
+    <input type = "hidden" name = "sdiUserId" value = "<?php echo $item->user_id; ?>" />            
     <?php echo JHtml::_('form.token'); ?>
 
     <script>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ** @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_contact
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -72,29 +72,33 @@ class Easysdi_contactViewUsers extends JViewLegacy {
             if (isset($this->items[0]->state)) {
                 JToolBarHelper::divider();
                 JToolBarHelper::custom('users.publish', 'publish.png', 'publish_f2.png', 'JTOOLBAR_PUBLISH', true);
-                JToolBarHelper::custom('users.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
-            } else {
-                //If this component does not use state then show a direct delete button as we can not trash
-                JToolBarHelper::deleteList('', 'users.delete', 'JTOOLBAR_DELETE');
-            }
+                JToolBarHelper::custom('users.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);                 
+            } 
+//            else {
+//                //If this component does not use state then show a direct delete button as we can not trash
+//                JToolBarHelper::deleteList('', 'users.delete', 'JTOOLBAR_DELETE');
+//            }
 
-            if (isset($this->items[0]->state)) {
-                JToolBarHelper::divider();
-                JToolBarHelper::archiveList('users.archive', 'JTOOLBAR_ARCHIVE');
-            }
+            JToolBarHelper::deleteList('', 'users.delete', 'JTOOLBAR_DELETE');
+             
+//            if (isset($this->items[0]->state)) {
+//                JToolBarHelper::divider();
+//                JToolBarHelper::archiveList('users.archive', 'JTOOLBAR_ARCHIVE');
+//            }
             if (isset($this->items[0]->checked_out)) {
                 JToolBarHelper::custom('users.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
             }
         }
 
+        
         //Show trash and delete for components that uses the state field
-        if (isset($this->items[0]->state)) {
-            if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
-                JToolBarHelper::deleteList('', 'users.delete', 'JTOOLBAR_EMPTY_TRASH');
-            } else if ($canDo->get('core.edit.state')) {
-                JToolBarHelper::trash('users.trash', 'JTOOLBAR_TRASH');
-            }
-        }
+//        if (isset($this->items[0]->state)) {
+//            if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
+//                JToolBarHelper::deleteList('', 'users.delete', 'JTOOLBAR_EMPTY_TRASH');
+//            } else if ($canDo->get('core.edit.state')) {
+//                JToolBarHelper::trash('users.trash', 'JTOOLBAR_TRASH');
+//            }
+//        }
 
         JToolBarHelper::divider();
         if ($canDo->get('core.admin')) {
@@ -119,9 +123,10 @@ class Easysdi_contactViewUsers extends JViewLegacy {
                 .'</select>';
         
         JHtmlSidebar::addFilter(
-                JText::_('JOPTION_SELECT_PUBLISHED'), 'filter_published', JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
+                JText::_('JOPTION_SELECT_PUBLISHED'), 'filter_published', JHtml::_('select.options', JHtml::_('jgrid.publishedOptions',array('trash' => 0, 'archived' =>0 )), "value", "text", $this->state->get('filter.state'), true)
         );
 
+         
         JHtmlSidebar::addFilter(
                 JText::_('JOPTION_SELECT_ACCESS'), 'filter_access', JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'))
         );

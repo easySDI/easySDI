@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -208,6 +208,12 @@ class Easysdi_shopModelOrder extends JModelForm {
         return $data;
     }
 
+    /**
+     * 
+     * @param type $id
+     * @param type $state
+     * @return boolean
+     */
     function setOrderState($id, $state) {
         $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
         $table = $this->getTable();
@@ -216,6 +222,23 @@ class Easysdi_shopModelOrder extends JModelForm {
         }
 
         $table->orderstate_id = $state;
+        return $table->store(false);
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @param type $archived
+     * @return boolean
+     */
+    function archive($id){
+        $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
+        $table = $this->getTable();
+        if (!$table->load($id)) {
+            return false;
+        }
+
+        $table->archived = 1;
         return $table->store(false);
     }
 

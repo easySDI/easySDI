@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -24,6 +24,12 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
             <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=orders'); ?>" method="post">
                 <div class="btn-toolbar">
                     <div class="btn-group pull-right">
+                        <fieldset class="radio btn-group btn-group-yesno" id="filterarchive">
+                            <input type="radio" id="archived0" name="filter_archived" value="1" <?php if ($this->state->get('filter.archived') == 1): ?> checked='checked'<?php endif; ?> onClick="this.form.submit();">
+                            <label for="archived0" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_REQUESTS_ACTIVE'); ?></label>
+                            <input type="radio" id="archived1" name="filter_archived" value="0" <?php if ($this->state->get('filter.archived') == 0): ?> checked='checked'<?php endif; ?> onClick="this.form.submit();">
+                            <label for="archived1" class="btn"><?php echo JText::_('COM_EASYSDI_SHOP_REQUESTS_ARCHIVED'); ?></label>                            
+                        </fieldset>
                         <?php if (count($this->organisms) > 1): ?>
                             <div id="filterorganism" >
                                 <select id="filter_organism" name="filter_organism" onchange="this.form.submit();" class="inputbox">

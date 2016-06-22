@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -18,7 +18,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/mpdf/
  * Catalog controller class.
  */
 class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
-    
+
     public function exportPDF($id = null, $download = true) {
         if (empty($id)) {
             $id = JFactory::getApplication()->input->get('id', null, 'STRING');
@@ -34,16 +34,28 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
         }
         //Specific parameter for PDF output
         $out = JFactory::getApplication()->input->get('out', null, 'STRING');
-        
+
+        //get extended MD xml
         $metadata = new cswmetadata($id);
         $metadata->load('complete');
         $metadata->extend($catalog, $type, $preview, 'true', $lang);
-        
-        $xhtmlfile = $metadata->applyXSL(array ('catalog' => $catalog, 'type' => $type, 'preview' => $preview, 'out' => $out));
+        $xhtmlfile = $metadata->applyXSL(array('catalog' => $catalog, 'type' => $type, 'preview' => $preview, 'out' => $out));
 
+        //PDF processor
         $mpdf = new mPDF();
+
+        //add custom CSS
+        $params = JComponentHelper::getParams('com_easysdi_catalog');
+        $pdfexportcss = $params->get('pdfexportcss');
+        if (isset($pdfexportcss) && strlen($pdfexportcss) > 0) {
+            $mpdf->WriteHTML($pdfexportcss, 1);
+        }
+
+        //add HTML and process
         $mpdf->WriteHTML($xhtmlfile);
         $file = $mpdf->Output('', 'S');
+        
+        //return PDF data depending on usage
         if ($download) {
             $this->setResponse($file, 'application/pdf', 'report.pdf', strlen($file));
         } else {

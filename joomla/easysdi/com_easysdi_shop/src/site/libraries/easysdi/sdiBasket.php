@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -20,7 +20,6 @@ class sdiBasket {
 
     public $id;
     public $name;
-    public $buffer;
     public $thirdparty;
     public $extractions = array();
     public $perimeters = array();
@@ -60,7 +59,6 @@ class sdiBasket {
                             . 'o.mandate_contact as mandate_contact, '
                             . 'o.mandate_email as mandate_email, '
                             . 'org.name as thirdorganism, '
-                            . 'o.buffer as buffer , '
                             . 'o.surface as surface, '
                             . 'o.level as level, '
                             . 'o.freeperimetertool as freeperimetertool, '
@@ -117,7 +115,7 @@ class sdiBasket {
 
             //Load diffusion
             $query = $db->getQuery(true)
-                    ->select('d.id as id, od.id as orderdiffusion_id, od.productstate_id, od.remark, od.fee, od.completed,' . $db->quoteName('od.file') . ' , od.displayName as displayname, od.size, od.created_by')
+                    ->select('d.id as id, od.id as orderdiffusion_id, od.productstate_id, od.remark, od.completed,' . $db->quoteName('od.file') . ' , od.displayName as displayname, od.size, od.created_by')
                     ->from('#__sdi_diffusion d')
                     ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                     ->innerJoin('#__sdi_order o ON o.id = od.order_id')
@@ -159,7 +157,6 @@ class sdiBasket {
                 $ex = new sdiExtraction($extractionobject);
                 $ex->productstate_id = $extraction->productstate_id;
                 $ex->remark = $extraction->remark;
-                $ex->fee = $extraction->fee;
                 $ex->completed = $extraction->completed;
                 $ex->file = $extraction->file;
                 $ex->displayname = $extraction->displayname;
@@ -182,7 +179,6 @@ class sdiBasket {
             $extent->id = $perimeters[0]->perimeter_id;
             $extent->name = $perimeters[0]->perimeter_name;
             $extent->surface = $order->surface;
-            $extent->buffer = $order->buffer;
             $extent->level = $order->level;
             $extent->features = array();
             foreach ($perimeters as $perimeter):
@@ -241,9 +237,9 @@ class sdiBasket {
      */
     function setPerimeters($perimeters) {
         $this->perimeters = $perimeters;
-        foreach ($this->perimeters as $perimeter):
-            $perimeter->setAllowedBuffer($this->extractions);
-        endforeach;
+//        foreach ($this->perimeters as $perimeter):
+//            $perimeter->setAllowedBuffer($this->extractions);
+//        endforeach;
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -15,12 +15,12 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js?v=' . sdiFactory::getSdiFullVersion());
 if (JDEBUG) {
-    $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js');
+    $document->addScript('components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
 } else {
-    $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
+    $document->addScript('components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js');
 }
 ?>
 <style>

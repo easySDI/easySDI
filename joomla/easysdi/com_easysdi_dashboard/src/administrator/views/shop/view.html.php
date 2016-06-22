@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_dashboard
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -28,9 +28,6 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
         $this->state = $this->get('State');
         
         $params = JComponentHelper::getParams('com_easysdi_dashboard');
-        $this->talendenabled =  $params->get('talendenabled');
-        $this->birtenabled =  $params->get('birtenabled');
-        $this->birturl =  $params->get('birturl');
         $this->graphcolours =  $params->get('graphcolours');
 
         // Check for errors.
@@ -53,15 +50,9 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
     protected function addToolbar() {
         require_once JPATH_COMPONENT . '/helpers/easysdi_dashboard.php';
 
-        //$state = $this->get('State');
-
         $canDo = Easysdi_dashboardHelper::getActions('core.admin');
 
         JToolBarHelper::title(JText::_('COM_EASYSDI_DASHBOARD_SHOP_HEADER'), 'links-cat.png');
-
-        //Check if the form exists before showing the add/edit buttons
-        $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/shop';
-
 
         JToolBarHelper::divider();
         if ($canDo->get('core.admin')) {
@@ -70,9 +61,7 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
 
         //Set sidebar action - New in 3.0
         JHtmlSidebar::setAction('index.php?option=com_easysdi_dashboard&view=shop');
-        $this->extra_sidebar = Easysdi_dashboardHelper::getPseudoFilters();
- 
-        //print_r($this);
+        $this->extra_sidebar = Easysdi_dashboardHelper::getBackendFilters();
         
     }
 }

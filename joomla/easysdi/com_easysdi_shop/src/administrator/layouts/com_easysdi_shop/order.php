@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -106,8 +106,7 @@ if (!$showActions) {
         </div>
 
         <?php
-        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_ARCHIVED ||
-                $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_HISTORIZED ||
+        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_HISTORIZED ||
                 $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH):
             ?>
             <div id="sdi-order-recap-completed" class="row-fluid" >
@@ -123,9 +122,11 @@ if (!$showActions) {
         <div id="sdi-order-recap-orderstate" class="row-fluid">
             <div class="span2 order-edit-label" >
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
+
             </div>
             <div class="span10 order-edit-value" >
-                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true); ?>
+                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true, true); ?>
+
             </div>
         </div>
 
@@ -436,10 +437,19 @@ if (!$showActions) {
                                     $product = $item->basket->pricing->suppliers[$supplier_id]->products[$productItem->id];
 
                                     if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST && $productItem->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_SENT) :
+                                        //price is pre-defined
                                         if (isset($product->cal_total_amount_ti)):
                                             ?>
                                             <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" value="<?php echo $product->cal_total_amount_ti; ?>" placeholder="<?php echo $product->cal_total_amount_ti; ?>" readonly="readonly" class="input-small"/>
-                                        <?php else: ?>
+                                            <?php
+                                        //price is free
+                                        elseif ($product->cfg_pricing_type == Easysdi_shopHelper::PRICING_FREE):
+                                            ?>
+                                            <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" value="0" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE'); ?>" readonly="readonly" class="input-small"/>
+                                            <?php
+                                        //price has to be set
+                                        else:
+                                            ?>
                                             <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRICE_FIELD_PLACEHOLDER'); ?>" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>/>
                                         <?php
                                         endif;
@@ -546,23 +556,23 @@ if (!$showActions) {
                         <?php endforeach; ?>
                     </tbody>
                     <?php if ($showPricing) : ?>
-                        <tfoot>
-                            <tr class="supplier_fixed_fee_row">
-                                <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
-                                <td class="price_column supplier_cal_fee_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti); ?></td>
-                                <td class="action_column action_column_recap">&nbsp;</td>
-                            </tr>
-                            <tr class="supplier_total_row" style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
-                                <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
-                                <td class="price_column supplier_cal_total_amount_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti); ?></td>
-                                <td class="action_column action_column_recap">&nbsp;</td>
-                            </tr>
-                            <tr class="supplier_rebate_row" style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
-                                <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
-                                <td class="price_column supplier_cal_total_rebate_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti); ?></td>
-                                <td class="action_column action_column_recap">&nbsp;</td>
-                            </tr>
-                        </tfoot>
+                    <tfoot>
+                        <tr class="supplier_fixed_fee_row">
+                            <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
+                            <td class="price_column supplier_cal_fee_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_fee_ti); ?></td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
+                        </tr>
+                        <tr class="supplier_total_row" style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
+                            <td class="price_title_column price_title_provider_total"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
+                            <td class="price_column supplier_cal_total_amount_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_amount_ti); ?></td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
+                        </tr>
+                        <tr class="supplier_rebate_row" style="<?php if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST): ?>display:none;<?php endif; ?>">
+                            <td class="price_title_column price_title_provider_discount"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
+                            <td class="price_column supplier_cal_total_rebate_ti"><?php echo Easysdi_shopHelper::priceFormatter($item->basket->pricing->suppliers[$supplier_id]->cal_total_rebate_ti); ?></td>
+                            <td class="action_column action_column_recap">&nbsp;</td>
+                        </tr>
+                    </tfoot>
                     <?php endif; ?>
                 </table>
             <?php endif; ?>

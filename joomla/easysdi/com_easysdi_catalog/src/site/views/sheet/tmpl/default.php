@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -19,7 +19,7 @@ $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js?v=' . sdiFactory::getSdiFullVersion());
 
 ?>
 <?php if ($this->item) : ?>

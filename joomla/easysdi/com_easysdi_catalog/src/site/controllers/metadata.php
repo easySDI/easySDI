@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -1005,11 +1005,32 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             foreach ($versions[$version->id]->children as $children) {
                 if ($children->metadatastate_id == sdiMetadata::VALIDATED) {
-                    $this->changeStatus($children->metadata_id, $metadatastate_id, $published);
+                    if($this->changeStatus($children->metadata_id, $metadatastate_id, $published)){
+                        
+                        
+                        $data = array();
+                        $data['id'] = $children->metadata_id;
+                        $data['published'] = $published;
+                        
+                        $child = new sdiMetadata($children->metadata_id);
+                        $childDom = $child->load();
+                        $childXPath = new DOMXpath($childDom);
+
+                        $nsdao = new SdiNamespaceDao();
+                        
+                        foreach ($nsdao->getAll() as $ns) {
+                            $childXPath->registerNamespace($ns->prefix, $ns->uri);
+                }
+                        $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
+                        
+                        $xml = $this->CreateUpdateBody($childXPath->query('/*/*')->item(0), $children->fileidentifier);
+                        $model->save($data, $xml->saveXML());
+                       
+            }
                 }
             }
-            $this->changeStatus($id, $metadatastate_id, $published);
             $this->db->transactionCommit();
+            
             return true;
         } catch (Exception $ex) {
             $this->db->transactionRollback();

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -16,7 +16,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript('components/com_easysdi_shop/views/diffusion/tmpl/diffusion.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 
@@ -85,7 +85,7 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                             <?php echo $field->input; ?>
                                             <?php if($field->fieldname == 'file'):?>
                                                 <?php if(!empty($this->item->file)):?>
-                                                    <a id="jform_file_hidden_href" href="<?php echo JRoute::_($this->params->get('fileFolder') . '/' . $this->item->file, false); ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
+                                                    <a id="jform_file_hidden_href" href="<?php echo Juri::base(true) ."/component/easysdi_shop/download/download?id=".$this->item->id; ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
                                                 <?php endif;?>
                                                 <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />
                                             <?php endif;?>
@@ -141,14 +141,13 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                         ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-												<label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>"><?php echo $orderperimeterlabel; ?></label>                                                
+						<label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>"><?php echo $orderperimeterlabel; ?></label>                                                
                                             </div>
                                             <div class="controls">
-                                                <?php //var_dump($this->item->perimeter[$orderperimeter->id]); ?>
                                                 <fieldset id="jform_perimeter<?php echo $orderperimeter->id ?>" class="radio btn-group btn-group-yesno">
-                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_0" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="0" <?php if (!array_key_exists($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_0" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="0" <?php if (!in_array($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
                                                     <label for="jform_perimeter<?php echo $orderperimeter->id ?>_0" <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JNO'); ?></label>                                            
-                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_1" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="1" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
+                                                    <input type="radio" id="jform_perimeter<?php echo $orderperimeter->id; ?>_1" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" value="1" <?php if (in_array($orderperimeter->id, $this->item->perimeter)): ?>checked="checked"<?php endif; ?> <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>>
                                                     <label for="jform_perimeter<?php echo $orderperimeter->id ?>_1" <?php if (!$this->isDiffusionManager): ?>disabled="disabled"<?php endif; ?>><?php echo JText::_('JYES'); ?></label>
                                                 </fieldset>
                                             </div>

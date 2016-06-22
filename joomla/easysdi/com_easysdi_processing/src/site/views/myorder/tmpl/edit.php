@@ -1,6 +1,6 @@
 <?php
 /**
-* @version     4.4.0
+* @version     4.4.1
 * @package     com_easysdi_processing
 * @copyright   Copyright (C) 2013-2016. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -22,8 +22,8 @@ JHtml::_('behavior.keepalive');
 
 // Import JS
 $document = JFactory::getDocument();
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript('administrator/components/com_easysdi_processing/assets/js/params_editor.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_processing/assets/js/params_editor.js?v=' . sdiFactory::getSdiFullVersion());
 $app = JFactory::getApplication();
 $processing=Easysdi_processingHelper::getProcessById($app->input->get('processing', '', 'INT'));
 $processing_parameters=json_decode($processing->parameters);

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_service
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -19,11 +19,11 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript(JURI::root(true) .'/components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/csw.js?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript('components/com_easysdi_service/libraries/openlayers/OpenLayers.js' );
-$document->addScript('components/com_easysdi_service/libraries/proj4js/lib/proj4js-combined.js' );
+$document->addScript(JURI::root(true) .'/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js' );
+$document->addScript(JURI::root(true) .'/components/com_easysdi_core/libraries/proj4js-1.1.0/lib/proj4js-combined.js' );
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 

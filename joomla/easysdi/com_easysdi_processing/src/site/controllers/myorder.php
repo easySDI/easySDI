@@ -1,6 +1,6 @@
 <?php
 /**
-* @version     4.4.0
+* @version     4.4.1
 * @package     com_easysdi_processing
 * @copyright   Copyright (C) 2013-2016. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_processing/helpers/easysdi_processing.php';
+jimport( 'joomla.filesystem.file' );
 
 /**
  * MyOrder controller class.
