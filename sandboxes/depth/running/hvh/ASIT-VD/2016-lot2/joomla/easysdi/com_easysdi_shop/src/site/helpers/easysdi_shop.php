@@ -979,6 +979,7 @@ abstract class Easysdi_shopHelper {
                         ->select('COUNT(1)')
                         ->from('#__sdi_pricing_order_supplier_product posp')
                         ->where('posp.pricing_order_supplier_id=' . (int) $pos->id)
+                        ->where('pricing_id <> 1')
                         ->where('posp.cal_total_amount_ti IS NULL'));
         $productsWithoutPrice = $db->loadResult();
         //if all products of this supplier have a price, we can update the supplier pricing branch
