@@ -115,7 +115,7 @@ class sdiBasket {
 
             //Load diffusion
             $query = $db->getQuery(true)
-                    ->select('d.id as id, od.id as orderdiffusion_id, od.productstate_id, od.remark, od.completed,' . $db->quoteName('od.file') . ' , od.displayName as displayname, od.size, od.created_by')
+                    ->select('d.id as id, d.otp as otp, od.id as orderdiffusion_id, od.productstate_id, od.remark, od.completed,' . $db->quoteName('od.file') . ' , od.displayName as displayname, od.otpchance as otpchance, od.size, od.created_by')
                     ->from('#__sdi_diffusion d')
                     ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                     ->innerJoin('#__sdi_order o ON o.id = od.order_id')
@@ -160,6 +160,8 @@ class sdiBasket {
                 $ex->completed = $extraction->completed;
                 $ex->file = $extraction->file;
                 $ex->displayname = $extraction->displayname;
+                $ex->otp = $extraction->otp;
+                $ex->otpchance = $extraction->otpchance;
                 $ex->size = $extraction->size;
                 $ex->created_by = sdiFactory::getSdiUserByJoomlaId($extraction->created_by)->name;
                 $this->addExtraction($ex);

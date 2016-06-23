@@ -636,6 +636,7 @@ CREATE TABLE [#__sdi_diffusion] (
 	[hasdownload] [smallint] NOT NULL,
 	[hasextraction] [smallint] NOT NULL,
 	[restrictedperimeter] [smallint] NOT NULL,
+        [otp] [smallint] NOT NULL DEFAULT 0,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_diffusion_id] PRIMARY KEY CLUSTERED 
@@ -1189,7 +1190,9 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[storage_id] [bigint] NULL,
 	[file] [nvarchar](500) NULL,
 	[size] [decimal](10, 0) NULL,
-        [displayName] [nvarchar](75) NULL
+        [displayName] [nvarchar](75) NULL,
+        [otp] [nvarchar](1000) NULL,
+        [otpchance] [smallint] DEFAULT 0,
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

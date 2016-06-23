@@ -100,7 +100,7 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                             <div id="div_extraction">
                                 <?php
                                 foreach ($this->form->getFieldset('extraction') as $field):
-                                    if (in_array($field->fieldname, array('hasextraction', 'restrictedperimeter')))
+                                    if (in_array($field->fieldname, array('hasextraction', 'restrictedperimeter','otp')))
                                         continue;
                                     ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
@@ -121,6 +121,15 @@ var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAIL
                                 <div class="control-group" id="<?php echo $this->form->getField('restrictedperimeter')->fieldname; ?>">
                                     <div class="control-label"><?php echo $this->form->getField('restrictedperimeter')->label; ?></div>
                                     <div class="controls"><?php echo $this->form->getField('restrictedperimeter')->input; ?></div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <?php 
+                                $test=$this->params->get('otpactivated');
+                                if($this->params->get('otpactivated') == 1) : ?>
+                                <div class="control-group" id="<?php echo $this->form->getField('otp')->fieldname; ?>">
+                                    <div class="control-label"><?php echo $this->form->getField('otp')->label; ?></div>
+                                    <div class="controls"><?php echo $this->form->getField('otp')->input; ?></div>
                                 </div>
                                 <?php endif; ?>
                                 
