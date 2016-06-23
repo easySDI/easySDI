@@ -61,6 +61,7 @@ class FormGenerator {
 
     /** @var string */
     private $catalog_prefix = 'catalog';
+    private $boundaryAttributeOptions = null;
 
     function __construct(JObject $item = null) {
         $this->db = JFactory::getDbo();
@@ -193,7 +194,7 @@ class FormGenerator {
                     break;
                 case EnumChildtype::$ATTRIBUT:
                     $v = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]');
-                    $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item($v->length -1);
+                    $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item($v->length - 1);
                     $cloned = $attribute->cloneNode(true);
                     $clearNode = $this->clearNodeValue($cloned);
 
@@ -223,7 +224,6 @@ class FormGenerator {
         }
 
         $rootXpath = $root->getNodePath();
-
         $this->setDomXpathStr();
 
         if (isset($this->csw)) {
@@ -234,11 +234,8 @@ class FormGenerator {
         }
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
-
         $this->setDomXpathStr();
-
         $form = $this->buildForm($this->domXpathStr->query($rootXpath)->item(0));
-//print_r($this->structure->saveXML()); die();
         return $form;
     }
 
@@ -390,7 +387,7 @@ class FormGenerator {
                     //because, disabled list will not post the selected default value
                     //and readonly html attribute is not supported on bootstrap list
                     if ($result->stereotype_id == 6) {
-                    //if (($scope_id == 2 || $scope_id == 3) && $result->stereotype_id == 6) {
+                        //if (($scope_id == 2 || $scope_id == 3) && $result->stereotype_id == 6) {
                         $result->defaultvalue = $this->getDefaultValue($result->id, null, true);
                     }
                     foreach ($formStereotype->getStereotype($result) as $st) {
@@ -409,7 +406,7 @@ class FormGenerator {
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
-                    array_push ($childs,$attribute); 
+                    array_push($childs, $attribute);
 
                     //Dummy node
                     if ($result->stereotype_id == 6 && isset($result->defaultvalue) && $result->upperbound > 1 && $scope_id == 1) {
@@ -422,7 +419,7 @@ class FormGenerator {
                         $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                         $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                         $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
-                        array_push ($childs,$dummyAttribute);
+                        array_push($childs, $dummyAttribute);
                     }
                     break;
                 case EnumChildtype::$RELATIONTYPE:
@@ -499,7 +496,7 @@ class FormGenerator {
     private function cleanStructure() {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
-        
+
         $clone_structure->loadXML($this->structure->saveXML());
         $domXpathClone = new DOMXPath($clone_structure);
 
@@ -567,9 +564,7 @@ class FormGenerator {
         }
 
         $this->getValue($clone_structure->firstChild);
-
         $this->mergeToStructure($clone_structure, $domXpathClone);
-
         return true;
     }
 
@@ -630,7 +625,7 @@ class FormGenerator {
         }
 
         //replace the structure with the clone
-        
+
         $this->structure->loadXML($clone->saveXML());
         $breakpoint = true;
     }
@@ -747,6 +742,9 @@ class FormGenerator {
 
         foreach ($this->domXpathStr->query($query, $root) as $attribute) {
             $attributes = $this->getFormField($attribute);
+            if ($attributes == null) {
+                continue;
+            }
             if (is_array($attributes)) {
                 foreach ($attributes as $attr) {
                     $fieldset->appendChild($attr);
@@ -806,51 +804,39 @@ class FormGenerator {
      * @return DOMElement
      */
     private function getFormField(DOMElement $attribute) {
-        $field = $this->form->createElement('field');
         switch ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
                 return $this->getRelationType($attribute);
-                break;
-
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
                     case EnumRendertype::$TEXTBOX:
                         return $this->getFormTextBoxField($attribute);
-                        break;
                     case EnumRendertype::$TEXTAREA:
                         return $this->getFormTextAreaField($attribute);
-                        break;
                     case EnumRendertype::$CHECKBOX:
                         return $this->getFormCheckboxField($attribute);
-                        break;
                     case EnumRendertype::$RADIOBUTTON:
                         return $this->getFormRadioButtonField($attribute);
-                        break;
                     case EnumRendertype::$LIST:
                         return $this->getFormListField($attribute);
-                        break;
                     case EnumRendertype::$DATE:
                         return $this->getFormDateField($attribute);
-                        break;
                     case EnumRendertype::$DATETIME:
                         return $this->getFormDateField($attribute);
-                        break;
                     case EnumRendertype::$GEMET:
                         return $this->getFormGemetField($attribute);
-                        break;
                     case EnumRendertype::$HIDDEN:
                         return $this->getFormHiddenField($attribute);
-                        break;
                     case EnumRendertype::$UPLOAD:
                     case EnumRendertype::$URL:
                     case EnumRendertype::$UPLOADANDURL:
                         return $this->getFormFileField($attribute);
-                        break;
                 }
                 break;
             default:
                 break;
         }
+        return null;
     }
 
     /**
@@ -1107,7 +1093,6 @@ class FormGenerator {
      */
     private function getFormListField(DOMElement $attribute) {
         $field = $this->form->createElement('field');
-
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
@@ -1139,6 +1124,7 @@ class FormGenerator {
             $field->setAttribute('description', $description);
         }
 
+        $defaultvalues = null;
         foreach ($this->getAttributOptions($attribute) as $opt) {
             switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
                 case EnumStereotype::$LOCALECHOICE:
@@ -1173,32 +1159,30 @@ class FormGenerator {
                     }
                     break;
                 case EnumStereotype::$BOUNDARY:
-
-                    if ($guid != '') {
-                        $field->setAttribute('label', EText::_($guid));
-                    } else {
-                        $field->setAttribute('label', JText::_($label));
-                    }
-
                     $option = $this->form->createElement('option', $opt->name);
                     $option->setAttribute('value', $opt->value);
-
                     $field->appendChild($option);
 
                     if ($upperbound > 1) {
-                        $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode->parentNode);
-                        $default = array();
-                        foreach ($allValues as $node) {
-                            if (!empty($node->firstChild->nodeValue)) {
-                                $default[] = $node->firstChild->nodeValue;
+                        if ($defaultvalues == null) {//Execute only once this part : it's the selected options and general field's informations definition
+                            $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode->parentNode);
+                            $defaultvalues = array();
+                            foreach ($allValues as $node) {
+                                if (!empty($node->firstChild->nodeValue)) {
+                                    $defaultvalues[] = $node->firstChild->nodeValue;
+                                }
+                            }
+                            $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()), 12, 15);
+                            $field->setAttribute('name', $name);
+                            $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $defaultvalues), true));
+                            $field->setAttribute('css', 'sdi-multi-extent-select');
+                            $field->setAttribute('type', 'MultipleDefaultList');
+                            if ($guid != '') {
+                                $field->setAttribute('label', EText::_($guid));
+                            } else {
+                                $field->setAttribute('label', JText::_($label));
                             }
                         }
-
-                        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()), 12, 15);
-                        $field->setAttribute('name', $name);
-                        $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
-                        $field->setAttribute('css', 'sdi-multi-extent-select');
-                        $field->setAttribute('type', 'MultipleDefaultList');
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                         $field->setAttribute('default', $attribute->firstChild->nodeValue);
@@ -1248,7 +1232,6 @@ class FormGenerator {
                         $option = $this->form->createElement('option');
                     }
                     $option->setAttribute('value', $opt->value);
-
                     $field->appendChild($option);
                     break;
             }
@@ -1291,8 +1274,6 @@ class FormGenerator {
         }
 
         $field->setAttribute('default', $this->getDefaultValue($relid, substr($attribute->firstChild->nodeValue, 0, 10)));
-
-
         return $field;
     }
 
@@ -1496,17 +1477,11 @@ class FormGenerator {
             case 1: // limit to resources of the current user's organism
                 //user's organism
                 $organisms = $this->user->getMemberOrganisms();
-
                 return "r.organism_id = " . (int) $organisms[0]->id;
-
             case 2: // limit to resources of the current metadata's organism
-
                 $query->innerJoin('#__sdi_version v2 ON v2.id=' . (int) $this->item->version_id)
-                        ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id')
-                ;
-
+                        ->innerJoin('#__sdi_resource r2 ON r2.id=v2.resource_id');
                 return 'r.organism_id=r2.organism_id';
-
             case 3: // both case 1 and case 2
                 return '(' . $this->applyAccessScopeLimitation($query, 1) . ' OR ' . $this->applyAccessScopeLimitation($query, 2) . ')';
         }
@@ -1561,22 +1536,7 @@ class FormGenerator {
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
                     case EnumStereotype::$BOUNDARY:
-                        $query->select('b.id, b.guid, b.name as value, bc.guid as cat_guid, bc.name as cat_name');
-                        $query->from('#__sdi_boundary b');
-                        $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
-                        $query->where('b.state = 1');
-                        $query->order('b.name ASC');
-
-                        $this->db->setQuery($query);
-                        $result = $this->db->loadObjectList();
-
-                        foreach ($result as $r) {
-                            $r->name = EText::_($r->guid) . ' [' . EText::_($r->cat_guid, 1, $r->cat_name) . ']';
-                        }
-
-                        $first = array('id' => '', 'guid' => '', 'value' => '', 'name' => '');
-                        array_unshift($result, (object) $first);
-                        break;
+                        return $this->getBoundaries();
                     default:
                         $query->select('id, guid, name, value');
                         $query->from('#__sdi_attributevalue');
@@ -1601,6 +1561,31 @@ class FormGenerator {
                 break;
         }
         return $result;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    private function getBoundaries() {
+        if ($this->boundaryAttributeOptions == null) {//Execute only once
+            $query = $this->db->getQuery(true);
+            $query->select('b.id, b.guid, b.name as value, bc.guid as cat_guid, bc.name as cat_name');
+            $query->from('#__sdi_boundary b');
+            $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
+            $query->where('b.state = 1');
+            $query->order('b.name ASC');
+            $this->db->setQuery($query);
+            $this->boundaryAttributeOptions = $this->db->loadObjectList();
+
+            foreach ($this->boundaryAttributeOptions as $r) {
+                $r->name = EText::_($r->guid) . ' [' . EText::_($r->cat_guid, 1, $r->cat_name) . ']';
+            }
+
+            $first = array('id' => '', 'guid' => '', 'value' => '', 'name' => '');
+            array_unshift($this->boundaryAttributeOptions, (object) $first);
+        }
+        return $this->boundaryAttributeOptions;
     }
 
     /**
@@ -1726,17 +1711,14 @@ class FormGenerator {
     }
 
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
-
         if (!empty($value) || (gettype($value) == "integer" && $value == 0)) {
             return $value;
         }
-
         if (empty($relation_id)) {
             return '';
         }
 
         $query = $this->db->getQuery(true);
-
         if ($isList) {
             $query->select('av.value, av.guid, a.stereotype_id');
             $query->from('#__sdi_relation_defaultvalue rdv');
