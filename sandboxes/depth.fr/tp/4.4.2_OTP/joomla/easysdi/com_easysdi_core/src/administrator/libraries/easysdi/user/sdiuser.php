@@ -213,8 +213,10 @@ class sdiUser {
         $db->setQuery($query);
         $user = $db->loadObject();
 
-        $this->juser = JFactory::getUser($user->jid);
-        $this->name = $this->juser->name;
+        if (isset($user)){
+            $this->juser = JFactory::getUser($user->jid);
+            $this->name = $this->juser->name;
+        }
 
         return $user;
     }
