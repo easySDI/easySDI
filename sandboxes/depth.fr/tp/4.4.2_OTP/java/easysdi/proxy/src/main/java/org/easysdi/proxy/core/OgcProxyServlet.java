@@ -198,8 +198,9 @@ public class OgcProxyServlet extends HttpServlet {
                 if (((HttpServletRequest) servletRequest).getUserPrincipal() == null) {
                     //Spring Anonymous user is used to perform this request, but not policy defined for it
                     servletResponse.setHeader("easysdi-proxy-error-occured", "true");
+                    servletResponse.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI Proxy service : " + servletName + "\"");
                     logger.error("Error occurred during " + servletName + " service initialization : No public policy found.");
-                    sendException("Error occurred during " + servletName + " service initialization : No public policy found.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK, connector, null);
+                    sendException("Error occurred during " + servletName + " service initialization : No public policy found.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_UNAUTHORIZED, connector, null);
                     return null;
 
                 } else {
@@ -237,7 +238,7 @@ public class OgcProxyServlet extends HttpServlet {
                 request = (ProxyServletRequest) requestConstructeur.newInstance(servletRequest);
                 if (request.getService() == null || request.getService().equals("")) {
                     servletResponse.setHeader("easysdi-proxy-error-occured", "true");
-                    sendException(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());                    
+                    sendException(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());
                     return null;
                 }
                 if (!connector.equals(request.getService())) {

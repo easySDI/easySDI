@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -138,7 +138,7 @@ abstract class Easysdi_shopHelper {
                                 if ($bperimeter->id == $cperimeter->id):
 //                                    if ($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
 //                                        $cperimeter->allowedbuffer = 0;
-                                        continue 2;
+                                    continue 2;
 //                                    endif;
                                 endif;
                             endforeach;
@@ -350,13 +350,13 @@ abstract class Easysdi_shopHelper {
                                 <div id="perimeter-recap-details-download">
                                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS'); ?>
                                     <span id ="perimeter-recap-details-download-gml"><a href="#" onclick="downloadPerimeter('GML',<?php echo $item->id; ?>);
-                                            return false;" >GML</a>, </span>
+                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GML'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-kml"><a href="#" onclick="downloadPerimeter('KML',<?php echo $item->id; ?>);
-                                            return false;" >KML</a>, </span>
+                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_KML'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-dxf"><a href="#" onclick="downloadPerimeter('DXF',<?php echo $item->id; ?>);
-                                            return false;" >DXF</a> ,</span>
+                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_DXF'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-geojson"><a href="#" onclick="downloadPerimeter('GeoJSON',<?php echo $item->id; ?>);
-                                            return false;" >GeoJSON</a></span>                                    
+                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GEOJSON'); ?></a></span>                                    
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -1702,11 +1702,11 @@ abstract class Easysdi_shopHelper {
                 break;
         }
 
-        $result = '<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl .'</span>';
+        $result = '<span class="label ' . $labelClass . '">' . JText::_($order->orderstate) . $statusCompl . '</span>';
         if ($witharchivedstate && $order->archived == 1) {
             $result .= ' <span class="order-archived-label label label-important" >' . JText::_('ARCHIVED') . '</span>';
         };
-        
+
 
         return $result;
     }

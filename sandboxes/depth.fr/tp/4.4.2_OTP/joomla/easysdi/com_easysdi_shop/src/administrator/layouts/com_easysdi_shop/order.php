@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -438,10 +438,19 @@ if (!$showActions) {
                                     $product = $item->basket->pricing->suppliers[$supplier_id]->products[$productItem->id];
 
                                     if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST && $productItem->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_SENT) :
+                                        //price is pre-defined
                                         if (isset($product->cal_total_amount_ti)):
                                             ?>
                                             <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" value="<?php echo $product->cal_total_amount_ti; ?>" placeholder="<?php echo $product->cal_total_amount_ti; ?>" readonly="readonly" class="input-small"/>
-                                        <?php else: ?>
+                                            <?php
+                                        //price is free
+                                        elseif ($product->cfg_pricing_type == Easysdi_shopHelper::PRICING_FREE):
+                                            ?>
+                                            <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" value="0" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE'); ?>" readonly="readonly" class="input-small"/>
+                                            <?php
+                                        //price has to be set
+                                        else:
+                                            ?>
                                             <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRICE_FIELD_PLACEHOLDER'); ?>" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>/>
                                         <?php
                                         endif;

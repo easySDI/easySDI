@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -136,7 +136,7 @@ $document->addStyleSheet($base_url.'/jQuery-File-Upload-9.9.3/css/jquery.fileupl
     var baseUrl = "<?php echo JUri::base(); ?>index.php?";
     var iframewidth = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframewidth'); ?>";
     var iframeheight = "<?php echo JComponentHelper::getParams('com_easysdi_catalog')->get('iframeheight'); ?>";
-    var resetMetadataUrl = "<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id='.$this->item->id); ?>";
+    var resetMetadataUrl = "<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->item->id); ?>";
     js = jQuery.noConflict();
     js('document').ready(function () {
         //override or create locale
@@ -171,7 +171,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
     <div>
         <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h1>
-        <h5><?php echo $title->name . ': ' . JText::_(strtoupper($title->value)); ?></h5>
+        <h5><span class="sdi-md-version-title"><?php echo $title->name; ?></span><span class="sdi-md-version-separator"> : </span><span class="sdi-md-version-state"><?php echo $title->state_label; ?></span></h5>
     </div>
 
     <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -472,7 +472,60 @@ class com_easysdi_coreInstallerScript {
             '/administrator/components/com_easysdi_dashboard/indicators/shop_responsetimeproduct.html.php',
             '/administrator/components/com_easysdi_dashboard/indicators/shop_topdownloads.html.php',
             '/administrator/components/com_easysdi_dashboard/indicators/shop_topextractions.html.php',
-            '/administrator/components/com_easysdi_dashboard/indicators/shop_topusers.html.php'
+            '/administrator/components/com_easysdi_dashboard/indicators/shop_topusers.html.php',
+            //BE JS libs to FE
+            '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/bootbox.min.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/data/PrintProvider.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/ux/PrintPreview.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/widgets/PrintMapPanel.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/en.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/fr.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/BingSource.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/GoogleGeocoder.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/GoogleSource.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/LayerManager.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/LayerTree.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/LoadingIndicator.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/OLSource.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/OSMSource.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/Print.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/WMSSource.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/ScaleOverlay.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/Viewer.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/form/GoogleGeocoderComboBox.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/map/predefinedperimeter.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/OpenLayers/override-openlayers.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/index.html',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/index.html',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/LayerDetailSheet.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/LayerDownload.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/LayerOrder.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/SearchCatalog.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/widgets/IndoorLevelslider.css',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/widgets/IndoorLevelSlider.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/widgets/IndoorLevelSliderTip.js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/view/index.html',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/view/view.js',
+            '/administrator/components/com_easysdi_core/assets/css/easysdi_loader.css',
+            //https://forge.easysdi.org/issues/1344 Remove jQuery-File-Upload servers
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-go/app.yaml',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-go/app/main.go',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-go/static/favicon.ico',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-go/static/robots.txt',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-python/app.yaml',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-python/main.py',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-python/static/favicon.ico',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/gae-python/static/robots.txt',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/node/package.json',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/node/server.js',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/php/index.php',
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/php/UploadHandler.php'
+            
         );
 
         $folders = array(
@@ -493,7 +546,32 @@ class com_easysdi_coreInstallerScript {
             '/administrator/components/com_easysdi_service/sql/install/postgresql',
             '/administrator/components/com_easysdi_service/sql/updates/postgresql',
             '/administrator/components/com_easysdi_shop/sql/install/postgresql',
-            '/administrator/components/com_easysdi_shop/sql/updates/postgresql'
+            '/administrator/components/com_easysdi_shop/sql/updates/postgresql',
+            //BE JS libs to FE
+            '/administrator/components/com_easysdi_core/libraries/DataTables-1.9.4',
+            '/administrator/components/com_easysdi_core/libraries/ext',
+            '/administrator/components/com_easysdi_core/libraries/filesaver',
+            '/administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0',
+            '/administrator/components/com_easysdi_core/libraries/geoext',
+            '/administrator/components/com_easysdi_core/libraries/gxp',
+            '/administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3',
+            '/administrator/components/com_easysdi_core/libraries/leaflet',
+            '/administrator/components/com_easysdi_core/libraries/openlayers',
+            '/administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1',
+            '/administrator/components/com_easysdi_core/libraries/proj4js-1.1.0',
+            '/administrator/components/com_easysdi_core/libraries/proj4js-1.4.1',
+            '/administrator/components/com_easysdi_core/libraries/proxy',
+            '/administrator/components/com_easysdi_core/libraries/syntaxhighlighter',
+            '/administrator/components/com_easysdi_core/libraries/tablednd',
+            '/administrator/components/com_easysdi_core/libraries/ux',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/js',
+            '/administrator/components/com_easysdi_core/libraries/easysdi/view',
+            '/administrator/components/com_easysdi_processing/assets/js',
+            '/administrator/components/com_easysdi_monitor/libraries/ext',
+            '/administrator/components/com_easysdi_catalog/assets/images',
+            '/administrator/components/com_easysdi_catalog/assets/css',
+            //https://forge.easysdi.org/issues/1344 Remove jQuery-File-Upload servers
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server'
         );
 
         jimport('joomla.filesystem.file');

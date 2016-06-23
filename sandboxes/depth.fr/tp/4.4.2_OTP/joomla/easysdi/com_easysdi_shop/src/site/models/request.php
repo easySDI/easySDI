@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -259,7 +259,7 @@ class Easysdi_shopModelRequest extends JModelForm {
                 return false;
             endif;
         endif;
-        if (!empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
+        if (!empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name']) || !empty($data['fee'][$diffusion_id])):
             $orderdiffusion->completed = date('Y-m-d H:i:s');
             $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
         endif;
