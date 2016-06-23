@@ -290,7 +290,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function validAndClose() {
         $this->changeStatusAndSave(sdiMetadata::VALIDATED, FALSE);
     }
-
+    
     /**
      * Change metadata status to publish
      */
