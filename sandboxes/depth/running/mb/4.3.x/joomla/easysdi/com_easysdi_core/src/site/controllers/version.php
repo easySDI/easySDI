@@ -551,7 +551,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $results = array();
         foreach ($cardinality as $card) {
             if($card->type == "child"){
-                $results[] = $card;
+                    $card->message = JText::sprintf('%s (min: %d | max: %d | now: %d)', $card->resourcetype, $card->childboundlower, $card->childboundupper, $card->actual);
+                    $results[] = $card;
             }
         }
         
@@ -569,6 +570,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $results = array();
         foreach ($cardinality as $card) {
             if($card->type == "parent"){
+                $card->message = JText::sprintf('%s (min: %d | max: %d | now: %d)', $card->resourcetype, $card->parentboundlower, $card->parentboundupper, $card->actual);
                 $results[] = $card;
             }
         }
@@ -587,14 +589,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $childrenCardinality = $this->getChildrenCardinality(false);
         foreach ($childrenCardinality as $childrenCard) {
             if($childrenCard->actual<$childrenCard->childboundlower || $childrenCard->actual>$childrenCard->childboundupper){
-                $errors[] = "Le nombre d'enfant de type ".$childrenCard->resourcetype." est incorrect ( actuel: ".$childrenCard->actual." min: ".$childrenCard->childboundlower." max: ".$childrenCard->childboundupper.")";
+                
+                $errors[] = JText::sprintf('COM_EASYSDI_CORE_ERROR_CHILDREN_CARDINALITY', $childrenCard->resourcetype, $childrenCard->actual, $childrenCard->childboundlower, $childrenCard->childboundupper);
             }
         }
         
         $parentCardinality = $this->getParentsCardinality(false);
         foreach ($parentCardinality as $parentCard) {
             if($parentCard->actual<$parentCard->parentboundlower || $parentCard->actual>$parentCard->parentboundupper){
-                $errors[] = "Le nombre de parent de type ".$parentCard->resourcetype." est incorrect ( actuel: ".$parentCard->actual." min: ".$parentCard->parentboundlower." max: ".$parentCard->parentboundupper.")";
+                $errors[] = JText::sprintf('COM_EASYSDI_CORE_ERROR_PARENT_CARDINALITY', $parentCard->resourcetype, $parentCard->actual, $parentCard->parentboundlower, $parentCard->parentboundupper);
             }
         }
         

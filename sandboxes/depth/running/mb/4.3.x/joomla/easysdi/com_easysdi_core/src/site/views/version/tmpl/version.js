@@ -112,6 +112,7 @@ js(document).ready(function() {
         ]
         ,
         fnDrawCallback : function(){
+            console.log("show children cardinality");
             showChildrenCardinality();
         }
         }));
@@ -136,6 +137,7 @@ js(document).ready(function() {
         ]
         ,
         fnDrawCallback : function(){
+            console.log("show parent cardinality");
             showParentsCardinality();
         }
     }));
@@ -170,7 +172,7 @@ function showChildrenCardinality(){
     js.get( baseUrl, {option: "com_easysdi_core", task : "version.getChildrenCardinality", version : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
     .done(function(data){
         var cardinality = JSON.parse(data);
-        
+        console.log(cardinality);
         js("#child-cardinality").empty();
     
         js.each(cardinality, function(i, item) {
@@ -180,7 +182,7 @@ function showChildrenCardinality(){
             }else{
                 classes = "alert alert-success";
             }
-            js("<div class='"+classes+"'>"+cardinality[i].resourcetype +" ( min: "+ cardinality[i].childboundlower +" | max: "+ cardinality[i].childboundupper+" | actuel : "+cardinality[i].actual+" )</div>").appendTo("#child-cardinality");
+            js("<div class='"+classes+"'>"+cardinality[i].message+"</div>").appendTo("#child-cardinality");
             
         }); 
     });
@@ -188,10 +190,10 @@ function showChildrenCardinality(){
 
 function showParentsCardinality(){
     
-    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getParentsCardinality", version : version})
+    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getParentsCardinality", version : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
     .done(function(data){
         var cardinality = JSON.parse(data);
-        
+        console.log(cardinality);
         js("#parent-cardinality").empty();
     
         js.each(cardinality, function(i, item) {
@@ -201,7 +203,7 @@ function showParentsCardinality(){
             }else{
                 classes = "alert alert-success";
             }
-            js("<div class='"+classes+"'>"+cardinality[i].resourcetype +" ( min: "+ cardinality[i].parentboundlower +" | max: "+ cardinality[i].parentboundupper+" | actuel : "+cardinality[i].actual+" )</div>").appendTo("#parent-cardinality");
+            js("<div class='"+classes+"'>"+cardinality[i].message+"</div>").appendTo("#parent-cardinality");
 
         }); 
     });
