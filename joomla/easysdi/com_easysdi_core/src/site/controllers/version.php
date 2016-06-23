@@ -402,7 +402,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('v.id as id, r.name as resource, v.name as version, rt.guid as resourcetype, ms.value as state')
+                ->select('v.id as id, r.name as resource, v.name as version, rt.guid as resourcetype, rt.id as resourcetype_id, ms.value as state')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
@@ -483,10 +483,138 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             'iTotalDisplayRecords' => count($parents),
             'aaData' => array_slice($parents, $start, $length),
             'sEcho' => $inputs->getString('sEcho', '')
+            
         ));
         die();
     }
 
+    private function _getCardinality(){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+
+        $id = $inputs->getInt('version', null);
+
+        $db = JFactory::getDbo();
+
+        $cardinality = array();
+        
+        // Children cardinality
+        
+            
+        $query = $db->getQuery(true)
+                ->select("rt.name, rtl.child_id, rtl.childboundlower, rtl.childboundupper, rt.guid as resourcetype, rt.id resourcetype_id")
+                ->from("#__sdi_version v")
+                ->innerJoin("#__sdi_resource r on r.id = v.resource_id")
+                ->innerJoin("#__sdi_resourcetypelink rtl on rtl.parent_id = r.resourcetype_id")
+                ->innerJoin("#__sdi_resourcetype rt on rt.id = rtl.child_id")
+                ->where("v.id = ".(int)$id);
+
+        $db->setQuery($query)->execute();
+        $childrenCardinality = $db->loadObjectList();
+
+        $children = $this->_getChildren4DT(true);
+
+        foreach ($childrenCardinality as $childCard){
+            $childCard->type = "child";
+            $childCard->resourcetype = EText::_($childCard->resourcetype);
+            $childCard->actual = $this->_countByResourceType($children, $childCard->resourcetype_id);
+            $cardinality[] = $childCard;
+        }
+        // Parent cardinality
+        
+        $query = $db->getQuery(true)
+                ->select("rt.name, rtl.child_id, rtl.parentboundlower, rtl.parentboundupper, rt.guid as resourcetype, rt.id resourcetype_id")
+                ->from("#__sdi_version v")
+                ->innerJoin("#__sdi_resource r on r.id = v.resource_id")
+                ->innerJoin("#__sdi_resourcetypelink rtl on rtl.child_id = r.resourcetype_id")
+                ->innerJoin("#__sdi_resourcetype rt on rt.id = rtl.parent_id")
+                ->where("v.id = ".(int)$id);
+
+        $db->setQuery($query)->execute();
+        $parentCardinality = $db->loadObjectList();
+
+        $parents = $this->_getParents4DT(true);
+
+        foreach ($parentCardinality as $parentCard){
+            $parentCard->type = "parent";
+            $parentCard->resourcetype = EText::_($parentCard->resourcetype);
+            $parentCard->actual = $this->_countByResourceType($parents, $parentCard->resourcetype_id);
+            $cardinality[] = $parentCard;
+        }
+        
+        return $cardinality;
+    }
+    
+    public function getChildrenCardinality($toJson = true){
+        $cardinality = $this->_getCardinality();
+        
+        $results = array();
+        foreach ($cardinality as $card) {
+            if($card->type == "child"){
+                    $card->message = JText::sprintf('%s (min: %d | max: %d | now: %d)', $card->resourcetype, $card->childboundlower, $card->childboundupper, $card->actual);
+                    $results[] = $card;
+            }
+        }
+        
+        if(!$toJson){
+            return $results;
+        }
+        
+        echo json_encode($results);
+        die();
+    }
+    
+    public function getParentsCardinality($toJson = true){
+        $cardinality = $this->_getCardinality();
+        
+        $results = array();
+        foreach ($cardinality as $card) {
+            if($card->type == "parent"){
+                $card->message = JText::sprintf('%s (min: %d | max: %d | now: %d)', $card->resourcetype, $card->parentboundlower, $card->parentboundupper, $card->actual);
+                $results[] = $card;
+            }
+        }
+        
+        if(!$toJson){
+            return $results;
+        }
+        
+        echo json_encode($results);
+        die();
+    }
+    
+    public function getCardinalityError(){
+        $errors = array();
+        
+        $childrenCardinality = $this->getChildrenCardinality(false);
+        foreach ($childrenCardinality as $childrenCard) {
+            if($childrenCard->actual<$childrenCard->childboundlower || $childrenCard->actual>$childrenCard->childboundupper){
+                
+                $errors[] = JText::sprintf('COM_EASYSDI_CORE_ERROR_CHILDREN_CARDINALITY', $childrenCard->resourcetype, $childrenCard->actual, $childrenCard->childboundlower, $childrenCard->childboundupper);
+            }
+        }
+        
+        $parentCardinality = $this->getParentsCardinality(false);
+        foreach ($parentCardinality as $parentCard) {
+            if($parentCard->actual<$parentCard->parentboundlower || $parentCard->actual>$parentCard->parentboundupper){
+                $errors[] = JText::sprintf('COM_EASYSDI_CORE_ERROR_PARENT_CARDINALITY', $parentCard->resourcetype, $parentCard->actual, $parentCard->parentboundlower, $parentCard->parentboundupper);
+            }
+        }
+        
+        echo json_encode($errors);
+        die();
+    }
+    
+    private function _countByResourceType($children, $resourcetype_id){
+        $nbre=0;
+        foreach ($children as $child) {
+            if($child->resourcetype_id == $resourcetype_id){
+                $nbre++;
+            }
+        }
+        return $nbre;
+    }
+    
     /**
      * 
      */
