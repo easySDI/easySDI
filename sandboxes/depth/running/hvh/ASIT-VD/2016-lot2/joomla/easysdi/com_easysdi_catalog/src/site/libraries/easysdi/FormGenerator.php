@@ -385,26 +385,26 @@ class FormGenerator {
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
-                    if($scope_id == 2 || $scope_id == 3){
+                    if ($scope_id == 2 || $scope_id == 3) {
                         $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
                     }
                     //Get the default value. 
-                    if ($result->stereotype_id == 6) {                        
-                        if(null !== $defaultvalue = $this->getDefaultValue($result->id, null, true)){
-                            $result->defaultvalue = $defaultvalue; 
+                    if ($result->stereotype_id == 6) {
+                        if (null !== $defaultvalue = $this->getDefaultValue($result->id, null, true)) {
+                            $result->defaultvalue = $defaultvalue;
                         }
-                    } 
-                    //Dummy node : allows the addition of a new selected option when all defaults were deslected and remove from the XML
+                    }
+                    //Dummy node : allows the addition of a new selected option when all defaults were deselected and remove from the XML                    
                     if ($result->stereotype_id == 6 && isset($result->defaultvalue) && $result->upperbound > 1 && $scope_id == 1) {
                         $dummyAttribute = $attribute->cloneNode(true);
-                        $dummyresult = $result;
+                        $dummyresult = clone $result;
                         $dummyresult->defaultvalue = null;
                         foreach ($formStereotype->getStereotype($dummyresult) as $st) {
                             $dummyAttribute->appendChild($this->structure->importNode($st, true));
                         }
                         array_push($childs, $dummyAttribute);
                     }
-                                      
+
                     foreach ($formStereotype->getStereotype($result) as $st) {
                         $attribute->appendChild($this->structure->importNode($st, true));
                     }
@@ -484,6 +484,7 @@ class FormGenerator {
     private function cleanStructure() {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
+        //      print_r($this->structure->saveXML());die();
         $clone_structure->loadXML($this->structure->saveXML());
         $domXpathClone = new DOMXPath($clone_structure);
 
@@ -501,6 +502,15 @@ class FormGenerator {
 
             $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
+
+            //Multiselect with default value will return from "$this->structure" several node indexed with [1], [2]
+            //Because each default value will have a nodePath indexed AND a dummy empty node will be also present
+            //So at least, with a multiselect with one default value, 2 nodes will be present in the XMl structure
+            //Need to handle just one
+            if((substr($nodePath, -1) === "]")){
+                $start = strrpos($nodePath, "[");
+                $nodePath = substr($nodePath, 0,  $start);
+            }
 
             if ($childType == EnumChildtype::$CLASS) {
                 $paths = explode('/', $nodePath);
@@ -549,6 +559,7 @@ class FormGenerator {
         }
 
         $this->getValue($clone_structure->firstChild);
+        //print_r($clone_structure->saveXML());die();
         $this->mergeToStructure($clone_structure, $domXpathClone);
         return true;
     }
@@ -1721,7 +1732,7 @@ class FormGenerator {
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
 
-        if($result == null)
+        if ($result == null)
             return null;
         if (empty($result)) {
             return '';
