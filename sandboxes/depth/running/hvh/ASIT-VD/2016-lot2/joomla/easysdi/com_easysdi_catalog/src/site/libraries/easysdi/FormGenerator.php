@@ -210,7 +210,7 @@ class FormGenerator {
                     //try to set the refNode, depending on the prevSibl existence
                     $item = $coll->item($coll->length - 1);
                     if (isset($item)) {
-                        $refNode = $coll->item($coll->length - 1)->nextSibling;
+                        $refNode = $item->nextSibling;
                         //add the child to the parent, before the refNode if defined or as last parent's child
                         isset($refNode) ? $parent->insertBefore($clearNode, $refNode) : $parent->appendChild($clearNode);
                     } else {
@@ -232,7 +232,6 @@ class FormGenerator {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_XML_IMPORT_ERROR'), 'error');
             }
         }
-
         $this->session->set('structure', serialize($this->structure->saveXML()));
         $this->setDomXpathStr();
         $form = $this->buildForm($this->domXpathStr->query($rootXpath)->item(0));
@@ -382,45 +381,34 @@ class FormGenerator {
 
                 case EnumChildtype::$ATTRIBUT:
                     $attribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
-                    //Get default value if field is hidden or visible. 
-                    //This value will only be used for hidden or visible List stereotype 
-                    //because, disabled list will not post the selected default value
-                    //and readonly html attribute is not supported on bootstrap list
-                    if ($result->stereotype_id == 6) {
-                        //if (($scope_id == 2 || $scope_id == 3) && $result->stereotype_id == 6) {
-                        $result->defaultvalue = $this->getDefaultValue($result->id, null, true);
-                    }
-                    foreach ($formStereotype->getStereotype($result) as $st) {
-                        $attribute->appendChild($this->structure->importNode($st, true));
-                    }
-
-                    switch ($scope_id) {
-                        // readOnly
-                        case 2:
-                        case 3:
-                            $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
-                            break;
-                    }
-
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'scopeId', $scope_id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
-                    array_push($childs, $attribute);
-
-                    //Dummy node
+                    if($scope_id == 2 || $scope_id == 3){
+                        $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
+                    }
+                    //Get the default value. 
+                    if ($result->stereotype_id == 6) {                        
+                        if(null !== $defaultvalue = $this->getDefaultValue($result->id, null, true)){
+                            $result->defaultvalue = $defaultvalue; 
+                        }
+                    } 
+                    //Dummy node : allows the addition of a new selected option when all defaults were deslected and remove from the XML
                     if ($result->stereotype_id == 6 && isset($result->defaultvalue) && $result->upperbound > 1 && $scope_id == 1) {
-                        $dummyAttribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
-                        $result->defaultvalue = null;
-                        foreach ($formStereotype->getStereotype($result) as $st) {
+                        $dummyAttribute = $attribute->cloneNode(true);
+                        $dummyresult = $result;
+                        $dummyresult->defaultvalue = null;
+                        foreach ($formStereotype->getStereotype($dummyresult) as $st) {
                             $dummyAttribute->appendChild($this->structure->importNode($st, true));
                         }
-                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'scopeId', $scope_id);
-                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
-                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
-                        $dummyAttribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
                         array_push($childs, $dummyAttribute);
                     }
+                                      
+                    foreach ($formStereotype->getStereotype($result) as $st) {
+                        $attribute->appendChild($this->structure->importNode($st, true));
+                    }
+                    array_push($childs, $attribute);
                     break;
                 case EnumChildtype::$RELATIONTYPE:
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->isocode, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
@@ -496,7 +484,6 @@ class FormGenerator {
     private function cleanStructure() {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
-
         $clone_structure->loadXML($this->structure->saveXML());
         $domXpathClone = new DOMXPath($clone_structure);
 
@@ -516,12 +503,10 @@ class FormGenerator {
             $nodePath = $node->getNodePath();
 
             if ($childType == EnumChildtype::$CLASS) {
-
                 $paths = explode('/', $nodePath);
                 $index = count($paths) - 2;
                 $index_node_name = $this->removeIndex($paths[$index]);
                 $paths[$index] = $index_node_name;
-
                 $nodePath = implode('/', $paths);
             }
 
@@ -625,7 +610,6 @@ class FormGenerator {
         }
 
         //replace the structure with the clone
-
         $this->structure->loadXML($clone->saveXML());
         $breakpoint = true;
     }
@@ -1737,6 +1721,8 @@ class FormGenerator {
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
 
+        if($result == null)
+            return null;
         if (empty($result)) {
             return '';
         } else {
