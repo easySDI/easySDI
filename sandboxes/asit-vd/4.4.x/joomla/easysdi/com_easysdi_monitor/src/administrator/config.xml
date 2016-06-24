@@ -6,7 +6,7 @@
 
         <field name="servletUrl"
                     type="text"
-                    default="http://localhost:8080/Monitor"
+                    default="http://localhost:8080/monitor"
                     class="input"             
                     size="100"
                     label="COM_EASYSDI_MONITOR_URL_LABEL"
