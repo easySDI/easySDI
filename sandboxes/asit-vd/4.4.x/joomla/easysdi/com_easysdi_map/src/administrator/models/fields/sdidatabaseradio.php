@@ -4,7 +4,7 @@
  * Displays options as a list of check boxes.
  * Multiselect may be forced to be true.
  * 
- * @version     4.4.1
+ * @version     4.4.2
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
