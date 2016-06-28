@@ -169,7 +169,7 @@ js(document).ready(function() {
 
 function showChildrenCardinality(){
     
-    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getChildrenCardinality", version : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
+    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getChildrenCardinality", version_id : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
     .done(function(data){
         var cardinality = JSON.parse(data);
         console.log(cardinality);
@@ -190,7 +190,7 @@ function showChildrenCardinality(){
 
 function showParentsCardinality(){
     
-    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getParentsCardinality", version : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
+    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getParentsCardinality", version_id : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString()})
     .done(function(data){
         var cardinality = JSON.parse(data);
         console.log(cardinality);

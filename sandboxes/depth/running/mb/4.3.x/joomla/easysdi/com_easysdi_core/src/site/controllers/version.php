@@ -492,7 +492,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $app = JFactory::getApplication();
         $inputs = $app->input;
 
-        $id = $inputs->getInt('version', null);
+        $id = $inputs->getInt('version_id', null);
 
         $db = JFactory::getDbo();
 
@@ -1062,6 +1062,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $response = array();
         $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished);
 
+        
+        $childrenCardinality = $this->getChildrenCardinality(false);
+        $minimumChild = 0;
+        foreach ($childrenCardinality as $childrenCard) {
+            $minimumChild = $minimumChild + $childrenCard->childboundlower;
+        }
+        
+        $response['minimumChild'] = $minimumChild;
+        
         echo json_encode($response);
         die();
     }

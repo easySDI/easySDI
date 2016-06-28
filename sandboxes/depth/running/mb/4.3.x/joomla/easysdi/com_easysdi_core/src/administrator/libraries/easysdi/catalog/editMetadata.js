@@ -206,16 +206,25 @@ js('document').ready(function () {
 
                                             bootbox.alert(errorsList);
                                         }else{
+                                            
                                             var response = js.parseJSON(data_version);
 
+                                            console.log(response);
+                                            
                                             var children = response.versions[rel.version].children;
                                             delete response.versions[rel.version].children;
                                             js('#publishModalCurrentMetadata').html(buildVersionsTree(response.versions));
 
                                             if (js(children).length) {
+                                                if(response['minimumChild']>0){
+                                                    js('#publishModalViralPublicationBlock').hide();
+                                                    js('#publishModalAlert').show();
+                                                }
                                                 js('#publishModalChildrenList').html(buildVersionsTree(children));
                                                 js('#publishModalViralPublication').attr('checked', true).trigger('change');
                                                 js('#publishModalChildrenDiv').show();
+                                                
+                                            
                                             }
                                             else {
                                                 js('#publishModalViralPublication').attr('checked', false).trigger('change');
