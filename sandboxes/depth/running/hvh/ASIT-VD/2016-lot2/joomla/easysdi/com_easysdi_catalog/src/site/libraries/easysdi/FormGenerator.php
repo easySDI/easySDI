@@ -1220,12 +1220,13 @@ class FormGenerator {
                 default:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
-                    if ($attribute->firstChild->hasAttribute('codeListValue')) {
-                        $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->getAttribute('codeListValue'), true));
-                    } else {
-                        $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, true));
+                    if ($upperbound == 1) {
+                        if ($attribute->firstChild->hasAttribute('codeListValue')) {
+                            $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->getAttribute('codeListValue'), true));
+                        } else {
+                            $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, true));
+                        }
                     }
-
                     if ($upperbound > 1) {
                         $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
                         $default = array();
