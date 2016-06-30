@@ -168,6 +168,7 @@ class sdiBasket {
                 $perimeters = array();
                 $orderPerimeters = array();
                 $hasCommon = false;
+                
                 foreach($this->extractions as $extraction):
                     foreach($extraction->perimeters as $perimeter):
                         if(isset($perimeters[$perimeter->id])):
@@ -178,8 +179,13 @@ class sdiBasket {
                                 //break 2;
                             endif;
                             $perimeters[$perimeter->id] = $perimeters[$perimeter->id] + 1;
-                        else:
-                            $perimeters[$perimeter->id] = 1;
+                        else:                            
+                            if(count($this->extractions) == 1):
+                                $hasCommon = true;
+                                array_push($orderPerimeters, $perimeter);
+                            else:
+                                $perimeters[$perimeter->id] = 1;
+                            endif;
                         endif;
                     endforeach;
                 endforeach;
