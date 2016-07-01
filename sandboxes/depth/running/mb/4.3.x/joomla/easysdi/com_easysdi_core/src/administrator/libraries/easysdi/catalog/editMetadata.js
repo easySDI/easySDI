@@ -191,7 +191,7 @@ js('document').ready(function () {
                                     cache: false
                                 }).done(function (data_version) {
                                     
-                                    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getCardinalityError", version : rel.version})
+                                    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getCardinalityError", version_id : rel.version})
                                     .done(function(data){
                                         var errors = JSON.parse(data);
                                         if(errors.length > 0){
