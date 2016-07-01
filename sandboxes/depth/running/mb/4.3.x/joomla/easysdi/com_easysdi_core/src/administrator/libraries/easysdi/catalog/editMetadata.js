@@ -219,6 +219,8 @@ js('document').ready(function () {
                                                 if(response['minimumChild']>0){
                                                     js('#publishModalViralPublicationBlock').hide();
                                                     js('#publishModalAlert').show();
+                                                }else{
+                                                    js('#publishModalAlert').hide();
                                                 }
                                                 js('#publishModalChildrenList').html(buildVersionsTree(children));
                                                 js('#publishModalViralPublication').attr('checked', true).trigger('change');
