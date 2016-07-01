@@ -140,7 +140,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id');
         
         $where = 'v.id <> ' . (int) $id . ' AND v.id NOT IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id=' . (int) $id . ') AND rt.id IN (' . $resourcetypechild . ')';
-        $where = '(SELECT count(*)
+        $where .= ' AND (SELECT count(*)
 			FROM slnvp_sdi_version cv
 			INNER JOIN slnvp_sdi_versionlink vl on vl.child_id = cv.id
 			inner join slnvp_sdi_version pv on pv.id = vl.parent_id
