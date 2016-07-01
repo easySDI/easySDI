@@ -381,7 +381,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                         <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
                         <span id="publishModalCurrentMetadata"></span>
                         <div id="publishModalChildrenDiv" style="display:none">
-                            <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?>
+                            <div id="publishModalAlert" class="alert alert-info"><?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_FORCE'); ?></div>
+                            <div id="publishModalViralPublicationBlock"><input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?></div>
                             <span id="publishModalChildrenList"></span>
                         </div>
 
