@@ -1,5 +1,6 @@
 js = jQuery.noConflict();
 js(document).ready(function () {
+    enablePricing();
     enableAccessScope();
     onProductStorageChange();
     onPricingChange();
@@ -106,6 +107,15 @@ function onPricingChange() {
 
             js('#pricing_profile_id').show();
             break;
+    }
+}
+
+function enablePricing() {
+    if (sdiPricingActivated) {
+        js('#pricing_id').show();
+    } else {
+        js('#pricing_id').hide();
+        js('#jform_pricing_id').val(sdiPricingFreeVal);
     }
 }
 

@@ -28,6 +28,8 @@ var version = <?php echo $this->item->version_id;?>;
 var freePerimeter = <?php if(!$this->isDiffusionManager) echo 'true'; else echo 'false';?>;
 var testOk = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_OK',true); ?>';
 var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE',true); ?>';
+var sdiPricingFreeVal = <?php echo Easysdi_shopHelper::PRICING_FREE; ?>;
+var sdiPricingActivated = <?php echo $this->pricingisActivated ? 'true' : 'false' ?>;
 </script>
 
 <style type="text/css">
