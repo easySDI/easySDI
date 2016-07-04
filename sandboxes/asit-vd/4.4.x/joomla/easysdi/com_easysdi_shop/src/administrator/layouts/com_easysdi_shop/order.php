@@ -463,7 +463,7 @@ if (!$showActions) {
                                             $rebate = false;
                                             $as = '';
                                             $discount = '';
-                                            if ($product->cfg_pct_category_profile_discount > 0 || $product->cfg_pct_category_supplier_discount > 0) {
+                                            if ((isset($product->cfg_pct_category_profile_discount) && $product->cfg_pct_category_profile_discount > 0) || $product->cfg_pct_category_supplier_discount > 0) {
                                                 $rebate = true;
                                                 if ($product->cfg_pct_category_supplier_discount > $product->cfg_pct_category_profile_discount) {
                                                     $as = $product->ind_lbl_category_supplier_discount;
