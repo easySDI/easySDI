@@ -55,6 +55,8 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
                 return false;
             }
         }
+        
+        $this->pricingisActivated = (bool)$this->params->get('is_activated',false);
 
         $db = JFactory::getDbo();
 
