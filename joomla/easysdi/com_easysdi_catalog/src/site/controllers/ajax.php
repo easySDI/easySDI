@@ -64,7 +64,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
     public function removeNode() {
         $this->domXpathStr = new DOMXPath($this->structure);
-
+//print_r($this->structure->saveXML()); die();
         foreach ($this->nsdao->getAll() as $ns) {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
@@ -72,9 +72,9 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
         $elements = $this->domXpathStr->query($query); //->item(0);
 
-        if ($elements->length)
+        if ($elements->length) {
             $element = $elements->item(0);
-        else { // HACK TO ALLOW FIRST KEYWORD REMOVAL
+        } else { // HACK TO ALLOW FIRST KEYWORD REMOVAL
             $tabQuery = explode('/', $query);
             array_pop($tabQuery);
             $query = implode('/', $tabQuery);
@@ -85,7 +85,6 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         try {
             $element->parentNode->removeChild($element);
             $response['success'] = 'true';
-
             $this->session->set('structure', serialize($this->structure->saveXML()));
         } catch (Exception $exc) {
             $response['success'] = 'false';
@@ -161,7 +160,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         echo json_encode($resourcetype);
         die();
     }
-    
+
     /**
      * Return the current metadata id in session
      */
@@ -172,7 +171,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $response['id'] = $app->getUserState('com_easysdi_catalog.edit.metadata.id');
         echo json_encode($response);
         die();
-    }    
+    }
 
     /**
      * Check Url from file popup
@@ -188,11 +187,11 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $target_folder = JPATH_BASE . '/media/easysdi/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
         $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
 
-        
-        
+
+
         $fu = new Easysdi_filedHelper();
         try {
-            $result['files'] = $fu->upload($_FILES, $target_folder, $fileBaseUrl, true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', $fileBaseUrl . '/thumbnails',120);
+            $result['files'] = $fu->upload($_FILES, $target_folder, $fileBaseUrl, true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', $fileBaseUrl . '/thumbnails', 120);
             $result['status'] = 'success';
             header('Content-type: application/json');
             echo json_encode($result);
