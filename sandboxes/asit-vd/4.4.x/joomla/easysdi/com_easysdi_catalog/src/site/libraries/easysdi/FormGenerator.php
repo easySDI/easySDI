@@ -301,7 +301,6 @@ class FormGenerator {
             }
 
             if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
-
                 if ($lowerbound > 0 || $occurance > 0) {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 } else {
@@ -322,11 +321,7 @@ class FormGenerator {
                 $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
             }
         }
-
-
-
         $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
-
         $formStereotype = new FormStereotype();
 
         $query = $this->getRelationQuery();
@@ -336,7 +331,6 @@ class FormGenerator {
         $query->order('r.name');
 
         $this->db->setQuery($query);
-
         $results = $this->db->loadObjectList();
 
         foreach ($results as $result) {
@@ -385,29 +379,45 @@ class FormGenerator {
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
-                    if($scope_id == 2 || $scope_id == 3){
+                    if ($scope_id == 2 || $scope_id == 3) {
                         $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
                     }
+
+                    if ($result->stereotype_id == 6) {
                     //Get the default value. 
-                    if ($result->stereotype_id == 6) {                        
-                        if(null !== $defaultvalue = $this->getDefaultValue($result->id, null, true)){
-                            $result->defaultvalue = $defaultvalue; 
+                        if (null !== $defaultvalue = $this->getDefaultValue($result->id, null, true)) {
+                            if (is_array($defaultvalue)) {
+                                //Generate a childNode for each default value
+                                foreach ($defaultvalue as $value) {
+                                    $defaultAttribute = $attribute->cloneNode(true);
+                                    $defaultResult = clone $result;
+                                    $defaultResult->defaultvalue = $value;
+                                    foreach ($formStereotype->getStereotype($defaultResult) as $st) {
+                                        $defaultAttribute->appendChild($this->structure->importNode($st, true));
+                                    }
+                                    array_push($childs, $defaultAttribute);
+                                }
+                            } else {
+                            $result->defaultvalue = $defaultvalue;
                         }
-                    } 
-                    //Dummy node : allows the addition of a new selected option when all defaults were deslected and remove from the XML
-                    if ($result->stereotype_id == 6 && isset($result->defaultvalue) && $result->upperbound > 1 && $scope_id == 1) {
+                    }
+
+                    //Dummy node : allows the addition of a new selected option when all defaults were deselected and remove from the XML                    
+                        if (isset($result->defaultvalue) && $result->upperbound > 1 && $scope_id == 1) {
                         $dummyAttribute = $attribute->cloneNode(true);
-                        $dummyresult = $result;
+                        $dummyresult = clone $result;
                         $dummyresult->defaultvalue = null;
                         foreach ($formStereotype->getStereotype($dummyresult) as $st) {
                             $dummyAttribute->appendChild($this->structure->importNode($st, true));
                         }
-                        array_push ($childs,$dummyAttribute);
+                            array_push($childs, $dummyAttribute);
                     }
-                                      
+                    }
+
                     foreach ($formStereotype->getStereotype($result) as $st) {
                         $attribute->appendChild($this->structure->importNode($st, true));
                     }
+
                     array_push($childs, $attribute);
                     break;
                 case EnumChildtype::$RELATIONTYPE:
@@ -494,13 +504,17 @@ class FormGenerator {
         for ($j = 0; $j < $coll->length; $j++) {
             /* @var $node DOMElement */
             $node = $coll->item($j);
-
-            if ($node->nodeName == 'catalog:dummy') {
-                $breakpoint = true;
-            }
-
             $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
+
+            //Multiselect with default value will return from "$this->structure" several node indexed with [1], [2]
+            //Because each default value will have a nodePath indexed AND a dummy empty node will be also present
+            //So at least, with a multiselect with one default value, 2 nodes will be present in the XMl structure
+            //Need to handle just one
+            if((substr($nodePath, -1) === "]")){
+                $start = strrpos($nodePath, "[");
+                $nodePath = substr($nodePath, 0,  $start);
+            }
 
             if ($childType == EnumChildtype::$CLASS) {
                 $paths = explode('/', $nodePath);
@@ -541,11 +555,23 @@ class FormGenerator {
                 $node = $node->parentNode;
             }
 
+            if ($occurance < $occurance_clone) {//Default values are present in the structure, but CSW metadata already has value(s) selected in fewer occurance 
+                for ($i = $occurance_clone; $i > $occurance + 1; $i--) {
+                    //remove the child
+                    $parent = $node->parentNode;
+                    if (isset($node->nextSibling)) {
+                        $node = $node->previousSibling;
+                    }
+                    $parent->removeChild($node->nextSibling);
+                    $clone_structure->normalizeDocument();
+                }
+            } else {
             for ($i = $occurance_clone; $i < $occurance; $i++) {
                 $cloneNode = $node->cloneNode(true);
                 $cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
                 isset($node->nextSibling) ? $node->parentNode->insertBefore($cloneNode, $node->nextSibling) : $node->parentNode->appendChild($cloneNode);
             }
+        }
         }
 
         $this->getValue($clone_structure->firstChild);
@@ -996,7 +1022,11 @@ class FormGenerator {
         $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
         $default = array();
         foreach ($allValues as $node) {
+            if ($node->firstChild->hasAttribute('codeListValue')) {
             $default[] = $node->firstChild->getAttribute('codeListValue');
+            } else {
+                $default[] = $node->firstChild->nodeValue;
+        }
         }
 
         $field->setAttribute('type', 'checkboxes');
@@ -1190,12 +1220,13 @@ class FormGenerator {
                 default:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
-                    if ($attribute->firstChild->hasAttribute('codeListValue')) {
-                        $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->getAttribute('codeListValue'), true));
-                    } else {
-                        $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, true));
+                    if ($upperbound == 1) {
+                        if ($attribute->firstChild->hasAttribute('codeListValue')) {
+                            $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->getAttribute('codeListValue'), true));
+                        } else {
+                            $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, true));
+                        }
                     }
-
                     if ($upperbound > 1) {
                         $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
                         $default = array();
@@ -1694,6 +1725,14 @@ class FormGenerator {
         return $query;
     }
 
+    /**
+     * Return the default value(s) of a field
+     * @param type $relation_id
+     * @param type $value
+     * @param type $isList
+     * @param type $language_id
+     * @return string|array defaul value(s)
+     */
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
         if (!empty($value) || (gettype($value) == "integer" && $value == 0)) {
             return $value;
@@ -1719,19 +1758,46 @@ class FormGenerator {
         }
 
         $this->db->setQuery($query);
+        if ($isList) {
+            $result = $this->db->loadObjectList();
+        } else {
         $result = $this->db->loadObject();
+        }
 
-        if($result == null)
+        if ($result == null) {
             return null;
+        }
         if (empty($result)) {
             return '';
+        }
+
+        //Handle simple and multiple default value for list field
+        if ($isList) {
+            if (count($result) > 1) {
+                $defaults = array();
+                foreach ($result as $r) {
+                    array_push($defaults, $this->extractDefaultValue($r));
+                }
+                return $defaults;
         } else {
-            if (isset($result->stereotype_id) && $result->stereotype_id == EnumStereotype::$LOCALECHOICE) {
-                return $result->guid;
+                return $this->extractDefaultValue($result[0]);
+            }
             } else {
                 return $result->value;
             }
         }
+
+    /**
+     * Extract default value depending on the object type
+     * @param type $obj
+     * @return string default value
+     */
+    private function extractDefaultValue($obj) {
+        if (isset($obj->stereotype_id) && $obj->stereotype_id == EnumStereotype::$LOCALECHOICE) {
+            return $obj->guid;
+        } else {
+            return $obj->value;
+    }
     }
 
     private function getGuidFromLocaleValue($relation_id, $texte) {
