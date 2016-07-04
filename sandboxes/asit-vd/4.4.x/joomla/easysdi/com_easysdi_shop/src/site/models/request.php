@@ -277,8 +277,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             $cfg_rounding = (float) JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
 
             $posp->cal_total_amount_ti = Easysdi_shopHelper::rounding($floatFee, $cfg_rounding);
-            $posp->cal_total_rebate_ti = 0.0; //cannot set a rebate in manual product processing
-
+            
             Easysdi_shopHelper::updatePricing($posp, $pos, $po);
         }
 

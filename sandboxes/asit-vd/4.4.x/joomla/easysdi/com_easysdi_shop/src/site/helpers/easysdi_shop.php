@@ -569,7 +569,7 @@ abstract class Easysdi_shopHelper {
         $provider->hasFeeWithoutPricingProfileProduct = false;
         foreach ($supplier->items as $product) {
             $provider->products[$product->id] = self::basketReloadSavedPricingByProduct($provider->pricing_order_supplier_id, $product, $prices);
-            if ($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE && !$internalFreeOrder) {
+            if ($product->pricing == self::PRICING_FEE_WITHOUT_PROFILE) {
                 $provider->hasFeeWithoutPricingProfileProduct = true;
             }
         }
@@ -979,6 +979,7 @@ abstract class Easysdi_shopHelper {
                         ->select('COUNT(1)')
                         ->from('#__sdi_pricing_order_supplier_product posp')
                         ->where('posp.pricing_order_supplier_id=' . (int) $pos->id)
+                        ->where('pricing_id <> 1')
                         ->where('posp.cal_total_amount_ti IS NULL'));
         $productsWithoutPrice = $db->loadResult();
         //if all products of this supplier have a price, we can update the supplier pricing branch
@@ -1033,7 +1034,6 @@ abstract class Easysdi_shopHelper {
 
         //if all suppliers of this order have a price, we can update the order pricing branch
         if ($suppliersWithoutPrice == 0) {
-
             $db->setQuery($db->getQuery(true)
                             ->select('SUM(pos.cal_total_amount_ti) orderSuppliersTotal')
                             ->from('#__sdi_pricing_order po')
