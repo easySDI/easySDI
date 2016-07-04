@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -35,14 +35,20 @@ class sdiPropertyValue {
                     ->from('#__sdi_translation t')
                     ->innerJoin('#__sdi_propertyvalue p ON p.guid = t.element_guid')
                     ->where('p.id = ' . (int)$this->id)
-                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $db->quote($lang->getTag()) . ')');
+                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $db->quote($lang->getTag()) . ')')
+                    ->group('t.text1');
+            
 
             $db->setQuery($query);
             $item = $db->loadObject();
-            $params = get_object_vars($item);
-            foreach ($params as $key => $value){
-                $this->$key = $value;
+            if(isset($item)){
+                $params = get_object_vars($item);
+
+                foreach ($params as $key => $value){
+                    $this->$key = $value;
+                }
             }
+            
             
         } catch (JDatabaseException $e) {
             

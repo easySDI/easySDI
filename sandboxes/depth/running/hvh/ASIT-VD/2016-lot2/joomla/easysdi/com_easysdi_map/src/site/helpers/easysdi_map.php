@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -309,6 +309,11 @@ abstract class Easysdi_mapHelper {
                 $obj->ptype = "sdi_gxp_wmssource";
                 $obj->url = $url;
                 break;
+            case 3 :
+                $obj->alias = $service->alias;
+                $obj->ptype = "sdi_gxp_olsource";
+                $obj->url = $url;
+                break;
             case 11 :
                 $obj->alias = $service->alias;
                 $obj->ptype = "gxp_wmscsource";
@@ -344,6 +349,15 @@ abstract class Easysdi_mapHelper {
                 $config = '{id:"' . $service->alias . '",';
                 $config .= '
                     ptype: "sdi_gxp_wmssource",
+                    hidden : "true",
+                    url: "' . $url . '"
+                    }
+                    ';
+                break;
+            case 3 :
+                $config = '{id:"' . $service->alias . '",';
+                $config .= '
+                    ptype: "sdi_gxp_olsource",
                     hidden : "true",
                     url: "' . $url . '"
                     }

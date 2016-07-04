@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -190,7 +190,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
                 break;
             case sdiMetadata::PUBLISHED:
                 if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)) {
-                    
+
                     //Preview
                     $tools[JText::_('COM_EASYSDI_CATALOG_TOOLS_DROP_PREVIEW_XML')] = 'metadata.show';
                     $tools[JText::_('COM_EASYSDI_CATALOG_TOOLS_DROP_PREVIEW_XHTML')] = 'metadata.preview';
@@ -245,8 +245,28 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         $this->db->setQuery($query);
         $metadata = $this->db->loadObjectList();
+        $title = $metadata[0];
 
-        return $metadata[0];
+        //set span label
+        $labelClass = '';
+        switch ($title->state) {
+            case 1:
+                $labelClass = 'label-warning';
+                break;
+            case 2:
+            case 5:
+                $labelClass = 'label-info';
+                break;
+            case 3:
+                $labelClass = 'label-success';
+                break;
+            case 4:
+                $labelClass = 'label-inverse';
+                break;
+        }
+        $title->state_label = '<span class="label ' . $labelClass . '">' . JText::_(strtoupper($title->value)) . '</span>';
+
+        return $title;
     }
 
     /**

@@ -1,6 +1,6 @@
 ﻿<?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -66,7 +66,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $this->metadataRollback();
                 $m = JTable::getInstance('metadata', 'Easysdi_catalogTable');
                 $m->load(array("version_id" => $data['id']));
-                $v = (object) ['v_id' => $data['id'], 'md_id' => $m->id];
+                $v = (object) array('v_id' => $data['id'], 'md_id' => $m->id);
                 $app = JFactory::getApplication();
                 $app->setUserState('com_easysdi_core.remove.version.mduk', json_encode($this->md_unknown));
                 $app->setUserState('com_easysdi_core.remove.version.call', json_encode($v));
@@ -866,7 +866,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                     //No metadata found to delete in remote CSW catalog
                     if(!$cleanup){
                         unset($this->md_rollback[$metadata->id]);
-                        $this->md_unknown = (object) ['v' => $csw->version->name, 'r' => $csw->resource->name];
+                        $this->md_unknown = (object) array('v' => $csw->version->name, 'r' => $csw->resource->name);
                         return false;
                     }
                 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -57,8 +57,13 @@ if ($this->item) :
 
                     <p id="validation_remark">
                         <label for="reason"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK'); ?>:</label>
-                        <textarea id="reason" name="reason" <?php if (!$this->isValidationManager): ?>disabled="disabled"<?php endif; ?>></textarea>
+                        <textarea id="reason" name="reason" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_REMARK_PLACEHOLDER'); ?>" <?php if (!$this->isValidationManager): ?>disabled="disabled"<?php endif; ?>></textarea>
                     </p>
+                    <div id="termsofuse-container">
+                        <label class="checkbox">
+                            <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse']; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_OF_USE') ?>
+                        </label>
+                    </div>
                     <?php
                 endif;
                 echo $this->getToolbar();
@@ -85,16 +90,28 @@ if ($this->item) :
             })
         })
     </script>
-    <script type="text/javascript">
-        jQuery(document).ready(function () {
-            if (jQuery('textarea#reason').length) {
+    
+    
+    <?php if ($this->state->get('layout.validation') && $this->item->orderstate_id == 8): ?>
+        <script type="text/javascript">
+
+            var updateValidationButtonsState = function () {
+                //must accept terms of use to validate
+                jQuery('div#toolbar-apply>button').prop('disabled', !jQuery('#termsofuse').prop('checked'));
+                //must accept terms of use AND have a 20 char remark to reject
+                jQuery('div#toolbar-delete>button').prop('disabled', !(jQuery('textarea#reason').val().length >= 20 && jQuery('#termsofuse').prop('checked')));
+            };
+
+            jQuery(document).ready(function () {
                 jQuery('div#toolbar-delete>button').prop('disabled', true);
-                jQuery('textarea#reason').on('input propertychange', function () {
-                    jQuery('div#toolbar-delete>button').prop('disabled', !(this.value.length > 20));
-                });
-            }
-        });
-    </script>
+                jQuery('textarea#reason').on('input propertychange', updateValidationButtonsState);
+                jQuery('#termsofuse').change(updateValidationButtonsState);
+                updateValidationButtonsState();
+            });
+
+        </script>
+    <?php endif; ?>
+        
     <?php
 else:
     echo JText::_('COM_EASYSDI_SHOP_ITEM_NOT_LOADED');

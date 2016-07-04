@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -28,6 +28,8 @@ var version = <?php echo $this->item->version_id;?>;
 var freePerimeter = <?php if(!$this->isDiffusionManager) echo 'true'; else echo 'false';?>;
 var testOk = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_OK',true); ?>';
 var testKo = '<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE',true); ?>';
+var sdiPricingFreeVal = <?php echo Easysdi_shopHelper::PRICING_FREE; ?>;
+var sdiPricingActivated = <?php echo $this->pricingisActivated ? 'true' : 'false' ?>;
 </script>
 
 <style type="text/css">

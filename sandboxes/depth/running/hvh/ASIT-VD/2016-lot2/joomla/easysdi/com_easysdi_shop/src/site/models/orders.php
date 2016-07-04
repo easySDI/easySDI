@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -225,6 +225,7 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->group('a.access');
         $query->group('a.asset_id');
         $query->group('a.validated_date');
+        $query->group('a.validated_by');
         $query->group('a.validated_reason');
         $query->group('a.mandate_ref');
         $query->group('a.mandate_contact');
@@ -232,10 +233,15 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->group('a.level');
         $query->group('a.freeperimetertool');
         $query->group('a.validated');        
+        $query->group('a.usernotified');
+        $query->group('a.access_token');      
+        $query->group('a.validation_token');      
         $query->group('state.value');
         $query->group('type.value');
         $query->group('juclient.name');
         $query->group('oclient.name');
+        $query->group('juvalid.name');
+        
        
         $s = $query->__toString();
         return $query;
