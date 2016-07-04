@@ -200,7 +200,10 @@ public class OgcProxyServlet extends HttpServlet {
                     servletResponse.setHeader("easysdi-proxy-error-occured", "true");
                     servletResponse.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI Proxy service : " + servletName + "\"");
                     logger.error("Error occurred during " + servletName + " service initialization : No public policy found.");
-                    sendException("Error occurred during " + servletName + " service initialization : No public policy found.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_UNAUTHORIZED, connector, null);
+                    // Note: use servletResponse.sendError instead of this.sendException : we're unable to send a body with message when HTTP error code is <> 200 with this.sendException
+                    // Result is : client will get an standard 401 page instead of an OGC/OWS error
+                    //sendException("Error occurred during " + servletName + " service initialization : No public policy found.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_UNAUTHORIZED, connector, null);
+                    servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error occurred during " + servletName + " service initialization : No public policy found.");
                     return null;
 
                 } else {
