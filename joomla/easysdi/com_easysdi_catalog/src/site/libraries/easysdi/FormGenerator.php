@@ -94,7 +94,7 @@ class FormGenerator {
         if (!isset($_GET['relid'])) {
             $query = $this->db->getQuery(true);
             $query->select('r.id, r.name, r.childtype_id');
-            $query->select('c.id as class_id, c.name as class_name, c.guid as class_guid, c.isrootclass');
+            $query->select('c.id as class_id, c.name as class_name,c.isocode as class_isocode, c.guid as class_guid, c.isrootclass');
             $query->select('ns.id as ns_id, ns.prefix as ns_prefix, ns.uri as ns_uri');
             $query->from('#__sdi_profile AS p');
             $query->innerJoin('#__sdi_relation AS r ON p.class_id = r.parent_id');
@@ -107,7 +107,7 @@ class FormGenerator {
             $this->db->setQuery($query);
             $result = $this->db->loadObject();
 
-            $root = $this->getDomElement($result->ns_uri, $result->ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
+            $root = $this->getDomElement($result->ns_uri, $result->ns_prefix, $result->class_isocode, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
             foreach ($this->nsdao->getAll() as $ns) {
                 $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:' . $ns->prefix, $ns->uri);
             }
@@ -352,7 +352,7 @@ class FormGenerator {
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->isocode, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
-                    $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
+                    $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_isocode, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
 
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':level', $level);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':scopeId', $scope_id);
@@ -1683,7 +1683,7 @@ class FormGenerator {
     private function getRelationQuery() {
         $query = $this->db->getQuery(true);
         $query->select('r.name, r.isocode, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id, r.accessscope_limitation');
-        $query->select('c.id as class_id, c.name AS class_name, c.guid AS class_guid');
+        $query->select('c.id as class_id, c.name AS class_name,c.isocode as class_isocode, c.guid AS class_guid');
         $query->select('ca.id as classass_id, ca.name AS classass_name, ca.guid AS classass_guid');
         $query->select('a.id as attribute_id, a.name AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length');
         $query->select('rt.id as resourcetype_id, rt.name as resourcetype_name, rt.fragment as resourcetype_fragment');
