@@ -209,6 +209,19 @@ js('document').ready(function () {
                                         var datetime = publish_date.split(' ');
                                         js('#publish_date').val(datetime[0]);
                                     }
+                                    else{
+                                        var d = new Date();
+                                        var day = d.getDate();
+                                        var month = d.getMonth() + 1;
+                                        var year = d.getFullYear();
+                                        if (day < 10) {
+                                            day = "0" + day;
+                                        }
+                                        if (month < 10) {
+                                            month = "0" + month;
+                                        }
+                                        js('#publish_date').val(year + "-" + month + "-" + day);
+                                    }
 
                                     js('#publishModal').modal('show');
                                 });
