@@ -356,9 +356,8 @@ class SearchJForm extends SearchForm {
                 if (!empty($params->boundarycategory_id)) {
                     $query->where('b.category_id IN (' . implode(',', $params->boundarycategory_id) . ')');
                 }
+                $query->where('b.state = 1');
                 $query->order('t.text1');
-                //$query->select('t.id, t.guid, t.guid as value, t.name');
-                //$query->from('#__sdi_boundary t');
                 break;
             case 'resourcetype':
                 $query->select('t.id, t.alias as value, t.guid, t.name');
