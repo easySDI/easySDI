@@ -14,6 +14,7 @@ jimport('joomla.application.component.modeladmin');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/models/propertyvalue.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/property.php';
 
 /**
  * Easysdi_shop model.
