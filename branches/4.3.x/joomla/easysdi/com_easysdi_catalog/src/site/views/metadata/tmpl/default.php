@@ -195,7 +195,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CORE_CLOSE'); ?></button>
                 </div>
             </div>
         </div>
