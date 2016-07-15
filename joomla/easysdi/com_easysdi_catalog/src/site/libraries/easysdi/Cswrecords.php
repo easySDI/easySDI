@@ -145,7 +145,7 @@ class Cswrecords extends SearchForm {
 
         // Permanent criteria
         $and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'published'));
-        $datetime = new DateTime('tomorrow');
+        $datetime = new DateTime('today');
         $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', $datetime->format('Y-m-d')));
 
         // User and organism filter
