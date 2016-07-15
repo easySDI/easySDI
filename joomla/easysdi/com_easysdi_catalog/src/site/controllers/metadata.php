@@ -369,7 +369,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($redirectURL), false));
         } else {
-            $this->update($id);
+            $this->update($id,$published);
         }
     }
 
@@ -378,9 +378,26 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      * @param int $id metadata id
      */
-    private function update($id) {
+    private function update($id, $published = null) {
         $smd = new sdiMetadata($id);
         if ($smd->updateSDIElement()) {
+            if(isset($published)) {
+                $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
+                $table = $model->getTable();
+                $table->load($id);
+                $preview = Easysdi_catalogHelper::getPreviewMetadata($table);
+                if (!empty($preview)) {
+                    // update endpublished
+                    $table_preview = $model->getTable();
+                    $table_preview->load($preview->id);
+                    if ($table_preview->save(array('endpublished' => $table->published), '', array('created', 'created_by'))) {
+                        $CSWmetadata = new sdiMetadata($table_preview->id);
+                        if (!$CSWmetadata->updateSDIElement()) {
+                            throw new Exception('Echec de mise à jour du catalog');
+                        }
+                    }
+                }
+            }
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
         } else {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
