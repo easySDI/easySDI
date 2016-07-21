@@ -145,8 +145,8 @@ class Cswrecords extends SearchForm {
 
         // Permanent criteria
         $and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'published'));
-        $datetime = new DateTime('tomorrow');
-        $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', $datetime->format('Y-m-d')));
+        $datetime = new DateTime('today');
+        $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', $datetime->format('Y-m-d H:i:s')));
 
         // User and organism filter
         $and4->appendChild($this->getOrganismBlock());
@@ -179,6 +179,7 @@ class Cswrecords extends SearchForm {
             return false;
         }
         $doc = new DOMDocument();
+        
         $loadTest = $doc->loadXML($results);
 
         if ($loadTest) {
@@ -445,9 +446,9 @@ class Cswrecords extends SearchForm {
 
     private function getVersions($literal) {
         $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
-        $or->appendChild($this->ogcFilters->getIsLessOrEqual('endpublished', '0000-00-01'));
+        $or->appendChild($this->ogcFilters->getIsLessOrEqual('endpublished', '0000-00-01 00:00:00'));
         $datetime = new DateTime('tomorrow');
-        $or->appendChild($this->ogcFilters->getIsGreatherOrEqual('endpublished', $datetime->format('Y-m-d')));
+        $or->appendChild($this->ogcFilters->getIsGreatherOrEqual('endpublished', $datetime->format('Y-m-d H:i:s')));
         return $or;
                 
     }
