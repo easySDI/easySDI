@@ -1176,26 +1176,26 @@ class FormGenerator {
                     $option = $this->form->createElement('option', $opt->name);
                     $option->setAttribute('value', $opt->value);
                     $field->appendChild($option);
+					if ($guid != '') {
+                        $field->setAttribute('label', EText::_($guid));
+                    } else {
+                        $field->setAttribute('label', JText::_($label));
+                    }
 
                     if ($upperbound > 1) {
                         if ($defaultvalues == null) {//Execute only once this part : it's the selected options and general field's informations definition
-                        $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode->parentNode);
-                            $defaultvalues = array();
-                        foreach ($allValues as $node) {
-                            if (!empty($node->firstChild->nodeValue)) {
-                                    $defaultvalues[] = $node->firstChild->nodeValue;
-                            }
-                        }
-                        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()), 12, 15);
-                        $field->setAttribute('name', $name);
-                            $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $defaultvalues), true));
-                        $field->setAttribute('css', 'sdi-multi-extent-select');
-                        $field->setAttribute('type', 'MultipleDefaultList');
-                            if ($guid != '') {
-                                $field->setAttribute('label', EText::_($guid));
-                    } else {
-                                $field->setAttribute('label', JText::_($label));
-                            }
+							$allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode->parentNode);
+							$defaultvalues = array();
+							foreach ($allValues as $node) {
+								if (!empty($node->firstChild->nodeValue)) {
+										$defaultvalues[] = $node->firstChild->nodeValue;
+								}
+							}
+							$name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()), 12, 15);
+							$field->setAttribute('name', $name);
+							$field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $defaultvalues), true));
+							$field->setAttribute('css', 'sdi-multi-extent-select');
+							$field->setAttribute('type', 'MultipleDefaultList');                            
                         }
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
