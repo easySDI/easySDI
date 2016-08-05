@@ -212,10 +212,12 @@ class sdiUser {
         ;
         $db->setQuery($query);
         $user = $db->loadObject();
-        if (isset($user)) {
+
+        if (isset($user)){
             $this->juser = JFactory::getUser($user->jid);
             $this->name = $this->juser->name;
         }
+
         return $user;
     }
 
@@ -411,7 +413,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[1];
+        return $this->role[1];        
     }
 
     /**
@@ -444,7 +446,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::resourcemanager]) ? $this->role[self::resourcemanager] : array();
+        return isset($this->role[self::resourcemanager]) ? $this->role[self::resourcemanager] : array(); 
     }
 
     /**
@@ -455,7 +457,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::metadataresponsible]) ? $this->role[self::metadataresponsible] : array();
+        return isset($this->role[self::metadataresponsible]) ? $this->role[self::metadataresponsible] : array();        
     }
 
     /**
@@ -466,7 +468,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::metadataeditor]) ? $this->role[self::metadataeditor] : array();
+        return isset($this->role[self::metadataeditor]) ? $this->role[self::metadataeditor] : array();            
     }
 
     /**
@@ -477,7 +479,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::diffusionmanager]) ? $this->role[self::diffusionmanager] : array();
+        return isset($this->role[self::diffusionmanager]) ? $this->role[self::diffusionmanager] : array(); 
     }
 
     /**
@@ -510,7 +512,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::pricingmanager]) ? $this->role[self::pricingmanager] : array();
+        return isset($this->role[self::pricingmanager]) ? $this->role[self::pricingmanager] : array();        
     }
 
     /**
