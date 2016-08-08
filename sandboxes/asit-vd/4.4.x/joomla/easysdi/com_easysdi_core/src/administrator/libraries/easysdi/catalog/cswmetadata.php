@@ -515,15 +515,15 @@ class cswmetadata {
                                 $layerConfig .= 'matrixSet: "' . $maplayer->asOLmatrixset . '",';
                                 $layerConfig .= 'url: "' . $service->resourceurl . '",';
                                 $layerConfig .= 'style : "' . $maplayer->asOLstyle . '",';
-                                foreach (json_decode($maplayer->asOLoptions) as $key => $value){
-                                    if ($key=="matrixIds"){
-                                        $layerConfig .= $key.' : ["' . implode('","',$value) . '"],';
-                                    }elseif ($key=="resolutions"){
-                                        $layerConfig .= $key.' : [' . implode(",",$value) . '],';
-                                    }elseif ($key=="maxExtent"){
+                                foreach (json_decode($maplayer->asOLoptions) as $key => $value) {
+                                    if ($key == "matrixIds") {
+                                        $layerConfig .= $key . ' : ["' . implode('","', $value) . '"],';
+                                    } elseif ($key == "resolutions") {
+                                        $layerConfig .= $key . ' : [' . implode(",", $value) . '],';
+                                    } elseif ($key == "maxExtent") {
                                         //$layerConfig .= '"maxExtent" : ' . $value . ',';
-                                    }else{
-                                        $layerConfig .= $key.' : "' . $value . '",';
+                                    } else {
+                                        $layerConfig .= $key . ' : "' . $value . '",';
                                     }
                                 }
                                 $layerConfig .= '}]}';
@@ -952,6 +952,13 @@ class cswmetadata {
         $sysPricing = $this->db->loadObject();
 
         $pricing->setAttribute("type", $sysPricing->value);
+
+        if (isset($this->diffusion->pricing_remark) && strlen($this->diffusion->pricing_remark) > 0) {
+            $pricingRemark = $domDocPricing->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_PricingRemark');
+            $pricingRemarkTxt = $domDocPricing->createTextNode($this->diffusion->pricing_remark);
+            $pricingRemark->appendChild($pricingRemarkTxt);
+            $pricing->appendChild($pricingRemark);
+        }
 
         //set pricing organism
         $queryOrganism = $this->db->getQuery(true)
