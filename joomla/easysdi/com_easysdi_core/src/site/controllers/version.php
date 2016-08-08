@@ -141,16 +141,16 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $where = 'v.id <> ' . (int) $id . ' AND v.id NOT IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id=' . (int) $id . ') AND rt.id IN (' . $resourcetypechild . ')';
         $where .= ' AND (SELECT count(*)
-			FROM slnvp_sdi_version cv
-			INNER JOIN slnvp_sdi_versionlink vl on vl.child_id = cv.id
-			inner join slnvp_sdi_version pv on pv.id = vl.parent_id
-			INNER JOIN slnvp_sdi_resource pr on pr.id = pv.resource_id AND pr.resourcetype_id IN (SELECT r.resourcetype_id FROM slnvp_sdi_version v
-                        INNER JOIN slnvp_sdi_resource r on r.id = v.resource_id
+			FROM #__sdi_version cv
+			INNER JOIN #__sdi_versionlink vl on vl.child_id = cv.id
+			inner join #__sdi_version pv on pv.id = vl.parent_id
+			INNER JOIN #__sdi_resource pr on pr.id = pv.resource_id AND pr.resourcetype_id IN (SELECT r.resourcetype_id FROM #__sdi_version v
+                        INNER JOIN #__sdi_resource r on r.id = v.resource_id
                         WHERE v.id = ' . (int) $id . ')
 			WHERE cv.id = v.id) < (SELECT rtl.parentboundupper 
-			FROM slnvp_sdi_version v
-			INNER JOIN slnvp_sdi_resource r on r.id = v.resource_id
-			INNER JOIN slnvp_sdi_resourcetypelink rtl on rtl.parent_id = r.resourcetype_id
+			FROM #__sdi_version v
+			INNER JOIN #__sdi_resource r on r.id = v.resource_id
+			INNER JOIN #__sdi_resourcetypelink rtl on rtl.parent_id = r.resourcetype_id
 			WHERE v.id = ' . (int) $id . '
 			AND rtl.child_id = ' . $resourcetypechild . ')';
         
