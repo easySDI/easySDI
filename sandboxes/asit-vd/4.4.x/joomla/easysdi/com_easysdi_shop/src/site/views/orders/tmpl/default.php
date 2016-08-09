@@ -88,11 +88,15 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
     <div class="items">
         <div class="well">                      
             <?php
-            $ordersListLayout = new JLayoutFile('com_easysdi_shop.orders', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
-            echo $ordersListLayout->render(array(
-                'items' => $this->items,
-                'displayTitle' => true
-            ));
+            if (count($this->items)):
+                $ordersListLayout = new JLayoutFile('com_easysdi_shop.orders', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
+                echo $ordersListLayout->render(array(
+                    'items' => $this->items,
+                    'displayTitle' => true
+                ));
+            else:
+                echo JText::_('COM_EASYSDI_SHOP_ORDERS_NO_ORDERS');
+            endif;
             ?>
         </div>
     </div>
