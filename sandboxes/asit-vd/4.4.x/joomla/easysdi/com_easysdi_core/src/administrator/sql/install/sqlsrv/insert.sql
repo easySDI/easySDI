@@ -590,8 +590,8 @@ INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (
 SET IDENTITY_INSERT [#__sdi_sys_productstorage] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_productmining] ON;
-INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'automatic');
-INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'manual');
+INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (1, 2, 1, N'automatic');
+INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (2, 1, 1, N'manual');
 SET IDENTITY_INSERT [#__sdi_sys_productmining] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_extractstorage] ON;
