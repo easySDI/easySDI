@@ -182,23 +182,25 @@
                translate="true" />
         
         <field name="managers_id" 
-               type="sql" 
+               type="sqlgroupedlist" 
                class="inputbox input-xlarge"
                multiple="true"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_EXTRACTION_RESPONSIBLE"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_EXTRACTION_RESPONSIBLE" 
                key_field="id" 
                value_field="value"
+               groupname_field="groupname"
                translate="false" />
                
         <field name="notifieduser_id" 
-               type="sql" 
+               type="sqlgroupedlist" 
                class="inputbox input-xlarge"
                multiple="true"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NOTIFIEDUSER_ID"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NOTIFIEDUSER_ID" 
                key_field="id" 
                value_field="value"
+               groupname_field="groupname"
                translate="false" />
             
         <field name="restrictedperimeter" type="radio"  default="0"

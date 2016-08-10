@@ -125,7 +125,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
         $resource->load($version->resource_id);
         $this->_item->resource_id = $resource->id;
-        
+
         if (empty($id)) {
             $this->_item->name = $resource->name;
         }
@@ -364,7 +364,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             $userroleresource->deleteByResourceId($data['resource_id'], Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE);
             $users = $data['managers_id'];
             foreach ($users as $user) {
-                $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');                        
+                $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
                 $userroleresource->user_id = $user;
                 $userroleresource->role_id = Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE;
                 $userroleresource->resource_id = $data['resource_id'];
@@ -477,12 +477,16 @@ class Easysdi_shopModelDiffusion extends JModelForm {
     private function getExtractionManagerListQuery() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('uro.user_id as id, ju.name as value')
+        $query->select('uro.user_id as id, ju.name as value, o.name as groupname')
                 ->from('#__sdi_user_role_organism as uro')
                 ->innerJoin('#__sdi_user as u on u.id = uro.user_id')
                 ->innerJoin('#__users as ju on ju.id = u.user_id')
-                ->where('organism_id=' . (int) $this->_item->organism_id)
-                ->where('role_id = ' . (int) Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE);
+                ->innerJoin('#__sdi_user_role_organism m ON u.id = m.user_id AND m.role_id = 1')
+                ->innerJoin('#__sdi_organism o ON m.organism_id = o.id')
+                ->where('uro.organism_id=' . (int) $this->_item->organism_id)
+                ->where('uro.role_id = ' . (int) Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE)
+                ->order('o.name')
+                ->order('ju.name');
 
         return $query->__toString();
     }
@@ -534,11 +538,14 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $users_user = $db->loadColumn();
 
         $query_all = $db->getQuery(true);
-        $query_all->select('u.id, ju.name as value');
+        $query_all->select('u.id, ju.name as value, o.name as groupname');
         $query_all->from('#__sdi_user u');
         $query_all->innerJoin('#__users ju ON ju.id=u.user_id');
+        $query_all->innerJoin('#__sdi_user_role_organism m ON u.id = m.user_id AND m.role_id = 1');
+        $query_all->innerJoin('#__sdi_organism o ON m.organism_id = o.id');
         $query_all->where('u.id IN (' . implode(',', array_unique(array_merge($users_user, $users_resource))) . ')');
-        $query_all->order('value');
+        $query_all->order('o.name');
+        $query_all->order('ju.name');
 
         return $query_all->__toString();
     }
