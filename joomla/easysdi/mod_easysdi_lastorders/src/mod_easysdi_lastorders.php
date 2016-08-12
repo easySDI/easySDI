@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     mod_easysdi_lastorders
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -33,6 +33,7 @@ foreach (get_object_vars($ordersModel->getState()) as $key => $value) {
         $ordersModel->setState($key, "");
     }
 }
+$ordersModel->setState("filter.archived", 1);
 $totalOrders = $ordersModel->getTotal();
 $ordersModel->setState('list.limit', $nbOrders);
 $ordersModel->setState('list.start', 0);

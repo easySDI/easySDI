@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -77,18 +77,21 @@ class FormStereotype {
         $dom = new DOMDocument('1.0', 'utf-8');
 
         $element = $dom->createElementNS($result->list_ns_uri, $result->list_ns_prefix . ':' . $result->attribute_type_isocode);
-
+        
         if (!empty($result->attribute_codelist)) {
             $element->setAttribute('codeList', $result->attribute_codelist);
-
-            //Get default value, only if field is hidden or visible
             if (!empty($result->defaultvalue)) {
                 $element->setAttribute('codeListValue', $result->defaultvalue);
             } else {
                 $element->setAttribute('codeListValue', '');
             }
+        }else{
+            if (!empty($result->defaultvalue)) {
+                $element->nodeValue = "";
+                $item = $dom->createTextNode($result->defaultvalue);
+                $element->appendChild($item);
+            } 
         }
-
         return $element;
     }
 

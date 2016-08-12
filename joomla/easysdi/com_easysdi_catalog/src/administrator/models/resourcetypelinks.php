@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -111,7 +111,7 @@ class Easysdi_catalogModelresourcetypelinks extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.state, a.checked_out, a.ordering, a.viralversioning'
+                        'list.select', 'a.id, a.state, a.checked_out, a.checked_out_time, a.ordering, a.viralversioning'
                 )
         );
         $query->from('#__sdi_resourcetypelink AS a');

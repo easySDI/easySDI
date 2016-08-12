@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ** @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_contact
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -48,9 +48,7 @@ class Easysdi_contactModeluser extends JModelAdmin {
         $user = JFactory::getUser();
 
         if (!empty($record->id)) {
-            if ($record->state != -2) {
-                return;
-            }
+
             if (!empty($record->catid)) {
                 return $user->authorise('core.delete', 'com_easysdi_contact.category.' . (int) $record->catid);
             }
@@ -59,6 +57,92 @@ class Easysdi_contactModeluser extends JModelAdmin {
                 return parent::canDelete($record);
             }
         }
+    }
+
+    /**
+     * Method to delete one or more records.
+     *
+     * @param   array  &$pks  An array of record primary keys.
+     *
+     * @return  boolean  True if successful, false if an error occurs.
+     *
+     * @since   12.2
+     */
+    public function delete(&$pks) {
+        $pks = (array) $pks;
+
+        $result = true;
+        // Iterate the items to delete each one.
+        foreach ($pks as $i => $pk) {
+            $sdiuser = sdiFactory::getSdiUser($pk);
+            try {
+
+                //If the user is the only resource manager of a resource, it can't be deleted
+                $list = $this->getResourceManagedByMe($pk);
+                if (count($list) > 0):
+                    $errorMessage = sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ERROR_RESOURCES'), $sdiuser->name);
+                    foreach ($list as $item):
+                        $errorMessage .= '<br> - ' . $item->rname;
+                    endforeach;
+                    JFactory::getApplication()->enqueueMessage($errorMessage, 'error');
+                    $result = false;
+                endif;
+
+                //If the user has order history, it can't be deleted
+                if ($this->getOrdersCount($pk) > 0):
+                    JFactory::getApplication()->enqueueMessage(sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ERROR_ORDER'), $sdiuser->name), 'error');
+                    $result = false;
+                endif;
+
+                //if the user has order processing history, it can't be deleted
+                if ($this->getProcessOrdersCount($pk) > 0):
+                    JFactory::getApplication()->enqueueMessage(sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ERROR_PROCESSING'), $sdiuser->name), 'error');
+                    $result = false;
+                endif;
+            } catch (Exception $ex) {
+                JFactory::getApplication()->enqueueMessage(sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_EXCEPTION'), $sdiuser->name), 'error');
+                $result = false;
+            }
+        }
+
+        if ($result):
+            $userjoomlaaction = JFactory::getApplication()->input->post->get('userjoomlaaction', '', 'string');
+            foreach ($pks as $i => $pk) {
+                $sdiuser = sdiFactory::getSdiUser($pk);
+                $username = $sdiuser->name;
+                $juser = $sdiuser->juser;
+                if (parent::delete($pk)):
+                    switch ($userjoomlaaction) {
+                    case "btn_keep":
+                        JFactory::getApplication()->enqueueMessage(sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_OK_KEEP_JUSER'), $username), 'message');
+                        break;
+                        case "btn_disable":
+                            //Disable Joomla user
+                            $juser->block = 1;
+                            if ($juser->save(true)):
+                                JFactory::getApplication()->enqueueMessage(sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_OK_DISABLE_JUSER'), $username), 'message');
+                            else:
+                                JFactory::getApplication()->enqueueMessage(sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ERROR_DISABLE_JUSER'), $username), 'warning');
+                            endif;
+                            break;
+                        case "btn_delete":
+                            //Delete Joomla user
+                            if ($juser->delete()) :
+                                JFactory::getApplication()->enqueueMessage(sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_OK_DELETE_JUSER'), $username), 'message');
+                            else:
+                                JFactory::getApplication()->enqueueMessage(sprintf(JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ERROR_DELETE_JUSER'), $username), 'warning');
+                            endif;
+                            break;
+                    }
+                    return true;
+                else:
+                    return false;
+                endif;
+            }
+            return false;
+        else:
+            return false;
+        endif;
     }
 
     /**
@@ -163,7 +247,7 @@ class Easysdi_contactModeluser extends JModelAdmin {
                 $query = $db->getQuery(true);
                 $query->select('MAX(ordering)');
                 $query->from('#__sdi_user');
-                
+
                 $db->setQuery($query);
                 $max = $db->loadResult();
                 $table->ordering = $max + 1;
@@ -182,45 +266,45 @@ class Easysdi_contactModeluser extends JModelAdmin {
      */
     public function save($data) {
         $fieldRole = array(
-            2   => 'organismsRM',
-            3   => 'organismsMR',
-            4   => 'organismsME',
-            5   => 'organismsDM',
-            6   => 'organismsVM',
-            7   => 'organismsER',
+            2 => 'organismsRM',
+            3 => 'organismsMR',
+            4 => 'organismsME',
+            5 => 'organismsDM',
+            6 => 'organismsVM',
+            7 => 'organismsER',
             /* 8   => 'organismsOE', // role removed */
-            9   => 'organismsPM',
-            10  => 'organismsTM',
-            11  => 'organismsManager'
+            9 => 'organismsPM',
+            10 => 'organismsTM',
+            11 => 'organismsManager'
         );
-        
+
         // Trigger the onEasysdiUserBeforeDeleteRoleAttribution event.
         JPluginHelper::importPlugin('user');
-        $dispatcher = JEventDispatcher::getInstance();      
-        
+        $dispatcher = JEventDispatcher::getInstance();
+
         $canContinue = $dispatcher->trigger('onEasysdiUserBeforeDeleteRoleAttribution', array(array(
-            'user_id' => $data['id'],
-            'organisms_ids' => isset($data['organismsRM']) ? $data['organismsRM'] : array()))
+                'user_id' => $data['id'],
+                'organisms_ids' => isset($data['organismsRM']) ? $data['organismsRM'] : array()))
         );
-        
+
         // Fire the onEasysdiUserBeforeDeleteRoleAttribution event.
-        if($canContinue[0] !== true){
+        if ($canContinue[0] !== true) {
             $this->setError($canContinue[0]);
             return false;
         }
-        
+
         if (parent::save($data)) {
             $item = parent::getItem($data['id']);
             $data['id'] = $item->id;
-            
+
             //Delete existing role attribution for this user
             $role = JTable::getInstance('role', 'Easysdi_contactTable');
             $role->deleteByUserId($data['id']);
 
             //Insert new role attribution  
-            foreach($fieldRole as $role_id => $fieldName)
-                isset($data[$fieldName]) ? $this->saveRoleAttribution ($data[$fieldName], $role_id) : $this->deleteRoleAttribution ($role_id);
-            
+            foreach ($fieldRole as $role_id => $fieldName)
+                isset($data[$fieldName]) ? $this->saveRoleAttribution($data[$fieldName], $role_id) : $this->deleteRoleAttribution($role_id);
+
 
             $array = array();
             $array['user_id'] = $this->getItem()->get('id');
@@ -252,45 +336,96 @@ class Easysdi_contactModeluser extends JModelAdmin {
     }
 
     function saveRoleAttribution($organisms, $role_id) {
-        if(!is_array($organisms))
+        if (!is_array($organisms))
             $organisms = array($organisms);
-        
-        foreach($organisms as $organism){
+
+        foreach ($organisms as $organism) {
             $role = JTable::getInstance('role', 'Easysdi_contactTable');
             $array = array(
-                'user_id'       => $this->getItem()->get('id'),
-                'role_id'       => $role_id,
-                'organism_id'   => $organism
+                'user_id' => $this->getItem()->get('id'),
+                'role_id' => $role_id,
+                'organism_id' => $organism
             );
             $role->save($array);
         }
-        
+
         $db = JFactory::getDbo();
-        
+
         $query = $db->getQuery(true)
                 ->select('id')
                 ->from('#__sdi_resource')
-                ->where('organism_id IN ('. implode(',',$organisms) .')');
+                ->where('organism_id IN (' . implode(',', $organisms) . ')');
         $db->setQuery($query);
         $resources = $db->loadColumn();
-        
+
         $this->deleteRoleAttribution($role_id, $resources);
     }
 
     function deleteRoleAttribution($role_id, $resources = false) {
-        if(sizeof($resources)>0 || $resources===false){
+        if (sizeof($resources) > 0 || $resources === false) {
             $db = JFactory::getDbo();
-            
+
             $query = $db->getQuery(true)
-                ->delete('#__sdi_user_role_resource')
-                ->where('user_id='.(int)$this->getItem()->get('id'))
-                ->where('role_id='.(int)$role_id);
-            if($resources==true && sizeof($resources)>0)
-                $query->where('resource_id NOT IN ('. implode(',', $resources) .')');
+                    ->delete('#__sdi_user_role_resource')
+                    ->where('user_id=' . (int) $this->getItem()->get('id'))
+                    ->where('role_id=' . (int) $role_id);
+            if ($resources == true && sizeof($resources) > 0)
+                $query->where('resource_id NOT IN (' . implode(',', $resources) . ')');
 
             $db->setQuery($query);
             $db->execute();
         }
+    }
+
+    private function getOrdersCount($user_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('count(id)')
+                ->from('#__sdi_order')
+                ->where('user_id = ' . (int) $user_id)
+        ;
+        $db->setQuery($query);
+        return $db->loadResult();
+    }
+
+    private function getProcessOrdersCount($user_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('count(id)')
+                ->from('#__sdi_processing_order')
+                ->where('user_id = ' . (int) $user_id)
+        ;
+        $db->setQuery($query);
+        return $db->loadResult();
+    }
+
+    private function getResourceManagedByMe($user_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('urr.*, r.name as rname')
+                ->from('#__sdi_user_role_resource urr')
+                ->innerJoin('#__sdi_resource r ON urr.resource_id = r.id ')
+                ->where('urr.role_id = 2')
+                ->where('urr.user_id = ' . (int) $user_id)
+        ;
+        $db->setQuery($query);
+        $urrs = $db->loadObjectList();
+        $result = array();
+        foreach ($urrs as $urr):
+            $query = $db->getQuery(true)
+                    ->select('count(urr.id)')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->where('urr.role_id = 2')
+                    ->where('urr.resource_id = ' . (int) $urr->resource_id)
+            ;
+            $db->setQuery($query);
+            $count = $db->loadResult();
+            if ($count = 1):
+                array_push($result, $urr);
+            endif;
+        endforeach;
+
+        return $result;
     }
 
 }

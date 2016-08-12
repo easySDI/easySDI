@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -39,7 +39,12 @@ class Easysdi_coreViewResources extends JViewLegacy {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             return;
         }
-
+       
+        $this->mduk = json_decode($app->getUserState('com_easysdi_core.remove.version.mduk'), null);
+        $app->setUserState('com_easysdi_core.remove.version.mduk', null);
+        $this->vcall = json_decode($app->getUserState('com_easysdi_core.remove.version.call'), null);
+        $app->setUserState('com_easysdi_core.remove.version.call', null);
+        
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
@@ -122,12 +127,7 @@ class Easysdi_coreViewResources extends JViewLegacy {
             $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
             $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
             $query->leftJoin('#__sdi_versionlink vl ON vl.child_id = v.id');
-            if (!empty($this->state->parentid)) {
-                $query->where('vl.parent_id='.(int)$this->state->parentid);
-            }
-            else{
-                $query->where('v.resource_id = ' . (int) $item->id);
-            }
+            $query->where('v.resource_id = ' . (int) $item->id);
             $query->order('v.name DESC');
 
             // Check if resource has a "unpublish" version

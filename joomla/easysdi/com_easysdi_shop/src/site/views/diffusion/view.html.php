@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -55,6 +55,8 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
                 return false;
             }
         }
+        
+        $this->pricingisActivated = (bool)$this->params->get('is_activated',false);
 
         $db = JFactory::getDbo();
 

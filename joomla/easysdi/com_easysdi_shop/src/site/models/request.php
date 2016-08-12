@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -233,7 +233,6 @@ class Easysdi_shopModelRequest extends JModelForm {
         $keys['order_id'] = (int) $id;
         $keys['diffusion_id'] = (int) $diffusion_id;
         $orderdiffusion->load($keys);
-        $orderdiffusion->fee = (int) $data['fee'][$diffusion_id];
         $orderdiffusion->remark = $data['remark'][$diffusion_id];
         if (!empty($files['file'][$diffusion_id][0]['name'])):
             //get clean filename for storage
@@ -259,11 +258,11 @@ class Easysdi_shopModelRequest extends JModelForm {
                 return false;
             endif;
         endif;
-        if (isset($orderdiffusion->fee) || !empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
+        if (!empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name']) || !empty($data['fee'][$diffusion_id])):
             $orderdiffusion->completed = date('Y-m-d H:i:s');
             $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
         endif;
-        $orderdiffusion->created_by = (int) sdiFactory::getSdiUser()->id;
+        $orderdiffusion->created_by = (int) sdiFactory::getSdiUser()->juser->id;
         $orderdiffusion->store();
 
         //store pricing in pricing tables if pricing is enabled
@@ -278,8 +277,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             $cfg_rounding = (float) JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
 
             $posp->cal_total_amount_ti = Easysdi_shopHelper::rounding($floatFee, $cfg_rounding);
-            $posp->cal_total_rebate_ti = 0.0; //cannot set a rebate in manual product processing
-
+            
             Easysdi_shopHelper::updatePricing($posp, $pos, $po);
         }
 
@@ -323,8 +321,7 @@ class Easysdi_shopModelRequest extends JModelForm {
         $keys = array();
         $keys['order_id'] = (int) $id;
         $keys['diffusion_id'] = (int) $diffusion_id;
-        $orderdiffusion->load($keys);
-        $orderdiffusion->fee = 0.0;
+        $orderdiffusion->load($keys);        
         $orderdiffusion->remark = $data['rejectionremark'];
         $orderdiffusion->completed = date('Y-m-d H:i:s');
         $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER;

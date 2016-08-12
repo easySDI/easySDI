@@ -6,7 +6,7 @@
 
         <field name="servletUrl"
                     type="text"
-                    default="http://localhost:8080/Monitor"
+                    default="http://localhost:8080/monitor"
                     class="input"             
                     size="100"
                     label="COM_EASYSDI_MONITOR_URL_LABEL"
@@ -14,13 +14,18 @@
                     required="true"/>
             
             
-        <field name="test"
-             type="radio"
-             default="1"
-             label="COM_EASYSDI_MONITOR_TEST_LABEL"
-             description="COM_EASYSDI_MONITOR_TEST_DESC">
-                 <option value="0">JHIDE</option>
-                 <option value="1">JSHOW</option>
+        <field name="monitorUser"
+             type="text"
+             class="input"
+             label="COM_EASYSDI_MONITOR_USER_LABEL"
+             description="COM_EASYSDI_MONITOR_USER_DESC">
+         </field>
+         
+         <field name="monitorPassword"
+             type="password"
+             class="input"
+             label="COM_EASYSDI_MONITOR_PASSWORD_LABEL"
+             description="COM_EASYSDI_MONITOR_PASSWORD_DESC">
          </field>
 
 	</fieldset>

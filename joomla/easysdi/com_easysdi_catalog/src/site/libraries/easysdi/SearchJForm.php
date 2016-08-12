@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -279,16 +279,17 @@ class SearchJForm extends SearchForm {
     }
 
     private function getName($searchCriteria) {
-        if (isset($searchCriteria->relation_guid)) {
-            return $searchCriteria->id . '_' . $this->getOgcSearchFilter($searchCriteria);
-        } else {
-            return $searchCriteria->id . '_' . $searchCriteria->name;
+        switch ($searchCriteria->criteriatype_id) {
+            case CriteriaType::System:
+                return $searchCriteria->id . '_' . $searchCriteria->name;
+            default:
+                return $searchCriteria->id . '_' . $this->getOgcSearchFilter($searchCriteria);
         }
     }
 
     private function getLabel($searchCriteria) {
         if (isset($searchCriteria->relation_guid)) {
-            return EText::_($searchCriteria->relation_guid);
+            return EText::_($searchCriteria->catalogsearchcriteriaguid);
         } else {
             return EText::_($searchCriteria->guid);
         }
@@ -355,9 +356,8 @@ class SearchJForm extends SearchForm {
                 if (!empty($params->boundarycategory_id)) {
                     $query->where('b.category_id IN (' . implode(',', $params->boundarycategory_id) . ')');
                 }
+                $query->where('b.state = 1');
                 $query->order('t.text1');
-                //$query->select('t.id, t.guid, t.guid as value, t.name');
-                //$query->from('#__sdi_boundary t');
                 break;
             case 'resourcetype':
                 $query->select('t.id, t.alias as value, t.guid, t.name');
@@ -375,6 +375,7 @@ class SearchJForm extends SearchForm {
                 $query->select('t.id, t.value, t.guid, t.name');
                 $query->from('#__sdi_attributevalue t');
                 $query->where('t.attribute_id = ' . $searchCriteria->attributechild_id);
+                $query->order('t.ordering');
                 break;
         }
 
