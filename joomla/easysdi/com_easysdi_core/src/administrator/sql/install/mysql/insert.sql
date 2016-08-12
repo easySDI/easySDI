@@ -491,7 +491,6 @@ INSERT IGNORE INTO `#__sdi_sys_country` VALUES ('241', '241', '1', 'Zimbabwe', '
 INSERT IGNORE INTO `#__sdi_sys_entity` VALUES ('1', '1', '1', 'attribute');
 INSERT IGNORE INTO `#__sdi_sys_entity` VALUES ('2', '2', '1', 'class');
 
-INSERT IGNORE INTO `#__sdi_sys_orderstate` VALUES ('1', '1', '1', 'archived');
 INSERT IGNORE INTO `#__sdi_sys_orderstate` VALUES ('2', '2', '1', 'historized');
 INSERT IGNORE INTO `#__sdi_sys_orderstate` VALUES ('3', '3', '1', 'finish');
 INSERT IGNORE INTO `#__sdi_sys_orderstate` VALUES ('4', '4', '1', 'await');

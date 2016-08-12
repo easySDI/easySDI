@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -15,8 +15,8 @@ JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
-$document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
+$document->addStyleSheet('components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
+$document->addScript('components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
 $document->addScript('components/com_easysdi_core/views/version/tmpl/version.js?v=' . sdiFactory::getSdiFullVersion());
 ?>
 <?php

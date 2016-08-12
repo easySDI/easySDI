@@ -65,4 +65,16 @@
 
 
       </fieldset>
+      <fieldset name="permissions"
+        description="JCONFIG_PERMISSIONS_DESC"
+        label="JCONFIG_PERMISSIONS_LABEL">
+        <field name="rules"
+            type="rules"
+            component="com_easysdi_processing"
+            class="inputbox"
+            filter="rules"
+            validate="rules"
+            label="JCONFIG_PERMISSIONS_LABEL"
+            section="component" />
+    </fieldset>
 </config>

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -152,7 +152,7 @@ class Easysdi_mapModelmaps extends JModelList
 		$query->select(
 				$this->getState(
 						'list.select',
-						'a.id, a.alias, a.state, a.checked_out, a.ordering, a.name, a.access'
+						'a.id, a.alias, a.state, a.checked_out, a.ordering, a.name, a.access, a.created_by'
 				)
 		);
 		$query->from('#__sdi_map AS a');
@@ -162,8 +162,8 @@ class Easysdi_mapModelmaps extends JModelList
 		$query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
 		// Join over the created by field 'created_by'
-		$query->select('created_by.name AS created_by');
-		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+		/*$query->select('created_by.name AS created_by');
+		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');*/
 
 		// Join over the access level.
 		$query->select('ag.title AS access_level');

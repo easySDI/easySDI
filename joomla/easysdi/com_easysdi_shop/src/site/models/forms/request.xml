@@ -17,7 +17,6 @@
         <field name="orderstate_id" type="hidden" filter="safehtml" />
         <field name="user_id" type="hidden" filter="safehtml" />
         <field name="thirdparty_id" type="hidden" filter="safehtml" />
-        <field name="buffer" type="hidden" filter="safehtml" />
         <field name="surface" type="hidden" filter="safehtml" />
         <field name="sent" type="hidden" filter="safehtml" />
         <field name="completed" type="hidden" filter="safehtml" />

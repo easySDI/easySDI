@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -23,6 +23,8 @@ class Easysdi_shopModelorder extends JModelAdmin {
      * @since	1.6
      */
     protected $text_prefix = 'COM_EASYSDI_SHOP';
+    
+    public $item;
 
     /**
      * Returns a reference to the a Table object, always creating it.
