@@ -1,0 +1,1 @@
+ALTER TABLE `#__sdi_maplayer` CHANGE `alias` `alias` VARCHAR(255) NOT NULL;

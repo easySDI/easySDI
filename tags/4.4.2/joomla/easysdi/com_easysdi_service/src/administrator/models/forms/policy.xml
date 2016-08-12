@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="policy">
+        <field name="name" type="text" size="40" class="inputbox" required="true" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_NAME"  filter="safehtml" />
+        <field name="alias" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALIAS" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALIAS"   filter="safehtml" />
+        <field name="layout" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CONNECTOR" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CONNECTOR" readonly="true" class="readonly" filter="safehtml" />
+        <field name="virtualservice" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VIRTUALSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VIRTUALSERVICE" readonly="true" class="readonly" filter="safehtml" />
+        <field
+            name="accessscope_id" 
+            onchange="enableAccessScope();"
+            type="sql" 
+            class="inputbox"
+            label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ACCESSSCOPE"
+            description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ACCESSSCOPE" 
+            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="value"
+            translate="true"
+        /> 
+        <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        />
+        <field
+            name="organisms" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field
+            name="users" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field name="allowfrom" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
+        <field name="allowto" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
+        <field name="anyoperation" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+    </fieldset>
+	
+    <fieldset name="csw_policy">
+        <field name="csw_includeharvested" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_INCLUDE_HARVESTED" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_INCLUDE_HARVESTED">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+		
+        <field name="csw_anyresourcetype" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYRESOURCETYPE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYRESOURCETYPE" >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="csw_resourcetype" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_RESOURCETYPE"
+            description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_RESOURCETYPE" 
+            query="SELECT id, name FROM #__sdi_resourcetype WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field name="csw_anyvisibility" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY" >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="csw_accessscope_id" 
+            onchange="enableVisibility();"
+            type="sql" 
+            class="inputbox"
+            label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VISIBILITY"
+            description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VISIBILITY" 
+            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND value!='category' ORDER BY ordering" 
+            key_field="id" 
+            value_field="value"
+            translate="true"
+        /> 
+        <field
+            name="csw_organisms" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+        /> 
+        <field
+            name="csw_users" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+        />  
+		
+        <field 	name="csw_anystate" 
+                        type="radio" 
+                        class="btn-group" 
+                        default="1" 
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" 
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE" >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field  name="csw_state" 
+                        type="sql" 
+                        class="multiselect input-xxlarge"
+                        onchange="onStateChange();"
+                        multiple="true"
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_STATE" 
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_STATE"
+                        query="
+						SELECT id , value
+						FROM #__sdi_sys_metadatastate
+						WHERE state = 1
+						ORDER BY ordering;"
+                        key_field="id" 
+                        value_field="value" 
+                        required="false"
+                        translate="true"
+        />
+        <field	name="csw_version_id"
+                        type="sql" 
+                        class="inputbox"
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_VERSION"
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_VERSION" 
+                        query="
+					SELECT id, value
+					FROM #__sdi_sys_metadataversion
+					WHERE state=1
+					ORDER BY ordering" 
+                        key_field="id" 
+                        value_field="value"
+                        translate="true"
+        />
+        <field name="eastboundlongitude" type="hidden" filter="SAFEHTML" />
+        <field name="westboundlongitude" type="hidden" filter="SAFEHTML" />
+        <field name="northboundlatitude" type="hidden" filter="SAFEHTML" />
+        <field name="southboundlatitude" type="hidden" filter="SAFEHTML" />
+        <field name="csw_anyattribute" type="hidden" filter="SAFEHTML" />
+    </fieldset>
+		
+    <fieldset name="csw_geographicfilter">
+        <field 	name="srssource" 
+                        type="text" 
+                        size="40" 
+                        class="span4" 
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_SRSSOURCE" 
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_SRSSOURCE"  
+                        filter="safehtml" />
+        <field 	name="maxx" 
+                        type="textwithplaceholder" 
+                        size="40" 
+                        class="input" 
+                        placeholder="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MAXX"
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MAXX" 
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_MAXX"  
+                        filter="safehtml" />
+        <field 	name="miny" 
+                        type="textwithplaceholder" 
+                        size="40" 
+                        class="input" 
+                        placeholder="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MINY"
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MINY" 
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_MINY"  
+                        filter="safehtml" />
+        <field 	name="maxy" 
+                        type="textwithplaceholder" 
+                        size="40" 
+                        class="input" 
+                        placeholder="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MAXY"
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MAXY" 
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_MAXY"  
+                        filter="safehtml" />
+        <field 	name="minx" 
+                        type="textwithplaceholder" 
+                        size="40" 
+                        class="input" 
+                        placeholder="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MINX"
+                        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MINX" 
+                        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_MINX"  
+                        filter="safehtml" />
+    </fieldset>
+	
+    <fieldset name="wms_policy">
+        <field name="wms_minimumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="SAFEHTML" />
+        <field name="wms_minimumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="SAFEHTML" />
+        <field name="wms_maximumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="SAFEHTML" />
+        <field name="wms_maximumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMHEIGHT"  filter="SAFEHTML" />
+    </fieldset>
+	
+    <field 	name="id" 
+                type="text" 
+                default="0" 
+                label="JGLOBAL_FIELD_ID_LABEL"
+                readonly="true" 
+                class="readonly"
+                description="JGLOBAL_FIELD_ID_DESC" /> 
+	
+    <fieldset name="hidden">
+        <field name="virtualservice_id" type="hidden" filter="SAFEHTML" />
+        <field name="serviceconnector_id" type="hidden" filter="SAFEHTML" />
+        <field name="compliance" id="compliance" type="hidden" filter="SAFEHTML" />
+        <field name="proxytype_id" type="hidden" default="1" />
+        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="guid" type="hidden" filter="unset" />
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+    </fieldset>
+	
+    <fieldset name="rulesdefinition">
+        <field 	name="rules" 
+                        type="rules" 
+                        label="JFIELD_RULES_LABEL"
+                        translate_label="true" 
+                        class="inputbox" 
+                        filter="rules"
+                        component="com_easysdi_service" 
+                        section="policy" 
+                        validate="rules"
+        />
+    </fieldset>
+	
+    <fieldset name="publishing">
+        <field name="created_by" type="user" class="readonly" readonly="true"
+                       label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_CREATED_BY"
+                       description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_CREATED_BY"
+                       filter="unset" />
+        <field name="created" type="calendar" class="readonly" readonly="true"
+                       label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_CREATED"
+                       description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_CREATED"
+                       filter="safehtml" />
+        <field name="modified_by" type="user" class="readonly" readonly="true"
+                       label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED_BY"
+                       description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED_BY"
+                       filter="unset" />
+        <field name="modified" type="calendar" class="readonly"
+                       readonly="true" label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED"
+                       description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED"
+                       filter="safehtml" />
+    </fieldset>
+	
+    <field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
+               description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />
+		
+    <field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC"
+               class="inputbox" size="1" default="0">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+        <option value="2">JARCHIVED</option>
+        <option value="-2">JTRASHED</option>
+    </field>
+	
+    <field 
+        name="allowedoperation_wmts"
+        type="allowedoperationSQL" 
+        class="allowedoperation multiselect input-xxlarge"
+        multiple="true"
+        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+        serviceconnector="WMTS"
+        key_field="id" 
+        value_field="value" 
+        required="false"
+    />
+	
+    <field 
+        name="allowedoperation_wms" 
+        type="allowedoperationSQL" 
+        class="allowedoperation multiselect input-xxlarge"
+        multiple="true"
+        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+        serviceconnector="WMS"
+        key_field="id" 
+        value_field="value" 
+        required="false"
+    />
+	
+    <field 
+        name="allowedoperation_wfs" 
+        type="allowedoperationSQL" 
+        class="allowedoperation multiselect input-xxlarge"
+        multiple="true"
+        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+        serviceconnector="WFS"
+        key_field="id" 
+        value_field="value" 
+        required="false"
+    />
+	
+    <field 
+        name="allowedoperation_csw" 
+        type="allowedoperationSQL" 
+        class="allowedoperation multiselect input-xxlarge"
+        multiple="true"
+        label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+        description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+        serviceconnector="CSW"
+        key_field="id" 
+        value_field="value" 
+        required="false"
+    />
+	
+</form>
