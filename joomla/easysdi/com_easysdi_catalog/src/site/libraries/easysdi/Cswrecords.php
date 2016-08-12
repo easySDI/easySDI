@@ -3,7 +3,7 @@
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/OgcFilters.php';
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -444,9 +444,12 @@ class Cswrecords extends SearchForm {
     }
 
     private function getVersions($literal) {
+        $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
+        $or->appendChild($this->ogcFilters->getIsLessOrEqual('endpublished', '0000-00-01'));
+        $datetime = new DateTime('tomorrow');
+        $or->appendChild($this->ogcFilters->getIsGreatherOrEqual('endpublished', $datetime->format('Y-m-d')));
+        return $or;
         
-        return $this->ogcFilters->getIsLessOrEqual('endpublished', '0000-00-01');
-                
     }
 
     private function getResouceName($literal) {

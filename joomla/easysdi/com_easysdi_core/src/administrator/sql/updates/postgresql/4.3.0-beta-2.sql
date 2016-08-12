@@ -1,1 +1,0 @@
-ALTER TABLE #__sdi_catalog ADD scrolltoresults SMALLINT NOT NULL DEFAULT 1;

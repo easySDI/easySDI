@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -27,26 +27,8 @@ class Easysdi_shopModelorders extends JModelList {
 
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                /* 'id', 'a.id',
-                  'guid', 'a.guid',
-                  'alias', 'a.alias',
-                  'created_by', 'a.created_by', */
-                'created', 'a.created', /*
-                  'modified_by', 'a.modified_by',
-                  'modified', 'a.modified',
-                  'ordering', 'a.ordering',
-                  'state', 'a.state', */
+                'created', 'a.created', 
                 'name', 'a.name',
-                /* 'access', 'a.access',
-                  'asset_id', 'a.asset_id',
-                  'ordertype_id', 'a.ordertype_id',
-                  'orderstate_id', 'a.orderstate_id',
-                  'user_id', 'a.user_id',
-                  'thirdparty_id', 'a.thirdparty_id',
-                  'buffer', 'a.buffer',
-                  'surface', 'a.surface',
-                  'remark', 'a.remark', */
-                'sent', 'a.sent',
                 'completed', 'a.completed',
                 'user', 'user',
             );
@@ -75,7 +57,8 @@ class Easysdi_shopModelorders extends JModelList {
             'orderprovider',
             'orderdiffusion',
             'ordersent',
-            'ordercompleted'
+            'ordercompleted',
+            'orderarchived'
         ) as $key) {
             $state = $app->getUserStateFromRequest($this->context . '.filter.' . $key, 'filter_' . $key, '', 'string');
             $this->setState('filter.' . $key, $state);
@@ -134,10 +117,10 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select(
-                $this->getState('DISTINCT ' .
-                        'list.select', ' a.*'
-                )
-        );
+          $this->getState('DISTINCT ' .
+                        'list.select', ' a.id,a.guid,a.ordering,a.name,a.alias,a.ordertype_id,a.orderstate_id,a.archived,a.user_id,a.sent,a.completed,a.created_by,a.created'
+          )
+          );
 
         $query->from('#__sdi_order AS a');
 
@@ -155,11 +138,14 @@ class Easysdi_shopModelorders extends JModelList {
         $query->select('orderstate.value AS orderstate')
                 ->innerJoin('#__sdi_sys_orderstate AS orderstate ON orderstate.id = a.orderstate_id');
 
+        $query->group('orderstate.value');
+        
         // Join over the ordertype field 'ordertype'
         $query->select('ordertype.value AS ordertype')
                 ->innerJoin('#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
 
-        // Filter by ordertype state
+        $query->group('ordertype.value');
+        // Filter by ordertype type
         $ordertype = $this->getState('filter.ordertype');
         if (is_numeric($ordertype)) {
             $query->where('a.ordertype_id = ' . (int) $ordertype);
@@ -169,6 +155,12 @@ class Easysdi_shopModelorders extends JModelList {
         $orderstate = $this->getState('filter.orderstate');
         if (is_numeric($orderstate)) {
             $query->where('a.orderstate_id = ' . (int) $orderstate);
+        }
+
+        // Filter by order archived state
+        $orderarchived = $this->getState('filter.orderarchived');
+        if (is_numeric($orderarchived)) {
+            $query->where('a.archived = ' . (int) $orderarchived);
         }
 
         // Filter by orderstate state
@@ -251,7 +243,7 @@ class Easysdi_shopModelorders extends JModelList {
                 );
             }
         }
-
+        
         // Filter by ordercompleted state
         $ordercompleted = $this->getState('filter.ordercompleted');
         if ($ordercompleted !== '') {
@@ -328,6 +320,14 @@ class Easysdi_shopModelorders extends JModelList {
 
         //group by order_id
         $query->group('a.id');
+        $query->group('a.guid');
+        $query->group('a.alias');
+        $query->group('a.created_by');
+        $query->group('a.created');
+        $query->group('a.name');
+        $query->group('users2.name');
+        $query->group('uc.name');
+        $query->group('users2.username');
 
         return $query;
     }
@@ -350,6 +350,9 @@ class Easysdi_shopModelorders extends JModelList {
         $query->from('#__sdi_sys_ordertype AS o');
         $query->where('o.state = 1');
         $query->order('o.ordering');
+        $query->group('o.ordering');
+        $query->group('o.id');
+        $query->group('o.value');
 
         try {
             $items = $this->_getList($query);
@@ -374,6 +377,9 @@ class Easysdi_shopModelorders extends JModelList {
         $query->from('#__sdi_sys_orderstate AS o');
         $query->where('o.state = 1');
         $query->order('o.ordering');
+        $query->group('o.ordering');
+        $query->group('o.id');
+        $query->group('o.value');
 
         try {
             $items = $this->_getList($query);
@@ -382,6 +388,14 @@ class Easysdi_shopModelorders extends JModelList {
             return false;
         }
         return $items;
+    }
+
+    /**
+     * get array of order archived status
+     * @return array [array('id'=>id,'value'=>value)]
+     */
+    public function getOrderArchived() {
+        return array(array('id' => 0, 'value'=>'active'),array('id' => 1, 'value'=>'archived'));
     }
 
     /**
@@ -394,12 +408,13 @@ class Easysdi_shopModelorders extends JModelList {
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.
-        $query->select('o.user_id as id, #__users.name as name');
+        $query->select('o.user_id as id, users.name as name');
         $query->from('#__sdi_order AS o');
         $query->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id = o.user_id');
-        $query->innerJoin('#__users    AS #__users ON #__users.id = sdi_user.user_id');
-        $query->order('#__users.name');
-        $query->group('#__users.id');
+        $query->innerJoin('#__users    AS users ON users.id = sdi_user.user_id');
+        $query->order('users.name');
+        $query->group('users.name');
+        $query->group('o.user_id');
 
 
         try {
@@ -427,7 +442,9 @@ class Easysdi_shopModelorders extends JModelList {
                 ->innerJoin('#__sdi_diffusion       AS diffusion       ON diffusion.id=order_diffusion.diffusion_id')
                 ->innerJoin('#__sdi_version         AS vers            ON vers.id = diffusion.version_id')
                 ->innerJoin('#__sdi_resource        AS resource        ON resource.id=vers.resource_id')
-                ->innerJoin('#__sdi_organism        AS organism        ON organism.id=resource.organism_id');
+                ->innerJoin('#__sdi_organism        AS organism        ON organism.id=resource.organism_id')
+                ->group('organism.id')
+                ->group('organism.name');
 
 
         try {
@@ -456,6 +473,7 @@ class Easysdi_shopModelorders extends JModelList {
         $query->innerJoin('#__sdi_order_diffusion AS sdi_order_diffusion ON sdi_order_diffusion.diffusion_id = d.id');
         $query->order('d.name');
         $query->group('d.id');
+        $query->group('d.name');
 
         try {
             $items = $this->_getList($query);

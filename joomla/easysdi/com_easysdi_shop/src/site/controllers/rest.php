@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -240,6 +240,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
                 if ($size = file_put_contents(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId . '/' . $filename, $content)) {
                     if ($this->updateOrderDiffusion($orderdiffusionId, $remark, $amount, $filename, $size)) {
                         $this->changeState($orderdiffusionId, Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE);
+                        //notify user if needed
+                        Easysdi_shopHelper::notifyCustomerOnOrderUpdate($orderId, true);
                         return $this->getSuccess('File sended');
                     } else {
                         return $this->getException('UnableToUpdateTable', 'Unable to update values into database table.');
@@ -272,7 +274,6 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query->update('#__sdi_order_diffusion');
         $query->set('remark = ' . $query->quote($remark));
-        $query->set('fee = '. $query->quote($amount));
         $query->set('completed = ' . $query->quote($now));
         $query->set('file = ' . $query->quote($filename));
         $query->set('size = ' . $size);
@@ -580,12 +581,6 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         }
         
         return $categories;
-    }
-
-    private function getBuffer() {
-        $buffer = $this->response->createElementNS($this->nsEasysdi, 'easysdi:BUFFER');
-
-        return $buffer;
     }
 
     /**
