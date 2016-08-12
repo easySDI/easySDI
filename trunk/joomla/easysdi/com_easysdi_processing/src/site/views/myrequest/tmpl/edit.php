@@ -1,6 +1,6 @@
 <?php
 /**
-* @version     4.4.0
+* @version     4.4.2
 * @package     com_easysdi_processing
 * @copyright   Copyright (C) 2013-2016. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -27,7 +27,7 @@ $order= $this->item;
 $user_roles=Easysdi_processingHelper::getCurrentUserRolesOnData($order);
 
 $base_url=Juri::base(true) . '/components/com_easysdi_processing/assets';
-$base_easysdiMap_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
+$base_easysdiMap_url = Juri::base(true) . '/components/com_easysdi_core/libraries';
 
 JHtml::_('jquery.framework');
 if (JDEBUG) {
@@ -84,7 +84,7 @@ $dispatcher = JDispatcher::getInstance();
 $plugin_results = $dispatcher->trigger( 'onRenderProcessingOrderItem' ,array($order));
 
 
-$doc->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$doc->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
 $app = JFactory::getApplication();
 $processing=Easysdi_processingHelper::getProcessById($app->input->get('processing', '', 'INT'));
 $processing_parameters=json_decode($processing->parameters);

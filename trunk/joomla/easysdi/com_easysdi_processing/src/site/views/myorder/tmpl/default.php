@@ -1,6 +1,6 @@
 <?php
 /**
-* @version     4.4.0
+* @version     4.4.2
 * @package     com_easysdi_processing
 * @copyright   Copyright (C) 2013-2016. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -70,18 +70,7 @@ $user_roles=Easysdi_processingHelper::getCurrentUserRolesOnData($order);
 
 $doc = JFactory::getDocument();
 $base_url=Juri::base(true) . '/components/com_easysdi_processing/assets';
-$base_easysdiMap_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
-
-/*$doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/leaflet/leaflet.css');
-$doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/main.css');
-
-$doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
-$doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
-$doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet/leaflet.js');
-//$doc->addScript($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js');
-$doc->addScript($base_easysdiMap_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js');
-$doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
-*/
+$base_easysdiMap_url = Juri::base(true) . '/components/com_easysdi_core/libraries';
 
 JHtml::_('jquery.framework');
 if (JDEBUG) {
@@ -97,6 +86,7 @@ if (JDEBUG) {
     $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.css');
     $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/leaflet-Easy/easyLeaflet.css');
     $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/font-awesome-4.3.0/css/font-awesome.css');
+    $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/leaflet-graphicscale/Leaflet.GraphicScale.min.css');
 
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/i18next-1.9.0/i18next-1.9.0.min.js');
     $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
@@ -113,10 +103,12 @@ if (JDEBUG) {
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-EasyAddLayer/easyAddLayer.js');
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-EasyLegend/easyLegend.js');
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.js');
+    $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-graphicscale/Leaflet.GraphicScale.min.js');
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/wms-capabilities/wms-capabilities.min.js');
     $doc->addScript($base_easysdiMap_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4-compressed.js');
     $doc->addScript($base_easysdiMap_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
+    $doc->addScript($base_easysdiMap_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js?v=' . sdiFactory::getSdiFullVersion());
 }else{
     $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/leaflet/leaflet.css');
     $doc->addStyleSheet($base_easysdiMap_url . '/leaflet/libs/easySDI_leaflet.pack/main.css?v=' . sdiFactory::getSdiFullVersion());

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -18,7 +18,7 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript(Juri::base(true) . '/components/com_easysdi_core/libraries/tablednd/jquery.tablednd.0.7.min.js');
+$document->addScript(JURI::root() . '/components/com_easysdi_core/libraries/tablednd/jquery.tablednd.0.7.min.js');
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();

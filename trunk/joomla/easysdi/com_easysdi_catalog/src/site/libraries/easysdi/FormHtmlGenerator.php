@@ -10,7 +10,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 /**
  * This Class will browse the xml structure in session and create the tree fielset.
  *
- * @version     4.4.0
+ * @version     4.4.2
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -852,7 +852,7 @@ class FormHtmlGenerator {
             }
 
             // path to Ext images
-            Ext.BLANK_IMAGE_URL = '" . JURI::root() . "administrator/components/com_easysdi_core/libraries/ext/resources/images/default/s.gif';
+            Ext.BLANK_IMAGE_URL = '" . JURI::root() . "components/com_easysdi_core/libraries/ext/resources/images/default/s.gif';
 
             // sets the user interface language
             HS.setLang('" . $default . "');
@@ -883,7 +883,7 @@ class FormHtmlGenerator {
             Ext.onReady(function() {
 
                 var thes = new ThesaurusReader({
-                    appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
+                    appPath: '" . JUri::base() . "components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
                     lang: '" . $default . "',
                     outputLangs: [" . implode(',', $languages) . "],
                     title: '" . JText::_('COM_EASYSDI_CATALOG_GEMET_THESAURUS_TITLE') . "',
@@ -892,7 +892,7 @@ class FormHtmlGenerator {
                     returnInspire: true,
                     width: 520, height: 300,
                     layout: 'fit',
-                    proxy: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
+                    proxy: '" . JUri::base() . "components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
                     handler: writeTerms
                 });
 
