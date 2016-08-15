@@ -136,6 +136,7 @@ function lockDownload() {
     js("#jform_hasdownload0").prop("checked", true);
     js("#jform_hasdownload1").prop("checked", false);
     js("label[for='jform_hasdownload1']").hide();
+    js('#no-download-on-paid-message').remove();
     js("#fieldset_download > legend").append('<small id="no-download-on-paid-message" class="text-error">' + Joomla.JText._('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_DOWNLOAD_DISABLED_WITH_PAID') + '</small>');
 }
 
