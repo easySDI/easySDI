@@ -22,6 +22,8 @@ $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
+$document->addStyleSheet('components/com_easysdi_catalog/assets/css/metadata.css');
+
 JText::script('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK');
 JText::script('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING');
 JText::script('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING');
