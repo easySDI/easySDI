@@ -21,6 +21,6 @@ tr[id$=_resource]{
 }
 
 .modal-body{
-	height: 250px;
+	max-height: 250px;
 	overflow-y: auto;
 }

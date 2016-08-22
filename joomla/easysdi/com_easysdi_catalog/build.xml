@@ -109,6 +109,7 @@
                     <folder>controllers</folder>
                     <folder>helpers</folder>
                     <folder>libraries</folder>
+                    <folder>assets</folder>
                 </files>
                 <languages folder="site">
                     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_catalog.ini</language>
