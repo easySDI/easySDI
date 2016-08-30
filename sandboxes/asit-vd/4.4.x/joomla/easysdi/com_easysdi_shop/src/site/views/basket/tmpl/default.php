@@ -41,6 +41,10 @@ JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE');
 JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE_TITLE');
 JText::script('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER');
 JText::script('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_SMALL');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_SMALL_TITLE');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_LARGE');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_LARGE_TITLE');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js?v=' . sdiFactory::getSdiFullVersion());
