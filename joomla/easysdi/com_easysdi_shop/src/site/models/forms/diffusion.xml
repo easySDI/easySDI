@@ -83,6 +83,7 @@
                class="inputbox input-xlarge"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRICING_REMARK"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRICING_REMARK" 
+               hint="COM_EASYSDI_SHOP_FORM_PLACEHOLDER_DIFFUSION_PRICING_REMARK"
                translate="true" /> 
 
     </fieldset> 
