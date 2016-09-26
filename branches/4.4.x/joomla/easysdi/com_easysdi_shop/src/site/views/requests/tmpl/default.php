@@ -100,12 +100,16 @@ JHtml::_('formbehavior.chosen', 'select');
     <div class="items">
         <div class="well">                      
             <?php
-            $requestsListLayout = new JLayoutFile('com_easysdi_shop.requests', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
-            echo $requestsListLayout->render(array(
-                'items' => $this->items,
-                'displayTitle' => true,
-                'filterStatus' => $this->state->get('filter.status')
-            ));
+            if (count($this->items)):
+                $requestsListLayout = new JLayoutFile('com_easysdi_shop.requests', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
+                echo $requestsListLayout->render(array(
+                    'items' => $this->items,
+                    'displayTitle' => true,
+                    'filterStatus' => $this->state->get('filter.status')
+                ));
+            else:
+                echo JText::_('COM_EASYSDI_SHOP_REQUESTS_NO_REQUESTS');
+            endif;
             ?>
         </div>
     </div>
