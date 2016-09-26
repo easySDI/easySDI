@@ -503,7 +503,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $platform = $this->response->createElementNS(self::nsSdi, 'sdi:platform');
 
         $this->addAttribute($platform, 'name', 'easySDI');
-        $this->addAttribute($platform, 'version', '4.3.0');
+        $this->addAttribute($platform, 'version', sdiFactory::getSdiVersion());
         $this->addAttribute($platform, 'serviceversion', '4.0');
 
         $orders->appendChild($platform);
