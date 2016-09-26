@@ -112,8 +112,10 @@ function onPricingChange() {
 
 function enablePricing() {
     if (sdiPricingActivated) {
+        js('#pricing_remark').show();
         js('#pricing_id').show();
     } else {
+        js('#pricing_remark').hide();
         js('#pricing_id').hide();
         js('#jform_pricing_id').val(sdiPricingFreeVal);
     }
