@@ -50,25 +50,8 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
         border-bottom: 1px solid #fff;
     }
 </style>
+
 <script type="text/javascript">
-    function getScript(url, success) {
-        var script = document.createElement('script');
-        script.src = url;
-        var head = document.getElementsByTagName('head')[0],
-                done = false;
-        // Attach handlers for all browsers
-        script.onload = script.onreadystatechange = function () {
-            if (!done && (!this.readyState
-                    || this.readyState == 'loaded'
-                    || this.readyState == 'complete')) {
-                done = true;
-                success();
-                script.onload = script.onreadystatechange = null;
-                head.removeChild(script);
-            }
-        };
-        head.appendChild(script);
-    }
 
     js = jQuery.noConflict();
     js(document).ready(function () {
