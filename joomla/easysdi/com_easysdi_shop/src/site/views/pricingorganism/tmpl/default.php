@@ -139,7 +139,7 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
                 <h4 class="modal-title" id="myModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></h4>
             </div>
             <div id="deleteModalBody" class="modal-body">
-                <?php echo JText::_('COM_EAYSDI_CORE_DELETE_CONFIRM'); ?>
+                <?php echo JText::_('COM_EASYSDI_SHOP_FORM_MSG_PRICINGORGANISM_CONFIRM_DELETE_PROFILE'); ?>
                 <span id="deleteModalChildrenList"></span>
             </div>
             <div class="modal-footer">
