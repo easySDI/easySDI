@@ -35,51 +35,6 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGORGANISM_TITLE'); ?> : <?php echo $this->item->name; ?></h1>
 
     <div class="well">
-
-        <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
-
-            <h2><?php echo JText::_('COM_EASYSDI_SHOP_FORM_PRICINGORGANISM_FIELDSET_GLOBAL'); ?></h2>
-            <table>
-                <?php foreach ($this->form->getFieldset('global') as $field): ?>
-                    <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                        <div class="control-label"><?php echo $field->label; ?></div>
-                        <div class="controls"><?php echo $field->input; ?></div>
-                    </div>
-                <?php endforeach; ?>
-            </table>
-
-            <h2><?php echo JText::_('COM_EASYSDI_SHOP_FORM_PRICINGORGANISM_FIELDSET_CATEGORIES_REBATE'); ?></h2>
-            <?php if (count($this->item->categories)): ?>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th><?php echo JText::_('COM_EASYSDI_SHOP_TH_CATEGORIES'); ?></th>
-                            <th><?php echo JText::_('COM_EASYSDI_SHOP_TH_PERCENT'); ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($this->item->categories as $category): ?>
-                            <tr>
-                                <td><label><?php echo $category->name; ?></label></td>
-                                <td><input type="text" name="jform[categories][<?php echo $category->id; ?>]" value="<?php echo $category->rebate; ?>"
-                                           <?php if (!$this->isPricingManager): ?>readonly="readonly"<?php endif; ?>></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-
-            <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
-                <?php echo $field->input; ?>
-            <?php endforeach; ?>
-            <input type="hidden" name="task" id="task" value="" />
-            <input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
-
-            <?php echo $this->getToolbar(); ?>
-        </form>
-    </div>
-
-    <div class="well">
         <h2><?php echo JText::_('COM_EASYSDI_SHOP_FORM_PRICINGORGANISM_FIELDSET_PRICING_PROFILE'); ?></h2>
         <?php if ($this->isPricingManager): ?>
             <div class="btn-group">
@@ -118,6 +73,60 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
                 </tbody>
             </table>
         <?php endif; ?>
+    </div>
+
+    <div class="well">
+        <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+
+            <h2><?php echo JText::_('COM_EASYSDI_SHOP_FORM_PRICINGORGANISM_FIELDSET_FIXED_FEES'); ?></h2>
+            <table>
+                <?php foreach ($this->form->getFieldset('fixed_fees') as $field): ?>
+                    <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                        <div class="control-label"><?php echo $field->label; ?></div>
+                        <div class="controls"><?php echo $field->input; ?></div>
+                    </div>
+                <?php endforeach; ?>
+            </table>
+
+            <h2><?php echo JText::_('COM_EASYSDI_SHOP_FORM_PRICINGORGANISM_FIELDSET_INTERNAL_ORDERS'); ?></h2>
+            <table>
+                <?php foreach ($this->form->getFieldset('internal_orders') as $field): ?>
+                    <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                        <div class="control-label"><?php echo $field->label; ?></div>
+                        <div class="controls"><?php echo $field->input; ?></div>
+                    </div>
+                <?php endforeach; ?>
+            </table>            
+
+            <h2><?php echo JText::_('COM_EASYSDI_SHOP_FORM_PRICINGORGANISM_FIELDSET_CATEGORIES_REBATE'); ?></h2>
+            <?php if (count($this->item->categories)): ?>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th><?php echo JText::_('COM_EASYSDI_SHOP_TH_CATEGORIES'); ?></th>
+                            <th><?php echo JText::_('COM_EASYSDI_SHOP_TH_PERCENT'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($this->item->categories as $category): ?>
+                            <tr>
+                                <td><label><?php echo $category->name; ?></label></td>
+                                <td><input type="text" name="jform[categories][<?php echo $category->id; ?>]" value="<?php echo $category->rebate; ?>"
+                                           <?php if (!$this->isPricingManager): ?>readonly="readonly"<?php endif; ?>></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+
+            <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+                <?php echo $field->input; ?>
+            <?php endforeach; ?>
+            <input type="hidden" name="task" id="task" value="" />
+            <input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
+
+            <?php echo $this->getToolbar(); ?>
+        </form>
     </div>
 </div>
 
