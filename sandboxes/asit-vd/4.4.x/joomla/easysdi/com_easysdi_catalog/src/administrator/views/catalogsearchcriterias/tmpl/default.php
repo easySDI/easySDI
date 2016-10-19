@@ -235,10 +235,6 @@ if (!empty($this->extra_sidebar)) {
                                         JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->id . ', 4)', '', 'catalogsearchcriterias.', false, null);
                                     }
 
-                                    if ($item->checked_out && $canCheckin) :
-                                        JHtml::_('dropdown.checkin', 'cb' . $i, 'physicalservices.');
-                                    endif;
-
                                     // render dropdown list
                                     echo JHtml::_('dropdown.render');
                                     ?>
