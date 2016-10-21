@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset>
+
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+    
+        <field name="alias" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ALIAS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ALIAS" 
+               filter="safehtml" /> 
+
+        <field name="created_by" type="createdby" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_CREATED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CREATED_BY"  /> 
+
+        <field name="created" type="timecreated" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_CREATED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CREATED"  /> 
+
+        <field name="modified_by" type="createdby" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_MODIFIED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_MODIFIED_BY" 
+               default="0" 
+               filter="safehtml" /> 
+
+        <field name="modified" type="timeupdated" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_MODIFIED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_MODIFIED"  /> 
+
+        <field name="name" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_NAME"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_NAME" 
+               filter="safehtml" /> 
+        
+        <field name="searchtab_id" 
+               type="sql" 
+               class="inputbox"
+               query="SELECT id, value FROM #__sdi_sys_searchtab WHERE state=1" 
+               key_field="id" 
+               value_field="value"
+               translate="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_SEARCHTAB_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_SEARCHTAB_ID" 
+        />
+
+        <field name="criteriatype_id" 
+               type="sql" 
+               class="inputbox"
+               query="SELECT id, value FROM #__sdi_sys_criteriatype WHERE state=1" 
+               key_field="id" 
+               value_field="value"
+               translate="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_CRITERIATYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CRITERIATYPE_ID" 
+        />
+        
+        <field name="organism_id" 
+               type="sql" 
+               query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER by name" 
+               key_field="id" 
+               value_field="name"
+               translate="true"
+               class="multiselect"
+               multiple="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ORGANISM_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ORGANISM_ID" 
+        />
+        
+        <field name="boundarycategory_id" 
+               type="sql" 
+               onchange="onBoundaryCategoryChange()"
+               query="SELECT id, name FROM #__sdi_boundarycategory WHERE state=1 ORDER by name" 
+               key_field="id" 
+               value_field="name"
+               translate="true"
+               class="multiselect"
+               multiple="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_BOUNDARYCATEGORY_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_BOUNDARYCATEGORY_ID" 
+        />
+        
+        <field name="searchboundarytype" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_SEARCHBOUNDARYTYPE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_SEARCHBOUNDARYTYPE" 
+        > 
+            <option value="0">BBOX</option>
+            <option value="1">ID</option>
+        </field>
+
+        <field name="categorysearchfield" type="text" size="40" class="inputbox"
+        label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_CATEGORYSEARCHFIELD"
+        description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CATEGORYSEARCHFIELD" 
+        filter="safehtml" />
+ 
+        <field name="boundarysearchfield" type="text" size="40" class="inputbox"
+         label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_BOUNDARYSEARCHFIELD"
+         description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_BOUNDARYSEARCHFIELD" 
+         filter="safehtml" />
+        
+        <field name="boundary_id" 
+               type="sql" 
+               query="SELECT id, name FROM #__sdi_boundary WHERE state=1 ORDER by ordering" 
+               key_field="id" 
+               value_field="name"
+               translate="true"
+               class="multiselect"
+               multiple="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_BOUNDARY_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_BOUNDARY_ID" 
+        />
+        
+        <field name="rendertype_id" 
+               type="sql" 
+               class="inputbox"
+               onchange="onRenderTypeChange()"
+               query="SELECT rt.id, rt.value FROM #__sdi_sys_rendertype rt  WHERE rt.id IN (SELECT rendertype_id FROM #__sdi_sys_rendertype_criteriatype WHERE criteriatype_id = 3) AND rt.state=1" 
+               key_field="id" 
+               value_field="value"
+               translate="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_RENDERTYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_RENDERTYPE_ID" 
+        />
+  
+        <field name="defaultvalue" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_DEFAULTVALUE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_DEFAULTVALUE" 
+               filter="safehtml" />
+        
+        <field name="defaultcheckbox" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_DEFAULTCHECKBOX"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_DEFAULTCHECKBOX" 
+        > 
+            <option value="0">JNO</option>
+            <option value="true">JYES</option>
+        </field>
+        
+        <!--<field name="resourcetype_id" 
+               type="sql" 
+               class="multiselect"
+               multiple="true" 
+               query="SELECT null as id , '' as name UNION SELECT id, name FROM #__sdi_resourcetype WHERE state=1" 
+               key_field="id" 
+               value_field="name"
+               translate="false"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_RESOURCETYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_RESOURCETYPE_ID" 
+        />-->
+        
+        <field name="resourcetype_id" 
+               type="sql" 
+               class="multiselect"
+               multiple="true" 
+               query="SELECT id, name, alias FROM #__sdi_resourcetype WHERE state=1" 
+               key_field="id" 
+               value_field="name"
+               translate="false"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_RESOURCETYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_RESOURCETYPE_ID" 
+        />
+        
+        <field name="defaultvalues" 
+               type="sql" 
+               class="multiselect"
+               multiple="true" 
+               query="SELECT id, value FROM #__sdi_attributevalue WHERE state=1" 
+               key_field="id" 
+               value_field="value"
+               translate="false"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_DEFAULTVALUE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_DEFAULTVALUE" 
+        />
+        
+        <field name="version" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_VERSION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_VERSION" 
+        > 
+            <option value="0">ALL</option>
+            <option value="1">LAST</option>
+        </field>
+
+        <field name="from" type="calendar" default=""
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_FROM"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_FROM"  />
+
+        <field name="to" type="calendar" default=""
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_TO"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_TO"  />
+        
+        <field name="is" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_IS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_IS" 
+        > 
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+               filter="ARRAY" />
+        
+        <field name="searchfilter" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_SEARCH"
+               description="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_SEARCH" 
+               filter="ARRAY" />
+        
+        <field
+            name="state"
+            type="list"
+            label="JSTATUS"
+            description="JFIELD_PUBLISHED_DESC"
+            class="inputbox"
+            size="1"
+            default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field> 
+
+
+    </fieldset> 
+    
+    <fieldset 
+        name="accesscontrol">
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="searchcriteria"
+        />
+
+    </fieldset>
+    
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+        <field name="issystem" type="hidden" filter="SAFEHTML" />
+        <field name="catalog_id" type="hidden" filter="SAFEHTML" />
+        <field name="catalogsearchcriteria_id" type="hidden" filter="SAFEHTML" />
+        <field name="criteriatype_id" type="hidden" filter="SAFEHTML" />
+        
+    </fieldset>
+
+</form>
