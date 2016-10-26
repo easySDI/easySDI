@@ -581,7 +581,6 @@ INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (4,
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'rejectedbythirdparty');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'rejectedbysupplier');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'deleted');
-INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'blocked');
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_productstorage] ON;
@@ -591,8 +590,8 @@ INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (
 SET IDENTITY_INSERT [#__sdi_sys_productstorage] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_productmining] ON;
-INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'automatic');
-INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'manual');
+INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (1, 2, 1, N'automatic');
+INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (2, 1, 1, N'manual');
 SET IDENTITY_INSERT [#__sdi_sys_productmining] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_extractstorage] ON;

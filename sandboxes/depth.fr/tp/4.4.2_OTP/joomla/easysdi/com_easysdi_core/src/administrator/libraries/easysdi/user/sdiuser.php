@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.1
+ * @version     4.4.3
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -213,7 +213,7 @@ class sdiUser {
         $db->setQuery($query);
         $user = $db->loadObject();
 
-        if (isset($user)){
+        if (isset($user)) {
             $this->juser = JFactory::getUser($user->jid);
             $this->name = $this->juser->name;
         }
@@ -413,7 +413,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[1];        
+        return $this->role[1];
     }
 
     /**
@@ -446,7 +446,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::resourcemanager]) ? $this->role[self::resourcemanager] : array(); 
+        return isset($this->role[self::resourcemanager]) ? $this->role[self::resourcemanager] : array();
     }
 
     /**
@@ -457,7 +457,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::metadataresponsible]) ? $this->role[self::metadataresponsible] : array();        
+        return isset($this->role[self::metadataresponsible]) ? $this->role[self::metadataresponsible] : array();
     }
 
     /**
@@ -468,7 +468,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::metadataeditor]) ? $this->role[self::metadataeditor] : array();            
+        return isset($this->role[self::metadataeditor]) ? $this->role[self::metadataeditor] : array();
     }
 
     /**
@@ -479,7 +479,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::diffusionmanager]) ? $this->role[self::diffusionmanager] : array(); 
+        return isset($this->role[self::diffusionmanager]) ? $this->role[self::diffusionmanager] : array();
     }
 
     /**
@@ -512,7 +512,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::pricingmanager]) ? $this->role[self::pricingmanager] : array();        
+        return isset($this->role[self::pricingmanager]) ? $this->role[self::pricingmanager] : array();
     }
 
     /**
@@ -532,7 +532,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[self::validationmanager];
+        return isset($this->role[self::validationmanager]) ? $this->role[self::validationmanager] : array();
     }
 
     /**
@@ -543,7 +543,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return $this->role[self::organismmanager];
+        return isset($this->role[self::organismmanager]) ? $this->role[self::organismmanager] : array();
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.1
+ * @version     4.4.3
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -464,7 +464,7 @@ if (!$showActions) {
                                             $rebate = false;
                                             $as = '';
                                             $discount = '';
-                                            if ($product->cfg_pct_category_profile_discount > 0 || $product->cfg_pct_category_supplier_discount > 0) {
+                                            if ((isset($product->cfg_pct_category_profile_discount) && $product->cfg_pct_category_profile_discount > 0) || $product->cfg_pct_category_supplier_discount > 0) {
                                                 $rebate = true;
                                                 if ($product->cfg_pct_category_supplier_discount > $product->cfg_pct_category_profile_discount) {
                                                     $as = $product->ind_lbl_category_supplier_discount;

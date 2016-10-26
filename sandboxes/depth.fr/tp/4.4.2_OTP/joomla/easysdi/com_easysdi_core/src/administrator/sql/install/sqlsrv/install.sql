@@ -624,6 +624,7 @@ CREATE TABLE [#__sdi_diffusion] (
 	[accessscope_id] [bigint] NOT NULL,
 	[pricing_id] [bigint] NOT NULL,
         [pricing_profile_id] [bigint],
+        [pricing_remark] [nvarchar](max) NULL,
 	[deposit] [nvarchar](255) NULL,
 	[productmining_id] [bigint] NULL,
 	[surfacemin] [nvarchar](50) NULL,
@@ -636,7 +637,6 @@ CREATE TABLE [#__sdi_diffusion] (
 	[hasdownload] [smallint] NOT NULL,
 	[hasextraction] [smallint] NOT NULL,
 	[restrictedperimeter] [smallint] NOT NULL,
-        [otp] [smallint] NOT NULL DEFAULT 0,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
  CONSTRAINT [PK_#__sdi_diffusion_id] PRIMARY KEY CLUSTERED 
@@ -1190,9 +1190,7 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[storage_id] [bigint] NULL,
 	[file] [nvarchar](500) NULL,
 	[size] [decimal](10, 0) NULL,
-        [displayName] [nvarchar](75) NULL,
-        [otp] [nvarchar](1000) NULL,
-        [otpchance] [smallint] DEFAULT 0,
+        [displayName] [nvarchar](75) NULL
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

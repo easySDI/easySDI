@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.1
+ * @version     4.4.3
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -14,6 +14,7 @@ jimport('joomla.application.component.modeladmin');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/models/propertyvalue.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/property.php';
 
 /**
  * Easysdi_shop model.

@@ -148,12 +148,12 @@ function orderSurfaceChecking() {
 
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
         if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
-            
+
             //do not count Draw Layers
             if (app.mapPanel.map.layers[j].name.indexOf("OpenLayers.Handler.") >= 0) {
                 continue;
             }
-            
+
             var layer = app.mapPanel.map.layers[j];
             for (var f = 0; f < layer.features.length; f++) {
                 if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
@@ -634,6 +634,12 @@ function savePerimeter() {
     }
 }
 
+function changePerimeterEditLabel() {
+    var theLabel = jQuery('#features').val() === '' ? Joomla.JText._('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER') : Joomla.JText._('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER');
+    jQuery('#modal-perimeter #myModalLabel').text(theLabel);
+    jQuery('#defineOrderBtnLbl').text(theLabel);
+}
+
 /**
  * Manage display according to savePerimeter response
  * @param response savePerimeter response
@@ -690,6 +696,8 @@ function updateDisplay(response) {
         else {
             jQuery('#shop-perimeter-title-surface').empty();
         }
+        //btns
+        changePerimeterEditLabel();
         //pricing
         updatePricing(response.pricing);
     }
@@ -901,13 +909,25 @@ jQuery(document).ready(function () {
     jQuery('#toolbar button').on('click', function () {
         var task = jQuery(this).attr('rel');
         var t = jQuery('#features').val();
-        if (jQuery('#features').val() === '') {
+        if (jQuery('#features').val() === '') { // no perimeter
             showBasketModalError(
                     Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING', 'You have to select an extent to go further'),
                     Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE', 'Perimeter missing')
                     );
             return false;
-        } else if (!checkThirdPartyDetails()) {
+        } else if (jQuery('#surfacemin').val() !== '' && parseFloat(jQuery('#surface').val()) < parseFloat(jQuery('#surfacemin').val())) { // perimeter too small
+            showBasketModalError(
+                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_SMALL', 'The order perimeter is too small, please click on the map to modify it'),
+                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_SMALL_TITLE', 'Order perimeter too small')
+                    );
+            return false;
+        } else if (jQuery('#surfacemax').val() !== '' && parseFloat(jQuery('#surface').val()) > parseFloat(jQuery('#surfacemax').val())) { // perimeter too large
+            showBasketModalError(
+                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_LARGE', 'The order perimeter is too large, please click on the map to modify it'),
+                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_LARGE_TITLE', 'Order perimeter too large')
+                    );
+            return false;
+        } else if (!checkThirdPartyDetails()) { // thirdparty details
             showBasketModalError(
                     Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING', 'You have to fill third party and mandate details'),
                     Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING_TITLE', 'Third party details missing')

@@ -1,5 +1,5 @@
 /**
- * @version     4.4.1
+ * @version     4.4.3
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -208,6 +208,19 @@ js('document').ready(function () {
                                     if ('undefined' !== typeof publish_date && '0000-00-00 00:00:00' !== publish_date) {
                                         var datetime = publish_date.split(' ');
                                         js('#publish_date').val(datetime[0]);
+                                    }
+                                    else{
+                                        var d = new Date();
+                                        var day = d.getDate();
+                                        var month = d.getMonth() + 1;
+                                        var year = d.getFullYear();
+                                        if (day < 10) {
+                                            day = "0" + day;
+                                        }
+                                        if (month < 10) {
+                                            month = "0" + month;
+                                        }
+                                        js('#publish_date').val(year + "-" + month + "-" + day);
                                     }
 
                                     js('#publishModal').modal('show');

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.1
+ * @version     4.4.3
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -88,11 +88,15 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
     <div class="items">
         <div class="well">                      
             <?php
-            $ordersListLayout = new JLayoutFile('com_easysdi_shop.orders', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
-            echo $ordersListLayout->render(array(
-                'items' => $this->items,
-                'displayTitle' => true
-            ));
+            if (count($this->items)):
+                $ordersListLayout = new JLayoutFile('com_easysdi_shop.orders', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
+                echo $ordersListLayout->render(array(
+                    'items' => $this->items,
+                    'displayTitle' => true
+                ));
+            else:
+                echo JText::_('COM_EASYSDI_SHOP_ORDERS_NO_ORDERS');
+            endif;
             ?>
         </div>
     </div>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.1
+ * @version     4.4.3
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -68,7 +68,6 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
             $doc->addScript($base_url . '/gxp/script/gxp.js?v=' . sdiFactory::getSdiFullVersion());
             $doc->addScript($base_url . '/easysdi/js/sdi.js?v=' . sdiFactory::getSdiFullVersion());
-
         }else{
             $doc->addScript(JURI::root(true) . '/media/jui/js/jquery.min.js');
             $doc->addScript(JURI::root(true) . '/media/jui/js/jquery-noconflict.js');
@@ -183,27 +182,27 @@ abstract class Easysdi_mapHelper {
 
         //Build object with params needed by the javascript map object
         $data = new stdClass();
-        $data->bottomInUnits = $item->bottomInUnits;
-        $data->bottomOutUnits = $item->bottomOutUnits;
-        $data->topInUnits = $item->topInUnits;
-        $data->topOutUnits = $item->topOutUnits;
-        $data->title = $item->title;
-        $data->abstract = $item->abstract;
+            $data->bottomInUnits = isset($item->bottomInUnits) ? $item->bottomInUnits : null;
+            $data->bottomOutUnits = isset($item->bottomOutUnits) ? $item->bottomOutUnits : null;
+            $data->topInUnits = isset($item->topInUnits) ? $item->topInUnits : null;
+            $data->topOutUnits = isset($item->topOutUnits) ? $item->topOutUnits : null;
+            $data->title = isset($item->title) ? $item->title : null;
+            $data->abstract = isset($item->abstract) ? $item->abstract : null;
         $data->tools = $item->tools;
         $data->rootnodetext = $item->rootnodetext;
         $data->srs = $item->srs;
         $data->maxextent = $item->maxextent;
         $data->maxresolution = $item->maxresolution;
         $data->units = $item->unit;
-        $data->centercoordinates = $item->centercoordinates;
-        $data->restrictedextent = $item->restrictedextent;
-        $data->zoom = $item->zoom;
-        $data->urlwfslocator = $item->urlwfslocator;
-        $data->fieldname = $item->fieldname;
-        $data->featuretype = $item->featuretype;
-        $data->featureprefix = $item->featureprefix;
-        $data->fieldname = $item->fieldname;
-        $data->geometryname = $item->geometryname;
+            $data->centercoordinates = isset($item->centercoordinates) ? $item->centercoordinates : null;
+            $data->restrictedextent = isset($item->restrictedextent) ? $item->restrictedextent : null;
+            $data->zoom = isset($item->zoom) ? $item->zoom : null;
+            $data->urlwfslocator = isset($item->urlwfslocator) ? $item->urlwfslocator : null;
+            $data->fieldname = isset($item->fieldname) ? $item->fieldname : null;
+            $data->featuretype = isset($item->featuretype) ? $item->featuretype : null;
+            $data->featureprefix = isset($item->featureprefix) ? $item->featureprefix : null;
+            $data->fieldname = isset($item->fieldname) ? $item->fieldname : null;
+            $data->geometryname = isset($item->geometryname) ? $item->geometryname : null;
         if(isset($item->level)){
             $data->level = $item->level;
         }
@@ -580,7 +579,8 @@ abstract class Easysdi_mapHelper {
             );
 
         $i= (integer) $service->serviceconnector_id;
-        if (isset($keys[$i])) return $keys[$i];
+        if (isset($keys[$i]))
+            return $keys[$i];
 
         return 'serviceconnector'.$service->serviceconnector_id;
     }
@@ -612,7 +612,8 @@ abstract class Easysdi_mapHelper {
             foreach ($ori->groups as $group) {
                 if (in_array($group->access, $user->getAuthorisedViewLevels())){
 
-                    if ($group->isdefault) $default_group=$group->alias;
+                    if ($group->isdefault)
+                        $default_group = $group->alias;
 
                     $resG=array();
                     foreach (array('id','alias','ordering','name','isbackground') as $key) {
@@ -639,7 +640,6 @@ abstract class Easysdi_mapHelper {
                             $resL['extractionurl']=self::getLayerOrderToolUrl($resL['metadata_guid'],JFactory::getLanguage()->getTag(), '');
 
                          $resG['layers'][]=$resL;
-
                       }
                     }// end each layers
                 $res['groups'][]=$resG;
@@ -666,7 +666,6 @@ abstract class Easysdi_mapHelper {
 
                 if ($resL['servicealias']!==null)
                     $res['services'][]=$resL;
-
             }
         }
 

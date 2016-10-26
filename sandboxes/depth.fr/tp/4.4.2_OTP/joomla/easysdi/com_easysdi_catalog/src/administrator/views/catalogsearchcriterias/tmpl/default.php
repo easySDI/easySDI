@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.1
+ * @version     4.4.3
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -234,10 +234,6 @@ if (!empty($this->extra_sidebar)) {
                                         JHtml::_('dropdown.addCustomItem', JText::_('hidden'), 'javascript:changeTab(' . $item->id . ', 3)', '', 'catalogsearchcriterias.', false, null);
                                         JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->id . ', 4)', '', 'catalogsearchcriterias.', false, null);
                                     }
-
-                                    if ($item->checked_out && $canCheckin) :
-                                        JHtml::_('dropdown.checkin', 'cb' . $i, 'physicalservices.');
-                                    endif;
 
                                     // render dropdown list
                                     echo JHtml::_('dropdown.render');

@@ -523,8 +523,8 @@ INSERT IGNORE INTO `#__sdi_sys_productstorage` VALUES ('1', '1', '1', 'upload');
 INSERT IGNORE INTO `#__sdi_sys_productstorage` VALUES ('2', '2', '1', 'url');
 INSERT IGNORE INTO `#__sdi_sys_productstorage` VALUES ('3', '3', '1', 'zoning');
 
-INSERT IGNORE INTO `#__sdi_sys_productmining` VALUES ('1', '1', '1', 'automatic');
-INSERT IGNORE INTO `#__sdi_sys_productmining` VALUES ('2', '2', '1', 'manual');
+INSERT IGNORE INTO `#__sdi_sys_productmining` VALUES ('1', '2', '1', 'automatic');
+INSERT IGNORE INTO `#__sdi_sys_productmining` VALUES ('2', '1', '1', 'manual');
 
 INSERT IGNORE INTO `#__sdi_sys_perimetertype` (ordering,state,value) 
 VALUES 

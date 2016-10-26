@@ -75,21 +75,21 @@
                 <install> <!-- Runs on install -->
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
-			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
                     </sql>
                 </install>
                 <uninstall> <!-- Runs on uninstall -->
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
-			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
                     </sql>
                 </uninstall>
                 <!-- SQL files to run on update -->
                 <update>
-                        <schemas>
-                                <schemapath type="mysql">sql/updates/mysql</schemapath>
-                                <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
-                        </schemas>
+                    <schemas>
+                        <schemapath type="mysql">sql/updates/mysql</schemapath>
+                        <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
+                    </schemas>
                 </update>
 
                 <files folder="site">
@@ -97,6 +97,7 @@
                     <filename>easysdi_monitor.php</filename>
                     <filename>controller.php</filename>
                     <filename>router.php</filename>
+                    <folder>assets</folder>
                     <folder>views</folder>
                     <folder>models</folder>
                     <folder>controllers</folder>
@@ -104,8 +105,8 @@
                 </files>
                 <languages folder="site">
                     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
-					<language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini</language>
-					<language tag="de-DE">language/de-DE/de-DE.com_easysdi_monitor.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.com_easysdi_monitor.ini</language>
                 </languages>
                 <administration>
                     <files folder="administrator">
@@ -115,10 +116,8 @@
                         <filename>index.html</filename>
                         <filename>easysdi_monitor.php</filename>
                         <folder>controllers</folder>
-                        <folder>assets</folder>
                         <folder>helpers</folder>
                         <folder>i18n</folder>
-                        <folder>libraries</folder>
                         <folder>models</folder>
                         <folder>sql</folder>
                         <folder>tables</folder>
