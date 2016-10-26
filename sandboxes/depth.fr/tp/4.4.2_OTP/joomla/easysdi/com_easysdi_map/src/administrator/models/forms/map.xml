@@ -451,11 +451,8 @@
     <fieldset name="publishing">
         <field name="created_by"
                type="user"
-               class="readonly"
-               readonly="true"
                label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED_BY"
-               description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED_BY"
-               filter="unset" />
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED_BY" />
 
         <field 	name="created"
                 type="calendar"
