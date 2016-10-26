@@ -13,11 +13,14 @@ require_once JPATH_SITE . '/components/com_easysdi_map/models/map.php';
 
 abstract class Easysdi_mapHelper {
 
-    public static function getMapScript($mapid, $cleared = false, $appname = "app", $renderto = "sdimapcontainer") {
+    public static function getMapScript($mapid, $cleared = false, $appname = "app", $renderto = "sdimapcontainer", $options=[]) {
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
         $item = $model->getData($mapid);
         $base_url = Juri::base(true) . '/components/com_easysdi_core/libraries';
         $doc = JFactory::getDocument();
+        
+        if (!isset($options['map_options'])) $options['map_options']=null;
+        if (!isset($options['sharelink'])) $options['sharelink']=true;
 
         if ($item->type=='geoext'){
         //Clear the map from all the tools
@@ -268,19 +271,26 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyGetFeature/easyGetFeature.js');
                 $doc->addScript($base_url . '/leaflet/libs/wms-capabilities/wms-capabilities.min.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-graphicscale/Leaflet.GraphicScale.min.js');
-                $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
+                $doc->addScript($base_url . '/proj4js-2.3.14/proj4.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
                 $doc->addScript($base_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js?v=' . sdiFactory::getSdiFullVersion());
             }else{
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/easySDI_leaflet.pack/main.css?v=' . sdiFactory::getSdiFullVersion());
-
+                $doc->addScript($base_url . '/proj4js-2.3.14/proj4.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
                 $doc->addScript($base_url . '/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js?v=' . sdiFactory::getSdiFullVersion());
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
             }
+            
+            $output = "<div id='easySDIMap' class='easySDImapPrintBlock'><div id='map' class='easySDI-leaflet sidebar-map ' data-url='".JURI::base(true)."/index.php?option=com_easysdi_map&view=map&id=".$mapid."&format=json' ";
+            if ($options['sharelink'])
+                $output .= " data-sharelink=true";
+            if ($options['map_options'])
+                $output .= " data-mapoptions='".json_encode($options['map_options'])."'";
 
-            $output = "<div id='easySDIMap' class='easySDImapPrintBlock'><div id='map' class='easySDI-leaflet sidebar-map ' data-url='".JURI::base(true)."/index.php?option=com_easysdi_map&view=map&id=".$mapid."&format=json' data-sharelink=true></div></div>";
+            $output .= "></div></div>";
         }
 
         return $output;
