@@ -197,10 +197,9 @@ class Easysdi_shopModelRequests extends JModelList {
             $query->where('od.productstate_id = ' . Easysdi_shopHelper::PRODUCTSTATE_SENT);
         }
 
-
-        //And the product minig is manual
+        //And the product minig is manual or product mining is automatic and product is blocked
         $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
-        $query->where('pm.value = ' . $query->quote('manual'));
+        $query->where('((pm.value = ' . $query->quote('manual').') OR (pm.value = ' . $query->quote('automatic'). ' and od.productstate_id = '. Easysdi_shopHelper::PRODUCTSTATE_BLOCKED.'))');
 
 
         $query->group('a.id');

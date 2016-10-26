@@ -314,7 +314,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
                 $return['status'] = 'ERROR_OTPCHANCE';
                 $return['msg'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_OTPCHANCEREACHED');
             }else{
-                if ($password == $orderdiffusion->get('otp')){
+                if (md5($password) == $orderdiffusion->get('otp')){
                     $return['status'] = 'OK';
                     //Reinit password to be used by the token
                     $orderdiffusion->otp = Easysdi_coreHelper::pwd(12);
@@ -453,11 +453,13 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $otp = Easysdi_coreHelper::pwd(128);
         
         //Generate the One Time Password
-        $orderdiffusion->otp = $otp;
-        $orderdiffusion->store();
+        if ($orderdiffusion->otp == ""){
+            $orderdiffusion->otp = md5($otp);
+            $orderdiffusion->store();
         
-        //Send the password by email
-        Easysdi_shopHelper::notifyCustomerOTP($order_id,$otp);
+            //Send the password by email
+            Easysdi_shopHelper::notifyCustomerOTP($order_id,$otp);
+        }
         die();
     }
 

@@ -118,8 +118,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         
         /////////// Check user right on this order
         $currentUser = sdiFactory::getSdiUser();
-        
-        $currentUser = sdiFactory::getSdiUser();
+
         // current user extrations (if is extraction responsible)
         $userExtrationsResponsible = $currentUser->getResponsibleExtraction();
         if (!is_array($userExtrationsResponsible)) {
