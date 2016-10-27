@@ -536,7 +536,14 @@ abstract class Easysdi_shopHelper {
         // get organism pricing
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('pos.id, pos.supplier_name, pos.cfg_internal_free, pos.cfg_fixed_fee_te, pos.cfg_fixed_fee_apply_vat, pos.cfg_data_free_fixed_fee, pos.cal_total_rebate_ti, pos.cal_fee_ti, pos.cal_total_amount_ti')
+                ->select('pos.id, pos.supplier_name, '
+                        . 'pos.cfg_internal_free, '
+                        . 'pos.cfg_fixed_fee_te, '
+                        . 'pos.cfg_fixed_fee_apply_vat, '
+                        . 'pos.cfg_data_free_fixed_fee, '
+                        . 'pos.cal_total_rebate_ti, '
+                        . 'pos.cal_fee_ti, '
+                        . 'pos.cal_total_amount_ti')
                 ->from('#__sdi_pricing_order_supplier pos')
                 ->where('pos.pricing_order_id=' . $prices->pricing_order_id)
                 ->where('pos.supplier_id=' . $provider->id);
@@ -633,6 +640,7 @@ abstract class Easysdi_shopHelper {
             $price->cfg_profile_guid = null;
             $price->cfg_profile_name = $pricingProfile->pricing_profile_name;
             $price->cfg_fixed_fee = $pricingProfile->cfg_fixed_fee;
+            $price->cfg_apply_vat = $pricingProfile->cfg_apply_vat;
             $price->cfg_surface_rate = $pricingProfile->cfg_surface_rate;
             $price->cfg_min_fee = $pricingProfile->cfg_min_fee;
             $price->cfg_max_fee = $pricingProfile->cfg_max_fee;
@@ -733,7 +741,10 @@ abstract class Easysdi_shopHelper {
                     $category = $db->loadObject();
 
                     if ($category !== null) {
-                        $prices->cal_fee_ti = $category->overall_fee;
+                        //Override overall fee with the one from category
+                        $prices->cfg_overall_default_fee_te = (isset($category->overall_fee)) ? $category->overall_fee : $prices->cfg_overall_default_fee_te;
+                        $prices->cal_fee_te = $prices->cfg_overall_default_fee_te;
+                        $prices->cal_fee_ti = ($prices->cfg_fee_apply_vat) ? $prices->cfg_overall_default_fee_te * (1 + $prices->cfg_vat / 100) : $prices->cfg_overall_default_fee_te;
                         $prices->ind_lbl_category_order_fee = $category->name;
                     }
                 }
