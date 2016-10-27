@@ -20,7 +20,7 @@ class sdiPricingProfile {
     public $surface_price;
     public $min_price;
     public $max_price;
-
+    
     function __construct($id) {
         if (empty($id))
             return;

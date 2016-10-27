@@ -12,7 +12,7 @@
  * @param	array	A named array
  * @return	array
  */
-function Easysdi_contactBuildRoute(&$query)
+function Easysdi_coreBuildRoute(&$query)
 {
 	$segments = array();
 
@@ -38,7 +38,7 @@ function Easysdi_contactBuildRoute(&$query)
  *
  * index.php?/banners/id/Itemid
  */
-function Easysdi_contactParseRoute($segments)
+function Easysdi_coreParseRoute($segments)
 {
 	$vars = array();
 

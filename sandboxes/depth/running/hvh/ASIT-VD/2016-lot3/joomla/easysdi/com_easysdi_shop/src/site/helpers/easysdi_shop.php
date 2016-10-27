@@ -349,13 +349,13 @@ abstract class Easysdi_shopHelper {
                                 <div id="perimeter-recap-details-download">
                                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS'); ?>
                                     <span id ="perimeter-recap-details-download-gml"><a href="#" onclick="downloadPerimeter('GML',<?php echo $item->id; ?>);
-                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GML'); ?></a>, </span>
+                                                        return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GML'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-kml"><a href="#" onclick="downloadPerimeter('KML',<?php echo $item->id; ?>);
-                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_KML'); ?></a>, </span>
+                                                        return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_KML'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-dxf"><a href="#" onclick="downloadPerimeter('DXF',<?php echo $item->id; ?>);
-                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_DXF'); ?></a>, </span>
+                                                        return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_DXF'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-geojson"><a href="#" onclick="downloadPerimeter('GeoJSON',<?php echo $item->id; ?>);
-                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GEOJSON'); ?></a></span>                                    
+                                                        return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GEOJSON'); ?></a></span>                                    
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -473,7 +473,7 @@ abstract class Easysdi_shopHelper {
             $prices->cfg_vat = null;
             $prices->cfg_currency = null;
             $prices->cfg_rounding = null;
-            $prices->cfg_overall_default_fee = null;
+            $prices->cfg_overall_default_fee_te = null;
             $prices->cfg_free_data_fee = null;
             $prices->cal_total_amount_ti = null;
             $prices->cal_fee_ti = null;
@@ -492,17 +492,16 @@ abstract class Easysdi_shopHelper {
                 $prices->cfg_vat = (float) $orderPricing->cfg_vat;
                 $prices->cfg_currency = $orderPricing->cfg_currency;
                 $prices->cfg_rounding = (float) $orderPricing->cfg_rounding;
-                $prices->cfg_overall_default_fee = (float) $orderPricing->cfg_overall_default_fee;
+                $prices->cfg_overall_default_fee_te = (float) $orderPricing->cfg_overall_default_fee_te;
+                $prices->cfg_fee_apply_vat = (bool) $orderPricing->cfg_fee_apply_vat;
                 $prices->cfg_free_data_fee = (bool) $orderPricing->cfg_free_data_fee;
                 $prices->cal_total_amount_ti = $orderPricing->cal_total_amount_ti;
                 $prices->cal_fee_ti = $orderPricing->cal_fee_ti;
                 $prices->pricing_order_id = (int) $orderPricing->id;
             }
 
-
             // get the surface ordered - default to 0
             $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface / 1000000 : 0;
-
 
             // get prices by supplier
             if ($prices->pricing_order_id) {
@@ -537,7 +536,7 @@ abstract class Easysdi_shopHelper {
         // get organism pricing
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('pos.id, pos.supplier_name, pos.cfg_internal_free, pos.cfg_fixed_fee_ti, pos.cfg_data_free_fixed_fee, pos.cal_total_rebate_ti, pos.cal_fee_ti, pos.cal_total_amount_ti')
+                ->select('pos.id, pos.supplier_name, pos.cfg_internal_free, pos.cfg_fixed_fee_te, pos.cfg_fixed_fee_apply_vat, pos.cfg_data_free_fixed_fee, pos.cal_total_rebate_ti, pos.cal_fee_ti, pos.cal_total_amount_ti')
                 ->from('#__sdi_pricing_order_supplier pos')
                 ->where('pos.pricing_order_id=' . $prices->pricing_order_id)
                 ->where('pos.supplier_id=' . $provider->id);
@@ -546,9 +545,14 @@ abstract class Easysdi_shopHelper {
         // config
         $provider->name = $priceOrdSupplier->supplier_name;
         $provider->cfg_internal_free = (bool) $priceOrdSupplier->cfg_internal_free;
-        $provider->cfg_fixed_fee_ti = $priceOrdSupplier->cfg_fixed_fee_ti;
+        $provider->cfg_fixed_fee_te = $priceOrdSupplier->cfg_fixed_fee_te;
+        $provider->cfg_fixed_fee_apply_vat = (bool) $priceOrdSupplier->cfg_fixed_fee_apply_vat;
         $provider->cfg_data_free_fixed_fee = (bool) $priceOrdSupplier->cfg_data_free_fixed_fee;
 
+        //Calculate fixed fee taxes included
+        $provider->cfg_fixed_fee_ti = ($provider->cfg_fixed_fee_apply_vat) ? $provider->cfg_fixed_fee_te * (1 + $prices->cfg_vat / 100) : $provider->cfg_fixed_fee_te;
+
+        //
         $provider->pricing_order_supplier_id = (int) $priceOrdSupplier->id;
 
         // gwt the provider tax
@@ -573,7 +577,6 @@ abstract class Easysdi_shopHelper {
                 $provider->hasFeeWithoutPricingProfileProduct = true;
             }
         }
-
 
         return $provider;
     }
@@ -680,7 +683,8 @@ abstract class Easysdi_shopHelper {
             $prices->cfg_vat = (float) JComponentHelper::getParams('com_easysdi_shop')->get('vat', 0);
             $prices->cfg_currency = JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF');
             $prices->cfg_rounding = (float) JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
-            $prices->cfg_overall_default_fee = (float) JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_fee', 0);
+            $prices->cfg_overall_default_fee_te = (float) JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_fee', 0);
+            $prices->cfg_fee_apply_vat = (bool) JComponentHelper::getParams('com_easysdi_shop')->get('overall_fee_apply_vat', true);
             $prices->cfg_free_data_fee = (bool) JComponentHelper::getParams('com_easysdi_shop')->get('free_data_fee', false);
 
             // get the surface ordered - default to 0
@@ -701,9 +705,11 @@ abstract class Easysdi_shopHelper {
 
             // set the platform tax
             if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee) {
+                $prices->cal_fee_te = 0;
                 $prices->cal_fee_ti = 0;
             } else {
-                $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
+                $prices->cal_fee_te = $prices->cfg_overall_default_fee_te;
+                $prices->cal_fee_ti = ($prices->cfg_fee_apply_vat) ? $prices->cfg_overall_default_fee_te * (1 + $prices->cfg_vat / 100) : $prices->cfg_overall_default_fee_te ;
 
                 //Current user categories are used to defined platform fee.
                 $db = JFactory::getDbo();
@@ -763,7 +769,7 @@ abstract class Easysdi_shopHelper {
         // get organism pricing params
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
+                ->select('o.name, o.internal_free, o.fixed_fee_te, o.data_free_fixed_fee, o.fixed_fee_apply_vat')
                 ->from('#__sdi_organism o')
                 ->where('o.id=' . $provider->id);
         $db->setQuery($query);
@@ -771,8 +777,9 @@ abstract class Easysdi_shopHelper {
 
         $provider->name = $organism->name;
         $provider->cfg_internal_free = (bool) $organism->internal_free;
-        $provider->cfg_fixed_fee_ti = $organism->fixed_fee_ti;
+        $provider->cfg_fixed_fee_te = $organism->fixed_fee_te;
         $provider->cfg_data_free_fixed_fee = (bool) $organism->data_free_fixed_fee;
+        $provider->cfg_fixed_fee_apply_vat = (bool) $organism->fixed_fee_apply_vat;
 
         // calculate supplier rebate
         $internalFreeOrder = false;
@@ -814,7 +821,8 @@ abstract class Easysdi_shopHelper {
             }
         }
 
-        // set the provider tax
+        // set the provider tax        
+        $provider->cfg_fixed_fee_ti = ($provider->cfg_fixed_fee_apply_vat) ? $provider->cfg_fixed_fee_te * (1 + $prices->cfg_vat / 100) : $provider->cfg_fixed_fee_te;
         $provider->cal_fee_ti = ($provider->cal_total_amount_ti > 0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
 
         // total amount for this provider
@@ -861,6 +869,7 @@ abstract class Easysdi_shopHelper {
         $price->cfg_surface_rate = $pricingProfile->surface_rate;
         $price->cfg_min_fee = $pricingProfile->min_fee;
         $price->cfg_max_fee = $pricingProfile->max_fee;
+        $price->cfg_apply_vat = $pricingProfile->apply_vat;
 
         // calculate product price
         $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
@@ -902,8 +911,8 @@ abstract class Easysdi_shopHelper {
         $cal_total_rebate_te = self::rounding($price->cal_amount_data_te - $price->cal_total_amount_te);
 
         // final price TI
-        $price->cal_total_amount_ti = self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding);
-        $price->cal_total_rebate_ti = self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding);
+        $price->cal_total_amount_ti = ($price->cfg_apply_vat) ? self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding) : self::rounding($price->cal_total_amount_te , $prices->cfg_rounding) ;
+        $price->cal_total_rebate_ti = ($price->cfg_apply_vat) ? self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding) : self::rounding($cal_total_rebate_te , $prices->cfg_rounding);
 
         return $price;
     }
@@ -1443,7 +1452,7 @@ abstract class Easysdi_shopHelper {
                 mapStrokeWidth = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_width', 2) . ',
                 mapPointStrokeWidth = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_point_stroke_width', 2) . ',
                 mapPointRadius = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5) . ',
-                mapRotateIconURL = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', Juri::base(true) .'/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png') . '",
+                mapRotateIconURL = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png') . '",
                 mapMinSurfaceRectangle = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0) . ',
                 mapMinSurfaceRectangleBorder = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100) . ';');
     }

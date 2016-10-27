@@ -205,7 +205,7 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
             return false;
         }
 
-        if (isset($data['searchtype']) && $data['searchtype'] == 'advanced') {
+        if ($data['searchtype'] == 'advanced') {
             return true;
         } else {
             return false;

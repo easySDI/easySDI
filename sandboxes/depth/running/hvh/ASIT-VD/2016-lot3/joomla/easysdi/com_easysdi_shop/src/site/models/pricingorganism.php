@@ -65,7 +65,7 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                    ->select('o.id, o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
+                    ->select('o.id, o.name, o.internal_free, o.fixed_fee_te, o.data_free_fixed_fee')
                     ->from($db->quoteName('#__sdi_organism') . ' as o')
                     ->where('o.id=' . (int) $id);
             $db->setQuery($query);

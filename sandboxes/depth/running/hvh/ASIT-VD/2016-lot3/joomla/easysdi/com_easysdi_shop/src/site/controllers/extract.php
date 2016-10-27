@@ -643,7 +643,8 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $orderSupplier = $this->db->loadObject();
 
             $this->addTextChildNode($pricing, 'sdi:cfg_internal_free', (bool) $orderSupplier->cfg_internal_free ? 'true' : 'false');
-            $this->addTextChildNode($pricing, 'sdi:cfg_fixed_fee_ti', (float) $orderSupplier->cfg_fixed_fee_ti);
+            $this->addTextChildNode($pricing, 'sdi:cfg_fixed_fee_te', (float) $orderSupplier->cfg_fixed_fee_te);
+            $this->addTextChildNode($pricing, 'sdi:cfg_fixed_fee_apply_vat', (bool) $orderSupplier->cfg_fixed_fee_apply_vat);
             $this->addTextChildNode($pricing, 'sdi:cfg_data_free_fixed_fee', (bool) $orderSupplier->cfg_data_free_fixed_fee ? 'true' : 'false');
             $this->addTextChildNode($pricing, 'sdi:cal_fee_ti', (float) $orderSupplier->cal_fee_ti);
 
