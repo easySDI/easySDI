@@ -994,6 +994,34 @@ abstract class Easysdi_shopHelper {
      * Ensure to compare the return to === true for correct completion of the process
      */
     private static function updatePricingSupplierSummary($pos, $po, &$db) {
+        
+        // count the products rejected by the current provider
+        $db->setQuery($db->getQuery(true)
+                        ->select('od.productstate_id')
+                        ->from('#__sdi_pricing_order_supplier_product posp')
+                        ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = posp.product_id')
+                        ->where('od.order_id='. (int) $po->order_id)
+                        ->where('posp.pricing_order_supplier_id=' . (int) $pos->id)
+                        ->group('od.productstate_id'));
+        $productsRejected = $db->loadColumn();
+        if(count($productsRejected) == 1 && $productsRejected[0] == Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER)
+        {
+            //All supplier products were rejected : cancel supplier fee
+            $pos->cal_fee_ti = 0;
+            $pos->cal_total_amount_ti = 0;
+            $pos->cal_total_rebate_ti = 0;
+            if (!$pos->save(array())) {
+                return 'Cannot update pricing order supplier';
+            }
+
+            $rpo = self::updatePricingOrderSummary($po, $db);
+            if ($rpo !== true) {
+                return $rpo;
+            }
+            
+            return true;
+        }
+                
         // count the products without price define for the current provider
         $db->setQuery($db->getQuery(true)
                         ->select('COUNT(1)')
@@ -1004,7 +1032,6 @@ abstract class Easysdi_shopHelper {
         $productsWithoutPrice = $db->loadResult();
         //if all products of this supplier have a price, we can update the supplier pricing branch
         if ($productsWithoutPrice == 0) {
-
             $db->setQuery($db->getQuery(true)
                             ->select('SUM(posp.cal_total_amount_ti) orderSupplierProductsTotal, SUM(posp.cal_total_rebate_ti) orderSupplierRebatesTotal')
                             ->from('#__sdi_pricing_order_supplier_product posp')
@@ -1044,6 +1071,28 @@ abstract class Easysdi_shopHelper {
      * Ensure to compare the return to === true for correct completion of the process
      */
     private static function updatePricingOrderSummary($po, &$db) {
+        // count the products rejected by the current provider
+        $db->setQuery($db->getQuery(true)
+                        ->select('od.productstate_id')
+                        ->from('#__sdi_pricing_order_supplier pos')
+                        ->innerJoin('#__sdi_pricing_order_supplier_product posp ON posp.pricing_order_supplier_id = pos.id')
+                        ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = posp.product_id')
+                        ->where('od.order_id='. (int) $po->order_id)
+                        ->group('od.productstate_id'));
+        $productsRejected = $db->loadColumn();
+        if(count($productsRejected) == 1 && $productsRejected[0] == Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER)
+        {
+            //All products were rejected : cancel plateform fee
+            $po->cal_fee_ti = 0;
+            $po->cal_total_amount_ti = 0;
+            
+            if (!$po->save(array())) {
+                return 'Cannot update pricing order';
+            }
+            
+            return true;
+        }
+        
         //count all the suppliers pricing of the order without price
         $db->setQuery($db->getQuery(true)
                         ->select('COUNT(1)')
