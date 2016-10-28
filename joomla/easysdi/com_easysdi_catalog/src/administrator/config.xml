@@ -255,7 +255,9 @@
 
 	</fieldset>
         
-        <fieldset name="predefinedboundary">
+        <fieldset name="predefinedboundary"
+        label="COM_EASYSDI_CATALOG_CONFIG_PREDEFINEDBOUNDARY_LABEL"
+		  description="COM_EASYSDI_CATALOG_CONFIG_PREDEFINEDBOUNDARY_DESC">
            <field name="catalogmap" 
                    type="sql" 
                    class="inputbox input-xlarge"
