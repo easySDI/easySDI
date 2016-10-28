@@ -742,7 +742,7 @@ abstract class Easysdi_shopHelper {
 
                     if ($category !== null) {
                         //Override overall fee with the one from category
-                        $prices->cfg_overall_default_fee_te = (isset($category->overall_fee)) ? $category->overall_fee : $prices->cfg_overall_default_fee_te;
+                        //$prices->cfg_overall_default_fee_te = (isset($category->overall_fee)) ? $category->overall_fee : $prices->cfg_overall_default_fee_te;
                         $prices->cal_fee_te = $prices->cfg_overall_default_fee_te;
                         $prices->cal_fee_ti = ($prices->cfg_fee_apply_vat) ? $prices->cfg_overall_default_fee_te * (1 + $prices->cfg_vat / 100) : $prices->cfg_overall_default_fee_te;
                         $prices->ind_lbl_category_order_fee = $category->name;
