@@ -27,7 +27,7 @@ class com_easysdi_shopInstallerScript {
         if($type == 'update' && $this->release == '4.4.4' && version_compare($this->getParam("version"), $this->release) == -1){
             $db = JFactory::getDbo();
             
-            $sql = "UPDATE `#__sdi_organism` SET fixed_fee_ti = fixed_fee_ti / (1+(" . $this->getParamValue("vat") ."/100))";
+            $sql = "UPDATE `#__sdi_organism` SET fixed_fee_te = fixed_fee_te / (1+(" . $this->getParamValue("vat") ."/100))";
             $db->setQuery($sql);
             $db->execute();
             
