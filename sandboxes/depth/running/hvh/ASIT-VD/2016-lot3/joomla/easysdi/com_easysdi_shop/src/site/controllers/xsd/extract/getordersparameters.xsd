@@ -2,7 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
 
 	<!-- ROOT element -->
-	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/2011/sdi/getordersparameters.xsd" name="parameters" type="sdi:parametersType"/>
+	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/getordersparameters.xsd" name="parameters" type="sdi:parametersType"/>
 	
 	<xs:complexType abstract="true" xmlns:sdi="http://www.easysdi.org/2011/sdi" name="parametersType">
 		<xs:sequence>

@@ -395,14 +395,13 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             );
 
             if ($pricingOrderSupplierProduct->save($pricingOrderSupplierProductData) === true && $pricingOrderSupplierProduct->pricing_id == 3) {
-
                 // sdi_pricing_order_supplier_product_profile
                 $pricingOrderSupplierProductProfile = $this->getTable('PricingOrderSupplierProductProfile', 'Easysdi_shopTable');
                 $pricingOrderSupplierProductProfileData = array(
                     'pricing_order_supplier_product_id' => $pricingOrderSupplierProduct->id,
                     'pricing_profile_id' => $product->cfg_profile_id,
                     'pricing_profile_name' => $product->cfg_profile_name,
-                    'cfg_fixed_fee' => $product->cfg_fixed_fee,
+                    'cfg_fixed_fee_te' => $product->cfg_fixed_fee_te,
                     'cfg_apply_vat' => $product->cfg_apply_vat,
                     'cfg_surface_rate' => $product->cfg_surface_rate,
                     'cfg_min_fee' => $product->cfg_min_fee,

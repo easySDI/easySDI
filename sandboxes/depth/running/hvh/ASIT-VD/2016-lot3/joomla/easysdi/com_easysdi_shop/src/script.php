@@ -59,6 +59,8 @@ class com_easysdi_shopInstallerScript {
      */
 
     function postflight($type, $parent) {
+        $db = JFactory::getDbo();
+        
         if ($type == 'install') {
             JTable::addIncludePath(JPATH_ADMINISTRATOR . "/../libraries/joomla/database/table");
             JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables');
@@ -116,7 +118,13 @@ class com_easysdi_shopInstallerScript {
             }
         }
         
-        $db = JFactory::getDbo();
+        if($type == 'update' && $this->release == '4.4.4' && version_compare($this->getParam("version"), $this->release) == -1){
+            $sql = "UPDATE `#__sdi_organism` SET fixed_fee_te = fixed_fee_te / (1+(" . $this->getParamValue("vat") ."/100))";
+            $query = $db->getQuery(true);
+            $db->setQuery($sql);
+            $db->execute();
+        }
+        
         $query = $db->getQuery(true);
         $query->delete('#__menu');
         $query->where('title = ' . $db->quote('com_easysdi_shop'));

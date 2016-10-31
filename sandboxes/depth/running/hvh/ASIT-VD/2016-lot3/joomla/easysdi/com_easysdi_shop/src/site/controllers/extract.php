@@ -109,14 +109,12 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * 
      * call getException if can't authenticate the user
      */
-    private function authentication() {
-        $this->isOrderAccount("asitvd", "asitvd");
-        $this->isOrganismAccount("asitvd", "asitvd");
-      //  if (!isset($_SERVER['PHP_AUTH_USER']) || !(
-             //   $this->isOrderAccount($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) || $this->isOrganismAccount($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) )
-        //) {
-          //  $this->getException(401);
-        //}
+    private function authentication() {        
+        if (!isset($_SERVER['PHP_AUTH_USER']) || !(
+                $this->isOrderAccount($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) || $this->isOrganismAccount($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) )
+        ) {
+           $this->getException(401);
+        }
     }
 
     /**
@@ -507,7 +505,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         $this->addAttribute($platform, 'name', 'easySDI');
         $this->addAttribute($platform, 'version', sdiFactory::getSdiVersion());
-        $this->addAttribute($platform, 'serviceversion', '4.0');
+        $this->addAttribute($platform, 'serviceversion', '4.4.4'); //easySDI version of the last modification
 
         $orders->appendChild($platform);
 

@@ -635,11 +635,10 @@ abstract class Easysdi_shopHelper {
             $pricingProfile = $db->loadObject();
 
             // get base parameters
-            //$pricingProfile = new sdiPricingProfile();
             $price->cfg_profile_id = $pricingProfile->pricing_profile_id;
             $price->cfg_profile_guid = null;
             $price->cfg_profile_name = $pricingProfile->pricing_profile_name;
-            $price->cfg_fixed_fee = $pricingProfile->cfg_fixed_fee;
+            $price->cfg_fixed_fee_te = $pricingProfile->cfg_fixed_fee_te;
             $price->cfg_apply_vat = $pricingProfile->cfg_apply_vat;
             $price->cfg_surface_rate = $pricingProfile->cfg_surface_rate;
             $price->cfg_min_fee = $pricingProfile->cfg_min_fee;
@@ -876,14 +875,14 @@ abstract class Easysdi_shopHelper {
         $price->cfg_profile_id = $pricingProfile->id;
         $price->cfg_profile_guid = $pricingProfile->guid;
         $price->cfg_profile_name = $pricingProfile->name;
-        $price->cfg_fixed_fee = $pricingProfile->fixed_fee;
+        $price->cfg_fixed_fee_te = $pricingProfile->fixed_fee;
         $price->cfg_surface_rate = $pricingProfile->surface_rate;
         $price->cfg_min_fee = $pricingProfile->min_fee;
         $price->cfg_max_fee = $pricingProfile->max_fee;
         $price->cfg_apply_vat = $pricingProfile->apply_vat;
 
         // calculate product price
-        $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
+        $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee_te + ($price->cfg_surface_rate * $prices->surface));
 
         // limit price according to min and max price
         if ($price->cfg_max_fee > 0 && $price->cal_amount_data_te > $price->cfg_max_fee) {

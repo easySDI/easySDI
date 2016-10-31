@@ -2685,7 +2685,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product_profile` (
     `pricing_order_supplier_product_id` int(11) unsigned not null,
     `pricing_profile_id` int(11) unsigned not null,
     `pricing_profile_name` varchar(255) not null,
-    `cfg_fixed_fee` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_fixed_fee_te` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_apply_vat` TINYINT DEFAULT 1,
     `cfg_surface_rate` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_min_fee` decimal(19,2) NOT NULL DEFAULT 0,
