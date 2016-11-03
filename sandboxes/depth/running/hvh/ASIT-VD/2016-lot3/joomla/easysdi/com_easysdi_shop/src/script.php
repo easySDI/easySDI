@@ -22,25 +22,6 @@ class com_easysdi_shopInstallerScript {
 
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
-        
-        
-        if($type == 'update' && $this->release == '4.4.4' && version_compare($this->getParam("version"), $this->release) == -1){
-            $db = JFactory::getDbo();
-            
-            if(isset( $this->getParamValue("vat")))
-            {
-                $sql = "UPDATE `#__sdi_organism` SET fixed_fee_te = fixed_fee_te / (1+(" . $this->getParamValue("vat") ."/100))";
-                $db->setQuery($sql);
-                $db->execute();
-            }
-            $overall_default_fee = $this->getParamValue("overall_default_fee");
-            if(isset($overall_default_fee))
-            {
-                $overall_default_fee = $overall_default_fee /(1 + ($this->getParamValue("vat")/100));            
-                $params['overall_default_fee'] = $overall_default_fee;
-                $this->setParams($params);
-            }
-        }
 
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Shop [com_easysdi_shop]';
@@ -134,6 +115,24 @@ class com_easysdi_shopInstallerScript {
             $archiveorderdelay = $this->getParamValue("archiveorderdelay");
             if(!empty($archiveorderdelay)){
                $this->setParams(array("cleanuporderdelay" => $archiveorderdelay));
+            }
+        }
+        
+        if($type == 'update' && $this->release == '4.4.4' && version_compare($this->getParam("version"), $this->release) == -1){
+            $vat = $this->getParamValue("vat");
+            if(isset( $vat))
+            {
+                $sql = "UPDATE `#__sdi_organism` SET fixed_fee_te = fixed_fee_te / (1+(" . $vat ."/100))";
+                $db->setQuery($sql);
+                $db->execute();
+            }
+            
+            $overall_default_fee = $this->getParamValue("overall_default_fee");
+            if(isset($overall_default_fee))
+            {
+                $overall_default_fee = $overall_default_fee /(1 + ($this->getParamValue("vat")/100)); 
+                $params = array("overall_default_fee" => $overall_default_fee);
+                $this->setParams($params);
             }
         }
         
