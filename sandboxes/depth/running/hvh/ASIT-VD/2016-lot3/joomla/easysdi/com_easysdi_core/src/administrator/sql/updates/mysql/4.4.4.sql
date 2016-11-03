@@ -16,8 +16,4 @@ UPDATE `#__sdi_pricing_order` SET cfg_overall_default_fee_te = cfg_overall_defau
 
 UPDATE `#__sdi_pricing_order_supplier` s SET s.cfg_fixed_fee_te = s.cfg_fixed_fee_te / (1+((SELECT o.cfg_vat FROM `#__sdi_pricing_order` o WHERE o.id = s.pricing_order_id)/100));
 
-UPDATE `#__sdi_pricing_order_supplier_product_profile` pospp SET pospp.cfg_fixed_fee_te = pospp.cfg_fixed_fee_te / 
-(1+((SELECT o.cfg_vat FROM `#__sdi_pricing_order` o
-INNER JOIN `#__sdi_pricing_order_supplier` pos ON o.id = pos.pricing_order_id  
-INNER JOIN `#__sdi_pricing_order_supplier_product` posp ON pos.id = posp.pricing_order_supplier_id  
-WHERE posp.id = pospp.pricing_order_supplier_product_id)/100));
+UPDATE `#__sdi_pricing_order_supplier_product_profile` pospp SET pospp.cfg_fixed_fee_te = pospp.cfg_fixed_fee_te / (1+((SELECT o.cfg_vat FROM `#__sdi_pricing_order` o INNER JOIN `#__sdi_pricing_order_supplier` pos ON o.id = pos.pricing_order_id  INNER JOIN `#__sdi_pricing_order_supplier_product` posp ON pos.id = posp.pricing_order_supplier_id  WHERE posp.id = pospp.pricing_order_supplier_product_id)/100));
