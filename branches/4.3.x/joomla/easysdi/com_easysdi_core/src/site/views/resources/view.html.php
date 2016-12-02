@@ -117,31 +117,66 @@ class Easysdi_coreViewResources extends JViewLegacy {
         // Load metadata for each resources
         foreach ($this->items as $item) {
             $query = $db->getQuery(true);
-            $query->select('DISTINCT m.id, v.name, s.value, s.id AS state, v.id as version, m.published');
-            $query->from('#__sdi_version v');
-            $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
-            $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
-            $query->leftJoin('#__sdi_versionlink vl ON vl.child_id = v.id');
-            $query->where('v.resource_id = ' . (int) $item->id);
-            $query->order('v.name DESC');
+  
+                $query->select('DISTINCT m.id, v.name, s.value, s.id AS state, v.id as version, m.published');
+                $query->from('#__sdi_version v');
+                $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+                $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
+                $query->leftJoin('#__sdi_versionlink vl ON vl.child_id = v.id');
+                $query->where('v.resource_id = ' . (int) $item->id);
+                $query->order('v.name DESC');
+         
 
             // Check if resource has a "unpublish" version
             $db->setQuery($query);
             $item->hasUnpublishVersion = false;
-            foreach ($db->loadObjectList() as $metadata) {
-                if ($metadata->state < 3) {
+            foreach ($db->loadObjectList() as $metadata) 
+            {
+                if ($metadata->state < 3) 
+                {
                     $item->hasUnpublishVersion = true;
                 }
             }
 
-            if (!empty($filter_status)) {
+            if (!empty($filter_status)) 
+            {
                 $query->where('m.metadatastate_id = ' . (int) $filter_status);
             }
 
             $db->setQuery($query);
             $item->metadata = $db->loadObjectList();
-			
-			// Load roles for each resources
+            
+            if (!empty($this->state->parentid)) 
+            {
+                //Load selected version
+                $query = $db->getQuery(true);
+                $query->select('DISTINCT m.id, v.name, v.id as version');
+                $query->from('#__sdi_version v');
+                $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+                $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
+                $query->leftJoin('#__sdi_versionlink vl ON vl.child_id = v.id');
+                $query->where('vl.parent_id = ' . (int) $this->state->parentid);
+                $query->where('v.resource_id = ' . (int) $item->id);
+                $query->order('v.name DESC');
+		if (!empty($filter_status)) {
+                    $query->where('m.metadatastate_id = ' . (int) $filter_status);
+                }
+                $db->setQuery($query);
+                $selected = $db->loadObject();
+                
+                foreach ($item->metadata as $metadata)
+                {  
+                    if($metadata->version == $selected->version)
+                    {   
+                        $metadata->selected = '1';
+                    }
+                }
+                    
+                    
+                
+            }
+            
+            // Load roles for each resources
             $query = $db->getQuery(true);
             
             $query->select('u.id as user_id, u.username, urr.role_id, r.value as role_name')

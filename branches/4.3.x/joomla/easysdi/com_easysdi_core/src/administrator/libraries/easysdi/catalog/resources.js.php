@@ -158,12 +158,13 @@ var metadataState = {
 
 var Metadata = (function(){
     
-    function Metadata(id, name, state, stateName, publishDate){
+    function Metadata(id, name, state, stateName, publishDate, selected){
         this.id = id;
         this.name = name;
         this.state = state;
         this.stateName = stateName;
         this.publishDate = publishDate;
+        this.selected = selected;
     }
     
     return Metadata;
@@ -179,9 +180,9 @@ var Version = (function(){
         this.child_number = 0;
         this.viralChild_number = 0;
         
-        this.metadata = function(id, name, state, stateName, publishDate){
+        this.metadata = function(id, name, state, stateName, publishDate, selected){
             if(arguments.length>0)
-                metadata = new Metadata(id, name, state, stateName, publishDate);
+                metadata = new Metadata(id, name, state, stateName, publishDate, selected);
             
             return metadata;
         };
@@ -229,7 +230,7 @@ var Resource = (function(){
                 return versions[version_id];
             else{
                 var v = new Version(version_id);
-                v.metadata(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+                v.metadata(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5]);
                 versions.push(v);
                 return versions;
             }
@@ -277,7 +278,7 @@ var Resource = (function(){
     resource.assignment = <?php  echo $assignenabled; ?>;
     resource.synchronize = <?php  echo $synchronizeenabled; ?>;
     <?php foreach($item->metadata as $key => $metadata):?>        
-        resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, <?php echo  json_encode(JText::_($metadata->value));?>, '<?php echo $metadata->published;?>');
+        resource.version(<?php echo $metadata->version;?>, <?php echo $metadata->id;?>, '<?php echo $metadata->name;?>', <?php echo $metadata->state;?>, <?php echo  json_encode(JText::_($metadata->value));?>, '<?php echo $metadata->published;?>','<?php echo $metadata->selected;?>');
     <?php endforeach;?>
     resources.add(resource);
 <?php endforeach; ?>
@@ -499,11 +500,23 @@ var buildStatusCell = function(resource){
                 var metadata = version.metadata();
                 var d = metadata.publishDate.substr(0,10);
                 d = d>now ? '('+d+')' : '';
-                var option = js('<option></option>')
+                if(metadata.selected == '1'){
+                    var option = js('<option></option>')
                         .val(version.id)
+                        .attr('selected', metadata.selected)
                         .html(metadata.name+' : '+metadata.stateName + ' ' + d);
 
                 select.append(option);
+                }
+                else{
+                    var option = js('<option></option>')
+                        .val(version.id)                        
+                        .html(metadata.name+' : '+metadata.stateName + ' ' + d);
+
+                select.append(option);
+                }
+                    
+                
             }
         });
         
