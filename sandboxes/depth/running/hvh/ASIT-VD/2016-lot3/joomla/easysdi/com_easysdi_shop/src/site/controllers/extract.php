@@ -429,12 +429,18 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         /* DEFAULT INPUTS */
         $mode = 'sdi:getOrders';
 
-        $agg = 'o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, o.level, u.guid , us.name , o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value');
-        $agg .= ', po.id , po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee_te, po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee';
+        $agg = 'o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, '
+                . 'o.surface, o.level, u.guid , us.name , o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value');
+        $agg .= ', po.id , po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee_te,'
+                . ' po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee';
         // retrieve all orders
         $query = $this->db->getQuery(true)
-                ->select('o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, o.level, u.guid as user_guid, us.name as user_name, o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') . ' as ordertype')
-                ->select('po.id as pricing_order, po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee_te, po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee, po.cfg_fee_apply_vat')
+                ->select('o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, '
+                        . 'o.surface, o.level, u.guid as user_guid, us.name as user_name, o.thirdparty_id,'
+                        . ' o.sent, ' . $this->db->quoteName('ot.value') . ' as ordertype')
+                ->select('po.id as pricing_order, po.cfg_vat, po.cfg_currency, '
+                        . 'po.cfg_rounding, po.cfg_overall_default_fee_te, po.cfg_free_data_fee, '
+                        . 'po.cal_fee_ti, po.ind_lbl_category_order_fee, po.cfg_fee_apply_vat')
                 ->from('#__sdi_order o')
                 ->leftJoin('#__sdi_pricing_order po ON po.order_id=o.id')
                 ->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id')
@@ -469,8 +475,8 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         $this->db->setQuery($query);
         
-        $s = $query->__toString();
-
+        //$s = $query->__toString();
+        
         return $this->db->loadObjectList();
     }
 
@@ -614,7 +620,11 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             if (!empty($this->organism) && $this->organism->id != $supplierId) {
                 continue;
             }
-            $suppliers->appendChild($this->getSupplier($order, $supplierId));
+            $supplier = $this->getSupplier($order, $supplierId);
+            if($supplier != false)
+            {
+                $suppliers->appendChild($supplier);
+            }
         }
 
         return $suppliers;
@@ -630,6 +640,12 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @since 4.3.0
      */
     private function getSupplier($order, $supplierId) {
+        $products = $this->getProducts($order, $supplierId);        
+        if($products == false)
+        {
+            //No product to extract
+            return false;
+        }
         $supplier = $this->response->createElementNS(self::nsSdi, 'sdi:supplier');
 
         $supplier->appendChild($this->getOrganism($supplierId));
@@ -653,7 +669,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $supplier->appendChild($pricing);
         }
 
-        $supplier->appendChild($this->getProducts($order, $supplierId));
+        $supplier->appendChild($products);
 
         return $supplier;
     }
@@ -882,7 +898,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                         ->select('m.id as metadata_id, m.guid as metadata_guid')
                         ->select('od.id as od_id, od.guid as od_guid')
                         ->select('posp.guid as posp_guid, posp.pricing_id, posp.cfg_pct_category_supplier_discount, posp.ind_lbl_category_supplier_discount, posp.cal_amount_data_te, posp.cal_total_amount_te, posp.cal_total_amount_ti, posp.cal_total_rebate_ti')
-                        ->select('pospp.pricing_profile_id, pospp.pricing_profile_name, pospp.cfg_fixed_fee, pospp.cfg_apply_vat, pospp.cfg_surface_rate, pospp.cfg_min_fee, pospp.cfg_max_fee, pospp.cfg_pct_category_profile_discount, pospp.ind_lbl_category_profile_discount')
+                        ->select('pospp.pricing_profile_id, pospp.pricing_profile_name, pospp.cfg_fixed_fee_te, pospp.cfg_apply_vat, pospp.cfg_surface_rate, pospp.cfg_min_fee, pospp.cfg_max_fee, pospp.cfg_pct_category_profile_discount, pospp.ind_lbl_category_profile_discount')
                         ->select('pp.guid as pricing_profile_guid')
                         ->from('#__sdi_order_diffusion od')
                         ->innerJoin('#__sdi_order o ON o.id=od.order_id')
@@ -904,6 +920,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         $orderProducts = $this->db->loadObjectList();
 
+        if($orderProducts == null || count($orderProducts) == 0)
+            return false;
+        
         foreach ($orderProducts as $orderProduct) {
             $products->appendChild($this->getProduct($order, $orderProduct));
         }
