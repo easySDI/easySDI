@@ -109,6 +109,12 @@ class Easysdi_shopViewOrders extends JViewLegacy {
         JHtmlSidebar::addFilter(
                 JText::_('COM_EASYSDI_SHOP_FILTER_SELECT_ORDERS_USER'), 'filter_orderuser', JHtml::_('select.options', $orderuserList, "id", "name", $this->state->get('filter.orderuser'), true)
         );
+        
+        //add Filter orderuserorganism INPUT
+        $orderuserorganismList = $orderModel->getOrderUsersOrganisms();
+        JHtmlSidebar::addFilter(
+                JText::_('COM_EASYSDI_SHOP_FILTER_SELECT_ORDERS_USER_ORGANISM'), 'filter_orderuserorganism', JHtml::_('select.options', $orderuserorganismList, "id", "name", $this->state->get('filter.orderuserorganism'), true)
+        );        
 
         //add Filter orderprovider INPUT
         $orderproviderList = $orderModel->getOrderProviders();
