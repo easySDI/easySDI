@@ -102,6 +102,14 @@ if (!empty($this->extra_sidebar)) {
                 <div class="row-fluid">
                     <div class="span12 well well-small">
                         <?php
+                        $tmpLayout = new JLayoutFile('com_easysdi_dashboard.shop_topproviders', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_dashboard'));
+                        echo $tmpLayout->render(null);
+                        ?>
+                    </div>
+                </div>                
+                <div class="row-fluid">
+                    <div class="span12 well well-small">
+                        <?php
                         $tmpLayout = new JLayoutFile('com_easysdi_dashboard.shop_topextractions', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_dashboard'));
                         echo $tmpLayout->render(null);
                         ?>
