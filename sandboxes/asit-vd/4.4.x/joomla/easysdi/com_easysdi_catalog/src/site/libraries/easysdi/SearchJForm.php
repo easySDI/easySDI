@@ -427,7 +427,7 @@ class SearchJForm extends SearchForm {
         $this->db->setQuery($query);
         $filter = $this->db->loadObject();
 
-        return $filter->ogcsearchfilter;
+        return isset($filter) ? $filter->ogcsearchfilter : null;
     }
 
     /**
