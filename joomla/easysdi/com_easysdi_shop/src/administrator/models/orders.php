@@ -54,6 +54,7 @@ class Easysdi_shopModelorders extends JModelList {
             'ordertype',
             'orderstate',
             'orderuser',
+            'orderuserorganism',
             'orderprovider',
             'orderdiffusion',
             'ordersent',
@@ -163,10 +164,17 @@ class Easysdi_shopModelorders extends JModelList {
             $query->where('a.archived = ' . (int) $orderarchived);
         }
 
-        // Filter by orderstate state
+        // Filter by order user
         $orderuser = $this->getState('filter.orderuser');
         if (is_numeric($orderuser)) {
             $query->where('a.user_id = ' . (int) $orderuser);
+        }
+
+        // Filter by order user's organism
+        $orderuserorganism = $this->getState('filter.orderuserorganism');
+        if (is_numeric($orderuserorganism)) {
+            $query->innerJoin('#__sdi_user_role_organism AS uro ON sdi_user.id = uro.user_id AND uro.role_id = 1');
+            $query->where('uro.organism_id = ' . (int) $orderuserorganism);
         }
 
         // Filter by orderprovider state
@@ -416,6 +424,34 @@ class Easysdi_shopModelorders extends JModelList {
         $query->group('users.name');
         $query->group('o.user_id');
 
+
+        try {
+            $items = $this->_getList($query);
+        } catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+        return $items;
+    }
+
+    /**
+     * get array of users
+     * @return array [array('id'=>id,'name'=>name)]
+     */
+    public function getOrderUsersOrganisms() {
+        // Load the list items.
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Select the required fields from the table.
+        $query->select('org.id as id, org.name as name');
+        $query->from('#__sdi_order AS o');
+        $query->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id = o.user_id');
+        $query->innerJoin('#__sdi_user_role_organism AS uro ON sdi_user.id = uro.user_id AND uro.role_id = 1');
+        $query->innerJoin('#__sdi_organism AS org ON org.id = uro.organism_id');
+        $query->order('org.name');
+        $query->group('org.id');
+        $query->group('org.name');
 
         try {
             $items = $this->_getList($query);
