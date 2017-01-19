@@ -39,24 +39,27 @@ class Easysdi_coreViewResources extends JViewLegacy {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             return;
         }
-       
+
         $this->mduk = json_decode($app->getUserState('com_easysdi_core.remove.version.mduk'), null);
         $app->setUserState('com_easysdi_core.remove.version.mduk', null);
         $this->vcall = json_decode($app->getUserState('com_easysdi_core.remove.version.call'), null);
         $app->setUserState('com_easysdi_core.remove.version.call', null);
-        
+
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_core');
-        
-        $this->userOrganisms = $this->user->getOrganisms(array(sdiUser::resourcemanager, 
-                                                               sdiUser::metadataresponsible, 
-                                                               sdiUser::metadataeditor,
-                                                               sdiUser::diffusionmanager, 
-                                                               sdiUser::viewmanager, 
-                                                               sdiUser::extractionresponsible, 
-                                                               sdiUser::organismmanager) );
+
+        $this->userOrganisms = $this->user->getOrganisms(array(sdiUser::resourcemanager,
+            sdiUser::metadataresponsible,
+            sdiUser::metadataeditor,
+            sdiUser::diffusionmanager,
+            sdiUser::viewmanager,
+            sdiUser::extractionresponsible,
+            sdiUser::organismmanager));
+
+        //Add scripts from plugins, if any
+        $this->document->addScriptDeclaration($this->getResourcesScriptPlugins());
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
@@ -145,32 +148,32 @@ class Easysdi_coreViewResources extends JViewLegacy {
 
             $db->setQuery($query);
             $item->metadata = $db->loadObjectList();
-			
-			// Load roles for each resources
+
+            // Load roles for each resources
             $query = $db->getQuery(true);
-            
+
             $query->select('u.id as user_id, u.username, urr.role_id, r.value as role_name')
                     ->from('#__sdi_user_role_resource urr')
                     ->join('left', '#__sdi_user su ON su.id=urr.user_id')
                     ->join('left', '#__users u ON u.id=su.user_id')
                     ->join('left', '#__sdi_sys_role r ON r.id=urr.role_id')
-                    ->where('urr.resource_id='.$item->id);
-            
+                    ->where('urr.resource_id=' . $item->id);
+
             $db->setQuery($query);
             $rows = $db->loadAssocList();
-            
+
             $item->roles = array();
-            foreach($rows as $row){
-                if(!isset($item->roles[$row['role_id']])){
+            foreach ($rows as $row) {
+                if (!isset($item->roles[$row['role_id']])) {
                     $item->roles[$row['role_id']] = array(
                         'role' => $row['role_name'],
                         'users' => array()
                     );
                 }
-                
+
                 $item->roles[$row['role_id']]['users'][$row['user_id']] = $row['username'];
             }
-            
+
             //if($item->id==29){var_dump($item->roles);exit();}
         }
 
@@ -179,6 +182,23 @@ class Easysdi_coreViewResources extends JViewLegacy {
         $query->select('s.value, s.id');
         $query->from('#__sdi_sys_metadatastate s');
         $db->setQuery($query);
-        $this->metadatastates = $db->loadObjectList();    }
+        $this->metadatastates = $db->loadObjectList();
+    }
+
+    /**
+     * Load the plugins and get the javascript
+     * Note: plugins must be in 'easysdi_basket_script' folder and 
+     * offer the 'getResourcesScript' public function
+     * @return String javascript from plugins
+     */
+    private function getResourcesScriptPlugins() {
+        JPluginHelper::importPlugin('easysdi_resources_script');
+        $app = JFactory::getApplication();
+        //get scripts
+        $scripts = $app->triggerEvent('getResourcesScript');
+
+        //Return merged scripts
+        return implode("\n", $scripts);
+    }
 
 }
