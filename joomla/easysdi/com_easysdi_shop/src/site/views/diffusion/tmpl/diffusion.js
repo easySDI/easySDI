@@ -4,8 +4,8 @@ js(document).ready(function () {
     enableAccessScope();
     onProductStorageChange();
     onPricingChange();
-    enableDownload();
-    enableExtraction();
+    toggleDownload();
+    toggleExtraction();
     enableFreePerimeter();
 
     js('#adminForm').submit(function (event) {
@@ -20,6 +20,12 @@ js(document).ready(function () {
 
     js('#jform_testurlauthentication').click(onTestUrlAuthenticationClick);
     js('#jform_testurlauthentication').parent().append('<span id="result_testurlauthentication"></span>');
+    js('#jform_hasextraction').click(function () {
+        toggleExtraction();
+    })
+    js('#jform_hasdownload').click(function () {
+        toggleDownload();
+    })
 });
 Joomla.submitbutton = function (task)
 {
@@ -29,8 +35,8 @@ Joomla.submitbutton = function (task)
     else {
 
         if (task != 'diffusion.cancel' && document.formvalidator.isValid(document.id('adminForm'))) {
-            if (js('#jform_hasextraction').is(':checked')) {
-               //check that at least one perimeter is active
+            if (js('input[name="jform[hasextraction]"]:checked').val() == 1) {
+                //check that at least one perimeter is active
                 if (jQuery("[id^=jform_perimeter][id$=_1]:checked").length < 1) {
                     alert(msgNoPerimeter);
                 } else {
@@ -73,17 +79,20 @@ function onPricingChange() {
 
     switch (js('#jform_pricing_id').val()) {
         case '1': // FREE
-            js('#fieldset_download').show();
+            //js('#fieldset_download').show();
+            unlockDownload();
             js('#pricing_profile_id').hide();
             break;
 
         case '2': // FEE WITHOUT PRICING PROFILE
-            js('#fieldset_download').hide();
+            //js('#fieldset_download').hide();
+            lockDownload();
             js('#pricing_profile_id').hide();
             break;
 
         case '3': // FEE WITH PRICING PROFILE
-            js('#fieldset_download').hide();
+            //js('#fieldset_download').hide();
+            lockDownload();
 
             if (!js('#pricing_profile_id option').length) {
                 js.ajax({
@@ -112,23 +121,41 @@ function onPricingChange() {
 
 function enablePricing() {
     if (sdiPricingActivated) {
+        js('#pricing_remark').show();
         js('#pricing_id').show();
     } else {
+        js('#pricing_remark').hide();
         js('#pricing_id').hide();
         js('#jform_pricing_id').val(sdiPricingFreeVal);
     }
 }
 
-function enableDownload() {
-    if (js('#jform_hasdownload').is(':checked')) {
+function lockDownload() {
+    js("label[for='jform_hasdownload0']").click();
+    js("label[for='jform_hasdownload0']").addClass('disabled');
+    js("#jform_hasdownload0").prop("checked", true);
+    js("#jform_hasdownload1").prop("checked", false);
+    js("label[for='jform_hasdownload1']").hide();
+    js('#no-download-on-paid-message').remove();
+    js("#fieldset_download > legend").append('<small id="no-download-on-paid-message" class="text-error">' + Joomla.JText._('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_DOWNLOAD_DISABLED_WITH_PAID') + '</small>');
+}
+
+function unlockDownload() {
+    js("label[for='jform_hasdownload0']").removeClass('disabled');
+    js("label[for='jform_hasdownload1']").show();
+    js('#no-download-on-paid-message').remove();
+}
+
+function toggleDownload() {
+    if (js('input[name="jform[hasdownload]"]:checked').val() == 1) {
         js('#div_download').show();
     } else {
         js('#div_download').hide();
     }
 }
 
-function enableExtraction() {
-    if (js('#jform_hasextraction').is(':checked')) {
+function toggleExtraction() {
+    if (js('input[name="jform[hasextraction]"]:checked').val() == 1) {
         js('#div_extraction').show();
     } else {
         js('#div_extraction').hide();
@@ -190,7 +217,7 @@ function onTestUrlAuthenticationClick() {
             js('#result_testurlauthentication').html(testOk).addClass('success');
         else {
             js('#result_testurlauthentication').html(testKo).addClass('error');
-			console.log(data);
+            console.log(data);
         }
     }).always(function () {
         js('#jform_testurlauthentication').blur();

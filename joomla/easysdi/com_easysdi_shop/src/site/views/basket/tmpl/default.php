@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.2
+ * @version     4.4.3
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -39,6 +39,12 @@ JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING');
 JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING_TITLE');
 JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE');
 JText::script('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE_TITLE');
+JText::script('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER');
+JText::script('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_SMALL');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_SMALL_TITLE');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_LARGE');
+JText::script('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_LARGE_TITLE');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js?v=' . sdiFactory::getSdiFullVersion());
@@ -130,9 +136,9 @@ if ($this->item && $this->item->extractions) :
                                 ?>
                                 <div id="help-perimeter" class="help-block"><?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER_ERROR')); ?></div>
                             <?php } else { ?>
-                                <a href="#modal-perimeter" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" >
-                                    <i class="icon-white icon-location"></i>
-                                    <span id="defineOrderBtn"> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></span></a>
+                                <a id="defineOrderBtn" href="#modal-perimeter" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" >
+                                    <i class="icon-white icon-location"></i> <span id="defineOrderBtnLbl"><?php echo empty($this->item->extent->features) ? JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER') : JText::_('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER'); ?></span>
+                                </a>
                             <?php } ?>
                         </div>
 
@@ -349,7 +355,11 @@ if ($this->item && $this->item->extractions) :
                                     <button class="btn btn-small" rel="basket.draft"><span class="icon-archive"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE') ?></button>
                                 </div>
                                 <div class="btn-wrapper" id="toolbar-estimate">
-                                    <button class="btn btn-small" rel="basket.estimate" <?php if (isset($this->item->pricing->cal_total_amount_ti)||!$this->item->pricing->isActivated): echo 'style="display: none;"'; else : echo 'style="display: inline-block;"'; endif;?>><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
+                                    <button class="btn btn-small" rel="basket.estimate" <?php
+                                    if (isset($this->item->pricing->cal_total_amount_ti) || !$this->item->pricing->isActivated): echo 'style="display: none;"';
+                                    else : echo 'style="display: inline-block;"';
+                                    endif;
+                                    ?>><span class="icon-edit"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE') ?></button>
                                 </div>
                                 <div class="btn-wrapper" id="toolbar-order">
                                     <button class="btn btn-small" rel="basket.order"><span class="icon-publish"></span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER') ?></button>
@@ -373,7 +383,7 @@ if ($this->item && $this->item->extractions) :
         <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%;"  class="modal invisible " tabindex="-1" role="dialog" aria-labelledby="modal-perimeter-label" data-backdrop="static" data-keyboard="false" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancel();">×</button>
-                <h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></h3>
+                <h3 id="myModalLabel"><?php echo empty($this->item->extent->features) ? JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER') : JText::_('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER'); ?></h3>
             </div>
             <div class="modal-body" style="max-height: 500px;">
                 <div class="container-fluid" >
@@ -410,8 +420,8 @@ if ($this->item && $this->item->extractions) :
                                                     <div class="btn-group btn-group-perimeter-selection">
                                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn btn-perimeter-selection" 
                                                            onClick="selectRectangle();
-                                                                                   jQuery('#help-perimeter').html('<?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE_HELP')); ?>');                                                                                  
-                                                                                 
+                                                                                   jQuery('#help-perimeter').html('<?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE_HELP')); ?>');
+
                                                                                    return false;">
                                                             <i class=" icon-checkbox-unchecked"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
                                                     </div>        
@@ -431,7 +441,7 @@ if ($this->item && $this->item->extractions) :
                                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
                                                            onClick="selectPerimeter<?php echo $perimeter->id; ?>();
                                                                                    jQuery('#help-perimeter').html('<?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_MY_PERIMETER_HELP')); ?>');
-                                                                                   
+
                                                                                    return false;">
                                                             <i class="icon-user"></i> <?php echo JText::_($perimeter->name); ?></a>
 
@@ -455,7 +465,7 @@ if ($this->item && $this->item->extractions) :
                                                     <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
                                                        onClick="selectPerimeter<?php echo $perimeter->id; ?>();
                                                                            jQuery('#help-perimeter').html('<?php echo nl2br(JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER_HELP')); ?>');
-                                                                           
+
                                                                            return false;">
                                                         <i class="icon-grid-view"></i> <?php echo JText::_($perimeter->name); ?></a>
                                                     <!-- test ybi -->
@@ -583,7 +593,7 @@ if ($this->item && $this->item->extractions) :
                         jQuery('#level').val(JSON.stringify(slider.getLevel()));
     <?php endif; ?>
                 }
-    <?php if (!empty($this->item->extent)): ?>        
+    <?php if (!empty($this->item->extent)): ?>
                     jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
     <?php endif; ?>
 
