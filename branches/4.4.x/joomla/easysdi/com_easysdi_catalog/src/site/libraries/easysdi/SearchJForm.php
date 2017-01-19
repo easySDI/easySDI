@@ -342,7 +342,7 @@ class SearchJForm extends SearchForm {
 
                     //user's organism's categories
                     $categories = $sdiUser->getMemberOrganismsCategoriesIds();
-                    if (is_null($caegories) || count($categories) == 0) {
+                    if (is_null($categories) || count($categories) == 0) {
                         $categories = array(0);
                     }
 

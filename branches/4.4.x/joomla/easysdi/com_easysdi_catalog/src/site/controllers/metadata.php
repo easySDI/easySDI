@@ -428,7 +428,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $user = new sdiUser();
         //user's organism's categories
         $categories = $user->getMemberOrganismsCategoriesIds();
-        if (is_null($caegories) || count($categories) == 0) {
+        if (is_null($categories) || count($categories) == 0) {
             $categories = array(0);
         }
 
