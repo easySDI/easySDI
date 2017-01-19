@@ -335,6 +335,9 @@ class SearchJForm extends SearchForm {
                 $query->select('DISTINCT o.id, o.guid, o.guid as value, o.name');
                 $query->from('#__sdi_organism o');
                 $query->innerJoin('#__sdi_resource r on o.id = r.organism_id');
+                $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
+                $query->innerJoin('#__sdi_catalog_resourcetype crt ON crt.resourcetype_id = rt.id');
+                $query->where('crt.catalog_id = ' . $this->item->id);
                 $query->order('o.name');
 
                 //apply resource's accessscope -> avoid to show orgnaisms without public resources
