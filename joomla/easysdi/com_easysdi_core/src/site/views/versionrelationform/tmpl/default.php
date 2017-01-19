@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.2
+ * @version     4.4.3
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -65,37 +65,6 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
         width: 50px !important;
     }
 </style>
-<script type="text/javascript">
-    function getScript(url,success) {
-        var script = document.createElement('script');
-        script.src = url;
-        var head = document.getElementsByTagName('head')[0],
-        done = false;
-        // Attach handlers for all browsers
-        script.onload = script.onreadystatechange = function() {
-            if (!done && (!this.readyState
-                || this.readyState == 'loaded'
-                || this.readyState == 'complete')) {
-                done = true;
-                success();
-                script.onload = script.onreadystatechange = null;
-                head.removeChild(script);
-            }
-        };
-        head.appendChild(script);
-    }
-    getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',function() {
-        js = jQuery.noConflict();
-        js(document).ready(function(){
-            js('#form-versionrelation').submit(function(event){
-                 
-            }); 
-        
-            
-        });
-    });
-    
-</script>
 
 <div class="versionrelation-edit front-end-edit">
     <?php if (!empty($this->item->id)): ?>

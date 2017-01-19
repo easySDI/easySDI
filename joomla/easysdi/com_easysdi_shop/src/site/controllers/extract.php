@@ -4,7 +4,7 @@
  * Extract - WebService designed to getOrders and setProduct
  * based on the old webservice (rest)
  * 
- * @version     4.4.2
+ * @version     4.4.3
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -503,7 +503,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $platform = $this->response->createElementNS(self::nsSdi, 'sdi:platform');
 
         $this->addAttribute($platform, 'name', 'easySDI');
-        $this->addAttribute($platform, 'version', '4.3.0');
+        $this->addAttribute($platform, 'version', sdiFactory::getSdiVersion());
         $this->addAttribute($platform, 'serviceversion', '4.0');
 
         $orders->appendChild($platform);

@@ -624,6 +624,7 @@ CREATE TABLE [#__sdi_diffusion] (
 	[accessscope_id] [bigint] NOT NULL,
 	[pricing_id] [bigint] NOT NULL,
         [pricing_profile_id] [bigint],
+        [pricing_remark] [nvarchar](max) NULL,
 	[deposit] [nvarchar](255) NULL,
 	[productmining_id] [bigint] NULL,
 	[surfacemin] [nvarchar](50) NULL,
