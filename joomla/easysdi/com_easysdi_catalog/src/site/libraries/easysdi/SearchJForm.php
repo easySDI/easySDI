@@ -346,17 +346,19 @@ class SearchJForm extends SearchForm {
                         $categories = array(0);
                     }
 
+                    //user's organism
+                    $organisms = $sdiUser->getMemberOrganisms();
+
                     $query->where("("
                             . "r.accessscope_id = 1 "
                             . "OR (r.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.category_id IN (" . implode(',', $categories) . ") AND a.entity_guid = r.guid ) > 0) "
-                            . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int) $sdiUser->getMemberOrganisms() . " AND a.entity_guid = r.guid ) = 1) "
+                            . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int) $organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
                             . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int) $sdiUser->id . " AND a.entity_guid = r.guid ) = 1)"
                             . ")"
                     );
                 } else {
                     $query->where("r.accessscope_id = 1 ");
                 }
-
 
                 break;
             case 'definedBoundary':
