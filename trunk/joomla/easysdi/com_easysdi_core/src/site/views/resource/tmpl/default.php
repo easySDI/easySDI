@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.2
+ * @version     4.4.3
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -50,25 +50,8 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
         border-bottom: 1px solid #fff;
     }
 </style>
+
 <script type="text/javascript">
-    function getScript(url, success) {
-        var script = document.createElement('script');
-        script.src = url;
-        var head = document.getElementsByTagName('head')[0],
-                done = false;
-        // Attach handlers for all browsers
-        script.onload = script.onreadystatechange = function () {
-            if (!done && (!this.readyState
-                    || this.readyState == 'loaded'
-                    || this.readyState == 'complete')) {
-                done = true;
-                success();
-                script.onload = script.onreadystatechange = null;
-                head.removeChild(script);
-            }
-        };
-        head.appendChild(script);
-    }
 
     js = jQuery.noConflict();
     js(document).ready(function () {
@@ -109,21 +92,26 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
         var userState = js('#jform_' + right).attr('data-orig') || false;
         if (userState)
             userState = userState.split(',');
-        js.each(rusers, function (key, user) {
-            var option = js('<option></option>').val(user.id).text(user.name);
-            if (
-                    limit === false
-                    || (startup === true
-                            && (
-                                    (userState === false && js.inArray(user.id, rightsarray[right]) > -1)
-                                    || js.inArray(user.id, userState) > -1
-                                    )
-                            )
-                    || (startup === false && right == 2 && user.id == currentUserId)
-                    )
-                option.attr('selected', 'selected');
+        js.each(rusers, function (okey, organism) {
+            var optGroup = js(' <optgroup label="'+organism.name+'"></optgroup>');
+            console.log(organism);
+            js.each(organism.users, function (ukey, user) {
+                var option = js('<option></option>').val(user.id).text(user.name);
+                if (
+                        limit === false
+                        || (startup === true
+                                && (
+                                        (userState === false && js.inArray(user.id, rightsarray[right]) > -1)
+                                        || js.inArray(user.id, userState) > -1
+                                        )
+                                )
+                        || (startup === false && right == 2 && user.id == currentUserId)
+                        )
+                    option.attr('selected', 'selected');
 
-            js('#jform_' + right).append(option).trigger("liszt:updated");
+                optGroup.append(option);
+            });
+            js('#jform_' + right).append(optGroup).trigger("liszt:updated");
         });
     };
 

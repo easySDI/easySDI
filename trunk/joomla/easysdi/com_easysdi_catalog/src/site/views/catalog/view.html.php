@@ -3,7 +3,7 @@
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/SearchHtmlForm.php';
 
 /**
- * @version     4.4.2
+ * @version     4.4.3
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -205,7 +205,7 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
             return false;
         }
 
-        if ($data['searchtype'] == 'advanced') {
+        if (isset($data['searchtype']) && $data['searchtype'] == 'advanced') {
             return true;
         } else {
             return false;

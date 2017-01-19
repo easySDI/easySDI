@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.2
+ * @version     4.4.3
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -66,41 +66,21 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     }
 </style>
 <script type="text/javascript">
-    function getScript(url, success) {
-        var script = document.createElement('script');
-        script.src = url;
-        var head = document.getElementsByTagName('head')[0],
-                done = false;
-        // Attach handlers for all browsers
-        script.onload = script.onreadystatechange = function() {
-            if (!done && (!this.readyState
-                    || this.readyState == 'loaded'
-                    || this.readyState == 'complete')) {
-                done = true;
-                success();
-                script.onload = script.onreadystatechange = null;
-                head.removeChild(script);
+
+    js = jQuery.noConflict();
+    
+    js(document).ready(function () {
+        
+        js('input:hidden.resource_id').each(function () {
+            var name = js(this).attr('name');
+            if (name.indexOf('resource_idhidden')) {
+                js('#jform_resource_id option[value="' + js(this).val() + '"]').attr('selected', true);
             }
-        };
-        head.appendChild(script);
-    }
-    getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', function() {
-        js = jQuery.noConflict();
-        js(document).ready(function() {
-            js('#form-version').submit(function(event) {
-
-            });
-
-
-            js('input:hidden.resource_id').each(function() {
-                var name = js(this).attr('name');
-                if (name.indexOf('resource_idhidden')) {
-                    js('#jform_resource_id option[value="' + js(this).val() + '"]').attr('selected', true);
-                }
-            });
-            js("#jform_resource_id").trigger("liszt:updated");
         });
+        js("#jform_resource_id").trigger("liszt:updated");
+        
     });
+
 
 </script>
 
@@ -195,7 +175,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
             <?php if (!JFactory::getUser()->authorise('core.admin', 'easysdi_core')): ?>
                 <script type="text/javascript">
                     jQuery.noConflict();
-                    jQuery('.tab-pane select').each(function() {
+                            jQuery('.tab-pane select').each(function () {
                         var option_selected = jQuery(this).find(':selected');
                         var input = document.createElement("input");
                         input.setAttribute("type", "hidden");

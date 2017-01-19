@@ -1,5 +1,5 @@
 /**
- * @version     4.4.2
+ * @version     4.4.3
  * @package     com_easysdi_dashboard
  * @copyright   Copyright (C) 2013-2016. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
