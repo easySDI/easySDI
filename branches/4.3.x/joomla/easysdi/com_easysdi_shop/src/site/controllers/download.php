@@ -262,9 +262,6 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         $curldata['url'] = $url;
         $pos = strrpos($url, '.');
         $extension = ($pos) ? substr($url, $pos) : null;
-        if ($extension) {
-            $curldata['fileextension'] = $extension;
-        }
         $curldata['filename'] = $name . $extension;
         return $curlHelper->get($curldata);
     }
