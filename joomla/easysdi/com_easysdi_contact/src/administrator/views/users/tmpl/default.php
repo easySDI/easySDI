@@ -1,9 +1,8 @@
 <?php
-
 /**
- * @version     4.4.3
+ *** @version     4.0.0
  * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -19,7 +18,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css');
 
 $user	= JFactory::getUser();
 $userId	= $user->get('id');
@@ -37,12 +36,6 @@ if ($saveOrder)
 $sortFields = $this->getSortFields();
 ?>
 <script type="text/javascript">
-        js = jQuery.noConflict();
-        js(document).on('click', '.btn-juser', function () {            
-            js('#userjoomlaaction').val(this.id);
-            Joomla.submitform('users.delete');
-        });
-                
 	Joomla.orderTable = function() {
 		table = document.getElementById("sortTable");
 		direction = document.getElementById("directionTable");
@@ -54,16 +47,6 @@ $sortFields = $this->getSortFields();
 		}
 		Joomla.tableOrdering(order, dirn, '');
 	}
-        Joomla.submitbutton = function(task)
-	{
-		if (task === 'users.delete') {
-                    js('#usermngmt').modal('show');                    
-		}
-		else {
-			Joomla.submitform(task);
-		}
-	}
-        
 </script>
 
 <?php
@@ -269,29 +252,8 @@ if (!empty($this->extra_sidebar)) {
 
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
-                <input type="hidden" name="userjoomlaaction" id="userjoomlaaction" value="" />
 		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
 		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
-            
-        <div class="modal fade" id="usermngmt" tabindex="-1" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><?php echo JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ACTION_TITLE'); ?></h4>
-                    </div>
-                    <div class="modal-body">
-                        <p><?php echo JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ACTION_BODY'); ?> </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" id="btn_cancel" class="btn btn-default " data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
-                        <button type="button" id="btn_delete" class="btn btn-danger btn-juser"><?php echo JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ACTION_DELETE'); ?></button>
-                        <button type="button" id="btn_disable" class="btn btn-warning btn-juser"><?php echo JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ACTION_DISABLE'); ?></button>
-                        <button type="button" id="btn_keep" class="btn btn-primary btn-juser"><?php echo JText::_('COM_EASYSDI_CONTACT_USER_DELETE_ACTION_KEEP'); ?></button>
-                    </div>
-                </div>
-            </div>
-        </div>
 </form>

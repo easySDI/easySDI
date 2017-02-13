@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     3.3.0
  * @package     com_easysdi_monitor
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -23,7 +23,7 @@ class Easysdi_monitorController extends JControllerLegacy
         public function display($cachable = false, $urlparams = false)
 	{
 		// Get the document object.
-		$document = JFactory::getDocument();
+		$document	= JFactory::getDocument();
 
 		// Set the default view name and format from the Request.
 		$vName = $this->input->get('view', 'proxy');

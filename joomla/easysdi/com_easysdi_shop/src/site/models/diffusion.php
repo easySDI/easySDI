@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -16,8 +16,6 @@ jimport('joomla.event.dispatcher');
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/userroleresource.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_contact/tables/role.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
@@ -27,7 +25,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
 class Easysdi_shopModelDiffusion extends JModelForm {
 
     var $_item = null;
-
+    
     /**
      * Method to auto-populate the model state.
      *
@@ -94,15 +92,14 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $this->_item->perimeter = array();
                 if ($perimeters) {
                     foreach ($perimeters as $perimeter) {
-                        array_push($this->_item->perimeter, $perimeter->perimeter_id);
+                        $this->_item->perimeter [$perimeter->perimeter_id] = $perimeter->buffer;
                     }
                 }
                 //Parse fileurl/packageurl to retrieve user/pwd
-                if (isset($this->_item->fileurl)) {
+                if(isset($this->_item->fileurl))
                     $this->_item->fileurl = $this->unparseurl($this->_item->fileurl);
-                } elseif (isset($this->_item->packageurl)) {
+                elseif(isset($this->_item->packageurl))
                     $this->_item->packageurl = $this->unparseurl($this->_item->packageurl);
-                }
 
                 //Load properties and properties values
                 $diffusionpropertyvalue = JTable::getInstance('diffusionpropertyvalue', 'Easysdi_shopTable');
@@ -117,32 +114,22 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $this->setError($error);
             }
         }
-
-        //Load linked object to fill field(s)
-        $version = JTable::getInstance('version', 'Easysdi_coreTable');
-        $version->load($this->_item->version_id);
-        $this->_item->version_id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusionversion.id');
-        $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
-        $resource->load($version->resource_id);
-        $this->_item->resource_id = $resource->id;
-
         if (empty($id)) {
+            $this->_item->version_id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusionversion.id');
+
+            $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
+            $version = JTable::getInstance('version', 'Easysdi_coreTable');
+            $version->load($this->_item->version_id);
+            $resource->load($version->resource_id);
             $this->_item->name = $resource->name;
         }
-        $this->_item->organism_id = $resource->organism_id;
-
-        //Load extraction managers
-        $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
-        $this->_item->managers_id = $userroleresource->loadByResourceId($version->resource_id, 'role_id = ' . Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE);
-
-
 
         return $this->_item;
     }
 
     private function unparseurl($sourceurl) {
         //Parse fileurl to retrieve user/pwd
-        if (!$url = parse_url($sourceurl)) {
+        if(!$url = parse_url($sourceurl)){
             return false;
         }
         $this->_item->userurl = isset($url['user']) ? $url['user'] : '';
@@ -245,8 +232,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
         $form->setFieldAttribute('notifieduser_id', 'query', $this->getNotifieduserListQuery());
 
-        $form->setFieldAttribute('managers_id', 'query', $this->getExtractionManagerListQuery());
-
         return $form;
     }
 
@@ -286,7 +271,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
         //Save
         $table = $this->getTable();
-
+                
         if ($table->save($data) === true) {
             $data['guid'] = $table->guid;
             $id = $table->id;
@@ -329,6 +314,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $array = array();
                 $array['diffusion_id'] = $id;
                 $array['perimeter_id'] = $key;
+                ($perimeter == 1) ? $array['buffer'] = 0 : $array['buffer'] = 1;
                 if (!$diffusionperimeter->save($array))
                     return false;
 
@@ -358,18 +344,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             //Delete entries no more usefull
             if (!$this->cleanTable($id, '#__sdi_diffusion_propertyvalue', $ids))
                 return false;
-
-            //Extraction Manager
-            $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
-            $userroleresource->deleteByResourceId($data['resource_id'], Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE);
-            $users = $data['managers_id'];
-            foreach ($users as $user) {
-                $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
-                $userroleresource->user_id = $user;
-                $userroleresource->role_id = Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE;
-                $userroleresource->resource_id = $data['resource_id'];
-                $userroleresource->store();
-            }
 
             //Update the metadata stored in the remote catalog 
             if (!$this->updateCSWMetadata($table->version_id)):
@@ -472,27 +446,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
     /**
      * 
-     * @return type
-     */
-    private function getExtractionManagerListQuery() {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('uro.user_id as id, ju.name as value, o.name as groupname')
-                ->from('#__sdi_user_role_organism as uro')
-                ->innerJoin('#__sdi_user as u on u.id = uro.user_id')
-                ->innerJoin('#__users as ju on ju.id = u.user_id')
-                ->innerJoin('#__sdi_user_role_organism m ON u.id = m.user_id AND m.role_id = 1')
-                ->innerJoin('#__sdi_organism o ON m.organism_id = o.id')
-                ->where('uro.organism_id=' . (int) $this->_item->organism_id)
-                ->where('uro.role_id = ' . (int) Easysdi_shopHelper::ROLE_EXTRACTIONRESPONSIBLE)
-                ->order('o.name')
-                ->order('ju.name');
-
-        return $query->__toString();
-    }
-
-    /**
-     * 
      * Get the sql query for Notifieduser_id field
      * 
      * @return string
@@ -500,8 +453,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
     private function getNotifieduserListQuery() {
         $user = sdiFactory::getSdiUser();
         $data = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusion.data', array());
-        $version_id = (isset($this->_item)) ? $this->_item->version_id : $data['version_id'];
-
+        $version_id = (isset($this->_item))?$this->_item->version_id : $data['version_id'] ;
+        
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('o.organism_id');
@@ -538,14 +491,11 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $users_user = $db->loadColumn();
 
         $query_all = $db->getQuery(true);
-        $query_all->select('u.id, ju.name as value, o.name as groupname');
+        $query_all->select('u.id, ju.name as value');
         $query_all->from('#__sdi_user u');
         $query_all->innerJoin('#__users ju ON ju.id=u.user_id');
-        $query_all->innerJoin('#__sdi_user_role_organism m ON u.id = m.user_id AND m.role_id = 1');
-        $query_all->innerJoin('#__sdi_organism o ON m.organism_id = o.id');
         $query_all->where('u.id IN (' . implode(',', array_unique(array_merge($users_user, $users_resource))) . ')');
-        $query_all->order('o.name');
-        $query_all->order('ju.name');
+        $query_all->order('value');
 
         return $query_all->__toString();
     }

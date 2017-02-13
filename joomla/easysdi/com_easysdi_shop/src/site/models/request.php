@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -233,15 +233,13 @@ class Easysdi_shopModelRequest extends JModelForm {
         $keys['order_id'] = (int) $id;
         $keys['diffusion_id'] = (int) $diffusion_id;
         $orderdiffusion->load($keys);
+        $orderdiffusion->fee = (int) $data['fee'][$diffusion_id];
         $orderdiffusion->remark = $data['remark'][$diffusion_id];
         if (!empty($files['file'][$diffusion_id][0]['name'])):
-            //get clean filename for storage
-            $storeFileName = Easysdi_shopHelper::getCleanFilename($files['file'][$diffusion_id][0]['name']);
             //Save uploaded file 
             $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
             $orderdiffusion->size = $files['file'][$diffusion_id][0]['size'];
-            $orderdiffusion->file = $storeFileName;
-            $orderdiffusion->displayName = $storeFileName;
+            $orderdiffusion->file = $files['file'][$diffusion_id][0]['name'];
             $extractsFilesPath = JPATH_BASE . '/' . $folder . '/' . $id . '/' . $diffusion_id;
             if (!file_exists($extractsFilesPath)) {
                 if (!mkdir($extractsFilesPath, 0755, true)) {
@@ -250,7 +248,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             }
             $file = $files['file'][$diffusion_id][0]['tmp_name'];
 
-            $newfile = $extractsFilesPath . '/' . $storeFileName;
+            $newfile = $extractsFilesPath . '/' . $files['file'][$diffusion_id][0]['name'];
             if (!move_uploaded_file($file, $newfile)):
 
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_COPY_FILE_ERROR_MESSAGE'), 'error');
@@ -258,11 +256,11 @@ class Easysdi_shopModelRequest extends JModelForm {
                 return false;
             endif;
         endif;
-        if (!empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name']) || !empty($data['fee'][$diffusion_id])):
+        if (isset($orderdiffusion->fee) || !empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
             $orderdiffusion->completed = date('Y-m-d H:i:s');
             $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
         endif;
-        $orderdiffusion->created_by = (int) sdiFactory::getSdiUser()->juser->id;
+        $orderdiffusion->created_by = (int) sdiFactory::getSdiUser()->id;
         $orderdiffusion->store();
 
         //store pricing in pricing tables if pricing is enabled
@@ -277,7 +275,8 @@ class Easysdi_shopModelRequest extends JModelForm {
             $cfg_rounding = (float) JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
 
             $posp->cal_total_amount_ti = Easysdi_shopHelper::rounding($floatFee, $cfg_rounding);
-            
+            $posp->cal_total_rebate_ti = 0.0; //cannot set a rebate in manual product processing
+
             Easysdi_shopHelper::updatePricing($posp, $pos, $po);
         }
 
@@ -321,7 +320,8 @@ class Easysdi_shopModelRequest extends JModelForm {
         $keys = array();
         $keys['order_id'] = (int) $id;
         $keys['diffusion_id'] = (int) $diffusion_id;
-        $orderdiffusion->load($keys);        
+        $orderdiffusion->load($keys);
+        $orderdiffusion->fee = 0.0;
         $orderdiffusion->remark = $data['rejectionremark'];
         $orderdiffusion->completed = date('Y-m-d H:i:s');
         $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER;

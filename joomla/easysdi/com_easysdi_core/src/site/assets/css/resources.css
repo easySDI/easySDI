@@ -2,11 +2,11 @@
 
 th#resources_name{
     position: relative;
-    background: transparent url(../../../../components/com_easysdi_core/libraries/DataTables-1.9.4/media/images/sort_both.png) no-repeat right center;
+    background: transparent url(/administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/images/sort_both.png) no-repeat right center;
 }
 
 span#resources_ordering{
-    background: transparent url(../../../../components/com_easysdi_core/libraries/DataTables-1.9.4/media/images/sort_asc.png) no-repeat right center;
+    background: transparent url(/administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/images/sort_asc.png) no-repeat right center;
     position: absolute;
     right: 0;
     width: 1em;
@@ -14,4 +14,13 @@ span#resources_ordering{
 
 tr[id$=_resource]{
     display: none;
+}
+
+.modal-dialog{
+	overflow-y: initial !important;	
+}
+
+.modal-body{
+	max-height: 250px;
+	overflow-y: auto;
 }

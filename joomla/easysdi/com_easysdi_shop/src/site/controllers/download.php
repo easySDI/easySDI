@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -24,9 +24,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
     private function stop($url = '', $message = 'COM_EASYSDI_SHOP_DOWNLOAD_NO_RIGHT', $type = 'warning') {
         //If the call came from another client than Joomla :
         //Return an http code 401
-        $jinput = JFactory::getApplication()->input;
-        $origin = $jinput->get('origin');
-        if (!JSession::checkToken('get') && $origin<>'map') {
+        if (!JSession::checkToken('get')) {
             $this->stopOnUnAuthorize();
             return false;
         }
@@ -35,10 +33,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         if (empty($url)) {
             $uri = JUri::getInstance()->toString();
             $u64 = base64_encode($uri);
-            $url = 'index.php?option=com_users&view=login&return=' . $u64;
-            
-            if ($jinput->get('tmpl'))
-                $url .= "&tmpl=".$jinput->get('tmpl');
+            $url = '/index.php?option=com_users&view=login&return=' . $u64;
         }
         $this->setMessage(JText::_($message), $type);
         $this->setRedirect(JRoute::_($url, false));
@@ -122,14 +117,14 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                 break;
             case 3: //accessscope by organism
                 $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
-                $organism = $this->sdiUser->getMemberOrganisms();
+                $organism = $sdiUser->getMemberOrganisms();
                 if (!in_array($organism[0]->id, $organisms))
                     return $this->stop();
                 return true;
                 break;
             case 4: //accessscope by user
                 $users = sdiModel::getAccessScopeUser($diffusion->guid);
-                if (!in_array($this->sdiUser->id, $users))
+                if (!in_array($sdiUser->id, $users))
                     return $this->stop();
                 return true;
                 break;
@@ -193,67 +188,22 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             error_reporting(0);
 
             if (!empty($diffusion->file)) { //Download local file
-                $file = $fileFolder . '/' . $diffusion->file;
                 $pos = strrpos($diffusion->file, '.');
                 $extension = substr($diffusion->file, $pos);
-
-                error_reporting(0);
-
-                $chunk = 8 * 1024 * 1024; // bytes per chunk (10 MB)
-
-                $size = filesize($file);
-                if ($size > $chunk) {
-                    set_time_limit(0);
-                    ignore_user_abort(false);
-                    ini_set('output_buffering', 0);
-                    ini_set('zlib.output_compression', 0);
-
-                    $fh = fopen($file, "rb");
-
-                    if ($fh === false) {
-                        $this->setMessage(JText::_('RESOURCE_LOCATION_UNAVAILABLE'), 'error');
-                        die();
-                    }
-
-                    header('Content-Description: File Transfer');
-                    header('Content-Type: application/octetstream');
-                    header("Accept-Ranges: bytes");
-                    header('Content-Disposition: attachement; filename="' . $diffusion->name . $extension . '"');
-                    header('Expires: -1');
-                    header('Cache-Control: no-cache');
-                    header("Cache-Control: public, must-revalidate, post-check=0, pre-check=0");
-                    header('Pragma: public');
-                    //do not check filesize on 32bits integer systems : http://php.net/manual/en/function.filesize.php#refsect1-function.filesize-returnvalues
-                    if (PHP_INT_SIZE >= 8) {
-                        header('Content-Length: ' . filesize($file));
-                    }
-
-                    // Repeat reading until EOF
-                    while (!feof($fh)) {
-                        $buffer = fread($fh, $chunk);
-                        echo $buffer;
-                        ob_flush();  // flush output
-                        //flush();
-                    }
-                } else {
-                    $pos = strrpos($diffusion->file, '.');
-                    $extension = substr($diffusion->file, $pos);
-                    $file = @file_get_contents($fileFolder . '/' . $diffusion->file);
-                    // If cannot DL the file, it returns an error msg to the client
-                    if ($file === false) {
-                        throw new Exception();
-                    }
-                    ini_set('zlib.output_compression', 0);
-                    header('Pragma: public');
-                    header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-                    header('Content-Transfer-Encoding: none');
-                    header("Content-Length: " . strlen($file));
-                    header('Content-Type: application/octetstream; name="' . $extension . '"');
-                    header('Content-Disposition: attachement; filename="' . $diffusion->name . $extension . '"');
-                    echo $file;
-                    die();
+                $file = @file_get_contents($fileFolder . '/' . $diffusion->file);
+                // If cannot DL the file, it returns an error msg to the client
+                if ($file === false) {
+                    throw new Exception();
                 }
-                
+                ini_set('zlib.output_compression', 0);
+                header('Pragma: public');
+                header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+                header('Content-Transfer-Encoding: none');
+                header("Content-Length: " . strlen($file));
+                header('Content-Type: application/octetstream; name="' . $extension . '"');
+                header('Content-Disposition: attachement; filename="' . $diffusion->name . $extension . '"');
+                echo $file;
+                die();
             } elseif (!empty($diffusion->fileurl)) { //Download remote file
                 if (!$this->call($diffusion->fileurl, $diffusion->name)) {
                     //Return error to client

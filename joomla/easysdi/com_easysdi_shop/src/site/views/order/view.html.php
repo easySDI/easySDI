@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -39,32 +39,9 @@ class Easysdi_shopViewOrder extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        //use direct access validation link, needs validation token
         if ($this->state->get('validation.manager')) {
-            $validation_token = $this->state->get('validation_token');
-            if (strlen($validation_token) < 64 || $this->item->validation_token != $validation_token) {
-                //on fail, return to home
-                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                JFactory::getApplication()->redirect(JRoute::_('index.php', false));
-                return false;
-            }
-            //token is OK, set validation user
             $this->user = sdiFactory::getSdiUser($this->state->get('validation.manager'));
-        }
-        //client direct access with token
-        elseif ($this->state->get('access_token')) {
-            $access_token = $this->state->get('access_token');
-            if (strlen($access_token) < 64 || $this->item->access_token != $access_token) {
-                //on fail, return to home
-                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                JFactory::getApplication()->redirect(JRoute::_('index.php', false));
-                return false;
-            }
-            //token is OK, set user = client
-            $this->user = sdiFactory::getSdiUser($this->item->user_id);
-        }
-        //connected user, use current sdiUser
-        else {
+        } else {
             $this->user = sdiFactory::getSdiUser();
         }
 

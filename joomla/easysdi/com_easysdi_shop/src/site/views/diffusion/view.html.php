@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -55,8 +55,6 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
                 return false;
             }
         }
-        
-        $this->pricingisActivated = (bool)$this->params->get('is_activated',false);
 
         $db = JFactory::getDbo();
 
@@ -66,8 +64,7 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $query->select('p.*')
                 ->from('#__sdi_property p')
                 ->where('p.state = 1')
-                ->where("(p.accessscope_id = 1 OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = p.guid ) = 1) OR (p.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = p.guid ) = 1))")
-                ->order("p.ordering");
+                ->where("(p.accessscope_id = 1 OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int)$organisms[0]->id . " AND a.entity_guid = p.guid ) = 1) OR (p.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int)$this->user->id . " AND a.entity_guid = p.guid ) = 1))");
                 //TODO add organism category accessscope
         $db->setQuery($query);
         $this->properties = $db->loadObjectList();

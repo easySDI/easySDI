@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -33,7 +33,6 @@ class Easysdi_contactHelper {
         );
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
-        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_processing');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -182,11 +182,11 @@ class Easysdi_shopModelRequests extends JModelList {
             // Filter by dates (order sent date)
             $sentfrom = $this->getState('filter.sentfrom');
             if (strlen($sentfrom) > 1) {
-                $query->where('a.sent >= \'' . $sentfrom . ' 00:00:00\'');
+                $query->where('a.sent >= \'' . $sentfrom . '\'');
             }
             $sentto = $this->getState('filter.sentto');
             if (strlen($sentto) > 1) {
-                $query->where('a.sent <= \'' . $sentto . ' 23:59:59\'');
+                $query->where('a.sent <= \'' . $sentto . '\'');
             }
         }
 
@@ -219,6 +219,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->group('a.orderstate_id');
         $query->group('a.user_id');
         $query->group('a.thirdparty_id');
+        $query->group('a.buffer');
         $query->group('a.surface');
         $query->group('a.remark');
         $query->group('a.sent');
@@ -233,17 +234,13 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->group('a.level');
         $query->group('a.freeperimetertool');
         $query->group('a.validated');
-        $query->group('a.validated_by');
-        $query->group('a.usernotified');
-        $query->group('a.access_token');
-        $query->group('a.validation_token');
         $query->group('uc.name');
         $query->group('state.value');
         $query->group('type.value');
         $query->group('juclient.name');
         $query->group('oclient.name');
-        
-        $query->order('a.sent DESC');
+
+        $query->order('a.created DESC');
 
         return $query;
     }

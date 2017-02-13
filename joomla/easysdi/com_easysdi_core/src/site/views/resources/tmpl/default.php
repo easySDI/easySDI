@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -18,22 +18,24 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.modal');
 JHtml::_('behavior.calendar');
 
+
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v=' . sdiFactory::getSdiFullVersion());
+//$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js.php');
+$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
 ?>
-<style>
+<style> 
     .tooltip{
         width: 250px;
     }
-
+    
     .tooltip-inner {
         white-space:pre-wrap;
     }
-
+    
 </style>
-<script type="text/javascript">
-    var baseUrl = "<?php echo JUri::base(); ?>index.php?";
-</script>
+ <script type="text/javascript">
+      var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
+    </script>
 <div class="core front-end-edit">
     <?php if (!empty($this->parent)): ?>
         <h1><?php echo $this->parent->name; ?>: <?php echo $this->parent->version_name; ?></h1>
@@ -41,10 +43,9 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
         <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_RESOURCES'); ?></h1>
     <?php endif; ?>
 
-    <?php
-    if (isset($this->user)):
+    <?php if (isset($this->user)):
         $resourcetypes = $this->user->getResourceType();
-        ?>
+    ?>
         <div class="well sdi-searchcriteria">
             <div class="row-fluid">
                 <form id='criterias' class="form-search" action="" method="post">
@@ -64,30 +65,30 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
-                        <?php elseif (!empty($this->parent)): ?>
-                            <a class="btn btn-success" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
+                        <?php elseif(!empty($this->parent)): ?>
+                             <a class="btn btn-success" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
                                 <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_BACK'); ?>
                             </a>
                         <?php endif; ?>
                     </div>
                     <div class="btn-group pull-right">
-                        <?php if (count($this->userOrganisms) > 1): ?>
-                            <div id="filterorganism" >
-                                <select id="filter_userorganism" name="filter_userorganism" onchange="this.form.submit();" class="inputbox">
-                                    <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_USER_ORGANISM_FILTER'); ?></option>
-                                    <?php foreach ($this->userOrganisms as $userOrganism): ?>
-                                        <option value="<?php echo $userOrganism->id; ?>" <?php
-                                        $filterName = (!empty($this->parent)) ? 'filter.userorganism.children' : 'filter.userorganism';
-                                        if ($this->state->get($filterName) == $userOrganism->id) : echo 'selected="selected"';
-                                        endif;
-                                        ?> ><?php echo $userOrganism->name; ?></option>
-                                            <?php endforeach; ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
+                        <?php if(count($this->userOrganisms)>1):?>
+                        <div id="filterorganism" >
+                            <select id="filter_userorganism" name="filter_userorganism" onchange="this.form.submit();" class="inputbox">
+                                <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_USER_ORGANISM_FILTER'); ?></option>
+                                <?php foreach ($this->userOrganisms as $userOrganism): ?>
+                                    <option value="<?php echo $userOrganism->id; ?>" <?php
+                                    $filterName = (!empty($this->parent)) ? 'filter.userorganism.children' : 'filter.userorganism';
+                                    if ($this->state->get($filterName) == $userOrganism->id) : echo 'selected="selected"';
+                                    endif;
+                                    ?> ><?php echo $userOrganism->name; ?></option>
+                                        <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <?php endif;?>
 
                         <div id="filtertype" >
-                            <select id="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif; ?>" name="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif; ?>" onchange="this.form.submit();" class="inputbox">
+                            <select id="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif;?>" name="filter_resourcetype<?php if (!empty($this->parent)): ?>_children<?php endif;?>" onchange="this.form.submit();" class="inputbox">
                                 <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCE_TYPE_FILTER'); ?></option>
                                 <?php foreach ($resourcetypes as $resourcetype): ?>
                                     <option value="<?php echo $resourcetype->id; ?>" <?php
@@ -102,7 +103,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
                         </div>
                         <div id="filterstatus">
 
-                            <select id="filter_status<?php if (!empty($this->parent)): ?>_children<?php endif; ?>" name="filter_status<?php if (!empty($this->parent)): ?>_children<?php endif; ?>" onchange="this.form.submit();" class="inputbox">
+                            <select id="filter_status<?php if (!empty($this->parent)): ?>_children<?php endif;?>" name="filter_status<?php if (!empty($this->parent)): ?>_children<?php endif;?>" onchange="this.form.submit();" class="inputbox">
                                 <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA_STATE_FILTER'); ?></option>
                                 <?php foreach ($this->metadatastates as $status): ?>
                                     <option value="<?php echo $status->id; ?>" <?php
@@ -116,11 +117,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
                         </div>
                         <div id="filtersearch" >
                             <div class="filter-search">
-                                <label for="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif; ?>" class="element-invisible">Rechercher</label>
-                                <input type="text" name="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif; ?>" id="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif; ?>" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php
-                                $filterName = (!empty($this->parent)) ? 'filter.search.children' : 'filter.search';
-                                echo $this->state->get($filterName);
-                                ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
+                                <label for="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" class="element-invisible">Rechercher</label>
+                                <input type="text" name="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" id="filter_search<?php if (!empty($this->parent)): ?>_children<?php endif;?>" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php $filterName = (!empty($this->parent)) ? 'filter.search.children' : 'filter.search'; echo $this->state->get($filterName); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
 
                                 <button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                                 <button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" id="search-reset"><i class="icon-remove"></i></button>
@@ -141,46 +139,43 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
     <div class="items">
         <div class="well">
             <div class="row-fluid">
+                <?php $show = count($this->items); ?>
+                <table id="resources" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th id="resources_name"  class="resource_name"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?><span id='resources_ordering'><?php echo $this->state->get('filter.ordering');?></span></th>
+                            <th class="resource_type"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
+                            <th class="resource_versions"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
+                            <th class="resource_metadata_actions"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
+                            <th class="resource_management_actions"></th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    </tfoot>
+                    <tbody>
+                        <?php foreach ($this->items as $item) : ?>
+                        <tr id="<?php echo $item->id;?>_resource">
+                            <td id="<?php echo $item->id;?>_resource_name" class="resource_name">
+                                
+                            </td>
+                            <td id="<?php echo $item->id;?>_resource_type" class="resource_type">
+                                
+                            </td>
+                            <td id="<?php echo $item->id;?>_resource_versions" class="resource_versions">
+                                
+                            </td>
+                            <td id="<?php echo $item->id;?>_resource_metadata_actions" class="resource_metadata_actions">
+                                
+                            </td>
+                            <td id="<?php echo $item->id;?>_resource_management_actions" class="resource_management_actions">
+                                
+                            </td>
+                        </tr>
+                        <?php endforeach;?>
+                    </tbody>
+                </table>
                 <?php
-                $show = count($this->items);
-                if ($show):
-                    ?>
-                    <table id="resources" class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th id="resources_name"  class="resource_name"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?><span id='resources_ordering'><?php echo $this->state->get('filter.ordering'); ?></span></th>
-                                <th class="resource_type"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
-                                <th class="resource_versions"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
-                                <th class="resource_metadata_actions"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
-                                <th class="resource_management_actions"></th>
-                            </tr>
-                        </thead>
-                        <tfoot>
-                        </tfoot>
-                        <tbody>
-                            <?php foreach ($this->items as $item) : ?>
-                                <tr id="<?php echo $item->id; ?>_resource">
-                                    <td id="<?php echo $item->id; ?>_resource_name" class="resource_name">
-
-                                    </td>
-                                    <td id="<?php echo $item->id; ?>_resource_type" class="resource_type">
-
-                                    </td>
-                                    <td id="<?php echo $item->id; ?>_resource_versions" class="resource_versions">
-
-                                    </td>
-                                    <td id="<?php echo $item->id; ?>_resource_metadata_actions" class="resource_metadata_actions">
-
-                                    </td>
-                                    <td id="<?php echo $item->id; ?>_resource_management_actions" class="resource_management_actions">
-
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                    <?php
-                else:
+                if (!$show):
                     echo JText::_('COM_EASYSDI_CORE_NO_ITEMS');
                 endif;
                 ?>
@@ -191,11 +186,10 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
         <div class="pagination">
             <p class="resources_counter">
                 <?php
-                $resourceFrom = ($this->pagination->pagesCurrent - 1) * $this->pagination->limit + 1;
-                $resourceTo = min($resourceFrom + $this->pagination->limit - 1, $this->pagination->total);
-
-                echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESULTS') . ' ' . $resourceFrom . ' ' . JText::_('COM_EASYSDI_CORE_RESOURCES_TO') . ' ' . $resourceTo . ' ' . JText::_('COM_EASYSDI_CORE_RESOURCES_OF') . ' ' . $this->pagination->total;
-                ?>
+                $resourceFrom   = ($this->pagination->pagesCurrent-1)*$this->pagination->limit + 1;
+                $resourceTo     = min($resourceFrom + $this->pagination->limit - 1, $this->pagination->total);
+                
+                echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESULTS').' '.$resourceFrom.' '.JText::_('COM_EASYSDI_CORE_RESOURCES_TO').' '.$resourceTo.' '.JText::_('COM_EASYSDI_CORE_RESOURCES_OF').' '.$this->pagination->total; ?>
             </p>
             <p class="counter">
                 <?php echo $this->pagination->getPagesCounter(); ?>
@@ -280,29 +274,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css?v
             <div class="modal-footer">
                 <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- removeWithOrphan modal -->
-<div class="modal fade" id="removeWithOrphanModal" tabindex="-1" role="dialog" aria-labelledby="removeWithOrphanModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></h4>
-            </div>
-            <div id="removeWithOrphanModalBody" class="modal-body">
-                <?php echo JText::_('COM_EAYSDI_CORE_DELETE_PROBLEM'); ?>
-                <span id="missingMetadata"></span>
-                <br>
-                <?php echo JText::_('COM_EAYSDI_CORE_REMOVEWITHORPHAN_CONFIRM'); ?>
-                <span id="removeWithOrphanModalChildrenList"></span>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn" id="btn_removewithorphan_cancel" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
-                <a href="#" id="btn_removewithorphan"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_REMOVEWITHORPHAN_ITEM'); ?></button></a>
             </div>
         </div>
     </div>

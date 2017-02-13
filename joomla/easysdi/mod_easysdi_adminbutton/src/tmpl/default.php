@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     mod_easysdi_adminbutton
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 $document = JFactory::getDocument();
-$document->addStyleSheet(JURI::base() . 'modules/mod_easysdi_adminbutton/assets/css/modeasysdiadminbutton.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet(JURI::base() . 'modules/mod_easysdi_adminbutton/assets/css/modeasysdiadminbutton.css');
 ?>
 <div class="row-fluid">
     <div class="span12 easysdiadminbutton">

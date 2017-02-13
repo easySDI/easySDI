@@ -9,47 +9,16 @@
     <available file="${joomla.administrator.components.dir}/${core.component.name}" type="dir" property="core.admin.exist"/>
     <available file="${joomla.site.components.dir}/${core.component.name}" type="dir" property="core.site.exist"/>
     
-    <target name="package" depends="geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, leaflet-concat, leaflet-minify, leaflet-concat-css, write-xml, build-info, zip-package" description="Main target" />
-    <target name="sync-package" depends="copy-administrator, copy-site, geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, leaflet-concat, leaflet-minify, leaflet-concat-css, write-xml, build-info, zip-package" description="Main target" />
+    <target name="package" depends="geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
     <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
-    
-    <!--
-        Cretae a php file containing version and revision of easySDI in variables.
-        Call with antcall : parameter ${destinationfile} must contain the destination file
-    -->
-    <target name="create-sdi-revision-file">
-        <!-- write revision to a temp file -->
-        <property name="svnrevision.temp.file" value="${root.out.dir}/svnrevisiontemp.txt"/>
-        <exec executable="svnversion" output="${svnrevision.temp.file}">
-            <arg line="${parent.src.out.dir}"/>
-        </exec>
-        <!-- load revision, clean with regex, store in property and delete file -->
-        <loadfile srcfile="${svnrevision.temp.file}" property="php.var.svnrevision">
-            <filterchain>
-                <striplinebreaks/>
-                <replaceregex pattern="[^0-9:]" replace="" flags="gi"/>
-                <replaceregex pattern=":" replace="-" flags="gi"/>
-            </filterchain>
-        </loadfile>
-        <delete file="${svnrevision.temp.file}"/>
-        <!-- write php file -->
-        <echo file="${destinationfile}" append="false">&lt;?php${line.separator}</echo>
-        <echo file="${destinationfile}" append="true">$sdi_build_version=&quot;${version}&quot;;${line.separator}</echo>
-        <echo file="${destinationfile}" append="true">$sdi_build_revision=&quot;${php.var.svnrevision}&quot;;${line.separator}</echo>
-    </target>
-    
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
         Copy the files from the Admin.
     --> 
     <target name="copy-administrator" if="core.admin.exist">
-        
-        <echo>Create sdiBuildInfos.php in source files</echo>
-        <antcall target="core.create-sdi-revision-file">
-            <param name="destinationfile" value="${joomla.administrator.components.dir}/${core.component.name}/libraries/easysdi/common/sdiBuildInfos.php"/>
-        </antcall>
         
         <echo>Copy administrator structure of ${core.component.name} component</echo>
         <copy todir="${core.src.out.dir}/administrator" overwrite="true">
@@ -58,12 +27,10 @@
                 <exclude name="script.*"/>
             </fileset>
         </copy>
-        
         <echo>Copy administrator language file of ${core.component.name} component</echo>
         <copy todir="${core.src.out.dir}/administrator/language" overwrite="true">
             <fileset dir="${joomla.administrator.language.dir}" includes="**/*${core.component.name}.ini **/*${core.component.name}.sys.ini"/>
         </copy>
-        
         <echo>Copy administrator deployement xml file of ${core.component.name} component</echo>
         <copy todir="${core.src.out.dir}">
             <fileset dir="${joomla.administrator.components.dir}/${core.component.name}">
@@ -110,22 +77,28 @@
                         <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
                         <file driver="mysql" charset="utf8">sql/install/mysql/insert.sql</file>
                         <file driver="mysql" charset="utf8">sql/install/mysql/alter.sql</file>
-                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
+			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
                         <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/insert.sql</file>
                         <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/alter.sql</file>
+			<file driver="postgresql" charset="utf8">sql/install/postgresql/install.sql</file>
+                        <file driver="postgresql" charset="utf8">sql/install/postgresql/insert.sql</file>
+                        <file driver="postgresql" charset="utf8">sql/install/postgresql/alter.sql</file>
+
                     </sql>
                 </install>
                 <uninstall> <!-- Runs on uninstall -->
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
-                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
+			<file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
+			<file driver="postgresql" charset="utf8">sql/install/postgresql/uninstall.sql</file>
                     </sql>
                 </uninstall>
                 <update>
-                    <schemas>
-                        <schemapath type="mysql">sql/updates/mysql</schemapath>
-                        <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
-                    </schemas>
+                        <schemas>
+                                <schemapath type="mysql">sql/updates/mysql</schemapath>
+                                <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
+                                <schemapath type="postgresql">sql/updates/postgresql</schemapath>
+                        </schemas>
                 </update>
 
                 <files folder="site">
@@ -138,7 +111,6 @@
                     <folder>controllers</folder>
                     <folder>helpers</folder>
                     <folder>assets</folder>
-                    <folder>libraries</folder>
                 </files>
                 <languages folder="site">
                     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.ini</language>
@@ -147,39 +119,6 @@
                 </languages>
                 <administration>
                     <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_SOLUTION</menu>
-                    <submenu>
-                        <!--
-                                Note that all & must be escaped to &amp; for the file to be valid
-                                XML and be parsed by the installer
-                        -->
-                        <menu link="option=com_easysdi_core" 
-                              img="class:sdi-menu-home"
-                              alt="EasySDI/Home">COM_EASYSDI_SOLUTION_HOME</menu>
-                        <menu link="option=com_easysdi_contact"
-                              img="class:sdi-menu-contact" 
-                              alt="EasySDI/Contact">COM_EASYSDI_SOLUTION_CONTACT</menu>
-                        <menu link="option=com_easysdi_catalog"
-                              img="class:sdi-menu-catalog" 
-                              alt="EasySDI/Catalog">COM_EASYSDI_SOLUTION_CATALOG</menu>
-                        <menu link="option=com_easysdi_shop"
-                              img="class:sdi-menu-shop" 
-                              alt="EasySDI/Shop">COM_EASYSDI_SOLUTION_SHOP</menu>
-                        <menu link="option=com_easysdi_processing"
-                              img="class:sdi-menu-processing" 
-                              alt="EasySDI/Processing">COM_EASYSDI_SOLUTION_PROCESSING</menu>
-                        <menu link="option=com_easysdi_service"
-                              img="class:sdi-menu-service" 
-                              alt="EasySDI/Service">COM_EASYSDI_SOLUTION_SERVICE</menu>
-                        <menu link="option=com_easysdi_map"
-                              img="class:sdi-menu-map" 
-                              alt="EasySDI/Map">COM_EASYSDI_SOLUTION_MAP</menu>
-                        <menu link="option=com_easysdi_monitor"
-                              img="class:sdi-menu-monitor" 
-                              alt="EasySDI/Monitor">COM_EASYSDI_SOLUTION_MONITOR</menu>
-                        <menu link="option=com_easysdi_dashboard"
-                              img="class:sdi-menu-dashboard" 
-                              alt="EasySDI/Dashboard">COM_EASYSDI_SOLUTION_DASHBOARD</menu>
-                    </submenu>                    
         
                     <files folder="administrator">
                         <filename>access.xml</filename>
@@ -227,12 +166,6 @@
             <entry key="build" value="${version}-r${svnrevision}"/>
             <entry key="build-owner" value="${user.name}"/>
         </propertyfile>
-        
-        <echo>Create sdiBuildInfos.php in package</echo>
-        <antcall target="core.create-sdi-revision-file">
-            <param name="destinationfile" value="${core.src.out.dir}/administrator/libraries/easysdi/common/sdiBuildInfos.php"/>
-        </antcall>
-        
     </target>
     
     <!-- Compresses the component package. --> 
@@ -266,8 +199,8 @@
         
         <echo>Concat geoext</echo>
         
-        <concat destfile="${core.src.out.dir}/site/libraries/geoext/lib/geoextcon.js" fixlastline="yes" overwrite="true">
-            <filelist dir="${core.src.out.dir}/site/libraries/geoext/lib" 
+        <concat destfile="${core.src.out.dir}/administrator/libraries/geoext/lib/geoextcon.js" fixlastline="yes" overwrite="true">
+            <filelist dir="${core.src.out.dir}/administrator/libraries/geoext/lib" 
                       files="GeoExt/data/AttributeReader.js, 
             GeoExt/data/AttributeStore.js, 
             GeoExt/data/FeatureRecord.js, 
@@ -338,14 +271,14 @@
     <target name="geoext-minify">
         <echo>Minify geoext</echo>        
         
-        <jsmin srcfile="${core.src.out.dir}/site/libraries/geoext/lib/geoextcon.js" suffix="true"/>
+        <jsmin srcfile="${core.src.out.dir}/administrator/libraries/geoext/lib/geoextcon.js" suffix="true"/>
     </target>
     
     <target name="gxp-concat">
         <echo>Concat gxp</echo>
         
-        <concat destfile="${core.src.out.dir}/site/libraries/gxp/script/gxp.js" fixlastline="yes">
-            <filelist dir="${core.src.out.dir}/site/libraries/gxp/script" 
+        <concat destfile="${core.src.out.dir}/administrator/libraries/gxp/script/gxp.js" fixlastline="yes">
+            <filelist dir="${core.src.out.dir}/administrator/libraries/gxp/script" 
                       files="util.js,
         util/color.js,
         util/style.js,
@@ -464,7 +397,7 @@
     <target name="gxp-minify" >
         <echo>Minify gxp</echo>
         
-        <jsmin srcfile="${core.src.out.dir}/site/libraries/gxp/script/gxp.js" suffix="true">
+        <jsmin srcfile="${core.src.out.dir}/administrator/libraries/gxp/script/gxp.js" suffix="true">
         </jsmin>
     </target>
 	
@@ -472,8 +405,8 @@
     <target name="sdi-concat">
         <echo>Concat sdi</echo>
         
-        <concat destfile="${core.src.out.dir}/site/libraries/easysdi/js/sdi.js" fixlastline="yes">
-            <filelist dir="${core.src.out.dir}/site/libraries/easysdi/js" 
+        <concat destfile="${core.src.out.dir}/administrator/libraries/easysdi/js/sdi.js" fixlastline="yes">
+            <filelist dir="${core.src.out.dir}/administrator/libraries/easysdi/js" 
                       files="gxp/plugins/LayerTree.js, 
 		 	gxp/plugins/Print.js,
 		 	gxp/plugins/LayerManager.js,
@@ -482,10 +415,8 @@
 		 	gxp/plugins/OSMSource.js,
 		 	gxp/plugins/LoadingIndicator.js,
                         gxp/plugins/WMSSource.js,
-                        gxp/plugins/GoogleGeocoder.js,
                         gxp/widgets/ScaleOverlay.js,
                         gxp/widgets/Viewer.js,
-                        gxp/widgets/form/GoogleGeocoderComboBox.js,
 		 	geoext/data/PrintProvider.js, 
 		 	geoext/ux/PrintPreview.js, 
 		 	geoext/widgets/PrintMapPanel.js,
@@ -503,57 +434,6 @@
     <target name="sdi-minify" >
         <echo>Minify sdi</echo>
         
-        <jsmin srcfile="${core.src.out.dir}/site/libraries/easysdi/js/sdi.js" suffix="true"/>
+        <jsmin srcfile="${core.src.out.dir}/administrator/libraries/easysdi/js/sdi.js" suffix="true"/>
     </target>
-    
-    <target name="leaflet-concat">
-        <echo>Concat leaflet</echo>
-        
-        <concat destfile="${core.src.out.dir}/site/libraries/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js" fixlastline="yes">
-            <filelist dir="${core.src.out.dir}/site/libraries/leaflet/libs" 
-                      files="i18next-1.9.0/i18next-1.9.0.js,
-                        shramov/tile/Google.js,
-                        shramov/tile/Bing.js,
-                        leaflet.TileLayer.WMTS-master/leaflet-tilelayer-wmts-src.js,
-                        Leaflet.ZoomBox/L.Control.ZoomBox.js,
-                        leaflet-measure/leaflet-measure.js,
-                        leaflet-control-geocoder/Control.Geocoder.js,
-                        leaflet-EasyPrint/L.Control.EasyPrint.js,
-                        wms-capabilities/wms-capabilities.min.js,
-                        sidebar-v2/js/leaflet-sidebar.js,
-                        leaflet-EasyLayer/easyLayer.js,
-                        leaflet-EasyAddLayer/easyAddLayer.js,
-                        leaflet-EasyLegend/easyLegend.js,
-                        leaflet-graphicscale/Leaflet.GraphicScale.min.js,
-                        leaflet-EasyGetFeature/easyGetFeature.js,
-                        easysdi_leaflet/easysdi_leaflet.js" />
-        </concat>
-    </target>
-	
-    <target name="leaflet-minify" >
-        <echo>Minify leaflet</echo>
-        
-        <jsmin srcfile="${core.src.out.dir}/site/libraries/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js" suffix="true"/>
-    </target>
-    
-    <target name="leaflet-concat-css">
-        <echo>Concat leaflet css</echo>
-        
-        <concat destfile="${core.src.out.dir}/site/libraries/leaflet/libs/easySDI_leaflet.pack/main.css" fixlastline="yes">
-            <filelist dir="${core.src.out.dir}/site/libraries/leaflet/libs" 
-                      files="font-awesome-4.3.0/css/font-awesome.css,
-                             Leaflet.ZoomBox/L.Control.ZoomBox.css, 
-                             leaflet-measure/leaflet-measure.css,
-                             leaflet-control-geocoder/Control.Geocoder.css,
-                             sidebar-v2/css/leaflet-sidebar.css,
-                             leaflet-EasyPrint/L.Control.EasyPrint.css,
-                             leaflet-EasyLayer/easyLayer.css,
-                             leaflet-EasyAddLayer/easyAddLayer.css,
-                             leaflet-EasyLegend/easyLegend.css,
-                             leaflet-EasyGetFeature/easyGetFeature.css,
-                             leaflet-graphicscale/Leaflet.GraphicScale.min.css,
-                             leaflet-Easy/easyLeaflet.css" />
-        </concat>
-    </target>
-	
 </project>

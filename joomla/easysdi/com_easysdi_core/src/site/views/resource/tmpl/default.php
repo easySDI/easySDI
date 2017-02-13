@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -15,7 +15,7 @@ JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
 $document = JFactory::getDocument();
-$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js');
 ?>
 
 <!-- Styling for making front end forms look OK -->
@@ -50,8 +50,25 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
         border-bottom: 1px solid #fff;
     }
 </style>
-
 <script type="text/javascript">
+    function getScript(url, success) {
+        var script = document.createElement('script');
+        script.src = url;
+        var head = document.getElementsByTagName('head')[0],
+                done = false;
+        // Attach handlers for all browsers
+        script.onload = script.onreadystatechange = function () {
+            if (!done && (!this.readyState
+                    || this.readyState == 'loaded'
+                    || this.readyState == 'complete')) {
+                done = true;
+                success();
+                script.onload = script.onreadystatechange = null;
+                head.removeChild(script);
+            }
+        };
+        head.appendChild(script);
+    }
 
     js = jQuery.noConflict();
     js(document).ready(function () {
@@ -92,26 +109,21 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
         var userState = js('#jform_' + right).attr('data-orig') || false;
         if (userState)
             userState = userState.split(',');
-        js.each(rusers, function (okey, organism) {
-            var optGroup = js(' <optgroup label="'+organism.name+'"></optgroup>');
-            console.log(organism);
-            js.each(organism.users, function (ukey, user) {
-                var option = js('<option></option>').val(user.id).text(user.name);
-                if (
-                        limit === false
-                        || (startup === true
-                                && (
-                                        (userState === false && js.inArray(user.id, rightsarray[right]) > -1)
-                                        || js.inArray(user.id, userState) > -1
-                                        )
-                                )
-                        || (startup === false && right == 2 && user.id == currentUserId)
-                        )
-                    option.attr('selected', 'selected');
+        js.each(rusers, function (key, user) {
+            var option = js('<option></option>').val(user.id).text(user.name);
+            if (
+                    limit === false
+                    || (startup === true
+                            && (
+                                    (userState === false && js.inArray(user.id, rightsarray[right]) > -1)
+                                    || js.inArray(user.id, userState) > -1
+                                    )
+                            )
+                    || (startup === false && right == 2 && user.id == currentUserId)
+                    )
+                option.attr('selected', 'selected');
 
-                optGroup.append(option);
-            });
-            js('#jform_' + right).append(optGroup).trigger("liszt:updated");
+            js('#jform_' + right).append(option).trigger("liszt:updated");
         });
     };
 
@@ -161,7 +173,7 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
         <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_NEW_RESOURCE'); ?></h1>
     <?php endif; ?>
     <div id="loader" style="">
-        <img id="loader_image"  src="components/com_easysdi_core/assets/images/loader.gif" alt="">
+        <img id="loader_image"  src="administrator/components/com_easysdi_core/assets/images/loader.gif" alt="">
     </div>
     <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 

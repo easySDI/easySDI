@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -209,10 +209,10 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
         // Flush the data from the session.
         $this->clearSession();
-
+        
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));        
     }
 
     public function getUsers() {
@@ -223,37 +223,23 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('uro.role_id, u.id, s.name,o.id as organism_id , o.name as organism_name');
+        $query->select('uro.role_id, u.id, s.name');
         $query->from('#__sdi_user_role_organism uro');
         $query->innerJoin('#__sdi_user u ON u.id = uro.user_id');
         $query->innerJoin('#__users s ON u.user_id = s.id');
-        $query->innerJoin('#__sdi_user_role_organism m ON u.id = m.user_id AND m.role_id = 1');
-        $query->innerJoin('#__sdi_organism o ON m.organism_id = o.id');
-        $query->where('uro.organism_id=' . (int) $organism_id);
-        $query->order('o.name');
+        $query->where('organism_id=' . (int)$organism_id);
         $query->order('s.name');
-
+        
         $db->setQuery($query);
         $users = $db->loadObjectList();
 
         foreach ($users as $user) :
-            //create role array
-            if (!isset($all[$user->role_id])) {
+            if (!isset($all[$user->role_id]))
                 $all[$user->role_id] = array();
-            }
-            //creta organism
-            if (!isset($all[$user->role_id][$user->organism_id])) {
-                $all[$user->role_id][$user->organism_id] = new stdClass();
-                $all[$user->role_id][$user->organism_id]->id = $user->organism_id;
-                $all[$user->role_id][$user->organism_id]->name = $user->organism_name;
-                $all[$user->role_id][$user->organism_id]->users = array();
-            }
             $u = new stdClass();
             $u->id = $user->id;
             $u->name = $user->name;
-            $u->organism_id = $user->organism_id;
-            $u->organism_name = $user->organism_name;
-            $all[$user->role_id][$user->organism_id]->users[$user->id] = $u;
+            array_push($all[$user->role_id], $u);
         endforeach;
 
 

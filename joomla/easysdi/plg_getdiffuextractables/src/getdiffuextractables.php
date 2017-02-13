@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     plg_easysdi_getdiffuextractables
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -19,7 +19,7 @@ class PlgEasysdi_admin_infoGetdiffuextractables extends JPlugin {
         $query = $db->getQuery(true);
         $query->select('COUNT(*) as nbre');
         $query->from('#__sdi_diffusion');
-        $query->where('hasextraction = 1');
+        $query->where('hasdownload = 1');
         $db->setQuery($query);
         $rows = $db->loadObjectList();
         //Convert the stdClass object in an array

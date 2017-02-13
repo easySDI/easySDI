@@ -123,6 +123,10 @@ var listenerFeatureUnselected = function (e) {
     else
         jQuery('#t-features').val(JSON.stringify(features));
 
+    /*if (jQuery('#t-surface').val() !== '') {
+     var surface = parseInt(jQuery('#t-surface').val());
+     jQuery('#t-surface').val(JSON.stringify(surface - e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
+     }*/
     orderSurfaceChecking();
     updateSelectCounter(selectLayer.features);
 };

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -15,7 +15,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metad
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
-require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 require_once JPATH_SITE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 class cswmetadata {
@@ -277,17 +276,9 @@ class cswmetadata {
                     $propertiesXMLDoc = $this->getShopExtractionProperties();
                     if (!is_null($propertiesXMLDoc)) {
                         $propertiesXML = $this->extendeddom->importNode($propertiesXMLDoc->documentElement, true);
+                        //print_r($propertiesXML);die();
                         $exdiffusion->appendChild($propertiesXML);
                     }
-                    //add pricing node if pricing is enabled on the platform
-                    if (JComponentHelper::getParams('com_easysdi_shop')->get('is_activated')) {
-                        $pricingXMLDoc = $this->getShopPricing();
-                        if (!is_null($pricingXMLDoc)) {
-                            $pricingXML = $this->extendeddom->importNode($pricingXMLDoc->documentElement, true);
-                            $exdiffusion->appendChild($pricingXML);
-                        }
-                    }
-
                     $exmetadata->appendChild($exdiffusion);
                 endif;
 
@@ -501,12 +492,10 @@ class cswmetadata {
                                 break;
                             case 3 :
                                 $layerConfig .= 'type: "OpenLayers.Layer.WMTS",';
-                                $layerConfig .= 'group: "autre",';
                                 $layerConfig .= ' name: "' . $maplayer->layername . '",';
                                 $layerConfig .= ' href: "' . $href . '",';
                                 $layerConfig .= ' download: "' . $downloadurl . '",';
                                 $layerConfig .= ' order: "' . $orderurl . '",';
-                                $layerConfig .= ' opacity: 1,';
                                 $layerConfig .= 'source : "' . $service->alias . '",';
                                 $layerConfig .= 'title : "' . $maplayer->name . '",';
                                 $layerConfig .= 'args: [{';
@@ -515,17 +504,7 @@ class cswmetadata {
                                 $layerConfig .= 'matrixSet: "' . $maplayer->asOLmatrixset . '",';
                                 $layerConfig .= 'url: "' . $service->resourceurl . '",';
                                 $layerConfig .= 'style : "' . $maplayer->asOLstyle . '",';
-                                foreach (json_decode($maplayer->asOLoptions) as $key => $value) {
-                                    if ($key == "matrixIds") {
-                                        $layerConfig .= $key . ' : ["' . implode('","', $value) . '"],';
-                                    } elseif ($key == "resolutions") {
-                                        $layerConfig .= $key . ' : [' . implode(",", $value) . '],';
-                                    } elseif ($key == "maxExtent") {
-                                        //$layerConfig .= '"maxExtent" : ' . $value . ',';
-                                    } else {
-                                        $layerConfig .= $key . ' : "' . $value . '",';
-                                    }
-                                }
+                                $layerConfig .= $maplayer->asOLoptions;
                                 $layerConfig .= '}]}';
                                 break;
                         endswitch;
@@ -701,10 +680,6 @@ class cswmetadata {
         return $text;
     }
 
-    /**
-     * Get shop HTML form for adding a product to basket
-     * @return string HTML form
-     */
     public function getShopExtension() {
         if (empty($this->version)):
             try {
@@ -722,13 +697,11 @@ class cswmetadata {
         endif;
 
 
-        if (empty($this->diffusion)):
-            $this->diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-            $keys = array("version_id" => $this->version->id);
-            if (!$this->diffusion->load($keys)):
-                //No diffusion configured for this version
-                return null;
-            endif;
+        $this->diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+        $keys = array("version_id" => $this->version->id);
+        if (!$this->diffusion->load($keys)):
+            //No diffusion configured for this version
+            return null;
         endif;
 
         if ($this->diffusion->hasextraction == 0)
@@ -780,6 +753,8 @@ class cswmetadata {
         $this->db->setQuery($query);
         $properties = $this->db->loadObjectList();
 
+
+//        $html = '<script src="' . JURI::root() . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>';
         $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm' . $this->diffusion->id . '" name="adminForm" enctype="multipart/form-data">';
         $html .= '<div class="sdi-shop-order well">';
         $html .= '<div class="sdi-shop-properties" >';
@@ -846,7 +821,7 @@ class cswmetadata {
                     case self::CHECKBOX:
                         $html .='
                             <div class="controls">
-                                <fieldset id="' . $property->property_id . '" class="sdi-shop-property-checkbox checkboxes ' . $classrequired . '" ' . $required . ' >';
+                                <fieldset id="' . $property->property_id . '" class="sdi-shop-property-checkbox ">';
                         $i = 0;
                         foreach ($values as $value):
                             $html .= '
@@ -903,144 +878,6 @@ class cswmetadata {
         return $html;
     }
 
-    /**
-     * Document containing the pricing fragment for shop
-     * https://forge.easysdi.org/issues/1294
-     * @return \DOMDocument
-     */
-    public function getShopPricing() {
-        if (empty($this->version)):
-            try {
-                $this->metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
-                $keys = array("guid" => $this->guid);
-                $this->metadata->load($keys);
-                $this->version = JTable::getInstance('version', 'Easysdi_coreTable');
-                if (!$this->version->load($this->metadata->version_id)):
-                    return null;
-                endif;
-            } catch (Exception $exc) {
-                //This metadata seems to be an harvested one
-                return null;
-            }
-        endif;
-
-        if (empty($this->diffusion)):
-            $this->diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-            $keys = array("version_id" => $this->version->id);
-            if (!$this->diffusion->load($keys)):
-                //No diffusion configured for this version
-                return null;
-            endif;
-        endif;
-
-        if (empty($this->resource)):
-            $this->resource = JTable::getInstance('resource', 'Easysdi_coreTable');
-            $this->resource->load($this->version->resource_id);
-        endif;
-
-        //doc and root node
-        $domDocPricing = new DOMDocument('1.0', 'UTF-8');
-        $pricing = $domDocPricing->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Pricing');
-        $domDocPricing->appendChild($pricing);
-
-        //set pricing type
-        $sysPricingQuery = $this->db->getQuery(true)
-                ->select('id, value')
-                ->from('#__sdi_sys_pricing')
-                ->where('id = ' . (int) $this->diffusion->pricing_id);
-        $this->db->setQuery($sysPricingQuery);
-        $sysPricing = $this->db->loadObject();
-
-        $pricing->setAttribute("type", $sysPricing->value);
-
-        if (isset($this->diffusion->pricing_remark) && strlen($this->diffusion->pricing_remark) > 0) {
-            $pricingRemark = $domDocPricing->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_PricingRemark');
-            $pricingRemarkTxt = $domDocPricing->createTextNode($this->diffusion->pricing_remark);
-            $pricingRemark->appendChild($pricingRemarkTxt);
-            $pricing->appendChild($pricingRemark);
-        }
-
-        //set pricing organism
-        $queryOrganism = $this->db->getQuery(true)
-                ->select('id, internal_free, fixed_fee_ti, data_free_fixed_fee')
-                ->from('#__sdi_organism')
-                ->where('id = ' . (int) $this->resource->organism_id);
-        $this->db->setQuery($queryOrganism);
-        $organism = $this->db->loadObject();
-
-        $pricingOrg = $domDocPricing->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_PricingOrganism');
-        $pricingOrg->setAttribute("internal_free", $organism->internal_free == 1 ? 'true' : 'false');
-        $pricingOrg->setAttribute("fixed_fee_ti", $organism->fixed_fee_ti);
-        $pricingOrg->setAttribute("data_free_fixed_fee", $organism->data_free_fixed_fee == 1 ? 'true' : 'false');
-
-        //set category rebates for organism
-        $queryOrgRebates = $this->db->getQuery(true)
-                ->select('ocpr.category_id, c.alias, c.name, ocpr.rebate')
-                ->from('#__sdi_organism_category_pricing_rebate ocpr')
-                ->innerJoin('#__sdi_category c ON ocpr.category_id = c.id')
-                ->where('ocpr.organism_id = ' . (int) $this->resource->organism_id);
-        $this->db->setQuery($queryOrgRebates);
-        $orgRebates = $this->db->loadObjectList();
-
-        foreach ($orgRebates as $orgRebate) {
-            $orgCatRebateNode = $domDocPricing->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_CategoryRebate');
-            $orgCatRebateNode->setAttribute("categoryId", $orgRebate->category_id);
-            $orgCatRebateNode->setAttribute("categoryAlias", $orgRebate->alias);
-            $orgCatRebateNode->setAttribute("categoryName", $orgRebate->name);
-            $orgCatRebateNode->setAttribute("rebate", $orgRebate->rebate);
-            $pricingOrg->appendChild($orgCatRebateNode);
-        }
-
-        $pricing->appendChild($pricingOrg);
-
-        //if has a pricing profile
-        if ($this->diffusion->pricing_id == Easysdi_shopHelper::PRICING_FEE_WITH_PROFILE) {
-            $queryPricingProfile = $this->db->getQuery(true)
-                    ->select('id, alias, name, fixed_fee, surface_rate, min_fee, max_fee')
-                    ->from('#__sdi_pricing_profile')
-                    ->where('id = ' . (int) $this->diffusion->pricing_profile_id);
-            $this->db->setQuery($queryPricingProfile);
-            $pricingProfile = $this->db->loadObject();
-            if (isset($pricingProfile)) {
-                $pricingProfileNode = $domDocPricing->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_PricingProfile');
-                $pricingProfileNode->setAttribute("id", $pricingProfile->id);
-                $pricingProfileNode->setAttribute("name", $pricingProfile->name);
-                $pricingProfileNode->setAttribute("alias", $pricingProfile->alias);
-                $pricingProfileNode->setAttribute("fixed_fee", $pricingProfile->fixed_fee);
-                $pricingProfileNode->setAttribute("surface_rate", $pricingProfile->surface_rate);
-                $pricingProfileNode->setAttribute("min_fee", $pricingProfile->min_fee);
-                $pricingProfileNode->setAttribute("max_fee", $pricingProfile->max_fee);
-
-                //get category rebates from profile
-                $queryProfileRebates = $this->db->getQuery(true)
-                        ->select('pcpr.category_id, c.alias, c.name, pcpr.rebate')
-                        ->from('#__sdi_pricing_profile_category_pricing_rebate pcpr')
-                        ->innerJoin('#__sdi_category c ON pcpr.category_id = c.id')
-                        ->where('pcpr.pricing_profile_id = ' . (int) $this->diffusion->pricing_profile_id);
-                $this->db->setQuery($queryProfileRebates);
-                $profileRebates = $this->db->loadObjectList();
-
-                foreach ($profileRebates as $profileRebate) {
-                    $orgProfileRabateNode = $domDocPricing->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_CategoryRebate');
-                    $orgProfileRabateNode->setAttribute("categoryId", $profileRebate->category_id);
-                    $orgProfileRabateNode->setAttribute("categoryAlias", $profileRebate->alias);
-                    $orgProfileRabateNode->setAttribute("categoryName", $profileRebate->name);
-                    $orgProfileRabateNode->setAttribute("rebate", $profileRebate->rebate);
-                    $pricingProfileNode->appendChild($orgProfileRabateNode);
-                }
-
-                $pricing->appendChild($pricingProfileNode);
-            }
-        }
-
-        return $domDocPricing;
-    }
-
-    /**
-     * Get the shop properties of the diffusion
-     * https://forge.easysdi.org/issues/740
-     * @return \DOMDocument shop properties fragment in a document
-     */
     public function getShopExtractionProperties() {
         if (empty($this->version)):
             try {
@@ -1058,13 +895,11 @@ class cswmetadata {
         endif;
 
 
-        if (empty($this->diffusion)):
-            $this->diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-            $keys = array("version_id" => $this->version->id);
-            if (!$this->diffusion->load($keys)):
-                //No diffusion configured for this version
-                return null;
-            endif;
+        $this->diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+        $keys = array("version_id" => $this->version->id);
+        if (!$this->diffusion->load($keys)):
+            //No diffusion configured for this version
+            return null;
         endif;
 
         if ($this->diffusion->hasextraction == 0)

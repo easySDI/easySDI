@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -36,8 +36,10 @@ class Easysdi_serviceController extends JControllerLegacy
 	public function negotiation ()
 	{
 		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
-                 $jinput = JFactory::getApplication()->input;
-                 Easysdi_serviceHelper::negotiation($jinput->getArray());
+		Easysdi_serviceHelper::negotiation(JRequest::get( 'get' ));
+                // TODO replace by  $jinput = JFactory::getApplication()->input; 
+                // Easysdi_serviceHelper::negotiation($jinput);
+                // $jinput->get('service');$jinput->get('resurl');$jinput->get('resuser');
 	}
 	
 	/**

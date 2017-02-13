@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -17,8 +17,8 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript(JURI::root() . '/components/com_easysdi_core/libraries/tablednd/jquery.tablednd.0.7.min.js');
+$document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
+$document->addScript(Juri::base(true) . '/components/com_easysdi_core/libraries/tablednd/jquery.tablednd.0.7.min.js');
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
@@ -66,9 +66,9 @@ $document->addScript(JURI::root() . '/components/com_easysdi_core/libraries/tabl
                     <div class="span10 form-horizontal">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#misc" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_MISC'); ?></a></li>
-                            <li><a href="#scale" id="scaletab" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_SCALE'); ?></a></li>
-                            <li><a href="#wfs" id="wfstab" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_WFS'); ?></a></li>
-                            <li><a href="#indoor" id="indoortab" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_INDOOR'); ?></a></li>                            
+                            <li><a href="#scale" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_SCALE'); ?></a></li>
+                            <li><a href="#wfs" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_WFS'); ?></a></li>
+                            <li><a href="#indoor" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_TOOLS_INDOOR'); ?></a></li>                            
                         </ul>
 
                         <div class="tab-content">

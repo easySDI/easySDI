@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -77,7 +77,7 @@ class SearchHtmlForm extends SearchForm {
     /**
      * Import the HTML structure of the label in a DOMElement.
      * 
-     * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+     * @author Depth S.A.
      * @since 4.0
      * 
      * @param JField $field The Joomla JField
@@ -125,7 +125,7 @@ class SearchHtmlForm extends SearchForm {
     /**
      * Encode special characters into HTML entities. Unless the <> characters.
      * 
-     * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+     * @author Depth S.A.
      * @since 4.0
      * 
      * @param string $text

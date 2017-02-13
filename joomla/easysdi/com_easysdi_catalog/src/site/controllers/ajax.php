@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -64,7 +64,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
     public function removeNode() {
         $this->domXpathStr = new DOMXPath($this->structure);
-//print_r($this->structure->saveXML()); die();
+
         foreach ($this->nsdao->getAll() as $ns) {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
@@ -72,9 +72,9 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
         $elements = $this->domXpathStr->query($query); //->item(0);
 
-        if ($elements->length) {
+        if ($elements->length)
             $element = $elements->item(0);
-        } else { // HACK TO ALLOW FIRST KEYWORD REMOVAL
+        else { // HACK TO ALLOW FIRST KEYWORD REMOVAL
             $tabQuery = explode('/', $query);
             array_pop($tabQuery);
             $query = implode('/', $tabQuery);
@@ -85,6 +85,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         try {
             $element->parentNode->removeChild($element);
             $response['success'] = 'true';
+
             $this->session->set('structure', serialize($this->structure->saveXML()));
         } catch (Exception $exc) {
             $response['success'] = 'false';
@@ -162,18 +163,6 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
     }
 
     /**
-     * Return the current metadata id in session
-     */
-    public function getCurrentEditId() {
-        $app = JFactory::getApplication();
-        $response = array();
-        $response['success'] = true;
-        $response['id'] = $app->getUserState('com_easysdi_catalog.edit.metadata.id');
-        echo json_encode($response);
-        die();
-    }
-
-    /**
      * Check Url from file popup
      */
     public function checkFileUrl() {
@@ -187,11 +176,11 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $target_folder = JPATH_BASE . '/media/easysdi/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
         $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
 
-
-
+        
+        
         $fu = new Easysdi_filedHelper();
         try {
-            $result['files'] = $fu->upload($_FILES, $target_folder, $fileBaseUrl, true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', $fileBaseUrl . '/thumbnails', 120);
+            $result['files'] = $fu->upload($_FILES, $target_folder, $fileBaseUrl, true, NULL, false, NULL, array(), array(), true, $target_folder . '/thumbnails', $fileBaseUrl . '/thumbnails',120);
             $result['status'] = 'success';
             header('Content-type: application/json');
             echo json_encode($result);

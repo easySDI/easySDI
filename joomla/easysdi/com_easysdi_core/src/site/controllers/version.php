@@ -1,11 +1,12 @@
 ﻿<?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 // No direct access
 defined('_JEXEC') or die;
 
@@ -19,7 +20,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     private $versions = array();
     private $md_rollback = array();
-    private $md_unknown = null;
 
     /** @var Easysdi_coreHelper */
     private $core_helpers;
@@ -28,20 +28,18 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $this->core_helpers = new Easysdi_coreHelper();
         parent::__construct();
     }
-    
-    public function removeWithOrphan (){
-        return $this->remove(true);
-    }
 
-    public function remove($cleanup = false) {
+    public function remove() {
         // Initialise variables.
         $db = JFactory::getDbo();
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         // Get the user data.
         $data = array();
-        $data['id'] = JFactory::getApplication()->input->get('id', null, 'int');        
+        $data['id'] = JFactory::getApplication()->input->get('id', null, 'int');
+
         $version = $model->getData($data['id']);
+
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         try {
@@ -52,35 +50,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $driver_begin_transaction = $db->name . '_begin_transaction';
                 $driver_begin_transaction($db->getConnection());
             }
-
-            //Check order history
-            $this->checkVersionOrderHistory($versions);
-
-            //Delete metadata 
-            $this->md_rollback = array();
-            $this->md_unknown = null;
-            if(!$this->deleteMetadatas($versions, $cleanup)){
-                //Some metadata were not found in the remote CSW catalog
-                //Transaction is rolled back
-                $db->transactionRollback();
-                $this->metadataRollback();
-                $m = JTable::getInstance('metadata', 'Easysdi_catalogTable');
-                $m->load(array("version_id" => $data['id']));
-                $v = (object) array('v_id' => $data['id'], 'md_id' => $m->id);
-                $app = JFactory::getApplication();
-                $app->setUserState('com_easysdi_core.remove.version.mduk', json_encode($this->md_unknown));
-                $app->setUserState('com_easysdi_core.remove.version.call', json_encode($v));
-                
-                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-                return false;
-            } else {
-                
-            }
-
-            //Delete versions
+            $this->deleteMetadatas($versions);
             $this->deleteVersions($versions);
-
-            //Everything went fine, commit transaction
             $db->transactionCommit();
 
             // Redirect to the list screen.
@@ -89,26 +60,16 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         } catch (Exception $exc) {
             $db->transactionRollback();
             $this->metadataRollback();
-            $this->setMessage($exc->getMessage(), 'error');
+            $this->setMessage(JText::_('Metadata can not be deleted.') . $exc->getMessage(), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
     }
 
-    /**
-     * Cleanup session variables related to remove version request
-     */
-    public function cleanupRemoveSession() {
-       // $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources'));
-        $app = JFactory::getApplication();
-        $app->setUserState('com_easysdi_core.remove.version.mduk', null);
-        $app->setUserState('com_easysdi_core.remove.version.call', null);
-    }
-
-
-    /**
+    /*
      * 
      */
+
     public function edit() {
         $app = JFactory::getApplication();
 
@@ -151,20 +112,48 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $app = JFactory::getApplication();
         $inputs = $app->input;
 
-        $id = $inputs->getInt('version', null);
+        $id = $inputs->getInt('version_id', null);
         $resourcetypechild = $inputs->getString('resourcetypechild', '0');
 
         $db = JFactory::getDbo();
+        
         $query = $db->getQuery(true)
-                ->select('DISTINCT v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state, r.id as ressource_id')
+                ->select('v.id as id, m.guid, r.name as resource, v.name as version, r.resourcetype_id, rt.guid as resourcetype, m.metadatastate_id, ms.value as state, r.id as ressource_id')
+                ->select('(SELECT count(*) count
+                            FROM #__sdi_version cv
+                            INNER JOIN #__sdi_versionlink vl on vl.child_id = cv.id
+                            INNER JOIN #__sdi_version pv on pv.id = vl.parent_id
+                            INNER JOIN #__sdi_resource pr on pr.id = pv.resource_id AND pr.resourcetype_id IN (SELECT r.resourcetype_id FROM #__sdi_version v
+                                                                                                                    INNER JOIN #__sdi_resource r on r.id = v.resource_id
+                                                                                                                    WHERE v.id = ' . (int) $id . ')
+                            WHERE cv.id = v.id) as parents')
+                ->select('(SELECT rtl.parentboundupper 
+			FROM #__sdi_version v
+			INNER JOIN #__sdi_resource r on r.id = v.resource_id
+			INNER JOIN #__sdi_resourcetypelink rtl on rtl.parent_id = r.resourcetype_id
+			WHERE v.id = ' . (int) $id . '
+			AND rtl.child_id = ' . $resourcetypechild . ') max_parents')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                 ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
                 ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id');
-
+        
         $where = 'v.id <> ' . (int) $id . ' AND v.id NOT IN (SELECT vl.child_id FROM #__sdi_versionlink vl WHERE vl.parent_id=' . (int) $id . ') AND rt.id IN (' . $resourcetypechild . ')';
-
+        $where .= ' AND (SELECT count(*)
+			FROM #__sdi_version cv
+			INNER JOIN #__sdi_versionlink vl on vl.child_id = cv.id
+			inner join #__sdi_version pv on pv.id = vl.parent_id
+			INNER JOIN #__sdi_resource pr on pr.id = pv.resource_id AND pr.resourcetype_id IN (SELECT r.resourcetype_id FROM #__sdi_version v
+                        INNER JOIN #__sdi_resource r on r.id = v.resource_id
+                        WHERE v.id = ' . (int) $id . ')
+			WHERE cv.id = v.id) < (SELECT rtl.parentboundupper 
+			FROM #__sdi_version v
+			INNER JOIN #__sdi_resource r on r.id = v.resource_id
+			INNER JOIN #__sdi_resourcetypelink rtl on rtl.parent_id = r.resourcetype_id
+			WHERE v.id = ' . (int) $id . '
+			AND rtl.child_id = ' . $resourcetypechild . ')';
+        
         $inc = $inputs->getString('inc', '');
         $exc = $inputs->getString('exc', '');
         if (!empty($inc))
@@ -219,24 +208,33 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         }
 
         $query->where($where);
-
-        $version = $inputs->getString('searchlast', 'all');
-        if ($version == 'last') {
+        
+        $version = $inputs->getString('searchlast','all');
+        if($version == 'last'){
             $query->order('m.created DESC');
             $upquery = $db->getQuery(true);
             $upquery->select('*')
-                    ->from('(' . $query->__toString() . ') as up')
-                    ->group('up.ressource_id');
+                        ->from( '(' . $query->__toString() . ') as up')
+                        ->group('up.ressource_id');
             $db->setQuery($upquery)->execute();
-        } else {
+            
+        }else{
             $db->setQuery($query)->execute();
         }
-
+        
         $rows = $db->getNumRows();
         $results = $db->loadObjectList();
 
-        foreach ($results as $result)
+        
+        
+        foreach ($results as $result){
             $result->resourcetype = EText::_($result->resourcetype);
+            if($result->parents<$result->max_parents){
+                $result->isAddable = true;
+            }else{
+                $result->isAddable = false;
+            }
+        }
 
         return $filtering ? $results : $rows;
     }
@@ -260,6 +258,43 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         die();
     }
 
+    private function _isAddable($availableChild_id){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+
+        $parent_id = $inputs->getInt('version_id', null);
+
+        $db = JFactory::getDbo();
+        
+        $query = $db->getQuery(true)
+                ->select("rtl.parent_id , rtl.parentboundupper, rtl.parentboundlower")
+                ->from("#__sdi_resourcetypelink rtl")
+                ->innerJoin("#__sdi_resource pr on pr.resourcetype_id = rtl.parent_id")
+                ->innerJoin("#__sdi_version pv on pr.id = pv.resource_id AND pv.id = ".(int)$parent_id)
+                ->innerJoin("#__sdi_resource cr on cr.resourcetype_id = rtl.child_id")
+                ->innerJoin("#__sdi_version cv on cr.id = cv.resource_id AND cv.id = ".(int)$availableChild_id);
+
+        $db->setQuery($query)->execute();
+        $cardinality = $db->loadObject();
+
+        $query = $db->getQuery(true)
+                ->select("count(*) count")
+                ->from("#__sdi_version cv")
+                ->innerJoin("#__sdi_versionlink vl on vl.child_id = cv.id AND vl.child_id = ".(int)$availableChild_id)
+                ->innerJoin("#__sdi_version pv on pv.id = vl.parent_id")
+                ->innerJoin("#__sdi_resource pr on pr.id = pv.resource_id AND pr.resourcetype_id = ".(int)$cardinality->parent_id);
+        
+        $db->setQuery($query)->execute();
+        $parents = $db->loadObject();
+        
+        if($parents->count < $cardinality->parentboundlower){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+    
     /**
      * Get children of a metadata
      */
@@ -301,7 +336,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $app = JFactory::getApplication();
         $inputs = $app->input;
 
-        $id = $inputs->getInt('version', null);
+        $id = $inputs->getInt('version_id', null);
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
@@ -436,11 +471,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $app = JFactory::getApplication();
         $inputs = $app->input;
 
-        $id = $inputs->getInt('version', null);
+        $id = $inputs->getInt('version_id', null);
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('v.id as id, r.name as resource, v.name as version, rt.guid as resourcetype, ms.value as state')
+                ->select('v.id as id, r.name as resource, v.name as version, rt.guid as resourcetype, rt.id as resourcetype_id, ms.value as state')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
@@ -521,10 +556,137 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             'iTotalDisplayRecords' => count($parents),
             'aaData' => array_slice($parents, $start, $length),
             'sEcho' => $inputs->getString('sEcho', '')
+            
         ));
         die();
     }
 
+    private function _getCardinality(){
+        $app = JFactory::getApplication();
+        $inputs = $app->input;
+
+        $id = $inputs->getInt('version_id', null);
+
+        $db = JFactory::getDbo();
+
+        $cardinality = array();
+        
+        // Children cardinality
+        
+            
+        $query = $db->getQuery(true)
+                ->select("rt.name, rtl.child_id, rtl.childboundlower, rtl.childboundupper, rt.guid as resourcetype, rt.id resourcetype_id")
+                ->from("#__sdi_version v")
+                ->innerJoin("#__sdi_resource r on r.id = v.resource_id")
+                ->innerJoin("#__sdi_resourcetypelink rtl on rtl.parent_id = r.resourcetype_id")
+                ->innerJoin("#__sdi_resourcetype rt on rt.id = rtl.child_id")
+                ->where("v.id = ".(int)$id);
+
+        $db->setQuery($query)->execute();
+        $childrenCardinality = $db->loadObjectList();
+
+        $children = $this->_getChildren4DT(true);
+
+        foreach ($childrenCardinality as $childCard){
+            $childCard->type = "child";
+            $childCard->resourcetype = EText::_($childCard->resourcetype);
+            $childCard->actual = $this->_countByResourceType($children, $childCard->resourcetype_id);
+            $cardinality[] = $childCard;
+        }
+        // Parent cardinality
+        $query = $db->getQuery(true)
+                ->select("rt.name, rtl.child_id, rtl.parentboundlower, rtl.parentboundupper, rt.guid as resourcetype, rt.id resourcetype_id")
+                ->from("#__sdi_version v")
+                ->innerJoin("#__sdi_resource r on r.id = v.resource_id")
+                ->innerJoin("#__sdi_resourcetypelink rtl on rtl.child_id = r.resourcetype_id")
+                ->innerJoin("#__sdi_resourcetype rt on rt.id = rtl.parent_id")
+                ->where("v.id = ".(int)$id);
+
+        $db->setQuery($query)->execute();
+        $parentCardinality = $db->loadObjectList();
+
+        $parents = $this->_getParents4DT(true);
+
+        foreach ($parentCardinality as $parentCard){
+            $parentCard->type = "parent";
+            $parentCard->resourcetype = EText::_($parentCard->resourcetype);
+            $parentCard->actual = $this->_countByResourceType($parents, $parentCard->resourcetype_id);
+            $cardinality[] = $parentCard;
+        }
+        
+        return $cardinality;
+    }
+    
+    public function getChildrenCardinality($toJson = true){
+        $cardinality = $this->_getCardinality();
+        
+        $results = array();
+        foreach ($cardinality as $card) {
+            if($card->type == "child"){
+                    $card->message = JText::sprintf('%s (min: %d | max: %d | now: %d)', $card->resourcetype, $card->childboundlower, $card->childboundupper, $card->actual);
+                    $results[] = $card;
+            }
+        }
+        
+        if(!$toJson){
+            return $results;
+        }
+        
+        echo json_encode($results);
+        die();
+    }
+    
+    public function getParentsCardinality($toJson = true){
+        $cardinality = $this->_getCardinality();
+        
+        $results = array();
+        foreach ($cardinality as $card) {
+            if($card->type == "parent"){
+                $card->message = JText::sprintf('%s (min: %d | max: %d | now: %d)', $card->resourcetype, $card->parentboundlower, $card->parentboundupper, $card->actual);
+                $results[] = $card;
+            }
+        }
+        
+        if(!$toJson){
+            return $results;
+        }
+        
+        echo json_encode($results);
+        die();
+    }
+    
+    public function getCardinalityError(){
+        $errors = array();
+        
+        $childrenCardinality = $this->getChildrenCardinality(false);
+        foreach ($childrenCardinality as $childrenCard) {
+            if($childrenCard->actual<$childrenCard->childboundlower || $childrenCard->actual>$childrenCard->childboundupper){
+                
+                $errors[] = JText::sprintf('COM_EASYSDI_CORE_ERROR_CHILDREN_CARDINALITY', $childrenCard->resourcetype, $childrenCard->actual, $childrenCard->childboundlower, $childrenCard->childboundupper);
+            }
+        }
+        
+        $parentCardinality = $this->getParentsCardinality(false);
+        foreach ($parentCardinality as $parentCard) {
+            if($parentCard->actual<$parentCard->parentboundlower || $parentCard->actual>$parentCard->parentboundupper){
+                $errors[] = JText::sprintf('COM_EASYSDI_CORE_ERROR_PARENT_CARDINALITY', $parentCard->resourcetype, $parentCard->actual, $parentCard->parentboundlower, $parentCard->parentboundupper);
+            }
+        }
+        
+        echo json_encode($errors);
+        die();
+    }
+    
+    private function _countByResourceType($children, $resourcetype_id){
+        $nbre=0;
+        foreach ($children as $child) {
+            if($child->resourcetype_id == $resourcetype_id){
+                $nbre++;
+            }
+        }
+        return $nbre;
+    }
+    
     /**
      * 
      */
@@ -596,9 +758,9 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $mddata = array("metadatastate_id" => 1, "accessscope_id" => 1, "version_id" => $version['id']);
                 $mddata['id'] = $metadata->save($mddata);
                 $metadatas[] = $mddata;
-
+                
                 $this->clonePreviewVersion($version['preview_metadata_id'], $mddata['id']);
-
+                
                 // Check in the version.
                 $model->checkin($version['id']);
             }
@@ -607,13 +769,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         } catch (Exception $exc) {
             // if fail, clean metadata 
             foreach ($metadatas as $mddata) {
-                try {
-                    if(!$metadata->delete($mddata)):
-                        //Geonetwork returned that no metadata has to be deleted
-                    endif;
-                } catch (Exception $ex) {
-                    //CSW catalog didn't answered
-                }
+                $metadata->delete($mddata);
             }
             $dbo->transactionRollback();
             $model = $this->getModel('Version', 'Easysdi_coreModel');
@@ -765,32 +921,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         return $new_versions;
     }
 
-    private function checkVersionOrderHistory($versions) {
-        foreach ($versions as $version) {
-            try {
-                if (!empty($version->children)) {
-                    $this->checkVersionOrderHistory($version->children);
-                }
-                $dbo = JFactory::getDbo();
-                //Check if the version can be deleted (if no order history is linked to it)
-                $query = $dbo->getQuery(true)
-                        ->select('count(od.id)')
-                        ->from('#__sdi_order_diffusion od')
-                        ->join('INNER', '#__sdi_diffusion d ON od.diffusion_id = d.id')
-                        ->where('d.version_id = ' . (int) $version->id);
-                $dbo->setQuery($query);
-                $count_order_diffusion = $dbo->loadResult();
-
-                if (intval($count_order_diffusion) > 0) {
-                    //can't be deleted
-                    throw new Exception( sprintf(JText::_('COM_EASYSDI_CORE_DELETE_RESOURCE_ERROR'),$version->resourcename, $version->name), null, null);
-                }
-            } catch (Exception $exc) {
-                throw $exc;
-            }
-        }
-    }
-
     /**
      * Recursively delete versions.
      * 
@@ -813,9 +943,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $data = array();
                 $data['id'] = $version->id;
 
+                //Check how many versions left on the resource
                 $dbo = JFactory::getDbo();
-
-                //Check how many versions left on the resource                
                 $query = $dbo->getQuery(true)
                         ->select('count(id)')
                         ->from('#__sdi_version')
@@ -830,7 +959,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 if ($num == 1) {
                     $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
                     $resource->load($version->resource_id);
-                    $resource->delete();
                 }
 
                 $model->checkin($return);
@@ -844,40 +972,35 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * Recursively delete metadata.
      * 
      * @param array $versions
-     * @param boolean $cleanup
-     * @return boolean
+     * @return array
      * @throws Exception
      */
-    private function deleteMetadatas($versions, $cleanup) {
+    private function deleteMetadatas($versions) {
+
+        $md_rollback = array();
+
         foreach ($versions as $version) {
             if (!empty($version->children)) {
-                //$md_rollback = array_merge($md_rollback, $this->deleteMetadatas($version->children));
-                if (!$this->deleteMetadatas($version->children, $cleanup))
-                    return false;
+                $md_rollback = array_merge($md_rollback, $this->deleteMetadatas($version->children));
             }
+
             $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
             $keys = array("version_id" => $version->id);
+
+
             $metadata->load($keys);
             //Delete the csw metadata in the remote catalog
             $csw = new sdiMetadata($metadata->id);
             $this->md_rollback[$metadata->id] = $csw->load();
-            try {
-                if (!$csw->delete()){
-                    //No metadata found to delete in remote CSW catalog
-                    if(!$cleanup){
-                        unset($this->md_rollback[$metadata->id]);
-                        $this->md_unknown = (object) array('v' => $csw->version->name, 'r' => $csw->resource->name);
-                        return false;
-                    }
-                }
-            } catch (Exception $ex) {
-                //CSW catalog didn't answered
+            if (!$csw->delete()) {
                 unset($this->md_rollback[$metadata->id]);
-                throw new Exception(sprintf(JText::_('COM_EASYSDI_CORE_DELETE_METADATA_CSW_ERROR'), $version->resourcename, $version->name));
+                throw new Exception(JText::_('Metadata can not be deleted from the remote catalog.'));
             }
+
             $metadata->delete($metadata->id);
         }
-        return true;
+
+        return $md_rollback;
     }
 
     /**
@@ -941,19 +1064,20 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $preview_md->load();
         $new_md = new sdiMetadata($new_metadata_id);
         $new_md->load();
-
+        
         $preview_sdi_block = $preview_md->dom->getElementsByTagNameNS('http://www.easysdi.org/2011/sdi', 'platform')->item(0);
         $new_sdi_block = $new_md->dom->getElementsByTagNameNS('http://www.easysdi.org/2011/sdi', 'platform')->item(0);
         $preview_md->dom->firstChild->replaceChild($preview_md->dom->importNode($new_sdi_block, true), $preview_sdi_block);
-
+        
         $transaction = $new_md->wrapUpdateBlock($preview_md->dom->firstChild)->saveXML();
-
-
-        if ($new_md->update(str_replace($preview_md->guid, $new_md->guid, $transaction))) {
+        
+        
+        if($new_md->update(str_replace($preview_md->guid, $new_md->guid, $transaction))){
             return true;
-        } else {
+        }else{
             throw new Exception(JText::_('Metadata can not be updated from the remote catalog.'));
         }
+        
     }
 
     /**
@@ -997,19 +1121,28 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-
+        
         $query->select('m.id as metadata_id,v.*,v.name as version_name,r.name as resource_name, r.id as resource_id');
         $query->from('#__sdi_version v');
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
         $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
-        $query->where('v.id = ' . (int) $id);
-
+        $query->where('v.id = '.(int)$id);
+        
         $db->setQuery($query);
         $version = $db->loadObject();
-
+        
         $response = array();
         $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished);
 
+        
+        $childrenCardinality = $this->getChildrenCardinality(false);
+        $minimumChild = 0;
+        foreach ($childrenCardinality as $childrenCard) {
+            $minimumChild = $minimumChild + $childrenCard->childboundlower;
+        }
+        
+        $response['minimumChild'] = $minimumChild;
+        
         echo json_encode($response);
         die();
     }
@@ -1063,7 +1196,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query->innerJoin('#__sdi_version av ON r.id = av.resource_id');
         $query->innerJoin('#__sdi_metadata am ON av.id = am.version_id');
         $query->where('m.id = ' . $metadata_id);
-        $query->where('am.metadatastate_id IN (' . sdiMetadata::INPROGRESS . ',' . sdiMetadata::VALIDATED . ')');
+        $query->where('am.metadatastate_id IN (' . sdiMetadata::INPROGRESS.','.sdiMetadata::VALIDATED.')');
         $db->setQuery($query);
         $metadatas = $db->loadObjectList();
 

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -59,7 +59,7 @@ abstract class sdiModel extends JModelAdmin {
      * @since   12.2
      */
     public function save($data) {
-        
+
         if (parent::save($data)) {
 
             //Get the element guid
@@ -296,37 +296,6 @@ abstract class sdiModel extends JModelAdmin {
             $this->setError($e->getMessage());
             return false;
         }
-    }
-    
-    public static function checkAccessScope($guid, $accessscope, $sdiUser) {
-        //check if the user has access on the objet identify by the guid
-        switch ($accessscope) {
-            case 2: //accesscope by organism's category
-                $categories = sdiModel::getAccessScopeCategory($guid);
-                if (count($categories) == 0)
-                    return false;
-                if (!$sdiUser->isPartOfCategories($categories))
-                    return false;
-                return true;                
-            case 3: //accessscope by organism
-                $organisms = sdiModel::getAccessScopeOrganism($guid);
-                $organism = $sdiUser->getMemberOrganisms();
-                if (!in_array($organism[0]->id, $organisms))
-                    return false;
-                return true;
-                
-            case 4: //accessscope by user
-                $users = sdiModel::getAccessScopeUser($guid);
-                if (!in_array($sdiUser->id, $users))
-                    return $false;
-                return true;
-                
-            case 1: //accessscope: public
-            default:
-                return true;
-                
-        }
-        return false;
     }
 
 }

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * Easysdi_shop helper.
  */
-class Easysdi_shopAdminHelper {
+class Easysdi_shopHelper {
 
     /**
      * Configure the Linkbar.
@@ -25,9 +25,6 @@ class Easysdi_shopAdminHelper {
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_catalog');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_shop');
         JHtmlSidebar::addEntry(
-                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'), 'index.php?option=com_easysdi_shop&view=orders', $vName == 'orders'
-        );
-        JHtmlSidebar::addEntry(
                 Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SHOP_TITLE_PERIMETERS'), 'index.php?option=com_easysdi_shop&view=perimeters', $vName == 'perimeters'
         );
         JHtmlSidebar::addEntry(
@@ -38,7 +35,9 @@ class Easysdi_shopAdminHelper {
                     Easysdi_coreHelper::getMenuSpacer(3) . $itemName, '#', $vName == 'propertyvalues'
             );
         };
-        Easysdi_coreHelper::addComponentSubmeu('com_easysdi_processing');
+        JHtmlSidebar::addEntry(
+                Easysdi_coreHelper::getMenuSpacer() . JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'), 'index.php?option=com_easysdi_shop&view=orders', $vName == 'orders'
+        );
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_service');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_map');
         Easysdi_coreHelper::addComponentSubmeu('com_easysdi_monitor');

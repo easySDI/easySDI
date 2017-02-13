@@ -1,13 +1,13 @@
 <?php
-
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-class SdiToolbar {
+
+class SdiToolbar{
 
     /** @var DOMDocument */
     private $dom;
@@ -21,30 +21,13 @@ class SdiToolbar {
         $this->dom->appendChild($toolbar);
     }
 
-    public function append($label, $id = '', $btnClass = '', $action = '', $dropdown = false, $iconClass = null) {
-        $button = $this->dom->createElement('button');
-
-        //add icon if needed
-        if (isset($iconClass)) {
-            $icon = $this->dom->createElement('i');
-            $icon->setAttribute('class', 'icon ' . $iconClass);
-            $button->appendChild($icon);
-        }
-
-        // set text, add spaces in case of icon and dropdown
-        $buttonText = $this->dom->createTextNode((isset($iconClass) ? ' ' : '') . $label . ($dropdown ? ' ' : ''));
-        $button->appendChild($buttonText);
-
+    public function append($label, $id = '', $btnClass = '', $action = '', $dropdown = false) {
+        $button = $this->dom->createElement('button', $label);
         $button->setAttribute('id', $id);
-
-
 
         if ($dropdown) {
             $button->setAttribute('class', 'btn dropdown-toggle ' . $btnClass);
             $button->setAttribute('data-toggle', 'dropdown');
-            $caret = $this->dom->createElement('span');
-            $caret->setAttribute('class', 'caret');
-            $button->appendChild($caret);
 
             $buttonGroup = $this->dom->createElement('div');
             $buttonGroup->setAttribute('class', 'btn-group');
@@ -54,20 +37,17 @@ class SdiToolbar {
             $ul->setAttribute('role', 'menu');
 
             foreach ($action as $menuLabel => $menuAction) {
-                if (is_array($menuAction)) {
+                if(is_array($menuAction)){
                     $menuRel = $menuAction[1];
                     $menuAction = $menuAction[0];
                 }
-
-
+                
+                
                 $li = $this->dom->createElement('li');
-                $a = $this->dom->createElement('a');
-                $textFragment = $this->dom->createDocumentFragment();
-                $textFragment->appendXML($menuLabel);
-                $a->appendChild($textFragment);
+                $a = $this->dom->createElement('a', $menuLabel);
                 $a->setAttribute('onclick', 'Joomla.submitbutton(\'' . $menuAction . '\', this.rel)');
                 $a->setAttribute('style', 'cursor:pointer');
-                if (isset($menuRel)) {
+                if(isset($menuRel)){
                     $a->setAttribute('rel', $menuRel);
                 }
                 $li->appendChild($a);
@@ -84,29 +64,17 @@ class SdiToolbar {
         }
     }
 
-    public function appendBtnRoute($label, $url, $btnClass = '', $id = '', $rel = '', $iconClass = null) {
-
-        $a = $this->dom->createElement('a');
-
-        //add icon if needed
-        if (isset($iconClass)) {
-            $icon = $this->dom->createElement('i');
-            $icon->setAttribute('class', 'icon ' . $iconClass);
-            $a->appendChild($icon);
-        }
-
-        // set text, add spaces in case of icon and dropdown
-        $aText = $this->dom->createTextNode((isset($iconClass) ? ' ' : '') . $label);
-        $a->appendChild($aText);
-
+    public function appendBtnRoute($label, $url, $btnClass = '', $id = '', $rel = ''){
+        
+        $a = $this->dom->createElement('a',$label);
         $a->setAttribute('class', 'btn ' . $btnClass);
         $a->setAttribute('id', $id);
         $a->setAttribute('href', $url);
         $a->setAttribute('rel', $rel);
-
+        
         $this->dom->firstChild->appendChild($a);
     }
-
+    
     public function renderToolbar() {
         $this->dom->formatOutput = true;
 

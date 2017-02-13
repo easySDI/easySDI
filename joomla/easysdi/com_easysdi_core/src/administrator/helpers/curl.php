@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.1
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -244,7 +244,6 @@ class CurlHelper {
 
     private function sendSimplified() {
         header("Access-Control-Allow-Origin: *"); // AJOUT Damien
-
         $content = trim(curl_exec($this->ch));
         $data = curl_getinfo($this->ch);
 
@@ -328,7 +327,7 @@ class CurlHelper {
             //check HTTP code, force fail in case of error code
             if ($infos['http_code'] < 200 || $infos['http_code'] >= 400) {
                 return -1;
-            }
+        }
 
             //update content_type if any
             if (isset($infos['content_type'])) {
@@ -441,7 +440,7 @@ class CurlHelper {
             $this->filename = $data['filename'];
             unset($data['filename']);
         }
-    }
+        }
 
     private function getArrayParameters($data) {
         $this->getParameters($data);

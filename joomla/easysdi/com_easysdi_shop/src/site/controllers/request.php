@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
-require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
 /**
  * Request controller class.
@@ -51,7 +50,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
     }
 
     /**
-     * Method to save one product in a request
+     * Method to save a user's profile data.
      *
      * @return	void
      * @since	1.6
@@ -67,6 +66,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         // Get the user data.
         $data = $app->input->get('jform', array(), 'array');
 
+
         // Attempt to save the data.
         $return = $model->saveproduct($data);
 
@@ -81,57 +81,22 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
 
         Easysdi_shopHelper::notifyCustomerOnOrderUpdate($data['id']);
 
-
-        //check if there is more product for this extraction manager
-        if ($this->hasMoreProductsTodo((int) $data['id'])) {
-
-            // Flush the product data from the session.
-            $app->setUserState('com_easysdi_shop.edit.request.data', null);
-
-            // Redirect to the list screen.
-            $this->setMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_PRODUCT_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&layout=edit&id=' . $data['id'] . '#sdi-recap-prod-list', false));
-        } else {
-
-            // Check in the request.
-            if ($return) {
-                $model->checkin($return);
-            }
-
-            // Clear the profile id from the session.
-            $app->setUserState('com_easysdi_shop.edit.request.id', null);
-
-            // Redirect to the list screen.
-            $this->setMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_PRODUCT_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
-
-            // Flush the data from the session.
-            $app->setUserState('com_easysdi_shop.edit.request.data', null);
+        // Check in the profile.
+        if ($return) {
+            $model->checkin($return);
         }
+
+        // Clear the profile id from the session.
+        $app->setUserState('com_easysdi_shop.edit.request.id', null);
+
+        // Redirect to the list screen.
+        $this->setMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_PRODUCT_SAVED_SUCCESSFULLY'));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
+
+        // Flush the data from the session.
+        $app->setUserState('com_easysdi_shop.edit.request.data', null);
     }
 
-    /**
-     * Check if the current user is extraction responsible for at least one product in sent state
-     * @param type $orderId the of the order to check
-     * @return boolean
-     */
-    private function hasMoreProductsTodo($orderId) {
-        $sdiUser = sdiFactory::getSdiUser();
-        $extractionResponsibleDiffusions = (array) $sdiUser->getResponsibleExtraction();
-        $sdiBasket = new sdiBasket();
-        $sdiBasket->loadOrder((int) $orderId);
-        foreach ($sdiBasket->extractions as $extraction) {
-            if ($extraction->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_SENT && in_array($extraction->id, $extractionResponsibleDiffusions)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Reject a product by a provider
-     * @return boolean
-     */
     public function rejectproduct() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -174,9 +139,6 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         $app->setUserState('com_easysdi_shop.edit.request.data', null);
     }
 
-    /**
-     * Cancel request edition and checkin item
-     */
     function cancel() {
         $model = $this->getModel('Request', 'Easysdi_shopModel');
         $id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.request.id');

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -13,8 +13,9 @@ defined('_JEXEC') or die;
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
-require_once JPATH_SITE . '/components/com_easysdi_shop/models/order.php';
-require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
+require_once JPATH_COMPONENT . '/models/order.php';
+require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/curl.php';
 
 /**
  * Order controller class.
@@ -81,10 +82,20 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             $app->setUserState('com_easysdi_shop.edit.order.id', null);
 
             // Notify notifiedusers and extractionresponsible for each orderdiffusion of the current order
-            Easysdi_shopHelper::notifyExtractionResponsibleAndNotifiedUsers($validateId);
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('diffusion_id as id')
+                    ->from('#__sdi_order_diffusion')
+                    ->where('order_id=' . (int) $validateId);
+            $db->setQuery($query);
+            $diffusions = $db->loadObjectList();
+            foreach ($diffusions as $diffusion) {
+                Easysdi_shopHelper::notifyNotifiedUsers($diffusion->id);
+                Easysdi_shopHelper::notifyExtractionResponsible($diffusion->id);
+            }
 
             //Notify validation managers
-            Easysdi_shopHelper::notifyAfterValidationManager($validateId);
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_VALIDATION);
 
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
@@ -142,10 +153,8 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTED_SUCCESSFULLY'));
 
-            //Notify customer
-            Easysdi_shopHelper::notifyCustomerOnOrderUpdate($validateId);
             //Notify validation managers
-            Easysdi_shopHelper::notifyAfterValidationManager($validateId);
+            Easysdi_shopHelper::notifyAfterValidationManager($validateId, $model->getData($validateId)->thirdparty_id, Easysdi_shopHelper::ORDERSTATE_REJECTED);
         }
 
         // Redirect to the list screen. (if user is logged in)
@@ -157,12 +166,11 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     }
 
     /**
-     * check rights and download an order file
+     * 
      */
     function download() {
         $diffusion_id = JFactory::getApplication()->input->getInt('id', null, 'int');
         $order_id = JFactory::getApplication()->input->getInt('order', null, 'int');
-        $access_token = JFactory::getApplication()->input->getString('a_token');
 
         if (empty($diffusion_id)):
             $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_EMPTY_ID');
@@ -188,9 +196,6 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         //the user is the client
         if ($order->user_id == $currentUser->id):
             $downloadAllowed = true;
-        //user has access token from mail
-        elseif (strlen($access_token) >= 64 && $order->access_token == $access_token):
-            $downloadAllowed = true;
         //the user is extraction responsible of the product
         elseif (in_array($diffusion_id, $userExtrationsResponsible)):
             $downloadAllowed = true;
@@ -201,6 +206,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         elseif ($currentUser->isOrganismManager($organisms[0]->id)):
             $downloadAllowed = true;
         endif;
+
 
         if (!$downloadAllowed) {
             $return['ERROR'] = JText::_('JERROR_ALERTNOAUTHOR');
@@ -216,9 +222,9 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $orderdiffusion->load($keys);
 
         Easysdi_shopHelper::downloadOrderFile($orderdiffusion);
+    
     }
 
-        
     function cancel() {
         JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
@@ -261,34 +267,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     }
 
     function archive() {
-        $model = $this->getModel('Order', 'Easysdi_shopModel');
-
-        $id = JFactory::getApplication()->input->getInt('id', null, 'array');
-
-        if (empty($id)):
-            // Redirect back to the list screen.
-            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDERS_ERROR_MSG_CANT_ARCHIVE'), 'error');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
-            return false;
-        endif;
-
-        // Attempt to save order state.
-        $return = $model->archive($id);
-
-        // Check for errors.
-        if ($return === false) {
-            // Redirect back to the list screen.
-            $this->setMessage(JText::sprintf('COM_EASYSDI_SHOP_ORDER_ARCHIVED_FAILED', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
-            return false;
-        }
-
-        // Clear the profile id from the session.
-        JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
-
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_ARCHIVED_SUCCESSFULLY'));
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+        $this->saveState(Easysdi_shopHelper::ORDERSTATE_ARCHIVED);
     }
 
     function saveState($state) {

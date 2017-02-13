@@ -1,9 +1,8 @@
 <?php
-
 /**
- * @version     4.4.3
+ * ** @version     4.0.0
  * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -18,7 +17,7 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css');
 
 JText::script('COM_EASYSDI_CONTACT_FORM_USER_EDIT_LINK');
 JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');
@@ -58,12 +57,8 @@ JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');
         initAddressByType('delivry');
         makeUserEditLink();
         makeOrganismEditLink();
-        jQuery('#jform_user_id').change(function () {
-            makeUserEditLink();
-        });
-        jQuery('#jform_organismsMember').change(function () {
-            makeOrganismEditLink();
-        });
+        jQuery('#jform_user_id').change(function () {makeUserEditLink();});
+        jQuery('#jform_organismsMember').change(function () {makeOrganismEditLink();});
     })
 
     function initAddressByType(type)
@@ -74,12 +69,12 @@ JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');
             disableAddressType(true, type);
         }
     }
-
+    
     function makeUserEditLink() {
         jQuery('#edit_joomla_user').remove();
         var currentUserId = jQuery('#jform_user_id_id').val();
         var linkText = Joomla.JText._('COM_EASYSDI_CONTACT_FORM_USER_EDIT_LINK', 'Edit joomla user');
-        if (jQuery.isNumeric(currentUserId)) {
+        if (jQuery.isNumeric(currentUserId)){
             jQuery(" <a />", {
                 id: "edit_joomla_user",
                 name: "edit_joomla_user",
@@ -88,13 +83,13 @@ JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');
             }).insertAfter('#jform_user_id_id');
         }
     }
-
+    
     function makeOrganismEditLink() {
         jQuery('#edit_organism_link').remove();
         var currentOrgId = jQuery('#jform_organismsMember').val();
-
+        
         var linkText = Joomla.JText._('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK', 'Edit organism');
-        if (jQuery.isNumeric(currentOrgId)) {
+        if (jQuery.isNumeric(currentOrgId)){
             jQuery(" <a />", {
                 id: "edit_organism_link",
                 name: "edit_organism_link",
@@ -115,7 +110,9 @@ JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');
                 <li><a href="#contactaddress" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_CONTACTADDRESS'); ?></a></li>
                 <li><a href="#billingaddress" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_BILLINGADDRESS'); ?></a></li>
                 <li><a href="#delivryaddress" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_DELIVRYADDRESS'); ?></a></li>	
-                <li><a href="#orderingoptions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_ORDERINGOPTIONS'); ?></a></li>					
+                <?php if ($this->shop) { ?>
+                    <li><a href="#orderingoptions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_ORDERINGOPTIONS'); ?></a></li>	
+                <?php } ?>				
                 <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_PUBLISHING'); ?></a></li>
                 <?php if ($this->canDo->get('core.admin')): ?>
                     <li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_RULES'); ?></a></li>
@@ -202,14 +199,16 @@ JText::script('COM_EASYSDI_CONTACT_FORM_ORGANISM_EDIT_LINK');
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <div class="tab-pane" id="orderingoptions">
-                    <?php foreach ($this->form->getFieldset('orderingoptions') as $field): ?>
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $field->label; ?></div>
-                            <div class="controls"><?php echo $field->input; ?></div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+                <?php if ($this->shop) { ?>
+                    <div class="tab-pane" id="orderingoptions">
+                        <?php foreach ($this->form->getFieldset('orderingoptions') as $field): ?>
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php } ?>
                 <div class="tab-pane" id="publishing">
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>

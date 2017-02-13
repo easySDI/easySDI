@@ -1,33 +1,26 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 $item = $displayData['item'];
 $form = $displayData['form'];
 $viewType = $displayData['viewType'];
-
-
 $authorizeddiffusion = isset($displayData['authorizeddiffusion']) ? $displayData['authorizeddiffusion'] : array();
 $managedOrganismsDiffusion = isset($displayData['managedOrganismsDiffusion']) ? $displayData['managedOrganismsDiffusion'] : array();
 
 $app = JFactory::getApplication();
 $doc = JFactory::getDocument();
 
-$cleanuporderdelay = JComponentHelper::getParams('com_easysdi_shop')->get('cleanuporderdelay');
+$cleanuporderdelay = $app->getParams('com_easysdi_shop')->get('cleanuporderdelay');
 
 $showPricing = isset($item->basket->pricing) && $item->basket->pricing->isActivated;
 
 // show the action column only if: 1) the order type is an order and the view is for the client OR 2) the view is for provider
 $showActions = ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER && $viewType == Easysdi_shopHelper::ORDERVIEW_ORDER) ||
-        $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST ||
-        $viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN;
-
-$showClientDetails = $viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN ||
-        $viewType == Easysdi_shopHelper::ORDERVIEW_VALIDATION ||
         $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST;
 
 $hasThirdParty = isset($item->basket->thirdparty) && $item->basket->thirdparty != 0;
@@ -42,14 +35,6 @@ $context->viewType = $viewType;
 $scripts = $app->triggerEvent('getRecapScript', array($context));
 //get merged scripts , scripts are added at the end of this layout
 $pluginScripts = implode("\n", $scripts);
-
-//get access token if any
-$access_token_param = '';
-$access_token = JFactory::getApplication()->input->getString('a_token');
-if ((strlen($access_token) >= 64 && $item->access_token == $access_token)) {
-    $access_token_param = '&a_token=' . $access_token;
-}
-
 
 //avoid posting form with return
 $doc->addScriptDeclaration("\n"
@@ -95,18 +80,19 @@ if (!$showActions) {
     <?php endif; ?>
 
     <div class="row-fluid ">
-        <h2 id="sdi-order-recap-type-and-name"><span id="sdi-order-title-type"><?php echo JText::_($item->ordertype); ?></span> : <span id="sdi-order-title-name"><?php echo $item->basket->name; ?></span></h2>
+        <h2 id="sdi-order-recap-type-and-name"><span id="sdi-order-title-type"><?php echo JText::_($item->ordertype); ?></span> : <span id="sdi-order-title-name"><?php echo $item->basket->name; ?></span> - <span id="sdi-order-title-id"><?php echo $item->id; ?></span></h2>
         <div id="sdi-order-recap-created" class="row-fluid" >
             <div class="span2 order-edit-label" >
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_CREATED'); ?>
             </div>
             <div class="span10 order-edit-value" >
-                <?php echo JHtml::date($item->sent, JText::_('DATE_FORMAT_LC2')); ?>
+                <?php echo JHtml::date($item->created, JText::_('DATE_FORMAT_LC2')); ?>
             </div>
         </div>
 
         <?php
-        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_HISTORIZED ||
+        if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_ARCHIVED ||
+                $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_HISTORIZED ||
                 $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH):
             ?>
             <div id="sdi-order-recap-completed" class="row-fluid" >
@@ -122,11 +108,9 @@ if (!$showActions) {
         <div id="sdi-order-recap-orderstate" class="row-fluid">
             <div class="span2 order-edit-label" >
                 <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
-
             </div>
             <div class="span10 order-edit-value" >
-                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true, true); ?>
-
+                <?php echo Easysdi_shopHelper::getOrderStatusLabel($item, $item->basket, true); ?>
             </div>
         </div>
 
@@ -140,7 +124,7 @@ if (!$showActions) {
         </div>
 
         <?php
-        //item has been rejected by third party
+        //item has been rejected by thrrd party
         if ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_REJECTED) {
             $displayString = "COM_EASYSDI_SHOP_ORDER_IS_REJECTED_ON_BY";
             $displayClass = "text-error";
@@ -184,19 +168,7 @@ if (!$showActions) {
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_NAME'); ?>
                 </div>
                 <div class="span8 order-edit-value" >        
-                    <?php
-                    if ($viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN):
-                        ?>
-                        <span class="hasTooltip" title="<?php echo $item->basket->sdiUser->juser->username ?>">
-                            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_contact&task=user.edit&id=' . (int) $item->basket->sdiUser->id); ?>">
-                                <?php echo $item->basket->sdiUser->name; ?>
-                            </a>
-                        </span>
-                        <?php
-                    else:
-                        echo $item->basket->sdiUser->name;
-                    endif;
-                    ?>
+                    <?php echo $item->basket->sdiUser->name; ?>
                 </div>
             </div>
             <div id="sdi-order-recap-client-organism" class="row-fluid">
@@ -204,24 +176,11 @@ if (!$showActions) {
                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_ORGANISM'); ?>
                 </div>
                 <div class="span8 order-edit-value" >
-                    <?php
-                    $organisms = $item->basket->sdiUser->getMemberOrganisms();
-
-
-                    if ($viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN):
-                        ?>
-                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_contact&task=organism.edit&id=' . (int) $organisms[0]->id); ?>">
-                            <?php echo $organisms[0]->name; ?>
-                        </a>
-                        <?php
-                    else:
-                        echo $organisms[0]->name;
-                    endif;
-                    ?>
+                    <?php $organisms = $item->basket->sdiUser->getMemberOrganisms();  echo $organisms[0]->name; ?>
 
                 </div>
             </div>     
-            <?php if ($showClientDetails): ?>
+            <?php if ($viewType != Easysdi_shopHelper::ORDERVIEW_ORDER): ?>
                 <div id="sdi-order-recap-client-email" class="row-fluid">
                     <div class="span4 order-edit-label" >
                         <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CLIENT_EMAIL'); ?>
@@ -284,15 +243,14 @@ if (!$showActions) {
 
 
     <!-- order perimter -->
-    <?php Easysdi_shopHelper::getHTMLOrderPerimeter($item, $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST || $viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN); ?>
+    <?php Easysdi_shopHelper::getHTMLOrderPerimeter($item, $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST); ?>
 
 
     <!-- order products -->
     <div class="row-fluid shop-product">
-        <h2 id="sdi-recap-prod-list"><?php
+        <h2><?php
             switch ($viewType) {
                 case Easysdi_shopHelper::ORDERVIEW_ORDER:
-                case Easysdi_shopHelper::ORDERVIEW_ADMIN:
                     echo JText::_('COM_EASYSDI_SHOP_ORDER_EXTRACTION_NAME_VIEW_ORDER');
                     break;
                 case Easysdi_shopHelper::ORDERVIEW_REQUEST:
@@ -317,8 +275,7 @@ if (!$showActions) {
 
             //Show All products, except in case of Request view (only products with extraction rights)
             if (
-                    $viewType == Easysdi_shopHelper::ORDERVIEW_ORDER || $viewType == Easysdi_shopHelper::ORDERVIEW_ADMIN ||
-                    $viewType == Easysdi_shopHelper::ORDERVIEW_VALIDATION ||
+                    $viewType == Easysdi_shopHelper::ORDERVIEW_ORDER || $viewType == Easysdi_shopHelper::ORDERVIEW_VALIDATION ||
                     $viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST && ($hasEditModeProducts || in_array($supplier_id, $managedOrganismsDiffusion))
             ) :
                 ?>
@@ -341,8 +298,6 @@ if (!$showActions) {
                             $isCompleted = false;
                             $isRejected = false;
                             $isWaiting = false;
-                            $filenameToDisplay = isset($productItem->displayname) ? $productItem->displayname : $productItem->file;
-
                             $completedDate = $productItem->completed;
                             switch ($productItem->productstate_id) {
                                 case Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE:
@@ -378,7 +333,7 @@ if (!$showActions) {
                             <tr rel="<?php echo $productItem->id; ?>" class="sdi-productstate-id-<?php echo($productItem->productstate_id); ?>">
                                 <td class="product_column">
                                     <input type = "hidden" name = "jform[diffusion][]" value = "<?php echo $productItem->id; ?>" />
-                                    <a href="<?php echo JRoute::_(JUri::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $productItem->metadataguid); ?>"><?php echo $productItem->name; ?></a><br/>
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&guid=' . $productItem->metadataguid); ?>"><?php echo $productItem->name; ?></a><br/>
 
                                     <div class="shop-basket-product-details">
 
@@ -437,19 +392,10 @@ if (!$showActions) {
                                     $product = $item->basket->pricing->suppliers[$supplier_id]->products[$productItem->id];
 
                                     if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST && $productItem->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_SENT) :
-                                        //price is pre-defined
                                         if (isset($product->cal_total_amount_ti)):
                                             ?>
                                             <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" value="<?php echo $product->cal_total_amount_ti; ?>" placeholder="<?php echo $product->cal_total_amount_ti; ?>" readonly="readonly" class="input-small"/>
-                                            <?php
-                                        //price is free
-                                        elseif ($product->cfg_pricing_type == Easysdi_shopHelper::PRICING_FREE):
-                                            ?>
-                                            <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" value="0" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE'); ?>" readonly="readonly" class="input-small"/>
-                                            <?php
-                                        //price has to be set
-                                        else:
-                                            ?>
+                                        <?php else: ?>
                                             <input type="text" id="fee_<?php echo $productItem->id; ?>" name="jform[fee][<?php echo $productItem->id; ?>]" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRICE_FIELD_PLACEHOLDER'); ?>" <?php if (!$editMode): ?>readonly="readonly"<?php endif; ?>/>
                                         <?php
                                         endif;
@@ -463,7 +409,7 @@ if (!$showActions) {
                                             $rebate = false;
                                             $as = '';
                                             $discount = '';
-                                            if ((isset($product->cfg_pct_category_profile_discount) && $product->cfg_pct_category_profile_discount > 0) || $product->cfg_pct_category_supplier_discount > 0) {
+                                            if ($product->cfg_pct_category_profile_discount > 0 || $product->cfg_pct_category_supplier_discount > 0) {
                                                 $rebate = true;
                                                 if ($product->cfg_pct_category_supplier_discount > $product->cfg_pct_category_profile_discount) {
                                                     $as = $product->ind_lbl_category_supplier_discount;
@@ -515,7 +461,7 @@ if (!$showActions) {
                                         if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST):
                                             //link for provider
                                             ?>
-                                            <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?>" class="hasTip" onClick="" title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
+                                            <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?>" class="hasTip" onClick="" title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
                                                 <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CHECK_FILE'); ?>
                                             </a>
 
@@ -523,8 +469,8 @@ if (!$showActions) {
                                         else:
                                             //link for client
                                             ?>
-                                            <span title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>" class="hasTip">
-                                                <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?><?php echo $access_token_param; ?>" class="btn btn-success " onClick="" title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
+                                            <span title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>" class="hasTip">
+                                                <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?>" class="btn btn-success " onClick="" title="<?php echo $productItem->file . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
                                                     <i class="icon-white icon-download"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWLOAD_BTN'); ?>
                                                 </a>
                                             </span>
@@ -555,7 +501,6 @@ if (!$showActions) {
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
-                    <?php if ($showPricing) : ?>
                     <tfoot>
                         <tr class="supplier_fixed_fee_row">
                             <td class="price_title_column price_title_fixed_fees"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
@@ -573,7 +518,6 @@ if (!$showActions) {
                             <td class="action_column action_column_recap">&nbsp;</td>
                         </tr>
                     </tfoot>
-                    <?php endif; ?>
                 </table>
             <?php endif; ?>
         <?php endforeach; ?>

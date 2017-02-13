@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -290,7 +290,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function validAndClose() {
         $this->changeStatusAndSave(sdiMetadata::VALIDATED, FALSE);
     }
-
+    
     /**
      * Change metadata status to publish
      */
@@ -369,7 +369,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($redirectURL), false));
         } else {
-            $this->update($id);
+            $this->update($id,$published);
         }
     }
 
@@ -378,9 +378,26 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      * @param int $id metadata id
      */
-    private function update($id) {
+    private function update($id, $published = null) {
         $smd = new sdiMetadata($id);
         if ($smd->updateSDIElement()) {
+            if(isset($published)) {
+                $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
+                $table = $model->getTable();
+                $table->load($id);
+                $preview = Easysdi_catalogHelper::getPreviewMetadata($table);
+                if (!empty($preview)) {
+                    // update endpublished
+                    $table_preview = $model->getTable();
+                    $table_preview->load($preview->id);
+                    if ($table_preview->save(array('endpublished' => $table->published), '', array('created', 'created_by'))) {
+                        $CSWmetadata = new sdiMetadata($table_preview->id);
+                        if (!$CSWmetadata->updateSDIElement()) {
+                            throw new Exception('Echec de mise à jour du catalog');
+                        }
+                    }
+                }
+            }
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
         } else {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
@@ -408,7 +425,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->where('l.code = ' . $query->quote($lang->getTag()));
         if (array_key_exists('version', $_POST)) {
             if ($_POST['version'] == 'last') {
-                $query->group(' r.name');
+                $query->group(' r.name');                
             }
         }
 
@@ -428,7 +445,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $user = new sdiUser();
         //user's organism's categories
         $categories = $user->getMemberOrganismsCategoriesIds();
-        if (is_null($caegories) || count($categories) == 0) {
+        if(is_null($caegories) || count($categories)==0){
             $categories = array(0);
         }
 
@@ -505,8 +522,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function save($data = null, $commit = true, $continue = false) {
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-
-        //print_r($xml);die();
 
         if (!isset($data)) {
             $data = $this->data;
@@ -604,6 +619,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
 
+        /* echo $this->structure->saveXML();
+          die(); */
+
         $this->removeNoneExist();
         $this->removeEmptyListNode();
         $this->removeCatalogNS();
@@ -678,7 +696,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 $eastBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal')->item(0);
                 $westBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal')->item(0);
 
-                $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype(null, $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
+                $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype('', $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
             }
         }
     }
@@ -843,8 +861,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         else
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_WARNING'), 'warning');
 
-        $notificationsenabled = JComponentHelper::getParams('com_easysdi_catalog')->get('notificationsenabled', 1);
-        if (count($success) && $notificationsenabled) {
+        if (count($success)) {
             $byUser = new sdiUser($data['assigned_by']);
             $toUser = new sdiUser($data['assigned_to']);
 
@@ -1019,13 +1036,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         
                         foreach ($nsdao->getAll() as $ns) {
                             $childXPath->registerNamespace($ns->prefix, $ns->uri);
-                }
+                        }
                         $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
                         
                         $xml = $this->CreateUpdateBody($childXPath->query('/*/*')->item(0), $children->fileidentifier);
                         $model->save($data, $xml->saveXML());
                        
-            }
+                    }
                 }
             }
             $this->db->transactionCommit();
@@ -1229,26 +1246,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function removeEmptyListNode() {
-
-        //Remove empty list Node with CodeListValue attribute
         $listNodes = $this->domXpathStr->query('descendant::*[@codeListValue=""]');
+
         $toRemove = array();
         foreach ($listNodes as $listNode) {
             $toRemove[] = $listNode->parentNode;
         }
+
         foreach ($toRemove as $remove) {
             $remove->parentNode->removeChild($remove);
-        }
-
-        //Remove empyt list node without CodeListValue attribute
-        $lists = $this->domXpathStr->query('//*[@catalog:stereotypeId="6"]');
-        foreach ($lists as $list) {
-            $code = $list->childNodes->item(0)->getAttribute("codeListValue");
-            if ($code == "") {
-                $defaultChild = trim($list->childNodes->item(0)->nodeValue);
-                if (empty($defaultChild) || $defaultChild == "")
-                    $list->parentNode->removeChild($list);
-            }
         }
     }
 
@@ -1292,15 +1298,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             $users = $this->db->loadColumn();
 
-            $notificationsenabled = JComponentHelper::getParams('com_easysdi_catalog')->get('notificationsenabled', 1);
-            if ($notificationsenabled) {
-                foreach ($users as $user) {
-                    $sdiUser = new sdiUser($user);
+            foreach ($users as $user) {
+                $sdiUser = new sdiUser($user);
 
-                    $sdiUser->sendMail(
-                            JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $sdiUser->juser->name)
-                    );
-                }
+                $sdiUser->sendMail(
+                        JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $sdiUser->juser->name)
+                );
             }
         }
     }
@@ -1372,7 +1375,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $supportedIds = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
 
         $results = array();
-        $results['supported'] = array();
+        $results['supported'] = array(); 
 
         // Only if multiple languages supported
         if ($supportedIds) {
@@ -1387,7 +1390,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $this->db->setQuery($query);
 
             $results['supported'] = $this->db->loadObjectList('iso3166-1-alpha2');
-        }
+        } 
 
         $query = $this->db->getQuery(true);
         $query->select('t.text2, ' . $query->quoteName('iso3166-1-alpha2'));

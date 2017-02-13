@@ -24,26 +24,14 @@
                class="input-xxlarge"
                filter="safehtml"
                label="COM_EASYSDI_CONTACT_FORM_LBL_CATEGORY_DESCRIPTION"
-               description="COM_EASYSDI_CONTACT_FORM_DESC_CATEGORY_DESCRIPTION" /> 
-        
-        <field 	id="backend_only" 
-                name="backend_only" 
-                type="radio"
-                class="btn-group"
-                label="COM_EASYSDI_CONTACT_FORM_LBL_BACKEND_ONLY"
-                description="COM_EASYSDI_CONTACT_FORM_DESC_BACKEND_ONLY" 
-                default="0" 	
-        >
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>        
+               description="COM_EASYSDI_CONTACT_FORM_DESC_CATEGORY_DESCRIPTION"  /> 
 
-        <field name="overall_fee" 
-               type="text"
-               size="7"
-               class="inputbox"
-               label="COM_EASYSDI_CONTACT_FORM_LBL_CATEGORY_OVERALL_FEE"
-               description="COM_EASYSDI_CONTACT_FORM_DESC_CATEGORY_OVERALL_FEE" /> 
+             <field name="overall_fee" 
+                    type="text"
+                    size="7"
+                    class="inputbox"
+                    label="COM_EASYSDI_CONTACT_FORM_LBL_CATEGORY_OVERALL_FEE"
+                    description="COM_EASYSDI_CONTACT_FORM_DESC_CATEGORY_OVERALL_FEE"             /> 
        
         <field name="id" 
                type="text" 

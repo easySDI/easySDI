@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -109,7 +109,7 @@ class com_easysdi_shopInstallerScript {
             $this->setParams($params);
         }
                 
-        if ($type == 'update' && $this->release <= '4.3.2') {
+        if ($type == 'update' && $this->release == '4.3.2') {
             $archiveorderdelay = $this->getParamValue("archiveorderdelay");
             if(!empty($archiveorderdelay)){
                $this->setParams(array("cleanuporderdelay" => $archiveorderdelay));

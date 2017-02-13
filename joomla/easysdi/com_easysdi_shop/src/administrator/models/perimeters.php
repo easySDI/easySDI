@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -26,14 +26,30 @@ class Easysdi_shopModelperimeters extends JModelList {
     public function __construct($config = array()) {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
+                                'id', 'a.id',
+                'guid', 'a.guid',
+                'alias', 'a.alias',
+                'created_by', 'a.created_by',
+                'created', 'a.created',
+                'modified_by', 'a.modified_by',
+                'modified', 'a.modified',
                 'ordering', 'a.ordering',
                 'state', 'a.state',
                 'name', 'a.name',
                 'description', 'a.description',
                 'accessscope_id', 'a.accessscope_id',
+                'wfsservice_id', 'a.wfsservice_id',
+                'featuretypeid', 'a.featuretypeid',
+                'featuretypename', 'a.featuretypename',
+                'featuretypefieldsurface', 'a.featuretypefieldsurface',
+                'featuretypefielddisplay', 'a.featuretypefielddisplay',
+                'featuretypefieldsearch', 'a.featuretypefieldsearch',
+                'layername', 'a.layername',
+                'minscale', 'a.minscale',
+                'maxscale', 'a.maxscale',
                 'access', 'a.access',
-                'asset_id', 'a.asset_id'
+                'asset_id', 'a.asset_id',
+
             );
         }
 
@@ -55,6 +71,8 @@ class Easysdi_shopModelperimeters extends JModelList {
 
         $published = $app->getUserStateFromRequest($this->context . '.filter.state', 'filter_published', '', 'string');
         $this->setState('filter.state', $published);
+
+        
 
         // Load the parameters.
         $params = JComponentHelper::getParams('com_easysdi_shop');
@@ -97,26 +115,29 @@ class Easysdi_shopModelperimeters extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.alias, a.name, a.state, a.ordering, a.checked_out, a.checked_out_time'
+                        'list.select', 'a.id, a.alias, a.name, a.state, a.ordering, a.checked_out'
                 )
         );
         $query->from('#__sdi_perimeter AS a');
 
-        // Join over the users for the checked out user.
-        $query->select('uc.name AS editor');
-        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+        
+    // Join over the users for the checked out user.
+    $query->select('uc.name AS editor');
+    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+    
+		// Join over the user field 'created_by'
+		$query->select('created_by.name AS created_by');
+		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
-        // Join over the user field 'created_by'
-        $query->select('created_by.name AS created_by');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-
-        // Filter by published state
-        $published = $this->getState('filter.state');
-        if (is_numeric($published)) {
-            $query->where('a.state = ' . (int) $published);
-        } else if ($published === '') {
-            $query->where('(a.state IN (0, 1))');
-        }
+        
+    // Filter by published state
+    $published = $this->getState('filter.state');
+    if (is_numeric($published)) {
+        $query->where('a.state = '.(int) $published);
+    } else if ($published === '') {
+        $query->where('(a.state IN (0, 1))');
+    }
+    
 
         // Filter by search in title
         $search = $this->getState('filter.search');
@@ -125,9 +146,12 @@ class Easysdi_shopModelperimeters extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE ' . $search . ' )');
+                $query->where('( a.name LIKE '.$search.' )');
             }
         }
+
+        
+
 
         // Add the list ordering clause.
         $orderCol = $this->state->get('list.ordering');
@@ -138,4 +162,11 @@ class Easysdi_shopModelperimeters extends JModelList {
 
         return $query;
     }
+
+    public function getItems() {
+        $items = parent::getItems();
+        
+        return $items;
+    }
+
 }

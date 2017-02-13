@@ -41,7 +41,7 @@
             multiple="true"
             label=""
             description="" 
-            query="SELECT id, name FROM #__sdi_category WHERE state=1 AND backend_only=0 ORDER BY ordering" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY ordering" 
             key_field="id" 
             value_field="name"
             translate="true"

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -71,7 +71,7 @@ class SearchForm {
         $query = $this->db->getQuery(true);
 
         $query->select('sc.id, sc.guid, sc.criteriatype_id, sc.name, sc.alias, sc.rendertype_id');
-        $query->select('csc.searchtab_id, csc.defaultvalue, csc.defaultvaluefrom, csc.defaultvalueto, csc.params, csc.guid as catalogsearchcriteriaguid');
+        $query->select('csc.searchtab_id, csc.defaultvalue, csc.defaultvaluefrom, csc.defaultvalueto, csc.params');
         $query->select('st.value as tab_value');
         $query->select('r.rendertype_id as rel_rendertype_id, r.attributechild_id, r.guid as relation_guid');
         $query->select('a.guid as attribute_guid');

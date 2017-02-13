@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -17,6 +17,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 class Easysdi_catalogController extends JControllerLegacy {
 
     public function display($cachable = false, $urlparams = false) {
+
         // If view is sheet, we'll check access scope before 
         // doing anything (like getting CSW data etc...)
         $vName = $this->input->get('view', null);
@@ -57,25 +58,22 @@ class Easysdi_catalogController extends JControllerLegacy {
                     JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                     return;
                 endif;
-                if ($resource->accessscope_id == 3)://Access scope organism                    
+                if ($resource->accessscope_id == 3):
                     $organisms = sdiModel::getAccessScopeOrganism($resource->guid);
-                    //Is the user member, editor or responsible of one of the authorized organism?
-                    $authorg = array_merge($sdiUser->getMemberOrganisms(),$sdiUser->getMetadataEditorOrganisms(),$sdiUser->getMetadataResponsibleOrganisms());
-                    $ids = array();
-                    foreach ($authorg as $o){
-                        array_push($ids, $o->id);
-                    }                    
-                    if (count(array_intersect($ids, $organisms)) == 0):
+                    $organism = $sdiUser->getMemberOrganisms();
+                    if (!in_array($organism[0]->id, $organisms)):
                         JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                         return;
-                    endif;                   
-                elseif ($resource->accessscope_id == 4)://Access scope user
+                    endif;
+                endif;
+                if ($resource->accessscope_id == 4):
                     $users = sdiModel::getAccessScopeUser($resource->guid);
                     if (!in_array($sdiUser->id, $users)):
                         JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                         return;
                     endif;
-                elseif ($resource->accessscope_id == 2)://Access scope organism category
+                endif;
+                if ($resource->accessscope_id == 2):
                     $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
                     $allowedCategories = sdiModel::getAccessScopeCategory($resource->guid);
                     if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):

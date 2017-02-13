@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -179,24 +179,32 @@ class Easysdi_catalogModelReport extends JModelForm {
         $xmls->appendChild($metadataset);
 
         $file = $xmls->saveXML();
+        $tmp = uniqid();
+        $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
+        file_put_contents($tmpfile . '.xml', $file);
 
-        $this->setResponse($file, 'text/xml', 'report.xml', strlen($file));
+        $this->setResponse($file, $tmpfile . '.xml', 'text/xml', 'report.xml', strlen($file));
     }
 
     private function reportPDF($catalog, $type, $preview, $metadatas){
-        $xhtmlfile = '';
+        $file = '';
         foreach ($metadatas as $metadata) {
-            $xhtmlfile .= $metadata->applyXSL(array('catalog' => $catalog, 'type' => $type, 'preview' => $preview));
+            $file .= $metadata->applyXSL(array('catalog' => $catalog, 'type' => $type, 'preview' => $preview));
         }
 
+        $tmp = uniqid();
+        $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
+        file_put_contents($tmpfile . '.xml', $file);
         $mpdf = new mPDF();
-        $mpdf->WriteHTML($xhtmlfile);
+        $mpdf->WriteHTML($file);
+        $mpdf->Output($tmpfile . '.pdf', 'F');
         $file = $mpdf->Output('', 'S');
 
-        $this->setResponse($file, 'application/pdf', 'report.pdf', strlen($file));
+        $this->setResponse($file, $tmpfile . '.pdf', 'application/pdf', 'report.pdf', strlen($file));
     }
 
-    private function setResponse($file, $contenttype, $downloadname, $size) {
+    private function setResponse($file, $filename, $contenttype, $downloadname, $size) {
+        unlink($filename);
         error_reporting(0);
         ini_set('zlib.output_compression', 0);
 

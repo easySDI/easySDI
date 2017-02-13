@@ -143,17 +143,12 @@ var listenerFeatureAddedToZoom = function (e) {
 
 //Check if the surface of the selection is applicable
 function orderSurfaceChecking() {
+
     var tmpSurface = 0;
     var isSelfIntersect = false;
 
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
         if (app.mapPanel.map.layers[j].id.indexOf("Vector") !== -1) {
-
-            //do not count Draw Layers
-            if (app.mapPanel.map.layers[j].name.indexOf("OpenLayers.Handler.") >= 0) {
-                continue;
-            }
-
             var layer = app.mapPanel.map.layers[j];
             for (var f = 0; f < layer.features.length; f++) {
                 if (layer.features[f].geometry instanceof OpenLayers.Geometry.Polygon || layer.features[f].geometry instanceof OpenLayers.Geometry.MultiPolygon) {
@@ -346,7 +341,6 @@ function toggleSelectControl(action) {
     }
 }
 
-//add the alert control (can show message in map)
 function addAlertControl(map) {
     alertControl = new OpenLayers.Control.Panel({
         displayClass: "sdiMapAlertControl hide",
@@ -372,55 +366,6 @@ function addAlertControl(map) {
     alertControl.deactivate();
 }
 
-//add the visibility checker
-function addVisibilityChecks(map) {
-    map.events.register('changelayer', this, function (e) {
-        if (e.property == "visibility" && e.layer.name == "perimeterLayer") {
-            checkPerimeterLayerVisibility(map);
-        }
-    });
-
-    map.events.register('addlayer', this, function (e) {
-        if (e.layer.name == "perimeterLayer") {
-            checkPerimeterLayerVisibility(map);
-        }
-    });
-
-    map.events.register('removelayer', this, function (e) {
-        if (e.layer.name == "perimeterLayer") {
-            checkPerimeterLayerVisibility(map);
-        }
-    });
-}
-
-//check perimeterLayer visiblity
-function checkPerimeterLayerVisibility(map) {
-    removeVisiblityWarning();
-    if (map.getLayersByName('perimeterLayer').length) {
-        if (!map.getLayersByName('perimeterLayer')[0].inRange) {
-            showVisiblityWarning();
-        }
-    }
-
-}
-
-//shows an icon next to the selected perimeter if layer is not visible
-function showVisiblityWarning() {
-    var warningButton = jQuery('<button disabled onclick="return false;" id="perimeter-visibility-warn-button" class="btn btn-warning disabled hasTip" title="' + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE_TITLE', 'Perimeter is not visible') + '"><i class="icon icon-eye-blocked"></i></button>');
-    jQuery('#perimeter-select-counter').after(warningButton);
-    warningButton.popover({
-        trigger: 'hover ',
-        placement: 'bottom',
-        content: Joomla.JText._('COM_EASYSDI_SHOP_BASKET_LAYER_OUT_OF_RANGE', 'Please zoom')
-    });
-
-}
-
-//remove the visibility warn icon
-function removeVisiblityWarning() {
-    jQuery('#perimeter-visibility-warn-button').remove();
-}
-
 //Reload initial extent selection
 function cancel() {
     resetAll();
@@ -442,7 +387,7 @@ function cancel() {
 //Add counter next to selection tool
 function addSelectCounter(perimeterId) {
     removeSelectCounter();
-    var counterHTML = '<button disabled onclick="return false;" id="perimeter-select-counter" data-perimeter-id="' + perimeterId + '" class="btn btn-primary disabled">0</button>';
+    var counterHTML = '<button onclick="return false;" id="perimeter-select-counter" data-perimeter-id="' + perimeterId + '" class="btn btn-primary disabled">0</button>';
     jQuery('#btn-perimeter' + perimeterId).after(counterHTML);
     jQuery("#perimeter-select-counter").popover({
         container: '#btn-perimeter' + perimeterId,
@@ -622,6 +567,8 @@ function savePerimeter() {
         var extent = {"id": jQuery('#t-perimeter').val(),
             "name": jQuery('#t-perimetern').val(),
             "surface": jQuery('#t-surface').val(),
+            "allowedbuffer": jQuery('#allowedbuffer').val(),
+            "buffer": jQuery('#buffer').val(),
             "level": jQuery('#t-level').val(),
             "features": jQuery('#t-features').val(),
             "freeperimetertool": jQuery('#t-freeperimetertool').val()};
@@ -632,12 +579,6 @@ function savePerimeter() {
             data: "item=" + encodeURIComponent(JSON.stringify(extent))
         }).done(updateDisplay);
     }
-}
-
-function changePerimeterEditLabel() {
-    var theLabel = jQuery('#features').val() === '' ? Joomla.JText._('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER') : Joomla.JText._('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER');
-    jQuery('#modal-perimeter #myModalLabel').text(theLabel);
-    jQuery('#defineOrderBtnLbl').text(theLabel);
 }
 
 /**
@@ -696,8 +637,6 @@ function updateDisplay(response) {
         else {
             jQuery('#shop-perimeter-title-surface').empty();
         }
-        //btns
-        changePerimeterEditLabel();
         //pricing
         updatePricing(response.pricing);
     }
@@ -909,31 +848,23 @@ jQuery(document).ready(function () {
     jQuery('#toolbar button').on('click', function () {
         var task = jQuery(this).attr('rel');
         var t = jQuery('#features').val();
-        if (jQuery('#features').val() === '') { // no perimeter
+        if (jQuery('#features').val() === '') {
             showBasketModalError(
                     Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING', 'You have to select an extent to go further'),
                     Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE', 'Perimeter missing')
                     );
             return false;
-        } else if (jQuery('#surfacemin').val() !== '' && parseFloat(jQuery('#surface').val()) < parseFloat(jQuery('#surfacemin').val())) { // perimeter too small
-            showBasketModalError(
-                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_SMALL', 'The order perimeter is too small, please click on the map to modify it'),
-                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_SMALL_TITLE', 'Order perimeter too small')
-                    );
-            return false;
-        } else if (jQuery('#surfacemax').val() !== '' && parseFloat(jQuery('#surface').val()) > parseFloat(jQuery('#surfacemax').val())) { // perimeter too large
-            showBasketModalError(
-                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_LARGE', 'The order perimeter is too large, please click on the map to modify it'),
-                    Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_TOO_LARGE_TITLE', 'Order perimeter too large')
-                    );
-            return false;
-        } else if (!checkThirdPartyDetails()) { // thirdparty details
+        } else if (!checkThirdPartyDetails()) {
             showBasketModalError(
                     Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING', 'You have to fill third party and mandate details'),
                     Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_THIRDPARTY_FIELDS_MISSING_TITLE', 'Third party details missing')
                     );
             return false;
         } else {
+            if (jQuery('#allowedbuffer').val() == 0) {
+                jQuery('#perimeter-buffer').val('');
+            }
+
             var format = new OpenLayers.Format.WMC({'layerOptions': {buffer: 0}});
             var text = format.write(minimap);
             jQuery('#wmc').val(text);

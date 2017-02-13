@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -16,7 +16,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
 
 $user = JFactory::getUser();
 $userId = $user->get('id');
@@ -144,12 +144,11 @@ if (!empty($this->extra_sidebar)) {
                 <tbody>
                     <?php
                     foreach ($this->items as $i => $item) :
-                        $ordering	= ($listOrder == 'a.ordering');
-			$canCreate	= $user->authorise('core.create', 'com_easysdi_map');
-			$canEdit	= $user->authorise('core.edit',	'com_easysdi_map.layer.'. $item->id);
-                        $canCheckin     = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
-                        $canEditOwn     = $user->authorise('core.edit.own',   'com_easysdi_map.layer.' . $item->id) && $item->created_by == $userId;
-			$canChange	= $user->authorise('core.edit.state', 'com_easysdi_map');
+                        $ordering = ($listOrder == 'groupordering');
+                        $canCreate = $user->authorise('core.create', 'com_easysdi_map');
+                        $canEdit = $user->authorise('core.edit', 'com_easysdi_map');
+                        $canCheckin = $user->authorise('core.manage', 'com_easysdi_map');
+                        $canChange = $user->authorise('core.edit.state', 'com_easysdi_map');
                         ?>
                         <tr class="row<?php echo $i % 2; ?>" >
 

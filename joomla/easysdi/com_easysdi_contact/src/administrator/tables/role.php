@@ -1,29 +1,31 @@
 <?php
-
 /**
- * @version     4.4.3
- * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+*** @version     4.0.0
+* @package     com_easysdi_contact
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 // No direct access
 defined('_JEXEC') or die;
 
 /**
  * address Table class
  */
-class Easysdi_contactTablerole extends JTable {
+class Easysdi_contactTablerole extends JTable
+{
+	/**
+	 * Constructor
+	 *
+	 * @param JDatabase A database connector object
+	 */
+	public function __construct(&$db)
+	{
+		parent::__construct('#__sdi_user_role_organism', 'id', $db);
+	}
 
-    /**
-     * Constructor
-     *
-     * @param JDatabase A database connector object
-     */
-    public function __construct(&$db) {
-        parent::__construct('#__sdi_user_role_organism', 'id', $db);
-    }
-
+    
     /**
      * Method to load a row from the database by user id and address type, and bind the fields
      * to the JTable instance properties.
@@ -35,8 +37,9 @@ class Easysdi_contactTablerole extends JTable {
      * @link    http://docs.joomla.org/JTable/load
      * @since   EasySDI 3.0.0
      */
-    public function loadByUserID($user_id = null, $type = null, $reset = true) {
-        return $this->loadBy('user_id','organism_id', $user_id, $type, $reset);
+    public function loadByUserID($user_id = null, $type = null ,$reset = true)
+    {
+    	return $this->loadBy('user_id', $user_id, $type, $reset );
     }
 
     /**
@@ -50,10 +53,11 @@ class Easysdi_contactTablerole extends JTable {
      * @link    http://docs.joomla.org/JTable/load
      * @since   EasySDI 3.0.0
      */
-    public function loadByOrganismID($organism_id = null, $type= null,$reset = true) {
-        return $this->loadBy('organism_id','user_id', $organism_id, $type, $reset);
+    public function loadByOrganismID($organism_id = null, $reset = true)
+    {
+    	return $this->loadBy('organism_id', $organism_id, null,$reset );
     }
-
+    
     /**
      * Generic method to load a row from the database by user or organism.
      * This method is called by Easysdi_contactTablerole::loadByUserID() and Easysdi_contactTablerole::loadByOrganismID()
@@ -61,45 +65,51 @@ class Easysdi_contactTablerole extends JTable {
      * @param unknown_type $id : identifier of the object where the role belonged
      * @param unknown_type $reset : reset
      */
-    private function loadBy($by, $return, $id = null, $type = null) {
-        // Initialise the query.
-        $query = $this->_db->getQuery(true);
-        $query->select($this->_db->quoteName($return));
-        $query->from($this->_tbl);
-        $query->where($this->_db->quoteName($by) . ' = ' . (int) $id);
-        if (!is_null($type)) {
-            $query->where($this->_db->quoteName('role_id') . ' = ' . (int) $type);
-        }
-        $this->_db->setQuery($query);
-
-        try {
-            $rows = $this->_db->loadColumn();
-        } catch (JDatabaseException $e) {
-            $je = new JException($e->getMessage());
-            $this->setError($je);
-            return false;
-        }
-
-        // Legacy error handling switch based on the JError::$legacy switch.
-        // @deprecated  12.1
-        if (JError::$legacy && $this->_db->getErrorNum()) {
-            $e = new JException($this->_db->getErrorMsg());
-            $this->setError($e);
-            return false;
-        }
-
-        // Check that we have a result.
-        if (empty($rows)) {
-            $e = new JException(JText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
-            $this->setError($e);
-            return false;
-        }
-
-        // Bind the object with the row and return.
-        return $rows;
+    private function loadBy($by, $id = null, $type = null)
+    {
+    	// Initialise the query.
+    	$query = $this->_db->getQuery(true);
+    	$query->select('organism_id');
+    	$query->from($this->_tbl);
+    	$query->where($this->_db->quoteName($by) . ' = ' . (int) $id);
+    	if(!is_null($type)){
+    		$query->where($this->_db->quoteName('role_id') . ' = ' . (int) $type);
+    	}
+    	$this->_db->setQuery($query);
+    
+    	try
+    	{
+    		$rows = $this->_db->loadColumn();
+    		
+    	}
+    	catch (JDatabaseException $e)
+    	{
+    		$je = new JException($e->getMessage());
+    		$this->setError($je);
+    		return false;
+    	}
+    
+    	// Legacy error handling switch based on the JError::$legacy switch.
+    	// @deprecated  12.1
+    	if (JError::$legacy && $this->_db->getErrorNum())
+    	{
+    		$e = new JException($this->_db->getErrorMsg());
+    		$this->setError($e);
+    		return false;
+    	}
+    
+    	// Check that we have a result.
+    	if (empty($rows))
+    	{
+    		$e = new JException(JText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
+    		$this->setError($e);
+    		return false;
+    	}
+    	
+    	// Bind the object with the row and return.
+    	return $rows;
     }
     
-
     /**
      * Delete all the role attribution for the specified user
      * 
@@ -107,44 +117,51 @@ class Easysdi_contactTablerole extends JTable {
      * 
      * @return boolean           True if successful. False if user not found or on error (internal error state set in that case).
      */
-    public function deleteByUserId($user_id) {
-        if (is_null($user_id))
-            return false;
-
-        //Select the user attribution
-        $query = $this->_db->getQuery(true);
-        $query->select('id');
-        $query->from($this->_tbl);
-        $query->where($this->_db->quoteName('user_id') . ' = ' . (int) $user_id);
-
-        $this->_db->setQuery($query);
-
-        try {
-            $ids = $this->_db->loadAssocList();
-        } catch (JDatabaseException $e) {
-            $je = new JException($e->getMessage());
-            $this->setError($je);
-            return false;
-        }
-
-        // Legacy error handling switch based on the JError::$legacy switch.
-        // @deprecated  12.1
-        if (JError::$legacy && $this->_db->getErrorNum()) {
-            $e = new JException($this->_db->getErrorMsg());
-            $this->setError($e);
-            return false;
-        }
-
-        //Delete the user attribution
-        foreach ($ids as $id) {
-            try {
-                $this->delete($id['id']);
-            } catch (JDatabaseException $e) {
-                $je = new JException($e->getMessage());
-                $this->setError($je);
-                return false;
-            }
-        }
-        return true;
+    public function deleteByUserId($user_id){
+    	if(is_null($user_id))
+    		return false;
+    	
+    	//Select the user attribution
+    	$query = $this->_db->getQuery(true);
+    	$query->select('id');
+    	$query->from($this->_tbl);
+    	$query->where($this->_db->quoteName('user_id') . ' = ' . (int) $user_id);
+    	 
+    	$this->_db->setQuery($query);
+    	
+    	try
+    	{
+    		$ids = $this->_db->loadAssocList();
+    	}
+    	catch (JDatabaseException $e)
+    	{
+    		$je = new JException($e->getMessage());
+    		$this->setError($je);
+    		return false;
+    	}
+    	
+    	// Legacy error handling switch based on the JError::$legacy switch.
+    	// @deprecated  12.1
+    	if (JError::$legacy && $this->_db->getErrorNum())
+    	{
+    		$e = new JException($this->_db->getErrorMsg());
+    		$this->setError($e);
+    		return false;
+    	}
+    	
+    	//Delete the user attribution
+    	foreach ($ids as $id){
+    		try{
+    			$this->delete($id['id']);
+    		}
+    		catch  (JDatabaseException $e)
+    		{
+    			$je = new JException($e->getMessage());
+    			$this->setError($je);
+    			return false;
+    		}
+    	}
+    	return true;
     }
+
 }

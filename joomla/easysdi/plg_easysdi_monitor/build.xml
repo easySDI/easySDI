@@ -5,7 +5,7 @@
     <property name="monitor.plugin.name" value="plg_easysdi_monitor"/>
     <property name="plg.monitor.src.out.dir" value="${root.out.dir}/${monitor.plugin.name}/src"/>
     <property name="plg.monitor.package.out.dir" value="${root.out.dir}/${monitor.plugin.name}/target"/>
-    <property name="joomla.monitor.plugin.path" value="content/sdimonitor"/>
+    <property name="joomla.monitor.plugin.path" value="content/easysdimonitor"/>
     
     <available file="${joomla.plugin.path}/${joomla.monitor.plugin.path}" type="dir" property="monitor.plg.exist"/>
     

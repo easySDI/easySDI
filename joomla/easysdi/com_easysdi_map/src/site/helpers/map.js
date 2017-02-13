@@ -301,7 +301,7 @@ function getMapConfig() {
             case 'getfeatureinfo':
                 var tool = {
                     ptype: "gxp_wmsgetfeatureinfo",
-                    //popupTitle: "Feature Info",
+                    popupTitle: "Feature Info",
                     toggleGroup: "interaction",
                     format: data.tools[index].params,
                     actionTarget: "hiddentbar",
@@ -312,7 +312,7 @@ function getMapConfig() {
             case 'googlegeocoder':
                 config.tools.push({actions: ["-"], actionTarget: "map.tbar"});
                 var tool = {
-                    ptype: "sdi_gxp_googlegeocoder",
+                    ptype: "gxp_googlegeocoder",
                     outputTarget: "map.tbar"
                 };
                 config.tools.push(tool);

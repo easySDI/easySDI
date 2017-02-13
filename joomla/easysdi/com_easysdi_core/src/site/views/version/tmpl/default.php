@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -15,9 +15,9 @@ JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
-$document->addScript('components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
-$document->addScript('components/com_easysdi_core/views/version/tmpl/version.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
+$document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
+$document->addScript('components/com_easysdi_core/views/version/tmpl/version.js');
 ?>
 <?php
 require_once JPATH_BASE.'/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
@@ -130,6 +130,7 @@ if ($this->item) :
                     <div class="span12">
                         <div class="well">
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_CHILDREN'); ?></h3>
+                            <div id="child-cardinality"></div>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-children" width="100%">
                                 <thead>
                                     <tr>
@@ -156,6 +157,7 @@ if ($this->item) :
                     <div class="span12">
                         <div class="well">
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_PARENT'); ?></h3>
+                            <div id="parent-cardinality"></div>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-parents" width="100%">
                                 <thead>
                                     <tr>

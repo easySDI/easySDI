@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -17,11 +17,13 @@ class sdiPerimeter {
     public $alias;
     public $wmsurl;
     public $wfsurl;
-    
+    public $allowedbuffer;
+
     function __construct($session_perimeter) {
         if (empty($session_perimeter))
             return;
         $this->id = $session_perimeter->perimeter_id;
+        $this->allowedbuffer = $session_perimeter->buffer;
         $this->loadData();
     }
 
@@ -116,21 +118,21 @@ class sdiPerimeter {
         }
     }
 
-//    public function setAllowedBuffer($extractions) {
-//        if (empty($extractions))
-//            return;
-//
-//        foreach ($extractions as $extraction):
-//            foreach ($extraction->perimeters as $perimeter):
-//                if ($perimeter->id == $this->id):
-//                    if ($perimeter->allowedbuffer == 0):
-//                        $this->allowedbuffer = 0;
-//                        return $this->allowedbuffer;
-//                    endif;
-//                endif;
-//            endforeach;
-//        endforeach;
-//    }
+    public function setAllowedBuffer($extractions) {
+        if (empty($extractions))
+            return;
+
+        foreach ($extractions as $extraction):
+            foreach ($extraction->perimeters as $perimeter):
+                if ($perimeter->id == $this->id):
+                    if ($perimeter->allowedbuffer == 0):
+                        $this->allowedbuffer = 0;
+                        return $this->allowedbuffer;
+                    endif;
+                endif;
+            endforeach;
+        endforeach;
+    }
 
 }
 

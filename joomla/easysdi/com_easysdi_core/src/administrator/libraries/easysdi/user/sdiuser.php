@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -165,31 +165,18 @@ class sdiUser {
     private function getUserById($sdiId) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('u.*, uro.role_id')
+                ->select('u.*, o.perimeter, juser.id as jid')
                 ->from('#__sdi_user AS u')
-                ->leftJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id")
+                ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id")
+                ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
+                ->innerJoin("#__users juser ON juser.id = u.user_id")
+                ->where("uro.role_id = 1")
                 ->where('u.id = ' . (int) $sdiId) //use the easySDI id
         ;
         $db->setQuery($query);
-        $users = $db->loadObjectList();
-        if (count($users) == 1 && is_null($users[0]->role_id)) {
-            //User roles weren't define yet
-            //Keep this record as user definition
-            $user = $users[0];
-        } else {
-            $query = $db->getQuery(true)
-                    ->select('u.*, o.perimeter')
-                    ->from('#__sdi_user AS u')
-                    ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id")
-                    ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
-                    ->where("uro.role_id = 1")
-                    ->where('u.id = ' . (int) $sdiId) //use the easySDI id
-            ;
-            $db->setQuery($query);
-            $user = $db->loadObject();
-        }
+        $user = $db->loadObject();
 
-        $this->juser = JFactory::getUser($user->user_id);
+        $this->juser = JFactory::getUser($user->jid);
         $this->name = $this->juser->name;
 
         return $user;
@@ -213,10 +200,8 @@ class sdiUser {
         $db->setQuery($query);
         $user = $db->loadObject();
 
-        if (isset($user)) {
-            $this->juser = JFactory::getUser($user->jid);
-            $this->name = $this->juser->name;
-        }
+        $this->juser = JFactory::getUser($user->jid);
+        $this->name = $this->juser->name;
 
         return $user;
     }
@@ -446,7 +431,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::resourcemanager]) ? $this->role[self::resourcemanager] : array();
+        return $this->role[2];
     }
 
     /**
@@ -457,7 +442,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::metadataresponsible]) ? $this->role[self::metadataresponsible] : array();
+        return $this->role[3];
     }
 
     /**
@@ -468,7 +453,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::metadataeditor]) ? $this->role[self::metadataeditor] : array();
+        return $this->role[4];
     }
 
     /**
@@ -479,7 +464,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::diffusionmanager]) ? $this->role[self::diffusionmanager] : array();
+        return $this->role[5];
     }
 
     /**
@@ -490,7 +475,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::viewmanager]) ? $this->role[self::viewmanager] : array();
+        return $this->role[6];
     }
 
     /**
@@ -501,7 +486,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::extractionresponsible]) ? $this->role[self::extractionresponsible] : array();
+        return $this->role[7];
     }
 
     /**
@@ -512,14 +497,9 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::pricingmanager]) ? $this->role[self::pricingmanager] : array();
+        return $this->role[self::pricingmanager];
     }
 
-    /**
-     * Is the user pricing manager for the organism $id
-     * @param type $id Id of the organism
-     * @return type boolean
-     */
     public function isPricingManager($id) {
         return in_array($id, $this->getOrganisms(self::pricingmanager, true));
     }
@@ -532,7 +512,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::validationmanager]) ? $this->role[self::validationmanager] : array();
+        return $this->role[self::validationmanager];
     }
 
     /**
@@ -543,7 +523,7 @@ class sdiUser {
         if (!$this->isEasySDI) {
             return null;
         }
-        return isset($this->role[self::organismmanager]) ? $this->role[self::organismmanager] : array();
+        return $this->role[self::organismmanager];
     }
 
     /**

@@ -1,9 +1,8 @@
 <?php
-
 /**
- * @version     4.4.3
- * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+*** @version     4.0.0
+* @package     com_easysdi_contact
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -44,6 +43,7 @@ class Easysdi_contactViewUser extends JViewLegacy
 		$this->delivryitem 			= $this->delivryaddressmodel->getItemByUserID($this->item->id,3);
 		
 		$app 				= JFactory::getApplication();
+		$this->shop 		= $app->getUserState( 'com_easysdi_shop-installed');
                 
                 $this->pricing = JComponentHelper::getParams('com_easysdi_shop')->get('is_activated', false);
 		

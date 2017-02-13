@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -57,9 +57,6 @@ class Easysdi_shopModelOrders extends JModelList {
 
         $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status', (JFactory::getApplication()->input->get('layout') == 'validation') ? 1 : null);
         $this->setState('filter.status', $search);
-        
-        $search = $app->getUserStateFromRequest($this->context . '.filter.archived', 'filter_archived', 1);
-        $this->setState('filter.archived', $search);
 
         $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
         $this->setState('filter.type', $search);
@@ -125,6 +122,8 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->leftJoin("#__sdi_user AS uvalid ON a.validated_by = uvalid.id");
         $query->leftJoin('#__users AS juvalid ON juvalid.id = uvalid.user_id');
 
+
+
         // Filter by type
         $type = $this->getState('layout.validation') ? Easysdi_shopHelper::ORDERTYPE_ORDER : $this->getState('filter.type');
         if (is_numeric($type)) {
@@ -158,6 +157,7 @@ class Easysdi_shopModelOrders extends JModelList {
                     $query->where('a.orderstate_id = ' . Easysdi_shopHelper::ORDERSTATE_VALIDATION);
                 else // get orders checked
                     $query->where('a.orderstate_id IN (' .
+                            Easysdi_shopHelper::ORDERSTATE_ARCHIVED . ', ' .
                             Easysdi_shopHelper::ORDERSTATE_HISTORIZED . ', ' .
                             Easysdi_shopHelper::ORDERSTATE_FINISH . ', ' .
                             Easysdi_shopHelper::ORDERSTATE_AWAIT . ', ' .
@@ -190,17 +190,13 @@ class Easysdi_shopModelOrders extends JModelList {
             if (is_numeric($status)) {
                 $query->where('a.orderstate_id = ' . $status);
             }
-            
-            // Filter by archived state
-            $archived = $this->getState('filter.archived');
-            if (is_numeric($archived)) {
-                $archived = $archived == 0 ? 1 : 0; 
-                $query->where('a.archived = ' . $archived);
-            }
         }
+        
         //Don't include historized item
         $query->where('a.orderstate_id <> 2');
-        $query->order('a.sent DESC');        
+
+        $query->order('a.created DESC');
+        
         $query->group('a.id');
         $query->group('a.guid');
         $query->group('a.alias');
@@ -215,9 +211,9 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->group('a.name');
         $query->group('a.ordertype_id');
         $query->group('a.orderstate_id');
-        $query->group('a.archived');
         $query->group('a.user_id');
         $query->group('a.thirdparty_id');
+        $query->group('a.buffer');
         $query->group('a.surface');
         $query->group('a.remark');
         $query->group('a.sent');
@@ -225,7 +221,6 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->group('a.access');
         $query->group('a.asset_id');
         $query->group('a.validated_date');
-        $query->group('a.validated_by');
         $query->group('a.validated_reason');
         $query->group('a.mandate_ref');
         $query->group('a.mandate_contact');
@@ -233,15 +228,10 @@ class Easysdi_shopModelOrders extends JModelList {
         $query->group('a.level');
         $query->group('a.freeperimetertool');
         $query->group('a.validated');        
-        $query->group('a.usernotified');
-        $query->group('a.access_token');      
-        $query->group('a.validation_token');      
         $query->group('state.value');
         $query->group('type.value');
         $query->group('juclient.name');
         $query->group('oclient.name');
-        $query->group('juvalid.name');
-        
        
         $s = $query->__toString();
         return $query;
@@ -293,7 +283,7 @@ class Easysdi_shopModelOrders extends JModelList {
             $query->join('INNER', $db->quoteName('#__sdi_order_diffusion', 'd') . ' ON (' . $db->quoteName('d.order_id') . ' = ' . $db->quoteName('o.id') . ')');
             $query->where('o.completed < ' . $db->quote($dStart->format('Y-m-d H:i:s')));
             $query->where('d.productstate_id = ' . Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE);
-            $query->where('(o.orderstate_id = ' . Easysdi_shopHelper::ORDERSTATE_FINISH  . ')');
+            $query->where('(o.orderstate_id = ' . Easysdi_shopHelper::ORDERSTATE_FINISH . ' OR o.orderstate_id = ' . Easysdi_shopHelper::ORDERSTATE_ARCHIVED . ')');
             $db->setQuery($query);
             $orderstohistorize = $db->loadObjectList();
 

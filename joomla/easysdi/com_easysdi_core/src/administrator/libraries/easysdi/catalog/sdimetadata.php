@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -230,9 +230,8 @@ class sdiMetadata extends cswmetadata {
         $xml = $this->dom->saveXML();
         $result = $this->CURLRequest("POST", $this->catalogurl, $xml);
 
-        if (empty($result)){
-            throw new Exception ('CSW catalog doesn\'t answered', null, null);
-        }
+        if (empty($result))
+            return false;
 
         $insertDom = new DOMDocument();
         $insertDom->loadXML($result);
@@ -240,11 +239,8 @@ class sdiMetadata extends cswmetadata {
         $xpathDelete->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
         $deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
 
-        if (is_null($deleted)) {
-            throw new Exception ('CSW catalog doesn\'t answered', null, null);
-        }
-        
         if ($deleted <> 1) {
+            JFactory::getApplication()->enqueueMessage('Metadata deletion failed.', 'error');
             return false;
         }
 

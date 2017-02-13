@@ -251,7 +251,7 @@ ALTER TABLE [#__sdi_diffusion_download] CHECK CONSTRAINT [#__sdi_diffusion_downl
 
 ALTER TABLE [#__sdi_diffusion_download]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk2] FOREIGN KEY([user_id])
 REFERENCES [#__sdi_user] ([id])
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_diffusion_download] CHECK CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk2];
 

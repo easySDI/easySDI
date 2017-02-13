@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -27,8 +27,8 @@ class Easysdi_shopViewProperty extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$this->state	= $this->get('State');
-		$this->item	= $this->get('Item');
-		$this->form	= $this->get('Form');
+		$this->item		= $this->get('Item');
+		$this->form		= $this->get('Form');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
@@ -48,18 +48,19 @@ class Easysdi_shopViewProperty extends JViewLegacy
 
 		$user		= JFactory::getUser();
 		$isNew		= ($this->item->id == 0);
-                if (isset($this->item->checked_out)) {
+        if (isset($this->item->checked_out)) {
 		    $checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-                } else {
-                    $checkedOut = false;
-                }
-		$canDo		= Easysdi_shopAdminHelper::getActions();
+        } else {
+            $checkedOut = false;
+        }
+		$canDo		= Easysdi_shopHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTY'), 'property.png');
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))
 		{
+
 			JToolBarHelper::apply('property.apply', 'JTOOLBAR_APPLY');
 			JToolBarHelper::save('property.save', 'JTOOLBAR_SAVE');
 		}

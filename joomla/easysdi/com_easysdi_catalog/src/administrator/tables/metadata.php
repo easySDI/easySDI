@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -62,18 +62,39 @@ class Easysdi_catalogTablemetadata extends sdiTable {
     }
 
     /**
-     * 
-     * @param type $pk
-     * @return boolean
+     * Overriden JTable::store to set modified data and user id.
+     *
+     * @param	boolean	True to update fields even if they are null.
+     * @return	boolean	True on success.
+     * @since	1.6
      */
-//    public function delete($pk = null) {
-//        
-//        //$CSWmetadata = new sdiMetadata($pk);
-//        
-//        if(parent::delete($pk)){
-////            return $CSWmetadata->delete();
+//    public function store($updateNulls = true) {
+//        (empty($this->id) ) ? $new = true : $new = false;
+//
+//        if (parent::store($updateNulls)) {
+//            $CSWmetadata = new sdiMetadata($this->id);
+//            if ($new) {
+//                if(!$CSWmetadata->insert()){
+//                    return false;
+//                }
+//            }else{
+//                if(!$CSWmetadata->update()){
+//                    return false;
+//                }
+//            }
 //            return true;
 //        }
 //        return false;
 //    }
+
+    public function delete($pk = null) {
+        
+        $CSWmetadata = new sdiMetadata($pk);
+        
+        if(parent::delete($pk)){
+//            return $CSWmetadata->delete();
+            return true;
+        }
+        return false;
+    }
 }

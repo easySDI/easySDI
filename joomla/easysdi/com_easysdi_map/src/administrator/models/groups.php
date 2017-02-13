@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -152,7 +152,7 @@ class Easysdi_mapModelgroups extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.alias, a.state, a.ordering, a.name, a.access, a.created_by, a.checked_out, a.checked_out_time'
+                        'list.select', 'a.id, a.alias, a.state, a.ordering, a.name, a.access'
                 )
         );
         $query->from('#__sdi_layergroup AS a');

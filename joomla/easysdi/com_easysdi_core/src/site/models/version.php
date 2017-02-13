@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -197,7 +197,7 @@ class Easysdi_coreModelVersion extends JModelForm {
      * @since	1.6
      */
     protected function loadFormData() {
-        $data = JFactory::getApplication()->getUserState('com_easysdi_core.edit.version.data', array());
+        //$data = JFactory::getApplication()->getUserState('com_easysdi_core.edit.version.data', array());
         if (empty($data)) {
             $data = $this->getData();
         }
@@ -248,7 +248,8 @@ class Easysdi_coreModelVersion extends JModelForm {
             if(!empty($childrentoremove)){
                 $query = $db->getQuery(true)
                         ->delete('#__sdi_versionlink')
-                        ->where('child_id IN ('.implode(',', $childrentoremove).')');
+                        ->where('child_id IN ('.implode(',', $childrentoremove).')')
+                        ->where('parent_id = '.(int)$data['id']);
                 $db->setQuery($query);
                 if(!$db->execute()){
                     JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_MSG_CANT_SAVE_VERSIONLINK'), 'error');

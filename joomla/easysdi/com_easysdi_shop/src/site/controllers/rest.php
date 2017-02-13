@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -113,13 +113,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         if (!empty($this->organism)) {
             $query->where('r.organism_id = ' . (int)$this->organism->id);
         }
-        //only items in sent state
         $query->where('od.productstate_id = ' . Easysdi_shopHelper::PRODUCTSTATE_SENT);
-        //only automatic mining products
         $query->where('d.productmining_id = ' . self::PRODUCTMININGAUTO);
-        //only order that are completely saved (avoid partial orders : https://forge.easysdi.org/issues/1252)
-        $query->where('o.sent > \'0000-00-00 00:00:00\'');
-        //group by order id
         $query->group('o.id');
 
         $this->db->setQuery($query);
@@ -240,8 +235,6 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
                 if ($size = file_put_contents(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId . '/' . $filename, $content)) {
                     if ($this->updateOrderDiffusion($orderdiffusionId, $remark, $amount, $filename, $size)) {
                         $this->changeState($orderdiffusionId, Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE);
-                        //notify user if needed
-                        Easysdi_shopHelper::notifyCustomerOnOrderUpdate($orderId, true);
                         return $this->getSuccess('File sended');
                     } else {
                         return $this->getException('UnableToUpdateTable', 'Unable to update values into database table.');
@@ -274,6 +267,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query->update('#__sdi_order_diffusion');
         $query->set('remark = ' . $query->quote($remark));
+        $query->set('fee = '. $query->quote($amount));
         $query->set('completed = ' . $query->quote($now));
         $query->set('file = ' . $query->quote($filename));
         $query->set('size = ' . $size);
@@ -581,6 +575,12 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         }
         
         return $categories;
+    }
+
+    private function getBuffer() {
+        $buffer = $this->response->createElementNS($this->nsEasysdi, 'easysdi:BUFFER');
+
+        return $buffer;
     }
 
     /**

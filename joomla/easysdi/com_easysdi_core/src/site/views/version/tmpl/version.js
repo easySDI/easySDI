@@ -22,7 +22,7 @@ js(document).ready(function() {
     availablechildrenTable = js('#sdi-availablechildren').dataTable(js.extend(true, {}, dtDefaultSettings, {
         sAjaxSource: baseUrl+'option=com_easysdi_core&task=version.getAvailableChildren4DT',
         fnServerParams: function(aoData){
-            aoData.push({ name: 'version', value: version });
+            aoData.push({ name: 'version_id', value: version });
             aoData.push({ name: 'resourcetypechild', value: resourcetypechild });
             aoData.push({ name: 'inc', value: tmpRemoved.toString()});
             aoData.push({ name: 'exc', value: tmpAdded.toString()});
@@ -40,10 +40,15 @@ js(document).ready(function() {
                     return Joomla.JText._(child.state, child.state);
             }, bSearchable: false},
             { aTargets: [8], mData: function(child){
-                    return "<button type='button' id='sdi-availablechildbutton-"+child.id+"' class='btn btn-success btn-mini' onclick='addChild("+JSON.stringify(child).replace(/'/g, ' ')+");'><i class='icon-white icon-new'></i></button>";
+                    if(child.isAddable == true){
+                        return "<button type='button' id='sdi-availablechildbutton-"+child.id+"' class='btn btn-success btn-mini' onclick='addChild("+JSON.stringify(child)+");'><i class='icon-white icon-new'></i></button>";
+                    }else{
+                        return "<button type='button' id='sdi-availablechildbutton-"+child.id+"' class='btn btn-success btn-mini disabled'><i class='icon-white icon-new'></i></button>";
+                    }
                 }, sClass: 'center', bSearchable: false, bVisible: !isReadonly }
         ],
         aaSorting: [[3, 'desc']]
+        
     }));
     
     // apply search criteria on available children table
@@ -90,7 +95,7 @@ js(document).ready(function() {
     childrenTable = js('#sdi-children').dataTable(js.extend(true, {}, dtDefaultSettings, {
         sAjaxSource: baseUrl+'option=com_easysdi_core&task=version.getChildren4DT',
         fnServerParams: function(aoData){
-            aoData.push({ name: 'version', value: version });
+            aoData.push({ name: 'version_id', value: version });
             aoData.push({ name: 'inc', value: tmpAdded.toString()});
             aoData.push({ name: 'exc', value: tmpRemoved.toString()});
         },
@@ -106,16 +111,22 @@ js(document).ready(function() {
                     return Joomla.JText._(child.state, child.state);
             }, bSearchable: false},
             { aTargets: [8], mData: function(child){
-                    return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child).replace(/'/g, ' ')+");'><i class='icon-white icon-minus'></i></button>";
+                    return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
                 }, sClass: 'center', bSearchable: false, bVisible: !isReadonly }
         ]
-    }));
+        ,
+        fnDrawCallback : function(){
+            showChildrenCardinality();
+        }
+        }));
+    
+    
     
     parents = js('#sdi-parents').dataTable(js.extend(true, {}, dtDefaultSettings, {
         "bFilter": true,
         sAjaxSource: baseUrl+'option=com_easysdi_core&task=version.getParents4DT',
         fnServerParams: function(aoData){
-            aoData.push({ name: 'version', value: version });
+            aoData.push({ name: 'version_id', value: version });
         },
         aoColumnDefs: [
             { bVisible: false, aTargets: [0], mData: 'id' },
@@ -127,6 +138,10 @@ js(document).ready(function() {
             }, bSearchable: false}
             
         ]
+        ,
+        fnDrawCallback : function(){
+            showParentsCardinality();
+        }
     }));
     
     // to avoid double click event under IE !!
@@ -153,6 +168,46 @@ js(document).ready(function() {
         Joomla.submitform(task, document.getElementById('adminForm'));
     };*/
 });
+
+function showChildrenCardinality(){
+    
+    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getChildrenCardinality", version_id : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString(), "ufo" : Math.random()})
+    .done(function(data){
+        var cardinality = JSON.parse(data);
+        js("#child-cardinality").empty();
+    
+        js.each(cardinality, function(i, item) {
+           
+            if(cardinality[i].actual < cardinality[i].childboundlower || cardinality[i].actual > cardinality[i].childboundupper){
+                classes = "alert alert-error";
+            }else{
+                classes = "alert alert-success";
+            }
+            js("<div class='"+classes+"'>"+cardinality[i].message+"</div>").appendTo("#child-cardinality");
+            
+        }); 
+    });
+}
+
+function showParentsCardinality(){
+    
+    js.get( baseUrl, {option: "com_easysdi_core", task : "version.getParentsCardinality", version_id : version, "inc": tmpAdded.toString(), "exc" : tmpRemoved.toString(), "ufo" : Math.random()})
+    .done(function(data){
+        var cardinality = JSON.parse(data);
+        js("#parent-cardinality").empty();
+    
+        js.each(cardinality, function(i, item) {
+           
+            if(cardinality[i].actual < cardinality[i].parentboundlower || cardinality[i].actual > cardinality[i].parentboundupper){
+                classes = "alert alert-error";
+            }else{
+                classes = "alert alert-success";
+            }
+            js("<div class='"+classes+"'>"+cardinality[i].message+"</div>").appendTo("#parent-cardinality");
+
+        }); 
+    });
+}
 
 var addChild = function(child){
     if(tmpRemoved.indexOf(child.id) > -1)

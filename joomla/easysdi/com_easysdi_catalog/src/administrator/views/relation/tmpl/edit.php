@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.3.2
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2015. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -17,9 +17,9 @@ JHtml::_('behavior.keepalive');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet(Juri::root(true) .'/components/com_easysdi_catalog/assets/css/easysdi_catalog.css?v=' . sdiFactory::getSdiFullVersion());
-$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css?v=' . sdiFactory::getSdiFullVersion());
-$document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js?v=' . sdiFactory::getSdiFullVersion());
+$document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
+$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
+$document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js');
 ?>
 <script type="text/javascript">
     var url = '<?php echo JURI::root(); ?>administrator/index.php?option=com_easysdi_catalog&task=relation.getRenderType&attributechild=';
