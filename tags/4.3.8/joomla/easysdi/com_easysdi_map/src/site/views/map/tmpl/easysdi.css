@@ -1,0 +1,30 @@
+/* Tile  */
+img.olTileImage {
+    max-width: none;
+}
+
+/* Layer tree  */
+ul.x-tree-root-ct, ul.x-tree-arrows, ul.x-tree-node-el, ul.x-tree-node-ct  {
+    list-style: none outside none;
+}
+ul.x-tree-root-ct, ul.x-tree-arrows, ul.x-tree-node-el, ul.x-tree-node-ct {
+    margin: 0 0 9px;
+}
+input.x-tree-node-cb {
+     margin: 0;
+}
+
+/* Google geocoder */
+input.x-form-field{
+    margin-bottom: 0;
+}
+
+/* Map scale */
+div.map-overlay {
+    left: 10px !important;
+    right: auto !important;
+}
+
+svg {
+    max-width :none !important;
+}

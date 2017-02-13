@@ -1,0 +1,61 @@
+.icon-48-layergroups {
+	background-image: url(../images/l_groups.png);
+	padding-left: 60px !important;
+}
+
+.icon-48-layergroup {
+	background-image: url(../images/l_groups.png);
+	padding-left: 60px !important;
+}
+
+.icon-48-layers {
+	background-image: url(../images/l_layers.png);
+	padding-left: 60px !important;
+}
+
+.icon-48-layer {
+	background-image: url(../images/l_layers.png);
+	padding-left: 60px !important;
+}
+
+.icon-48-maps {
+	background-image: url(../images/l_maps.png);
+	padding-left: 60px !important;
+}
+
+.icon-48-map {
+	background-image: url(../images/l_maps.png);
+	padding-left: 60px !important;
+}
+
+#progress{
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	visibility:hidden; 
+	position:absolute; 
+	background-color: #B8B9BB;
+	height:100%;
+	width:100%;
+	opacity:0.3;
+	filter:alpha(opacity=30);
+	text-align : center; 
+	vertical-align:middle;
+	z-index:99;
+}
+#progress_image{
+	padding-left:60px;
+	padding-top:70px;
+}
+
+#WMTS-info{
+	color: #000000;
+    margin: 10px 0;
+    background: url("../images/notice-note.png") no-repeat scroll 0 0 #FFFFFF;
+    border-bottom: 2px solid #FAA528;
+    border-top: 2px solid #FAA528;
+    padding: 10px 10px 10px 40px;
+        list-style: none outside none;
+        font-weight: bold;
+        text-indent: 0;
+}
+
