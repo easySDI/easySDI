@@ -232,12 +232,16 @@ class FormGenerator {
             //$this->mergeCsw();
         }
 
+        //echo $this->structure->saveXML(); die();
+        
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $this->setDomXpathStr();
 
         $form = $this->buildForm($this->domXpathStr->query($rootXpath)->item(0));
 
+        //echo $this->structure->saveXML(); die();
+        
         return $form;
     }
 
@@ -555,6 +559,8 @@ class FormGenerator {
             }
         }
 
+        //echo $clone_structure->saveXML(); die();
+        
         $this->getValue($clone_structure->firstChild);
 
         $this->mergeToStructure($clone_structure, $domXpathClone);
@@ -568,11 +574,18 @@ class FormGenerator {
      * 
      */
     private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
+        //echo $this->structure->saveXML(); die();
+        
         /* @var $node DOMElement */
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
             if (strpos($node->getNodePath(), 'gmd:extent') > -1) {
                 $breakpoint = true;
             }
+            
+            if($node->nodeName == "bee:autoload" || $node->nodeName == "gmd:MD_CodeDomain"){
+                $breakpoint = true;
+            }
+            
             if ($domXpathClone->query($node->getNodePath())->length == 0) {
                 do {
                     $childToImport = $node;
@@ -581,41 +594,46 @@ class FormGenerator {
                 } while ($domXpathClone->query($node->getNodePath() . '[@catalog:id="' . $id . '"]')->length == 0);
 
                 //$target = $domXpathClone->query($node->getNodePath())->item(0);
-                $targets = $domXpathClone->query($node->getNodePath());
-                $target = $targets->item(0);
-                $prevSibl = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
-                if (isset($prevSibl)) {
-                    $coll = $domXpathClone->query($prevSibl->getNodePath());
+                foreach ($domXpathClone->query($node->getNodePath()) as $target) {
+                    //$target = $targets->item(0);
+                    $prevSibl = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
+                    if (isset($prevSibl)) {
+                        $coll = $domXpathClone->query($prevSibl->getNodePath());
 
-                    //try to set the refNode, depending on the prevSibl existence
-                    //$refNode = $coll->length > 0 ? $coll->item($coll->length - 1)->nextSibling : $target->firstChild;
-                    if ($coll->length > 0) {
-                        $refNode = $coll->item($coll->length - 1)->nextSibling;
-                        //$target = $targets->item($coll->length - 1);
+                        //try to set the refNode, depending on the prevSibl existence
+                        //$refNode = $coll->length > 0 ? $coll->item($coll->length - 1)->nextSibling : $target->firstChild;
+                        if ($coll->length > 0) {
+                            $refNode = $coll->item($coll->length - 1)->nextSibling;
+                            //$target = $targets->item($coll->length - 1);
+                        } else {
+                            $refNode = $target->firstChild;
+                        }
                     } else {
                         $refNode = $target->firstChild;
                     }
-                } else {
-                    $refNode = $target->firstChild;
-                }
 
-                if (empty($refNode)) {
-                    $breakpoint = true;
-                }
-
-                try {
-                    //add the child to the parent, before the refNode if defined or as last parent's child
-                    if (isset($refNode)) {
-                        $target->insertBefore($clone->importNode($childToImport, true), $refNode);
-                    } else {
-                        $target->appendChild($clone->importNode($childToImport, true));
+                    if (empty($refNode)) {
+                        $breakpoint = true;
                     }
-                } catch (Exception $exc) {
-                    $exc->getTraceAsString();
+
+                    try {
+                        //add the child to the parent, before the refNode if defined or as last parent's child
+                        if (isset($refNode)) {
+                            $target->insertBefore($clone->importNode($childToImport, true), $refNode);
+                        } else {
+                            $target->appendChild($clone->importNode($childToImport, true));
+                        }
+                    } catch (Exception $exc) {
+                        $exc->getTraceAsString();
+                    }
                 }
+                
+                
             }
         }
 
+        //echo $clone->saveXML(); die();
+        
         //replace the structure with the clone
         $this->structure->loadXML($clone->saveXML());
         $breakpoint = true;
@@ -1092,6 +1110,11 @@ class FormGenerator {
      * @since 4.0.0
      */
     private function getFormListField(DOMElement $attribute) {
+        
+        if($attribute->nodeName == "bee:autoload"){
+            $breakpoint = true;
+        }
+        
         $field = $this->form->createElement('field');
 
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
