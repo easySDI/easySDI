@@ -61,8 +61,8 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_catalog');
         $this->form = $this->get('Form');
-
-
+        
+        
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
@@ -115,6 +115,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     }
 
     protected function buildForm() {
+        
         $structure = $this->structure = $this->get('Structure');
 
         $fhg = new FormHtmlGenerator($this->form, $structure);
