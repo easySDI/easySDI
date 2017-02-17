@@ -81,6 +81,7 @@ class FormHtmlGenerator {
     private $isNotOnlyOrganismManager = false;
 
     function __construct(JForm $form, DOMDocument $structure, $ajaxXpath = null) {
+        
         $this->form = $form;
         $structure->preserveWhiteSpace = false;
         $this->structure = $structure;
@@ -135,13 +136,20 @@ class FormHtmlGenerator {
             $rootFieldset = $this->formHtml->createElement('fieldset');
         }
 
+        $struct = $this->structure->saveXML();
+        //echo $struct; die();
+        
         $this->formHtml->appendChild($rootFieldset);
 
+        
+        
         $this->recBuildForm($root, $rootFieldset);
 
         $this->formHtml->formatOutput = true;
         $html = $this->formHtml->saveHTML();
-
+        
+        //echo $struct; die();
+        
         return $html;
     }
 
@@ -155,6 +163,11 @@ class FormHtmlGenerator {
      * @param DOMElement $parentHtml Parent element in the HTML structure.
      */
     private function recBuildForm(DOMElement $parent, DOMElement $parentHtml) {
+        
+        if($parent->nodeName == "gmd:namedType"){
+            $breakpoint = true;
+        }
+        
         switch ($parent->parentNode->nodeType) {
             case XML_DOCUMENT_NODE:
                 $query = '*[@catalog:childtypeId="0"]|*[@catalog:childtypeId="2"]|*[@catalog:childtypeId="3"]';
@@ -309,6 +322,11 @@ class FormHtmlGenerator {
      * @return DOMElement A fieldset containing the necessary buttons.
      */
     private function getFieldset(DOMElement $element) {
+        
+        if($element->nodeName == "gmd:MD_CodeDomain"){
+            $breakpoint=true;
+        }
+        
         $lowerbound = $element->getAttributeNS($this->catalog_uri, 'lowerbound');
         $upperbound = $element->getAttributeNS($this->catalog_uri, 'upperbound');
         $guid = $element->getAttributeNS($this->catalog_uri, 'id');
@@ -416,6 +434,10 @@ class FormHtmlGenerator {
      */
     private function getAttribute(DOMElement $attribute) {
 
+        if($attribute->nodeName == "bee:autoload"){
+            $breakpoint = true;
+        }
+        
         $languages = $this->ldao->getSupported();
         $userLanguageIndex = 0;
 
