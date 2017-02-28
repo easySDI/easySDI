@@ -383,7 +383,7 @@ if ($this->item && $this->item->extractions) :
         <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%;"  class="modal invisible " tabindex="-1" role="dialog" aria-labelledby="modal-perimeter-label" data-backdrop="static" data-keyboard="false" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancel();">×</button>
-                <h3 id="myModalLabel"><?php echo empty($this->item->extent->features) ? JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER') : JText::_('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER'); ?></h3>
+                <h3 id="myModalLabel"><span id="shop-perimeter-modal-title"><?php echo empty($this->item->extent->features) ? JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER') : JText::_('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER'); ?></span><span id="shop-perimeter-modal-title-surface"></span></h3>
             </div>
             <div class="modal-body" style="max-height: 500px;">
                 <div class="container-fluid" >
