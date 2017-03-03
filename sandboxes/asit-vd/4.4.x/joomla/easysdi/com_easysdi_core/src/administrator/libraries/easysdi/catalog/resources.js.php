@@ -899,9 +899,11 @@ foreach ($this->items as $item) :
             js('tr#' + resource.id + '_resource').toggleClass('hasextraction', diffusion.hasextraction);
 
             //remove all diffusion_accessscopes
-            js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_user');
             js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_public');
+            js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_user');
             js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_organism');
+            js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_category');
+            
             //if set, add the correct accessscope
             if (diffusion.diffusion_accessscope !== null) {
                 js('tr#' + resource.id + '_resource').addClass('diffusion_accessscope_' + diffusion.diffusion_accessscope);
