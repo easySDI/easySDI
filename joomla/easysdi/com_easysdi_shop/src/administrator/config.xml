@@ -208,9 +208,11 @@
             class="radio btn-group btn-group-yesno"
             label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_TP_INFO_DISPLAY"
             description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_TP_INFO_DISPLAY"
-            default="1"><option
-                value="0">JNO</option><option
-                value="1">JYES</option></field><field
+            default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field
             name="overall_fee"
             type="note"
             label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_OVERALL_FEE" /><field
@@ -220,19 +222,35 @@
             class="inputbox"
             label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_OVERALL_DEFAULT_FEE"
             description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_OVERALL_DEFAULT_FEE"
-            default="0" /><field
+            default="0" />
+        <field
             name="free_data_fee"
             type="radio"
             class="radio btn-group btn-group-yesno"
             label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_FREE_DATA_FEE"
             description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_FREE_DATA_FEE"
-            default="0"><option
+            default="0">
+            <option
                 value="0">JNO</option><option
-                value="1">JYES</option></field><field
+                value="1">JYES</option>
+        </field>
+        <field
+            name="overall_fee_apply_vat"
+            type="radio"
+            class="radio btn-group btn-group-yesno"
+            label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_OVERALL_FEE_APPLY_VAT"
+            description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_OVERALL_FEE_APPLY_VAT"
+            default="1">
+            <option
+                value="0">JNO</option><option
+                value="1">JYES</option>
+        </field>
+        <field
             name="pricing_by_category"
             type="note"
             class="alert alert-info"
-            description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_BY_CATEGORY" /></fieldset>
+            description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_BY_CATEGORY" />
+    </fieldset>
     <fieldset name="basket_map"
         label="COM_EASYSDI_SHOP_CONFIG_MAPTAB_LABEL"
         description="COM_EASYSDI_SHOP_CONFIG_MAPTAB_DESC">
