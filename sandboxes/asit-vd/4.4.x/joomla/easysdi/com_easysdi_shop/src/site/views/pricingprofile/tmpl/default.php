@@ -72,7 +72,7 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                         <div class="control-label"><?php echo $field->label; ?></div>
                         <div class="controls"><?php echo $field->input; ?>
-                            <?php echo $field->name == "jform[name]" ? "" : ($field->name == "jform[surface_rate]" ? " km2" : " ".$this->paramsarray["currency"]); ?>
+                            <?php echo $field->name == "jform[name]" || $field->name == "jform[apply_vat]" ? "" : ($field->name == "jform[surface_rate]" ? " km2" : " ".$this->paramsarray["currency"]); ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

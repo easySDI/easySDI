@@ -1261,9 +1261,9 @@ CREATE TABLE [#__sdi_organism] (
 	[username] [nvarchar](150) NULL,
 	[password] [nvarchar](65) NULL,
         [internal_free] [smallint] NULL,
-        [fixed_fee_ti] [decimal](6,2) NULL,
+        [fixed_fee_te] [decimal](6,2) NULL,
         [data_free_fixed_fee] [smallint] NULL,
-
+        [fixed_fee_apply_vat] [smallint] NOT NULL DEFAULT 1,
  CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1271,6 +1271,8 @@ CREATE TABLE [#__sdi_organism] (
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 SET ANSI_NULLS ON;
+
+
 
 SET QUOTED_IDENTIFIER ON;
 
@@ -2286,6 +2288,7 @@ CREATE TABLE [#__sdi_pricing_profile](
     [surface_rate] [decimal](19,2),
     [min_fee] [decimal](19,2),
     [max_fee] [decimal](19,2),
+    [apply_vat] [smallint] NOT NULL DEFAULT 1,
 CONSTRAINT [PK_#__sdi_pricing_profile] PRIMARY KEY CLUSTERED
 (
     [id] ASC
@@ -2312,7 +2315,8 @@ CREATE TABLE [#__sdi_pricing_order] (
     [cfg_vat] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_currency] [char](3) NOT NULL DEFAULT 'CHF',
     [cfg_rounding] [decimal](3,2) NOT NULL DEFAULT '0.05',
-    [cfg_overall_default_fee] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_overall_default_fee_te] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_fee_apply_vat] [smallint] NOT NULL DEFAULT 1,
     [cfg_free_data_fee] [smallint] DEFAULT 0,
     [cal_total_amount_ti] [decimal](19,2),
     [cal_fee_ti] [decimal](19,2) NOT NULL DEFAULT 0,
@@ -2343,7 +2347,8 @@ CREATE TABLE [#__sdi_pricing_order_supplier] (
     [supplier_id] [int] NOT NULL,
     [supplier_name] [nvarchar](255) NOT NULL,
     [cfg_internal_free] [smallint] NOT NULL DEFAULT 1,
-    [cfg_fixed_fee_ti] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_fixed_fee_te] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_fixed_fee_apply_vat] [smallint] NOT NULL DEFAULT 1,
     [cfg_data_free_fixed_fee] [smallint] NOT NULL DEFAULT 0,
     [cal_total_rebate_ti] [decimal](19,2) NOT NULL DEFAULT 0,
     [cal_fee_ti] decimal(19,2) NOT NULL DEFAULT 0,
@@ -2404,7 +2409,8 @@ CREATE TABLE [#__sdi_pricing_order_supplier_product_profile] (
     [pricing_order_supplier_product_id] [int](11) not null,
     [pricing_profile_id] [int](11) not null,
     [pricing_profile_name] [nvarchar](255) not null,
-    [cfg_fixed_fee] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_fixed_fee_te] [decimal](19,2) NOT NULL DEFAULT 0,
+    [cfg_apply_vat] [smallint] NOT NULL DEFAULT 1,
     [cfg_surface_rate] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_min_fee] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_max_fee] [decimal](19,2) NOT NULL DEFAULT 0,
@@ -4542,5 +4548,13 @@ ALTER TABLE [sla] ADD  DEFAULT '0' FOR [MEASURE_TIME_TO_FIRST];
 ALTER TABLE [users] ADD  DEFAULT '1' FOR [ENABLED];
 
 ALTER TABLE [users] ADD  DEFAULT '0' FOR [LOCKED];
+
+
+
+
+
+
+
+
 
 
