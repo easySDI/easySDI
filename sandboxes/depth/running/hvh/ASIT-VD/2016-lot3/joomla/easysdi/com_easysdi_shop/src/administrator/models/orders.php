@@ -27,7 +27,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'created', 'a.created', 
+                'created', 'a.created',
                 'name', 'a.name',
                 'completed', 'a.completed',
                 'user', 'user',
@@ -54,6 +54,7 @@ class Easysdi_shopModelorders extends JModelList {
             'ordertype',
             'orderstate',
             'orderuser',
+            'orderuserorganism',
             'orderprovider',
             'orderdiffusion',
             'ordersent',
@@ -117,10 +118,10 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select(
-          $this->getState('DISTINCT ' .
+                $this->getState('DISTINCT ' .
                         'list.select', ' a.id,a.guid,a.ordering,a.name,a.alias,a.ordertype_id,a.orderstate_id,a.archived,a.user_id,a.sent,a.completed,a.created_by,a.created'
-          )
-          );
+                )
+        );
 
         $query->from('#__sdi_order AS a');
 
@@ -131,15 +132,15 @@ class Easysdi_shopModelorders extends JModelList {
         // Join over the user field 'user'
         $query->select($db->quoteName('users2.name', 'user'))
                 ->select($db->quoteName('users2.username', 'username'))
-                ->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id=a.user_id')
-                ->innerJoin('#__users AS users2 ON users2.id=sdi_user.user_id');
+                ->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id = a.user_id')
+                ->innerJoin('#__users    AS users2   ON users2.id   = sdi_user.user_id');
 
         // Join over the orderstate field 'orderstate'
         $query->select('orderstate.value AS orderstate')
                 ->innerJoin('#__sdi_sys_orderstate AS orderstate ON orderstate.id = a.orderstate_id');
 
         $query->group('orderstate.value');
-        
+
         // Join over the ordertype field 'ordertype'
         $query->select('ordertype.value AS ordertype')
                 ->innerJoin('#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
@@ -163,20 +164,27 @@ class Easysdi_shopModelorders extends JModelList {
             $query->where('a.archived = ' . (int) $orderarchived);
         }
 
-        // Filter by orderstate state
+        // Filter by order user
         $orderuser = $this->getState('filter.orderuser');
         if (is_numeric($orderuser)) {
             $query->where('a.user_id = ' . (int) $orderuser);
         }
 
+        // Filter by order user's organism
+        $orderuserorganism = $this->getState('filter.orderuserorganism');
+        if (is_numeric($orderuserorganism)) {
+            $query->innerJoin('#__sdi_user_role_organism AS uro ON sdi_user.id = uro.user_id AND uro.role_id = 1');
+            $query->where('uro.organism_id = ' . (int) $orderuserorganism);
+        }
+
         // Filter by orderprovider state
         $orderprovider = $this->getState('filter.orderprovider');
         if (is_numeric($orderprovider)) {
-            //   $query->where('a.provider_id = '.(int) $orderprovider); !TODO
             $query
-                    ->innerJoin('#__sdi_order_diffusion AS order_diffusion2 ON order_diffusion2.order_id =a.id')
-                    ->innerJoin('#__sdi_diffusion AS diffusion2 ON diffusion2.id=order_diffusion2.diffusion_id')
-                    ->innerJoin('#__sdi_resource AS resource2 ON resource2.id=diffusion2.version_id')
+                    ->innerJoin('#__sdi_order_diffusion AS order_diffusion2 ON order_diffusion2.order_id = a.id')
+                    ->innerJoin('#__sdi_diffusion       AS diffusion2       ON diffusion2.id             = order_diffusion2.diffusion_id')
+                    ->innerJoin('#__sdi_version         AS version2         ON version2.id               = diffusion2.version_id')
+                    ->innerJoin('#__sdi_resource        AS resource2        ON resource2.id              = version2.resource_id')
                     ->where('resource2.organism_id = ' . (int) $orderprovider);
         }
 
@@ -243,7 +251,7 @@ class Easysdi_shopModelorders extends JModelList {
                 );
             }
         }
-        
+
         // Filter by ordercompleted state
         $ordercompleted = $this->getState('filter.ordercompleted');
         if ($ordercompleted !== '') {
@@ -395,7 +403,7 @@ class Easysdi_shopModelorders extends JModelList {
      * @return array [array('id'=>id,'value'=>value)]
      */
     public function getOrderArchived() {
-        return array(array('id' => 0, 'value'=>'active'),array('id' => 1, 'value'=>'archived'));
+        return array(array('id' => 0, 'value' => 'active'), array('id' => 1, 'value' => 'archived'));
     }
 
     /**
@@ -430,6 +438,34 @@ class Easysdi_shopModelorders extends JModelList {
      * get array of users
      * @return array [array('id'=>id,'name'=>name)]
      */
+    public function getOrderUsersOrganisms() {
+        // Load the list items.
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Select the required fields from the table.
+        $query->select('org.id as id, org.name as name');
+        $query->from('#__sdi_order AS o');
+        $query->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id = o.user_id');
+        $query->innerJoin('#__sdi_user_role_organism AS uro ON sdi_user.id = uro.user_id AND uro.role_id = 1');
+        $query->innerJoin('#__sdi_organism AS org ON org.id = uro.organism_id');
+        $query->order('org.name');
+        $query->group('org.id');
+        $query->group('org.name');
+
+        try {
+            $items = $this->_getList($query);
+        } catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+        return $items;
+    }
+
+    /**
+     * get array of users
+     * @return array [array('id'=>id,'name'=>name)]
+     */
     public function getOrderProviders() {
         // Load the list items.
         $db = $this->getDbo();
@@ -444,8 +480,8 @@ class Easysdi_shopModelorders extends JModelList {
                 ->innerJoin('#__sdi_resource        AS resource        ON resource.id=vers.resource_id')
                 ->innerJoin('#__sdi_organism        AS organism        ON organism.id=resource.organism_id')
                 ->group('organism.id')
-                ->group('organism.name');
-
+                ->group('organism.name')
+                ->order('organism.name');
 
         try {
             $items = $this->_getList($query);

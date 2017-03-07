@@ -797,7 +797,7 @@ class cswmetadata {
                 endif;
 
                 $html .= '
-                    <div class="control-group">
+                    <div class="control-group" id="sdi-property-group-' . $property->property_id . '">
                         <div class="control-label"><label id="' . $property->property_id . '-lbl" for="' . $property->property_id . '" class="hasTip" title="">' . $property->propertyname . $labelrequired . '</label></div>
                 ';
 
