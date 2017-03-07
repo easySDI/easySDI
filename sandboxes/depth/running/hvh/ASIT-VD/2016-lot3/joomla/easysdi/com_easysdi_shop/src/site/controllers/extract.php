@@ -44,12 +44,18 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     const xsdException = 'exception.xsd';
 
     //XSDs local files
-    private $xsdLocalPathBase;
     private $xsdLocalGetOrders;
     private $xsdLocalGetOrdersParameters;
     private $xsdLocalSetProduct;
     private $xsdLocalSetProductParameters;
     private $xsdLocalException;
+    
+    //easisdi.org files
+    private $xsdCentralGetOrders;
+    private $xsdCentralGetOrdersParameters;
+    private $xsdCentralSetProduct;
+    private $xsdCentralSetProductParameters;
+    private $xsdCentralException;    
 
     //XSIs
     const xsiBaseURL = 'http://www.easysdi.org/2011/sdi/';
@@ -93,6 +99,14 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->xsdLocalSetProductParameters = $xsdLocalPathBase . self::xsdSetProductParameters;
         $this->xsdLocalException = $xsdLocalPathBase . self::xsdException;
 
+        //set CENTRAL XSDs path
+        $xsdCentralPathBase = 'http://www.easysdi.org/schema/4.4.4/';
+        $this->xsdCentralGetOrders = $xsdCentralPathBase . self::xsdGetOrders;
+        $this->xsdCentralGetOrdersParameters = $xsdCentralPathBase . self::xsdGetOrdersParameters;
+        $this->xsdCentralSetProduct = $xsdCentralPathBase . self::xsdSetProduct;
+        $this->xsdCentralSetProductParameters = $xsdCentralPathBase . self::xsdSetProductParameters;
+        $this->xsdCentralException = $xsdCentralPathBase . self::xsdException;        
+        
         //set XSIs path
         $this->xsiGetOrders = self::xsiBaseURL . self::xsdGetOrders;
         $this->xsiGetOrdersParameters = self::xsiBaseURL . self::xsdGetOrdersParameters;
@@ -223,7 +237,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $response = new DOMDocument('1.0', 'utf-8');
 
         $root = $response->createElementNS(self::nsSdi, 'sdi:exception');
-        $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsiException);
+        $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsdCentralException);
 
         $this->addTextChildNode($root, 'sdi:code', $code);
         $this->addTextChildNode($root, 'sdi:message', $this->HTTPSTATUS[$code]);
@@ -505,7 +519,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->transaction = true;
 
         $orders = $this->response->createElementNS(self::nsSdi, 'sdi:orders');
-        $orders->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsiGetOrders);
+        $orders->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsdCentralGetOrders);
 
         $platform = $this->response->createElementNS(self::nsSdi, 'sdi:platform');
 
@@ -1453,7 +1467,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->response = new DOMDocument('1.0', 'utf-8');
 
         $root = $this->response->createElementNS(self::nsSdi, 'sdi:success');
-        $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsiSetProduct);
+        $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsdCentralSetProduct);
 
         $code = 200;
         $this->addTextChildNode($root, 'sdi:code', $code);
