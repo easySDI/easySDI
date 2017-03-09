@@ -524,7 +524,10 @@ class com_easysdi_coreInstallerScript {
             '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/node/package.json',
             '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/node/server.js',
             '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/php/index.php',
-            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/php/UploadHandler.php'
+            '/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/server/php/UploadHandler.php',
+            ////// easySDI < 4.4.4
+            //https://forge.easysdi.org/issues/1380
+            '/administrator/components/com_easysdi_map/models/fields/createdby.php'
             
         );
 
