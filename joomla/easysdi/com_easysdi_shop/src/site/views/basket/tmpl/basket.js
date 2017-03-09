@@ -1,5 +1,5 @@
 var map, miniBaseLayers = [], perimeterLayer, selectLayer, polygonLayer, boxLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap, slider, customStyleMap, alertControl, userperimeter;
-var meterToKilometerLimit = 1000000;
+var meterToKilometer = 1000000;
 var shopPerimeterSurface_m2 = 'm²';
 var shopPerimeterSurface_km2 = 'km²';
 
@@ -167,6 +167,9 @@ function orderSurfaceChecking() {
     }
     jQuery('#t-surface').val(tmpSurface);
 
+    //display surface in modal
+    displaySurface('#shop-perimeter-modal-title-surface', tmpSurface);
+
     if (isSelfIntersect) {
         //More than 2 intersectios for a line, mean that a line intersects another one.
         var message = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ERROR_SELFINTERSECT', 'Self-intersecting perimeter is not allowed');
@@ -188,15 +191,25 @@ function orderSurfaceChecking() {
     }
 }
 
+//Displqay a surface in an HTML target
+function displaySurface(csstarget, surface) {
+    jQuery(csstarget).html(
+            " (" +
+            ((surface > maxmetervalue)
+                    ? (surface / meterToKilometer).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km²')
+                    : parseFloat(surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m²')) +
+            ")");
+}
+
 //build the message for too big / too low surface
 function getSurfaceMessage(baseMessage, tmpSurface, surfaceLimit) {
 
     var unitString = shopPerimeterSurface_m2;
 
     //switch to km2 for big surface
-    if (tmpSurface >= meterToKilometerLimit) {
-        tmpSurface = tmpSurface / meterToKilometerLimit;
-        surfaceLimit = surfaceLimit / meterToKilometerLimit;
+    if (tmpSurface >= maxmetervalue) {
+        tmpSurface = tmpSurface / meterToKilometer;
+        surfaceLimit = surfaceLimit / meterToKilometer;
         unitString = shopPerimeterSurface_km2;
     }
     return baseMessage.replace('%SURFACE', tmpSurface.toFixed(surfacedigit) + ' ' + unitString).replace('%SURFACELIMIT', surfaceLimit.toFixed(surfacedigit) + ' ' + unitString);
@@ -309,6 +322,7 @@ function reset() {
     clearLayersVector();
     jQuery('#perimeter-level').hide();
     jQuery('#btns-selection').show();
+    jQuery('#shop-perimeter-modal-title-surface').empty();
 
     disableDrawControls();
 }
@@ -547,8 +561,7 @@ var updatePricing = function (pricing) {
             var displayedPrice;
             if (product.cfg_pricing_type == 1) {
                 displayedPrice = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_PRODUCT_FREE', 'free');
-            }
-            else {
+            } else {
                 displayedPrice = priceFormatter(product.cal_total_amount_ti);
                 var as = '',
                         discount = '',
@@ -560,15 +573,13 @@ var updatePricing = function (pricing) {
                     if (supplierDiscount > profileDiscount) {
                         as = product.ind_lbl_category_supplier_discount;
                         discount = supplierDiscount;
-                    }
-                    else {
+                    } else {
                         as = product.ind_lbl_category_profile_discount;
                         discount = profileDiscount;
                     }
                     title = Joomla.JText._('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REBATE_INFO', 'As %s, you get a discount of %s%%').replace(/(.*)(?:%s)(.*)(?:%s%)(.*)/gi, '$1' + as + '$2' + discount + '$3');
                     jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').attr('title', title).show();
-                }
-                else {
+                } else {
                     jQuery('table[rel=' + supplierId + ']>tbody>tr[rel=' + productId + ']>td.price_column>i.icon-info').attr('title', title).hide();
                 }
             }
@@ -636,7 +647,7 @@ function savePerimeter() {
 
 function changePerimeterEditLabel() {
     var theLabel = jQuery('#features').val() === '' ? Joomla.JText._('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER') : Joomla.JText._('COM_EASYSDI_SHOP_BASKET_MODIFY_PERIMETER');
-    jQuery('#modal-perimeter #myModalLabel').text(theLabel);
+    jQuery('#modal-perimeter #myModalLabel #shop-perimeter-modal-title').text(theLabel);
     jQuery('#defineOrderBtnLbl').text(theLabel);
 }
 
@@ -671,29 +682,21 @@ function updateDisplay(response) {
 
         if (response.extent.name !== '') {
             jQuery('#perimeter-recap-details-title > h4').html(response.extent.name);
-        }
-        else {
+        } else {
             jQuery('#perimeter-recap-details-title > h4').empty();
         }
         if (response.extent.level !== '') {
             jQuery('#perimeter-level-value').html(JSON.parse(response.extent.level).label);
             jQuery('#perimeter-level').show();
             jQuery('#perimeter-recap').show();
-        }
-        else {
+        } else {
             jQuery('#perimeter-level-value').empty();
             jQuery('#perimeter-level').hide();
         }
         if (response.extent.surface !== '') {
-            jQuery('#shop-perimeter-title-surface').html(
-                    " (" +
-                    ((response.extent.surface > maxmetervalue)
-                            ? (response.extent.surface / 1000000).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km²')
-                            : parseFloat(response.extent.surface).toFixed(surfacedigit) + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m²')) +
-                    ")");
+            displaySurface('#shop-perimeter-title-surface', response.extent.surface);
             jQuery('#perimeter-recap').show();
-        }
-        else {
+        } else {
             jQuery('#shop-perimeter-title-surface').empty();
         }
         //btns
@@ -790,8 +793,7 @@ var sendProduct = function () {
                 setTimeout(sendProduct, 100);
             else
                 setTimeout(closeBasket, 1000);
-        }
-        else {
+        } else {
             for (var el in data) {
                 Joomla.renderMessages({el: data[el]});
                 jQuery('#myModalProcess').modal('hide');
