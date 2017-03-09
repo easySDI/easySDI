@@ -125,11 +125,13 @@ class Easysdi_coreViewResources extends JViewLegacy {
         // Load metadata for each resources
         foreach ($this->items as $item) {
             $query = $db->getQuery(true);
-            $query->select('DISTINCT m.id, v.name, s.value, s.id AS state, v.id as version, m.published');
+            $query->select('DISTINCT m.id, v.name, s.value, s.id AS state, v.id as version, m.published, d.state AS diffusion_published, d.hasdownload, d.hasextraction, das.value AS diffusion_accessscope');
             $query->from('#__sdi_version v');
             $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
             $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
             $query->leftJoin('#__sdi_versionlink vl ON vl.child_id = v.id');
+            $query->leftJoin('#__sdi_diffusion d ON d.version_id = v.id');
+            $query->leftJoin('#__sdi_sys_accessscope das ON das.id = d.accessscope_id');
             $query->where('v.resource_id = ' . (int) $item->id);
             $query->order('v.name DESC');
 
