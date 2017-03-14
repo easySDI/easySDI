@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.4.4
  * @package     com_easysdi_contact
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -39,6 +39,7 @@ class Easysdi_contactModelusers extends JModelList {
                 'notificationrequesttreatment', 'a.notificationrequesttreatment',
                 'catid', 'a.catid',
                 'params', 'a.params',
+                'member_organism', 'o.name',
                 'access', 'a.access', 'access_level',
             );
         }
@@ -124,7 +125,7 @@ class Easysdi_contactModelusers extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.created_by, a.ordering,a.state,a.catid'
+                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.created_by, a.ordering,a.state,a.catid,' . $query->concatenate(array($db->qn('o.name'), "' ['", $db->qn('o.id'), "']'")) . ' AS member_organism, o.id as member_organism_id'
                 )
         );
         $query->from('#__sdi_user AS a');
@@ -133,6 +134,10 @@ class Easysdi_contactModelusers extends JModelList {
         // Join over the users .
         $query->select('u.name, u.username ');
         $query->join('LEFT', '#__users AS u ON u.id=a.user_id');
+
+        // Join over the user's member organism.
+        $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.user_id=a.id AND uro.role_id=1');
+        $query->join('LEFT', '#__sdi_organism o ON uro.organism_id=o.id');
 
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
@@ -179,9 +184,7 @@ class Easysdi_contactModelusers extends JModelList {
         // Filter by organism
         $organisms = $this->getState('filter.organism');
         if (count($organisms)) {
-            $query->join('left', '#__sdi_user_role_organism uro ON uro.user_id=a.id')
-                    ->where('uro.organism_id IN (' . implode(',', $organisms) . ')')
-                    ->where('uro.role_id=1'); // filtering by organism should consider 'Member of' role
+            $query->where('uro.organism_id IN (' . implode(',', $organisms) . ')');
         }
 
         // Filter by search in title

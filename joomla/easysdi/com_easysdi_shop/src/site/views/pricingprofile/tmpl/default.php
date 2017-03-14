@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.4.4
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -72,7 +72,7 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                         <div class="control-label"><?php echo $field->label; ?></div>
                         <div class="controls"><?php echo $field->input; ?>
-                            <?php echo $field->name == "jform[name]" ? "" : ($field->name == "jform[surface_rate]" ? " km2" : " ".$this->paramsarray["currency"]); ?>
+                            <?php echo $field->name == "jform[name]" || $field->name == "jform[apply_vat]" ? "" : ($field->name == "jform[surface_rate]" ? " km2" : " ".$this->paramsarray["currency"]); ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

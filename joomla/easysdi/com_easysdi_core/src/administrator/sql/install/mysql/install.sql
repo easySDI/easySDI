@@ -449,8 +449,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `username` VARCHAR(150) ,
 `password` VARCHAR(65) ,
 `internal_free` TINYINT DEFAULT 0,
-`fixed_fee_ti` FLOAT(6,2) UNSIGNED DEFAULT 0,
+`fixed_fee_te` FLOAT(6,2) UNSIGNED DEFAULT 0,
 `data_free_fixed_fee` TINYINT DEFAULT 0,
+`fixed_fee_apply_vat` TINYINT DEFAULT 0,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -2233,6 +2234,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile` (
     `surface_rate` decimal(19,2),
     `min_fee` decimal(19,2),
     `max_fee` decimal(19,2),
+    `apply_vat` TINYINT DEFAULT 1,
     PRIMARY KEY (`id`),
     KEY `#__sdi_pricing_profile_fk1` (`organism_id`),
     CONSTRAINT `#__sdi_pricing_profile_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -2601,7 +2603,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order` (
     `cfg_vat` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_currency` char(3) NOT NULL DEFAULT 'CHF',
     `cfg_rounding` decimal(3,2) NOT NULL DEFAULT '0.05',
-    `cfg_overall_default_fee` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_overall_default_fee_te` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_fee_apply_vat` TINYINT DEFAULT 1,
     `cfg_free_data_fee` TINYINT DEFAULT 0,
     `cal_total_amount_ti` decimal(19,2),
     `cal_fee_ti` decimal(19,2) NOT NULL DEFAULT 0,
@@ -2626,7 +2629,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier` (
     `supplier_id` int(11) UNSIGNED NOT NULL,
     `supplier_name` varchar(255) NOT NULL,
     `cfg_internal_free` TINYINT NOT NULL DEFAULT 1,
-    `cfg_fixed_fee_ti` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_fixed_fee_te` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_fixed_fee_apply_vat` TINYINT NOT NULL DEFAULT 1,
     `cfg_data_free_fixed_fee` TINYINT NOT NULL DEFAULT 0,
     `cal_total_rebate_ti` decimal(19,2) NOT NULL DEFAULT 0,
     `cal_fee_ti` decimal(19,2) NOT NULL DEFAULT 0,
@@ -2681,7 +2685,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product_profile` (
     `pricing_order_supplier_product_id` int(11) unsigned not null,
     `pricing_profile_id` int(11) unsigned not null,
     `pricing_profile_name` varchar(255) not null,
-    `cfg_fixed_fee` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_fixed_fee_te` decimal(19,2) NOT NULL DEFAULT 0,
+    `cfg_apply_vat` TINYINT DEFAULT 1,
     `cfg_surface_rate` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_min_fee` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_max_fee` decimal(19,2) NOT NULL DEFAULT 0,

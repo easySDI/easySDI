@@ -1,4 +1,5 @@
 js = jQuery.noConflict();
+
 js(document).ready(function () {
     enablePricing();
     enableAccessScope();
@@ -27,14 +28,24 @@ js(document).ready(function () {
         toggleDownload();
     })
 });
+
 Joomla.submitbutton = function (task)
 {
+
+    //cancel
     if (task == 'diffusion.cancel') {
         Joomla.submitform(task, document.getElementById('adminForm'));
     }
+    //create or update
     else {
 
-        if (task != 'diffusion.cancel' && document.formvalidator.isValid(document.id('adminForm'))) {
+        //cleanup unused profiles
+        if (js('#jform_pricing_id').val() != '3') {
+            js("jform_pricing_profile_id").val([]);
+            js('#pricing_profile_id option').remove();
+        }
+
+        if (document.formvalidator.isValid(document.id('adminForm'))) {
             if (js('input[name="jform[hasextraction]"]:checked').val() == 1) {
                 //check that at least one perimeter is active
                 if (jQuery("[id^=jform_perimeter][id$=_1]:checked").length < 1) {
@@ -46,11 +57,12 @@ Joomla.submitbutton = function (task)
                 Joomla.submitform(task, document.getElementById('adminForm'));
             }
         }
-        else {
+        else { //form is invalid
             alert(msgFormValidationFailed);
         }
     }
 }
+
 function onProductStorageChange() {
     var storage = js("#jform_productstorage_id :selected").val();
     switch (storage) {
@@ -74,49 +86,60 @@ function onProductStorageChange() {
             break;
     }
 }
+
 var globdata;
+
 function onPricingChange() {
 
     switch (js('#jform_pricing_id').val()) {
         case '1': // FREE
             //js('#fieldset_download').show();
             unlockDownload();
-            js('#pricing_profile_id').hide();
+            hidePricingProfile();
             break;
 
         case '2': // FEE WITHOUT PRICING PROFILE
             //js('#fieldset_download').hide();
             lockDownload();
-            js('#pricing_profile_id').hide();
+            hidePricingProfile();
             break;
 
         case '3': // FEE WITH PRICING PROFILE
             //js('#fieldset_download').hide();
             lockDownload();
-
-            if (!js('#pricing_profile_id option').length) {
-                js.ajax({
-                    url: urlProfiles,
-                    type: "POST",
-                    data: {
-                        version_id: version
-                    }
-                }).fail(function () {
-                    //console.log('todo');
-                }).done(function (data) {
-                    data.each(function (item) {
-                        js('#pricing_profile_id select').append(js('<option>', {
-                            value: item.id,
-                            text: item.name,
-                            selected: item.affected_diffusion != null
-                        })).trigger('liszt:updated');
-                    });
-                });
-            }
-
-            js('#pricing_profile_id').show();
+            showPricingProfile();
             break;
     }
+}
+
+function showPricingProfile() {
+    //update list
+    if (!js('#pricing_profile_id option').length) {
+        js.ajax({
+            url: urlProfiles,
+            type: "POST",
+            data: {
+                version_id: version
+            }
+        }).fail(function () {
+            //console.log('todo');
+        }).done(function (data) {
+            data.each(function (item) {
+                js('#pricing_profile_id select').append(js('<option>', {
+                    value: item.id,
+                    text: item.name,
+                    selected: item.affected_diffusion != null
+                })).trigger('liszt:updated');
+            });
+        });
+    }
+    js('#pricing_profile_id').show();
+    js('#jform_pricing_profile_id').addClass('required');
+}
+
+function hidePricingProfile() {
+    js('#pricing_profile_id').hide();
+    js('#jform_pricing_profile_id').removeClass('required');
 }
 
 function enablePricing() {
@@ -226,6 +249,4 @@ function onTestUrlAuthenticationClick() {
 
     return false;
 }
-;
-
     

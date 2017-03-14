@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.4.4
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -71,6 +71,13 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
                 return;
             }
 
+            //ensure the order needs validation/rejection
+            if (intval($model->getData($validateId)->orderstate_id) !== Easysdi_shopHelper::ORDERSTATE_VALIDATION) {
+                //is not validator, set message
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_NO_POSSIBLE_STATE'), 'error');
+                return;
+            }
+
             $model->checkout($validateId);
 
             $model->thirdpartyValidation($validateId, $validatorId, $app->input->get('reason', null, 'html'));
@@ -127,6 +134,13 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             if (!in_array($model->getData($validateId)->thirdparty_id, $validator->getOrganisms(array(sdiUser::validationmanager), true))) {
                 //is not validator, set message
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                return;
+            }
+
+            //ensure the order needs validation/rejection
+            if (intval($model->getData($validateId)->orderstate_id) !== Easysdi_shopHelper::ORDERSTATE_VALIDATION) {
+                //is not validator, set message
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_NO_POSSIBLE_STATE'), 'error');
                 return;
             }
 
@@ -218,7 +232,6 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         Easysdi_shopHelper::downloadOrderFile($orderdiffusion);
     }
 
-        
     function cancel() {
         JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));

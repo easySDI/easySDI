@@ -2,7 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
     
     <!-- ROOT element -->
-    <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/2011/sdi/getorders.xsd" name="orders" type="sdi:ordersType"/>
+    <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/getorders.xsd" name="orders" type="sdi:ordersType"/>
     
     <!-- Contains all orders and platform elements -->
     <xs:complexType name="ordersType">
@@ -73,8 +73,7 @@
                         <!-- Product properties, this element is mandatory, but my be empty if no properties are set for this product -->
                         <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:productPropertiesType" name="properties"/>
                         <!-- Product metadata -->
-                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:productMetadataType" name="metadata"/>
-                        
+                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:productMetadataType" name="metadata"/>                        
                     </xs:sequence>
                     <xs:attribute type="xs:integer" name="id" use="required"/>
                     <xs:attribute type="xs:string" name="guid" use="required"/>
@@ -86,10 +85,10 @@
 	<!-- Describes the metadata of a product -->
 	<xs:complexType name="productMetadataType">
 		<xs:sequence>
-			<!-- XML copy of product's metadata, saved when order is placed -->
-			<xs:element type="xs:base64Binary" name="xml"/>
-			<!-- PDF copy of product's metadata, saved when order is placed -->
-			<xs:element type="xs:base64Binary" name="pdf"/>
+                    <!-- XML copy of product's metadata, saved when order is placed -->
+                    <xs:element type="xs:base64Binary" name="xml"/>
+                    <!-- PDF copy of product's metadata, saved when order is placed -->
+                    <xs:element type="xs:base64Binary" name="pdf"/>
 		</xs:sequence>
 		<xs:attribute type="xs:integer" name="id" use="required"/>
 		<xs:attribute type="xs:string" name="guid" use="required"/>
@@ -199,8 +198,8 @@
                     </xs:simpleContent>
                 </xs:complexType>
             </xs:element>
-			<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:indoorlevelType" name="indoorlevel" minOccurs="0" maxOccurs="1"/>
-			<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:contentsType" name="contents"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:indoorlevelType" name="indoorlevel" minOccurs="0" maxOccurs="1"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:contentsType" name="contents"/>
         </xs:sequence>
         <xs:attribute name="type" use="required">
             <xs:simpleType>
@@ -212,11 +211,10 @@
         </xs:attribute>        
         <xs:attribute type="xs:integer" name="id" use="required"/>
         <xs:attribute type="xs:string" name="alias" use="required"/>
-        <xs:attribute type="xs:string" name="guid" use="required"/>
-        
+        <xs:attribute type="xs:string" name="guid" use="required"/>        
     </xs:complexType>
-	
-	 <!-- Describes the indoor level -->         
+
+    <!-- Describes the indoor level -->         
     <xs:complexType name="indoorlevelType">
         <xs:attribute type="xs:string" name="code" use="required"/>
         <xs:attribute type="xs:string" name="label" use="required"/>
@@ -260,38 +258,37 @@
             <xs:element type="xs:string" name="cfg_currency" minOccurs="0"/>
             <!-- cfg_rounding : Rounding used for Taxes Included ammounts -->
             <xs:element type="xs:decimal" name="cfg_rounding" minOccurs="0"/>
-            <!-- cfg_overall_default_fee : Default platform order fee (when no category matches), taxes included -->
-            <xs:element type="xs:decimal" name="cfg_overall_default_fee" minOccurs="0"/>
+            <!-- cfg_overall_default_fee_te : Default platform order fee (when no category matches), taxes excluded -->
+            <xs:element type="xs:decimal" name="cfg_overall_default_fee_te" minOccurs="0"/>
             <!-- cfg_free_data_fee : Is platform order fee applied when all products of all providers are free ? -->
-            <xs:element type="xs:boolean" name="cfg_free_data_fee" minOccurs="0"/>  
-            
+            <xs:element type="xs:boolean" name="cfg_free_data_fee" minOccurs="0"/> 
+            <!-- cfg_fee_apply_vat : Is vat applied on platform order fee  ? -->
+            <xs:element type="xs:boolean" name="cfg_fee_apply_vat" minOccurs="0"/>              
             <!-- Computed platform's order's fee, taxes included -->  
             <xs:element type="xs:decimal" name="cal_fee_ti" minOccurs="0"/>
-            <!-- If a client's has one or more categories that gives specific order's fee,
-            (best match) it's described here  -->  
+            <!-- If a client's has one or more categories that gives specific order's fee, (best match) it's described here  -->  
             <xs:element type="xs:string" name="ind_lbl_category_order_fee" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>      
         
-    <!-- Describes the pricing for the supplier,
-    only supplier level (order fee for example)    -->
+    <!-- Describes the pricing for the supplier, only supplier level (order fee for example)    -->
     <xs:complexType name="supplierPricingType">
         <xs:sequence>
             <!-- Supplier organism's pricing configuration, for information: -->
             <!-- cfg_internal_free : are products billed for internal orders ? -->
             <xs:element type="xs:boolean" name="cfg_internal_free" minOccurs="0"/>
-            <!-- cfg_fixed_fee_ti : defined order fee, taxes included -->
-            <xs:element type="xs:decimal" name="cfg_fixed_fee_ti" minOccurs="0"/>
+            <!-- cfg_fixed_fee_te : defined order fee, taxes excluded -->
+            <xs:element type="xs:decimal" name="cfg_fixed_fee_te" minOccurs="0"/>
+            <!-- cfg_fixed_fee_apply_vat : is vat applied on fixed order fee ? -->
+            <xs:element type="xs:boolean" name="cfg_fixed_fee_apply_vat" minOccurs="0"/>
             <!-- cfg_data_free_fixed_fee : is order fee applied when all supplier's product in the order free ? -->
-            <xs:element type="xs:boolean" name="cfg_data_free_fixed_fee" minOccurs="0"/>
-            
+            <xs:element type="xs:boolean" name="cfg_data_free_fixed_fee" minOccurs="0"/>            
             <!-- Computed supplier's order's fee, taxes included -->
             <xs:element type="xs:decimal" name="cal_fee_ti" minOccurs="0"/>            
         </xs:sequence>
     </xs:complexType>    
     
-    <!-- Describes the pricing for a product,
-    only product level    -->
+    <!-- Describes the pricing for a product, only product level    -->
     <xs:complexType name="productPricingType">
         <xs:sequence>
             <!-- Describes the pricing type for the product -->
@@ -338,7 +335,7 @@
             <!-- Name of the pricing profile -->
             <xs:element type="xs:string" name="name"/>
             <!-- Base fee -->
-            <xs:element type="xs:decimal" name="cfg_fixed_fee"/>
+            <xs:element type="xs:decimal" name="cfg_fixed_fee_te"/>
             <!-- Fee per surface -->
             <xs:element name="cfg_surface_rate">
                 <xs:complexType>
@@ -353,9 +350,10 @@
             <xs:element type="xs:decimal" name="cfg_min_fee"/>
             <!-- Fee's ceiling = maximum fee -->
             <xs:element type="xs:decimal" name="cfg_max_fee"/>
+            <!-- cfg_apply_vat : is vat applied on profile's fee ? -->
+            <xs:element type="xs:boolean" name="cfg_apply_vat" minOccurs="0"/>            
         </xs:sequence>
-		<xs:attribute type="xs:integer" name="id" use="required"/>
+        <xs:attribute type="xs:integer" name="id" use="required"/>
         <xs:attribute type="xs:string" name="guid" use="required"/>
     </xs:complexType>     
-        
 </xs:schema>

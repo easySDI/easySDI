@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.4.4
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -99,6 +99,14 @@ if (!empty($this->extra_sidebar)) {
                 </div>
             </div>
             <div class="span6">
+                <div class="row-fluid">
+                    <div class="span12 well well-small">
+                        <?php
+                        $tmpLayout = new JLayoutFile('com_easysdi_dashboard.shop_topproviders', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_dashboard'));
+                        echo $tmpLayout->render(null);
+                        ?>
+                    </div>
+                </div>                
                 <div class="row-fluid">
                     <div class="span12 well well-small">
                         <?php

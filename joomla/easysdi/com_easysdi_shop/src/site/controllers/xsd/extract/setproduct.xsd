@@ -2,7 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
 	
 	<!-- ROOT element -->
-	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/2011/sdi/setproduct.xsd" name="success">
+	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/setproduct.xsd" name="success">
 		<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi">
 			<xs:sequence>
 				<xs:element name="code" type="xs:integer" fixed="200" minOccurs="1" maxOccurs="1"/>
@@ -26,6 +26,5 @@
 		</xs:sequence>
         <xs:attribute type="xs:string" name="guid" use="required"/>
 	</xs:complexType>
-	
-	
+		
 </xs:schema>
