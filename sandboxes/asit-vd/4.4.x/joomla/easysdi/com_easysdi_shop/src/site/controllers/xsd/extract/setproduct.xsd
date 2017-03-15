@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
+	
+	<!-- ROOT element -->
+	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/setproduct.xsd" name="success">
+		<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi">
+			<xs:sequence>
+				<xs:element name="code" type="xs:integer" fixed="200" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="order" type="sdi:orderType"/>
+				<xs:element name="product" type="sdi:productType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="orderType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+		</xs:sequence>
+        <xs:attribute type="xs:string" name="guid" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="productType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+		</xs:sequence>
+        <xs:attribute type="xs:string" name="guid" use="required"/>
+	</xs:complexType>
+		
+</xs:schema>

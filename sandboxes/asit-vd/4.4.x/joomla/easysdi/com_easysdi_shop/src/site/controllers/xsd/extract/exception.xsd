@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
+    
+    <!-- ROOT element -->
+    <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/exception.xsd" name="exception" type="sdi:exceptionType"/>
+    
+    <!-- Contains all orders and platform elements -->
+    <xs:complexType name="exceptionType">
+        <xs:sequence>
+            <xs:element type="xs:integer" name="code"/>
+            <xs:element type="xs:string" name="message"/>
+            <xs:element type="xs:string" name="details"/>
+        </xs:sequence>
+    </xs:complexType>
+        
+</xs:schema>
