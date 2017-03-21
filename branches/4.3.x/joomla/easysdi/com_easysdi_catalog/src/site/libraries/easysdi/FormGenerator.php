@@ -61,7 +61,8 @@ class FormGenerator {
 
     /** @var string */
     private $catalog_prefix = 'catalog';
-
+    
+   
     function __construct(JObject $item = null) {
         $this->db = JFactory::getDbo();
         $this->session = JFactory::getSession();
@@ -490,30 +491,35 @@ class FormGenerator {
     }
 
     /**
-     * Clone structure and remove from the clone node that not in csw domdocument and get the value from the csw
+     * Clone structure and remove from the clone node that not in csw domdocument and add node from the csw
      * 
      */
     private function cleanStructure() {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
         $clone_structure->loadXML($this->structure->saveXML());
-
+        
+        // Structure crée depuis la base de donnée
+        // echo $this->structure->saveXML(); die();
+        
         $domXpathClone = new DOMXPath($clone_structure);
         $this->registerNamespace($domXpathClone);
 
+        // Récupère les class, attibuts et relationType du clone
         $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$RELATIONTYPE . '"]');
 
         for ($j = 0; $j < $coll->length; $j++) {
             /* @var $node DOMElement */
             $node = $coll->item($j);
-
-            if ($node->nodeName == 'catalog:dummy') {
-                $breakpoint = true;
-            }
-
+            
             $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
 
+            if($node->nodeName == "gmd:MD_Type"){
+                $breakpoint = true;
+            }
+            
+            
             if ($childType == EnumChildtype::$CLASS) {
 
                 $paths = explode('/', $nodePath);
@@ -532,14 +538,17 @@ class FormGenerator {
                 $parentChildType = $node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
 
                 //look for the ancestor under which we can clean the structure
-                while (!isset($node->nextSibling) && !isset($node->previousSibling) && $parentChildType != EnumChildtype::$RELATIONTYPE) {
+                while (!isset($node->nextSibling) && !isset($node->previousSibling) && $parentChildType != EnumChildtype::$RELATION) {
                     $node = $node->parentNode;
                 }
 
                 //remove the child
-                $parent = $node->parentNode;
-                $parent->removeChild($node);
+                //if($node->getAttributeNs($this->catalog_uri, 'childtypeId') != EnumChildtype::$RELATION){
+                    $parent = $node->parentNode;
+                    $parent->removeChild($node);
+                //}
                 $clone_structure->normalizeDocument();
+                
 
                 //reset collection and loop
                 $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$RELATIONTYPE . '"]');
@@ -559,6 +568,7 @@ class FormGenerator {
             }
         }
 
+        // Structure après ajout suppression des noeuds 
         //echo $clone_structure->saveXML(); die();
         
         $this->getValue($clone_structure->firstChild);
@@ -574,17 +584,12 @@ class FormGenerator {
      * 
      */
     private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
+        
+        
         //echo $this->structure->saveXML(); die();
         
         /* @var $node DOMElement */
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
-            if (strpos($node->getNodePath(), 'gmd:extent') > -1) {
-                $breakpoint = true;
-            }
-            
-            if($node->nodeName == "bee:autoload" || $node->nodeName == "gmd:MD_CodeDomain"){
-                $breakpoint = true;
-            }
             
             if ($domXpathClone->query($node->getNodePath())->length == 0) {
                 do {
@@ -1878,6 +1883,9 @@ class FormGenerator {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
     }
 
+    
 }
+
+
 
 ?>
