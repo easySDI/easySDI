@@ -78,6 +78,10 @@ class FormStereotype {
 
         $element = $dom->createElementNS($result->list_ns_uri, $result->list_ns_prefix . ':' . $result->attribute_type_isocode);
 
+        if($result->name == 'autoload'){
+            $breakpoint = true;
+        }
+        
         if (!empty($result->attribute_codelist)) {
             $element->setAttribute('codeList', $result->attribute_codelist);
            

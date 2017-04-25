@@ -685,7 +685,7 @@ class FormGenerator {
      * @param DOMNode $child The current attribute.
      */
     private function getValue(DOMNode &$child) {
-        if (strstr($child->getNodePath(), 'colors')) {
+        if (strstr($child->getNodePath(), 'autoload')) {
             $breakpoint = true;
         }
 
@@ -1740,7 +1740,11 @@ class FormGenerator {
 
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
 
-        if (!empty($value) || (gettype($value) == "integer" && $value == 0)) {
+        if($relation_id == 574){
+            $breakpoint = true;
+        }
+        
+        if (isset($value) || (gettype($value) == "integer" && $value == 0)) {
             return $value;
         }
 

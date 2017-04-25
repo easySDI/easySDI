@@ -81,7 +81,7 @@ class FormHtmlGenerator {
     private $isNotOnlyOrganismManager = false;
 
     function __construct(JForm $form, DOMDocument $structure, $ajaxXpath = null) {
-        
+     
         $this->form = $form;
         $structure->preserveWhiteSpace = false;
         $this->structure = $structure;
@@ -110,6 +110,7 @@ class FormHtmlGenerator {
      * @return string
      */
     public function buildForm() {
+        //echo $this->structure->saveXML(); die();
         $this->domXpathStr = new DOMXPath($this->structure);
         $this->domXpathFormHtml = new DOMXPath($this->formHtml);
 
@@ -141,8 +142,6 @@ class FormHtmlGenerator {
         
         $this->formHtml->appendChild($rootFieldset);
 
-        
-        
         $this->recBuildForm($root, $rootFieldset);
 
         $this->formHtml->formatOutput = true;
@@ -549,6 +548,10 @@ class FormHtmlGenerator {
                         break;
                     case EnumRendertype::$LIST:
                         // Mutiple list
+                        if (strpos($nodePath, 'autoload') !== false) {
+                            $breakpoint = true;
+                        }
+                        
                         if ($upperbound > 1) {
                             switch ($stereotypeId) {
                                 case EnumStereotype::$BOUNDARY:
@@ -1023,6 +1026,8 @@ class FormHtmlGenerator {
      * @return DOMElement[]
      */
     private function buildField(DOMElement $attribute, JFormField $field) {
+   
+        
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
