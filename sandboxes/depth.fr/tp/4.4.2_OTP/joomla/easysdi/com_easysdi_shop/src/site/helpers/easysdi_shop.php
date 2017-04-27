@@ -1847,7 +1847,9 @@ abstract class Easysdi_shopHelper {
 
             $chunk = 8 * 1024 * 1024; // bytes per chunk (10 MB)
 
-            $size = filesize($file);
+            $file_size = filesize($file);
+	    $size = $file_size >= 0 ? $file_size : 4*1024*1024*1024 + $file_size;
+            
             if ($size > $chunk) {
                 set_time_limit(0);
                 ignore_user_abort(false);
