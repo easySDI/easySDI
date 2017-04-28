@@ -116,4 +116,11 @@ if ($this->item) :
 else:
     echo JText::_('COM_EASYSDI_SHOP_ITEM_NOT_LOADED');
 endif;
+
+//If OTP option is enabled, load the OTP Modal
+if($this->params->get('otpactivated') == 1)
+{
+    echo Easysdi_shopHelper::downloadOTPProductModal(); 
+}
 ?>
+    

@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
 
 /**
  * Request controller class.
@@ -107,6 +108,53 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
 
             // Flush the data from the session.
             $app->setUserState('com_easysdi_shop.edit.request.data', null);
+        }
+    }
+    
+    /**
+     * download an order file with a OTP
+     */
+    function unblock() {
+        
+        /////////// Check user right on this order
+        $currentUser = sdiFactory::getSdiUser();
+
+        // current user extrations (if is extraction responsible)
+        $userExtrationsResponsible = $currentUser->getResponsibleExtraction();
+        if (!is_array($userExtrationsResponsible)) {
+            $userExtrationsResponsible = array();
+        }
+        
+        $diffusion_id = JFactory::getApplication()->input->getInt('diffusion_id', null, 'int');
+        $order_id = JFactory::getApplication()->input->getInt('order_id', null, 'int');
+        
+        if (!in_array($diffusion_id, $userExtrationsResponsible)){
+            // Redirect back to the edit screen.
+            $this->setMessage(JText::_('JERROR_ALERTNOAUTHOR'));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
+        }
+
+        //Load order response
+        $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
+        $keys = array();
+        $keys['order_id'] = $order_id;
+        $keys['diffusion_id'] = $diffusion_id;
+        $orderdiffusion->load($keys);
+        $orderdiffusion->otpchance = 0;
+        $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
+        $return = $orderdiffusion->store();
+        
+        // Check for errors.
+        if ($return === false) {
+            // Redirect back to the edit screen.
+            $this->setMessage(JText::sprintf('Save failed', $orderdiffusion->getError()), 'warning');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&layout=edit&id=' . $order_id, false));
+        }else{
+            // Send email to the supplier
+            Easysdi_shopHelper::notifyCustomerOTPUnblocked($order_id);
+            // Redirect back to the edit screen.
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_MESSAGE_OTPPRODUCTUNBLOCK'));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&layout=edit&id=' . $order_id, false));
         }
     }
 
