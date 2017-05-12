@@ -179,7 +179,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         try {
             //Record the download for statistic purpose        
             $columns = array('diffusion_id', 'user_id', 'executed');
-            $userid = ($this->sdiUser->isEasySDI ? $this->sdiUser->id : null);
+            $userid = ($this->sdiUser->isEasySDI ? $this->sdiUser->id : 'NULL');
             $values = array($diffusion->id, $userid, $db->quote(date("Y-m-d H:i:s")));
             $query = $db->getQuery(true)
                     ->insert($db->quoteName('#__sdi_diffusion_download'))
