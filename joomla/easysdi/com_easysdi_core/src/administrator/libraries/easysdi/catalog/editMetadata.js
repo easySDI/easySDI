@@ -556,6 +556,7 @@ js(document).on('click', '.attribute-add-btn', function () {
  * remove field from form
  */
 js(document).on('click', '.attribute-remove-btn', function () {
+    console.log('tutu');
     var parent = js(this).parent();
     var uuid = getUuid('attribute-remove-btn', this.id);
 
@@ -643,6 +644,7 @@ js(document).on('click', '.add-btn', function () {
  * Remove fieldset from form
  */
 js(document).on('click', '.remove-btn', function () {
+    console.log('toto');    
     var id = this.id;
     var xpath = js(this).attr('data-xpath');
 
@@ -650,6 +652,7 @@ js(document).on('click', '.remove-btn', function () {
         if (result) {
 
             var uuid = getUuid('remove-btn', id);
+            
             js.ajax({
                 url: baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid,
                 type: "GET",
@@ -658,6 +661,100 @@ js(document).on('click', '.remove-btn', function () {
             }).done(function () {
                 js('#fds' + uuid).remove();
                 setRelationAction(js('#add-btn' + xpath));
+                
+                // Get remove btn with same path
+                var regex = /(.*)-la-[0-9]*-ra-/g;
+                var corresp = regex.exec(id);
+                
+                var removeBtn = js("[data-xpath='"+xpath+"']");
+                
+                // If only one after remove 
+                if(removeBtn.length == 1){
+                    // get sibling uuid
+                        var siblingUuid = getUuid('remove-btn', removeBtn[0].id);
+                        
+                        var siblings =  js("[name*='"+siblingUuid+"']");
+                        var siblingUuidUnderscore = siblingUuid.replace(/-/g,'_');
+                        
+                        var root = new RegExp('(.*)(-la-[0-9]*-ra-)','g').exec(siblingUuid)[1];
+                        var rootUnderscore = new RegExp('(.*)(_la_[0-9]*_ra_)','g').exec(siblingUuidUnderscore)[1];
+                        
+                        // for each field
+                        for (i = 0; i < siblings.length; i++) {
+                            
+                            var nameRegex = new RegExp('(.*'+root+')(-la-[0-9]*-ra-)(.*)','g');
+                            var idRegex = new RegExp('(.*'+rootUnderscore+')(_la_[0-9]*_ra_)(.*)','g');
+
+                            var newName = js(siblings[i]).attr('name').replace(nameRegex, "$1$3");
+                            var newId = js(siblings[i]).attr('id').replace(idRegex, "$1$3");
+
+                            js(siblings[i]).attr('name', newName);
+                            js(siblings[i]).attr('id', newId); 
+
+                        };
+
+                        var siblings = js("[id*='"+siblingUuid+"']")
+                        // for each other elements
+                        for (i = 0; i < siblings.length; i++) {
+                            var idRegex = /(.*)(-la-[0-9]*-ra-)(.*)/g;
+
+                            var newId = js(siblings[i]).attr('id').replace(idRegex, "$1$3");
+
+                            js(siblings[i]).attr('id', newId);
+                        };
+                }else{
+                
+                    // For each remove btn
+                    var index = 1;    
+                    removeBtn.each(function(){
+
+                        // get sibling uuid
+                        var siblingUuid = getUuid('remove-btn', this.id);
+                        var siblingUuidUnderscore = siblingUuid.replace(/-/g,'_');
+                        
+                        var root = new RegExp('(.*)(-la-[0-9]*-ra-)','g').exec(siblingUuid)[1];
+                        var rootUnderscore = new RegExp('(.*)(_la_[0-9]*_ra_)','g').exec(siblingUuidUnderscore)[1];
+                        
+                        var siblings =  js("[name*='"+siblingUuid+"']");
+                        for (i = 0; i < siblings.length; i++) { 
+                            
+                            var nameRegex = new RegExp('(.*'+root+')(-la-[0-9]*-ra-)(.*)','g');
+                            var idRegex = new RegExp('(.*'+rootUnderscore+')(_la_[0-9]*_ra_)(.*)','g');
+
+                            var newName = js(siblings[i]).attr('name').replace(nameRegex, "$1-la-"+index+"-ra-$3");
+                            var newId = js(siblings[i]).attr('id').replace(idRegex, "$1_la_"+index+"_ra_$3");
+
+                            js(siblings[i]).attr('name', newName);
+                            js(siblings[i]).attr('id', newId);
+                        }
+
+                        var siblings = js("[id*='"+siblingUuid+"']")
+                        // for each other elements
+                        for (i = 0; i < siblings.length; i++) { 
+                            
+                            if(js(siblings[i]).attr('id').match(/anonymousType/)){
+                                var toto = 1;
+                            }
+                            
+                            var idRegex = new RegExp('(.*'+root+')(-la-[0-9]*-ra-)(.*)','g');
+
+                            var newId = js(siblings[i]).attr('id').replace(idRegex, "$1-la-"+index+"-ra-$3");
+                            
+                            console.log(siblingUuid);
+                            console.log(root);
+                            console.log(js(siblings[i]).attr('id'));
+                            console.log(idRegex);
+                            console.log(newId);
+                            console.log("====================================");
+
+                            js(siblings[i]).attr('id', newId);
+                        };
+
+                        index++;
+                    });
+                }
+                //var toRename = js("[name*='"+key+"']" );
+                
             }).fail(function () {
                 bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION', 'COM_EASYSDI_CATALOG_ERROR_REMOVE_RELATION'));
             });

@@ -523,14 +523,20 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
 
+        //echo $this->structure->saveXML();die(); Ok à ce stade
+        
         if (!isset($data)) {
             $data = $this->data;
         }
+        
+        //echo print_r($data); die();
 
         foreach ($this->nsdao->getAll() as $ns) {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
 
+        //echo $this->structure->saveXML();die(); OK à ce stade
+        
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
@@ -559,6 +565,30 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
+        /*$dataReIndexed = array();
+        
+        foreach ($dataWithoutArray as $xpath => $value) {
+            if (strpos($xpath, 'attribute') !== false) {
+                $breakpoint = true;
+            }
+            
+            $pattern = preg_replace("/(.*)(-la-[0-9*]-ra-)(.*)/", "$1-la-[0-9*]-ra-$3", $xpath);
+            
+            $count = $this->countInstance($dataWithoutArray, $xpath);
+            
+                $i = 1;
+                foreach ($dataWithoutArray as $key=>$val) {
+                    if(preg_match("/".$pattern."/", $key)){
+                       $dataReIndexed[preg_replace("/(.*)(-la-[0-9*]-ra-)(.*)/", "$1-la-".$i."-ra-$3", $key)] = $val;
+                       $i++;
+                    }
+                }
+        }*/
+        
+        //echo print_r($dataReIndexed); die();
+        
+        //echo $this->structure->saveXML();die(); OK à ce stade
+        
         foreach ($dataWithoutArray as $xpath => $value) {
 
             $xpatharray = explode('#', $xpath);
@@ -601,7 +631,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 }
             }
         }
-
+        
+        //echo $this->structure->saveXML();die(); 
+        
         $keywords = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="' . EnumStereotype::$GEMET . '"]');
 
         if ($keywords->length) {
@@ -619,8 +651,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
 
-        /* echo $this->structure->saveXML();
-          die(); */
+        //echo $this->structure->saveXML();die(); 
 
         $this->removeNoneExist();
         $this->removeEmptyListNode();
@@ -658,6 +689,23 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
     }
 
+    
+    
+    private function countInstance($dataWithoutArray, $xpath){
+        
+        $pattern = preg_replace("/(.*)(-la-[0-9*]-ra-)(.*)/", "$1-la-[0-9*]-ra-$3", $xpath);
+        
+        $i = 0;
+            foreach ($dataWithoutArray as $key=>$val) {
+                if(preg_match("/".$pattern."/", $key)){
+                   $dataReIndexed[preg_replace("/(.*)(-la-[0-9*]-ra-)(.*)/", "$1-la-".$i."-ra-$3", $key)] = $val;
+                   $i++;
+                }
+            }
+        
+        return $i;
+    }
+    
     /**
      * Add boundary stereotype into xpath
      * 
