@@ -639,18 +639,22 @@ jQuery(document).ready(function ($) {
                 }).addTo(map); // creation du controller de couches
             }
 
-
+            var layerorder = 1000;
+            var reversegroup = "";
             // creation de couches
             jQuery.each(contextMapData.groups, function (g, group) {
-                //for (var g in contextMapData.groups) {
-                //var group = contextMapData.groups[g];
                 var overlay = (group.isbackground != '1');
                 if (isset(group.layers)) {
-                    jQuery.each(group.layers, function (l, layer) {
-                        //for (var l = group.layers.length - 1; l >= 0; l--) {
-                        //var layer = group.layers[l];
+                    if (group.isbackground == 1){
+                        reversegroup = group.layers;
+                    }else{
+                        reversegroup = group.layers.reverse();
+                    }
+                    jQuery.each(reversegroup, function (l, layer) {
                         var show = (layer.isdefaultvisible == '1');
+                        layer.ordering=layerorder;
                         addLayer(layer, overlay, show, group.name);
+                        layerorder--;
                     });
                 }
             });
