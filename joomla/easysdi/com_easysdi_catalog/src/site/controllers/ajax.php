@@ -128,7 +128,8 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
             return null;
             die();
         }
-        $name = addslashes($_GET['value']);
+        //$name = addslashes($_GET['value']);
+        $name = $_GET['value'];
         $query = $this->db->getQuery(true);
         $query->select('t.text1, b.alias, b.northbound, b.southbound, b.westbound, b.eastbound');
         $query->from('#__sdi_boundary AS b');
