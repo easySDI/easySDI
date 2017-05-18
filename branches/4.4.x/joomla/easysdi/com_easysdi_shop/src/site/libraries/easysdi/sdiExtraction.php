@@ -21,6 +21,7 @@ class sdiExtraction {
     public $properties;
     public $resource;
     public $restrictedperimeter;
+    public $otp;
     public $perimeters;
     public $visualization;
 
@@ -63,6 +64,7 @@ class sdiExtraction {
                         o.name as organism, 
                         o.id as organism_id,
                         d.restrictedperimeter, 
+                        d.otp, 
                         d.surfacemin, 
                         d.surfacemax, 
                         d.pricing_id as pricing, 

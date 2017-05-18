@@ -275,6 +275,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->update('#__sdi_order_diffusion');
         $query->set('remark = ' . $query->quote($remark));
         $query->set('completed = ' . $query->quote($now));
+        $query->set('storage_id = 1');
         $query->set('file = ' . $query->quote($filename));
         $query->set('size = ' . $size);
         $query->where('id = ' . $orderdiffusionId);

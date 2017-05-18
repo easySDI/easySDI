@@ -109,4 +109,12 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
     </div>
 </div>
 
-<?php echo Easysdi_shopHelper::getAddToBasketModal(); ?>
+<?php 
+    echo Easysdi_shopHelper::getAddToBasketModal();
+    
+    //If OTP option is enabled, load the OTP Modal
+    if($this->params->get('otpactivated'))
+    {
+        echo Easysdi_shopHelper::downloadOTPProductModal(); 
+    }
+?>

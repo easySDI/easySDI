@@ -234,6 +234,7 @@ class Easysdi_shopModelRequest extends JModelForm {
         $keys['diffusion_id'] = (int) $diffusion_id;
         $orderdiffusion->load($keys);
         $orderdiffusion->remark = $data['remark'][$diffusion_id];
+        $orderdiffusion->storage_id = (int) Easysdi_shopHelper::EXTRACTSTORAGE_LOCAL;
         if (!empty($files['file'][$diffusion_id][0]['name'])):
             //get clean filename for storage
             $storeFileName = Easysdi_shopHelper::getCleanFilename($files['file'][$diffusion_id][0]['name']);

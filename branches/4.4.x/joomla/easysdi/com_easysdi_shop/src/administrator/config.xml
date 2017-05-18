@@ -95,6 +95,15 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+		<field name="otpactivated"
+            type="radio"
+            class="radio btn-group btn-group-yesno"
+            label="COM_EASYSDI_SHOP_CONFIG_LBL_OTP_IS_ACTIVATED"
+            description="COM_EASYSDI_SHOP_CONFIG_DESC_OTP_IS_ACTIVATED"
+            default="0">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
         <field name="perimeterimportactivated"
             type="radio"
             class="radio btn-group btn-group-yesno"
