@@ -169,5 +169,18 @@ class Easysdi_shopBasketStringParser {
         $this->searchStrings['{DIFFUSIONS_LIST}'] = $this->getDiffusionsList($limitedDiffusionList);
         return $this->getReplacedString($strinToReplaceIn);
     }
+    
+    /**
+     * Returns the string with all ocurences replaced with basket values,
+     * the diffusion is limited by the ids passed as a parameter
+     * (a supplier has to get only his diffusions)
+     * @param string $strinToReplaceIn original string
+     * @param integer[] $limitedDiffusionList an aray of intergers containing the authorized diffusions
+     * @return string The string with all matching occurences replaced
+     */
+    public function getReplacedStringForOTP($strinToReplaceIn, $otp) {
+        $this->searchStrings['{OTP}'] = $otp;
+        return $this->getReplacedString($strinToReplaceIn);
+    }
 
 }
