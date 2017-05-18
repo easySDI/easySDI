@@ -29,7 +29,7 @@ class Easysdi_contactViewCategory extends JViewLegacy {
         $this->item = $this->get('Item');
         $this->form = $this->get('Form');
         
-        $this->currency = &JComponentHelper::getParams('com_easysdi_shop')->get('currency', false);
+        $this->currency = JComponentHelper::getParams('com_easysdi_shop')->get('currency', false);
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
