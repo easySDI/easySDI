@@ -75,7 +75,8 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $query = $db->getQuery(true);
         $query->select('*')
                 ->from('#__sdi_propertyvalue')
-                ->where('state = 1');
+                ->where('state = 1')
+                ->order("ordering");
         $db->setQuery($query);
         $this->propertyvalues = $db->loadObjectList();
 
