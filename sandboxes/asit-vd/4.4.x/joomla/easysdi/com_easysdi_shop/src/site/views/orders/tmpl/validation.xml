@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="COM_EASYSDI_SHOP_TITLE_ITEM_VIEW_ORDERS_TO_VALIDATE" option="View">
+        <message>
+                        <![CDATA[COM_EASYSDI_SHOP_TITLE_ITEM_VIEW_ORDERS_TO_VALIDATE_DESC]]>
+        </message>
+	</layout>
+</metadata>

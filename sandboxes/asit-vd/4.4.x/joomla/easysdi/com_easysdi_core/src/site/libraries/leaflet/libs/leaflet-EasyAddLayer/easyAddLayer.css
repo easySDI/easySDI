@@ -1,0 +1,54 @@
+.addLayerBtn {
+  padding: 5px;
+  display: inline-block;
+  margin: 2px;
+  text-decoration: none;
+  border: 1px solid #333;
+  background: #fff;
+  color: #333;
+}
+
+.addLayerBtn:hover, .addLayerBtn:focus {
+  background: #333;
+  color: #fff;
+  border-color: #fff;
+  }
+
+.addlayer_container {
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.25);
+  padding: 5px 2px 5px 15px;
+}
+
+.addlayer_container .available_layers {
+  height: 200px;
+  overflow: auto;
+}
+
+.addlayer_container .available_layers ul {
+  list-style: none;
+}
+
+
+
+.addlayer_container .available_layers a {
+  color: #000;
+  text-decoration: none;
+}
+
+.addlayer_container .available_layers a::before {
+    content: " ";
+    display: inline-block;
+    font-family: FontAwesome;
+    margin-left: -30px;
+    margin-right: 5px;
+    position: relative;
+    width: 10px;
+  }
+
+  .addlayer_container .available_layers a:hover::before {
+    content: "\f055";
+  }
+
+.addlayer_container .available_layers a:hover {
+  text-decoration: underline;
+  }

@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+
+        <field name="name" 
+               type="text" 
+               size="40" 
+               class="inputbox"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_NAME"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_NAME" 
+               filter="safehtml" /> 
+
+        <field name="acronym" 
+               type="text" 
+               size="40" 
+               class="inputbox"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_ACRONYM"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_ACRONYM" 
+               filter="safehtml" /> 
+
+        <field name="description" 
+               type="textarea" 
+               buttons="false"
+               class="input-xxlarge"
+               filter="safehtml"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_DESCRIPTION"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_DESCRIPTION"  /> 
+        
+        <field name="logo" 
+               type="media" 
+               size="40" 
+               class="input-xxlarge"
+               preview="tooltip"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_LOGO"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_LOGO" 
+               filter="safehtml" /> 
+
+        <field name="website" 
+               type="text" 
+               size="40" 
+               class="input-xxlarge"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_WEBSITE"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_WEBSITE" 
+               validate="url" 
+               filter="safehtml" /> 
+
+        <field name="perimeter" 
+               type="textarea" 
+               buttons="false"
+               class="input-xxlarge"
+               filter="safehtml"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PERIMETER"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_PERIMETER"  /> 
+
+        <field name="categories" 
+               type="sql" 
+               query="SELECT id, name as value FROM #__sdi_category WHERE state=1 ORDER BY ordering" 
+               key_field="id"
+               value_field="value"
+               multiple="true"
+               class="multiselect input-xxlarge"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_CATEGORIES"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_CATEGORIES"  /> 
+        
+        <field 	id="selectable_as_thirdparty" 
+                name="selectable_as_thirdparty" 
+                type="radio"
+                class="btn-group"
+                label="com_easysdi_contact_FORM_LBL_SELECTABLE_AS_THIRDPARTY"
+                description="com_easysdi_contact_FORM_DESC_SELECTABLE_AS_THIRDPARTY" 
+                default="0" 	
+        >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        
+        <field name="id" 
+               type="text" 
+               default="0" 
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_ID"
+               readonly="true" 
+               class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+            
+        <field  name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field  name="guid" type="hidden" filter="SAFEHTML" />
+        <field  name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field  name="checked_out_time" type="hidden" filter="SAFEHTML" />
+    </fieldset>
+
+    <fieldset name="orderuser">
+        <field name="username"
+               type="text"
+               size="40" 
+               class="inputbox"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_USERNAME"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_USERNAME" 
+               filter="safehtml"/>
+        
+        <field name="clearpassword"
+               type="password"
+               size="40" 
+               class="inputbox"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PASSWORD"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_PASSWORD" 
+               filter="safehtml"/>
+        
+        <field name="confirmpassword"
+               type="password"
+               size="40" 
+               class="inputbox"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PASSWORDCONFIRM"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_PASSWORD" 
+               filter="safehtml"/>
+        
+        <field name="password"
+               type="hidden"/>
+    </fieldset>
+    
+    
+
+    <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field>
+	    
+    <field name="access" 
+           type="accesslevel"
+           label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_ACCESS"
+           description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_ACCESS" 
+           filter="raw" /> 
+
+    <fieldset name="publishing">
+        <field name="created_by" 
+               type="user" 
+               class="readonly"
+               readonly="true" 
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_CREATED_BY"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_CREATED_BY"  /> 
+
+        <field name="created" 
+               type="calendar" 
+               class="readonly"
+               readonly="true"
+               default="0000-00-00 00:00:00" 
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_CREATED"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_CREATED"  /> 
+
+        <field name="modified_by" 
+               type="user" 
+               class="readonly"
+               readonly="true" 
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_MODIFIED_BY"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_MODIFIED_BY" 
+               filter="unset" /> 
+
+        <field name="modified" 
+               type="calendar" 
+               class="readonly"
+               readonly="true"
+               default="0000-00-00 00:00:00" 
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_MODIFIED"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_MODIFIED"  /> 
+    </fieldset>
+	
+    <fieldset name="rulesdefinition">
+        <field 	name="rules" 
+                type="rules" 
+                label="JFIELD_RULES_LABEL"
+                translate_label="true" 
+                class="inputbox" 
+                filter="rules"
+                component="com_easysdi_contact" 
+                section="organism" 
+                validate="rules"
+        />
+    </fieldset>
+	
+    <fieldset name="contactaddress">
+	
+        <field 	name="contact_civility" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_CIVILITY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_CIVILITY" 
+                filter="safehtml" 
+        /> 
+                 
+        <field 	name="contact_firstname" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FIRSTNAME"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FIRSTNAME" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_lastname" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_LASTNAME"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_LASTNAME" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_function" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FUNCTION"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FUNCTION" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_address" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESS"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESS" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_addresscomplement" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_postalcode" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALCODE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALCODE" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_postalbox" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALBOX"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALBOX" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_locality" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_LOCALITY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_LOCALITY" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_country_id" 
+                type="sql" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_COUNTRY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_COUNTRY" 
+                translate="true" 
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_sys_country" key_field="id" value_field="value"
+        /> 
+
+        <field 	name="contact_phone" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_PHONE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_PHONE" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_mobile" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_MOBILE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_MOBILE" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_fax" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FAX"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FAX" 
+                filter="safehtml" /> 
+
+        <field 	name="contact_email" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_EMAIL"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_EMAIL" 
+                filter="safehtml" 
+                validate="email" /> 
+
+        <field name="contact_checked_out" type="hidden" filter="safehtml" />
+        <field name="contact_checked_out_time" type="hidden" filter="safehtml" />
+        <field  name="contact_guid" type="hidden" filter="safehtml" />
+        <field  name="contact_user_id" type="hidden" filter="safehtml" />
+        <field  name="contact_id" type="hidden" filter="safehtml" />
+        <field  name="contact_addresstype_id" type="hidden" filter="safehtml" value = "2" />
+    </fieldset>
+	
+    <fieldset name="billingaddress">
+        <field 	id="billing_sameascontact" 
+                name="billing_sameascontact" 
+                type="radio"
+                class="btn-group"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_SAMEASCONTACT"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_SAMEASCONTACT" 
+                default="1" 	
+        >
+            <option value="0" onclick="disableAddressType(false, 'billing');">JNO</option>
+            <option value="1" onclick="disableAddressType(true, 'billing');">JYES</option>
+        </field>
+		
+        <field 	name="billing_civility" 
+                type="text" 
+                size="40"
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_CIVILITY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_CIVILITY" 
+                translate="true" 
+                filter="safehtml"
+        /> 
+
+        <field 	name="billing_firstname" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FIRSTNAME"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FIRSTNAME" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_lastname" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_LASTNAME"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_LASTNAME" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_function" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FUNCTION"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FUNCTION" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_address" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESS"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESS" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_addresscomplement" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_postalcode" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALCODE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALCODE" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_postalbox" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALBOX"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALBOX" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_locality" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_LOCALITY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_LOCALITY" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_country_id" 
+                type="sql" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_COUNTRY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_COUNTRY" 
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_sys_country" key_field="id" value_field="value"
+        /> 
+
+        <field 	name="billing_phone" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_PHONE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_PHONE" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_mobile" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_MOBILE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_MOBILE" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_fax" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FAX"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FAX" 
+                filter="safehtml" /> 
+
+        <field 	name="billing_email" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_EMAIL"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_EMAIL" 
+                filter="safehtml" /> 
+
+        <field name="billing_checked_out" type="hidden" filter="safehtml" />
+        <field name="billing_checked_out_time" type="hidden" filter="safehtml" />
+        <field  name="billing_guid" type="hidden" filter="safehtml" />
+        <field  name="billing_user_id" type="hidden" filter="safehtml" />
+        <field  name="billing_id" type="hidden" filter="safehtml" />
+        <field  name="billing_addresstype_id" type="hidden" filter="safehtml" value = "2" />
+    </fieldset>
+	
+    <fieldset name="delivryaddress">
+        <field 	id="delivry_sameascontact" 
+                name="delivry_sameascontact" 
+                type="radio"
+                class="btn-group"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_SAMEASCONTACT"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_SAMEASCONTACT" 
+                default="1" 	>
+            <option value="0" onclick="disableAddressType(false,'delivry');">JNO</option>
+            <option value="1" onclick="disableAddressType(true,'delivry');">JYES</option>
+        </field> 
+		
+        <field 	name="delivry_civility" 
+                type="text" 
+                size="40"
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_CIVILITY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_CIVILITY" 
+                translate="true" 
+                filter="safehtml" 
+        /> 
+
+        <field 	name="delivry_firstname" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FIRSTNAME"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FIRSTNAME" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_lastname" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_LASTNAME"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_LASTNAME" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_function" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FUNCTION"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FUNCTION" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_address" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESS"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESS" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_addresscomplement" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_postalcode" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALCODE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALCODE" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_postalbox" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALBOX"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALBOX" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_locality" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_LOCALITY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_LOCALITY" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_country_id" 
+                type="sql" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_COUNTRY"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_COUNTRY" 
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_sys_country" key_field="id" value_field="value"
+        /> 
+
+        <field 	name="delivry_phone" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_PHONE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_PHONE" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_mobile" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_MOBILE"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_MOBILE" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_fax" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_FAX"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_FAX" 
+                filter="safehtml" /> 
+
+        <field 	name="delivry_email" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="com_easysdi_contact_FORM_LBL_ADDRESS_EMAIL"
+                description="com_easysdi_contact_FORM_DESC_ADDRESS_EMAIL" 
+                filter="safehtml" /> 
+
+		
+
+        <field name="delivry_checked_out" type="hidden" filter="safehtml" />
+        <field name="delivry_checked_out_time" type="hidden" filter="safehtml" />
+        <field  name="delivry_guid" type="hidden" filter="safehtml" />
+        <field  name="delivry_user_id" type="hidden" filter="safehtml" />
+        <field  name="delivry_id" type="hidden" filter="safehtml" />
+        <field  name="delivry_addresstype_id" type="hidden" filter="safehtml" value = "2" />
+    </fieldset>
+</form>
