@@ -1,6 +1,7 @@
 <?php
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/OgcFilters.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
 
 /**
  * @version     4.4.4
@@ -313,7 +314,8 @@ class Cswrecords extends SearchForm {
                 break;
             default :
                 if (is_array($value)) {
-                    $value_filter = array_filter($value);
+                    //Remove all null values in the array
+                    $value_filter = array_filter($value, 'FormUtils::arrayFilterKeep0');
                     if (count($value_filter) > 0) {
                         $element = $this->switchOnRenderType($name, $value_filter);
                         if ($element != FALSE) {

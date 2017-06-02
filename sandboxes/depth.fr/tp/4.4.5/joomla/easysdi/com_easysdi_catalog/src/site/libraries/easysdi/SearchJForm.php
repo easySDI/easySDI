@@ -13,6 +13,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enu
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRenderType.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/SearchForm.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
 
 class SearchJForm extends SearchForm {
 
@@ -316,7 +317,8 @@ class SearchJForm extends SearchForm {
     private function getDefaultFromSession($name) {
         if (key_exists($name, $this->data)) {
             if (is_array($this->data[$name])) {
-                return implode(',', array_filter($this->data[$name]));
+                $value_filter = array_filter($this->data[$name], 'FormUtils::arrayFilterKeep0');
+                return implode(',', $value_filter);
             } else {
                 return $this->data[$name];
             }

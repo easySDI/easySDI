@@ -94,6 +94,12 @@ class FormUtils {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
     }
 
+	/**
+	* Callback function to use with array_filter to keep '0' as value in the array
+	*/
+	public static function arrayFilterKeep0($value){
+        return ($value !== null && $value !== false && $value !== '');  
+    }
 }
 
 ?>
