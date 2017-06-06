@@ -84,7 +84,7 @@ class Easysdi_catalogControllerSitemap extends Easysdi_catalogController {
                 ->join('LEFT', '#__sdi_version v on v.id=m.version_id')
                 ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')
                 ->where('m.metadatastate_id=3') // metadata must be published
-                ->where('m.accessscope_id=1') // metadata must have public access scope
+                ->where('r.accessscope_id=1') // metadata must have public access scope
                 ->where('r.resourcetype_id IN ('.implode(',',$resourcestype).')') // metadata must be from allowed resources types
                 ;
 
