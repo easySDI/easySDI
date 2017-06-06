@@ -51,13 +51,13 @@
 
         <field name="state"
                type="list"
-               label="JSTATUS"
-               description="JFIELD_PUBLISHED_DESC"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PUBLISHED"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PUBLISHED"
                class="inputbox input-xlarge"
                size="1"
                default="1">
-            <option value="1">JPUBLISHED</option>
-            <option value="0">JUNPUBLISHED</option>
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
         </field> 
         
         <field name="pricing_id" 
