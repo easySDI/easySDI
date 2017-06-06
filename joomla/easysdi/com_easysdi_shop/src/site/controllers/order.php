@@ -223,7 +223,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         }
 
         $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-        $diffusion->load($$diffusion_id);
+        $diffusion->load($diffusion_id);
         
         //if file is OTP protected and the user is the customer, disable downnload
         if (($order->user_id == $currentUser->id) && ($diffusion->otp == 1)){
