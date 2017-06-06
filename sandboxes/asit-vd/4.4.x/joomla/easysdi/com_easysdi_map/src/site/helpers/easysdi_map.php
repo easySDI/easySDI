@@ -239,6 +239,7 @@ abstract class Easysdi_mapHelper {
             //Loadind js files
             JHtml::_('jquery.framework');
             if (JDEBUG) {
+                //$doc->addStyleSheet("http://unpkg.com/leaflet@1.0.3/dist/leaflet.css");
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/Leaflet.ZoomBox/L.Control.ZoomBox.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-measure/leaflet-measure.css');
@@ -256,6 +257,7 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/leaflet/libs/i18next-1.9.0/i18next-1.9.0.min.js');
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
+                //$doc->addScript("http://unpkg.com/leaflet@1.0.3/dist/leaflet.js");
                 $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Google.js');
                 $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Bing.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet.TileLayer.WMTS-master/leaflet-tilelayer-wmts-src.js');
@@ -272,6 +274,7 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-graphicscale/Leaflet.GraphicScale.min.js');
                 $doc->addScript($base_url . '/proj4js-2.3.14/proj4.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet.nontiledlayer/NonTiledLayer.js');
                 $doc->addScript($base_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js?v=' . sdiFactory::getSdiFullVersion());
             }else{
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
