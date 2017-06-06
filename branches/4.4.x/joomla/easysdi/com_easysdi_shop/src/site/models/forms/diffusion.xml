@@ -6,47 +6,47 @@
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NAME" /> 
 
         <field name="accessscope_id" 
-            onchange="enableAccessScope();"
-            type="sql" 
-            class="inputbox input-xlarge"
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ACCESSSCOPE_ID"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_ACCESSSCOPE_ID" 
-            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
-            key_field="id" 
-            value_field="value"
+               onchange="enableAccessScope();"
+               type="sql" 
+               class="inputbox input-xlarge"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ACCESSSCOPE_ID"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_ACCESSSCOPE_ID" 
+               query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+               key_field="id" 
+               value_field="value"
                translate="true" /> 
         
         <field name="categories" 
-            type="sql" 
-            class="multiselect input-xxlarge"
-            multiple="true"
-            label=""
-            description="" 
-            query="SELECT id, name FROM #__sdi_category WHERE state=1 AND backend_only=0 ORDER BY ordering" 
-            key_field="id" 
-            value_field="name"
+               type="sql" 
+               class="multiselect input-xxlarge"
+               multiple="true"
+               label=""
+               description="" 
+               query="SELECT id, name FROM #__sdi_category WHERE state=1 AND backend_only=0 ORDER BY ordering" 
+               key_field="id" 
+               value_field="name"
                translate="true" /> 
         
         <field name="organisms" 
-            type="sql" 
-            class="multiselect input-xxlarge"
-            multiple="true"
-            label=""
-            description="" 
-            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
-            key_field="id" 
-            value_field="name"
+               type="sql" 
+               class="multiselect input-xxlarge"
+               multiple="true"
+               label=""
+               description="" 
+               query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
+               key_field="id" 
+               value_field="name"
                translate="true" /> 
         
         <field name="users" 
-            type="sql" 
-            class="multiselect input-xxlarge"
-            multiple="true"
-            label=""
-            description="" 
-            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY name" 
-            key_field="id" 
-            value_field="name"
+               type="sql" 
+               class="multiselect input-xxlarge"
+               multiple="true"
+               label=""
+               description="" 
+               query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY name" 
+               key_field="id" 
+               value_field="name"
                translate="true" /> 
 
         <field name="state"
@@ -80,7 +80,7 @@
 
         <field name="pricing_remark" 
                type="textarea" 
-            class="inputbox input-xlarge"
+               class="inputbox input-xlarge"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRICING_REMARK"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRICING_REMARK" 
                hint="COM_EASYSDI_SHOP_FORM_PLACEHOLDER_DIFFUSION_PRICING_REMARK"
@@ -99,15 +99,15 @@
         </field>  
 
         <field name="productstorage_id" 
-                type="sql" 
-                class="inputbox input-xlarge"
-                onchange="onProductStorageChange()"
-                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTSTORAGE_ID"
-                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRODUCTSTORAGE_ID" 
+               type="sql" 
+               class="inputbox input-xlarge"
+               onchange="onProductStorageChange()"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTSTORAGE_ID"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRODUCTSTORAGE_ID" 
                query="SELECT id, CONCAT('COM_EASYSDI_SHOP_FORM_DIFFUSION_LIST_', value) as value FROM #__sdi_sys_productstorage WHERE state=1 ORDER BY ordering" 
-                key_field="id" 
-                value_field="value"
-                translate="true" />
+               key_field="id" 
+               value_field="value"
+               translate="true" />
         
         <field name="fileurl" type="text" size="40" class="inputbox input-xlarge"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILEURL"
@@ -184,29 +184,36 @@
         
         <field name="managers_id" 
                type="sqlgroupedlist" 
-                   class="inputbox input-xlarge"
-                   multiple="true"
+               class="inputbox input-xlarge"
+               multiple="true"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_EXTRACTION_RESPONSIBLE"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_EXTRACTION_RESPONSIBLE" 
-                   key_field="id" 
-                   value_field="value"
+               key_field="id" 
+               value_field="value"
                groupname_field="groupname"
-                   translate="false" />
+               translate="false" />
                
         <field name="notifieduser_id" 
                type="sqlgroupedlist" 
-                   class="inputbox input-xlarge"
-                   multiple="true"
-                   label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NOTIFIEDUSER_ID"
-                   description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NOTIFIEDUSER_ID" 
-                   key_field="id" 
-                   value_field="value"
+               class="inputbox input-xlarge"
+               multiple="true"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NOTIFIEDUSER_ID"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NOTIFIEDUSER_ID" 
+               key_field="id" 
+               value_field="value"
                groupname_field="groupname"
-                   translate="false" />
+               translate="false" />
         
         <field name="restrictedperimeter" type="radio"  default="0"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_RESTRICTEDPERIMETER"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_RESTRICTEDPERIMETER">   
+            <option value="0">JNO</option>
+            <option value="1" >JYES</option>
+        </field>
+        
+        <field name="otp" type="radio" class="radio btn-group btn-group-yesno"  default="0"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_OTP"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_OTP">   
             <option value="0">JNO</option>
             <option value="1" >JYES</option>
         </field>
@@ -226,15 +233,7 @@
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_SURFACEMAX" 
                hint="COM_EASYSDI_SHOP_FORM_PLACEHOLDER_DIFFUSION_SURFACEMINMAX"
                filter="safehtml" /> 
-    
-        <field name="otp" type="radio" class="radio btn-group btn-group-yesno"  default="0"
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_OTP"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_OTP" 
-        >   
-            <option value="0">JNO</option>
-            <option value="1" >JYES</option>
-            
-        </field>
+
     </fieldset>
     
     <fieldset name="hidden">

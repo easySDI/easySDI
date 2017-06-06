@@ -108,7 +108,7 @@ else
                             <div id="div_extraction">
                                 <?php
                                 foreach ($this->form->getFieldset('extraction') as $field):
-                                    if (in_array($field->fieldname, array('hasextraction', 'restrictedperimeter','otp')))
+                                    if (in_array($field->fieldname, array('hasextraction', 'restrictedperimeter', 'otp')))
                                         continue;
                                     ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
@@ -132,15 +132,13 @@ else
                                     </div>
                                 <?php endif; ?>
 
-                                <?php 
-                                $test=$this->params->get('otpactivated');
-                                if($this->params->get('otpactivated') == 1) : ?>
-                                <div class="control-group" id="<?php echo $this->form->getField('otp')->fieldname; ?>">
-                                    <div class="control-label"><?php echo $this->form->getField('otp')->label; ?></div>
-                                    <div class="controls"><?php echo $this->form->getField('otp')->input; ?></div>
-                                </div>
+                                <?php if ($this->params->get('otpactivated', 0) == 1) : ?>
+                                    <div class="control-group" id="<?php echo $this->form->getField('otp')->fieldname; ?>">
+                                        <div class="control-label"><?php echo $this->form->getField('otp')->label; ?></div>
+                                        <div class="controls"><?php echo $this->form->getField('otp')->input; ?></div>
+                                    </div>
                                 <?php endif; ?>
-                                
+
                                 <fieldset id ="fieldset_perimeters" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
 

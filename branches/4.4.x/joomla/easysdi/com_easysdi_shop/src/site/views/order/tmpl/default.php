@@ -118,7 +118,7 @@ else:
 endif;
 
 //If OTP option is enabled, load the OTP Modal
-if($this->params->get('otpactivated') == 1)
+if($this->params->get('otpactivated', 0) == 1)
 {
     echo Easysdi_shopHelper::downloadOTPProductModal(); 
 }
