@@ -19,7 +19,7 @@ defined('_JEXEC') or die;
         if ( js('#termsofuse').is(':checked') == true ){
             js('#saveSubmit').removeAttr('disabled', 'disabled'); 
             js('#saveSubmit').attr('onclick', 'tokenize();');
-            js('#saveSubmit').attr('href', js('#adminForm').attr('action') + '?id=' + js('#id').attr('value'));   
+            js('#saveSubmit').attr('href', js('#adminForm').attr('action') + '&id=' + js('#id').attr('value'));   
         }
         else{
             js('#saveSubmit').attr('disabled', 'disabled'); 
@@ -31,7 +31,7 @@ defined('_JEXEC') or die;
         js('#saveSubmit').attr('href', js('#saveSubmit').attr('href') + '&'+ js('#id').next().attr('name') + '=' + js('#id').next().attr('value')); 
     }
 </script>
-<form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+<form class="form-inline form-validate" action="<?php echo Juri::root(true) . '/index.php?option=com_easysdi_shop&task=download.download'; ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
     <div class="download-confirm front-end-edit">
         <h1><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_TITLE');; ?></h1>
         <div class="container-fluid">
