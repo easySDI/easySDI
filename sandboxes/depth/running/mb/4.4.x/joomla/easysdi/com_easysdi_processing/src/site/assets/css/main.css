@@ -1,0 +1,20 @@
+.easysdi_processtype_list {
+
+}
+
+.easysdi_processtype_list .item {
+
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+    padding: 5px 10px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.25);
+    }
+
+.easysdi_processtype_list h3 {
+    text-align: center;
+}
+
+.easySDIMap-closeme {
+    display: block;
+    text-align: right;
+}
