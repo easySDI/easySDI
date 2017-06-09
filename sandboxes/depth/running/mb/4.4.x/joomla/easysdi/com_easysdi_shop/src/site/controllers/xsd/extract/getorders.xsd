@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
+    
+    <!-- ROOT element -->
+    <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/getorders.xsd" name="orders" type="sdi:ordersType"/>
+    
+    <!-- Contains all orders and platform elements -->
+    <xs:complexType name="ordersType">
+        <xs:sequence>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:platformType" name="platform"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:orderType" name="order" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+       
+    <!-- describes the platform delivering the orders list -->   
+    <xs:complexType name="platformType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="name" use="required"/>
+                <xs:attribute type="xs:string" name="version" use="required"/>
+                <xs:attribute type="xs:string" name="serviceversion" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>   
+        
+    <!-- Describes an order -->
+    <xs:complexType name="orderType">     
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:clientType" name="client"/>
+            <xs:element name="tierce">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:organismType" name="organism" maxOccurs="1" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:perimeterType" name="perimeter"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:suppliersType" name="suppliers"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:orderPricingType" name="pricing" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute type="xs:integer" name="id" use="required"/>
+        <xs:attribute type="xs:string" name="type" use="required"/>
+        <xs:attribute type="xs:string" name="guid" use="required"/>
+        <xs:attribute type="xs:dateTime" name="datetimesent" use="required"/> 
+    </xs:complexType>
+    
+    <!-- Describes the suppliers of an order, with their description (organism), princing and products -->
+    <xs:complexType name="suppliersType">
+        <xs:sequence>
+            <xs:element name="supplier" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:organismType" name="organism"/>
+                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:supplierPricingType" name="pricing" minOccurs="0" maxOccurs="1"/>
+                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:productsType" name="products"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Describes the products of a supplier -->         
+    <xs:complexType name="productsType">
+        <xs:sequence>
+            <!-- There's at least one product -->  
+            <xs:element name="product" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element type="xs:string" name="name"/>
+                        <!-- Products pricing definition -->
+                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:productPricingType" name="pricing" minOccurs="0" maxOccurs="1"/>
+                        <!-- Product properties, this element is mandatory, but my be empty if no properties are set for this product -->
+                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:productPropertiesType" name="properties"/>
+                        <!-- Product metadata -->
+                        <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:productMetadataType" name="metadata"/>                        
+                    </xs:sequence>
+                    <xs:attribute type="xs:integer" name="id" use="required"/>
+                    <xs:attribute type="xs:string" name="guid" use="required"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+	<!-- Describes the metadata of a product -->
+	<xs:complexType name="productMetadataType">
+		<xs:sequence>
+                    <!-- XML copy of product's metadata, saved when order is placed -->
+                    <xs:element type="xs:base64Binary" name="xml"/>
+                    <!-- PDF copy of product's metadata, saved when order is placed -->
+                    <xs:element type="xs:base64Binary" name="pdf"/>
+		</xs:sequence>
+		<xs:attribute type="xs:integer" name="id" use="required"/>
+		<xs:attribute type="xs:string" name="guid" use="required"/>
+	</xs:complexType>
+     
+    
+    <!-- describes an address, used for organism and contacts
+    no field is mandatory in database-->
+    <xs:complexType name="addressType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="organismacronym" minOccurs="0"/>
+            <xs:element type="xs:string" name="organismname" minOccurs="0"/>
+            <xs:element type="xs:string" name="agentfirstname" minOccurs="0"/>
+            <xs:element type="xs:string" name="agentlastname" minOccurs="0"/>
+            <xs:element type="xs:string" name="addressstreet1" minOccurs="0"/>
+            <xs:element type="xs:string" name="addressstreet2" minOccurs="0"/>
+            <xs:element type="xs:string" name="zip" minOccurs="0"/>
+            <xs:element type="xs:string" name="pobox" minOccurs="0"/>
+            <xs:element type="xs:string" name="locality" minOccurs="0"/>
+            <xs:element type="xs:string" name="country" minOccurs="0"/>
+            <xs:element type="xs:string" name="email" minOccurs="0"/>
+            <xs:element type="xs:string" name="mobile" minOccurs="0"/>
+            <xs:element type="xs:string" name="phone" minOccurs="0"/>
+            <xs:element type="xs:string" name="fax" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- the tree different addresses used for organism or client -->
+    <xs:complexType name="contactType">
+        <xs:sequence>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:addressType" name="address"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="invoiceType">
+        <xs:sequence>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:addressType" name="address"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="deliveryType">
+        <xs:sequence>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:addressType" name="address"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- describes an organism, for client or supplier -->
+    <xs:complexType name="organismType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element type="xs:string" name="acronym"/>
+            <xs:element type="xs:anyURI" name="website"/>
+            <xs:element name="categories">
+                <xs:complexType>
+                    <xs:sequence>
+                        <!-- organism's categories -->
+                        <xs:element name="category" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element type="xs:string" name="name"/>
+                                </xs:sequence>
+                                <xs:attribute type="xs:integer" name="id" use="required"/>
+                                <xs:attribute type="xs:string" name="guid" use="required"/>
+                                <xs:attribute type="xs:string" name="alias" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <!-- organism's addresses -->
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:contactType" name="contact"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:invoiceType" name="invoice"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:deliveryType" name="delivery"/>
+        </xs:sequence>
+        <xs:attribute type="xs:integer" name="id" use="required"/>
+        <xs:attribute type="xs:string" name="guid" use="required"/>
+    </xs:complexType>
+    
+    <!-- Describes a client (a user) -->
+    <xs:complexType name="clientType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <!-- client's addresses -->
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:contactType" name="contact"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:invoiceType" name="invoice"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:deliveryType" name="delivery"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:organismType" name="organism"/>
+        </xs:sequence>
+        <xs:attribute type="xs:integer" name="id" use="required"/>
+        <xs:attribute type="xs:string" name="guid" use="required"/>
+    </xs:complexType>
+    
+
+    <!-- Describes the perimeter of an order -->
+    <xs:complexType name="perimeterType">
+        <xs:sequence>
+            <xs:element name="surface">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:float">
+                            <xs:attribute name="unit" use="required">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="m2"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:attribute>  
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:indoorlevelType" name="indoorlevel" minOccurs="0" maxOccurs="1"/>
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:contentsType" name="contents"/>
+        </xs:sequence>
+        <xs:attribute name="type" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="coordinates"/>
+                    <xs:enumeration value="values"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>        
+        <xs:attribute type="xs:integer" name="id" use="required"/>
+        <xs:attribute type="xs:string" name="alias" use="required"/>
+        <xs:attribute type="xs:string" name="guid" use="required"/>        
+    </xs:complexType>
+
+    <!-- Describes the indoor level -->         
+    <xs:complexType name="indoorlevelType">
+        <xs:attribute type="xs:string" name="code" use="required"/>
+        <xs:attribute type="xs:string" name="label" use="required"/>
+    </xs:complexType>  
+	
+    <!-- Describes the perimeter contents -->         
+    <xs:complexType name="contentsType">
+        <xs:sequence>
+            <!-- There's at least one content -->  
+            <xs:element name="content" maxOccurs="unbounded" minOccurs="1" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>   
+
+    <!-- Describes the properties set by the client for this product -->
+    <xs:complexType name="productPropertiesType">
+        <xs:sequence>
+            <!-- a product may have 0 to n properties -->
+            <xs:element name="property" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <!-- Property value, may be multiple, for instance in case of checkboxes -->
+                        <xs:element type="xs:string" name="value" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                    <!-- id, alias and guid of the property (not the value) -->
+                    <xs:attribute type="xs:integer" name="id" use="required"/>
+                    <xs:attribute type="xs:string" name="alias" use="required"/>
+                    <xs:attribute type="xs:string" name="guid" use="required"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Describes the pricing of the order,
+    only order level (platform fee for example) -->
+    <xs:complexType name="orderPricingType">
+        <xs:sequence>
+            <!-- Platform's pricing configuration, for information -->
+            <!-- cfg_vat : VAT rate (percent) configured at the moment of the order -->
+            <xs:element type="xs:decimal" name="cfg_vat" minOccurs="0"/>
+            <!-- cfg_currency : Displayed currency -->
+            <xs:element type="xs:string" name="cfg_currency" minOccurs="0"/>
+            <!-- cfg_rounding : Rounding used for Taxes Included ammounts -->
+            <xs:element type="xs:decimal" name="cfg_rounding" minOccurs="0"/>
+            <!-- cfg_overall_default_fee_te : Default platform order fee (when no category matches), taxes excluded -->
+            <xs:element type="xs:decimal" name="cfg_overall_default_fee_te" minOccurs="0"/>
+            <!-- cfg_free_data_fee : Is platform order fee applied when all products of all providers are free ? -->
+            <xs:element type="xs:boolean" name="cfg_free_data_fee" minOccurs="0"/> 
+            <!-- cfg_fee_apply_vat : Is vat applied on platform order fee  ? -->
+            <xs:element type="xs:boolean" name="cfg_fee_apply_vat" minOccurs="0"/>              
+            <!-- Computed platform's order's fee, taxes included -->  
+            <xs:element type="xs:decimal" name="cal_fee_ti" minOccurs="0"/>
+            <!-- If a client's has one or more categories that gives specific order's fee, (best match) it's described here  -->  
+            <xs:element type="xs:string" name="ind_lbl_category_order_fee" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>      
+        
+    <!-- Describes the pricing for the supplier, only supplier level (order fee for example)    -->
+    <xs:complexType name="supplierPricingType">
+        <xs:sequence>
+            <!-- Supplier organism's pricing configuration, for information: -->
+            <!-- cfg_internal_free : are products billed for internal orders ? -->
+            <xs:element type="xs:boolean" name="cfg_internal_free" minOccurs="0"/>
+            <!-- cfg_fixed_fee_te : defined order fee, taxes excluded -->
+            <xs:element type="xs:decimal" name="cfg_fixed_fee_te" minOccurs="0"/>
+            <!-- cfg_fixed_fee_apply_vat : is vat applied on fixed order fee ? -->
+            <xs:element type="xs:boolean" name="cfg_fixed_fee_apply_vat" minOccurs="0"/>
+            <!-- cfg_data_free_fixed_fee : is order fee applied when all supplier's product in the order free ? -->
+            <xs:element type="xs:boolean" name="cfg_data_free_fixed_fee" minOccurs="0"/>            
+            <!-- Computed supplier's order's fee, taxes included -->
+            <xs:element type="xs:decimal" name="cal_fee_ti" minOccurs="0"/>            
+        </xs:sequence>
+    </xs:complexType>    
+    
+    <!-- Describes the pricing for a product, only product level    -->
+    <xs:complexType name="productPricingType">
+        <xs:sequence>
+            <!-- Describes the pricing type for the product -->
+            <xs:element name="cfg_type">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <!-- fee: product is not free, but price is not defined online,
+                        provider will give the final price when responding -->
+                        <xs:enumeration value="fee"/>
+                        <!-- free: product is free -->
+                        <xs:enumeration value="free"/>
+                        <!-- profile: product is not free, and price has been defined online by the platform,
+                        in this case, the profile used, and computed values are described in nexts elements  -->
+                        <xs:enumeration value="profile"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>  
+            <!-- product's pricing profile used for this product -->
+            <xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:productPrincingProfileType" name="profile" minOccurs="0"/>
+            <!-- Product's computed gross price, using pricing profile, without discounts, taxes excluded -->
+            <xs:element type="xs:decimal" name="cal_amount_data_te" minOccurs="0"/>
+            <!-- If user or third party, matches a category discount in profile (best discount is used),
+            the discount percetage is indicated here -->
+            <xs:element type="xs:decimal" name="cfg_pct_category_profile_discount" minOccurs="0"/>
+            <!-- If user or third party, matches a category discount in profile (best discount is used),
+            the matched category is indicated here -->
+            <xs:element type="xs:string" name="ind_lbl_category_profile_discount" minOccurs="0"/>
+            <!-- If user or third party, matches a category discount in organism pricing (best discount is used),
+            the discount percetage is indicated here -->
+            <xs:element type="xs:decimal" name="cfg_pct_category_supplier_discount" minOccurs="0"/>
+            <!-- If user or third party, matches a category discount in organism pricing (best discount is used),
+            the matched category is indicated here -->    
+            <xs:element type="xs:string" name="ind_lbl_category_supplier_discount" minOccurs="0"/>
+            <!-- Product's computed price, with discounts applied, taxes excluded -->
+            <xs:element type="xs:decimal" name="cal_total_amount_te" minOccurs="0"/>
+            <!-- Product's computed price, with discounts applied, taxes included (Using VAT in platform pricing) -->
+            <xs:element type="xs:decimal" name="cal_total_amount_ti" minOccurs="0"/>                        
+        </xs:sequence>
+    </xs:complexType>   
+    
+    <!-- Describes a tarification profile, applied to a product  -->  
+    <xs:complexType name="productPrincingProfileType">
+        <xs:sequence>
+            <!-- Name of the pricing profile -->
+            <xs:element type="xs:string" name="name"/>
+            <!-- Base fee -->
+            <xs:element type="xs:decimal" name="cfg_fixed_fee_te"/>
+            <!-- Fee per surface -->
+            <xs:element name="cfg_surface_rate">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:decimal">
+                            <xs:attribute type="xs:string" name="unit" use="required"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+			</xs:element>
+            <!-- Fee's floor = minimum fee -->
+            <xs:element type="xs:decimal" name="cfg_min_fee"/>
+            <!-- Fee's ceiling = maximum fee -->
+            <xs:element type="xs:decimal" name="cfg_max_fee"/>
+            <!-- cfg_apply_vat : is vat applied on profile's fee ? -->
+            <xs:element type="xs:boolean" name="cfg_apply_vat" minOccurs="0"/>            
+        </xs:sequence>
+        <xs:attribute type="xs:integer" name="id" use="required"/>
+        <xs:attribute type="xs:string" name="guid" use="required"/>
+    </xs:complexType>     
+</xs:schema>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="main">
+        <field name="name"
+            type="text"
+            size="75"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_NAME"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_NAME"
+            default="profile_X"        />
+    </fieldset>
+    
+    <fieldset name="pricing" label="COM_EASYSDI_SHOP_FORM_FIELDSET_PRICINGPROFILE_PRICING">
+        <field name="fixed_fee"
+            type="text"
+            size="6"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_FIXED_FEE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_FIXED_FEE"
+            default="0" />
+        
+        <field name="surface_rate"
+            type="text"
+            size="6"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_SURFACE_RATE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_SURFACE_RATE"
+            default="0" />
+        
+        <field name="min_fee"
+            type="text"
+            size="6"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_MIN_FEE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_MIN_FEE"
+            default="0" />
+        
+        <field name="max_fee"
+            type="text"
+            size="6"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_MAX_FEE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_MAX_FEE"
+            default="0" />
+        
+        <field name="apply_vat"
+            type="radio"
+            class="radio btn-group btn-group-yesno"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_APPLY_VAT"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_APPLY_VAT"
+            default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>  
+    </fieldset>
+    
+    <fieldset name="free_categories" label="COM_EASYSDI_SHOP_FORM_FIELDSET_PRICINGPROFILE_FREE_CATEGORIES"/>
+</form>

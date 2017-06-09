@@ -1,0 +1,255 @@
+div.header {
+background-repeat:no-repeat;
+  padding-left:140px !important;
+}
+
+/*Tells the administrator menu to go over the ExtJs components*/
+#menu li ul {
+   z-index:9999 !important;
+}
+.x-grid3 .x-window-ml{
+	padding-left: 0;	
+} 
+.x-grid3 .x-window-mr {
+	padding-right: 0;
+} 
+.x-grid3 .x-window-tl {
+	padding-left: 0;
+} 
+.x-grid3 .x-window-tr {
+	padding-right: 0;
+} 
+.x-grid3 .x-window-tc .x-window-header {
+	height: 3px;
+	padding:0;
+	overflow:hidden;
+} 
+.x-grid3 .x-window-mc {
+	border-width: 0;
+	background: #cdd9e8;
+} 
+.x-grid3 .x-window-bl {
+	padding-left: 0;
+} 
+.x-grid3 .x-window-br {
+	padding-right: 0;
+}
+.x-grid3 .x-panel-btns {
+	padding:0;
+}
+.x-grid3 .x-panel-btns td.x-toolbar-cell {
+	padding:3px 3px 0;
+}
+.x-box-inner {
+	zoom:1;
+}
+.icon-service-view-alerts {
+    background-image: url(../images/icons/bell.png) !important;
+}
+.icon-service-view-reports {
+    background-image: url(../images/icons/page.png) !important;
+}
+.icon-only-newest-alert {
+    background-image: url(../images/icons/clock.png) !important;
+}
+.icon-all-jobs {
+    background-image: url(../images/icons/sum.png) !important;
+}
+.icon-service-execute {
+    background-image: url(../images/icons/lightning.png) !important;
+}
+.icon-service-refresh {
+    background-image: url(../images/icons/arrow_refresh_small.png) !important;
+}
+.icon-rss {
+    background-image: url(../images/icons/rss.png) !important;
+}
+.icon-service-add {
+    background-image: url(../images/icons/server_add.png) !important;
+}
+.icon-service-rem {
+    background-image: url(../images/icons/server_delete.png) !important;
+}
+.icon-user-add {
+    background-image: url(../images/icons/user_add.gif) !important;
+}
+.icon-user-delete {
+    background-image: url(../images/icons/user_delete.gif) !important;
+}
+.icon-gridrenderer-boolean-true {
+    background-image: url(../images/icons/check.png) !important;
+    width:16px;
+    height:16px;
+}
+.icon-gridrenderer-boolean-false {
+   background: url(../images/icons/uncheck.gif) no-repeat 0 0 !important;
+   background-position:center;
+   width:16px;
+   height:16px;
+}
+
+.icon-gridrenderer-failure-to-available{
+   background-image: url(../images/icons/f-to-a.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-unavailable-to-available{
+   background-image: url(../images/icons/u-to-a.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-untested-to-available{
+   background-image: url(../images/icons/unt-to-a.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-available-to-failure{
+   background-image: url(../images/icons/a-to-f.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-unavailable-to-failure{
+   background-image: url(../images/icons/u-to-f.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-untested-to-failure{
+   background-image: url(../images/icons/unt-to-f.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-failure-to-unavailable{
+   background-image: url(../images/icons/f-to-u.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-available-to-unavailable{
+   background-image: url(../images/icons/a-to-u.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-untested-to-unavailable{
+   background-image: url(../images/icons/unt-to-u.png) !important;
+   width:32px;
+   height:16px;
+}
+.icon-gridrenderer-available{
+   background-image: url(../images/icons/flag_green.png) !important;
+   width:16px;
+   height:16px;
+   display: inline-block;
+}
+.icon-gridrenderer-unavailable{
+   background-image: url(../images/icons/flag_red.png) !important;
+   width:16px;
+   height:16px;
+   display: inline-block;
+}
+.icon-gridrenderer-failure{
+   background-image: url(../images/icons/flag_orange.png) !important;
+   width:16px;
+   height:16px;
+   display: inline-block;
+}
+.icon-gridrenderer-untested{
+   background-image: url(../images/icons/untested.png) !important;
+   width:16px;
+   height:16px;
+   display: inline-block;
+}
+
+.OverviewLabel
+{
+	font-weight: bold !important;
+	vertical-align:top;
+}
+.OverviewTableCells
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+}
+
+.OverviewTableCellsOk
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+	background-color:#CCFFCC;
+}
+.OverviewTableCellsFailed
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+	background-color:#FFFF00;
+}
+.OverviewTableCellsError
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+	background-color:#FF0000;
+}
+.OverviewTableCellsNotTested
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+	background-color:#b3b3b3;
+}
+
+.OverviewTableCellsImg
+{
+	vertical-align:top !important;
+	text-align:center;
+	padding-left:15px;
+}
+.OverviewTableCellsInludeBox
+{
+	vertical-align:top !important;
+	text-align:right !important;
+}
+.OverviewTableCellsInludeText
+{
+	
+	text-align:left !important;
+	font-variant:bold;
+}
+.ReportTableCell
+{
+	vertical-align:top !important;
+}
+.Text_area_result
+{
+	width: 290px;
+	height: 140px;
+}
+
+#tablepagePanel .x-table-layout {
+	width:100% !important;
+}
+
+.Div_overview_request
+{
+	float:left;
+	min-width:200px;
+}
+.Div_overview_request_pub
+{
+	float:left;
+	min-width:270px;
+}
+
+.grey-frame .x-panel-body {
+    background-color: #E8E8E8;
+}
+
+#exportBtn{
+    display:none;
+}
