@@ -227,6 +227,8 @@ class FormGenerator {
 
         $this->setDomXpathStr();
 
+        //echo $this->csw->saveXML(); die();
+        
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
             $this->cleanStructure();
@@ -498,6 +500,8 @@ class FormGenerator {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
         $clone_structure->loadXML($this->structure->saveXML());
+       
+        //echo $clone_structure->saveXML(); die();
         
         // Structure crée depuis la base de donnée
         // echo $this->structure->saveXML(); die();
@@ -515,10 +519,9 @@ class FormGenerator {
             $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
 
-            if($node->nodeName == "gmd:MD_Type"){
+            if($node->nodeName == "bee:range"){
                 $breakpoint = true;
             }
-            
             
             if ($childType == EnumChildtype::$CLASS) {
 
@@ -530,11 +533,14 @@ class FormGenerator {
                 $nodePath = implode('/', $paths);
             }
 
+            // Nombre d'occurance dans le CSW
             $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
+            // Nombre d'occurance dans le colne
             $occurance_clone = $domXpathClone->query($nodePath)->length;
 
-            // if occurance == 0 remove node from clone
-            if ($occurance == 0) {
+            // Si il a 0 occurance dans le CSW, et que le noeud n'est pas un attribut, 
+            // on le supprime du clone. Les attributs doivent toujours rester disponible pour la saisie.
+            if ($occurance == 0 && $childType != EnumChildtype::$ATTRIBUT) {
                 $parentChildType = $node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
 
                 //look for the ancestor under which we can clean the structure
@@ -543,10 +549,10 @@ class FormGenerator {
                 }
 
                 //remove the child
-                //if($node->getAttributeNs($this->catalog_uri, 'childtypeId') != EnumChildtype::$RELATION){
+                if($node->getAttributeNs($this->catalog_uri, 'childtypeId') != EnumChildtype::$RELATION){
                     $parent = $node->parentNode;
                     $parent->removeChild($node);
-                //}
+                }
                 $clone_structure->normalizeDocument();
                 
 
@@ -556,11 +562,13 @@ class FormGenerator {
                 continue;
             }
 
+            // On selectionne le noeud parent dans lequel on doit ajouter la nouvelle instance enfant
             $childtype = $node->getAttributeNS($this->catalog_uri, 'childtypeId');
             if ($childtype == EnumChildtype::$CLASS) {
                 $node = $node->parentNode;
             }
 
+            // On ajoute le bon nombre d'instance
             for ($i = $occurance_clone; $i < $occurance; $i++) {
                 $cloneNode = $node->cloneNode(true);
                 $cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
@@ -584,12 +592,16 @@ class FormGenerator {
      * 
      */
     private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
-        
-        
+
         //echo $this->structure->saveXML(); die();
+        //echo $clone->saveXML(); die();
         
         /* @var $node DOMElement */
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
+            
+            if($node->nodeName == "gmd:type"){
+                $breakpoint = true;
+            }
             
             if ($domXpathClone->query($node->getNodePath())->length == 0) {
                 do {
@@ -599,6 +611,9 @@ class FormGenerator {
                 } while ($domXpathClone->query($node->getNodePath() . '[@catalog:id="' . $id . '"]')->length == 0);
 
                 //$target = $domXpathClone->query($node->getNodePath())->item(0);
+                // Index of parent instance
+                $i=0;
+                // Search all parent instance
                 foreach ($domXpathClone->query($node->getNodePath()) as $target) {
                     //$target = $targets->item(0);
                     $prevSibl = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
@@ -608,7 +623,7 @@ class FormGenerator {
                         //try to set the refNode, depending on the prevSibl existence
                         //$refNode = $coll->length > 0 ? $coll->item($coll->length - 1)->nextSibling : $target->firstChild;
                         if ($coll->length > 0) {
-                            $refNode = $coll->item($coll->length - 1)->nextSibling;
+                            $refNode = $coll->item($i)->nextSibling;
                             //$target = $targets->item($coll->length - 1);
                         } else {
                             $refNode = $target->firstChild;
@@ -624,6 +639,7 @@ class FormGenerator {
                     try {
                         //add the child to the parent, before the refNode if defined or as last parent's child
                         if (isset($refNode)) {
+                            //$clone->normalizeDocument();
                             $target->insertBefore($clone->importNode($childToImport, true), $refNode);
                         } else {
                             $target->appendChild($clone->importNode($childToImport, true));
@@ -631,9 +647,9 @@ class FormGenerator {
                     } catch (Exception $exc) {
                         $exc->getTraceAsString();
                     }
+                    
+                    $i++;
                 }
-                
-                
             }
         }
 
@@ -685,7 +701,9 @@ class FormGenerator {
      * @param DOMNode $child The current attribute.
      */
     private function getValue(DOMNode &$child) {
-        if (strstr($child->getNodePath(), 'autoload')) {
+        //echo $this->csw->saveXML(); die();
+        
+        if($child->nodeName == "gmd:type"){
             $breakpoint = true;
         }
 
