@@ -84,19 +84,37 @@ else
                             <div id="div_download">
                                 <?php
                                 foreach ($this->form->getFieldset('download') as $field):
-                                    if ($field->fieldname == 'hasdownload')
+                                    if ($field->fieldname == 'hasdownload') {
                                         continue;
-                                    ?>
+                                    }
+                                    if ($field->fieldname == 'file' && !empty($this->item->file)) {
+                                        ?>
+                                        <div class="control-group" id="existingfile">
+                                            <div class="control-label">
+                                                <label id="jform_file_hidden_href-lbl" 
+                                                       for="jform_file_hidden_href" 
+                                                       class="hasPopover" 
+                                                       title="<?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_EXISTINGFILE'); ?>"
+                                                       >
+                                                           <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_EXISTINGFILE'); ?>
+                                                </label>
+                                            </div>
+                                            <div class="controls">
+                                                <p>
+                                                    <a id="jform_file_hidden_href" href="<?php echo Juri::base(true) . "/component/easysdi_shop/download/download?id=" . $this->item->id; ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
+                                                </p>                                            
+                                            </div>
+                                        </div>
+                                        <?php
+                                    }
+                                    ?>                                
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
                                         <div class="controls">
                                             <?php echo $field->input; ?>
                                             <?php if ($field->fieldname == 'file'): ?>
-                                                <?php if (!empty($this->item->file)): ?>
-                                                    <a id="jform_file_hidden_href" href="<?php echo Juri::base(true) . "/component/easysdi_shop/download/download?id=" . $this->item->id; ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
-                                                <?php endif; ?>
                                                 <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />
-                                            <?php endif; ?>
+                                            <?php endif; ?>                                              
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
