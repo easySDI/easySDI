@@ -69,7 +69,7 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
                             <td><?php echo $profile->max_fee; ?></td>
                             <td><?php echo (bool) $profile->free_category ? JText::_('JYES') : JText::_('JNO'); ?></td>
                             <td><?php echo $profile->count_diffusions; ?></td>
-                            <td><?php if ($this->isPricingManager): ?><button type="button" class="btn btn-danger delete" data-id="<?php echo $profile->id; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_DELETE_ITEM'); ?></button><?php endif; ?></td>
+                            <td><?php if ($this->isPricingManager): ?><button type="button" class="btn btn-danger <?php echo $profile->count_diffusions > 0 ? 'disabled' : 'delete'; ?>" data-id="<?php echo $profile->id; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_DELETE_ITEM'); ?></button><?php endif; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
