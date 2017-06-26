@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -75,7 +75,8 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $query = $db->getQuery(true);
         $query->select('*')
                 ->from('#__sdi_propertyvalue')
-                ->where('state = 1');
+                ->where('state = 1')
+                ->order("ordering");
         $db->setQuery($query);
         $this->propertyvalues = $db->loadObjectList();
 

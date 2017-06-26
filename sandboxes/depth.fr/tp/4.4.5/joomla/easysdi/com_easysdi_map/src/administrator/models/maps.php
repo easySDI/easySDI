@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -152,7 +152,7 @@ class Easysdi_mapModelmaps extends JModelList
 		$query->select(
 				$this->getState(
 						'list.select',
-						'a.id, a.alias, a.state, a.checked_out, a.ordering, a.name, a.access, a.created_by'
+						'a.id, a.alias, a.state, a.checked_out, a.checked_out_time, a.ordering, a.name, a.access, a.created_by'
 				)
 		);
 		$query->from('#__sdi_map AS a');

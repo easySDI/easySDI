@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -143,8 +143,8 @@ class Easysdi_shopModelRequests extends JModelList {
                 $searchOnId = ' OR (a.id = ' . (int) $search . ')';
             }
             $search = $db->Quote('%' . $db->escape($search, true) . '%');
-            $query->where('(( a.name LIKE ' . $search . ' ) '.$searchOnId. ' )');
-        } 
+            $query->where('(( a.name LIKE ' . $search . ' ) ' . $searchOnId . ' )');
+        }
 
         //Only order that the current user has something to do with
         $user = sdiFactory::getSdiUser();
@@ -193,14 +193,10 @@ class Easysdi_shopModelRequests extends JModelList {
         if ($doneRequests) {
             $query->where('od.productstate_id <> ' . Easysdi_shopHelper::PRODUCTSTATE_SENT);
             $query->where('od.productstate_id <> ' . Easysdi_shopHelper::PRODUCTSTATE_VALIDATION);
+            $query->where('od.productstate_id <> ' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT);
         } else {
-            $query->where('od.productstate_id = ' . Easysdi_shopHelper::PRODUCTSTATE_SENT);
+            $query->where('od.productstate_id IN (' . Easysdi_shopHelper::PRODUCTSTATE_SENT . ',' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT . ')');
         }
-
-        //And the product minig is manual or product mining is automatic and product is blocked
-        $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
-        $query->where('((pm.value = ' . $query->quote('manual').') OR (pm.value = ' . $query->quote('automatic'). ' and od.productstate_id = '. Easysdi_shopHelper::PRODUCTSTATE_BLOCKED.'))');
-
 
         $query->group('a.id');
         $query->group('a.guid');
@@ -241,7 +237,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->group('type.value');
         $query->group('juclient.name');
         $query->group('oclient.name');
-        
+
         $query->order('a.sent DESC');
 
         return $query;
@@ -286,11 +282,6 @@ class Easysdi_shopModelRequests extends JModelList {
                 ->innerJoin('#__sdi_version v ON v.id=d.version_id')
                 ->innerJoin('#__sdi_resource r ON r.id=v.resource_id')
                 ->where('(d.id IN (' . implode(',', $diffusions) . ') OR r.organism_id IN (' . implode(',', $managedOrganisms) . '))');
-
-        //And the product minig is manual
-        $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
-        $query->where('pm.value = ' . $query->quote('manual'));
-
 
         $query->group('oclient.id');
         $query->group('oclient.name');

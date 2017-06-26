@@ -36,7 +36,7 @@ class plgUserEasysdicontact extends JPlugin {
             
             $dbo = JFactory::getDbo();
             $query = $dbo->getQuery(true)
-                    ->select('COUNT(urr2.id) cnt')
+                    ->select('urr2.resource_id')
                     ->from('#__sdi_user_role_resource urr')
                     ->join('LEFT', '#__sdi_user_role_resource urr2 ON urr2.resource_id=urr.resource_id AND urr2.role_id=urr.role_id')
                     ->join('LEFT', '#__sdi_resource r ON r.id=urr.resource_id')
@@ -47,6 +47,11 @@ class plgUserEasysdicontact extends JPlugin {
                     $query->group('urr2.resource_id')
                     ->having('COUNT(urr2.id)=1');
             
+             //echo $query->__toString(); die();
+                    
+            // fix Joomla SQL query constructor for SQLServer database
+            //$query = str_replace(",", "",$query);
+                    
             $dbo->setQuery($query);
             $dbo->execute();
             

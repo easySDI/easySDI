@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -118,7 +118,7 @@ else:
 endif;
 
 //If OTP option is enabled, load the OTP Modal
-if($this->params->get('otpactivated') == 1)
+if($this->params->get('otpactivated', 0) == 1)
 {
     echo Easysdi_shopHelper::downloadOTPProductModal(); 
 }

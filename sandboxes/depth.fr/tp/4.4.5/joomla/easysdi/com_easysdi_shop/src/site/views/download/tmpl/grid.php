@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -19,7 +19,7 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
 Easysdi_shopHelper::addMapShopConfigToDoc();
 ?>
 <?php if ($this->item) : ?>
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+    <form class="form-inline form-validate" action="<?php echo Juri::root(true) . '/index.php?option=com_easysdi_shop&task=download.download'; ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="download-confirm front-end-edit">
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_GRID_TITLE'); ?></h1>
             <div class="container-fluid">
