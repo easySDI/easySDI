@@ -82,12 +82,12 @@ class Easysdi_shopModelRequest extends JModelForm {
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
-            
+
             //if a validator is set, loat it
-            if(isset($this->_item->validated_by)){
+            if (isset($this->_item->validated_by)) {
                 $validator = new sdiUser($this->_item->validated_by);
                 $this->_item->validator = $validator->name;
-            }            
+            }
 
             $basket = new sdiBasket();
             $basket->loadOrder($id);
@@ -233,7 +233,8 @@ class Easysdi_shopModelRequest extends JModelForm {
         $keys['order_id'] = (int) $id;
         $keys['diffusion_id'] = (int) $diffusion_id;
         $orderdiffusion->load($keys);
-        $orderdiffusion->remark = $data['remark'][$diffusion_id];
+        $filter = JFilterInput::getInstance();
+        $orderdiffusion->remark = $filter->clean($data['remark'][$diffusion_id], 'string');
         $orderdiffusion->storage_id = (int) Easysdi_shopHelper::EXTRACTSTORAGE_LOCAL;
         if (!empty($files['file'][$diffusion_id][0]['name'])):
             //get clean filename for storage
@@ -278,7 +279,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             $cfg_rounding = (float) JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
 
             $posp->cal_total_amount_ti = Easysdi_shopHelper::rounding($floatFee, $cfg_rounding);
-            
+
             Easysdi_shopHelper::updatePricing($posp, $pos, $po);
         }
 
@@ -322,8 +323,9 @@ class Easysdi_shopModelRequest extends JModelForm {
         $keys = array();
         $keys['order_id'] = (int) $id;
         $keys['diffusion_id'] = (int) $diffusion_id;
-        $orderdiffusion->load($keys);        
-        $orderdiffusion->remark = $data['rejectionremark'];
+        $orderdiffusion->load($keys);
+        $filter = JFilterInput::getInstance();
+        $orderdiffusion->remark = $filter->clean($data['rejectionremark'], 'string');
         $orderdiffusion->completed = date('Y-m-d H:i:s');
         $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER;
         $orderdiffusion->created_by = (int) sdiFactory::getSdiUser()->id;
@@ -352,9 +354,9 @@ class Easysdi_shopModelRequest extends JModelForm {
      * @since	1.6
      */
     public function save($data) {
-        
+
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('request.id');
-        
+
         $table = $this->getTable();
         $table->load($id);
 
