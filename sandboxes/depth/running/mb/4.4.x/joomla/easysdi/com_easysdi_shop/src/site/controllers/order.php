@@ -328,7 +328,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
                 $return['status'] = 'ERROR_OTPCHANCE';
                 $return['msg'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_OTPCHANCEREACHED');
             }else{
-                if (md5($password) == $orderdiffusion->get('otp')){
+                if (md5(trim($password)) == $orderdiffusion->get('otp')){
                     $return['status'] = 'OK';
                     //Reinit password to be used by the token
                     $orderdiffusion->otp = Easysdi_coreHelper::pwd(12);
