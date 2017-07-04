@@ -371,17 +371,17 @@ class sdiUser {
         $db = JFactory::getDbo();
 
         $cls = '(rt.accessscope_id = 1 
-                            OR ((rt.accessscope_id = 3) AND (' . $this->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = rt.guid)))';
+                            OR ((rt.accessscope_id = 4) AND (' . $this->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = rt.guid)))';
 
         foreach ($this->getOrganisms(array(self::resourcemanager, self::organismmanager), true) as $organism):
-            $cls .= 'OR ((rt.accessscope_id = 2) AND (';
+            $cls .= 'OR ((rt.accessscope_id = 3) AND (';
             $cls .= $organism . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = rt.guid)';
             $cls .= '))';
         endforeach;
 
         $categories = $this->getMemberOrganismsCategoriesIds();
         foreach ($categories as $cat):
-            $cls .= 'OR ((rt.accessscope_id = 4) AND (';
+            $cls .= 'OR ((rt.accessscope_id = 2) AND (';
             $cls .= $cat . ' in (select a.category_id from #__sdi_accessscope a where a.entity_guid = rt.guid)';
             $cls .= '))';
         endforeach;
