@@ -1361,7 +1361,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchcriteria` (
 `catalog_id` INT UNSIGNED NOT NULL ,
 `searchcriteria_id` INT UNSIGNED NOT NULL ,
 `searchtab_id` INT(11) UNSIGNED NOT NULL ,
-`defaultvalue` VARCHAR(255)  ,
+`defaultvalue` TEXT  ,
 `defaultvaluefrom` DATETIME ,
 `defaultvalueto` DATETIME ,
 `params` VARCHAR(500)  ,
