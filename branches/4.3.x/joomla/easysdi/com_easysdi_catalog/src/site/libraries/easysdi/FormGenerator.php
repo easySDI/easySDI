@@ -501,6 +501,8 @@ class FormGenerator {
         $clone_structure = new DOMDocument('1.0', 'utf-8');
         $clone_structure->loadXML($this->structure->saveXML());
        
+        //echo $this->csw->saveXML(); die();
+        
         //echo $clone_structure->saveXML(); die();
         
         // Structure crée depuis la base de donnée
@@ -519,7 +521,7 @@ class FormGenerator {
             $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
 
-            if($node->nodeName == "bee:range"){
+            if($node->nodeName == "gmd:MD_Type"){
                 $breakpoint = true;
             }
             
@@ -533,6 +535,8 @@ class FormGenerator {
                 $nodePath = implode('/', $paths);
             }
 
+            
+            
             // Nombre d'occurance dans le CSW
             $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
             // Nombre d'occurance dans le colne
@@ -540,18 +544,33 @@ class FormGenerator {
 
             // Si il a 0 occurance dans le CSW, et que le noeud n'est pas un attribut, 
             // on le supprime du clone. Les attributs doivent toujours rester disponible pour la saisie.
-            if ($occurance == 0 && $childType != EnumChildtype::$ATTRIBUT) {
+            //if ($occurance == 0 && $childType != EnumChildtype::$ATTRIBUT) {
+            if ($occurance == 0 ) {
                 $parentChildType = $node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
 
+                
+                
                 //look for the ancestor under which we can clean the structure
                 while (!isset($node->nextSibling) && !isset($node->previousSibling) && $parentChildType != EnumChildtype::$RELATION) {
                     $node = $node->parentNode;
                 }
-
+                
                 //remove the child
                 if($node->getAttributeNs($this->catalog_uri, 'childtypeId') != EnumChildtype::$RELATION){
+                    if($node->nodeName == "gmd:MD_Type"){
+                        $breakpoint = true;
+                    }
+                    
                     $parent = $node->parentNode;
                     $parent->removeChild($node);
+                    
+                    // Quand la relation parent est vide, on la flag exist:0 pour na pas la voir apparaitre dans le formaulaire, mais 
+                    // quand même avoir le bouton pour lui ajouter des enfants.
+                    if(!$parent->hasChildNodes() && $parent->getAttributeNs($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATION){
+                        $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', 0);
+                    }
+                    
+                    $breakpoint = true;
                 }
                 $clone_structure->normalizeDocument();
                 
@@ -569,7 +588,8 @@ class FormGenerator {
             }
 
             // On ajoute le bon nombre d'instance
-            for ($i = $occurance_clone; $i < $occurance; $i++) {
+             for ($i = $occurance_clone; $i < $occurance; $i++) {
+                
                 $cloneNode = $node->cloneNode(true);
                 $cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
                 isset($node->nextSibling) ? $node->parentNode->insertBefore($cloneNode, $node->nextSibling) : $node->parentNode->appendChild($cloneNode);
@@ -596,10 +616,12 @@ class FormGenerator {
         //echo $this->structure->saveXML(); die();
         //echo $clone->saveXML(); die();
         
+        
+        
         /* @var $node DOMElement */
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
             
-            if($node->nodeName == "gmd:type"){
+            if($node->nodeName == "gmd:anonymous"){
                 $breakpoint = true;
             }
             
