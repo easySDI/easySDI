@@ -535,8 +535,6 @@ class FormGenerator {
                 $nodePath = implode('/', $paths);
             }
 
-            
-            
             // Nombre d'occurance dans le CSW
             $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
             // Nombre d'occurance dans le colne
@@ -544,8 +542,8 @@ class FormGenerator {
 
             // Si il a 0 occurance dans le CSW, et que le noeud n'est pas un attribut, 
             // on le supprime du clone. Les attributs doivent toujours rester disponible pour la saisie.
-            //if ($occurance == 0 && $childType != EnumChildtype::$ATTRIBUT) {
-            if ($occurance == 0 ) {
+            if ($occurance == 0 && $childType != EnumChildtype::$ATTRIBUT) {
+            //if ($occurance == 0 ) {
                 $parentChildType = $node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
 
                 
