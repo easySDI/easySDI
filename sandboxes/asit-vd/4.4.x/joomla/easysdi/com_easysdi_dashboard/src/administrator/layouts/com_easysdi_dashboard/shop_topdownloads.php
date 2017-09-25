@@ -88,7 +88,7 @@ $indicator_name = 'shop_topdownloads';
 $vUrlInstance = JUri::getInstance();
 $vUrlInstance = substr($vUrlInstance, 0, strrpos($vUrlInstance, "/"));
 ?>
-        window.open("<?php echo($vUrlInstance); ?>/index.php?option=com_easysdi_dashboard&task=getData&indicator=shop_topdownloadsDetails&organism=" + vOrganism + "&diffusion=" + vfnID + "&timestart=" + vTimestart + "&timeend=" + vTimeEnd + "&dataformat=csv&format=raw");
+        window.open("<?php echo($vUrlInstance); ?>/index.php?option=com_easysdi_dashboard&task=getData&indicator=shop_topdownloadsdetails&organism=" + vOrganism + "&diffusion=" + vfnID + "&timestart=" + vTimestart + "&timeend=" + vTimeEnd + "&dataformat=csv&format=raw");
     }
 
 </script>

@@ -9,7 +9,7 @@
  */
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
-class sdiIndicatorShop_topdownloadsDetails extends sdiIndicator {
+class sdiIndicatorShop_topdownloadsdetails extends sdiIndicator {
 
     /**
      * Return the indicator name for file download

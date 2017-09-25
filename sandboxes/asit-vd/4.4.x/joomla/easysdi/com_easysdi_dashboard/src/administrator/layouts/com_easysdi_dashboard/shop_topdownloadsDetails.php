@@ -6,5 +6,5 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-$indicator_name = 'shop_topdownloadsDetails';
+$indicator_name = 'shop_topdownloadsdetails';
 ?>
