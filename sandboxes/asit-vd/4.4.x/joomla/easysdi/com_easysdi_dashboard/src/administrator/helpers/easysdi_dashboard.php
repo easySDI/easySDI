@@ -193,6 +193,38 @@ class Easysdi_dashboardHelper {
     }
 
     /**
+     * Convert durations to minutes, hours, days
+     * @return   Convert durations to minutes, hours, days
+     */
+    public static function DurationConvert($vfnVal, $vfnHoursLimit = 2880) {
+        if ($vfnVal < 0) {
+            $vfnVal = 0;
+        }
+        if ($vfnVal == 0) {
+            $vfnVal = "< 1";
+        }
+        $vResult = $vfnVal . " " . JText::_('COM_EASYSDI_DASHBOARD_SHOP_DURATION_MINUTES');
+        if ($vfnVal > 60) {
+            $vResult = round($vfnVal / 60, 1) . " " . JText::_('COM_EASYSDI_DASHBOARD_SHOP_DURATION_HOURS');
+        }
+        if ($vfnVal > $vfnHoursLimit) {
+            $vResult = round($vfnVal / 1440, 1) . " " . JText::_('COM_EASYSDI_DASHBOARD_SHOP_DURATION_DAYS');
+        }
+        return $vResult;
+    }
+    
+    /**
+     * Replace specials filters keys of headers
+     * @return   Replace specials keys of headers
+     */
+    public static function HeaderReplaceKeys($vfnVal) {
+				$vfnVal=str_replace("_EXVIEW","",$vfnVal);
+				$vfnVal=str_replace("_EXPDF","",$vfnVal);
+				$vfnVal=str_replace("_EXCSV","",$vfnVal);
+        return $vfnVal;
+    }    
+
+    /**
      * get organism list for back-end dashboard
      * @return a JHTML select
      */
