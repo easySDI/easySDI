@@ -98,9 +98,9 @@ class Easysdi_shopModelorders extends JModelList {
      */
     protected function getStoreId($id = '') {
         // Compile the store id.
-        $id.= ':' . $this->getState('filter.search');
-        $id.= ':' . $this->getState('filter.state');
-        $id.= ':' . $this->getState('filter.ordertype');
+        $id .= ':' . $this->getState('filter.search');
+        $id .= ':' . $this->getState('filter.state');
+        $id .= ':' . $this->getState('filter.ordertype');
 
         return parent::getStoreId($id);
     }
@@ -431,6 +431,7 @@ class Easysdi_shopModelorders extends JModelList {
             $this->setError($e->getMessage());
             return false;
         }
+
         return $items;
     }
 
