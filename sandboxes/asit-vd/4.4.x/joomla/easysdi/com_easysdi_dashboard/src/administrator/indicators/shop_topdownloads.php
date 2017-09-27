@@ -77,7 +77,7 @@ class sdiIndicatorShop_topdownloads extends sdiIndicator {
 
         // Download link by diffusion_id
         if ($organism != "all") {
-            $query->select("(CONCAT('<a href=''','javascript:dashboardTopDownloadsDetails(',dif.id,');','''>','" . JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_DETAILS_LINK') . "','</a>'))");
+            $query->select("(CONCAT('<small><i class=''icon-file''></i></small>&nbsp;&nbsp;<a href=''','javascript:dashboardTopDownloadsDetails(',dif.id,');','''>','" . JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_DETAILS_LINK') . "','</a>'))");
         }
 
         // Next query
