@@ -26,6 +26,7 @@ $displayTitle = isset($displayData['displayTitle']) ? $displayData['displayTitle
         <?php
         foreach ($items as $item) :
             $basket = new sdiBasket();
+            $basket->smartviewmode = true;
             $basket->loadOrder($item->id);
             ?>
             <tr class="order-line order-line-new <?php echo('sdi-orderstate-' . preg_replace('/\s+/', '', $item->orderstate) . ' ' . 'sdi-ordertype-' . preg_replace('/\s+/', '', $item->ordertype) ); ?>">
@@ -57,8 +58,11 @@ $displayTitle = isset($displayData['displayTitle']) ? $displayData['displayTitle
                         <?php if ($item->ordertype_id == Easysdi_shopHelper::ORDERTYPE_ORDER && ($item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_PROGRESS || $item->orderstate_id == Easysdi_shopHelper::ORDERSTATE_FINISH)): ?>                                    
                             <?php
                             $first = true;
-                            $basket = new sdiBasket();
-                            $basket->loadOrder($item->id);
+                            /*
+                              Disabled it's a duplicated call
+                              $basket = new sdiBasket();
+                              $basket->loadOrder($item->id);
+                             */
                             foreach ($basket->extractions as $extraction) {
                                 if ($extraction->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE):
                                     if ($first)://Create the dropdown menu to hold the download links
@@ -70,19 +74,19 @@ $displayTitle = isset($displayData['displayTitle']) ? $displayData['displayTitle
                                             <ul class="dropdown-menu">
                                                 <?php
                                                 $first = false;
-                                    endif;
-                                    if ($extraction->otp == 1):
-                                        echo '<li><a id="' . $item->id .'_' . $extraction->id . '_otpdownload" style="cursor: pointer;">' . $extraction->name . '</a></li>';
-                                    else : 
-                                        echo '<li><a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=' . $extraction->id . '&order=' . $item->id . '">' . $extraction->name . '</a></li>';
-                                    endif;                                   
-                                endif;
-                            }
-                            if (!$first):
-                            ?>
-                                            </ul>
-                                        </div>
-                            <?php
+                                            endif;
+                                            if ($extraction->otp == 1):
+                                                echo '<li><a id="' . $item->id . '_' . $extraction->id . '_otpdownload" style="cursor: pointer;">' . $extraction->name . '</a></li>';
+                                            else :
+                                                echo '<li><a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=' . $extraction->id . '&order=' . $item->id . '">' . $extraction->name . '</a></li>';
+                                            endif;
+                                        endif;
+                                    }
+                                    if (!$first):
+                                        ?>
+                                    </ul>
+                                </div>
+                                <?php
                             endif;
                             ?>                                
                         <?php endif; ?>
