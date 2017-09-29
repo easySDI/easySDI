@@ -91,7 +91,9 @@ class FormUtils {
      * @return string
      */
     public static function removeIndex($xpath) {
-        return preg_replace('/[\[0-9\]*]/i', '', $xpath);
+        //return preg_replace('/[\[0-9\]*]/i', '', $xpath);
+        
+        return preg_replace("/(.*)(\[[0-9*]\])/", "$1$3", $xpath);
     }
 
 }

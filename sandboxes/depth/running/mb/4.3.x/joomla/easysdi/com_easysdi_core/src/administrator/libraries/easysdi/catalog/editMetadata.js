@@ -659,14 +659,18 @@ js(document).on('click', '.remove-btn', function () {
                 async: false,
                 cache: false
             }).done(function () {
+                var fdsClass = js('#fds' + uuid).attr('class');
+                
                 js('#fds' + uuid).remove();
                 setRelationAction(js('#add-btn' + xpath));
                 
-                // Get remove btn with same path
-                var regex = /(.*)-la-[0-9]*-ra-/g;
-                var corresp = regex.exec(id);
+               // Get remove btn with same path
+               // var regex = /(.*)-la-[0-9]*-ra-/g;
+               // var corresp = regex.exec(id);
                 
-                var removeBtn = js("[data-xpath='"+xpath+"']");
+                //var removeBtn = js("[data-xpath='"+xpath+"']");
+                
+                var removeBtn = js('.'+fdsClass).children("legend").children(".btn-danger");
                 
                 // If only one after remove 
                 if(removeBtn.length == 1){

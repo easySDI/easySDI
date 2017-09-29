@@ -1321,6 +1321,8 @@ class FormHtmlGenerator {
      */
     private function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
+        //return preg_replace('/(.*)(-la-[0-9*]-ra-)(.*)/', '$1', $xpath);
+        //return preg_replace("/(.*)(-la-[0-9*]-ra-)(.*)/", "$1$3", $xpath);
     }
 
     /**
