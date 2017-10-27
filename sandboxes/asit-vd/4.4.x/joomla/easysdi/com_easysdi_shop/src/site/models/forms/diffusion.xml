@@ -50,14 +50,13 @@
                translate="true" /> 
 
         <field name="state"
-               type="list"
+               type="radio"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PUBLISHED"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PUBLISHED"
-               class="inputbox input-xlarge"
-               size="1"
+               class="btn-group btn-group-yesno"
                default="1">
-            <option value="1">JYES</option>
             <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field> 
         
         <field name="pricing_id" 
@@ -291,3 +290,4 @@
     </fieldset>
     
 </form>
+

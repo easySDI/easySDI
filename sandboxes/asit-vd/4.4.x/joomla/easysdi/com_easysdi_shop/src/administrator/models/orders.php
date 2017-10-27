@@ -523,3 +523,4 @@ class Easysdi_shopModelorders extends JModelList {
     }
 
 }
+

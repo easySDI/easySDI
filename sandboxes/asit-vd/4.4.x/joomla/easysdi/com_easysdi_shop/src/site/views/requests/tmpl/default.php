@@ -20,6 +20,7 @@ JHtml::_('formbehavior.chosen', 'select');
     <div class="well sdi-searchcriteria">
         <div class="row-fluid">
             <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=requests'); ?>" method="post">
+                <input type="hidden" name="filter_smartview" value="1">
                 <div class="btn-group pull-right">
 
                     <fieldset class="radio btn-group btn-group-yesno" id="filterstatus">
@@ -121,3 +122,4 @@ JHtml::_('formbehavior.chosen', 'select');
         <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
 </div>
+

@@ -127,3 +127,4 @@ $displayTitle = isset($displayData['displayTitle']) ? $displayData['displayTitle
         <?php endforeach; ?>
     </tbody>
 </table>
+
