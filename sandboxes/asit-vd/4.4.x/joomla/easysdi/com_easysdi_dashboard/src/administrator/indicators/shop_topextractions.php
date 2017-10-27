@@ -93,7 +93,7 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
 		(
 		SELECT
 		ROUND(MIN(TIMESTAMPDIFF(MINUTE,IF(vSdiOrder.validated_date IS NULL,vSdiOrder.sent,vSdiOrder.validated_date),vSdiOrderDiff.completed)))
-		FROM " . $db->quoteName("jos_sdi_order", "vSdiOrder") . "," . $db->quoteName("jos_sdi_order_diffusion", "vSdiOrderDiff") . "
+		FROM " . $db->quoteName("#__sdi_order", "vSdiOrder") . "," . $db->quoteName("#__sdi_order_diffusion", "vSdiOrderDiff") . "
 		WHERE
 		vSdiOrderDiff.order_id=vSdiOrder.id
 		AND vSdiOrderDiff.productstate_id IN(" . implode(',', array(Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE, Easysdi_shopHelper::PRODUCTSTATE_DELETED, Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,)) . ")
@@ -108,7 +108,7 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
 		(
 		SELECT
 		ROUND(MAX(TIMESTAMPDIFF(MINUTE,IF(vSdiOrder.validated_date IS NULL,vSdiOrder.sent,vSdiOrder.validated_date),vSdiOrderDiff.completed)))
-		FROM " . $db->quoteName("jos_sdi_order", "vSdiOrder") . "," . $db->quoteName("jos_sdi_order_diffusion", "vSdiOrderDiff") . "
+		FROM " . $db->quoteName("#__sdi_order", "vSdiOrder") . "," . $db->quoteName("#__sdi_order_diffusion", "vSdiOrderDiff") . "
 		WHERE
 		vSdiOrderDiff.order_id=vSdiOrder.id
 		AND vSdiOrderDiff.productstate_id IN(" . implode(',', array(Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE, Easysdi_shopHelper::PRODUCTSTATE_DELETED, Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,)) . ")
@@ -122,12 +122,12 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
         $query->select("odif.diffusion_id");
 
         // Next query
-        $query->from($db->quoteName('jos_sdi_order', 'o'))
-                ->join('INNER', $db->quoteName('jos_sdi_order_diffusion', 'odif') . ' ON (' . $db->quoteName('o.id') . ' = ' . $db->quoteName('odif.order_id') . ')')
-                ->join('INNER', $db->quoteName('jos_sdi_diffusion', 'dif') . ' ON (' . $db->quoteName('odif.diffusion_id') . ' = ' . $db->quoteName('dif.id') . ')')
-                ->join('INNER', $db->quoteName('jos_sdi_version', 'v') . ' ON (' . $db->quoteName('dif.version_id') . ' = ' . $db->quoteName('v.id') . ')')
-                ->join('INNER', $db->quoteName('jos_sdi_resource', 'r') . ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
-                ->join('INNER', $db->quoteName('jos_sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
+        $query->from($db->quoteName('#__sdi_order', 'o'))
+                ->join('INNER', $db->quoteName('#__sdi_order_diffusion', 'odif') . ' ON (' . $db->quoteName('o.id') . ' = ' . $db->quoteName('odif.order_id') . ')')
+                ->join('INNER', $db->quoteName('#__sdi_diffusion', 'dif') . ' ON (' . $db->quoteName('odif.diffusion_id') . ' = ' . $db->quoteName('dif.id') . ')')
+                ->join('INNER', $db->quoteName('#__sdi_version', 'v') . ' ON (' . $db->quoteName('dif.version_id') . ' = ' . $db->quoteName('v.id') . ')')
+                ->join('INNER', $db->quoteName('#__sdi_resource', 'r') . ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
+                ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
                 ->where($db->quoteName('odif.productstate_id') . ' IN(' . implode(',', array(
                             Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE,
                             Easysdi_shopHelper::PRODUCTSTATE_DELETED,
@@ -154,7 +154,7 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
         $query = $db->getQuery(true);
         $query->select("
 	TIMESTAMPDIFF(MINUTE,IF(vSdiOrder.validated_date IS NULL,vSdiOrder.sent,vSdiOrder.validated_date),vSdiOrderDiff.completed)
-	FROM jos_sdi_order AS vSdiOrder,jos_sdi_order_diffusion AS vSdiOrderDiff
+	FROM #__sdi_order AS vSdiOrder,#__sdi_order_diffusion AS vSdiOrderDiff
 	WHERE
 	vSdiOrderDiff.order_id=vSdiOrder.id
 	AND vSdiOrderDiff.productstate_id IN(" . implode(',', array(Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE, Easysdi_shopHelper::PRODUCTSTATE_DELETED, Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,)) . ")
@@ -186,3 +186,4 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
     }
 
 }
+

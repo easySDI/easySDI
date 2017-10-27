@@ -8,3 +8,4 @@
  */
 $indicator_name = 'shop_topdownloadsdetails';
 ?>
+

@@ -80,3 +80,4 @@ $indicator_name = 'shop_topextractions';
     //add event listener for update
     jQuery(document).on("dashboardFiltersUpdated", update_<?php echo($indicator_name); ?>);
 </script>
+

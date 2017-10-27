@@ -100,3 +100,4 @@ class sdiIndicatorShop_topdownloads extends sdiIndicator {
     }
 
 }
+

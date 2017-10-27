@@ -84,11 +84,12 @@ $indicator_name = 'shop_topdownloads';
 
     // Export download details by diffusion_id
     function dashboardTopDownloadsDetails(vfnID) {
-<?php
-$vUrlInstance = JUri::getInstance();
-$vUrlInstance = substr($vUrlInstance, 0, strrpos($vUrlInstance, "/"));
-?>
+		<?php
+		$vUrlInstance = JUri::getInstance();
+		$vUrlInstance = substr($vUrlInstance, 0, strrpos($vUrlInstance, "/"));
+		?>
         window.open("<?php echo($vUrlInstance); ?>/index.php?option=com_easysdi_dashboard&task=getData&indicator=shop_topdownloadsdetails&organism=" + vOrganism + "&diffusion=" + vfnID + "&timestart=" + vTimestart + "&timeend=" + vTimeEnd + "&dataformat=csv&format=raw");
     }
 
 </script>
+

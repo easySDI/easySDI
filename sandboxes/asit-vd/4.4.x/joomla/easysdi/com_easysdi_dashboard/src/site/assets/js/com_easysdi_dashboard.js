@@ -267,3 +267,4 @@ function dashboardFillTable(indicatorName, json) {
         jQuery("#div_" + indicatorName + " .result-success tbody:last").append('</tr>');
     });
 }
+
