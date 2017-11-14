@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-shared-configuration>
+    <!--
+    This file contains additional configuration written by modules in the NetBeans IDE.
+    The configuration is intended to be shared among all the users of project and
+    therefore it is assumed to be part of version control checkout.
+    Without this configuration present, some functionality in the IDE may be limited or fail altogether.
+    -->
+    <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+        <word>plugin</word>
+    </spellchecker-wordlist>
+    <properties xmlns="http://www.netbeans.org/ns/maven-properties-data/1">
+        <!--
+        Properties that influence various parts of the IDE, especially code formatting and the like.
+        You can copy and paste the single properties, into the pom.xml file and the IDE will pick them up.
+        That way multiple projects can share the same settings (useful for formatting rules for example).
+        Any value defined here will override the pom.xml file value but is only applicable to the current project.
+        -->
+        <org-netbeans-modules-css-prep.sass_2e_compiler_2e_options/>
+        <org-netbeans-modules-css-prep.less_2e_mappings>
+            /less:/css
+        </org-netbeans-modules-css-prep.less_2e_mappings>
+        <org-netbeans-modules-css-prep.less_2e_enabled>
+            false
+        </org-netbeans-modules-css-prep.less_2e_enabled>
+        <org-netbeans-modules-css-prep.sass_2e_mappings>
+            /scss:/css
+        </org-netbeans-modules-css-prep.sass_2e_mappings>
+        <org-netbeans-modules-css-prep.sass_2e_enabled>
+            false
+        </org-netbeans-modules-css-prep.sass_2e_enabled>
+        <org-netbeans-modules-css-prep.less_2e_compiler_2e_options/>
+        <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>
+            Tomcat
+        </org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>
+        <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_j2eeVersion>
+            1.7-web
+        </org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_j2eeVersion>
+        <org-netbeans-modules-javascript2-requirejs.enabled>
+            true
+        </org-netbeans-modules-javascript2-requirejs.enabled>
+        <org-netbeans-modules-web-clientproject-api.js_2e_libs_2e_folder>../resources/static/lib</org-netbeans-modules-web-clientproject-api.js_2e_libs_2e_folder>
+        <org-netbeans-modules-maven-j2ee.netbeans_2e_deploy_2e_on_2e_save>
+            false
+        </org-netbeans-modules-maven-j2ee.netbeans_2e_deploy_2e_on_2e_save>
+        <netbeans.hint.license>gpl30</netbeans.hint.license>
+    </properties>
+    <libraries xmlns="http://www.netbeans.org/ns/cdnjs-libraries/1">
+        <library name="bootstrap-datepicker" version="1.6.4">
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker.css" path="css/bootstrap-datepicker.css"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker.css.map" path="css/bootstrap-datepicker.css.map"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css" path="css/bootstrap-datepicker.min.css"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css.map" path="css/bootstrap-datepicker.min.css.map"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker.standalone.css" path="css/bootstrap-datepicker.standalone.css"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker.standalone.css.map" path="css/bootstrap-datepicker.standalone.css.map"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker.standalone.min.css" path="css/bootstrap-datepicker.standalone.min.css"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker.standalone.min.css.map" path="css/bootstrap-datepicker.standalone.min.css.map"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker3.css" path="css/bootstrap-datepicker3.css"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker3.css.map" path="css/bootstrap-datepicker3.css.map"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" path="css/bootstrap-datepicker3.min.css"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker3.min.css.map" path="css/bootstrap-datepicker3.min.css.map"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker3.standalone.css" path="css/bootstrap-datepicker3.standalone.css"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker3.standalone.css.map" path="css/bootstrap-datepicker3.standalone.css.map"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker3.standalone.min.css" path="css/bootstrap-datepicker3.standalone.min.css"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/css/bootstrap-datepicker3.standalone.min.css.map" path="css/bootstrap-datepicker3.standalone.min.css.map"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/js/bootstrap-datepicker.js" path="js/bootstrap-datepicker.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js" path="js/bootstrap-datepicker.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.ar.min.js" path="locales/bootstrap-datepicker.ar.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.az.min.js" path="locales/bootstrap-datepicker.az.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.bg.min.js" path="locales/bootstrap-datepicker.bg.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.bs.min.js" path="locales/bootstrap-datepicker.bs.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.ca.min.js" path="locales/bootstrap-datepicker.ca.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.cs.min.js" path="locales/bootstrap-datepicker.cs.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.cy.min.js" path="locales/bootstrap-datepicker.cy.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.da.min.js" path="locales/bootstrap-datepicker.da.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.de.min.js" path="locales/bootstrap-datepicker.de.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.el.min.js" path="locales/bootstrap-datepicker.el.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.en-AU.min.js" path="locales/bootstrap-datepicker.en-AU.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.en-GB.min.js" path="locales/bootstrap-datepicker.en-GB.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.eo.min.js" path="locales/bootstrap-datepicker.eo.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.es.min.js" path="locales/bootstrap-datepicker.es.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.et.min.js" path="locales/bootstrap-datepicker.et.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.eu.min.js" path="locales/bootstrap-datepicker.eu.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.fa.min.js" path="locales/bootstrap-datepicker.fa.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.fi.min.js" path="locales/bootstrap-datepicker.fi.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.fo.min.js" path="locales/bootstrap-datepicker.fo.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.fr-CH.min.js" path="locales/bootstrap-datepicker.fr-CH.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.fr.min.js" path="locales/bootstrap-datepicker.fr.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.gl.min.js" path="locales/bootstrap-datepicker.gl.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.he.min.js" path="locales/bootstrap-datepicker.he.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.hr.min.js" path="locales/bootstrap-datepicker.hr.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.hu.min.js" path="locales/bootstrap-datepicker.hu.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.hy.min.js" path="locales/bootstrap-datepicker.hy.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.id.min.js" path="locales/bootstrap-datepicker.id.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.is.min.js" path="locales/bootstrap-datepicker.is.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.it-CH.min.js" path="locales/bootstrap-datepicker.it-CH.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.it.min.js" path="locales/bootstrap-datepicker.it.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.ja.min.js" path="locales/bootstrap-datepicker.ja.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.ka.min.js" path="locales/bootstrap-datepicker.ka.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.kh.min.js" path="locales/bootstrap-datepicker.kh.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.kk.min.js" path="locales/bootstrap-datepicker.kk.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.ko.min.js" path="locales/bootstrap-datepicker.ko.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.kr.min.js" path="locales/bootstrap-datepicker.kr.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.lt.min.js" path="locales/bootstrap-datepicker.lt.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.lv.min.js" path="locales/bootstrap-datepicker.lv.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.me.min.js" path="locales/bootstrap-datepicker.me.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.mk.min.js" path="locales/bootstrap-datepicker.mk.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.mn.min.js" path="locales/bootstrap-datepicker.mn.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.ms.min.js" path="locales/bootstrap-datepicker.ms.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.nb.min.js" path="locales/bootstrap-datepicker.nb.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.nl-BE.min.js" path="locales/bootstrap-datepicker.nl-BE.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.nl.min.js" path="locales/bootstrap-datepicker.nl.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.no.min.js" path="locales/bootstrap-datepicker.no.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.pl.min.js" path="locales/bootstrap-datepicker.pl.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.pt-BR.min.js" path="locales/bootstrap-datepicker.pt-BR.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.pt.min.js" path="locales/bootstrap-datepicker.pt.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.ro.min.js" path="locales/bootstrap-datepicker.ro.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.rs-latin.min.js" path="locales/bootstrap-datepicker.rs-latin.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.rs.min.js" path="locales/bootstrap-datepicker.rs.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.ru.min.js" path="locales/bootstrap-datepicker.ru.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.sk.min.js" path="locales/bootstrap-datepicker.sk.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.sl.min.js" path="locales/bootstrap-datepicker.sl.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.sq.min.js" path="locales/bootstrap-datepicker.sq.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.sr-latin.min.js" path="locales/bootstrap-datepicker.sr-latin.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.sr.min.js" path="locales/bootstrap-datepicker.sr.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.sv.min.js" path="locales/bootstrap-datepicker.sv.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.sw.min.js" path="locales/bootstrap-datepicker.sw.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.th.min.js" path="locales/bootstrap-datepicker.th.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.tr.min.js" path="locales/bootstrap-datepicker.tr.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.uk.min.js" path="locales/bootstrap-datepicker.uk.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.vi.min.js" path="locales/bootstrap-datepicker.vi.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js" path="locales/bootstrap-datepicker.zh-CN.min.js"/>
+            <file localPath="src/main/resources/static/lib/bootstrap-datepicker/locales/bootstrap-datepicker.zh-TW.min.js" path="locales/bootstrap-datepicker.zh-TW.min.js"/>
+        </library>
+    </libraries>
+</project-shared-configuration>

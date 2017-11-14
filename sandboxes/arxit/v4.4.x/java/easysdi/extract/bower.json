@@ -1,0 +1,14 @@
+{
+  "name": "extract-gui",
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "datatables.net": "1.10.13",
+    "datatables.net-bs": "1.10.13",
+    "font-awesome": "4.7.0",
+    "jquery-ui": "1.12.1",
+    "select2": "4.0.3"
+  },
+  "resolutions": {
+    "jquery": "~1.10.2"
+  }
+}
