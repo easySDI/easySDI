@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=UTF-8">
+  <title>Gemet Client Example</title>
+  <link rel="stylesheet" type="text/css" href="http://bnhelp.cz/wwwlibs/ext/ext3/resources/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="http://bnhelp.cz/wwwlibs/ext/ext3/resources/css/xtheme-gray.css" />
+  <script type="text/javascript" src="http://bnhelp.cz/wwwlibs/ext/ext3/adapter/ext/ext-base.js"></script>
+  <script type="text/javascript" src="http://bnhelp.cz/wwwlibs/ext/ext3/ext-all.js"></script>
+  <script type="text/javascript" src="HS.js"></script>      
+  <script type="text/javascript" src="thesaur.js"></script>      
+  <script type="text/javascript" src="translations.js"></script>      
+  <style>
+  	.thes-term {color:#C00000; font-weight: bold; margin:4px; font-size:15px; text-align:center}
+  	.thes-description div div {font-family: arial,tahoma; font-size:11px; padding:4px; color:#505050}
+  	.thes-link a span {color:#0040D0}
+  </style>
+
+<script type="text/javascript">
+window.focus();
+Ext.BLANK_IMAGE_URL = 'http://bnhelp.cz/wwwlibs/ext/ext3/resources/images/default/s.gif';
+
+  var getURLParams = function(){
+     var params = window.location.href;
+     var result = {};
+     if(params.indexOf("?") > -1 ){
+       params = params.substr(params.indexOf("?")+1).toLowerCase();
+       params = params.split("&");
+       for(var i=0;i<params.length;i++){
+         var pom = params[i].split("=");
+         result[pom[0]] = pom[1];
+       }
+     }
+     return result;
+  }
+
+var params = getURLParams();
+HS.setLang(HS.getLastLangCode());
+//HS.setLang("cs");
+
+Ext.onReady(function(){
+  
+  var thes = new ThesaurusReader({
+      lang: HS.getLang(2),
+      outputLangs: ['en','sv', 'fr', 'de', 'pl', 'cs', 'no', 'es', 'da', 'hu', 'pt'], 
+      title: 'Thesauri client example',
+      separator: '/',
+      //returnPath: (params.path=='true'),
+      returnPath: true,
+      width: 300, height:400,
+      layout: 'fit',
+      handler: writeTerms,
+      //defaultThesaurus: 'GEMET',
+      thesaurus: {
+        'INSPIRE': {},
+      	'GEMET': {},
+        '1GE': {
+          	url:        "http://gemet.esdi-humboldt.cz/thesaurus/",
+          	concept:    "http://www.onegeology-europe.eu/concept/",
+          	theme:      "http://www.onegeology-europe.eu/theme/",        
+          	group:   	  null,
+          	supergroup: null
+        }    
+     }      
+  });
+  
+  thes.render('thesDiv');
+});
+  
+
+var writeTerms = function(result){
+  if(opener){
+  	if(opener.document.forms[0].keywords.value) opener.document.forms[0].keywords.value += ',';
+  	opener.document.forms[0].keywords.value += result.terms[HS.getLang(2)];
+  }
+  else {
+    var s = '';
+    for(l in result.terms) s += l+': '+result.terms[l]+'<br>';
+  	var target = document.getElementById('terms');
+  	target.innerHTML = s+'uri: '+result.uri + "<br>version: "+result.version;
+  }
+}
+  
+</script>
+</head>
+<body>
+
+<div id='thesDiv'></div>
+<br>
+selected terms:
+<div id='terms' style='font-family:monospace; font-size:11px'></div>
+<hr>
+parametres:<br>
+<b>lang</b>: 3-digit language iso code<br>
+<b>path</b>: if set to true, client tries to return term with broader ones<br>
+<b>return_inspire</b>: if set to false, the inspire themes are treated as other term (clicking gets related concepts)
+</body>
+</html>
+
