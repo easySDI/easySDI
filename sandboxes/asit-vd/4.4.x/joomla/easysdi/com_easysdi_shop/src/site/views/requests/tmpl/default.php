@@ -19,8 +19,9 @@ JHtml::_('formbehavior.chosen', 'select');
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_REQUESTS'); ?></h1>
     <div class="well sdi-searchcriteria">
         <div class="row-fluid">
-            <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=requests'); ?>" method="post">
-                <input type="hidden" name="filter_smartview" value="1">
+            <form name="FormSearchRequests" class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=requests'); ?>" method="post">
+                <input type="hidden" id="filter_smartview" name="filter_smartview" value="1">
+                <input type="hidden" id="filter_smartview_last30days" value="1">
                 <div class="btn-group pull-right">
 
                     <fieldset class="radio btn-group btn-group-yesno" id="filterstatus">
@@ -74,7 +75,7 @@ JHtml::_('formbehavior.chosen', 'select');
                         </div>
                     <?php endif; ?>
 
-                    <div id="filterstatus">                        
+                    <div id="filterstatus">
                         <select id="filter_status" name="filter_type" onchange="this.form.submit();" class="inputbox">
                             <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_TYPE_FILTER'); ?></option>
                             <?php foreach ($this->ordertype as $ordertype): ?>
@@ -99,7 +100,7 @@ JHtml::_('formbehavior.chosen', 'select');
     </div>
 
     <div class="items">
-        <div class="well">                      
+        <div class="well">
             <?php
             if (count($this->items)):
                 $requestsListLayout = new JLayoutFile('com_easysdi_shop.requests', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
@@ -123,3 +124,30 @@ JHtml::_('formbehavior.chosen', 'select');
     </div>
 </div>
 
+<script>
+// If smartview is enabled, and none filter set
+if ((document.getElementById("state0").checked == true) && (document.getElementById("filter_smartview").value == "1") && (document.getElementById("filter_smartview_last30days").value == "1")) {
+	var vOrganism = document.getElementById("filter_clientorganism").value;
+	var vSentFrom = document.getElementById("filter_sentfrom").value;
+	var vSentTo = document.getElementById("filter_sentto").value;
+	var vFilterSearch = document.getElementById("filter_search").value;
+	if (vOrganism + vSentFrom + vSentTo + vFilterSearch == "") {
+		document.getElementById("ShopRequestsAlert").style.display = "none";
+		document.getElementById("ShopRequestsLoading").style.display = "block";
+		fnSetLast30Days();
+	}
+}
+
+// Set filter to "last 30 days"
+function fnSetLast30Days() {
+	<?php
+	$vSentTo = date("Y-m-d");
+	$vSentFrom = date('Y-m-d', strtotime('-1 months', strtotime($vSentTo)));
+	echo("var vSentFrom='$vSentFrom';\n");
+	echo("var vSentTo='$vSentTo';\n");
+	?>
+	document.getElementById("filter_sentfrom").value = vSentFrom;
+	document.getElementById("filter_sentto").value = vSentTo;
+	document.FormSearchRequests.submit();
+}
+</script>

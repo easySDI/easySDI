@@ -64,7 +64,7 @@ $filterStatus = isset($displayData['filterStatus']) ? $displayData['filterStatus
                         <span  class="label" >
                             <?php echo( JText::plural('COM_EASYSDI_SHOP_REQUESTS_N_PRODUCTS_TO_PROCESS', $item->productcount)); ?>
                         </span>
-                    </td>                            
+                    </td>
                     <td class="orderactions">
                         <a class="btn btn-primary btn-small pull-right" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=request.edit&id=' . $item->id); ?>"><?php echo $filterStatus == 0 ? JText::_('COM_EASYSDI_SHOP_REQUESTS_OPEN') : JText::_('COM_EASYSDI_SHOP_REQUESTS_REPLY') ?></a>
                     </td>
@@ -74,8 +74,10 @@ $filterStatus = isset($displayData['filterStatus']) ? $displayData['filterStatus
         </tbody>
     </table>
 <?php }else { ?>
-    <div class="alert alert-danger" role="alert">
+    <div id="ShopRequestsAlert" class="alert alert-danger" role="alert">
         <h4><?php echo(JText::_('COM_EASYSDI_SHOP_REQUESTS_FORCE_FILTER')); ?></h4>
     </div>
+    <div id="ShopRequestsLoading" style="display:none;" class="alert alert-danger" role="alert">
+        <h4><?php echo(JText::_('COM_EASYSDI_SHOP_REQUESTS_FILTER_LOADING')); ?></h4>
+    </div>
 <?php } ?>
-
