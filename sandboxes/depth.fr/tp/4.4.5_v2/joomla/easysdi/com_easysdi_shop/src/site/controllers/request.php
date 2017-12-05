@@ -141,6 +141,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         $keys['diffusion_id'] = $diffusion_id;
         $orderdiffusion->load($keys);
         $orderdiffusion->otpchance = 0;
+		$orderdiffusion->otp = "";
         $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE;
         $return = $orderdiffusion->store();
         
