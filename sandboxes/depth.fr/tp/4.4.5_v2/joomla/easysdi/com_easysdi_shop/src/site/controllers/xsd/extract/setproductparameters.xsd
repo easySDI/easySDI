@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
+
+	<!-- ROOT element -->
+	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/setproductparameters.xsd" name="product" type="sdi:product"/>
+	
+	<xs:complexType abstract="true" xmlns:sdi="http://www.easysdi.org/2011/sdi" name="product">
+		<xs:sequence>
+			<xs:element name="order" type="xs:string"/>
+		</xs:sequence>
+        <xs:attribute type="xs:string" name="guid" use="required"/>
+	</xs:complexType>
+	
+	<!-- Rejection case -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="rejection">
+		<xs:complexContent>
+			<xs:extension base="sdi:product">
+				<xs:sequence>
+					<xs:element name="state" type="xs:string" fixed="rejected"/>
+					<xs:element type="xs:string" name="remark"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- Available case -->
+	<xs:complexType abstract="true" xmlns:sdi="http://www.easysdi.org/2011/sdi" name="available">
+		<xs:complexContent>
+			<xs:extension base="sdi:product">
+				<xs:sequence>
+					<xs:element name="state" type="xs:string" fixed="available"/>
+					<xs:element type="xs:string" name="remark" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- Estimation available case -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="estimation">
+		<xs:complexContent>
+			<xs:extension base="sdi:available">
+				<xs:sequence>
+					<xs:element type="xs:decimal" name="fee"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- Order available with local storage and predefined price case -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="localAndPredefined">
+		<xs:complexContent>
+			<xs:extension base="sdi:available">
+				<xs:sequence>
+					<xs:element name="storage" type="xs:string" fixed="local"/>
+					<xs:element type="xs:string" name="filename"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- Order available with remote storage and predefined price case -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="remoteAndPredefined">
+		<xs:complexContent>
+			<xs:extension base="sdi:available">
+				<xs:sequence>
+					<xs:element name="storage" type="xs:string" fixed="remote"/>
+					<xs:element type="xs:string" name="filename"/>
+					<xs:element type="xs:string" name="fileurl"/>
+					<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" name="filesize" type="sdi:filesize"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- Order available with local storage and fee without profile case -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="localAndFee">
+		<xs:complexContent>
+			<xs:extension base="sdi:available">
+				<xs:sequence>
+					<xs:element type="xs:decimal" name="fee"/>
+					<xs:element name="storage" type="xs:string" fixed="local"/>
+					<xs:element type="xs:string" name="filename"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- Order available with remote storage and fee without profile case -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="remoteAndFee">
+		<xs:complexContent>
+			<xs:extension base="sdi:available">
+				<xs:sequence>
+					<xs:element type="xs:decimal" name="fee"/>
+					<xs:element name="storage" type="xs:string" fixed="remote"/>
+					<xs:element type="xs:string" name="filename"/>
+					<xs:element type="xs:string" name="fileurl"/>
+					<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" name="filesize" type="sdi:filesize"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- Filesize Type -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="filesize">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="unit" default="o">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="o"/>
+							<xs:enumeration value="Kio"/>
+							<xs:enumeration value="Mio"/>
+							<xs:enumeration value="Gio"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	
+	
+</xs:schema>

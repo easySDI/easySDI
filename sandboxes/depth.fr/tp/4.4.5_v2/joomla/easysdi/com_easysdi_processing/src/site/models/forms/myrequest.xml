@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+        <field name="output" type="file"
+               label="COM_EASYSDI_PROCESSING_FORM_LBL_OUTPUT_FILE" class="inputbox input-xlarge"
+               description="COM_EASYSDI_PROCESSING_FORM_DESC_OUTPUT_FILE"
+               filter="raw" />
+
+       <field name="outputpreview" type="file" class="inputbox"
+         default=""
+         label="COM_EASYSDI_PROCESSING_FORM_LBL_OUTPUTPREVIEW_FILE"
+         description="COM_EASYSDI_PROCESSING_FORM_LBL_OUTPUTPREVIEW_FILE"
+         filter="safehtml" />
+       
+       <field name="status"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="active">COM_EASYSDI_PROCESSING_STATUS_ACTIVE</option>
+        <option value="done">COM_EASYSDI_PROCESSING_STATUS_DONE</option>
+        <option value="fail">COM_EASYSDI_PROCESSING_STATUS_FAIL</option>
+    </field> 
+    
+            <field name="info" type="editor" class="inputbox input-xxlarge"
+         default=""
+         label="COM_EASYSDI_PROCESSING_FORM_LBL_ORDER_INFO"
+         description="COM_EASYSDI_PROCESSING_FORM_DESC_ORDER_INFO"
+         filter="safehtml" />
+ </fieldset>
+
+ <fieldset name="hidden">
+        <field name="id" type="hidden" filter="safehtml" />
+        <field name="sent" type="hidden" />
+        <field name="created" type="hidden" />
+    </fieldset>
+
+</form>
