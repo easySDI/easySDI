@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -84,7 +84,7 @@ class Easysdi_catalogControllerSitemap extends Easysdi_catalogController {
                 ->join('LEFT', '#__sdi_version v on v.id=m.version_id')
                 ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')
                 ->where('m.metadatastate_id=3') // metadata must be published
-                ->where('m.accessscope_id=1') // metadata must have public access scope
+                ->where('r.accessscope_id=1') // metadata must have public access scope
                 ->where('r.resourcetype_id IN ('.implode(',',$resourcestype).')') // metadata must be from allowed resources types
                 ;
 

@@ -639,6 +639,7 @@ CREATE TABLE [#__sdi_diffusion] (
 	[restrictedperimeter] [smallint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
+        [otp][tinyint](1) NOT NULL DEFAULT 0,
  CONSTRAINT [PK_#__sdi_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1190,7 +1191,9 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[storage_id] [bigint] NULL,
 	[file] [nvarchar](500) NULL,
 	[size] [decimal](10, 0) NULL,
-        [displayName] [nvarchar](75) NULL
+        [displayName] [nvarchar](75) NULL,
+        [opt] [nvarchar] NULL,
+        [optchance] [int] (11) DEFAULT 0,
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -2407,7 +2410,7 @@ CREATE TABLE [#__sdi_pricing_order_supplier_product_profile] (
     [checked_out] [int] NOT NULL,
     [checked_out_time] [datetime2](0) NOT NULL,
     [pricing_order_supplier_product_id] [int](11) not null,
-    [pricing_profile_id] [int](11) not null,
+    [pricing_profile_id] [int](11) null,
     [pricing_profile_name] [nvarchar](255) not null,
     [cfg_fixed_fee_te] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_apply_vat] [smallint] NOT NULL DEFAULT 1,

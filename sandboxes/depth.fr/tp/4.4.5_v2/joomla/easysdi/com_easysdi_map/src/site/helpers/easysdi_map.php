@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -287,6 +287,7 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/leaflet/libs/i18next-1.9.0/i18next-1.9.0.min.js');
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
+                //$doc->addScript("http://unpkg.com/leaflet@1.0.3/dist/leaflet.js");
                 $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Google.js');
                 $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Bing.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet.TileLayer.WMTS-master/leaflet-tilelayer-wmts-src.js');

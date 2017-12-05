@@ -1734,7 +1734,7 @@ class FormGenerator {
      * @return string|array defaul value(s)
      */
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
-        if (!empty($value) || (gettype($value) == "integer" && $value == 0)) {
+        if (isset($value) || (gettype($value) == "integer" && $value == 0)) {
             return $value;
         }
         if (empty($relation_id)) {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -223,7 +223,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         }
 
         $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-        $diffusion->load($$diffusion_id);
+        $diffusion->load($diffusion_id);
         
         //if file is OTP protected and the user is the customer, disable downnload
         if (($order->user_id == $currentUser->id) && ($diffusion->otp == 1)){
@@ -328,7 +328,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
                 $return['status'] = 'ERROR_OTPCHANCE';
                 $return['msg'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_OTPCHANCEREACHED');
             }else{
-                if (md5($password) == $orderdiffusion->get('otp')){
+                if (md5(trim($password)) == $orderdiffusion->get('otp')){
                     $return['status'] = 'OK';
                     //Reinit password to be used by the token
                     $orderdiffusion->otp = Easysdi_coreHelper::pwd(12);

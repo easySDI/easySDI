@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -179,6 +179,12 @@ class SearchJForm extends SearchForm {
         $field->setAttribute('label', $this->getLabel($searchCriteria));
         $field->setAttribute('name', $name);
         $field->setAttribute('default', $this->getDefault($searchCriteria, $name));
+        
+        //New behaviour with default values in Joomla! 3.7.x : https://github.com/joomla/joomla-cms/commit/97e4048357481d3747c2e19e4f31ab89824dfaa8
+        //Force the checked attribute if value==default
+        if($field->getAttribute('default') == $field->getAttribute('value')){
+            $field->setAttribute('checked', 'checked');
+        }
 
         return $field;
     }

@@ -2687,7 +2687,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product_profile` (
     `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
     `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
     `pricing_order_supplier_product_id` int(11) unsigned not null,
-    `pricing_profile_id` int(11) unsigned not null,
+    `pricing_profile_id` int(11) unsigned null,
     `pricing_profile_name` varchar(255) not null,
     `cfg_fixed_fee_te` decimal(19,2) NOT NULL DEFAULT 0,
     `cfg_apply_vat` TINYINT DEFAULT 1,
@@ -2700,7 +2700,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product_profile` (
     KEY `#__sdi_pricing_order_supplier_product_profile_fk1` (`pricing_order_supplier_product_id`),
     KEY `#__sdi_pricing_order_supplier_product_profile_fk2` (`pricing_profile_id`),
     CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk1` FOREIGN KEY (`pricing_order_supplier_product_id`) REFERENCES `#__sdi_pricing_order_supplier_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-    CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk2` FOREIGN KEY (`pricing_profile_id`) REFERENCES `#__sdi_pricing_profile` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk2` FOREIGN KEY (`pricing_profile_id`) REFERENCES `#__sdi_pricing_profile` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- com_easysdi_monitor

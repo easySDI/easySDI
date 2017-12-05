@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -84,19 +84,37 @@ else
                             <div id="div_download">
                                 <?php
                                 foreach ($this->form->getFieldset('download') as $field):
-                                    if ($field->fieldname == 'hasdownload')
+                                    if ($field->fieldname == 'hasdownload') {
                                         continue;
-                                    ?>
+                                    }
+                                    if ($field->fieldname == 'file' && !empty($this->item->file)) {
+                                        ?>
+                                        <div class="control-group" id="existingfile">
+                                            <div class="control-label">
+                                                <label id="jform_file_hidden_href-lbl" 
+                                                       for="jform_file_hidden_href" 
+                                                       class="hasPopover" 
+                                                       title="<?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_EXISTINGFILE'); ?>"
+                                                       >
+                                                           <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_EXISTINGFILE'); ?>
+                                                </label>
+                                            </div>
+                                            <div class="controls">
+                                                <p>
+                                                    <a id="jform_file_hidden_href" href="<?php echo Juri::base(true) . "/component/easysdi_shop/download/download?id=" . $this->item->id; ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
+                                                </p>                                            
+                                            </div>
+                                        </div>
+                                        <?php
+                                    }
+                                    ?>                                
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                         <div class="control-label"><?php echo $field->label; ?></div>
                                         <div class="controls">
                                             <?php echo $field->input; ?>
                                             <?php if ($field->fieldname == 'file'): ?>
-                                                <?php if (!empty($this->item->file)): ?>
-                                                    <a id="jform_file_hidden_href" href="<?php echo Juri::base(true) . "/component/easysdi_shop/download/download?id=" . $this->item->id; ?>"><?php echo '[' . substr($this->item->file, 33) . ']'; ?></a>
-                                                <?php endif; ?>
                                                 <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />
-                                            <?php endif; ?>
+                                            <?php endif; ?>                                              
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -108,7 +126,7 @@ else
                             <div id="div_extraction">
                                 <?php
                                 foreach ($this->form->getFieldset('extraction') as $field):
-                                    if (in_array($field->fieldname, array('hasextraction', 'restrictedperimeter','otp')))
+                                    if (in_array($field->fieldname, array('hasextraction', 'restrictedperimeter', 'otp')))
                                         continue;
                                     ?>
                                     <div class="control-group" id="<?php echo $field->fieldname; ?>">
@@ -132,15 +150,13 @@ else
                                     </div>
                                 <?php endif; ?>
 
-                                <?php 
-                                $test=$this->params->get('otpactivated');
-                                if($this->params->get('otpactivated') == 1) : ?>
-                                <div class="control-group" id="<?php echo $this->form->getField('otp')->fieldname; ?>">
-                                    <div class="control-label"><?php echo $this->form->getField('otp')->label; ?></div>
-                                    <div class="controls"><?php echo $this->form->getField('otp')->input; ?></div>
-                                </div>
+                                <?php if ($this->params->get('otpactivated', 0) == 1) : ?>
+                                    <div class="control-group" id="<?php echo $this->form->getField('otp')->fieldname; ?>">
+                                        <div class="control-label"><?php echo $this->form->getField('otp')->label; ?></div>
+                                        <div class="controls"><?php echo $this->form->getField('otp')->input; ?></div>
+                                    </div>
                                 <?php endif; ?>
-                                
+
                                 <fieldset id ="fieldset_perimeters" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
 

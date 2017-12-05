@@ -116,7 +116,7 @@ class Easysdi_contactModelusers extends JModelList {
      * @since	1.6
      */
     protected function getListQuery() {
-
+        
         // Create a new query object.
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -125,7 +125,8 @@ class Easysdi_contactModelusers extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.created_by, a.ordering,a.state,a.catid,' . $query->concatenate(array($db->qn('o.name'), "' ['", $db->qn('o.id'), "']'")) . ' AS member_organism, o.id as member_organism_id'
+                        //'list.select', 'a.id, a.checked_out, a.checked_out_time, a.created_by, a.ordering,a.state,a.catid,' . $query->concatenate(array($db->qn('o.name'), "' ['", $db->qn('o.guid'), "']'")) . ' AS member_organism, o.id as member_organism_id'
+                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.created_by, a.ordering,a.state,a.catid,CONCAT(o.name,\' [\',o.id,\']\') AS member_organism, o.id as member_organism_id'
                 )
         );
         $query->from('#__sdi_user AS a');
@@ -177,10 +178,7 @@ class Easysdi_contactModelusers extends JModelList {
         } elseif ($published === '') {
             $query->where('(a.state = 0 OR a.state = 1)');
         }
-
-
-
-
+        
         // Filter by organism
         $organisms = $this->getState('filter.organism');
         if (count($organisms)) {
@@ -207,7 +205,7 @@ class Easysdi_contactModelusers extends JModelList {
         //Not necessary
         // group by user.id to have unique rows in result
         //$query->group('a.id');
-
+        
         return $query;
     }
 

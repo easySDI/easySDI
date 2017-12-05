@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.4.4
+ * @version     4.4.5
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -419,7 +419,7 @@ if (!$showActions) {
                                             ?>
                                             <span class="<?php echo $textColorClass; ?> shop-basket-product-completed-date"><i class="icon <?php echo $completedIcon; ?>"> </i> <?php echo JText::sprintf($completedString, JHtml::date($completedDate, JText::_('DATE_FORMAT_LC2'))); ?></span><br/>
                                             <?php if (isset($productItem->remark) && strlen($productItem->remark) > 0) : ?>
-                                                <span class="<?php echo $textColorClass; ?> shop-basket-product-remark"><i class="icon icon-comment"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRODUCT_REMARK'); ?></span><span class="shop-basket-product-remark-content"><?php echo $productItem->remark; ?></span>
+                                            <span class="<?php echo $textColorClass; ?> shop-basket-product-remark"><i class="icon icon-comment"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRODUCT_REMARK'); ?></span><span class="shop-basket-product-remark-content"><?php echo nl2br($productItem->remark); ?></span>
                                                 <?php
                                             endif;
                                         elseif ($isWaiting):
