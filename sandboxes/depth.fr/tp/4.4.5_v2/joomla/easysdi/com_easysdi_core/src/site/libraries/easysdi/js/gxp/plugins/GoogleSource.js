@@ -49,7 +49,7 @@ sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
      */
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.GoogleSource.superclass.createLayerRecord.apply(this, arguments);
-        
+
         record.json = config;
         return record;
     }

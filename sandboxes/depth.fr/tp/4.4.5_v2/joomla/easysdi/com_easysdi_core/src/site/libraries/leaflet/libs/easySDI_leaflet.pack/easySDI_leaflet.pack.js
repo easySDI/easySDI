@@ -10964,7 +10964,7 @@ L.control.sidebar = function (sidebar, options) {
 
  }
 L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWhenIdle:false,minUnitWidth:30,maxUnitsWidth:240,fill:false,showSubunits:false,doubleLine:false,labelPlacement:"auto"},onAdd:function(map){this._map=map;this._possibleUnitsNum=[3,5,2,4];this._possibleUnitsNumLen=this._possibleUnitsNum.length;this._possibleDivisions=[1,.5,.25,.2];this._possibleDivisionsLen=this._possibleDivisions.length;this._possibleDivisionsSub={1:{num:2,division:.5},.5:{num:5,division:.1},.25:{num:5,division:.05},.2:{num:2,division:.1}};this._scaleInner=this._buildScale();this._scale=this._addScale(this._scaleInner);this._setStyle(this.options);map.on(this.options.updateWhenIdle?"moveend":"move",this._update,this);map.whenReady(this._update,this);return this._scale},onRemove:function(map){map.off(this.options.updateWhenIdle?"moveend":"move",this._update,this)},_addScale:function(scaleInner){var scale=L.DomUtil.create("div");scale.className="leaflet-control-graphicscale";scale.appendChild(scaleInner);return scale},_setStyle:function(options){var classNames=["leaflet-control-graphicscale-inner"];if(options.fill&&options.fill!=="nofill"){classNames.push("filled");classNames.push("filled-"+options.fill)}if(options.showSubunits){classNames.push("showsubunits")}if(options.doubleLine){classNames.push("double")}classNames.push("labelPlacement-"+options.labelPlacement);this._scaleInner.className=classNames.join(" ")},_buildScale:function(){var root=document.createElement("div");root.className="leaflet-control-graphicscale-inner";var subunits=L.DomUtil.create("div","subunits",root);var units=L.DomUtil.create("div","units",root);this._units=[];this._unitsLbls=[];this._subunits=[];for(var i=0;i<5;i++){var unit=this._buildDivision(i%2===0);units.appendChild(unit);this._units.push(unit);var unitLbl=this._buildDivisionLbl();unit.appendChild(unitLbl);this._unitsLbls.push(unitLbl);var subunit=this._buildDivision(i%2===1);subunits.appendChild(subunit);this._subunits.unshift(subunit)}this._zeroLbl=L.DomUtil.create("div","label zeroLabel");this._zeroLbl.innerHTML="0";this._units[0].appendChild(this._zeroLbl);this._subunitsLbl=L.DomUtil.create("div","label subunitsLabel");this._subunitsLbl.innerHTML="?";this._subunits[4].appendChild(this._subunitsLbl);return root},_buildDivision:function(fill){var item=L.DomUtil.create("div","division");var l1=L.DomUtil.create("div","line");item.appendChild(l1);var l2=L.DomUtil.create("div","line2");item.appendChild(l2);if(fill)l1.appendChild(L.DomUtil.create("div","fill"));if(!fill)l2.appendChild(L.DomUtil.create("div","fill"));return item},_buildDivisionLbl:function(){var itemLbl=L.DomUtil.create("div","label divisionLabel");return itemLbl},_update:function(){var bounds=this._map.getBounds(),centerLat=bounds.getCenter().lat,halfWorldMeters=6378137*Math.PI*Math.cos(centerLat*Math.PI/180),dist=halfWorldMeters*(bounds.getNorthEast().lng-bounds.getSouthWest().lng)/180,size=this._map.getSize();if(size.x>0){this._updateScale(dist,this.options)}},_updateScale:function(maxMeters,options){var scale=this._getBestScale(maxMeters,options.minUnitWidth,options.maxUnitsWidth);this._render(scale)},_getBestScale:function(maxMeters,minUnitWidthPx,maxUnitsWidthPx){var possibleUnits=this._getPossibleUnits(maxMeters,minUnitWidthPx,this._map.getSize().x);var possibleScales=this._getPossibleScales(possibleUnits,maxUnitsWidthPx);possibleScales.sort(function(scaleA,scaleB){return scaleB.score-scaleA.score});var scale=possibleScales[0];scale.subunits=this._getSubunits(scale);return scale},_getSubunits:function(scale){var subdivision=this._possibleDivisionsSub[scale.unit.unitDivision];var subunit={};subunit.subunitDivision=subdivision.division;subunit.subunitMeters=subdivision.division*(scale.unit.unitMeters/scale.unit.unitDivision);subunit.subunitPx=subdivision.division*(scale.unit.unitPx/scale.unit.unitDivision);var subunits={subunit:subunit,numSubunits:subdivision.num,total:subdivision.num*subunit.subunitMeters};return subunits},_getPossibleScales:function(possibleUnits,maxUnitsWidthPx){var scales=[];var minTotalWidthPx=Number.POSITIVE_INFINITY;var fallbackScale;for(var i=0;i<this._possibleUnitsNumLen;i++){var numUnits=this._possibleUnitsNum[i];var numUnitsScore=(this._possibleUnitsNumLen-i)*.5;for(var j=0;j<possibleUnits.length;j++){var unit=possibleUnits[j];var totalWidthPx=unit.unitPx*numUnits;var scale={unit:unit,totalWidthPx:totalWidthPx,numUnits:numUnits,score:0};var totalWidthPxScore=1-(maxUnitsWidthPx-totalWidthPx)/maxUnitsWidthPx;totalWidthPxScore*=3;var score=unit.unitScore+numUnitsScore+totalWidthPxScore;if(unit.unitDivision===.25&&numUnits===3||unit.unitDivision===.5&&numUnits===3||unit.unitDivision===.25&&numUnits===5){score-=2}scale.score=score;if(totalWidthPx<maxUnitsWidthPx){scales.push(scale)}if(totalWidthPx<minTotalWidthPx){minTotalWidthPx=totalWidthPx;fallbackScale=scale}}}if(!scales.length)scales.push(fallbackScale);return scales},_getPossibleUnits:function(maxMeters,minUnitWidthPx,mapWidthPx){var exp=(Math.floor(maxMeters)+"").length;var unitMetersPow;var units=[];for(var i=exp;i>0;i--){unitMetersPow=Math.pow(10,i);for(var j=0;j<this._possibleDivisionsLen;j++){var unitMeters=unitMetersPow*this._possibleDivisions[j];var unitPx=mapWidthPx*(unitMeters/maxMeters);if(unitPx<minUnitWidthPx){return units}units.push({unitMeters:unitMeters,unitPx:unitPx,unitDivision:this._possibleDivisions[j],unitScore:this._possibleDivisionsLen-j})}}return units},_render:function(scale){this._renderPart(scale.unit.unitPx,scale.unit.unitMeters,scale.numUnits,this._units,this._unitsLbls);this._renderPart(scale.subunits.subunit.subunitPx,scale.subunits.subunit.subunitMeters,scale.subunits.numSubunits,this._subunits);var subunitsDisplayUnit=this._getDisplayUnit(scale.subunits.total);this._subunitsLbl.innerHTML=""+subunitsDisplayUnit.amount+subunitsDisplayUnit.unit},_renderPart:function(px,meters,num,divisions,divisionsLbls){var displayUnit=this._getDisplayUnit(meters);for(var i=0;i<this._units.length;i++){var division=divisions[i];if(i<num){division.style.width=px+"px";division.className="division"}else{division.style.width=0;division.className="division hidden"}if(!divisionsLbls)continue;var lbl=divisionsLbls[i];var lblClassNames=["label","divisionLabel"];if(i<num){var lblText=(i+1)*displayUnit.amount;if(i===num-1){lblText+=displayUnit.unit;lblClassNames.push("labelLast")}else{lblClassNames.push("labelSub")}lbl.innerHTML=lblText}lbl.className=lblClassNames.join(" ")}},_getDisplayUnit:function(meters){var displayUnit=meters<1e3?"m":"km";return{unit:displayUnit,amount:displayUnit==="km"?meters/1e3:meters}}});L.Map.mergeOptions({graphicScaleControl:false});L.Map.addInitHook(function(){if(this.options.graphicScaleControl){this.graphicScaleControl=new L.Control.GraphicScale;this.addControl(this.graphicScaleControl)}});L.control.graphicScale=function(options){return new L.Control.GraphicScale(options)};
- easyGetFeature = function (map, layertree, serviceconnector, params) {
+ easyGetFeature = function(map, layertree, serviceconnector, params, popup_size) {
 
      var options = {
          "queryablelayers_title": "Select a layer",
@@ -10990,19 +10990,19 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
      var current_layerID = null;
 
      var queryable = [];
+     var last_event;
 
-
-     var isset = function (variable) {
-         return typeof (variable) != "undefined" && variable !== null;
+     var isset = function(variable) {
+         return typeof(variable) != "undefined" && variable !== null;
      };
 
 
      function debounce(func, wait, immediate) { //http://davidwalsh.name/essential-javascript-functions
          var timeout;
-         return function () {
+         return function() {
              var context = this,
                  args = arguments;
-             var later = function () {
+             var later = function() {
                  timeout = null;
                  if (!immediate) func.apply(context, args);
              };
@@ -11015,51 +11015,51 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
 
 
 
-     map.on('layeradd', function () {
-         _this.update();
-     })
-         .on('layerremove', function () {
+     map.on('layeradd', function() {
              _this.update();
          })
-         .on('click', function (e) {
+         .on('layerremove', function() {
+             _this.update();
+         })
+         .on('click', function(e) {
              _this.onclick(e);
          });
 
-     jQuery('#sidebar').on('click', '.sidebar-tabs a', function () {
+     jQuery('#sidebar').on('click', '.sidebar-tabs a', function() {
          _this.update();
      })
 
-     window.addEventListener('getCapabilities', function (e) {
+     window.addEventListener('getCapabilities', function(e) {
          _this.update();
      });
 
 
 
-     _this.addTo = function (div) {
+     _this.addTo = function(div) {
          container = div;
 
          container_info = jQuery('<div class="getfeature_info"></div>').appendTo(container);
          container_results = jQuery('<div class="getfeature_results"></div>').appendTo(container);
 
-         container_info.on('change', 'select.queryable_layers', function () {
+         /*container_info.on('change', 'select.queryable_layers', function() {
              current_layerID = jQuery(this).val();
-         });
+         });*/
 
-         container_results.on('click', '.removeResult', function (e) {
+         container_results.on('click', '.removeResult', function(e) {
              e.stopPropagation();
              e.preventDefault();
              queryid = jQuery(this).data('queryid');
              removeRes(_this.query[queryid]);
          });
 
-         container_results.on('click', '.removeAllResult', function (e) {
+         container_results.on('click', '.removeAllResult', function(e) {
              e.stopPropagation();
              e.preventDefault();
              for (var i in _this.query)
                  removeRes(_this.query[i]);
          });
 
-         container_results.on('click', '.found', function (e) {
+         container_results.on('click', '.found', function(e) {
              e.preventDefault();
              queryid = jQuery(this).data('queryid');
              showRes(_this.query[queryid]);
@@ -11067,86 +11067,165 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
 
      }
 
-     var removeRes = function (queryRes) {
+     var removeRes = function(queryRes) {
          queryRes.html = false;
          if (isset(queryRes.obj))
              marker_layer.removeLayer(queryRes.obj);
          _this.updateResults();
      };
 
-     var showRes = function (queryRes) {
+     var showRes = function(queryRes) {
          queryRes.obj.openPopup();
          map.panTo(queryRes.latlng);
      };
 
+     var collapse_start =
+         '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
 
-     _this.onclick = function (e) {
-         // console.log(jQuery('.leaflet-zoom-box-crosshair').length);
+
+
+     var collapse_end = '</div>';
+
+     var tmp_collapse = "";
+     var nbr_active_layer = 0;
+     var first_layer;
+
+     _this.onclick = function(e) {
+         nbr_active_layer = 0;
+         first_layer = "in";
+         layertree.groups.forEach(function(group) {
+             for (var index in layertree.layers[group]) {
+                 var attr = layertree.layers[group][index];
+                 if (attr.on == true) {
+                     nbr_active_layer++;
+                 }
+
+             };
+         });
+         tmp_collapse = "";
          if (jQuery('.leaflet-zoom-box-crosshair').length == 0) {
-             var layerId = container.find('.queryable_layers').val();
-             if (isset(layerId)) {
-                 _this.getFeature(layertree.getLayerById(layerId), e);
-             }
-         }
 
+             layertree.groups.forEach(function(group) {
+                 for (var index in layertree.layers[group]) {
+
+                     var attr = layertree.layers[group][index];
+                     if (attr.on == true) {
+                         last_event = e;
+                         _this.getFeature(layertree.getLayerById(attr.layer._leaflet_id), e);
+                     }
+
+                 };
+             });
+         }
      }
 
 
-     _this.getFeature = function (layer, event) {
-         var loc = event.containerPoint;
 
+
+
+     _this.getFeature = function(layer, event = last_event) {
+
+         var loc = event.containerPoint;
          var url = serviceconnector.getFeatureUrl(layer.layer, map, loc);
 
-         var request = {
+         request = {
              loading: true,
              layer: layer,
              latlng: event.latlng,
-             html: null
          };
-
          _this.query.push(request);
          var id = _this.query.length - 1;
          request = _this.query[id];
          request.id = id;
-         _this.updateResults();
-
+         request.html = "";
          jQuery.ajax({
              type: "GET",
              url: url,
-             success: function (data) {
+             success: function(data) {
                  request.loading = false;
                  if (data != null) {
                      var table = jQuery('<div></div>').html(data).find('table');
                      if (table.length > 0) {
-                         request.html = '';
-                         jQuery.each(table, function () {
+
+
+
+
+                         jQuery.each(table, function() {
                              request.html += '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
                          });
+
+                         var collapse =
+                             '<div class="panel panel-default">' +
+                             '<div class="panel-heading" role="tab" id="headingOne">' +
+                             '<h4 class="panel-title">' +
+                             '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + layer.layer._leaflet_id + '" aria-expanded="true" aria-controls="collapse' + layer.layer._leaflet_id + '">' +
+                             layer.name +
+                             '</a>' +
+                             '</h4>' +
+                             '</div>' +
+                             '<div id="collapse' + layer.layer._leaflet_id + '" class="panel-collapse collapse ' + first_layer + '" role="tabpanel" aria-labelledby="heading' + layer.layer._leaflet_id + '">' +
+                             '<div class="panel-body">' +
+                             '<pre class="featureInfo easygetfeature_pre">' + request.html + '</pre>' +
+                             '</div>' +
+                             '</div>' +
+                             '</div>';
+
+
+                         tmp_collapse += collapse;
+                         request.html = collapse_start + tmp_collapse + collapse_end;
+                         first_layer = "";
+
+                         var evt = new CustomEvent('getFeature', request);
+                         window.dispatchEvent(evt);
+                         nbr_active_layer--;
+                         _this.updateResults();
+
                      } else {
                          data = data.replace('GetFeatureInfo results:', '').trim();
-                         if (data.length > 0 && data.search('Search returned no results.') == -1) {
-                             request.html = '<pre class="featureInfo easygetfeature_pre">' + data + '</pre>';
+                         if (data.length > 0 && data.search('Search returned no results.') == -1 && data.search('ul') > 0) {
+
+                             var collapse =
+                                 '<div class="panel panel-default">' +
+                                 '<div class="panel-heading" role="tab" id="headingOne">' +
+                                 '<h4 class="panel-title">' +
+                                 '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + layer.layer._leaflet_id + '" aria-expanded="true" aria-controls="collapse' + layer.layer._leaflet_id + '">' +
+                                 layer.name +
+                                 '</a>' +
+                                 '</h4>' +
+                                 '</div>' +
+                                 '<div id="collapse' + layer.layer._leaflet_id + '" class="panel-collapse collapse ' + first_layer + '" role="tabpanel" aria-labelledby="heading' + layer.layer._leaflet_id + '">' +
+                                 '<div class="panel-body featureInfo easygetfeature_pre">' +
+                                 data +
+                                 '</div>' +
+                                 '</div>' +
+                                 '</div>';
+
+
+
+
+                             tmp_collapse += collapse;
+                             request.html = collapse_start + tmp_collapse + collapse_end;
+                             first_layer = "";
+
+                             var evt = new CustomEvent('getFeature', request);
+                             window.dispatchEvent(evt);
+                             _this.updateResults();
                          } else {
-                             request.html = 'none';
-                             setTimeout(function () {
-                                 removeRes(_this.query[request.id]);
-                             }, 1000);
+
                          }
                      }
                  }
-                 var evt = new CustomEvent('getFeature', request);
-                 window.dispatchEvent(evt);
-                 _this.updateResults();
+
              }
-         }).fail(function () {
+
+         }).fail(function() {
              request.html = false;
-             _this.updateResults();
          });
      }
 
 
 
-     _this.update = debounce(function () {
+     _this.update = debounce(function() {
          var queryable = [];
          jQuery(map._container).removeClass('getFeatureOn');
          if (container_info !== null) {
@@ -11175,74 +11254,61 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
              }
 
 
-             if (queryable.length > 0) {
-                 //container_info.append(jQuery('<p>Il y a ' + (queryable.length == 1 ? ' un couche interrogeable' : queryable.length + ' couches interrogeables') + ':</p>'));
-                 container_info.append(jQuery('<p>' + options.queryablelayers_title + '</p>'));
-                 var select = jQuery('<select class="queryable_layers"></select>');
-                 container_info.append(select);
-                 jQuery.each(queryable, function (i, rqueryable) {
-                     //for (var i in queryable) {
-                     var layerId = L.Util.stamp(rqueryable.layer);
-                     jQuery('<option value="' + layerId + '"' + (current_layerID == layerId ? ' selected' : '') + '>' + queryable[i].name + '</option>').appendTo(select);
-                 });
-
-                 if (jQuery('#sidebar #getfeature').hasClass('active') /*&& !jQuery('#sidebar').hasClass('collapsed')*/ ) {
-                     if (!map.hasLayer(marker_layer))
-                         map.addLayer(marker_layer);
-                     jQuery(map._container).addClass('getFeatureOn');
-                 } else {
-                     if (map.hasLayer(marker_layer))
-                         map.removeLayer(marker_layer);
-                 }
-             } else {
-                 container_info.html('<p class="warning">' + options.noqueryablelayers + '</p>');
-             }
-
 
          }
      }, 250);
 
 
 
-     var addQueryObj = function (query) {
+     var addQueryObj = function(query) {
 
          var html_result = query.html;
 
          var nlayer = new L.Marker(query.latlng)
              .bindPopup(html_result, {
-                 className: 'easygetfeature_popup'
+                 // className: 'easygetfeature_popup',
+                 maxWidth: popup_size.popupwidth,
+                 minWidth: popup_size.popupwidth,
+                 minHeight: popup_size.popupheight,
+                 maxHeight: popup_size.popupheight,
              })
              .addTo(marker_layer)
              .openPopup();
 
          if (!jQuery('#sidebar #getfeature').hasClass('active')) {
              var popup = L.popup({
-                     className: 'easygetfeature_popup'
+                     //className: 'easygetfeature_popup',
+                     maxWidth: popup_size.popupwidth,
+                     minWidth: popup_size.popupwidth,
+                     minHeight: popup_size.popupheight,
+                     maxHeight: popup_size.popupheight,
                  })
                  .setLatLng(query.latlng)
                  .setContent(html_result)
-                 .openOn(map);
+
+             .openOn(map);
+
+
+
          }
 
 
          query.obj = nlayer;
      }
 
-     _this.updateResults = debounce(function () {
+     _this.updateResults = debounce(function() {
 
          if (container_results !== null) {
 
              container_results.html('');
 
-             var query_shown = jQuery.grep(_this.query, function (v) {
+             var query_shown = jQuery.grep(_this.query, function(v) {
                  return v.loading == false && v.html != null && v.html != false;
              });
              if (query_shown.length > 1)
                  container_results.append('<a href="#" class="removeAllResult" rel="tooltip" title="' + options.emptyselection + '"><i class="fa fa-eraser"></i></a>');
 
-             jQuery.each(_this.query, function (i, query) {
-                 //for (var i in _this.query) {
-                 //var query = _this.query[i];
+             jQuery.each(_this.query, function(i, query) {
                  if (query.loading) {
                      var html = '<div class="query' + i + ' loading"></div>';
                      var div = jQuery(html).appendTo(container_results);
@@ -11269,18 +11335,27 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
 
                  }
              });
+             //var left = document.getElementsByClassName("easygetfeature_popup")[0].style.left.split("px")
+             //left = Number(left[0]) - ((popup_size.popupwidth - document.getElementsByClassName("easygetfeature_popup")[0].clientWidth) / 2);
 
+             //var bottom = document.getElementsByClassName("easygetfeature_popup")[0].style.bottom.split("px")
+
+             //bottom = Number(bottom[0]) - ((popup_size.popupheight - document.getElementsByClassName("easygetfeature_popup")[0].clientHeight));
+
+
+
+             //document.getElementsByClassName("easygetfeature_popup")[0].style.left = left + "px";
+             //document.getElementsByClassName("easygetfeature_popup")[0].style.bottom = bottom + "px";
+             //document.getElementsByClassName("easygetfeature_popup")[0].style.width = popup_size.popupwidth + "px";
+             //document.getElementsByClassName("easygetfeature_popup")[0].style.height = popup_size.popupheight + "px";
+             //document.getElementsByClassName("leaflet-popup-content-wrapper")[0].style.height = popup_size.popupheight + "px";
+             //document.getElementsByClassName("leaflet-popup-content")[0].style.maxHeight = popup_size.popupheight - 20 + "px";
          }
      }, 250);
 
 
-     _this.showPanel = function (sidebar) {
+     _this.showPanel = function(sidebar) {
          sidebar.open();
-         if (!jQuery('#sidebar #getfeature').hasClass('active')) {
-             jQuery('#sidebar .sidebar-content.active,#sidebar .sidebar-tabs li.active').removeClass('active');
-             jQuery('#sidebar #getfeature').addClass('active');
-             jQuery('#sidebar a[href=#getfeature]').parent().addClass('active');
-         }
          _this.update();
      }
 
@@ -11915,7 +11990,19 @@ jQuery(document).ready(function($) {
             });
 
 
+            /*
+            fixe display print-left
+            var printProvider = L.print.provider({
+                method: 'GET',
+                url: 'http://lebouzin/print-servlet/pdf',
+                autoLoad: true,
+                dpi: 90
+            });*/
 
+            /*var printControl = L.control.print({
+                provider: printProvider
+            });*/
+            //map.addControl(printControl);
 
 
 
@@ -11933,6 +12020,17 @@ jQuery(document).ready(function($) {
                 var overlay = (group.isbackground != '1');
                 if (isset(group.layers)) {
                     if (group.isbackground == 1) {
+                        var has_default = false;
+                        for (var index = 0; index < group.layers.length; index++) {
+                            var element = group.layers[index];
+                            if (element.id == data.default_backgroud_layer) {
+                                has_default = true;
+                            }
+                        }
+                        if (!has_default) {
+                            data.default_backgroud_layer = group.layers[0].id
+                        }
+
                         reversegroup = group.layers;
                     } else {
                         reversegroup = group.layers.reverse();
@@ -11953,13 +12051,21 @@ jQuery(document).ready(function($) {
                         className: 'addedGeoJsonLayer'
                     }
                 }); // ajouter style
-                //addOverlay(l, 'titre groupe', 'titre');
                 overlays['textareaGeoJson'] = ld;
                 ld.addTo(map);
                 geoJsonDataObj.remove();
             }
 
-            if (isset(lastBaseLayer)) lastBaseLayer.addTo(map);
+
+
+            if (isset(lastBaseLayer)) {
+                if (lastBaseLayer.data.servicealias == "google") {
+                    var gmap_layer = new L.Google(lastBaseLayer.data.layername);
+                    map.addLayer(gmap_layer);
+                } else {
+                    lastBaseLayer.addTo(map);
+                }
+            }
 
             obj.addClass('easySDImap');
 
@@ -12138,7 +12244,6 @@ jQuery(document).ready(function($) {
 
         var getOloptions = function(opt) {
             if (!isset(opt) || opt == '') return [];
-            //console.log(opt);
             var asOLoptions = JSON.parse(opt); //opt.replace('OpenLayers.', '_ImportOL.');
             //eval('var asOLoptions= {' + opt + '};');
             return asOLoptions;
@@ -12292,7 +12397,10 @@ jQuery(document).ready(function($) {
             baseLayers[name] = layer;
             if (isset(controlLayer))
                 controlLayer.addBaseLayer(layer, name);
-            lastBaseLayer = layer;
+            if (layer.data.id === contextMapData.default_backgroud_layer) {
+                lastBaseLayer = layer;
+            }
+
         };
         _easySDImap.addBaseLayer = addBaseLayer;
 
@@ -12320,7 +12428,9 @@ jQuery(document).ready(function($) {
                         return options;
                     },
                     onEachFeature: function(feature, tlayer) {
+
                         tlayer.on('click', function(e) {
+
                             var html = '<table class="table table-bordered table-striped" style="display: block; max-height: 400px; overflow: auto">';
                             jQuery.each(feature.properties, function(k, v) {
                                 html += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
@@ -12478,8 +12588,9 @@ jQuery(document).ready(function($) {
 
 
         var addGoogle = function(data) {
-            if (typeof(google) !== 'undefined')
+            if (typeof(google) !== 'undefined') {
                 return new L.Google(data.layername);
+            }
             return false;
         };
 
@@ -12675,7 +12786,7 @@ jQuery(document).ready(function($) {
                 '<ul class="sidebar-tabs sidebar-tabs-top" role="tablist"></ul>' +
                 '<ul class="sidebar-tabs sidebar-tabs-bottom" role="tablist"></ul>' +
                 '<div class="sidebar-content active"></div>' +
-                '</div>').prependTo('#easySDIMap'); //prependTo('body');////jQuery('#map').parent());
+                '</div>').prependTo('#easySDIMap');
 
             // tree
             jQuery('<li><a href="#tree" role="tab" title="' + i18n.t('tools_tooltips.layertree') + '"><i class="fa fa-bars"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
@@ -12712,10 +12823,22 @@ jQuery(document).ready(function($) {
 
             //getFeature
             if (options.getfeatureinfo !== false) {
-                jQuery('<li><a href="#getfeature" role="tab" title="' + i18n.t('tools_tooltips.getfeatureinfo') + '"><i class="fa fa-map-marker"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
                 _this.panelFeature = jQuery('<div class="sidebar-pane" id="getfeature"></div>').appendTo(sidebar_html.find('.sidebar-content'));
+                console.log("popup", data.popupheight, data.popupwidth);
+                var popup_size = {};
+                if (data.popupheight > 0 && data.popupheight != false) {
+                    popup_size.popupheight = data.popupheight;
+                } else {
+                    popup_size.popupheight = 200;
+                }
+                if (data.popupwidth > 0 && data.popupwidth != false) {
+                    popup_size.popupwidth = data.popupwidth;
+                } else {
+                    popup_size.popupwidth = 350;
+                }
 
-                _this.easyGetFeature = easyGetFeature(map, controlLayer, serviceConnector, options);
+
+                _this.easyGetFeature = easyGetFeature(map, controlLayer, serviceConnector, options, popup_size);
                 controlGetFeature = _this.easyGetFeature;
                 controlGetFeature.addTo(_this.panelFeature);
 

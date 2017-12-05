@@ -35,7 +35,7 @@
             type="sql" 
             class="multiselect input-xxlarge"
             multiple="true"
-            label=""
+            label=""  
             description="" 
             query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
             key_field="id" 

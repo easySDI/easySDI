@@ -18,6 +18,7 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css?v=' . sdiFactory::getSdiFullVersion());
+$document->addScript('components/com_easysdi_map/views/map/tmpl/edit.js?v=' . sdiFactory::getSdiFullVersion());
 $document->addScript(JURI::root() . '/components/com_easysdi_core/libraries/tablednd/jquery.tablednd.0.7.min.js');
 ?>
 <script type="text/javascript">
@@ -195,6 +196,7 @@ $document->addScript(JURI::root() . '/components/com_easysdi_core/libraries/tabl
                 </div>
             </fieldset>
         </div>
-        <!-- End Sidebar -->
+        <!-- End Sidebar --> 
     </div>
-</form>
+
+

@@ -43,11 +43,18 @@ class Easysdi_mapController extends JControllerLegacy
 		return $this;
 	}
 	
-	public function getLayers ()
+	public function getMaps ()
 	{
+		require_once JPATH_COMPONENT.'/helpers/easysdi_map.php';
+		Easysdi_mapHelper::getMaps(JRequest::get( 'get' ));
+	}
+
+	public function getLayers ()
+	{	
 		require_once JPATH_COMPONENT.'/helpers/easysdi_map.php';
 		Easysdi_mapHelper::getLayers(JRequest::get( 'get' ));
 	}
+
 	
 	/**
 	 * Method to redirect to EasySDI home page (driven by easysdi_com_core)

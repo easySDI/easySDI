@@ -40,7 +40,7 @@ class Easysdi_mapControllerLayer extends JControllerForm
            // If the category has been passed in the data or URL check it.
            $allow = $user->authorise('core.create', 'com_easysdi_map');
 
-           if ($allow === null)
+           if ($allow === null)   
            {
                    // In the absense of better information, revert to the component permissions.
                    return parent::allowAdd();

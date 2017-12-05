@@ -250,6 +250,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
      * @since   11.1
      */
     public function save($data) {
+        
         if ($this->checkMapType($data)){
             if (parent::save($data)) {
                 $db = JFactory::getDbo();
@@ -386,6 +387,22 @@ class Easysdi_mapModelmap extends JModelAdmin {
 
                 //Background group
                 $background = $data['background'];
+                
+                $query = $db->getQuery(true);
+                $query
+                        ->update($db->quoteName('#__sdi_map'))
+                        ->set('default_backgroud_layer='.$data['default_backgroud_layer_new'])
+                        ->where('id = ' . (int) $this->getItem()->get('id'));
+                $db->setQuery($query);
+                try {
+                    $result = $db->execute();
+                } catch (Exception $e) {
+                    var_dump($e);
+                    die();
+                    $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_DELBACKGROUND_FAIL_GROUP_ERROR"));
+                    return false;
+                }
+
 
                 //Overlay groups and default adding group
                 $groups = $data['groups'];

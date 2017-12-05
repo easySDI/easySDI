@@ -67,6 +67,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
             $doc->addScript($base_url . '/geoext/lib/GeoExt/data/PrintProvider.js');
             $doc->addScript($base_url . '/gxp/script/gxp.js?v=' . sdiFactory::getSdiFullVersion());
+            $doc->addScript($base_url . '/easysdi/js/gxp/plugins/Popup.js');
             $doc->addScript($base_url . '/easysdi/js/sdi.js?v=' . sdiFactory::getSdiFullVersion());
         }else{
             $doc->addScript(JURI::root(true) . '/media/jui/js/jquery.min.js');
@@ -208,8 +209,37 @@ abstract class Easysdi_mapHelper {
         }
 
         $c = ($cleared) ? 'true' : 'false';
+   
 
+        $layer_default_name="";
+        foreach ($item->groups as  $group) {
+            if ($group->name == $backgroundname) {
+                foreach ($group->layers as  $layer) {
+                   // var_dump($item->default_backgroud_layer , $layer->id,$layer->name);
+                    if ($item->default_backgroud_layer == $layer->id) {
+                        $layer_default_name=$layer->name;
+                    }
+                }
+
+
+            }
+        }
+
+        foreach ($layers as  $layer) {
+            if ($layer->title ==  $layer_default_name) {
+                $layer->visibility=true;
+            } 
+        }
+        $popupheight = JComponentHelper::getParams('com_easysdi_map')->get('popupheight');
+        $popupwidth = JComponentHelper::getParams('com_easysdi_map')->get('popupwidth');
+        if ($popupheight ==0 || $popupheight==null) {
+            $popupheight=400;
+        }
+        if ($popupwidth ==0 || $popupwidth==null) {
+            $popupwidth=200;
+        }
         $output = '<script>
+        var popup_size = {"popupheight":'.$popupheight.',"popupwidth":'.$popupwidth.'};
             var msg = "' . JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE') . '";
             var layermsg = "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '";
             var cleared = "' . $c . '";
@@ -257,7 +287,6 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/leaflet/libs/i18next-1.9.0/i18next-1.9.0.min.js');
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
-                //$doc->addScript("http://unpkg.com/leaflet@1.0.3/dist/leaflet.js");
                 $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Google.js');
                 $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Bing.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet.TileLayer.WMTS-master/leaflet-tilelayer-wmts-src.js');
@@ -603,7 +632,7 @@ abstract class Easysdi_mapHelper {
         $default_group;
 
         if (in_array($ori->access, $user->getAuthorisedViewLevels())){
-            foreach (array('id','name','title','srs','maxresolution','numzoomlevel','maxextent','restrictedextent','centercoordinates','zoom','unit','tools') as $key) {
+            foreach (array('id','name','title','srs','maxresolution','numzoomlevel','maxextent','restrictedextent','centercoordinates','zoom','unit','tools','default_backgroud_layer') as $key) {
                 if(property_exists($ori, $key)) {
                   $res[$key]=$ori->$key;
               }

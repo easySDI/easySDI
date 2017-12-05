@@ -45,7 +45,9 @@ class Easysdi_mapViewMap extends JViewLegacy {
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_map');
         $this->form = $this->get('Form');
-
+        $popupheight = JComponentHelper::getParams('com_easysdi_map')->get('popupheight');
+        $popupwidth = JComponentHelper::getParams('com_easysdi_map')->get('popupwidth');
+        
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
@@ -56,8 +58,10 @@ class Easysdi_mapViewMap extends JViewLegacy {
             echo self::returnJson(null, 'error', JText::_('COM_EASYSDI_MAP_MAP_NOT_FOUND'));
             return;
         }
-
-        echo self::returnJson( Easysdi_mapHelper::getCleanMap($this->item) );
+        $result = Easysdi_mapHelper::getCleanMap($this->item);
+        $result['popupheight']=$popupheight;
+        $result['popupwidth']=$popupwidth;
+        echo self::returnJson( $result );
     }
 
 
