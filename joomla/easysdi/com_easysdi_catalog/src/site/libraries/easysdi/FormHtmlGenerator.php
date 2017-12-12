@@ -343,7 +343,7 @@ class FormHtmlGenerator {
         $aCollapse->setAttribute('class', 'btn btn-mini collapse-btn');
 
         $iCollapse = $this->formHtml->createElement('i');
-        $iCollapse->setAttribute('class', 'icon-white icon-arrow-right');
+        $iCollapse->setAttribute('class', 'icon-white icon-arrow-down');
         
         if($this->isNotOnlyOrganismManager){
             $aRemove = $this->formHtml->createElement('a');
@@ -1321,6 +1321,8 @@ class FormHtmlGenerator {
      */
     private function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
+        //return preg_replace('/(.*)(-la-[0-9*]-ra-)(.*)/', '$1', $xpath);
+        //return preg_replace("/(.*)(-la-[0-9*]-ra-)(.*)/", "$1$3", $xpath);
     }
 
     /**
