@@ -564,9 +564,9 @@ class FormGenerator {
                     
                     // Quand la relation parent est vide, on la flag exist:0 pour na pas la voir apparaitre dans le formaulaire, mais 
                     // quand même avoir le bouton pour lui ajouter des enfants.
-                    if(!$parent->hasChildNodes() && $parent->getAttributeNs($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATION){
+                    /*if(!$parent->hasChildNodes() && $parent->getAttributeNs($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATION){
                         $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', 0);
-                    }
+                    }*/
                     
                     $breakpoint = true;
                 }
