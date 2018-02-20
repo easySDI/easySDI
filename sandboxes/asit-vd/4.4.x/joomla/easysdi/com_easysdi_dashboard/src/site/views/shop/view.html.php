@@ -38,7 +38,7 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
             $app->redirect("index.php");
             return false;
         }
-        
+
         if (!$this->hasDashboardAccess($this->user)) {
             $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             $app->redirect("index.php");
@@ -63,7 +63,7 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
      * @return type
      */
     private function hasDashboardAccess($sdiUser) {
-        
+
         $tmpOrgList = array();
         //get all orgs with rights for dashboard
         foreach (
@@ -73,14 +73,16 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
             $sdiUser::extractionresponsible,
             $sdiUser::organismmanager)
         as $roleId) {
-            foreach ($sdiUser->role[$roleId] as $org) {
-                $tmpOrgList[$org->id] = $org->name;
+            if (isset($sdiUser->role[$roleId])) {
+                foreach ($sdiUser->role[$roleId] as $org) {
+                    $tmpOrgList[$org->id] = $org->name;
+                }
             }
         }
 
         $session = JFactory::getSession();
         $session->set('organismDashboardAccess', $tmpOrgList);
-        
+
         return count($tmpOrgList) > 0;
     }
 

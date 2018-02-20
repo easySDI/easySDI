@@ -238,8 +238,10 @@ class Easysdi_dashboardHelper {
             $sdiUser::extractionresponsible,
             $sdiUser::organismmanager)
         as $roleId) {
-            foreach ($sdiUser->role[$roleId] as $org) {
-                $tmpOrgList[$org->id] = $org->name;
+            if (isset($sdiUser->role[$roleId])) {
+                foreach ($sdiUser->role[$roleId] as $org) {
+                    $tmpOrgList[$org->id] = $org->name;
+                }
             }
         }
         //alpha sort
