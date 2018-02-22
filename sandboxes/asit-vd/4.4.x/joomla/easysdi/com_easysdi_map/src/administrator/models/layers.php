@@ -200,7 +200,7 @@ class Easysdi_mapModellayers extends JModelList
 				$query->where('a.id = '.(int) substr($search, 3));
 			} else {
 				$search = $db->Quote('%'.$db->escape($search, true).'%');
-				$query->where('( a.name LIKE '.$search.'  OR  a.layername LIKE '.$search.' )');
+				$query->where('( a.name LIKE '.$search.'  OR  a.layername LIKE '.$search.' OR  a.alias LIKE '.$search.' )');
 			}
 		}
 
