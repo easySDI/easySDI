@@ -96,7 +96,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['restrictedperimeter'] = 0;
         }
 
-        $params = JFactory::getApplication()->getParams('com_easysdi_shop');
+        $params = JComponentHelper::getParams('com_easysdi_shop');
         $fileFolder = $params->get('fileFolder');
         $depositFolder = $params->get('depositFolder', '/');
         $maxfilesize = $params->get('maxuploadfilesize', 0);
