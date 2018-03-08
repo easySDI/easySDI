@@ -60,7 +60,7 @@ JHtml::_('formbehavior.chosen', 'select');
                         <div id="filtersentfrom" >
                             <?php
                             $datefromval = $this->state->get('filter.sentfrom');
-                            if (!($datefromval & strlen($datefromval) > 1))
+                            if (!($datefromval && strlen($datefromval) > 1))
                                 $datefromval = '';
                             echo JHTML::_('calendar', $datefromval, 'filter_sentfrom', 'filter_sentfrom', '%Y-%m-%d', array('placeholder' => JText::_('COM_EASYSDI_CORE_REQUESTS_DATEFROM_FILTER'), 'onChange' => 'this.form.submit();'));
                             ?>
@@ -68,7 +68,7 @@ JHtml::_('formbehavior.chosen', 'select');
                         <div id="filtersentto" >
                             <?php
                             $datetoval = $this->state->get('filter.sentto');
-                            if (!($datetoval & strlen($datetoval) > 1))
+                            if (!($datetoval && strlen($datetoval) > 1))
                                 $datetoval = '';
                             echo JHTML::_('calendar', $datetoval, 'filter_sentto', 'filter_sentto', '%Y-%m-%d', array('placeholder' => JText::_('COM_EASYSDI_CORE_REQUESTS_DATETO_FILTER'), 'onChange' => 'this.form.submit();'));
                             ?>
