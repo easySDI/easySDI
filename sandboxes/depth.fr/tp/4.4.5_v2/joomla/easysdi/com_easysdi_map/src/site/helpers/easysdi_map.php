@@ -59,8 +59,8 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
             $doc->addScript($base_url . '/ext/ext-all-debug.js');
             $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
-                $doc->addScript($base_url . '/ux/ext/RowExpander.js');
-                $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
+            $doc->addScript($base_url . '/ux/ext/RowExpander.js');
+            $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');
             $doc->addScript($base_url . '/easysdi/js/OpenLayers/override-openlayers.js?v=' . sdiFactory::getSdiFullVersion());
             $doc->addScript($base_url . '/geoext/lib/overrides/override-ext-ajax.js?v=' . sdiFactory::getSdiFullVersion());
@@ -210,26 +210,30 @@ abstract class Easysdi_mapHelper {
 
         $c = ($cleared) ? 'true' : 'false';
    
-
+        $bg_layers = array();
         $layer_default_name="";
         foreach ($item->groups as  $group) {
             if ($group->name == $backgroundname) {
-                foreach ($group->layers as  $layer) {
-                   // var_dump($item->default_backgroud_layer , $layer->id,$layer->name);
+                foreach ($group->layers as $layer) {
                     if ($item->default_backgroud_layer == $layer->id) {
                         $layer_default_name=$layer->name;
                     }
+                    //Creation of an array of the backgroud layers
+                    array_push($bg_layers,$layer->name);
                 }
-
-
             }
         }
-
-        foreach ($layers as  $layer) {
-            if ($layer->title ==  $layer_default_name) {
-                $layer->visibility=true;
-            } 
+        
+        foreach ($layers as $layer) {
+            if (in_array($layer->title, $bg_layers)){
+                if ($layer->title == $layer_default_name) {
+                    $layer->visibility=true;
+                }else{
+                    $layer->visibility=false;
+                }
+            }
         }
+        
         $popupheight = JComponentHelper::getParams('com_easysdi_map')->get('popupheight');
         $popupwidth = JComponentHelper::getParams('com_easysdi_map')->get('popupwidth');
         if ($popupheight ==0 || $popupheight==null) {
@@ -466,6 +470,7 @@ abstract class Easysdi_mapHelper {
                 case 'WMTS' :
                     $obj->type = "OpenLayers.Layer.WMTS";
                     $obj->name = $layer->name;
+                    $obj->title = $layer->name;
                     $obj->url = $layer->serviceurl;
                     $obj->layer = $layer->layername;
 
@@ -651,7 +656,7 @@ abstract class Easysdi_mapHelper {
                     $resG=array();
                     foreach (array('id','alias','ordering','name','isbackground') as $key) {
                       if(property_exists($group, $key)) {
-                        $resG[$key]=$group->$key;
+                            $resG[$key]=$group->$key;
                         }
                     }
 
@@ -660,9 +665,15 @@ abstract class Easysdi_mapHelper {
                       if (in_array($layer->access, $user->getAuthorisedViewLevels())){
                         $resL=array();
                         foreach (array('id','alias','ordering','name','servicetype','layername','istiled','isdefaultvisible','opacity','asOL','asOLstyle','asOLmatrixset','asOLoptions','metadatalink','attribution','serviceurl','serviceconnector','servicealias','version') as $key) {
-
                               if(property_exists($layer, $key)) {
                                 $resL[$key]=$layer->$key;
+                              }
+                              if ($resG['isbackground']){
+                                  if ($res['default_backgroud_layer']==$resL['id']){
+                                      $resL['isdefaultvisible']=1;
+                                  }else{
+                                      $resL['isdefaultvisible']=0;
+                                  }
                               }
                           }
 
@@ -679,7 +690,7 @@ abstract class Easysdi_mapHelper {
               }
             } // end each groups
 
-                            $res['default_group']=$default_group;
+                $res['default_group']=$default_group;
 
                 if(property_exists($ori,'virtualservices'))
                 foreach ($ori->virtualservices as $service) {
