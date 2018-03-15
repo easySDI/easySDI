@@ -583,7 +583,7 @@ jQuery(document).ready(function($) {
             container.height(h * 0.95);
 
             // order mapdata arrays
-            contextMapData.groups.sort(byOrdering);
+            //contextMapData.groups.sort(byOrdering);
             contextMapData.services.sort(byOrdering);
 
             _easySDImap.contextMapData = contextMapData;
