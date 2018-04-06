@@ -109,6 +109,10 @@ class com_easysdi_catalogInstallerScript {
         if ($jversion->getShortVersion() == '3.3.6') {
             copy(JPATH_ROOT . '/administrator/components/com_easysdi_catalog/assets/patch/libraries/cms/router/site.php', JPATH_ROOT . '/libraries/cms/router/site.php');
         }
+        
+        if ($jversion->getShortVersion() >= '3.3.16') {
+            copy(JPATH_ROOT . '/administrator/components/com_easysdi_catalog/assets/patch/module/mod_languages/helper.php', JPATH_ROOT . '/module/mod_languages/helper.php');
+        }
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
