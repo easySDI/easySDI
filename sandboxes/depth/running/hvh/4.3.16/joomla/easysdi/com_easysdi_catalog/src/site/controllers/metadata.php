@@ -425,6 +425,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->where('l.code = ' . $query->quote($lang->getTag()));
         if (array_key_exists('version', $_POST)) {
             if ($_POST['version'] == 'last') {
+                $query->innerJoin('(SELECT * FROM (SELECT * FROM jos_sdi_version   ORDER BY resource_id, name desc) t group by t.resource_id) vv on vv.resource_id = r.id');
                 $query->group(' r.name');                
             }
         }
