@@ -188,6 +188,14 @@
     </build>
     
     <modules>
+        <module>extract-interface</module>
+        <module>extract-connector-easysdiv4</module>
+        <module>extract-task-archive</module>
+        <module>extract-task-fmedesktop</module>
+        <module>extract-task-fmeserver</module>
+        <module>extract-task-remark</module>
+        <module>extract-task-validation</module>
+        <module>extract</module>
         <module>monitor</module>
         <module>proxy</module>
     </modules>
