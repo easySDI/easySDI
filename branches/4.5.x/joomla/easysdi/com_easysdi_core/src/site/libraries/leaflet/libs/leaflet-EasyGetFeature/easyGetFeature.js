@@ -185,9 +185,8 @@
 
 
                          jQuery.each(table, function() {
-                             request.html += '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
+                             request.html = '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
                          });
-
                          var collapse =
                              '<div class="panel panel-default">' +
                              '<div class="panel-heading" role="tab" id="headingOne">' +
@@ -217,7 +216,6 @@
                      } else {
                          data = data.replace('GetFeatureInfo results:', '').trim();
                          if (data.length > 0 && data.search('Search returned no results.') == -1 && data.search('ul') > 0) {
-
                              var collapse =
                                  '<div class="panel panel-default">' +
                                  '<div class="panel-heading" role="tab" id="headingOne">' +
@@ -236,7 +234,7 @@
 
 
 
-
+                             //console.log("2",collapse)
                              tmp_collapse += collapse;
                              request.html = collapse_start + tmp_collapse + collapse_end;
                              first_layer = "";

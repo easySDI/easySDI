@@ -2542,7 +2542,6 @@ L.BingLayer = L.TileLayer.extend({
 L.bingLayer = function (key, options) {
     return new L.BingLayer(key, options);
 };
-
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.L || (g.L = {})).NonTiledLayer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 /*
@@ -3192,7 +3191,6 @@ L.TileLayer.WMTS = L.TileLayer.extend({
 L.tileLayer.wmts = function (url, options) {
     return new L.TileLayer.WMTS(url, options);
 };
-
 L.Control.ZoomBox = L.Control.extend({
     _active: false,
     _map: null,
@@ -10103,7 +10101,6 @@ a.J=function(a){return function(d,f){var b=a.call(e(void 0)?void 0:this,d,f);e(b
 g.l(c);if(c=/^\s*(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(Z|(?:([+\-])(\d{2})(?::(\d{2}))?))\s*$/.exec(c)){var d=Date.UTC(parseInt(c[1],10),parseInt(c[2],10)-1,parseInt(c[3],10),parseInt(c[4],10),parseInt(c[5],10),parseInt(c[6],10))/1E3;if("Z"!=c[7]){var e="-"==c[8]?-1:1,d=d+60*e*parseInt(c[9],10);a(c[10])&&(d+=3600*e*parseInt(c[10],10))}return d}},j:function(a){a=g.l(a);return m.s(a)},s:function(a){if(a=/^\s*([+\-]?\d*\.?\d+(?:e[+\-]?\d+)?)\s*$/i.exec(a))return parseFloat(a[1])},B:function(a){a=
 g.l(a);return m.C(a)},C:function(a){if(a=/^\s*(\d+)\s*$/.exec(a))return parseInt(a[1],10)},a:function(a){a=g.l(a);return e.trim(a)},Na:function(a,d){m.Aa(a,d?"1":"0")},Oa:function(a,d){var e=new Date(1E3*d),b=e.getUTCFullYear()+"-"+b.m(e.getUTCMonth()+1,2)+"-"+b.m(e.getUTCDate(),2)+"T"+b.m(e.getUTCHours(),2)+":"+b.m(e.getUTCMinutes(),2)+":"+b.m(e.getUTCSeconds(),2)+"Z";a.appendChild(g.o.createTextNode(b))},Pa:function(a,d){a.appendChild(g.o.createTextNode(d.toPrecision()))},Qa:function(a,d){a.appendChild(g.o.createTextNode(d.toString()))},
 Aa:function(a,d){a.appendChild(g.o.createTextNode(d))}};h.exports=m},{"./utils/isdef":3,"./utils/string":5,"./xml_parser":8}]},{},[1])(1)});
-
 L.Control.Sidebar = L.Control.extend({
     includes: L.Mixin.Events,
 
@@ -11151,9 +11148,8 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
 
 
                          jQuery.each(table, function() {
-                             request.html += '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
+                             request.html = '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
                          });
-
                          var collapse =
                              '<div class="panel panel-default">' +
                              '<div class="panel-heading" role="tab" id="headingOne">' +
@@ -11183,7 +11179,6 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
                      } else {
                          data = data.replace('GetFeatureInfo results:', '').trim();
                          if (data.length > 0 && data.search('Search returned no results.') == -1 && data.search('ul') > 0) {
-
                              var collapse =
                                  '<div class="panel panel-default">' +
                                  '<div class="panel-heading" role="tab" id="headingOne">' +
@@ -11202,7 +11197,7 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
 
 
 
-
+                             //console.log("2",collapse)
                              tmp_collapse += collapse;
                              request.html = collapse_start + tmp_collapse + collapse_end;
                              first_layer = "";
@@ -11947,7 +11942,7 @@ jQuery(document).ready(function($) {
             container.height(h * 0.95);
 
             // order mapdata arrays
-            contextMapData.groups.sort(byOrdering);
+            //contextMapData.groups.sort(byOrdering);
             contextMapData.services.sort(byOrdering);
 
             _easySDImap.contextMapData = contextMapData;
