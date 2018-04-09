@@ -274,11 +274,11 @@ class Easysdi_dashboardHelper {
     }
 
     private static function getCustomDateFilterFrom() {
-        return JHTML::_('calendar', null, 'sdi-dashboard-custom-from', 'sdi-dashboard-custom-from', '%Y-%m-%d', array('onchange' => 'triggerFilterUpdate();', 'placeholder' => JText::_('COM_EASYSDI_DASHBOARD_TIME_CUSTOM_FROM')));
+        return JHTML::_('calendar', null, 'sdi-dashboard-custom-from', 'sdi-dashboard-custom-from', '%Y-%m-%d', array('onChange' => 'triggerFilterUpdate();', 'placeholder' => JText::_('COM_EASYSDI_DASHBOARD_TIME_CUSTOM_FROM')));
     }
 
     private static function getCustomDateFilterTo() {
-        return JHTML::_('calendar', null, 'sdi-dashboard-custom-to', 'sdi-dashboard-custom-to', '%Y-%m-%d', array('onchange' => 'triggerFilterUpdate();', 'placeholder' => JText::_('COM_EASYSDI_DASHBOARD_TIME_CUSTOM_TO')));
+        return JHTML::_('calendar', null, 'sdi-dashboard-custom-to', 'sdi-dashboard-custom-to', '%Y-%m-%d', array('onChange' => 'triggerFilterUpdate();', 'placeholder' => JText::_('COM_EASYSDI_DASHBOARD_TIME_CUSTOM_TO')));
     }
 
 }
