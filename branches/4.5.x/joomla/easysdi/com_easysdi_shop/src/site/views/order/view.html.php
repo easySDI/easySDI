@@ -68,10 +68,18 @@ class Easysdi_shopViewOrder extends JViewLegacy {
             $this->user = sdiFactory::getSdiUser();
         }
 
+        //no easysdi user attached
         if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+            JFactory::getApplication()->redirect(JRoute::_('index.php', false));
             return false;
+        }
+        
+        //user is disabled
+        if ($this->user->juser->block != 0) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php', false));
+            return false;            
         }
 
         $this->isValidationManager = in_array($this->item->thirdparty_id, $this->user->getOrganisms(array(sdiUser::validationmanager), true));
