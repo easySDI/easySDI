@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -70,15 +70,19 @@ $displayTitle = isset($displayData['displayTitle']) ? $displayData['displayTitle
                                             <ul class="dropdown-menu">
                                                 <?php
                                                 $first = false;
-                                            endif;
-                                            echo '<li><a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=' . $extraction->id . '&order=' . $item->id . '">' . $extraction->name . '</a></li>';
-                                        endif;
-                                    }
-                                    if (!$first):
-                                        ?>
-                                    </ul>
-                                </div> 
-                                <?php
+                                    endif;
+                                    if ($extraction->otp == 1):
+                                        echo '<li><a id="' . $item->id .'_' . $extraction->id . '_otpdownload" style="cursor: pointer;">' . $extraction->name . '</a></li>';
+                                    else : 
+                                        echo '<li><a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=' . $extraction->id . '&order=' . $item->id . '">' . $extraction->name . '</a></li>';
+                                    endif;                                   
+                                endif;
+                            }
+                            if (!$first):
+                            ?>
+                                            </ul>
+                                        </div>
+                            <?php
                             endif;
                             ?>                                
                         <?php endif; ?>

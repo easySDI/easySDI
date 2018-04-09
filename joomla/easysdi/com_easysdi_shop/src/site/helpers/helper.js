@@ -131,7 +131,7 @@ function initStyleMap() {
 var acturl;
         
 function addOrderToBasket (n){
-    if(n!=0){ jQuery('#modal-dialog').modal('show');}
+    if(n!=0){ jQuery('#modal-dialog-atb').modal('show');}
     else{confirmAdd();}
 }
 
@@ -149,3 +149,61 @@ function getBasketContent(callback){
         catch(e){if(window.console){console.log(e);}}
     });
 }
+
+js(document).on('click', 'a[id$=_otpdownload]', function () {
+    jQuery("#otpmessage").hide();
+    showOTPDownloadModal(this);
+});
+
+js(document).on('submit', '#form_otp' , function( event ) {  
+    confirmOtpAuth(event);
+    event.preventDefault();
+});
+
+// Retrieves resource's id from HTML Element's id
+var getDiffusionId = function (element) {
+    var tabId = js(element).attr('id').split('_');
+    return tabId[1];
+};
+
+// Retrieves resource's id from HTML Element's id
+var getOrderId = function (element) {
+    var tabId = js(element).attr('id').split('_');
+    return tabId[0];
+};
+
+var showOTPDownloadModal = function (element) {
+    jQuery('#modal-dialog-otp').modal('show');
+    jQuery.ajax({
+        cache: false,
+        type: 'GET',
+        url: 'index.php?option=com_easysdi_shop&task=order.generateOTP&order_id='+getOrderId(element)+'&diffusion_id='+getDiffusionId(element)
+    }).done(function(r){
+        jQuery('#order_id').val(getOrderId(element));
+        jQuery('#diffusion_id').val(getDiffusionId(element));
+    });
+    return false;
+};
+
+var confirmOtpAuth = function (evt) {
+    var otp = jQuery('#otp').val();
+    var order_id = jQuery('#order_id').val();
+    var diffusion_id = jQuery('#diffusion_id').val();
+    jQuery.post('index.php?option=com_easysdi_shop&task=order.downloadOTP',jQuery("#form_otp").serialize(),
+     function(data)
+        {
+            if (data.status == 'OK'){
+                window.open('index.php?option=com_easysdi_shop&task=order.downloadOTP&order_id='+order_id+'&diffusion_id='+diffusion_id+'&token='+data.token,'_self');
+                jQuery('#modal-dialog-otp').modal('hide');
+                jQuery('#'+order_id+'_'+diffusion_id+'_otpdownload').hide();
+            }else{
+                jQuery("#otpmessage").html(data.msg);
+                jQuery("#otpmessage").show();
+                if (data.status=='ERROR_OTPCHANCE')
+                {
+                    jQuery('#'+order_id+'_'+diffusion_id+'_otpdownload').hide();
+                }
+            }
+        },'json'
+      );
+};

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -28,7 +28,7 @@ class Easysdi_catalogViewSheet extends JViewLegacy {
     public function display($tpl = null) {
 
         $app = JFactory::getApplication();
- 
+
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_catalog');
@@ -50,17 +50,23 @@ class Easysdi_catalogViewSheet extends JViewLegacy {
     protected function _prepareDocument() {
         $app = JFactory::getApplication();
         $menus = $app->getMenu();
-        $title = null;
-
-        // Because the application sets a default page title,
-        // we need to get it from the menu item itself
         $menu = $menus->getActive();
+        $mdguid = JFactory::getApplication()->input->get('guid');
+
+        //Try to get the MD title as title
+        $mdtitle = EText::_($mdguid);
+        
+        if (strlen($mdtitle) > 0) {
+            $this->params->def('page_heading', $mdtitle);
+        }
+        //Otherwise, use application page title
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         } else {
             $this->params->def('page_heading', JText::_('com_easysdi_catalog_DEFAULT_PAGE_TITLE'));
         }
-        $title = $this->params->get('page_title', '');
+        $title = $this->params->get('page_heading', '');
+
         if (empty($title)) {
             $title = $app->getCfg('sitename');
         } elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {

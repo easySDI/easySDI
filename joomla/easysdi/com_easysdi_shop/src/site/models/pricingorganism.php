@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -65,7 +65,7 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                    ->select('o.id, o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
+                    ->select('o.id, o.name, o.internal_free, o.fixed_fee_te, o.data_free_fixed_fee, o.fixed_fee_apply_vat')
                     ->from($db->quoteName('#__sdi_organism') . ' as o')
                     ->where('o.id=' . (int) $id);
             $db->setQuery($query);
@@ -82,9 +82,10 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
             $this->_item->categories = $db->loadObjectList();
 
             $query = $db->getQuery(true)
-                    ->select('pp.id, pp.name, pp.fixed_fee, pp.surface_rate, pp.min_fee, pp.max_fee, COUNT(ppcpr.id) as free_category')
+                    ->select('pp.id, pp.name, pp.fixed_fee, pp.surface_rate, pp.min_fee, pp.max_fee, COUNT(DISTINCT ppcpr.id) as free_category, COUNT(DISTINCT d.id) as count_diffusions')
                     ->from($db->quoteName('#__sdi_pricing_profile') . ' as pp')
                     ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate as ppcpr ON ppcpr.pricing_profile_id=pp.id')
+                    ->join('LEFT', '#__sdi_diffusion as d on pp.id = d.pricing_profile_id and d.state = 1 and hasextraction = 1')
                     ->where('pp.organism_id=' . (int) $id)
                     ->group('pp.id, pp.name, pp.fixed_fee, pp.surface_rate, pp.min_fee, pp.max_fee')
                     ->having('pp.id IS NOT NULL');

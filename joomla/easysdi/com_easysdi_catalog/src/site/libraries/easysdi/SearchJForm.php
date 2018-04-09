@@ -1,18 +1,19 @@
 <?php
+
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumCriteriaType.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRenderType.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/SearchForm.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
 
 class SearchJForm extends SearchForm {
 
@@ -30,7 +31,6 @@ class SearchJForm extends SearchForm {
         $this->simple->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
         $this->advanced->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
         $this->hidden->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
-        
     }
 
     public function getForm() {
@@ -77,14 +77,14 @@ class SearchJForm extends SearchForm {
         $field = null;
 
         foreach ($this->loadSystemFields() as $searchCriteria) {
-            if($searchCriteria->id == 654){
+            if ($searchCriteria->id == 654) {
                 $breakpoint = TRUE;
             }
-            
-            if(empty($searchCriteria->rendertype_id)){
+
+            if (empty($searchCriteria->rendertype_id)) {
                 $searchCriteria->rendertype_id = $searchCriteria->rel_rendertype_id;
             }
-            
+
             switch ($searchCriteria->rendertype_id) {
                 case EnumRendertype::$TEXTBOX:
                     $field = $this->getFormTextBoxField($searchCriteria);
@@ -180,6 +180,12 @@ class SearchJForm extends SearchForm {
         $field->setAttribute('label', $this->getLabel($searchCriteria));
         $field->setAttribute('name', $name);
         $field->setAttribute('default', $this->getDefault($searchCriteria, $name));
+        
+        //New behaviour with default values in Joomla! 3.7.x : https://github.com/joomla/joomla-cms/commit/97e4048357481d3747c2e19e4f31ab89824dfaa8
+        //Force the checked attribute if value==default
+        if($field->getAttribute('default') == $field->getAttribute('value')){
+            $field->setAttribute('checked', 'checked');
+        }
 
         return $field;
     }
@@ -303,10 +309,7 @@ class SearchJForm extends SearchForm {
             if (isset($searchCriteria->defaultvalue)) {
                 //If rendertype is text, checkbox or radiobutton, default value is 
                 //to get from the field 'defaultvalue'
-                if($searchCriteria->rendertype_id == 1 
-                        || $searchCriteria->rendertype_id == 5 
-                        || $searchCriteria->rendertype_id == 2 
-                        || $searchCriteria->rendertype_id == 3){
+                if ($searchCriteria->rendertype_id == 1 || $searchCriteria->rendertype_id == 5 || $searchCriteria->rendertype_id == 2 || $searchCriteria->rendertype_id == 3) {
                     return $searchCriteria->defaultvalue;
                 }
                 //Otherwise, default value is to query against the attributevalue table
@@ -320,7 +323,8 @@ class SearchJForm extends SearchForm {
     private function getDefaultFromSession($name) {
         if (key_exists($name, $this->data)) {
             if (is_array($this->data[$name])) {
-                return implode(',', array_filter($this->data[$name]));
+                $value_filter = array_filter($this->data[$name], 'FormUtils::arrayFilterKeep0');
+                return implode(',', $value_filter);
             } else {
                 return $this->data[$name];
             }
@@ -334,10 +338,39 @@ class SearchJForm extends SearchForm {
 
         switch ($searchCriteria->name) {
             case 'organism':
+                $sdiUser = sdiFactory::getSdiUser();
+
                 $query->select('DISTINCT o.id, o.guid, o.guid as value, o.name');
                 $query->from('#__sdi_organism o');
                 $query->innerJoin('#__sdi_resource r on o.id = r.organism_id');
+                $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
+                $query->innerJoin('#__sdi_catalog_resourcetype crt ON crt.resourcetype_id = rt.id');
+                $query->where('crt.catalog_id = ' . $this->item->id);
                 $query->order('o.name');
+
+                //apply resource's accessscope -> avoid to show orgnaisms without public resources
+                if ($sdiUser->isEasySDI) {
+
+                    //user's organism's categories
+                    $categories = $sdiUser->getMemberOrganismsCategoriesIds();
+                    if (is_null($categories) || count($categories) == 0) {
+                        $categories = array(0);
+                    }
+
+                    //user's organism
+                    $organisms = $sdiUser->getMemberOrganisms();
+
+                    $query->where("("
+                            . "r.accessscope_id = 1 "
+                            . "OR (r.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.category_id IN (" . implode(',', $categories) . ") AND a.entity_guid = r.guid ) > 0) "
+                            . "OR (r.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . (int) $organisms[0]->id . " AND a.entity_guid = r.guid ) = 1) "
+                            . "OR (r.accessscope_id = 4 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . (int) $sdiUser->id . " AND a.entity_guid = r.guid ) = 1)"
+                            . ")"
+                    );
+                } else {
+                    $query->where("r.accessscope_id = 1 ");
+                }
+
                 break;
             case 'definedBoundary':
 
@@ -347,12 +380,12 @@ class SearchJForm extends SearchForm {
                 if (!empty($params->searchboundarytype) && ($params->searchboundarytype == parent::SEARCHTYPEID)) {
                     $query->select('b.alias as value, t.text1 as name, b.guid');
                 } else {
-                    $query->select($query->concatenate(array('b.northbound','b.southbound','b.eastbound','b.westbound'), '#').' as value, t.text1 as name, b.guid');
+                    $query->select($query->concatenate(array('b.northbound', 'b.southbound', 'b.eastbound', 'b.westbound'), '#') . ' as value, t.text1 as name, b.guid');
                 }
 
                 $query->from('#__sdi_boundary b');
                 $query->innerJoin('#__sdi_translation t on b.guid = t.element_guid');
-                $query->where('t.language_id = ' . (int)$language->id);
+                $query->where('t.language_id = ' . (int) $language->id);
                 if (!empty($params->boundarycategory_id)) {
                     $query->where('b.category_id IN (' . implode(',', $params->boundarycategory_id) . ')');
                 }
@@ -396,13 +429,13 @@ class SearchJForm extends SearchForm {
 
         $query->select('scf.ogcsearchfilter');
         $query->from('#__sdi_searchcriteriafilter scf');
-        $query->where('scf.searchcriteria_id = ' . (int)$searchCriteria->id);
-        $query->where('scf.language_id = ' . (int)$language->id);
+        $query->where('scf.searchcriteria_id = ' . (int) $searchCriteria->id);
+        $query->where('scf.language_id = ' . (int) $language->id);
 
         $this->db->setQuery($query);
         $filter = $this->db->loadObject();
 
-        return $filter->ogcsearchfilter;
+        return isset($filter) ? $filter->ogcsearchfilter : null;
     }
 
     /**
@@ -450,7 +483,7 @@ class SearchJForm extends SearchForm {
                 if ($params->searchboundarytype == parent::SEARCHTYPEID) {
                     $query->select('b.alias as value');
                 } else {
-                    $query->select($query->concatenate(array('b.northbound','b.southbound','b.eastbound','b.westbound'), '#').' as value');
+                    $query->select($query->concatenate(array('b.northbound', 'b.southbound', 'b.eastbound', 'b.westbound'), '#') . ' as value');
                 }
 
                 $query->from('#__sdi_boundary as b');
@@ -463,7 +496,7 @@ class SearchJForm extends SearchForm {
                 $query->from('#__sdi_searchcriteria sc');
                 $query->innerJoin('#__sdi_catalog_searchcriteria csc on csc.searchcriteria_id = sc.id');
                 $query->where('sc.alias =' . $query->quote($alias));
-                $query->where('csc.catalog_id = ' . (int)$this->item->id);
+                $query->where('csc.catalog_id = ' . (int) $this->item->id);
                 break;
             default :
                 if (empty($ids)) {
@@ -489,7 +522,5 @@ class SearchJForm extends SearchForm {
             return '';
         }
     }
-
-    
 
 }

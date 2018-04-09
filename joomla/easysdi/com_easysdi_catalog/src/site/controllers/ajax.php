@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -128,7 +128,8 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
             return null;
             die();
         }
-        $name = addslashes($_GET['value']);
+        //$name = addslashes($_GET['value']);
+        $name = $_GET['value'];
         $query = $this->db->getQuery(true);
         $query->select('t.text1, b.alias, b.northbound, b.southbound, b.westbound, b.eastbound');
         $query->from('#__sdi_boundary AS b');

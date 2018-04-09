@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -347,6 +347,7 @@ if (!$showActions) {
                             switch ($productItem->productstate_id) {
                                 case Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE:
                                 case Easysdi_shopHelper::PRODUCTSTATE_DELETED:
+                                case Easysdi_shopHelper::PRODUCTSTATE_BLOCKED:
                                     $textColorClass = ' text-success ';
                                     $completedIcon = 'icon-checkmark';
                                     $completedString = 'COM_EASYSDI_SHOP_ORDER_PRODUCT_COMPLETED_ON';
@@ -418,7 +419,7 @@ if (!$showActions) {
                                             ?>
                                             <span class="<?php echo $textColorClass; ?> shop-basket-product-completed-date"><i class="icon <?php echo $completedIcon; ?>"> </i> <?php echo JText::sprintf($completedString, JHtml::date($completedDate, JText::_('DATE_FORMAT_LC2'))); ?></span><br/>
                                             <?php if (isset($productItem->remark) && strlen($productItem->remark) > 0) : ?>
-                                                <span class="<?php echo $textColorClass; ?> shop-basket-product-remark"><i class="icon icon-comment"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRODUCT_REMARK'); ?></span><span class="shop-basket-product-remark-content"><?php echo $productItem->remark; ?></span>
+                                            <span class="<?php echo $textColorClass; ?> shop-basket-product-remark"><i class="icon icon-comment"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_PRODUCT_REMARK'); ?></span><span class="shop-basket-product-remark-content"><?php echo nl2br($productItem->remark); ?></span>
                                                 <?php
                                             endif;
                                         elseif ($isWaiting):
@@ -522,15 +523,48 @@ if (!$showActions) {
                                             <?php
                                         else:
                                             //link for client
+                                            if ($productItem->otp == 1):?>
+                                                <span title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>" class="hasTip">
+                                                    <a id="<?php echo $item->id; ?>_<?php echo $productItem->id; ?>_otpdownload"  class="btn btn-success " title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
+                                                        <i class="icon-white icon-download"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWLOAD_BTN'); ?>
+                                                    </a>
+                                                </span>
+                                        <?php
+                                                
+                                            else:?>
+                                                <span title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>" class="hasTip">
+                                                    <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?><?php echo $access_token_param; ?>" class="btn btn-success " onClick="" title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
+                                                        <i class="icon-white icon-download"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWLOAD_BTN'); ?>
+                                                    </a>
+                                                </span>
+                                        <?php endif;
+                                        endif; ?>
+
+
+                                        <br/>
+                                        <small class="sdi-product-download-timeleft"><?php echo JText::sprintf('COM_EASYSDI_SHOP_ORDER_DOWLOAD_TIME_LEFT', JHtml::date($cmplDate, JText::_('DATE_FORMAT_LC3'))); ?></small>                                    
+
+                                        <?php
+                                    elseif ($productItem->productstate_id == Easysdi_shopHelper::PRODUCTSTATE_BLOCKED && !empty($productItem->file)) :
+                                        $cmplDate = new JDate($productItem->completed);
+                                        $cmplDate->modify('+' . $cleanuporderdelay . ' days');
+                                        ?>
+                                        <?php
+                                        if ($viewType == Easysdi_shopHelper::ORDERVIEW_REQUEST):
+                                            //link for provider and add a button to unblock
                                             ?>
-                                            <span title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>" class="hasTip">
-                                                <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?><?php echo $access_token_param; ?>" class="btn btn-success " onClick="" title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
-                                                    <i class="icon-white icon-download"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWLOAD_BTN'); ?>
-                                                </a>
-                                            </span>
+                                            <a href="index.php?option=com_easysdi_shop&task=request.unblock&diffusion_id=<?php echo $productItem->id; ?>&order_id=<?php echo $item->id; ?>" class="btn btn-success" onClick="" title="<?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DESCRIPTION_OTPPRODUCTUNBLOCK'); ?>">
+                                                    <i class="icon-white icon-lock"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_LABEL_OTPPRODUCTUNBLOCK'); ?>
+                                            </a><br/>
+                                            <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $productItem->id; ?>&order=<?php echo $item->id; ?>" class="hasTip" onClick="" title="<?php echo $filenameToDisplay . ' (' . Easysdi_shopHelper::getHumanReadableFilesize($productItem->size) . ')'; ?>">
+                                                <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_CHECK_FILE'); ?>
+                                            </a>
+                                            <?php
+                                        else:
+                                            //link for client
+                                            ?>
+                                        <div class="alert alert-danger" id="otpmessage" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_LABEL_OTPPRODUCTBLOCKED'); ?></div>
                                         <?php endif; ?>
-
-
                                         <br/>
                                         <small class="sdi-product-download-timeleft"><?php echo JText::sprintf('COM_EASYSDI_SHOP_ORDER_DOWLOAD_TIME_LEFT', JHtml::date($cmplDate, JText::_('DATE_FORMAT_LC3'))); ?></small>                                    
 
@@ -549,7 +583,11 @@ if (!$showActions) {
                                         <button class="btn disabled hide" disabled="disabled" onclick="">
                                             <i class="icon-white icon-download"> </i> <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWLOAD_BTN'); ?>
                                         </button><br/>
-                                        <small class="sdi-product-download-timeleft"><?php echo JText::plural('COM_EASYSDI_SHOP_ORDER_DOWLOAD_RETENTION_EXCEEDED', $cleanuporderdelay); ?></small>
+                                        <?php if ($productItem->otp == 1) {?>
+                                            <small class="sdi-product-download-timeleft"><?php echo JText::plural('COM_EASYSDI_SHOP_ORDER_DOWNLOADED_OTP', $cleanuporderdelay); ?></small>
+                                        <?php }else{?>
+                                            <small class="sdi-product-download-timeleft"><?php echo JText::plural('COM_EASYSDI_SHOP_ORDER_DOWLOAD_RETENTION_EXCEEDED', $cleanuporderdelay); ?></small>
+                                        <?php }?>    
                                     <?php endif; ?>                                    
                                 </td>
                             </tr>

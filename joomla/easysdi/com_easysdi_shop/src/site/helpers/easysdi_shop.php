@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -58,6 +58,7 @@ abstract class Easysdi_shopHelper {
     const PRODUCTSTATE_REJECTED_TP = 5; //product rejected by third party
     const PRODUCTSTATE_REJECTED_SUPPLIER = 6; // product rejected by supplier
     const PRODUCTSTATE_DELETED = 7;
+    const PRODUCTSTATE_BLOCKED = 8; //too many otp attempts
     //ORDRE VIEWS
     const ORDERVIEW_ORDER = 1; //client
     const ORDERVIEW_REQUEST = 2; //provider -> extraction
@@ -349,13 +350,13 @@ abstract class Easysdi_shopHelper {
                                 <div id="perimeter-recap-details-download">
                                     <?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS'); ?>
                                     <span id ="perimeter-recap-details-download-gml"><a href="#" onclick="downloadPerimeter('GML',<?php echo $item->id; ?>);
-                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GML'); ?></a>, </span>
+                                                        return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GML'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-kml"><a href="#" onclick="downloadPerimeter('KML',<?php echo $item->id; ?>);
-                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_KML'); ?></a>, </span>
+                                                        return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_KML'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-dxf"><a href="#" onclick="downloadPerimeter('DXF',<?php echo $item->id; ?>);
-                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_DXF'); ?></a>, </span>
+                                                        return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_DXF'); ?></a>, </span>
                                     <span id ="perimeter-recap-details-download-geojson"><a href="#" onclick="downloadPerimeter('GeoJSON',<?php echo $item->id; ?>);
-                                            return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GEOJSON'); ?></a></span>                                    
+                                                        return false;" ><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_DOWNLOAD_PERIMETER_AS_GEOJSON'); ?></a></span>                                    
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -473,7 +474,7 @@ abstract class Easysdi_shopHelper {
             $prices->cfg_vat = null;
             $prices->cfg_currency = null;
             $prices->cfg_rounding = null;
-            $prices->cfg_overall_default_fee = null;
+            $prices->cfg_overall_default_fee_te = null;
             $prices->cfg_free_data_fee = null;
             $prices->cal_total_amount_ti = null;
             $prices->cal_fee_ti = null;
@@ -492,17 +493,16 @@ abstract class Easysdi_shopHelper {
                 $prices->cfg_vat = (float) $orderPricing->cfg_vat;
                 $prices->cfg_currency = $orderPricing->cfg_currency;
                 $prices->cfg_rounding = (float) $orderPricing->cfg_rounding;
-                $prices->cfg_overall_default_fee = (float) $orderPricing->cfg_overall_default_fee;
+                $prices->cfg_overall_default_fee_te = (float) $orderPricing->cfg_overall_default_fee_te;
+                $prices->cfg_fee_apply_vat = (bool) $orderPricing->cfg_fee_apply_vat;
                 $prices->cfg_free_data_fee = (bool) $orderPricing->cfg_free_data_fee;
                 $prices->cal_total_amount_ti = $orderPricing->cal_total_amount_ti;
                 $prices->cal_fee_ti = $orderPricing->cal_fee_ti;
                 $prices->pricing_order_id = (int) $orderPricing->id;
             }
 
-
             // get the surface ordered - default to 0
             $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface / 1000000 : 0;
-
 
             // get prices by supplier
             if ($prices->pricing_order_id) {
@@ -537,7 +537,14 @@ abstract class Easysdi_shopHelper {
         // get organism pricing
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('pos.id, pos.supplier_name, pos.cfg_internal_free, pos.cfg_fixed_fee_ti, pos.cfg_data_free_fixed_fee, pos.cal_total_rebate_ti, pos.cal_fee_ti, pos.cal_total_amount_ti')
+                ->select('pos.id, pos.supplier_name, '
+                        . 'pos.cfg_internal_free, '
+                        . 'pos.cfg_fixed_fee_te, '
+                        . 'pos.cfg_fixed_fee_apply_vat, '
+                        . 'pos.cfg_data_free_fixed_fee, '
+                        . 'pos.cal_total_rebate_ti, '
+                        . 'pos.cal_fee_ti, '
+                        . 'pos.cal_total_amount_ti')
                 ->from('#__sdi_pricing_order_supplier pos')
                 ->where('pos.pricing_order_id=' . $prices->pricing_order_id)
                 ->where('pos.supplier_id=' . $provider->id);
@@ -546,9 +553,14 @@ abstract class Easysdi_shopHelper {
         // config
         $provider->name = $priceOrdSupplier->supplier_name;
         $provider->cfg_internal_free = (bool) $priceOrdSupplier->cfg_internal_free;
-        $provider->cfg_fixed_fee_ti = $priceOrdSupplier->cfg_fixed_fee_ti;
+        $provider->cfg_fixed_fee_te = $priceOrdSupplier->cfg_fixed_fee_te;
+        $provider->cfg_fixed_fee_apply_vat = (bool) $priceOrdSupplier->cfg_fixed_fee_apply_vat;
         $provider->cfg_data_free_fixed_fee = (bool) $priceOrdSupplier->cfg_data_free_fixed_fee;
 
+        //Calculate fixed fee taxes included
+        $provider->cfg_fixed_fee_ti = ($provider->cfg_fixed_fee_apply_vat) ? $provider->cfg_fixed_fee_te * (1 + $prices->cfg_vat / 100) : $provider->cfg_fixed_fee_te;
+
+        //
         $provider->pricing_order_supplier_id = (int) $priceOrdSupplier->id;
 
         // gwt the provider tax
@@ -573,7 +585,6 @@ abstract class Easysdi_shopHelper {
                 $provider->hasFeeWithoutPricingProfileProduct = true;
             }
         }
-
 
         return $provider;
     }
@@ -625,11 +636,11 @@ abstract class Easysdi_shopHelper {
             $pricingProfile = $db->loadObject();
 
             // get base parameters
-            //$pricingProfile = new sdiPricingProfile();
             $price->cfg_profile_id = $pricingProfile->pricing_profile_id;
             $price->cfg_profile_guid = null;
             $price->cfg_profile_name = $pricingProfile->pricing_profile_name;
-            $price->cfg_fixed_fee = $pricingProfile->cfg_fixed_fee;
+            $price->cfg_fixed_fee_te = $pricingProfile->cfg_fixed_fee_te;
+            $price->cfg_apply_vat = $pricingProfile->cfg_apply_vat;
             $price->cfg_surface_rate = $pricingProfile->cfg_surface_rate;
             $price->cfg_min_fee = $pricingProfile->cfg_min_fee;
             $price->cfg_max_fee = $pricingProfile->cfg_max_fee;
@@ -680,7 +691,8 @@ abstract class Easysdi_shopHelper {
             $prices->cfg_vat = (float) JComponentHelper::getParams('com_easysdi_shop')->get('vat', 0);
             $prices->cfg_currency = JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF');
             $prices->cfg_rounding = (float) JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
-            $prices->cfg_overall_default_fee = (float) JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_fee', 0);
+            $prices->cfg_overall_default_fee_te = (float) JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_fee', 0);
+            $prices->cfg_fee_apply_vat = (bool) JComponentHelper::getParams('com_easysdi_shop')->get('overall_fee_apply_vat', true);
             $prices->cfg_free_data_fee = (bool) JComponentHelper::getParams('com_easysdi_shop')->get('free_data_fee', false);
 
             // get the surface ordered - default to 0
@@ -701,9 +713,11 @@ abstract class Easysdi_shopHelper {
 
             // set the platform tax
             if (!$prices->hasFeeWithoutPricingProfileProduct && $prices->cal_total_amount_ti == 0 && !$prices->cfg_free_data_fee) {
+                $prices->cal_fee_te = 0;
                 $prices->cal_fee_ti = 0;
             } else {
-                $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
+                $prices->cal_fee_te = $prices->cfg_overall_default_fee_te;
+                $prices->cal_fee_ti = ($prices->cfg_fee_apply_vat) ? $prices->cfg_overall_default_fee_te * (1 + $prices->cfg_vat / 100) : $prices->cfg_overall_default_fee_te ;
 
                 //Current user categories are used to defined platform fee.
                 $db = JFactory::getDbo();
@@ -727,7 +741,8 @@ abstract class Easysdi_shopHelper {
                     $category = $db->loadObject();
 
                     if ($category !== null) {
-                        $prices->cal_fee_ti = $category->overall_fee;
+                        $prices->cal_fee_te = $category->overall_fee;
+                        $prices->cal_fee_ti = ($prices->cfg_fee_apply_vat) ? $category->overall_fee * (1 + $prices->cfg_vat / 100) : $category->overall_fee;
                         $prices->ind_lbl_category_order_fee = $category->name;
                     }
                 }
@@ -763,7 +778,7 @@ abstract class Easysdi_shopHelper {
         // get organism pricing params
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
+                ->select('o.name, o.internal_free, o.fixed_fee_te, o.data_free_fixed_fee, o.fixed_fee_apply_vat')
                 ->from('#__sdi_organism o')
                 ->where('o.id=' . $provider->id);
         $db->setQuery($query);
@@ -771,8 +786,9 @@ abstract class Easysdi_shopHelper {
 
         $provider->name = $organism->name;
         $provider->cfg_internal_free = (bool) $organism->internal_free;
-        $provider->cfg_fixed_fee_ti = $organism->fixed_fee_ti;
+        $provider->cfg_fixed_fee_te = $organism->fixed_fee_te;
         $provider->cfg_data_free_fixed_fee = (bool) $organism->data_free_fixed_fee;
+        $provider->cfg_fixed_fee_apply_vat = (bool) $organism->fixed_fee_apply_vat;
 
         // calculate supplier rebate
         $internalFreeOrder = false;
@@ -814,7 +830,8 @@ abstract class Easysdi_shopHelper {
             }
         }
 
-        // set the provider tax
+        // set the provider tax        
+        $provider->cfg_fixed_fee_ti = ($provider->cfg_fixed_fee_apply_vat) ? $provider->cfg_fixed_fee_te * (1 + $prices->cfg_vat / 100) : $provider->cfg_fixed_fee_te;
         $provider->cal_fee_ti = ($provider->cal_total_amount_ti > 0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
 
         // total amount for this provider
@@ -857,13 +874,14 @@ abstract class Easysdi_shopHelper {
         $price->cfg_profile_id = $pricingProfile->id;
         $price->cfg_profile_guid = $pricingProfile->guid;
         $price->cfg_profile_name = $pricingProfile->name;
-        $price->cfg_fixed_fee = $pricingProfile->fixed_fee;
+        $price->cfg_fixed_fee_te = $pricingProfile->fixed_fee;
         $price->cfg_surface_rate = $pricingProfile->surface_rate;
         $price->cfg_min_fee = $pricingProfile->min_fee;
         $price->cfg_max_fee = $pricingProfile->max_fee;
+        $price->cfg_apply_vat = $pricingProfile->apply_vat;
 
         // calculate product price
-        $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
+        $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee_te + ($price->cfg_surface_rate * $prices->surface));
 
         // limit price according to min and max price
         if ($price->cfg_max_fee > 0 && $price->cal_amount_data_te > $price->cfg_max_fee) {
@@ -902,8 +920,8 @@ abstract class Easysdi_shopHelper {
         $cal_total_rebate_te = self::rounding($price->cal_amount_data_te - $price->cal_total_amount_te);
 
         // final price TI
-        $price->cal_total_amount_ti = self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding);
-        $price->cal_total_rebate_ti = self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding);
+        $price->cal_total_amount_ti = ($price->cfg_apply_vat) ? self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding) : self::rounding($price->cal_total_amount_te , $prices->cfg_rounding) ;
+        $price->cal_total_rebate_ti = ($price->cfg_apply_vat) ? self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat / 100), $prices->cfg_rounding) : self::rounding($cal_total_rebate_te , $prices->cfg_rounding);
 
         return $price;
     }
@@ -974,6 +992,34 @@ abstract class Easysdi_shopHelper {
      * Ensure to compare the return to === true for correct completion of the process
      */
     private static function updatePricingSupplierSummary($pos, $po, &$db) {
+        
+        // count the products rejected by the current provider
+        $db->setQuery($db->getQuery(true)
+                        ->select('od.productstate_id')
+                        ->from('#__sdi_pricing_order_supplier_product posp')
+                        ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = posp.product_id')
+                        ->where('od.order_id='. (int) $po->order_id)
+                        ->where('posp.pricing_order_supplier_id=' . (int) $pos->id)
+                        ->group('od.productstate_id'));
+        $productsRejected = $db->loadColumn();
+        if(count($productsRejected) == 1 && $productsRejected[0] == Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER)
+        {
+            //All supplier products were rejected : cancel supplier fee
+            $pos->cal_fee_ti = 0;
+            $pos->cal_total_amount_ti = 0;
+            $pos->cal_total_rebate_ti = 0;
+            if (!$pos->save(array())) {
+                return 'Cannot update pricing order supplier';
+            }
+
+            $rpo = self::updatePricingOrderSummary($po, $db);
+            if ($rpo !== true) {
+                return $rpo;
+            }
+            
+            return true;
+        }
+                
         // count the products without price define for the current provider
         $db->setQuery($db->getQuery(true)
                         ->select('COUNT(1)')
@@ -984,7 +1030,6 @@ abstract class Easysdi_shopHelper {
         $productsWithoutPrice = $db->loadResult();
         //if all products of this supplier have a price, we can update the supplier pricing branch
         if ($productsWithoutPrice == 0) {
-
             $db->setQuery($db->getQuery(true)
                             ->select('SUM(posp.cal_total_amount_ti) orderSupplierProductsTotal, SUM(posp.cal_total_rebate_ti) orderSupplierRebatesTotal')
                             ->from('#__sdi_pricing_order_supplier_product posp')
@@ -1024,6 +1069,28 @@ abstract class Easysdi_shopHelper {
      * Ensure to compare the return to === true for correct completion of the process
      */
     private static function updatePricingOrderSummary($po, &$db) {
+        // count the products rejected by the current provider
+        $db->setQuery($db->getQuery(true)
+                        ->select('od.productstate_id')
+                        ->from('#__sdi_pricing_order_supplier pos')
+                        ->innerJoin('#__sdi_pricing_order_supplier_product posp ON posp.pricing_order_supplier_id = pos.id')
+                        ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = posp.product_id')
+                        ->where('od.order_id='. (int) $po->order_id)
+                        ->group('od.productstate_id'));
+        $productsRejected = $db->loadColumn();
+        if(count($productsRejected) == 1 && $productsRejected[0] == Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER)
+        {
+            //All products were rejected : cancel plateform fee
+            $po->cal_fee_ti = 0;
+            $po->cal_total_amount_ti = 0;
+            
+            if (!$po->save(array())) {
+                return 'Cannot update pricing order';
+            }
+            
+            return true;
+        }
+        
         //count all the suppliers pricing of the order without price
         $db->setQuery($db->getQuery(true)
                         ->select('COUNT(1)')
@@ -1430,6 +1497,104 @@ abstract class Easysdi_shopHelper {
             }
         }
     }
+    
+    /**
+     * notifyCustomerOTP - notify the customer of the OTP generated by EasySDI
+     * 
+     * @param integer $order_id
+     * @param string $OTP
+     * @return void
+     * @since 4.4.2
+     */
+    public static function notifyCustomerOTP($orderId,$otp) {
+        $db = JFactory::getDbo();
+
+        $basket = new sdiBasket();
+        $basket->loadOrder($orderId);
+        $stringParser = new Easysdi_shopBasketStringParser($basket);
+        
+        $subject = $stringParser->getReplacedStringForOTP(JText::_('COM_EASYSDI_SHOP_NOTIFICATION_OTP_SUBJECT'));
+        $bodytext = $stringParser->getReplacedStringForOTP(JText::_('COM_EASYSDI_SHOP_NOTIFICATION_OTP_BODY'),$otp);
+        
+        if (!$basket->sdiUser->sendMail($subject, $bodytext)) {
+                $errors = true;
+        }
+
+        if ($errors && !$silentFail) {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+        }
+    }
+    
+    /**
+     * notifyCustomerOTP - notify the customer of the OTP generated by EasySDI
+     * 
+     * @param integer $order_id
+     * @param string $OTP
+     * @return void
+     * @since 4.4.2
+     */
+    public static function notifyCustomerOTPUnblocked($orderId) {
+        $db = JFactory::getDbo();
+
+        $basket = new sdiBasket();
+        $basket->loadOrder($orderId);
+        $stringParser = new Easysdi_shopBasketStringParser($basket);
+        
+        $subject = $stringParser->getReplacedStringForOTP(JText::_('COM_EASYSDI_SHOP_NOTIFICATION_OTPUNBLOCKED_SUBJECT'));
+        $bodytext = $stringParser->getReplacedStringForClient(JText::_('COM_EASYSDI_SHOP_NOTIFICATION_OTPUNBLOCKED_BODY'));
+        
+        if (!$basket->sdiUser->sendMail($subject, $bodytext)) {
+                $errors = true;
+        }
+
+        if ($errors && !$silentFail) {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+        }
+    }
+    
+    /**
+     * notifyExtractionResponsible - notify the extraction responsible
+     * 
+     * @param sdiBasket $basket
+     * @param Easysdi_shopBasketStringParser $stringParser
+     * @since 4.4.0
+     */
+    public static function notifyExtractionResponsibleOTPChanceReached($orderdiffusion) {
+        //extraction responsible users
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select($db->qn('uro.user_id', 'user_id'))
+                ->select($db->qn('d.id', 'diffusion_id'))
+                ->from($db->qn('#__sdi_order', 'o'))
+                ->innerJoin($db->qn('#__sdi_order_diffusion', 'od') . ' ON od.order_id = o.id')
+                ->innerJoin($db->qn('#__sdi_diffusion', 'd') . ' ON od.diffusion_id = d.id')
+                ->innerJoin($db->qn('#__sdi_version', 'v') . ' ON d.version_id = v.id')
+                ->innerJoin($db->qn('#__sdi_user_role_resource', 'uro') . ' ON v.resource_id = uro.resource_id AND uro.role_id = ' . self::ROLE_EXTRACTIONRESPONSIBLE)
+                ->where('o.id = ' . (int) $orderdiffusion->order_id)
+                ->where('od.diffusion_id = ' . (int) $orderdiffusion->diffusion_id);
+        $db->setQuery($query);
+        $extractionResponsibles = $db->loadRowList();
+
+        //group diffusions by users
+        $grouppedExtractionResponsibles = array();
+        foreach ($extractionResponsibles as $nf) {
+            $grouppedExtractionResponsibles[$nf[0]][] = $nf[1];
+        }
+        
+        $basket = new sdiBasket();
+        $basket->loadOrder($orderdiffusion->order_id);
+        $stringParser = new Easysdi_shopBasketStringParser($basket);
+
+        foreach ($grouppedExtractionResponsibles as $erUserId => $erUserDiffusions) {
+            $user = new sdiUser($erUserId);
+            $subject = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_OTPMAXATTEMPT_SUBJECT');
+            $bodytext = JText::_('COM_EASYSDI_SHOP_NOTIFICATION_OTPMAXATTEMPT_BODY');
+
+            if (!$user->sendMail($subject, $stringParser->getReplacedStringForSupplier($bodytext, $erUserDiffusions))) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            }
+        }
+    }
 
     /**
      * Add javascript config variables in DOM for SHOP MAP
@@ -1443,7 +1608,7 @@ abstract class Easysdi_shopHelper {
                 mapStrokeWidth = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_stroke_width', 2) . ',
                 mapPointStrokeWidth = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_point_stroke_width', 2) . ',
                 mapPointRadius = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_point_radius', 5) . ',
-                mapRotateIconURL = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', Juri::base(true) .'/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png') . '",
+                mapRotateIconURL = "' . JComponentHelper::getParams('com_easysdi_shop')->get('map_rotate_icon_url', Juri::base(true) . '/components/com_easysdi_shop/views/basket/tmpl/rotate_20.png') . '",
                 mapMinSurfaceRectangle = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle', 0) . ',
                 mapMinSurfaceRectangleBorder = ' . JComponentHelper::getParams('com_easysdi_shop')->get('map_min_surface_rectangle_border', 100) . ';');
     }
@@ -1453,7 +1618,7 @@ abstract class Easysdi_shopHelper {
      * @return String HTML element of basket modal
      */
     public static function getAddToBasketModal() {
-        return '<div id="modal-dialog" class="modal hide fade" style="z-index: 1000000" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        return '<div id="modal-dialog-atb" class="modal hide fade" style="z-index: 1000000" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         <h3 id="modalLabel">' . JText::_("COM_EASYSDI_SHOP_ORDER_DIALOG_HEADER") . '</h3>
@@ -1467,6 +1632,41 @@ abstract class Easysdi_shopHelper {
                     </div>
                 </div>';
     }
+    
+     /**
+     * Return the modal's HTML to ask for authentication in order to download OTP file
+     * @return String HTML element of OTP modal
+     */
+    public static function downloadOTPProductModal() {
+        return '<div id="modal-dialog-otp" class="modal hide fade" style="z-index: 1000000" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                     <form id="form_otp" action="#" class="form-validate form-horizontal">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3 id="modalLabel">' . JText::_("COM_EASYSDI_SHOP_ORDER_DIALOG_OTP_HEADER") . '</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger" id="otpmessage" >
+                            </div>
+                            <p><div id="modal-dialog-body-text">' . JText::_("COM_EASYSDI_SHOP_ORDER_DIALOG_OTP_ASK_AUTH") . '</div></p>
+                            <div class="control-group">
+                            <div class="control-label"><label id="otp-lbl" for="otp_password" class="" aria-invalid="false">' . JText::_("COM_EASYSDI_SHOP_ORDER_DIALOG_OTP_LABEL") . '</label></div>
+                            <div class="controls"><div class="input-append">
+                                    <input type="password" name="otp" id="otp" value="" class="required" aria-required="true" required="required" aria-invalid="false">
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">' . JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_ABORT") . '</button>
+                            <input type="submit"  class="btn btn-danger"  value="' . JText::_("COM_EASYSDI_SHOP_ORDER_MODAL_BTN_DOWNLOAD") . '"></input>
+                        </div>
+                    <input type="hidden" id="order_id" name="order_id">
+                    <input type="hidden" id="diffusion_id" name="diffusion_id">
+                    </form>
+                </div>';
+    }
+    
 
     /**
      * Get a phrase like "2 hours ago" from a date. Units are: Year, Month, day, hour, minute, seconds
@@ -1529,7 +1729,8 @@ abstract class Easysdi_shopHelper {
                     $extraction->productstate_id == self::PRODUCTSTATE_AVAILABLE ||
                     $extraction->productstate_id == self::PRODUCTSTATE_DELETED ||
                     $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_SUPPLIER ||
-                    $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_TP
+                    $extraction->productstate_id == self::PRODUCTSTATE_REJECTED_TP ||
+                    $extraction->productstate_id == self::PRODUCTSTATE_BLOCKED
             ) {
                 $progressCount++;
             }
@@ -1712,7 +1913,9 @@ abstract class Easysdi_shopHelper {
 
             $chunk = 8 * 1024 * 1024; // bytes per chunk (10 MB)
 
-            $size = filesize($file);
+            $file_size = filesize($file);
+	    $size = $file_size >= 0 ? $file_size : 4*1024*1024*1024 + $file_size;
+            
             if ($size > $chunk) {
                 set_time_limit(0);
                 ignore_user_abort(false);
@@ -1757,7 +1960,34 @@ abstract class Easysdi_shopHelper {
 
                 readfile($file);
             }
-
+            
+            $order = JTable::getInstance('order', 'Easysdi_shopTable');
+            $order->load($orderdiffusion->order_id);
+            
+            $currentUser = sdiFactory::getSdiUser();
+            $clientUser = new sdiUser((int) $order->user_id);
+            
+            $userExtrationsResponsible = $currentUser->getResponsibleExtraction();
+            if (!is_array($userExtrationsResponsible)) {
+                $userExtrationsResponsible = array();
+            }
+            
+            $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+            $diffusion->load($orderdiffusion->diffusion_id);
+            
+            //if diffusion securized by OTP and download not done by the responsible of extraction
+            if (($diffusion->otp == 1) && (!in_array($orderdiffusion->diffusion_id, $userExtrationsResponsible)))
+            {
+                //Delete folder
+                $orderResponseFolderBase = JPATH_ROOT . JComponentHelper::getParams('com_easysdi_shop')->get('orderresponseFolder');
+                $orderResponseFolder = $orderResponseFolderBase . '/' . $orderdiffusion->order_id .'/'.$orderdiffusion->diffusion_id;
+                if (JFolder::exists($orderResponseFolder)) {
+                    JFolder::delete($orderResponseFolder);
+                }
+                $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_DELETED;
+                $orderdiffusion->store();
+            }
+            
             die();
         }
     }

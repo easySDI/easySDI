@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -63,11 +63,11 @@ class sdiBasket {
 
                 //create the copy name
                 $this->name = $this->createCopyName();
-
+                
                 //Check if the third party is still available
                 $this->checkThirdParty();
-            }
-
+                    }
+                
             //For "non copies": reload the user who's created the order (e.g. in views: order, request )
             if (!$copy) {
                 $this->sdiUser = sdiFactory::getSdiUser($this->order->user_id);
@@ -156,13 +156,15 @@ class sdiBasket {
                 $ex->completed = $extraction->completed;
                 $ex->file = $extraction->file;
                 $ex->displayname = $extraction->displayname;
+                $ex->otp = $extraction->otp;
+                $ex->otpchance = $extraction->otpchance;
                 $ex->size = $extraction->size;
                 $ex->created_by = sdiFactory::getSdiUserByJoomlaId($extraction->created_by)->name;
 
                 $this->addExtraction($ex);
                 $this->perimeters = $ex->perimeters;
             endforeach;
-                        
+
             if($copy && $isPerimeterChanged):
                 //Check if a common perimeter is still available
                 $perimeters = array();
@@ -179,15 +181,15 @@ class sdiBasket {
                                 //break 2;
                             endif;
                             $perimeters[$perimeter->id] = $perimeters[$perimeter->id] + 1;
-                        else:                            
+                else:
                             if(count($this->extractions) == 1):
                                 $hasCommon = true;
                                 array_push($orderPerimeters, $perimeter);
                             else:
                                 $perimeters[$perimeter->id] = 1;
-                            endif;
+                endif;
                         endif;
-                    endforeach;
+            endforeach;
                 endforeach;
                 if(!$hasCommon):
                         JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_ERROR'), 'error');
@@ -198,7 +200,7 @@ class sdiBasket {
                         $this->surface = null;  
                         $this->perimeters = $orderPerimeters;
                         JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_PERIMETER'), 'warning');
-                    
+
                 endif;
             endif;
         } catch (JDatabaseException $ex) {
@@ -312,7 +314,7 @@ class sdiBasket {
         $params = get_object_vars($order);
         foreach ($params as $key => $value) {
             $this->$key = $value;
-        }
+}
         return $order;
     }
 
@@ -396,9 +398,9 @@ class sdiBasket {
         $query = $db->getQuery(true)
                 ->select('d.id as id, d.state as diffusionstate_id,d.guid as guid,d.hasextraction,r.guid as rguid,'
                         . ' m.metadatastate_id,r.accessscope_id as raccessscope_id,  '
-                        . 'd.accessscope_id as accessscope_id, od.id as orderdiffusion_id, '
+                        . 'd.accessscope_id as accessscope_id, od.id as orderdiffusion_id, d.otp as otp,'
                         . 'od.productstate_id, od.remark, od.completed,' . $db->quoteName('od.file') . ' , '
-                        . 'od.displayName as displayname, od.size, od.created_by')
+                        . 'od.displayName as displayname, od.otpchance as otpchance, od.size, od.created_by')
                 ->from('#__sdi_diffusion d')
                 ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                 ->innerJoin('#__sdi_order o ON o.id = od.order_id')

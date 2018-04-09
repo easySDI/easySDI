@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.4.5
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2017. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -60,7 +60,7 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
         $ex = false;
         $db = JFactory::getDbo();
         try {
-            
+
             try {
                 $db->transactionStart();
             } catch (Exception $exc) {
@@ -87,7 +87,7 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
                     ->insert($db->quoteName('#__sdi_pricing_profile_category_pricing_rebate'))
                     ->columns($db->quoteName('pricing_profile_id') . ', ' . $db->quoteName('category_id'));
             $doInsert = false;
-            if(!empty($dataCategories)){
+            if (!empty($dataCategories)) {
                 foreach ($dataCategories as $category_id => $isFree) {
                     if ((bool) $isFree) {
                         $doInsert = true;
@@ -161,21 +161,38 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
         $inputs = $app->input;
 
         $profile_id = $inputs->getInt('id');
-        
+
         $organism_id = $app->getUserState('com_easysdi_shop.edit.pricingprofile.organism_id');
 
         $db = JFactory::getDbo();
+
+        //Avoid removal of an affected profile
+        $query = $db->getQuery(true);
+        $query->select('count(id)');
+        $query->from('#__sdi_diffusion');
+        $query->where('pricing_profile_id=' . (int) $profile_id);
+        $query->where('state = 1');
+        $query->where('hasextraction = 1');
+        $db->setQuery($query);
+        $countDIffusionWithProfile = (int) $db->loadResult();
+        if ($countDIffusionWithProfile > 0) {
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_PRICINGPROFILE_UNABLE_TO_DELETE_WITH_DIFFUSION'), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism&layout=edit&id=' . $organism_id, false));
+            return;
+        }
+
+
         $query = $db->getQuery(true);
         $query->delete('#__sdi_pricing_profile');
         $query->where('id=' . (int) $profile_id);
-        
+
         $db->setQuery($query);
-        
-        if($db->execute()!==false){
+
+        if ($db->execute() !== false) {
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_DELETED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism&layout=edit&id=' . $organism_id, false));
-        }else{
-            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_DELETED_FAIL'));
+        } else {
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_DELETED_FAIL'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism&layout=edit&id=' . $organism_id, false));
         }
     }
