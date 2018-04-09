@@ -1,6 +1,6 @@
 ﻿<?php
 /**
- * @version     4.4.5
+ * @version     4.5.0
  * @package     com_easysdi_core
  * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
