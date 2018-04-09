@@ -55,3 +55,17 @@ body {
     z-index: 1000;
 }
 
+.leaflet-popup-scrolled {
+    overflow: auto;
+    border-bottom: 0px;
+    border-top: 0px;
+}
+
+.easygetfeature_pre {
+    width: 100% ;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+

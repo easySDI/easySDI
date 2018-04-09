@@ -483,6 +483,7 @@
 		 	gxp/plugins/LoadingIndicator.js,
                         gxp/plugins/WMSSource.js,
                         gxp/plugins/GoogleGeocoder.js,
+                        gxp/plugins/Popup.js,
                         gxp/widgets/ScaleOverlay.js,
                         gxp/widgets/Viewer.js,
                         gxp/widgets/form/GoogleGeocoderComboBox.js,
