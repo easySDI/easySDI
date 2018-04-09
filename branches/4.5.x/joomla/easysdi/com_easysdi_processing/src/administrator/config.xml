@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<fieldset name="folders"
+		label="COM_EASYSDI_PROCESSING_CONFIG_LBL_PARAMSFOLDERS"
+		description="COM_EASYSDI_PROCESSING_CONFIG_DESC_PARAMSFOLDERS"
+	>
+            <field name="maxuploadfilesize"
+            type="text"
+            default="32"
+            class="inputbox input-xxlarge"
+            required="true"
+            size="500"
+            label="COM_EASYSDI_PROCESSING_CONFIG_LBL_MAXUPLOADFILESIZE"
+            description="COM_EASYSDI_PROCESSING_CONFIG_DESC_MAXUPLOADFILESIZE"></field>
+            <field name="upload_path"
+                   type="text"
+                   default="/storage"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_PROCESSING_CONFIG_LBL_UPLOADPATH"
+                   description="COM_EASYSDI_PROCESSING_CONFIG_DESC_UPLOADPATH">
+            </field>
+            <field name="output_path"
+                   type="text"
+                   default="/output"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_PROCESSING_CONFIG_LBL_OUTPUTPATH"
+                   description="COM_EASYSDI_PROCESSING_CONFIG_DESC_OUTPUTPATH">
+            </field>
+	</fieldset>
+
+      <fieldset name="email"
+            label="COM_EASYSDI_PROCESSING_CONFIG_LBL_PARAMSEMAILS"
+            description="COM_EASYSDI_PROCESSING_CONFIG_DESC_PARAMSEMAILS"
+      >
+            <field name="email_prefix"
+                   type="text"
+                   default="[Processing]"
+                   class="inputbox input-xlarge"
+                   size="500"
+                   label="COM_EASYSDI_PROCESSING_CONFIG_LBL_EMAIL_PREFIX"
+                   description="">
+            </field>
+
+            <field name="ready_title"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   size="500"
+                   label="COM_EASYSDI_PROCESSING_CONFIG_LBL_EMAIL_TITLE_READY"
+                   description="">
+            </field>
+
+            <field name="new_title"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   size="500"
+                   label="COM_EASYSDI_PROCESSING_CONFIG_LBL_EMAIL_TITLE_NEW_PROCESSING"
+                   description="">
+            </field>
+
+
+      </fieldset>
+      <fieldset name="permissions"
+        description="JCONFIG_PERMISSIONS_DESC"
+        label="JCONFIG_PERMISSIONS_LABEL">
+        <field name="rules"
+            type="rules"
+            component="com_easysdi_processing"
+            class="inputbox"
+            filter="rules"
+            validate="rules"
+            label="JCONFIG_PERMISSIONS_LABEL"
+            section="component" />
+    </fieldset>
+</config>

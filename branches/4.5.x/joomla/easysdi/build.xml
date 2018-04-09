@@ -1,0 +1,455 @@
+<?xml version="1.0" ?>
+<project default="easysdi" basedir="../">
+    
+    <!-- Global export path -->
+    <property name="root.out.dir" value="easysdi" />
+    <property name="parent.component.name" value="easysdi"/>
+    <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
+    <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
+    <property name="version" value="4.4.5"/>
+    
+    <!-- Joomla component path -->
+    <property name="joomla.administrator.components.dir" value="administrator/components" />
+    <property name="joomla.administrator.modules.dir" value="administrator/modules" />
+    <property name="joomla.administrator.language.dir" value="administrator/language" />
+    <property name="joomla.site.components.dir" value="components" />
+    <property name="joomla.site.language.dir" value="language" />
+    <property name="joomla.template.dir" value="templates" />
+    <property name="joomla.administrator.template.dir" value="administrator/templates" />
+    
+    <!-- Joomla plugins path -->
+    <property name="joomla.plugin.path" value="plugins"/>
+    
+    <!-- Joomla module path -->
+    <property name="joomla.module.path" value="modules"/>
+    
+    <!-- Java librairies path -->
+    <property name="lib.path" value="easysdi/utils/lib"/>
+    
+    <!-- Joomla xml properties -->
+    <property name="xml.packager" value="EasySDI Community"/>
+    <tstamp>
+        <format property="xml.releaseDate" pattern="dd MMMM yyyy"/>
+    </tstamp>
+    <property name="xml.copyright" value="Copyright (C) 2012. All rights reserved."/>
+    <property name="xml.license" value="GNU General Public License version 3 or later; see LICENSE.txt"/>
+    <property name="xml.author" value="EasySDI Community"/>
+    <property name="xml.authorEmail" value="contact@easysdi.org"/>
+    <property name="xml.authorUrl" value="http://www.easysdi.org"/>
+    
+    <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="${lib.path}/compiler.jar"/>
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${lib.path}/ant-contrib-1.0b3.jar"/>
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${lib.path}/ant-contrib-1.0b3.jar"/>
+    <taskdef name="jsmin" classname="net.matthaynes.jsmin.JSMin_Task" classpath="${lib.path}/jsmin.0.2.4.jar"/>
+    
+    <!-- Import sub ant scripts -->
+    <include file="com_easysdi_core/build.xml" as="core"/>
+    <include file="com_easysdi_catalog/build.xml" as="catalog"/>
+    <include file="com_easysdi_map/build.xml" as="map"/>
+    <include file="com_easysdi_monitor/build.xml" as="monitor"/>
+    <include file="com_easysdi_service/build.xml" as="service"/>
+    <include file="com_easysdi_dashboard/build.xml" as="dashboard"/>
+    <include file="com_easysdi_contact/build.xml" as="contact"/>
+    <include file="com_easysdi_shop/build.xml" as="shop"/>
+    <include file="com_easysdi_processing/build.xml" as="processing"/>
+    <include file="plg_easysdi_monitor/build.xml" as="plg-monitor"/>
+    <include file="plg_easysdi_contact/build.xml" as="plg-contact"/>
+    <include file="plg_easysdi_service/build.xml" as="plg-service"/>
+    <include file="plg_getusers/build.xml" as="plg-getusers"/>
+    <include file="plg_getorganisms/build.xml" as="plg-getorganisms"/>
+    <include file="plg_getresources/build.xml" as="plg-getresources"/>
+    <include file="plg_getdiffudownloadables/build.xml" as="plg-getdiffudownloadables"/>
+    <include file="plg_getdiffudownloads/build.xml" as="plg-getdiffudownloads"/>
+    <include file="plg_getdiffuextractables/build.xml" as="plg-getdiffuextractables"/>
+    <include file="plg_getdiffuextractions/build.xml" as="plg-getdiffuextractions"/>
+    <include file="plg_getordersaresptime/build.xml" as="plg-getordersaresptime"/>
+    <include file="plg_getusersbutton/build.xml" as="plg-getusersbutton"/>
+    <include file="plg_getordersbutton/build.xml" as="plg-getordersbutton"/>
+    <include file="tpl_easysdiadminpositions/build.xml" as="tpl-easysdiadminpositions"/>
+    <include file="mod_easysdi_basket/build.xml" as="mod-basket"/>
+    <include file="mod_easysdi_lastorders/build.xml" as="mod-lastorders"/>
+    <include file="mod_easysdi_pendingrequests/build.xml" as="mod-pendingrequests"/>
+    <include file="mod_easysdi_admininfo/build.xml" as="mod-admininfo"/>
+    <include file="mod_easysdi_adminbutton/build.xml" as="mod-adminbutton"/>
+    
+    <!-- Packaging targets -->
+    <target name="package-all" 
+            depends="package-com-core,
+                    package-com-catalog,
+                    package-com-map,
+                    package-com-monitor,
+                    package-com-service,
+                    package-com-dashboard,
+                    package-com-contact,
+                    package-com-shop,
+                    package-com-processing,
+                    package-plg-contact,
+                    package-plg-monitor,
+                    package-plg-service,
+                    package-plg-getusers,
+                    package-plg-getorganisms,
+                    package-plg-getresources,
+                    package-plg-getdiffudownloadables,
+                    package-plg-getdiffudownloads,
+                    package-plg-getdiffuextractables,
+                    package-plg-getdiffuextractions,
+                    package-plg-getordersaresptime,
+                    package-plg-getusersbutton,
+                    package-plg-getordersbutton,
+                    package-mod-basket,
+                    package-mod-lastorders,
+                    package-mod-pendingrequests,
+                    package-mod-admininfo,
+                    package-mod-adminbutton,
+                    package-tpl-easysdiadminpositions,
+                    copy-sub-package,
+                    write-xml,
+                    build-info,
+                    package"
+            description="Main target"/>
+    
+    <target name="package-com-core" depends="core.package" description="Main Target"/>
+    <target name="package-com-catalog" depends="catalog.package" description="Main Target"/>
+    <target name="package-com-map" depends="map.package" description="Main Target"/>
+    <target name="package-com-monitor" depends="monitor.package" description="Main Target"/>
+    <target name="package-com-service" depends="service.package" description="Main Target"/>
+    <target name="package-com-dashboard" depends="dashboard.package" description="Main Target"/>
+    <target name="package-com-shop" depends="shop.package" description="Main Target"/>
+    <target name="package-com-processing" depends="processing.package" description="Main Target"/>
+    <target name="package-com-contact" depends="contact.package" description="Main Target"/>
+    
+    <target name="package-plg-contact" depends="plg-contact.package" description="Main Target"/>
+    <target name="package-plg-monitor" depends="plg-monitor.package" description="Main Target"/>
+    <target name="package-plg-service" depends="plg-service.package" description="Main Target"/>
+    <target name="package-plg-getusers" depends="plg-getusers.package" description="Main Target"/>
+    <target name="package-plg-getorganisms" depends="plg-getorganisms.package" description="Main Target"/>
+    <target name="package-plg-getresources" depends="plg-getresources.package" description="Main Target"/>
+    <target name="package-plg-getdiffudownloadables" depends="plg-getdiffudownloadables.package" description="Main Target"/>
+    <target name="package-plg-getdiffudownloads" depends="plg-getdiffudownloads.package" description="Main Target"/>
+    <target name="package-plg-getdiffuextractables" depends="plg-getdiffuextractables.package" description="Main Target"/>
+    <target name="package-plg-getdiffuextractions" depends="plg-getdiffuextractions.package" description="Main Target"/>
+    <target name="package-plg-getordersaresptime" depends="plg-getordersaresptime.package" description="Main Target"/>
+    <target name="package-plg-getusersbutton" depends="plg-getusersbutton.package" description="Main Target"/>
+    <target name="package-plg-getordersbutton" depends="plg-getordersbutton.package" description="Main Target"/>
+    
+    <target name="package-mod-basket" depends="mod-basket.package" description="Main Target"/>
+    <target name="package-mod-lastorders" depends="mod-lastorders.package" description="Main Target"/>
+    <target name="package-mod-pendingrequests" depends="mod-pendingrequests.package" description="Main Target"/>
+    <target name="package-mod-admininfo" depends="mod-admininfo.package" description="Main Target"/>
+    <target name="package-mod-adminbutton" depends="mod-adminbutton.package" description="Main Target"/>    
+    
+    <target name="package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.package" description="Main Target"/>
+    
+    
+    <!-- Dev Packaging targets -->
+    <target name="dev-package-all" 
+            depends="dev-package-com-core,
+                    dev-package-com-catalog,
+                    dev-package-com-map,
+                    dev-package-com-monitor,
+                    dev-package-com-service,
+                    dev-package-com-dashboard,
+                    dev-package-com-contact,
+                    dev-package-com-shop,
+                    dev-package-com-processing,
+                    package-plg-contact,
+                    package-plg-monitor,
+                    package-plg-service,
+                    package-plg-getusers,
+                    package-plg-getorganisms,
+                    package-plg-getresources,
+                    package-plg-getdiffudownloadables,
+                    package-plg-getdiffudownloads,
+                    package-plg-getdiffuextractables,
+                    package-plg-getdiffuextractions,
+                    package-plg-getordersaresptime,
+                    package-plg-getusersbutton,
+                    package-plg-getordersbutton,
+                    package-mod-basket,
+                    package-mod-lastorders,
+                    package-mod-pendingrequests,
+                    package-mod-admininfo,
+                    package-mod-adminbutton,
+                    package-tpl-easysdiadminpositions,
+                    copy-sub-package,
+                    write-xml,
+                    package" 
+            description="Main target"/>
+    
+    <target name="dev-package-com-core" depends="core.dev-package" description="Main Target"/>
+    <target name="dev-package-com-catalog" depends="catalog.dev-package" description="Main Target"/>
+    <target name="dev-package-com-map" depends="map.dev-package" description="Main Target"/>
+    <target name="dev-package-com-monitor" depends="monitor.dev-package" description="Main Target"/>
+    <target name="dev-package-com-service" depends="service.dev-package" description="Main Target"/>
+    <target name="dev-package-com-dashboard" depends="dashboard.dev-package" description="Main Target"/>
+    <target name="dev-package-com-shop" depends="shop.dev-package" description="Main Target"/>
+    <target name="dev-package-com-processing" depends="processing.dev-package" description="Main Target"/>
+    <target name="dev-package-com-contact" depends="contact.dev-package" description="Main Target"/>
+    
+    <target name="dev-package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.dev-package" description="Main Target"/>
+    
+    <!-- Sycronysing targets-->
+    <target name="sync-all" 
+            depends="sync-com-core,
+                    sync-com-catalog,
+                    sync-com-map,
+                    sync-com-monitor,
+                    sync-com-service,
+                    sync-com-dashboard,
+                    sync-com-contact,
+                    sync-com-shop,
+                    sync-com-processing,
+                    sync-plg-contact,
+                    sync-plg-monitor,
+                    sync-plg-service,
+                    sync-plg-getusers,
+                    sync-plg-getorganisms,
+                    sync-plg-getresources,
+                    sync-plg-getdiffudownloadables,
+                    sync-plg-getdiffudownloads,
+                    sync-plg-getdiffuextractables,
+                    sync-plg-getdiffuextractions,
+                    sync-plg-getordersaresptime,
+                    sync-plg-getusersbutton,
+                    sync-plg-getordersbutton,
+                    sync-mod-basket,
+                    sync-mod-lastorders,
+                    sync-mod-pendingrequests,
+                    sync-mod-admininfo,
+                    sync-mod-adminbutton,
+                    sync-tpl-easysdiadminpositions" 
+            description="Main target"/>
+    
+    <target name="sync-com-core" depends="core.sync" description="Main Target"/>
+    <target name="sync-com-catalog" depends="catalog.sync" description="Main Target"/>
+    <target name="sync-com-map" depends="map.sync" description="Main Target"/>
+    <target name="sync-com-monitor" depends="monitor.sync" description="Main Target"/>
+    <target name="sync-com-service" depends="service.sync" description="Main Target"/>
+    <target name="sync-com-dashboard" depends="dashboard.sync" description="Main Target"/>
+    <target name="sync-com-contact" depends="contact.sync" description="Main Target"/>
+    <target name="sync-com-shop" depends="shop.sync" description="Main Target"/>
+    <target name="sync-com-processing" depends="processing.sync" description="Main Target"/>
+    
+    <target name="sync-plg-contact" depends="plg-contact.sync" description="Main Target"/>
+    <target name="sync-plg-monitor" depends="plg-monitor.sync" description="Main Target"/>
+    <target name="sync-plg-service" depends="plg-service.sync" description="Main Target"/>
+    <target name="sync-plg-getusers" depends="plg-getusers.sync" description="Main Target"/>
+    <target name="sync-plg-getorganisms" depends="plg-getorganisms.sync" description="Main Target"/>
+    <target name="sync-plg-getresources" depends="plg-getresources.sync" description="Main Target"/>
+    <target name="sync-plg-getdiffudownloadables" depends="plg-getdiffudownloadables.sync" description="Main Target"/>
+    <target name="sync-plg-getdiffudownloads" depends="plg-getdiffudownloads.sync" description="Main Target"/>
+    <target name="sync-plg-getdiffuextractables" depends="plg-getdiffuextractables.sync" description="Main Target"/>
+    <target name="sync-plg-getdiffuextractions" depends="plg-getdiffuextractions.sync" description="Main Target"/>
+    <target name="sync-plg-getordersaresptime" depends="plg-getordersaresptime.sync" description="Main Target"/>
+    <target name="sync-plg-getusersbutton" depends="plg-getusersbutton.sync" description="Main Target"/>
+    <target name="sync-plg-getordersbutton" depends="plg-getordersbutton.sync" description="Main Target"/>
+    
+    <target name="sync-mod-basket" depends="mod-basket.sync" description="Main Target"/>
+    <target name="sync-mod-lastorders" depends="mod-lastorders.sync" description="Main Target"/>
+    <target name="sync-mod-pendingrequests" depends="mod-pendingrequests.sync" description="Main Target"/>
+    <target name="sync-mod-admininfo" depends="mod-admininfo.sync" description="Main Target"/>
+    <target name="sync-mod-adminbutton" depends="mod-adminbutton.sync" description="Main Target"/>    
+    
+    <target name="sync-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.sync" description="Main Target"/>
+    
+    
+    <!-- Sycronysing Packages targets-->
+    <target name="sync-package-all"
+            depends="sync-package-com-core,
+                    sync-package-com-map,
+                    sync-package-com-monitor,
+                    sync-package-com-service,
+                    sync-package-com-dashboard,
+                    sync-package-com-contact,
+                    sync-package-com-shop,
+                    sync-package-com-processing,
+                    sync-package-com-catalog,
+                    sync-package-plg-contact,
+                    sync-package-plg-monitor,
+                    sync-package-plg-service,
+                    sync-package-plg-getusers,
+                    sync-package-plg-getorganisms,
+                    sync-package-plg-getresources,
+                    sync-package-plg-getdiffudownloadables,
+                    sync-package-plg-getdiffudownloads,
+                    sync-package-plg-getdiffuextractables,
+                    sync-package-plg-getdiffuextractions,
+                    sync-package-plg-getordersaresptime,
+                    sync-package-plg-getusersbutton,
+                    sync-package-plg-getordersbutton,
+                    sync-package-mod-basket,
+                    sync-package-mod-lastorders,
+                    sync-package-mod-pendingrequests,
+                    sync-package-mod-admininfo,
+                    sync-package-mod-adminbutton,
+                    sync-package-tpl-easysdiadminpositions,
+                    copy-sub-package,
+                    write-xml,
+                    build-info,
+                    package" 
+            description="Main target"/>
+    
+    <target name="sync-package-com-core" depends="core.sync-package" description="Main Target"/>
+    <target name="sync-package-com-catalog" depends="catalog.sync-package" description="Main Target"/>
+    <target name="sync-package-com-map" depends="map.sync-package" description="Main Target"/>
+    <target name="sync-package-com-monitor" depends="monitor.sync-package" description="Main Target"/>
+    <target name="sync-package-com-service" depends="service.sync-package" description="Main Target"/>
+    <target name="sync-package-com-dashboard" depends="dashboard.sync-package" description="Main Target"/>
+    <target name="sync-package-com-contact" depends="contact.sync-package" description="Main Target"/>
+    <target name="sync-package-com-shop" depends="shop.sync-package" description="Main Target"/>
+    <target name="sync-package-com-processing" depends="processing.sync-package" description="Main Target"/>
+    
+    <target name="sync-package-plg-contact" depends="plg-contact.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-monitor" depends="plg-monitor.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-service" depends="plg-service.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getusers" depends="plg-getusers.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getorganisms" depends="plg-getorganisms.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getresources" depends="plg-getresources.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getdiffudownloadables" depends="plg-getdiffudownloadables.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getdiffudownloads" depends="plg-getdiffudownloads.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getdiffuextractables" depends="plg-getdiffuextractables.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getdiffuextractions" depends="plg-getdiffuextractions.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getordersaresptime" depends="plg-getordersaresptime.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getusersbutton" depends="plg-getusersbutton.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-getordersbutton" depends="plg-getordersbutton.sync-package" description="Main Target"/>
+	
+    <target name="sync-package-mod-basket" depends="mod-basket.sync-package" description="Main Target"/>
+    <target name="sync-package-mod-lastorders" depends="mod-lastorders.sync-package" description="Main Target"/>
+    <target name="sync-package-mod-pendingrequests" depends="mod-pendingrequests.sync-package" description="Main Target"/>
+    <target name="sync-package-mod-admininfo" depends="mod-admininfo.sync-package" description="Main Target"/>
+    <target name="sync-package-mod-adminbutton" depends="mod-adminbutton.sync-package" description="Main Target"/>
+    
+    <target name="sync-package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.sync-package" description="Main Target"/>
+    
+
+    <!-- Copy sub package in main package --> 
+    <target name="copy-sub-package">
+        <echo>Copy sub package</echo>
+        <mkdir dir="${parent.src.out.dir}/easysdi" />
+        <delete>
+            <fileset dir="${parent.src.out.dir}/easysdi" includes="*"/>
+        </delete>
+        <copy todir="${parent.src.out.dir}/easysdi">
+            <fileset dir="${root.out.dir}/com_easysdi_core/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_catalog/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_map/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_service/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_dashboard/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_shop/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_processing/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_easysdi_service/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getusers/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getorganisms/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getresources/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getdiffudownloadables/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getdiffudownloads/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getdiffuextractables/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getdiffuextractions/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getordersaresptime/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getusersbutton/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_getordersbutton/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/mod_easysdi_basket/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/mod_easysdi_lastorders/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/mod_easysdi_pendingrequests/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/mod_easysdi_admininfo/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/mod_easysdi_adminbutton/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/tpl_easysdi/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/tpl_easysdiadminpositions/target" includes="*" erroronmissingdir="false"/>
+        </copy>
+    </target>
+    
+    <target name="write-xml">
+        <echoxml file="${parent.src.out.dir}/pkg_easysdi.xml">
+            <extension type="package" version="3.0.0" method="upgrade"> 
+                <name>EasySDI</name> 
+                <packager>${xml.packager}</packager> 
+                <packagename>easysdi</packagename>
+                <creationDate>${xml.releaseDate}</creationDate>
+                <copyright>${xml.copyright}</copyright>
+                <license>${xml.license}</license>
+                <author>${xml.author}</author>
+                <authorEmail>${xml.authorEmail}</authorEmail>
+                <authorUrl>${xml.authorUrl}</authorUrl>
+                <version>${version}</version>
+                <description>PKG_EASYSDI_XML_DESCRIPTION</description> 
+                <files folder="easysdi"> 
+                    <file type="component" id="com_easysdi_core">com_easysdi_core.zip</file> 
+                    <file type="component" id="com_easysdi_contact">com_easysdi_contact.zip</file>
+                    <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
+                    <file type="component" id="com_easysdi_dashboard">com_easysdi_dashboard.zip</file>
+                    <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
+                    <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
+                    <file type="component" id="com_easysdi_shop">com_easysdi_shop.zip</file>
+                    <file type="component" id="com_easysdi_processing">com_easysdi_processing.zip</file>
+                    <file type="component" id="com_easysdi_monitor">com_easysdi_monitor.zip</file>
+                    <file type="module" id="mod_easysdi_basket">mod_easysdi_basket.zip</file>
+                    <file type="module" id="mod_easysdi_lastorders">mod_easysdi_lastorders.zip</file>
+                    <file type="module" id="mod_easysdi_pendingrequests">mod_easysdi_pendingrequests.zip</file>
+                    <file type="module" id="mod_easysdi_admininfo">mod_easysdi_admininfo.zip</file>
+                    <file type="module" id="mod_easysdi_adminbutton">mod_easysdi_adminbutton.zip</file>
+                    <file type="plugin" id="easysdicontact" group="user">plg_easysdi_contact.zip</file> 
+                    <file type="plugin" id="easysdiservice" group="content">plg_easysdi_service.zip</file>
+                    <file type="plugin" id="easysdimonitor" group="content">plg_easysdi_monitor.zip</file>
+		    <file type="plugin" id="getusers" group="easysdi_admin_info">plg_getusers.zip</file>
+                    <file type="plugin" id="getorganisms" group="easysdi_admin_info">plg_getorganisms.zip</file>
+                    <file type="plugin" id="getresources" group="easysdi_admin_info">plg_getresources.zip</file>
+                    <file type="plugin" id="getdiffudownloadables" group="easysdi_admin_info">plg_getdiffudownloadables.zip</file>
+                    <file type="plugin" id="getdiffudownloads" group="easysdi_admin_info">plg_getdiffudownloads.zip</file>
+                    <file type="plugin" id="getdiffuextractables" group="easysdi_admin_info">plg_getdiffuextractables.zip</file>
+                    <file type="plugin" id="getdiffuextractions" group="easysdi_admin_info">plg_getdiffuextractions.zip</file>
+                    <file type="plugin" id="getordersaresptime" group="easysdi_admin_info">plg_getordersaresptime.zip</file>
+                    <file type="plugin" id="getusersbutton" group="easysdi_admin_button">plg_getusersbutton.zip</file>
+                    <file type="plugin" id="getordersbutton" group="easysdi_admin_button">plg_getordersbutton.zip</file>
+                    <file type="template" id="tpl_easysdiadminpositions" client="administrator">tpl_easysdiadminpositions.zip</file>
+                </files> 
+                <languages>
+                    <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.pkg_easysdi.sys.ini</language>
+                </languages>
+				<!-- updateservers is commented until update.easysdi.org is not up -->
+                <!-- <updateservers>
+                    <server type="collection">http://update.easysdi.org/packages/easysdi/manifest.xml</server>
+                </updateservers> -->
+            </extension> 
+        </echoxml>
+    </target>
+    
+    <!-- Compress the complete package. --> 
+    <target name="package">
+        <echo>Zip full package</echo>
+        <mkdir dir="${parent.package.out.dir}"/>
+        <delete>
+            <fileset dir="${parent.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${parent.package.out.dir}/easysdi-${version}.zip">
+            <fileset dir="${parent.src.out.dir}"/>
+        </jar>
+    </target>
+    
+    <!-- Create the build description file. --> 
+    <target name="build-info">
+        
+        <echo>Create buid info file for ${core.component.name} component</echo>
+        <mkdir dir="${parent.src.out.dir}/META-INF"/>
+        <tstamp>
+            <format property="buildtime" pattern="dd.MM.yyyy hh:mm:ss aa" />
+        </tstamp>
+        <exec executable="svnversion" outputproperty="svnrevision">
+            <arg line="${parent.src.out.dir}"/>
+        </exec>
+        
+        <propertyfile file="${parent.src.out.dir}/META-INF/build-info.properties" comment="This file is automatically generated - DO NOT EDIT">
+            <entry key="build-datetime" value="${buildtime}"/>
+            <entry key="component" value="${parent.component.name}"/>
+            <entry key="build" value="${version}-r${svnrevision}"/>
+            <entry key="version" value="${version}"/>
+            <entry key="build-owner" value="${user.name}"/>
+        </propertyfile>
+    </target>
+    
+</project>

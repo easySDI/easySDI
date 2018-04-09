@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
+
+	<!-- ROOT element -->
+	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/getordersparameters.xsd" name="parameters" type="sdi:parametersType"/>
+	
+	<xs:complexType abstract="true" xmlns:sdi="http://www.easysdi.org/2011/sdi" name="parametersType">
+		<xs:sequence>
+			<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:statesType" name="states" maxOccurs="1" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<!-- describes the allowed product's states -->
+	<xs:complexType name="statesType">
+		<xs:sequence>
+			<xs:element name="state" minOccurs="1" maxOccurs="unbounded">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<!-- AWAIT -->
+						<xs:enumeration value="2"/>
+						<!-- SENT -->
+						<xs:enumeration value="3"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<!-- parametersType extensions for each getOrders*() methods -->
+	<!-- getOrders() -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="getOrders">
+		<xs:complexContent>
+			<xs:extension base="sdi:parametersType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- getOrdersByGuids() -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="getOrdersByGuids">
+		<xs:complexContent>
+			<xs:extension base="sdi:parametersType">
+				<xs:sequence>
+					<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" name="guids">
+						<xs:complexType>
+							<xs:sequence>
+                                                            <xs:element type="xs:string" name="guid" minOccurs="1" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<!-- getOrdersByIds() -->
+	<xs:complexType xmlns:sdi="http://www.easysdi.org/2011/sdi" name="getOrdersByIds">
+		<xs:complexContent>
+			<xs:extension base="sdi:parametersType">
+				<xs:sequence>
+					<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" name="ids">
+						<xs:complexType>
+							<xs:sequence>
+                                                            <xs:element type="xs:integer" name="id" minOccurs="1" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

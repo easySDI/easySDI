@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset>
+
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_ID" readonly="true" class="readonly" description="JGLOBAL_FIELD_ID_DESC"/> 
+
+        <field name="alias" type="text" size="40" class="inputbox" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_ALIAS" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_ALIAS" filter="safehtml"/> 
+
+        <field name="created_by" type="createdby" class="readonly"
+                       readonly="true" default="" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_CREATED_BY" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_CREATED_BY"/> 
+
+        <field name="created" type="calendar" class="readonly"
+                       readonly="true"  default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_CREATED" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_CREATED" filter="safehtml"/> 
+
+        <field name="modified_by" type="text" size="40" class="readonly"
+                       readonly="true" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_MODIFIED_BY" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_MODIFIED_BY" default="0" filter="safehtml"/> 
+
+        <field name="modified" type="calendar" class="readonly"
+                       readonly="true" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_MODIFIED" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_MODIFIED" filter="safehtml"/> 
+
+        <field name="name" type="text" size="40" class="inputbox" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_NAME" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_NAME" filter="safehtml"/> 
+
+        <field name="prefix" type="text" size="40" class="inputbox" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_PREFIX" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_PREFIX" filter="safehtml"/> 
+
+        <field name="uri" type="text" size="40" class="inputbox" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_URI" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_URI" filter="safehtml"/> 
+		
+        <field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" size="1" default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field> 
+                
+        <field name="access"
+                       type="accesslevel"
+                       label="JFIELD_ACCESS_LABEL"
+                       description="JFIELD_ACCESS_DESC"
+                       class="inputbox span12 small"
+                       size="1"
+        />
+                
+                
+
+    </fieldset> 
+        
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="system" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+
+    <fieldset name="accesscontrol">
+        <field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" filter="rules" validate="rules" class="inputbox" component="com_easysdi_core" section="namespace"/>
+
+    </fieldset>
+
+</form>
