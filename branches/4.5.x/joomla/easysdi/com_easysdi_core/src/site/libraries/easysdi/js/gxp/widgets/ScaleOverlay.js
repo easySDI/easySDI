@@ -14,32 +14,32 @@ Ext.namespace("sdi.gxp.widgets");
  *      selecting the map scale.
  */
 sdi.gxp.ScaleOverlay = Ext.extend(gxp.ScaleOverlay, {
- 
+
 
     /** private: method[addScaleLine]
      *  
      *  Create the scale line control and add it to the panel.
      */
     addScaleLine: function() {
-       var scaleLinePanel = new Ext.BoxComponent({
+        var scaleLinePanel = new Ext.BoxComponent({
             autoEl: {
                 tag: "div",
                 cls: "olControlScaleLine overlay-element overlay-scaleline"
             }
         });
-        this.on("afterlayout", function(){
+        this.on("afterlayout", function() {
             scaleLinePanel.getEl().dom.style.position = 'relative';
             scaleLinePanel.getEl().dom.style.display = 'inline';
 
             this.getEl().on("click", this.stopMouseEvents, this);
             this.getEl().on("mousedown", this.stopMouseEvents, this);
         }, this);
-        scaleLinePanel.on('render', function(){
+        scaleLinePanel.on('render', function() {
             var scaleLine = new OpenLayers.Control.ScaleLine({
-                bottomInUnits :SdiScaleLineParams.bottomInUnits,
-                bottomOutUnits :SdiScaleLineParams.bottomOutUnits,
-                topInUnits :SdiScaleLineParams.topInUnits,
-                topOutUnits :SdiScaleLineParams.topOutUnits,
+                bottomInUnits: SdiScaleLineParams.bottomInUnits,
+                bottomOutUnits: SdiScaleLineParams.bottomOutUnits,
+                topInUnits: SdiScaleLineParams.topInUnits,
+                topOutUnits: SdiScaleLineParams.topOutUnits,
                 geodesic: true,
                 div: scaleLinePanel.getEl().dom
             });

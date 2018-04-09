@@ -1982,6 +1982,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map` (
 `modified` DATETIME  ,
 `ordering` INT(11)   ,
 `state` INT(11)  NOT NULL DEFAULT '1',
+`default_backgroud_layer` INT(11)  NOT NULL DEFAULT '0',
 `checked_out` INT(11)  NOT NULL DEFAULT '0' ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,

@@ -175,7 +175,6 @@ function getMapConfig() {
     }
     layermanager.groups['background'] = { title: backgroundname, exclusive: true, expanded: backgroundexpanded };
     config.tools.push(layermanager);
-
     for (index = 0; index < data.tools.length; ++index) {
         switch (data.tools[index].alias) {
             case 'googleearth':
@@ -308,6 +307,8 @@ function getMapConfig() {
                 var tool = {
                     ptype: "gxp_wmsgetfeatureinfo",
                     //popupTitle: "Feature Info",
+                    popupWidth: popup_size.popupwidth,
+                    popupHeight: popup_size.popupheight,
                     toggleGroup: "interaction",
                     format: data.tools[index].params,
                     actionTarget: "hiddentbar",

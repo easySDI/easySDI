@@ -626,7 +626,19 @@ jQuery(document).ready(function($) {
             });
 
 
+            /*
+            fixe display print-left
+            var printProvider = L.print.provider({
+                method: 'GET',
+                url: 'http://lebouzin/print-servlet/pdf',
+                autoLoad: true,
+                dpi: 90
+            });*/
 
+            /*var printControl = L.control.print({
+                provider: printProvider
+            });*/
+            //map.addControl(printControl);
 
 
 
@@ -644,6 +656,17 @@ jQuery(document).ready(function($) {
                 var overlay = (group.isbackground != '1');
                 if (isset(group.layers)) {
                     if (group.isbackground == 1) {
+                        var has_default = false;
+                        for (var index = 0; index < group.layers.length; index++) {
+                            var element = group.layers[index];
+                            if (element.id == data.default_backgroud_layer) {
+                                has_default = true;
+                            }
+                        }
+                        if (!has_default) {
+                            data.default_backgroud_layer = group.layers[0].id
+                        }
+
                         reversegroup = group.layers;
                     } else {
                         reversegroup = group.layers.reverse();
@@ -664,13 +687,21 @@ jQuery(document).ready(function($) {
                         className: 'addedGeoJsonLayer'
                     }
                 }); // ajouter style
-                //addOverlay(l, 'titre groupe', 'titre');
                 overlays['textareaGeoJson'] = ld;
                 ld.addTo(map);
                 geoJsonDataObj.remove();
             }
 
-            if (isset(lastBaseLayer)) lastBaseLayer.addTo(map);
+
+
+            if (isset(lastBaseLayer)) {
+                if (lastBaseLayer.data.servicealias == "google") {
+                    var gmap_layer = new L.Google(lastBaseLayer.data.layername);
+                    map.addLayer(gmap_layer);
+                } else {
+                    lastBaseLayer.addTo(map);
+                }
+            }
 
             obj.addClass('easySDImap');
 
@@ -849,7 +880,6 @@ jQuery(document).ready(function($) {
 
         var getOloptions = function(opt) {
             if (!isset(opt) || opt == '') return [];
-            //console.log(opt);
             var asOLoptions = JSON.parse(opt); //opt.replace('OpenLayers.', '_ImportOL.');
             //eval('var asOLoptions= {' + opt + '};');
             return asOLoptions;
@@ -1003,7 +1033,10 @@ jQuery(document).ready(function($) {
             baseLayers[name] = layer;
             if (isset(controlLayer))
                 controlLayer.addBaseLayer(layer, name);
-            lastBaseLayer = layer;
+            if (layer.data.id === contextMapData.default_backgroud_layer) {
+                lastBaseLayer = layer;
+            }
+
         };
         _easySDImap.addBaseLayer = addBaseLayer;
 
@@ -1031,7 +1064,9 @@ jQuery(document).ready(function($) {
                         return options;
                     },
                     onEachFeature: function(feature, tlayer) {
+
                         tlayer.on('click', function(e) {
+
                             var html = '<table class="table table-bordered table-striped" style="display: block; max-height: 400px; overflow: auto">';
                             jQuery.each(feature.properties, function(k, v) {
                                 html += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
@@ -1189,8 +1224,9 @@ jQuery(document).ready(function($) {
 
 
         var addGoogle = function(data) {
-            if (typeof(google) !== 'undefined')
+            if (typeof(google) !== 'undefined') {
                 return new L.Google(data.layername);
+            }
             return false;
         };
 
@@ -1386,7 +1422,7 @@ jQuery(document).ready(function($) {
                 '<ul class="sidebar-tabs sidebar-tabs-top" role="tablist"></ul>' +
                 '<ul class="sidebar-tabs sidebar-tabs-bottom" role="tablist"></ul>' +
                 '<div class="sidebar-content active"></div>' +
-                '</div>').prependTo('#easySDIMap'); //prependTo('body');////jQuery('#map').parent());
+                '</div>').prependTo('#easySDIMap');
 
             // tree
             jQuery('<li><a href="#tree" role="tab" title="' + i18n.t('tools_tooltips.layertree') + '"><i class="fa fa-bars"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
@@ -1423,10 +1459,22 @@ jQuery(document).ready(function($) {
 
             //getFeature
             if (options.getfeatureinfo !== false) {
-                jQuery('<li><a href="#getfeature" role="tab" title="' + i18n.t('tools_tooltips.getfeatureinfo') + '"><i class="fa fa-map-marker"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
                 _this.panelFeature = jQuery('<div class="sidebar-pane" id="getfeature"></div>').appendTo(sidebar_html.find('.sidebar-content'));
+                console.log("popup", data.popupheight, data.popupwidth);
+                var popup_size = {};
+                if (data.popupheight > 0 && data.popupheight != false) {
+                    popup_size.popupheight = data.popupheight;
+                } else {
+                    popup_size.popupheight = 200;
+                }
+                if (data.popupwidth > 0 && data.popupwidth != false) {
+                    popup_size.popupwidth = data.popupwidth;
+                } else {
+                    popup_size.popupwidth = 350;
+                }
 
-                _this.easyGetFeature = easyGetFeature(map, controlLayer, serviceConnector, options);
+
+                _this.easyGetFeature = easyGetFeature(map, controlLayer, serviceConnector, options, popup_size);
                 controlGetFeature = _this.easyGetFeature;
                 controlGetFeature.addTo(_this.panelFeature);
 
