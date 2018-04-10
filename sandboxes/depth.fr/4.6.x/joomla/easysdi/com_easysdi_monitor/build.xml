@@ -1,0 +1,220 @@
+<?xml version="1.0" ?>
+
+<project default="com_easysdi_monitor" basedir="../../../">
+    
+    <property name="monitor.component.name" value="com_easysdi_monitor"/>
+    <property name="monitor.src.out.dir" value="${root.out.dir}/${monitor.component.name}/src"/>
+    <property name="monitor.package.out.dir" value="${root.out.dir}/${monitor.component.name}/target"/>
+    
+    <available file="${joomla.administrator.components.dir}/${monitor.component.name}" type="dir" property="monitor.admin.exist"/>
+    <available file="${joomla.site.components.dir}/${monitor.component.name}" type="dir" property="monitor.site.exist"/>
+    
+    <target name="package" depends="js-concat, js-minify, write-xml, build-info, zip-package" description="Main target"/>
+    <target name="sync-package" depends="copy-administrator, copy-site, js-concat, js-minify, write-xml, build-info, zip-package" description="Main target"/>
+    <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
+    <!-- 
+        Create the administrator folder if necessary.
+        Empty the administrator folder, except svn files.
+        Copy the files from the Admin.
+    --> 
+    <target name="copy-administrator" if="monitor.admin.exist">
+        
+        <echo>Copy administrator structure of ${monitor.component.name} component</echo>
+        <copy todir="${monitor.src.out.dir}/administrator" overwrite="true">
+            <fileset dir="${joomla.administrator.components.dir}/${monitor.component.name}">
+                <exclude name="easysdi_*.xml"/>
+                <exclude name="script.*"/>
+            </fileset>
+        </copy>
+        <echo>Copy administrator language file of ${monitor.component.name} component</echo>
+        <copy todir="${monitor.src.out.dir}/administrator/language" overwrite="true">
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${monitor.component.name}.ini"/>
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${monitor.component.name}.sys.ini"/>            
+        </copy>
+        <echo>Copy administrator deployement xml file of ${monitor.component.name} component</echo>
+        <copy todir="${monitor.src.out.dir}">
+            <fileset dir="${joomla.administrator.components.dir}/${monitor.component.name}">
+                <include name="easysdi_*.xml"/>
+                <include name="script.*"/>
+            </fileset>
+        </copy>
+    </target>
+ 
+    <!-- 
+        Create the site folder if necessary.
+        Empty the site folder, except svn files.
+        Copy the files from the site.
+    --> 
+    <target name="copy-site" if="monitor.site.exist">
+       
+        <echo>Copy site structure of ${monitor.component.name} component</echo>
+        
+        <copy todir="${monitor.src.out.dir}/site" overwrite="true">
+            <fileset dir="${joomla.site.components.dir}/${monitor.component.name}"/>
+        </copy>
+        <echo>Copy site language file of ${monitor.component.name} component</echo>
+        <copy todir="${monitor.src.out.dir}/site/language" overwrite="true">
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${monitor.component.name}.ini"/>
+        </copy>
+    </target>
+    
+    <target name="write-xml">
+        <echoxml file="${monitor.src.out.dir}/easysdi_monitor.xml">
+            <extension type="component" version="3.0.0" method="upgrade">
+                <name>com_easysdi_monitor</name>
+                <creationDate>${xml.releaseDate}</creationDate>
+                <copyright>${xml.copyright}</copyright>
+                <license>${xml.license}</license>
+                <author>${xml.author}</author>
+                <authorEmail>${xml.authorEmail}</authorEmail>
+                <authorUrl>${xml.authorUrl}</authorUrl>
+                <version>${version}</version>
+                <description></description>
+                <scriptfile>script.php</scriptfile>
+                <install> <!-- Runs on install -->
+                    <sql>
+                        <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
+                    </sql>
+                </install>
+                <uninstall> <!-- Runs on uninstall -->
+                    <sql>
+                        <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
+                    </sql>
+                </uninstall>
+                <!-- SQL files to run on update -->
+                <update>
+                    <schemas>
+                        <schemapath type="mysql">sql/updates/mysql</schemapath>
+                        <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
+                    </schemas>
+                </update>
+
+                <files folder="site">
+                    <filename>index.html</filename>
+                    <filename>easysdi_monitor.php</filename>
+                    <filename>controller.php</filename>
+                    <filename>router.php</filename>
+                    <folder>assets</folder>
+                    <folder>views</folder>
+                    <folder>models</folder>
+                    <folder>controllers</folder>
+                    <folder>helpers</folder>
+                </files>
+                <languages folder="site">
+                    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.com_easysdi_monitor.ini</language>
+                </languages>
+                <administration>
+                    <files folder="administrator">
+                        <filename>access.xml</filename>
+                        <filename>config.xml</filename>
+                        <filename>controller.php</filename>
+                        <filename>index.html</filename>
+                        <filename>easysdi_monitor.php</filename>
+                        <folder>controllers</folder>
+                        <folder>helpers</folder>
+                        <folder>i18n</folder>
+                        <folder>models</folder>
+                        <folder>sql</folder>
+                        <folder>tables</folder>
+                        <folder>views</folder>
+                    </files>
+                    <languages folder="administrator">
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.sys.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.sys.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_monitor.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_monitor.sys.ini</language>
+                    </languages>
+                </administration>
+            </extension>
+        </echoxml>
+    </target>
+    
+    <!-- Create the build description file. --> 
+    <target name="build-info">
+        
+        <echo>Create buid info file for ${monitor.component.name} component</echo>
+        <mkdir dir="${monitor.src.out.dir}/META-INF"/>
+        <tstamp>
+            <format property="buildtime" pattern="dd.MM.yyyy hh:mm:ss aa" />
+        </tstamp>
+        <exec executable="svnversion" outputproperty="svnrevision">
+            <arg line="${monitor.src.out.dir}"/>
+        </exec>
+        
+        <propertyfile file="${monitor.src.out.dir}/META-INF/build-info.properties" comment="This file is automatically generated - DO NOT EDIT">
+            <entry key="build-datetime" value="${buildtime}"/>
+            <entry key="component" value="${monitor.component.name}"/>
+            <entry key="build" value="${version}-r${svnrevision}"/>
+            <entry key="build-owner" value="${user.name}"/>
+        </propertyfile>
+    </target>
+    
+    <!-- Compresses the component package. --> 
+    <target name="zip-package">
+        
+        <echo>Zip package ${monitor.component.name}.zip</echo>
+        
+        <mkdir dir="${monitor.package.out.dir}"/>
+        <delete>
+            <fileset dir="${monitor.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${monitor.package.out.dir}/${monitor.component.name}.zip">
+            <fileset dir="${monitor.src.out.dir}"/>
+        </jar>
+    </target>
+    
+    <target name="zip-dev-package">
+        
+        <echo>Zip package ${monitor.component.name}.zip</echo>
+        
+        <mkdir dir="${monitor.package.out.dir}"/>
+        <delete>
+            <fileset dir="${monitor.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${monitor.package.out.dir}/${monitor.component.name}.zip">
+            <fileset dir="${monitor.src.out.dir}"/>
+        </jar>
+    </target>
+    
+    <target name="js-concat">
+        <echo>Concat js source</echo>
+        
+        <concat destfile="${monitor.src.out.dir}/administrator/views/mains/js/Monitor.js">
+            <filelist dir="${monitor.src.out.dir}/administrator/views/mains/js/dev">
+                <file name="exportType.js"/>
+                <file name="language.js"/>
+                <file name="vtypes.js"/>
+                <file name="app/App.js"/>
+                <file name="definitions.js"/>
+                <file name="jobManager.js"/>
+                <file name="jobRequest.js"/>
+                <file name="jobAlert.js"/>
+                <file name="sla.js" />
+                <file name="reports.js"/>
+                <file name="alerts.js"/>
+                <file name="responseoverview.js" />
+                <file name="state.js"/>
+                <file name="maintenance.js"/>
+                <file name="monitor.js"/>
+                <file name="graphs/healthGraphRaw.js"/>
+                <file name="graphs/healthGraphAgg.js"/>
+                <file name="graphs/healthLineGraph.js"/>
+                <file name="graphs/responseTimeGraph.js"/>			
+            </filelist>
+        </concat>
+    </target>
+    
+    <target name="js-minify">
+        <echo>Minifying js source</echo>
+        
+        <jsmin srcfile="${monitor.src.out.dir}/administrator/views/mains/js/Monitor.js" suffix="true"/>
+    </target>
+    
+</project>

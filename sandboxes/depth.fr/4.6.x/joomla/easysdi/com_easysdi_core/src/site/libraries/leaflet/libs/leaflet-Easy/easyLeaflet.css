@@ -1,0 +1,71 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    Created on : 7 juil. 2015, 15:59:17
+    Author     : tportier
+*/
+
+body {
+  font-family: verdana;
+  font-size: 12px;
+}
+
+#easySDIMap {
+  min-height: 500px;
+  width: 100%;
+  position: relative;
+}
+
+#easySDIMap svg {
+  max-width: none !important;
+  max-height: none !important;
+
+}
+
+#map{
+  width: 100%;
+  min-height: 500px;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+#sidebar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+  .sidebar-tabs-bottom {
+  top:auto !important;
+  bottom:0 !important;
+  height: auto;
+}
+
+.leaflet-control-geocoder-form input[type="text"] {
+  border:0px;
+  padding:0px;
+  margin-bottom:0px;
+}
+
+.easySDImapPrintMeta, .easySDImapPrintButtons {
+    z-index: 1000;
+}
+
+.leaflet-popup-scrolled {
+    overflow: auto;
+    border-bottom: 0px;
+    border-top: 0px;
+}
+
+.easygetfeature_pre {
+    width: 100% ;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+

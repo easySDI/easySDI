@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+	   
+        <field 	name="name" 
+                type="text" 
+                size="50" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_NAME"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_NAME" 
+                required="true" 
+                filter="safehtml" /> 
+
+        <field 	name="alias" 
+                type="text" 
+                size="20" class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ALIAS"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ALIAS" 
+                filter="safehtml" /> 
+        
+        <field
+                name="accessscope_id" 
+                onchange="enableAccessScope();"
+                type="sql" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ACCESSSCOPE"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ACCESSSCOPE" 
+                query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND value!='category' ORDER BY ordering" 
+                key_field="id" 
+                value_field="value"
+                translate="true"
+        /> 
+        <field
+            name="organisms" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""  
+            description="" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field
+            name="users" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        />  
+                
+        <field 	name="service_id" 
+                type="ServicegroupedList" 
+                multiple ="false"
+                onchange="clearLayers();setServiceConnector();getLayers();"
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
+                required="true"
+        />
+     
+        <field 	name="layername" 
+                type="list" 
+                class="inputbox input-xxlarge"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_LAYERNAME"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_LAYERNAME" 
+                required="true" 
+                filter="safehtml" /> 
+
+        <field 	name="istiled" 
+                type="checkbox" 
+                value="1"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISTILED"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ISTILED" 
+                filter="intval" /> 
+
+        <field 	name="isdefaultvisible" 
+                        type="checkbox" 
+                        label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISDEFAULTVISIBLE"
+                        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ISDEFAULTVISIBLE" 
+                        value="1"
+                        filter="intval" />
+ 
+        <field 	name="opacity" 
+                type="text" 
+                size="40" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_OPACITY"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_OPACITY" 
+                default="1" 
+                filter="safehtml" /> 
+            	
+        <field 	name="metadatalink" 
+                type="textarea" 
+                class="inputbox"
+                rows="1"
+                cols="15"
+                filter="safehtml"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_METADATALINK"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_METADATALINK"  /> 
+        
+        <field 	name="attribution" 
+                type="textarea" 
+                class="inputbox"
+                rows="1"
+                cols="15"
+                filter="safehtml"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ATTRIBUTION"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ATTRIBUTION"  /> 
+
+        <field 	name="id" 
+                        type="text" 
+                        default="0" 
+                        label="JGLOBAL_FIELD_ID_LABEL"
+                        readonly="true" 
+                        class="readonly"
+                        description="JGLOBAL_FIELD_ID_DESC" /> 
+                
+        <field name="serviceconnector" type="hidden" />
+        <field name="onloadlayername" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+    </fieldset>
+
+    <field 	name="access"
+                type="accesslevel"
+                label="JFIELD_ACCESS_LABEL"
+                description="JFIELD_ACCESS_DESC"
+                class="inputbox"
+                size="1" />
+				
+    <field name="state"
+           type="list"
+           label="JSTATUS"
+           description="JFIELD_PUBLISHED_DESC"
+           class="inputbox"
+           size="1"
+           default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+	
+    <fieldset name="indoornavigation">
+         <field name="isindoor" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_LAYER_INDOORNAVIGATION"
+               description="COM_EASYSDI_MAP_FORM_DESC_LAYER_INDOORNAVIGATION" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field 	name="levelfield" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                disabled = "false"
+                required="false" 
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_LEVEL_FIELD"
+                description="COM_EASYSDI_MAP_FORM_DESC_LEVEL_FIELD" 
+                filter="safehtml" />
+    </fieldset>
+    
+    <fieldset name="openlayers">
+        <field name="asOL" 
+                        type="checkbox" 
+                        label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOL"
+                        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ASOL" 
+                        value="1"
+                        onclick="javascript:enableOlparams();"
+                        filter="intval" />
+                
+        <field 	name="asOLstyle" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                required="false" 
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOL_STYLE"
+                description="COM_EASYSDI_MAP_FORM_DESC_ASOL_STYLE" 
+                filter="safehtml" />
+       
+        <field 	name="asOLmatrixset" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                required="false" 
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOL_MATRIXSET"
+                description="COM_EASYSDI_MAP_FORM_DESC_ASOL_MATRIXSET" 
+                filter="safehtml" />
+                
+        <field 	name="asOLoptions" 
+                type="textarea" 
+                class="inputbox"
+                rows="10"
+                cols="10"
+                disabled = "true"
+                filter="safehtml"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOLOPTIONS"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ASOLOPTIONS"  />
+    </fieldset>
+	
+    <fieldset name="publishing">
+        <field name="created_by" 
+                        type="user" 
+                        class="readonly"
+                        readonly="true"
+                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED_BY"
+                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED_BY"  
+                        filter="unset" /> 
+            	
+        <field 	name="created" 
+                        type="calendar" 
+                        class="readonly"
+                        readonly="true"
+                        default="0000-00-00 00:00:00" 
+                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED"
+                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED"  
+                        filter="safehtml" /> 
+
+        <field 	name="modified_by" 
+                type="user" 
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_MODIFIED_BY"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_MODIFIED_BY" 
+                filter="unset" /> 
+
+        <field 	name="modified" 
+                type="calendar" 
+                class="readonly"
+                readonly="true"
+                default="0000-00-00 00:00:00"  
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_MODIFIED"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_MODIFIED"  
+                filter="safehtml" />
+    </fieldset>
+	
+    <fieldset name="rulesdefinition">
+        <field 	name="rules" 
+                        type="rules" 
+                        label="JFIELD_RULES_LABEL"
+                        translate_label="true" 
+                        class="inputbox" 
+                        filter="rules"
+                        component="com_easysdi_map" 
+                        section="layer" 
+                        validate="rules"
+        />
+    </fieldset>
+</form>
