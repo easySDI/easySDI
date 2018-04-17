@@ -45,7 +45,7 @@ var cleanSelectionValues = function () {
  * @returns {undefined}
  */
 var enableSave = function () {
-    if (js('#termsofuse').is(':checked') == true && js('#featurecode').val() != '') {
+    if ((js('#termsofuse').length == 0 || js('#termsofuse').is(':checked') == true) && js('#featurecode').val() != '') {
         js('#saveSubmit').removeAttr('disabled', 'disabled');
         js('#saveSubmit').attr('onclick', 'tokenize();');
         js('#saveSubmit').attr('href', js('#adminForm').attr('action') + '?id=' + js('#id').attr('value') + '&featurecode=' + js('#featurecode').attr('value'));

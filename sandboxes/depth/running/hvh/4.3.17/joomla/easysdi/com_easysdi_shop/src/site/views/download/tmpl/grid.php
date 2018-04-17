@@ -50,12 +50,15 @@ Easysdi_shopHelper::addMapShopConfigToDoc();
                     <div class="span12">
                         <div class="row-fluid">
                             <div class="span6 offset3 well">
+                                <?php if($this->item->witheula == 1 ): ?>
+                                
                                 <br/>
                                 <label class="checkbox">
                                     <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse']; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
                                 </label>
                                 <br/>
                                 <br/>
+                                <?php endif; ?>
                                 <a href="#" id="saveSubmit" onclick="return false;" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large" role="button"><b><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_LABEL');?></b></a>                            
                             </div>
                         </div>
