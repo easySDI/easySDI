@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset>
+
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+
+        <field name="alias" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ALIAS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ALIAS" 
+               filter="safehtml" /> 
+
+        <field name="created_by" type="createdby" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CREATED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CREATED_BY"  /> 
+
+        <field name="created" type="timecreated" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CREATED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CREATED"  /> 
+
+        <field name="modified_by" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_MODIFIED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_MODIFIED_BY" 
+               default="0" 
+               filter="safehtml" /> 
+
+        <field name="modified" type="timeupdated" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_MODIFIED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_MODIFIED"  /> 
+
+        <field name="name" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_NAME"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_NAME" 
+               filter="safehtml" /> 
+
+        <field name="description" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DESCRIPTION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DESCRIPTION" 
+               filter="safehtml" /> 
+        
+        <field name="profile_id" type="sql" class="inputbox" multiple="true" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_PROFILE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_PROFILE_ID" 
+               query="SELECT id, name FROM #__sdi_profile" key_field="id" value_field="name"
+        />
+
+        <field name="parent_id" type="sql" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_PARENT_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_PARENT_ID" 
+               query="SELECT null AS id, '' AS name UNION SELECT id, name 
+                FROM #__sdi_class ORDER BY name" key_field="id" value_field="name"
+        /> 
+
+        <field name="attributechild_id" type="sql" class="inputbox"
+               onchange="onChangeAttributeChild()"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ATTRIBUTECHILD_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ATTRIBUTECHILD_ID" 
+               query="SELECT null AS id, '' AS name UNION SELECT id, name 
+                FROM #__sdi_attribute ORDER BY name" key_field="id" value_field="name"
+        /> 
+
+        <field name="classchild_id" type="sql" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CLASSCHILD_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CLASSCHILD_ID" 
+               query="SELECT null AS id, '' AS name UNION SELECT id, name 
+                FROM #__sdi_class ORDER BY name" key_field="id" value_field="name"
+        /> 
+
+        <field name="lowerbound" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_LOWERBOUND"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_LOWERBOUND" 
+               default="0" 
+               filter="safehtml" /> 
+
+        <field name="upperbound" type="text" size="40" class="inputbox"
+               onchange="onChangeRenderType();"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_UPPERBOUND"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_UPPERBOUND" 
+               filter="safehtml" /> 
+
+        <field name="relationtype_id" type="sql"  class="inputbox"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_RELATIONTYPE_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_RELATIONTYPE_ID" 
+                query=" SELECT null AS id, '' AS value 
+                UNION SELECT id, value
+                FROM #__sdi_sys_relationtype WHERE state=1 ORDER BY value" 
+                key_field="id" 
+                value_field="value"/> 
+        
+        <field name="rendertype_id" type="sql"  class="inputbox"
+                onchange="onChangeRenderType();"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_RENDERTYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_RENDERTYPE_ID" 
+               query=" SELECT null AS id, '' AS value
+                UNION SELECT id, value
+                FROM #__sdi_sys_rendertype WHERE state=1 ORDER BY value" 
+               key_field="id" 
+               value_field="value"/>
+
+        <field name="namespace_id" 
+               type="sql" 
+               class="inputbox input-small"
+               query=" SELECT null AS id, '' AS name 
+                UNION SELECT id, name 
+                FROM #__sdi_namespace WHERE state=1 ORDER BY name" 
+               key_field="id" 
+               value_field="name"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_REALTION_NAMESPACE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_NAMESPACE_ID" 
+        />  
+
+        <field name="isocode" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ISOCODE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ISOCODE" 
+               filter="safehtml" /> 
+        
+        <field name="classassociation_id" type="sql" class="inputbox"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CLASSASSOCIATION_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CLASSASSOCIATION_ID" 
+                query="SELECT null AS id, '' AS name UNION SELECT id, name FROM #__sdi_class ORDER BY name" key_field="id" value_field="name"
+        />         
+
+        <field name="relationscope_id" type="sql"  class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_RELATIONSCOPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_RELATIONSCOPE_ID" 
+               query=" SELECT null AS id, '' AS value UNION SELECT id, value FROM #__sdi_sys_relationscope WHERE state=1 ORDER BY value" 
+               key_field="id" 
+               value_field="value"/> 
+        
+        <field name="editorrelationscope_id" type="sql"  class="inputbox" required="true"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_EDITORRELATIONSCOPE_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_EDITORRELATIONSCOPE_ID" 
+                query=" SELECT null AS id, '' AS value UNION SELECT id, value FROM #__sdi_sys_relationscope WHERE state=1 ORDER BY value" 
+                key_field="id" 
+                value_field="value"/> 
+         
+        <field name="childresourcetype_id" type="sql"  class="inputbox" 
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDRESOURCETYPE_ID"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CHILDRESOURCETYPE_ID" 
+                query=" SELECT id, name FROM #__sdi_resourcetype WHERE state=1 ORDER BY name" 
+                key_field="id" 
+                value_field="name"/> 
+ 
+        <field
+            name="childtype_id" required="true"
+            type="list"
+            onchange="onChangeChildType()"
+            label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CHILDTYPE"
+            class="inputbox"
+            size="1"
+            default="1">
+            <option value="1">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_CLASS</option>
+            <option value="2">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_ATTRIBUTE</option>
+            <option value="3">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_RESOURCETYPE</option>
+        </field> 
+        
+        <field  name="accessscope_limitation"
+                type="radio"
+                default="0"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ACCESSSCOPELIMITATION"
+        >
+            <option value="0">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION_NONE</option>
+            <option value="1">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION_USER</option>
+            <option value="2">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION_METADATA</option>
+            <option value="3">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ACCESSSCOPELIMITATION_BOTH</option>
+        </field>
+        
+        <field
+            name="state"
+            type="list"
+            label="JSTATUS"
+            description="JFIELD_PUBLISHED_DESC"
+            class="inputbox"
+            size="1"
+            default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field> 
+        
+        <field name="access" type="accesslevel"
+               label="JFIELD_ACCESS_LABEL"
+               description="JFIELD_ACCESS_DESC" 
+               filter="raw" /> 
+        
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge"  required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+               filter="ARRAY" />
+        
+        <field name="text2" type="multilingual" cols="20" rows="5" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_HELP"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_HELP" 
+               filter="ARRAY" />
+    </fieldset> 
+
+    <fieldset name="accesscontrol">
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="relation"
+        />
+
+    </fieldset>
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+        <field name="hiddendefaultlist" type="hidden" filter="SAFEHTML" />
+    </fieldset>
+    
+    <fieldset name="search">
+        <field name="issearchfilter"  type="radio" class="btn-group" default="0"
+                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ISSEARCHFILTER"
+                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ISSEARCHFILTER" > 
+            <option value="1" onclick="onChangeSearchFilter()">JYES</option>
+            <option value="0" onclick="onChangeSearchFilter()">JNO</option>
+        </field>
+       
+        <field name="catalog_id" type="sql" class="inputbox" multiple="true"
+              label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CATALOG_ID"
+              description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CATALOG_ID" 
+              query="SELECT id, name FROM #__sdi_catalog" key_field="id" value_field="name"
+        />
+    </fieldset>
+    
+    
+    <field name="searchfilter" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_SEARCH"
+           description="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_SEARCH" 
+           filter="ARRAY" /> 
+    
+    <field name="defaulttextbox" type="text" size="40" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" 
+           filter="safehtml" /> 
+    
+    <field name="defaultdate" type="calendar"  
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE" 
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" 
+           format="%d-%m-%Y" /> 
+    
+    <field name="defaulttextarea" type="textarea" rows="5" cols="10" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" 
+           filter="safehtml" /> 
+    
+    <field name="defaultlocaletextbox" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" 
+           filter="ARRAY" />
+    
+    <field name="defaultlocaletextarea" type="multilingual" cols="20" rows="5" class="inputbox input-xlarge" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" 
+           filter="ARRAY" />
+    
+    <field name="defaultlist" type="list" class="inputbox"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE" description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" translate="true">
+        <option value=""></option>
+    </field>
+    
+     <field name="defaultmultiplelist" type="list" class="inputbox"  multiple="true" 
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE" description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" translate="true">
+        <option value=""></option>
+    </field>
+    
+    
+    
+</form>
