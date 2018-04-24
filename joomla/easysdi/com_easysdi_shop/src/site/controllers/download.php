@@ -144,8 +144,12 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             return false;
 
         $id = JFactory::getApplication()->input->getInt('id', null);
-        if (!empty($diffusion->file) || !empty($diffusion->fileurl)):
-            $url = 'index.php?option=com_easysdi_shop&view=download&layout=default&id=' . $id;
+        if (!empty($diffusion->file) || !empty($diffusion->fileurl) || !empty($diffusion->redirectionurl)):
+            if ($diffusion->witheula == 1):
+                $url = 'index.php?option=com_easysdi_shop&view=download&layout=default&id=' . $id;
+            else:
+                $this->download();
+            endif;
         elseif (!empty($diffusion->perimeter_id)) :
             $url = 'index.php?option=com_easysdi_shop&view=download&layout=grid&id=' . $id;
         endif;
@@ -219,6 +223,9 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
                     return false;
                 }
+            } elseif (!empty($diffusion->redirectionurl)) { //Redirection
+                header('Location: ' . $diffusion->redirectionurl, true, 302);
+                die();
             } else { //Download is not well configured
                 $this->setMessage(JText::_('RESOURCE_LOCATION_UNAVAILABLE'), 'error');
                 $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=' . $layout . '&id=' . $id, false));
@@ -255,10 +262,10 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
     private function call($url, $name) {
         if (JSession::checkToken('get')) { //Call from Joomla
             $curlHelper = new CurlHelper(true);
-        }else{//Call from tierce client
+        } else {//Call from tierce client
             $curlHelper = new CurlHelper(false);
         }
-        
+
         $curldata['url'] = $url;
         $pos = strrpos($url, '.');
         $extension = ($pos) ? substr($url, $pos) : null;

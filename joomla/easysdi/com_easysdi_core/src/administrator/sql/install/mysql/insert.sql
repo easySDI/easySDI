@@ -522,6 +522,7 @@ INSERT INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='feewithap
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('1', '1', '1', 'upload');
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('2', '2', '1', 'url');
 INSERT INTO `#__sdi_sys_productstorage` VALUES ('3', '3', '1', 'zoning');
+INSERT INTO `#__sdi_sys_productstorage` VALUES ('4', '4', '1', 'redirection');
 
 INSERT INTO `#__sdi_sys_productmining` VALUES ('1', '1', '1', 'automatic');
 INSERT INTO `#__sdi_sys_productmining` VALUES ('2', '2', '1', 'manual');
