@@ -40,7 +40,6 @@ defined('_JEXEC') or die;
                     <div class="row-fluid">
                         <div class="span6 offset3 well">
                             <br/>
-                            <br/>
                             <label class="checkbox">
                                 <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse'] ; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_OF_USE') ?>
                             </label>

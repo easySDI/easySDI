@@ -52,18 +52,28 @@ function onProductStorageChange() {
             js('#fileurl,#userurl, #passurl, #testurlauthentication').hide();
             js('#packageurl').removeAttr('required');
             js('#perimeter_id,#packageurl').hide();
+            js('#redirectionurl').hide();
             break;
         case "2":
             js('#file').hide();
             js('#fileurl, #userurl, #passurl, #testurlauthentication').show();
             js('#packageurl').removeAttr('required');
             js('#perimeter_id,#packageurl').hide();
+            js('#redirectionurl').hide();
             break;
         case "3":
             js('#file').hide();
             js('#fileurl, #testurlauthentication').hide();
             js('#perimeter_id,#packageurl,#userurl, #passurl').show();
             js('#packageurl').attr('required');
+            js('#redirectionurl').hide();
+            break;
+        case "4":
+            js('#file').hide();
+            js('#fileurl, #testurlauthentication').hide();
+            js('#perimeter_id,#packageurl,#userurl, #passurl').hide();
+            js('#packageurl').removeAttr('required');     
+            js('#redirectionurl').show();
             break;
     }
 }

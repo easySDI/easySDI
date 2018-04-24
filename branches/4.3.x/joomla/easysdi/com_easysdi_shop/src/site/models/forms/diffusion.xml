@@ -86,7 +86,23 @@
     </fieldset> 
 
     <fieldset name="download">
-        <field name="hasdownload" type="checkbox"  onclick="enableDownload()" label="Show title" description="Show the title of the item" value="1" default="0" />
+        <field name="hasdownload" 
+               type="checkbox"  
+               onclick="enableDownload()" 
+               label="Show title" 
+               description="Show the title of the item" 
+               value="1" 
+               default="0" />
+
+        <field name="witheula" 
+               type="radio" 
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_WITH_EULA" 
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_WITH_EULA" 
+               class="btn-group btn-group-yesno"
+               default="1" >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
 
          <field name="productstorage_id" 
                type="sql" 
@@ -99,6 +115,11 @@
                value_field="value"
                translate="true" />
         
+         <field name="redirectionurl" type="text" size="40" class="inputbox input-xlarge"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_REDIRECTIONURL"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_REDIRECTIONURL" 
+              filter="safehtml" /> 
+         
         <field name="fileurl" type="text" size="40" class="inputbox input-xlarge"
               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILEURL"
               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILEURL" 
@@ -139,16 +160,11 @@
                 label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_TESTURLAUTHENTICATION"
                 description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_TESTURLAUTHENTICATION" 
                 filter="safehtml" />
-
-        
     
         <field name="file" type="file"
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILE" class="inputbox input-xlarge"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILE" 
                filter="raw" />
-        
-        
- 
     </fieldset>
     
     <fieldset name="extraction">

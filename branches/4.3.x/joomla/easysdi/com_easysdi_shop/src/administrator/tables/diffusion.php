@@ -40,6 +40,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
         $jinput = JFactory::getApplication()->input;
         $form = $jinput->get('jform', null, 'ARRAY');
         (empty($array['hasdownload'])) ? $array['hasdownload'] = "0" : $array['hasdownload'] = "1";
+        (empty($array['witheula'])) ? $array['witheula'] = "0" : $array['witheula'] = "1";
         (empty($array['hasextraction'])) ? $array['hasextraction'] = "0" : $array['hasextraction'] = "1";
         if (empty($array['surfacemin']))
             $array['surfacemin'] = null;
@@ -57,17 +58,27 @@ class Easysdi_shopTablediffusion extends sdiTable {
                     $array['fileurl'] = null;
                     $array['perimeter_id'] = null;
                     $array['packageurl'] = null;
+                    $array['redirectionurl'] = null;
                     break;
                 case 2:
                     $array['file'] = null;
                     $array['file_hidden'] = null;
                     $array['perimeter_id'] = null;
                     $array['packageurl'] = null;
+                    $array['redirectionurl'] = null;
                     break;
                 case 3:
                     $array['file'] = null;
                     $array['file_hidden'] = null;
                     $array['fileurl'] = null;
+                    $array['redirectionurl'] = null;
+                    break;
+                case 4:
+                    $array['file'] = null;
+                    $array['file_hidden'] = null;
+                    $array['fileurl'] = null;
+                    $array['perimeter_id'] = null;
+                    $array['packageurl'] = null;
                     break;
             }
         }

@@ -2264,6 +2264,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `packageurl` VARCHAR(500)   ,
 `perimeter_id` INT(11) UNSIGNED  ,
 `hasdownload` TINYINT(1)  NOT NULL DEFAULT 0 ,
+`witheula` tinyint(1) NOT NULL DEFAULT '1' ,
+`redirectionurl` VARCHAR(500)  NULL ,
 `hasextraction` TINYINT(1)  NOT NULL DEFAULT 0 ,
 `restrictedperimeter` TINYINT(1)  NOT NULL DEFAULT 0 ,
 `access` INT(10)  NOT NULL DEFAULT '1',

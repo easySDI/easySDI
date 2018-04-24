@@ -46,6 +46,7 @@ defined('_JEXEC') or die;
 											<input type="hidden" name="jform[productmining_id]" value="<?php echo $item->productmining_id; ?>" />
 											<input type="hidden" name="jform[surfacemin]" value="<?php echo $item->surfacemin; ?>" />
 											<input type="hidden" name="jform[surfacemax]" value="<?php echo $item->surfacemax; ?>" />
+                                                                                        <input type="hidden" name="jform[witheula]" value="<?php echo $item->witheula; ?>" />
 											<input type="hidden" name="jform[productstorage_id]" value="<?php echo $item->productstorage_id; ?>" />
 											<input type="hidden" name="jform[file]" value="<?php echo $item->file; ?>" />
 											<input type="hidden" name="jform[fileurl]" value="<?php echo $item->fileurl; ?>" />
@@ -82,6 +83,7 @@ defined('_JEXEC') or die;
 											<input type="hidden" name="jform[productmining_id]" value="<?php echo $item->productmining_id; ?>" />
 											<input type="hidden" name="jform[surfacemin]" value="<?php echo $item->surfacemin; ?>" />
 											<input type="hidden" name="jform[surfacemax]" value="<?php echo $item->surfacemax; ?>" />
+                                                                                        <input type="hidden" name="jform[witheula]" value="<?php echo $item->witheula; ?>" />
 											<input type="hidden" name="jform[productstorage_id]" value="<?php echo $item->productstorage_id; ?>" />
 											<input type="hidden" name="jform[file]" value="<?php echo $item->file; ?>" />
 											<input type="hidden" name="jform[fileurl]" value="<?php echo $item->fileurl; ?>" />
