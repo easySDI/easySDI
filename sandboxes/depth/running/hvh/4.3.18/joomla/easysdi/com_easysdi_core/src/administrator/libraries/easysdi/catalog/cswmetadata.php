@@ -340,7 +340,7 @@ class cswmetadata {
                         $action->appendChild($download);
                     else:
                         //Download right
-                        $query = $this->db->getQuery(true)
+                        /*$query = $this->db->getQuery(true)
                                 ->select('ju.name, ju.email')
                                 ->from('#__sdi_user_role_resource urr')
                                 ->innerJoin('#__sdi_user u ON u.id = urr.user_id')
@@ -349,7 +349,8 @@ class cswmetadata {
                                 ->where('urr.role_id = 5')
                         ;
                         $this->db->setQuery($query);
-                        $user = $this->db->loadObject();
+                        $user = $this->db->loadObject();*/
+                        $user = $this->GetDownloadInformationsReplacement($this->resource->id);
                         if (!empty($user)):
                             $downloadright = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:downloadright');
                             $downloadrighttooltip = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:tooltip');
@@ -522,22 +523,27 @@ class cswmetadata {
                 $links = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:links');
                 $parents = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parents');
                 foreach ($parentsitem as $item):
-                    $parentDownloadLink = $this->GetParentDownloadLink($item->guid);
+                   
                     $parent = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parent');
                     $parent->setAttribute('guid', $item->guid);
                     $parent->setAttribute('title', $item->title);
                     $parent->setAttribute('resourcename', $item->name);
                     $parent->setAttribute('resourcetype', $item->type);
                     $parent->setAttribute('version', $item->version);
+                    
+                    $parentDownloadLink = $this->GetParentDownloadLink($item->guid);
                     if($parentDownloadLink != null)
                     {
-                        $parent->setAttribute('productstorage', $parentDownloadLink->productstorage);
-                        if($parentDownloadLink->url != null)
+                        if(isset($parentDownloadLink->url))
                         {
+                            $download = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:download');
+                            $download->setAttribute('productstorage', $parentDownloadLink->productstorage);
                             $downloadlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . $parentDownloadLink->url));
-                            $parent->appendChild($downloadlink);
+                            $download->appendChild($downloadlink);
+                            $parent->appendChild($download);
                         }
-                        else if($parentDownloadLink->username != null){
+                        else if(isset($parentDownloadLink->username))
+                        {
                             $downloadright = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:downloadright');
                             $downloadrighttooltip = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:tooltip');
                             $downloadrighttooltip->setAttribute('username', $parentDownloadLink->username);
@@ -545,10 +551,13 @@ class cswmetadata {
                             $downloadright->appendChild($downloadrighttooltip);
                             $parent->appendChild($downloadright);
                         }
-                    }
+                    }                        
+                    
+                    $sheet = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:sheetview');
                     $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $item->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&type='));
-                    $parent->appendChild($sheetlink);
-                    $parents->appendChild($parent);
+                    $sheet->appendChild($sheetlink);
+                    $parent->appendChild($sheet);
+                    $parents->appendChild($parent);                   
                 endforeach;
 
                 $query = $this->db->getQuery(true);
@@ -621,26 +630,24 @@ class cswmetadata {
         $action->appendChild($exportxml);
 
         $extendedmetadata->appendChild($action);
-
-
-
         $extendedroot->appendChild($extendedmetadata);
         $this->extendeddom->appendChild($extendedroot);
 
         $string = $this->extendeddom->saveXML();
-
+        echo ($string); die;
         return $this->extendeddom;
     }
 
     protected function GetParentDownloadLink ($guid)
     {
         $query = $this->db->getQuery(true)
-            ->select('d.id, d.guid ,d.pricing_id, d.hasdownload, d.hasextraction, d.accessscope_id, d.surfacemin, d.surfacemax, ps.value as productstorage, v.resource_id as resourceid')
+            ->select('d.id, d.guid ,d.pricing_id, d.hasdownload, d.hasextraction, d.accessscope_id, ps.value as productstorage, v.resource_id as resourceid')
             ->from('#__sdi_diffusion AS d')
             ->leftJoin('#__sdi_sys_productstorage ps ON d.productstorage_id=ps.id')
-            ->leftjoin('#__sdi_version v on v.id = d.version_id')
-            ->leftjoin('#__sdi_metadata m on m.version_id = d.version_id')
-            ->where('m.guid = ' . $guid);        
+            ->leftJoin('#__sdi_version v on v.id = d.version_id')
+            ->leftJoin('#__sdi_metadata m on m.version_id = d.version_id')
+            ->where('m.guid = "' . $guid . '"');   
+        $this->db->setQuery($query);
         $diffusion = $this->db->loadObject();
         
         if (empty($diffusion)):
@@ -648,7 +655,10 @@ class cswmetadata {
         endif;
         
         $link = new stdClass();
-        $link->productstorage = $diffusion->productstorage;
+        if(isset($diffusion->productstorage))
+        {
+            $link->productstorage = $diffusion->productstorage;
+        }
         
         if (!empty($diffusion) && $diffusion->hasdownload == 1):
             //check if the user has the right to download
@@ -656,9 +666,11 @@ class cswmetadata {
         endif;
         
         if ($right):
+            //Link to download
             $link->url =  'index.php?option=com_easysdi_shop&task=download.direct&id=' . $diffusion->id;                        
         else:
-            $infos = $this->GetDownloadInformationsReplacement($guid);
+            //Info about diffusion
+            $infos = $this->GetDownloadInformationsReplacement($diffusion->resourceid);
             if(isset($infos))
             {
                 $link->username = $infos->name;
