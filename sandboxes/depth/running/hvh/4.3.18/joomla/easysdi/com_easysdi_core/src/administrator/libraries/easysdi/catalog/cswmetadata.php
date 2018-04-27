@@ -633,8 +633,8 @@ class cswmetadata {
         $extendedroot->appendChild($extendedmetadata);
         $this->extendeddom->appendChild($extendedroot);
 
-        $string = $this->extendeddom->saveXML();
-        echo ($string); die;
+        //$string = $this->extendeddom->saveXML();
+        //echo ($string); die;
         return $this->extendeddom;
     }
 
