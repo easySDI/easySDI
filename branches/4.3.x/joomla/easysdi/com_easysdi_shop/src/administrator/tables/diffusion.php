@@ -52,6 +52,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
             $array['file_hidden'] = null;
             $array['fileurl'] = null;
             $array['perimeter_id'] = null;
+			$array['redirectionurl'] = null;
         } else {
             switch ($array['productstorage_id']) {
                 case 1:
