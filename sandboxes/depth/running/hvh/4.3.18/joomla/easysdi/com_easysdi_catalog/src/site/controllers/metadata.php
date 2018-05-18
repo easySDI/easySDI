@@ -1348,28 +1348,35 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             //Current user
             $currentSDIUser = sdiFactory::getSdiUser();
+            $isCurrentResponsible = false;
+            foreach ($users as $user) {
+                if ($currentSDIUser->id == $user) {
+                    $isCurrentResponsible = true;
+                    break;
+                }
+            }
+
+            if ($isCurrentResponsible)//Current user is a responsible, no need to notify other
+                return;
 
             if ($assignement->assigned_to == $currentSDIUser->id) {//Metadata was assigned to the current user
                 //Check if the author is a responsible
                 $responsible_id = $assignement->assigned_by;
                 $isResponsible = false;
-                foreach ($users as $user) 
-                {
-                    if($responsible_id == $user)
-                    {
+                foreach ($users as $user) {
+                    if ($responsible_id == $user) {
                         $isResponsible = true;
                         break;
                     }
-                }                
-                if(!$isResponsible)//Author of the assignation is not a responsible, no need to notify
+                }
+                if (!$isResponsible)//Author of the assignation is not a responsible, no need to notify
                     return;
-                
+
                 //Notified the author of the assignation                
                 $responsibleUser = new sdiUser($responsible_id);
-                /*  $responsibleUser->sendMail(
-                  JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $responsibleUser->juser->name)
-                  ); */
-
+                //JFactory::getApplication()->enqueueMessage("Un email devrait être envoyé à : ".$responsibleUser->juser->name, 'Notice');                     
+                $responsibleUser->sendMail(JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $responsibleUser->juser->name));
+                
                 //New assignation
                 $newassignment = new stdClass();
                 $newassignment->id = null;
@@ -1378,36 +1385,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 $newassignment->assigned_by = $currentSDIUser->id;
                 $newassignment->assigned_to = $responsibleUser->id;
                 $newassignment->metadata_id = $this->data['id'];
-                $newassignment->text = "Auto assignement après validation de la métadonnée.";
+                $newassignment->text = JText::_('COM_EASYSDI_CATALOG_METADATA_AUTO_ASSIGNMENT');
 
                 if ($this->db->insertObject('#__sdi_assignment', $newassignment, 'id')) {
                     //
                 } else {
                     //
                 }
-            } else {
-                //No assignation found, notify responsible
-                $isResponsible = false;
-                foreach ($users as $user) 
-                {
-                    if($currentSDIUser->id  == $user)
-                    {
-                        $isResponsible = true;
-                        break;
-                    }
-                }                
-                if($isResponsible)//Current user is a responsible, no need to notify other
-                    return;
-                
+            } else {//No assignation found, notify responsible                
                 foreach ($users as $user) {
                     if ($currentSDIUser->id == $user) {
                         //Current user is a responsible of the metadata, do not send a notification email
                         continue;
                     }
                     $sdiUser = new sdiUser($user);
-                    /*   $sdiUser->sendMail(
-                      JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $sdiUser->juser->name)
-                      ); */
+                    //JFactory::getApplication()->enqueueMessage("Un email devrait être envoyé à : ".$sdiUser->juser->name, 'Notice'); 
+                    $sdiUser->sendMail(JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $sdiUser->juser->name));                    
                 }
             }
         }
