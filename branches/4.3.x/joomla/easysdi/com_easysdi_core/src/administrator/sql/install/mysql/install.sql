@@ -2195,6 +2195,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_perimeter` (
 `maplayer_id` INT(11) UNSIGNED   NULL ,
 `wmsservice_id` INT(11) UNSIGNED   NULL ,
 `wmsservicetype_id` INT(11) UNSIGNED   NULL ,
+`map_id` INT(11) NULL ,
 `layername` VARCHAR(255)   NULL ,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',

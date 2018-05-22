@@ -39,8 +39,8 @@ class Easysdi_shopViewdownload extends JViewLegacy {
         
         if($this->_layout == 'grid'){            
             if(isset($this->paramsarray['ordermap'])){
-                $this->mapscript = Easysdi_mapHelper::getMapScript($this->paramsarray['ordermap']);
-                
+                $map = ($this->item->perimeter->_item->map_id != null) ?$this->item->perimeter->_item->map_id :$this->paramsarray['ordermap'];                 
+                $this->mapscript = Easysdi_mapHelper::getMapScript($map);                
             }            
         }
 

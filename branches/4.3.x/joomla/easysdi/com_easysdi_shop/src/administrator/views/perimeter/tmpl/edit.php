@@ -77,6 +77,14 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
                             <div class="controls"><?php echo $field->input; ?></div>
                         </div>
                     <?php endforeach; ?>
+                    <fieldset><legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_ORDERMAP'); ?></legend>
+                    <?php foreach ($this->form->getFieldset('map') as $field): ?>
+                        <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                            <div class="control-label"><?php echo $field->label; ?></div>
+                            <div class="controls"><?php echo $field->input; ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                    </fieldset>
                     <fieldset><legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_WMS'); ?></legend>
                     <?php foreach ($this->form->getFieldset('wms') as $field): ?>
                         <div class="control-group" id="<?php echo $field->fieldname; ?>">
