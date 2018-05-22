@@ -122,6 +122,7 @@ class Easysdi_shopModelperimeter extends sdiModel {
         $poswfs = strstr($_REQUEST['jform']['wfsservice_id'], 'physical_');
         $table->wfsservice_id = substr($_REQUEST['jform']['wfsservice_id'], strrpos($_REQUEST['jform']['wfsservice_id'], '_') + 1);
         if ($poswfs) : $table->wfsservicetype_id = 1; else :$table->wfsservicetype_id = 2; endif;
+        if($table->map_id == 0)$table->map_id=null;
         
     }
 }
