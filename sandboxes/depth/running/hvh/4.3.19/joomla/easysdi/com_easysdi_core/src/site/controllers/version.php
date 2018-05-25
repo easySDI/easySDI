@@ -1105,6 +1105,14 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     public function getCascadePublicableChild() {
         return $this->getCascadeChild(false, true);
     }
+    
+     /**
+     * Get a list of cascading children
+     * 
+     */
+    public function getCascadeAllChildren() {
+        return $this->getCascadeChild(true, false);
+    }
 
     /**
      * getCascadeChild - get the list of the version's children

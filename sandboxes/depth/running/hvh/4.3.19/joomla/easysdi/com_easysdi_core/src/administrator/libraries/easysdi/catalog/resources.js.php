@@ -115,7 +115,7 @@ var Links = {
         inprogress_right: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getParent&versionId=#0#&parentState=#1#')?>',
         delete_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadeDeleteChild&version_id=#0#')?>',
         get_roles: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.getRoles&versionId=#0#')?>',
-        publicable_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadePublicableChild&version_id=#0#')?>',
+        publicable_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadeAllChildren&version_id=#0#')?>',
         inprogress_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getInProgressChildren&resource=#0#')?>'
     },
     modal: {

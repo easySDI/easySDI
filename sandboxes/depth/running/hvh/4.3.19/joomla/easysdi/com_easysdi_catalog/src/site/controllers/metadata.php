@@ -319,20 +319,30 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private function changeStatusAndSave($statusId, $continue = true) {
         $viral = JFactory::getApplication()->input->get('viral', 0, 'integer');
 
-        if (isset($this->data['metadatastate_id']) && $statusId == $this->data['metadatastate_id']) {
+        if (isset($this->data['metadatastate_id']) && $statusId == $this->data['metadatastate_id']) 
+        {
             $this->save(null, true, $continue);
-        } elseif (isset($viral) && $viral == 1) {
-            if ($this->changeStatusViral($this->data['id'], $statusId, $this->data['published'])) {
+        } 
+        elseif (isset($viral) && $viral == 1) 
+        {
+            if ($this->changeStatusViral($this->data['id'], $statusId, $this->data['published'])) 
+            {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
                 $this->save(null, true, $continue);
-            } else {
+            } 
+            else 
+            {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
                 $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
             }
-        } elseif ($this->changeStatus($this->data['id'], $statusId, $this->data['published']) != FALSE) {
+        } 
+        elseif ($this->changeStatus($this->data['id'], $statusId, $this->data['published']) != FALSE) 
+        {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
             $this->save(null, true, $continue);
-        } else {
+        } 
+        else 
+        {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
         }
@@ -345,23 +355,33 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $id = JFactory::getApplication()->input->get('id', null, 'int');
         $redirectURL = JFactory::getApplication()->input->get('redirectURL', '');
-        if (empty($redirectURL)) {
+        if (empty($redirectURL)) 
+        {
             $redirectURL = 'index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id'];
         }
 
-        if (isset($this->data['metadatastate_id']) && $statusId == $this->data['metadatastate_id']) {
+        if (isset($this->data['metadatastate_id']) && $statusId == $this->data['metadatastate_id']) 
+        {
             $changeStatus = null;
-        } else {
+        } 
+        else 
+        {
             $published = JFactory::getApplication()->input->get('published', null, 'string');
             $viral = JFactory::getApplication()->input->get('viral', 0, 'integer');
-            if (isset($published)) {
-
-                if (isset($viral) && $viral == 1) {
+            if (isset($published)) 
+            {
+                if (isset($viral) && $viral == 1) 
+                {
+                    $changeStatus = $this->changeStatus($id, $statusId, $published);
                     $changeStatus = $this->changeStatusViral($id, $statusId, $published);
-                } else {
+                } 
+                else 
+                {
                     $changeStatus = $this->changeStatus($id, $statusId, $published);
                 }
-            } else {
+            } 
+            else 
+            {
                 $changeStatus = $this->changeStatus($id, $statusId);
             }
         }
@@ -1011,7 +1031,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      * @return mixed A database cursor resource on success, boolean false on failure
      */
-    public function changeStatus($id, $metadatastate_id, $published = null) {
+public function changeStatus($id, $metadatastate_id, $published = null) {
 
         $this->data['metadatastate_id'] = $metadatastate_id;
         switch ($metadatastate_id) {
@@ -1063,7 +1083,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
 
             foreach ($versions[$version->id]->children as $children) {
-                if ($children->metadatastate_id == sdiMetadata::VALIDATED) {
+                //if ($children->metadatastate_id == sdiMetadata::VALIDATED) {
                     if ($this->changeStatus($children->metadata_id, $metadatastate_id, $published)) {
                         $data = array();
                         $data['id'] = $children->metadata_id;
@@ -1083,7 +1103,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         $xml = $this->CreateUpdateBody($childXPath->query('/*/*')->item(0), $children->fileidentifier);
                         $model->save($data, $xml->saveXML());
                     }
-                }
+               // }
             }
             $this->db->transactionCommit();
 
