@@ -235,15 +235,14 @@
     </fieldset>
     
     <fieldset name="publishing">
-        <field name="created_by" type="createdby" default=""  readonly="true"
+        <field name="created_by" type="createdby" default="0"  readonly="true" 
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED_BY"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_CREATED_BY"  /> 
-
-        <field name="created" type="timecreated" 
-               default="0" readonly="true"
-               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED"
-               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_CREATED" 
-               filter="safehtml" /> 
+        
+        <field name="created" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED"
+              filter="user_utc" description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_CREATED" 
+               /> 
     </fieldset>
     
     <fieldset name="publishing_update">
@@ -251,13 +250,12 @@
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_MODIFIED_BY"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_MODIFIED_BY" 
                default="0" 
-               filter="safehtml" /> 
+                /> 
 
-        <field name="modified" type="timecreated" class="inputbox"
-               default="0"  readonly="true"
+        <field name="modified" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" 
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_MODIFIED"
-               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_MODIFIED" 
-               filter="safehtml" />
+               filter="user_utc" description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_MODIFIED" 
+                />
     </fieldset>
     
 </form>

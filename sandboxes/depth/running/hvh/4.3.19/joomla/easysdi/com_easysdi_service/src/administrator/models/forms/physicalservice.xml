@@ -208,12 +208,10 @@
                         filter="unset" /> 
 
         <field 	name="created" 
-                        type="calendar" 
-                        class="readonly"
-                        readonly="true"
+                        type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
                         label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_CREATED"
                         description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_CREATED" 
-                        filter="safehtml" /> 
+                         /> 
 
         <field 	name="modified_by" 
                         type="user" 
@@ -224,12 +222,10 @@
                         filter="unset" /> 
 
         <field 	name="modified" 
-                        type="calendar" 
-                        class="readonly"
-                        readonly="true"
+                        type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
                         label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED"
                         description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED" 
-                        filter="safehtml" /> 
+                         /> 
     </fieldset>
 	
     <fieldset name="rulesdefinition">

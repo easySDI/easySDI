@@ -39,7 +39,13 @@ defined('_JEXEC') or die;
                             <tr>
                                 <td><?php echo $item->assigned_by ?></td>
                                 <td><?php echo $item->assigned_to ?></td>
-                                <td><?php echo $item->assigned ?></td>
+                                <td><?php 
+                                if($item->assigned)
+                                {
+                                    $timezone = new DateTimeZone(JFactory::getConfig()->get('offset', 'UTC'));
+                                    echo JFactory::getDate($item->assigned, 'UTC')->setTimezone($timezone)->format('Y-m-d H:i:s', true); 
+                                }
+                                ?></td>
                                 <td><?php echo nl2br($item->text) ?></td>
                                 <td></td>
                             </tr>

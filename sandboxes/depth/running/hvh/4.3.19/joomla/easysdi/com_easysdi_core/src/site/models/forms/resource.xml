@@ -153,15 +153,14 @@
     </fieldset>
     
     <fieldset name="publishing">
-        <field name="created_by" type="createdby" default=""  readonly="true"
+        <field name="created_by" type="createdby" default="0"  readonly="true"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED_BY"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED_BY"  /> 
 
-        <field name="created" type="calendar" 
-              default="0" readonly="true"
+        <field name="created"  type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED" 
-              filter="safehtml" /> 
+              filter="user_utc" /> 
     </fieldset>
     
     <fieldset name="publishing_update">
@@ -171,10 +170,9 @@
               default="0" 
               filter="safehtml" /> 
 
-        <field name="modified" type="calendar" class="inputbox"
-              default="0"  readonly="true"
+        <field name="modified"  type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED" 
-              filter="safehtml" />
+              filter="user_utc" />
     </fieldset>
 </form>

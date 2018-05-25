@@ -25,17 +25,17 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_CREATED_BY"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_CREATED_BY"  /> 
 
-        <field name="created" type="timecreated" default="" 
+        <field name="created" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" default="" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_CREATED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_CREATED"  /> 
 
-        <field name="modified_by" type="text" size="40" class="inputbox"
+        <field name="modified_by" type="createdby"
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_MODIFIED_BY"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_MODIFIED_BY" 
                default="0" 
-               filter="safehtml" /> 
+                /> 
 
-        <field name="modified" type="timeupdated" default="" 
+        <field name="modified" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" default="" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_MODIFIED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_MODIFIED"  /> 
 

@@ -295,7 +295,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
             if ($new) {
                 $version = JTable::getInstance('version', 'Easysdi_coreTable');
                 $version->resource_id = $table->id;
-                $version->name = date("Y-m-d H:i:s");
+                $version->name = JFactory::getDate('now', JFactory::getConfig()->get('offset', 'UTC'))->format('Y-m-d H:i:s', true);
                 $version->store();
 
                 require_once JPATH_SITE . '/components/com_easysdi_catalog/models/metadata.php';

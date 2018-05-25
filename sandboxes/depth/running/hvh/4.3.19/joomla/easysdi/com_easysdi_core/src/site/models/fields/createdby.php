@@ -35,17 +35,33 @@ class JFormFieldCreatedby extends JFormField
 		// Initialize variables.
 		$html = array();
         
-        
 		//Load user
-		$user_id = $this->value;
+                /*$user_id = $this->value;
 		if ($user_id) {
 			$user = JFactory::getUser($user_id);
 		} else {
 			$user = JFactory::getUser();
 			$html[] = '<input type="hidden" name="'.$this->name.'" value="'.$user->id.'" />';
 		}
-		$html[] = "<div>".$user->name." (".$user->username.")</div>";
-        
+		$html[] = "<div>".$user->name." (".$user->username.")</div>";*/
+		$user_id = $this->value;
+		if (isset($user_id)) {
+			$user = JFactory::getUser($user_id);
+                        if($user->id != null && $user_id != "0")
+                        {
+                            $html[] = "<div>".$user->name." (".$user->username.")</div>";
+                            $html[] = '<input type="hidden" name="'.$this->name.'" value="'.$user->id.'" />';
+                        }
+                        else
+                        {
+                            $html[] = "<div>(".$user_id.")</div>";
+                            $html[] = '<input type="hidden" name="'.$this->name.'" value="'.$user_id.'" />';
+                        }
+		} else {
+			$user = JFactory::getUser();
+			$html[] = "<div>".$user->name." (".$user->username.")</div>";
+                        $html[] = '<input type="hidden" name="'.$this->name.'" value="'.$user->id.'" />';                  
+		}     
 		return implode($html);
 	}
 }
