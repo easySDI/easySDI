@@ -206,6 +206,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
     <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.publish'); ?>" method="post" class="form-validate form-horizontal">
         <input type="hidden" id="id" name="id" value=""/>
         <input type="hidden" id="viral" name="viral" value="0"/>
+        <input type="hidden" id="viraldate" name="viraldate" value="0"/>
         <input type="hidden" id="redirectURL" name="redirectURL" value="index.php?option=com_easysdi_core&view=resources"/>
         <input type="hidden" id="task" name="task" value="metadata.publish"/>
         <div class="modal-dialog">
@@ -226,10 +227,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                     <?php echo JText::_('COM_EAYSDI_CORE_UPDATE_CONFIRM'); ?>
                     <span id="publishModalCurrentMetadata"></span>
                     <div id="publishModalChildrenDiv" style="display:none">
-                        <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_UPDATE_CHILDREN_CONFIRM'); ?>
+                        <input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?>
                         <span id="publishModalChildrenList"></span>
                     </div>
-
+                    <span id="publishDateModalCurrentMetadata"></span>
+                    <div id="publishDateModalChildrenDiv" style="display:none">
+                        <input type="checkbox" id="publishDateModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_UPDATE_CHILDREN_CONFIRM'); ?>
+                        <span id="publishDateModalChildrenList"></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
@@ -353,4 +358,3 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
         </div>
     </form>
 </div>
-

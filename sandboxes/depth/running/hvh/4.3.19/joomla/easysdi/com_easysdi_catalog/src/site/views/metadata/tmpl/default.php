@@ -21,7 +21,6 @@ $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
-
 $document->addStyleSheet('components/com_easysdi_catalog/assets/css/metadata.css');
 
 JText::script('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK');
@@ -38,13 +37,10 @@ JText::script('COM_EASYSDI_CATALOG_ERROR_RETRIEVE_IMPORT_REF');
 JText::script('COM_EASYSDI_CATALOG_ERROR_REMOVE');
 JText::script('COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE');
 JText::script('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN');
-
-
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
 JText::script('PUBLISHED');
 JText::script('VALIDATED');
-
 JText::script('COM_EASYSDI_CATALOG_GEMET_HOME');
 JText::script('COM_EASYSDI_CATALOG_GEMET_SEARCH');
 JText::script('COM_EASYSDI_CATALOG_GEMET_BT');
@@ -60,15 +56,12 @@ JText::script('COM_EASYSDI_CATALOG_GEMET_TOP_CONCEPTS');
 JText::script('COM_EASYSDI_CATALOG_GEMET_FOUND');
 JText::script('COM_EASYSDI_CATALOG_GEMET_INSPIRE_THEMES');
 JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
-
 JText::script('COM_EASYSDI_CATALOG_OPEN_ALL');
 JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
-
 JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_OK');
 JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_KO');
 JText::script('COM_EASYSDI_CATALOG_FILE_VALIDATE_UNABLE');
 JText::script('COM_EASYSDI_CATALOG_FILE_UPLOAD_SUCCES');
-
 JText::script('JGLOBAL_SELECT_SOME_OPTIONS');
 JText::script('JGLOBAL_SELECT_AN_OPTION');
 JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
@@ -105,19 +98,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/proj4j
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
-
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
-
 $document->addScript('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/scripts/shCore.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/scripts/shBrushXml.js');
-
 $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/vendor/jquery.ui.widget.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/jquery.iframe-transport.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/jQuery-File-Upload-9.9.3/js/jquery.fileupload.js');
-
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/editMetadata.js');
-
-
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shCore.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shThemeDefault.css');
 $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
@@ -161,8 +148,6 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
     </div>
 
     <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
-
-
         <div class ="well">
             <?php echo $this->formHtml; ?>
 
@@ -173,14 +158,10 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
             <input type="hidden" name="task" value="" />
             <input type="hidden" name="preview" value="public" />
             <input type="hidden" name="viral" id="jform_viral" value="0" />
-
         </div>
-
         <div>
-
             <?php if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor) || $this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)):echo $this->getActionToolbar();
             endif; ?>
-
 <?php echo JHtml::_('form.token'); ?>
         </div>
     </form>
@@ -387,7 +368,11 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
                             <div id="publishModalViralPublicationBlock"><input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?></div>
                             <span id="publishModalChildrenList"></span>
                         </div>
-
+                        <div id="publishDateModalChildrenDiv" style="display:none">
+                            <div id="publishDateModalAlert" class="alert alert-info"><?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_DATE_CHILDREN_FORCE'); ?></div>
+                            <div id="publishDateModalViralPublicationBlock"><input type="checkbox" id="publishModalViralPublication"> <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CHILDREN_CONFIRM'); ?></div>
+                            <span id="publishDateModalChildrenList"></span>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>

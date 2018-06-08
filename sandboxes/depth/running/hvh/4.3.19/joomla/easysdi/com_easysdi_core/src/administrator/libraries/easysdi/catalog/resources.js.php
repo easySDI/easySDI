@@ -115,7 +115,8 @@ var Links = {
         inprogress_right: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getParent&versionId=#0#&parentState=#1#')?>',
         delete_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadeDeleteChild&version_id=#0#')?>',
         get_roles: '<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.getRoles&versionId=#0#')?>',
-        publicable_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadeAllChildren&version_id=#0#')?>',
+        publicable_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadePublicableChild&version_id=#0#')?>',
+        dateupdate_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getCascadeViralPublishedChildren&version_id=#0#')?>',
         inprogress_child: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.getInProgressChildren&resource=#0#')?>'
     },
     modal: {
@@ -834,23 +835,32 @@ var showPublishModal = function(element){
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     var metadata = version.metadata();
+    GetChildrenToPublish(version, metadata);
+    GetChildrenToDateUpdate(version,metadata);
     
-    //console.log(version);
-    //console.log(metadata);
-    
-    js.ajax({
+    if('undefined' !== typeof metadata.publishDate && '0000-00-00 00:00:00' !== metadata.publishDate){
+        var datetime = metadata.publishDate.split(' ');
+        js('#publishModal #published').val(datetime[0]);
+    }
+          
+    js(document).ajaxStop(function () {        
+        showModal(metadata.id); 
+    });
+    return false;
+};
+
+var  GetChildrenToPublish = function (version, metadata){
+   return js.ajax({
         cache: false,
         type: 'GET',
         url: Links.ajax.publicable_child.replace('#0#', version.id)
     }).done(function(data) {
         try{
             var response = js.parseJSON(data);
-            response.versions[version.id].metadata_id = metadata.id;
-            
+            response.versions[version.id].metadata_id = metadata.id;            
             var children = response.versions[version.id].children;
             delete response.versions[version.id].children;
             js('#publishModalCurrentMetadata').html(buildVersionsTree(response.versions));
-
             if(js(children).length){
                 js('#publishModalChildrenList').html(buildVersionsTree(children));
                 js('#publishModalViralPublication').attr('checked', true).trigger('change');
@@ -859,13 +869,6 @@ var showPublishModal = function(element){
             else{
                 js('#publishModalViralPublication').attr('checked', false).trigger('change');
             }
-
-            if('undefined' !== typeof metadata.publishDate && '0000-00-00 00:00:00' !== metadata.publishDate){
-                var datetime = metadata.publishDate.split(' ');
-                js('#publishModal #published').val(datetime[0]);
-            }
-
-            showModal(metadata.id);
         }
         catch(e){
             if(window.console){
@@ -874,8 +877,36 @@ var showPublishModal = function(element){
             }
         }
     });
-    return false;
 };
+
+var GetChildrenToDateUpdate = function (version, metadata){
+    return js.ajax({
+        cache: false,
+        type: 'GET',
+        url: Links.ajax.dateupdate_child.replace('#0#', version.id)
+    }).done(function(data) {
+        try{
+            var response = js.parseJSON(data);
+            response.versions[version.id].metadata_id = metadata.id;
+            var children = response.versions[version.id].children;
+            delete response.versions[version.id].children;
+            if(js(children).length){
+                js('#publishDateModalChildrenList').html(buildVersionsTree(children));
+                js('#publishDateModalViralPublication').attr('checked', true).trigger('change');
+                js('#publishDateModalChildrenDiv').show();
+            }
+            else{
+                js('#publishDateModalViralPublication').attr('checked', false).trigger('change');
+            }
+        }
+        catch(e){
+            if(window.console){
+                console.log(e);
+                console.log(data);
+            }
+        }
+    });
+ };
 
 function showSyncModal(element){
     js('#btn_synchronize').attr('href', js(element).attr('href'));
@@ -908,6 +939,8 @@ js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);
 js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
 
 js(document).on('change', '#publishModalViralPublication', function(){js('#publishModal #viral').val(js(this).attr('checked')==='checked'?1:0)});
+
+js(document).on('change', '#publishDateModalViralPublication', function(){js('#publishModal #viraldate').val(js(this).attr('checked')==='checked'?1:0)});
 
 // Fix action's link style
 js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});

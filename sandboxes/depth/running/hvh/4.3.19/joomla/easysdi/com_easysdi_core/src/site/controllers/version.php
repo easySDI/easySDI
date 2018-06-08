@@ -1113,12 +1113,20 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     public function getCascadeAllChildren() {
         return $this->getCascadeChild(true, false);
     }
+    
+    /**
+     * Get a list of cascading children
+     * 
+     */
+    public function getCascadeViralPublishedChildren() {
+        return $this->getCascadeChild(true, false, true);
+    }
 
     /**
      * getCascadeChild - get the list of the version's children
      */
-    public function getCascadeChild($viralVersioning = false, $unpublished = false) {
-        $model = $this->getModel('Version', 'Easysdi_coreModel');
+    public function getCascadeChild($viralVersioning = false, $unpublished = false, $onlypublished = false) {
+      //  $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         // Get the user data.
         $id = JFactory::getApplication()->input->get('version_id', null, 'int');
@@ -1140,7 +1148,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $version = $db->loadObject();
         
         $response = array();
-        $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished);
+        $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished, $onlypublished);
 
         
         $childrenCardinality = $this->getChildrenCardinality(false);
