@@ -325,7 +325,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         } 
         elseif (isset($viral) && $viral == 1) //Change status and update all children status
         {
-            if ($this->changeStatusViral($this->data['id'], $statusId, $this->data['published'])) 
+            if ($this->changeStatusViral($this->data['id'], $statusId, $this->data['published'], false, true, false)) 
             {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
                 $this->save(null, true, $continue);
@@ -349,7 +349,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         //Change publication date of viral children
         if($statusId == sdiMetadata::PUBLISHED)
-            $this->changeStatusViral($this->data['id'], $statusId, $this->data['published'], true);
+            $this->changeStatusViral($this->data['id'], $statusId, $this->data['published'], true, false, true);
         
         //Send notification when status is validated
         if (sdiMetadata::VALIDATED == $statusId)
@@ -377,17 +377,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             {
                 if (isset($viral) && $viral == 1) //Publish with all children
                 {
-                    $changeStatus = $this->changeStatusViral($id, $statusId, $published, false);
+                    $changeStatus = $this->changeStatusViral($id, $statusId, $published, false, true, false);
                 } 
-                else if (isset($viraldate) && $viraldate == 1) //Publish with viral children
+                if (isset($viraldate) && $viraldate == 1) //Publish with viral children
                 {
-                    //$changeStatus = $this->changeStatus($id, $statusId, $published);
-                    $changeStatus = $this->changeStatusViral($id, $statusId, $published, true);
+                    $changeStatus = $this->changeStatusViral($id, $statusId, $published, true, false, true);
                 }
-                else //Publish only current metadata
-                {
-                    $changeStatus = $this->changeStatus($id, $statusId, $published);
-                }
+                //Publish only current metadata
+                $changeStatus = $this->changeStatus($id, $statusId, $published);
+                
             } 
             else //Change status
             {
@@ -1033,7 +1031,7 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
         return $this->db->execute();
     }
 
-    private function changeStatusViral($id, $metadatastate_id, $published = null, $viral = false) {
+    private function changeStatusViral($id, $metadatastate_id, $published = null, $viral = false, $unpublished = false, $onlypublished  = false) {
         $query = $this->db->getQuery(true)
                 ->select('version_id as id')
                 ->from('#__sdi_metadata')
@@ -1041,7 +1039,7 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
         $this->db->setQuery($query);
         $version = $this->db->loadObject();
 
-        $versions = $this->core_helpers->getChildrenVersion($version, $viral);
+        $versions = $this->core_helpers->getChildrenVersion($version, $viral, $unpublished, $onlypublished);
 
         try {
             try {
@@ -1058,18 +1056,14 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
                         $data = array();
                         $data['id'] = $children->metadata_id;
                         $data['published'] = $published;
-
                         $child = new sdiMetadata($children->metadata_id);
                         $childDom = $child->load();
                         $childXPath = new DOMXpath($childDom);
-
                         $nsdao = new SdiNamespaceDao();
-
                         foreach ($nsdao->getAll() as $ns) {
                             $childXPath->registerNamespace($ns->prefix, $ns->uri);
                         }
                         $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
-
                         $xml = $this->CreateUpdateBody($childXPath->query('/*/*')->item(0), $children->fileidentifier);
                         $model->save($data, $xml->saveXML());
                     }
