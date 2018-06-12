@@ -648,8 +648,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if ($commit) {
             $xml = $this->CreateUpdateBody($root, $data['guid'])->saveXML();
 
-            //Save published date
-            
             if (isset($this->data['viral']) && $this->data['viral'] == 1) {
                 $virality = $this->changeStatusViral($this->data['id'], $this->data['metadatastate_id'], $this->data['published']);
             }
