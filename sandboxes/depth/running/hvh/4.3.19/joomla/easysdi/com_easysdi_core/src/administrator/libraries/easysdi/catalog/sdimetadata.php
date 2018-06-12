@@ -42,7 +42,13 @@ class sdiMetadata extends cswmetadata {
     const xmlns_uri = 'http://www.w3.org/2000/xmlns/';
     const csw_uri = 'http://www.opengis.net/cat/csw/2.0.2';
     const ogc_uri = 'http://www.opengis.net/ogc';
-
+    
+    //Resource type
+    const geoproducttype = 2;
+    const layertype = 3;
+    const maptype = 4;
+    const geoservicetype = 10;
+    
     /**
      * 
      */
@@ -264,10 +270,27 @@ class sdiMetadata extends cswmetadata {
         
         $publicationdate = date('Y-m-d',strtotime($this->metadata->published));
                 
+        JComponentHelper::getParams('com_easysdi_catalog')->get('metadatatitlexpath');        
+        $datexpath = '';
+        switch ($this->resource->resourcetype_id){
+            case self::geoproducttype:
+                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('geoproductpublicationdatexpath');
+                break;
+            case self::layertype:
+                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('layerpublicationdatexpath');
+                break;
+            case self::geoservicetype:
+                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('servicepublicationdatexpath');
+                break;
+            case self::maptype:
+                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('mappublicationdatexpath');
+                break;
+        }
+                
          $xpath = new DOMXPath($dom);
         
-        if(!empty($this->metadata->published)){
-            $currentgcodate = $xpath->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode[@codeListValue='publication']/../../gmd:date/gco:Date")->item(0);
+        if(!empty($this->metadata->published) && !empty($datexpath)){
+            $currentgcodate = $xpath->query($datexpath."/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode[@codeListValue='publication']/../../gmd:date/gco:Date")->item(0);
             if($currentgcodate){
                 $gmddate = $currentgcodate->parentNode;
                 $newgcodate = $dom->createElementNS('http://www.isotc211.org/2005/gco', 'gco:Date', $publicationdate);
@@ -275,7 +298,7 @@ class sdiMetadata extends cswmetadata {
             }
             else
             {
-                $currentgmdcicitation = $xpath->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation")->item(0);
+                $currentgmdcicitation = $xpath->query($datexpath)->item(0);
                 $newgmddate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:date');
                 $newgmdcidate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:CI_Date');
                 $newsubgmddate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:date');
