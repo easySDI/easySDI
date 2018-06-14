@@ -930,20 +930,20 @@ var buildActionsCell = function(resource, reload){
 };
 
 // Set events
-js(document).on('click', '#search-reset', resetSearch);
+//js(document).on('click', '#search-reset', resetSearch);
 
-js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', function(){showDeleteModal(this);return false;});
+//js(document).on('click', 'a[id$=_delete_version], a[id$=_delete_resource]', function(){showDeleteModal(this);return false;});
 
-js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
+//js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
 
-js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
+//js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
 
-js(document).on('change', '#publishModalViralPublication', function(){js('#publishModal #viral').val(js(this).attr('checked')==='checked'?1:0)});
+//js(document).on('change', '#publishModalViralPublication', function(){js('#publishModal #viral').val(js(this).attr('checked')==='checked'?1:0)});
 
-js(document).on('change', '#publishDateModalViralPublication', function(){js('#publishModal #viraldate').val(js(this).attr('checked')==='checked'?1:0)});
+//js(document).on('change', '#publishDateModalViralPublication', function(){js('#publishModal #viraldate').val(js(this).attr('checked')==='checked'?1:0)});
 
 // Fix action's link style
-js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});
+//js(document).on('hover', 'td[id$=_actions] a', function(){js(this).css('cursor', 'pointer')});
 
 js(document).ready(function(){
     
@@ -968,6 +968,10 @@ js(document).ready(function(){
     js(document).on('click', 'a[id$=_assign]', function(){showAssignmentModal(this);return false;});
     
     js(document).on('click', 'a[id$=_changepublishdate]', function(){showPublishModal(this)});
+    
+    js(document).on('change', '#publishModalViralPublication', function(){js('#publishModal #viral').val(js(this).attr('checked')==='checked'?1:0)});
+
+    js(document).on('change', '#publishDateModalViralPublication', function(){js('#publishModal #viraldate').val(js(this).attr('checked')==='checked'?1:0)});
     
     var ordering = js('#resources_ordering').html();
     

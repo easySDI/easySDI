@@ -42,7 +42,13 @@ class sdiMetadata extends cswmetadata {
     const xmlns_uri = 'http://www.w3.org/2000/xmlns/';
     const csw_uri = 'http://www.opengis.net/cat/csw/2.0.2';
     const ogc_uri = 'http://www.opengis.net/ogc';
-
+    
+    //Resource type
+    const geoproducttype = 2;
+    const layertype = 3;
+    const maptype = 4;
+    const geoservicetype = 10;
+    
     /**
      * 
      */
@@ -112,7 +118,6 @@ class sdiMetadata extends cswmetadata {
         $this->db->setQuery($query);
         $rootclass = $this->db->loadObject();
 
-
         //Create metadata XML
         $this->dom = new DOMDocument('1.0', 'utf-8');
 
@@ -125,6 +130,10 @@ class sdiMetadata extends cswmetadata {
         $insert = $this->dom->createElementNS(self::csw_uri, 'csw:Insert');
 
         if (!empty($xml)) {
+            if($this->metadata->published && $this->metadata->published != '0000-00-00 00:00:00')
+            {
+                $xml = $this->UpdatePublicationDate($xml);
+            }
             $root = $xml->getElementsByTagNameNS($rootclass->uri, $rootclass->nodeName);
             $insert->appendChild($this->dom->importNode($xml->documentElement, true));
         } else {
@@ -133,7 +142,6 @@ class sdiMetadata extends cswmetadata {
             $root->setAttributeNS(self::xmlns_uri, 'xmlns:gco', 'http://www.isotc211.org/2005/gco');
             $root->setAttributeNS(self::xmlns_uri, 'xmlns:gml', 'http://www.opengis.net/gml');
             $root->setAttributeNS(self::xmlns_uri, 'xmlns:sdi', 'http://www.easysdi.org/2011/sdi');
-
 
             $identifier = $this->dom->createElement($attributeIdentifier->attribute_isocode);
             $identifiertype = $this->dom->createElement($attributeIdentifier->type_isocode, $this->metadata->guid);
@@ -175,6 +183,14 @@ class sdiMetadata extends cswmetadata {
      * 
      */
     public function update($xml) {
+        //Update metadata publication date according to easySDI publication date
+     /*   if($this->metadata->published && $this->metadata->published != '0000-00-00 00:00:00')
+        {
+            $newdom = new DOMDocument();
+            $newdom->loadXML($xml);
+            $resultdom = $this->UpdatePublicationDate($newdom);
+            $xml = $resultdom->saveXML();
+        }*/
         $reponse = $this->CURLRequest('POST', $this->catalogurl, $xml);
         $dom = new DOMDocument();
         $dom->loadXML($reponse);
@@ -247,6 +263,62 @@ class sdiMetadata extends cswmetadata {
         return true;
     }
 
+    public function UpdatePublicationDate(DOMDocument $dom)
+    {
+        if(!$this->metadata->published && $this->metadata->published != '0000-00-00 00:00:00')
+            return $dom;
+        
+        $publicationdate = date('Y-m-d',strtotime($this->metadata->published));
+                
+        JComponentHelper::getParams('com_easysdi_catalog')->get('metadatatitlexpath');        
+        $datexpath = '';
+        switch ($this->resource->resourcetype_id){
+            case self::geoproducttype:
+                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('geoproductpublicationdatexpath');
+                break;
+            case self::layertype:
+                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('layerpublicationdatexpath');
+                break;
+            case self::geoservicetype:
+                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('servicepublicationdatexpath');
+                break;
+            case self::maptype:
+                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('mappublicationdatexpath');
+                break;
+        }
+                
+         $xpath = new DOMXPath($dom);
+        
+        if(!empty($this->metadata->published) && !empty($datexpath)){
+            $currentgcodate = $xpath->query($datexpath."/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode[@codeListValue='publication']/../../gmd:date/gco:Date")->item(0);
+            if($currentgcodate){
+                $gmddate = $currentgcodate->parentNode;
+                $newgcodate = $dom->createElementNS('http://www.isotc211.org/2005/gco', 'gco:Date', $publicationdate);
+                $gmddate->replaceChild($newgcodate,$currentgcodate);
+            }
+            else
+            {
+                $currentgmdcicitation = $xpath->query($datexpath)->item(0);
+                $newgmddate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:date');
+                $newgmdcidate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:CI_Date');
+                $newsubgmddate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:date');
+                $newgcodate = $dom->createElementNS('http://www.isotc211.org/2005/gco', 'gco:Date', $publicationdate);
+                $newgmddatetype = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:dateType');
+                $newgmdcidatetypecode = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:CI_DateTypeCode');
+                $newgmdcidatetypecode->setAttribute("codeList", "http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode");
+                $newgmdcidatetypecode->setAttribute("codeListValue", "publication");
+                
+                $newgmddatetype->appendChild($newgmdcidatetypecode);
+                $newsubgmddate->appendChild($newgcodate);
+                $newgmdcidate->appendChild($newsubgmddate);
+                $newgmdcidate->appendChild($newgmddatetype);
+                $newgmddate->appendChild($newgmdcidate);                        
+                $currentgmdcicitation->appendChild($newgmddate);                
+            }
+        }
+        
+        return $dom;
+    }
     /**
      * Load a metadata and update the SDI elements.
      * 
@@ -254,23 +326,26 @@ class sdiMetadata extends cswmetadata {
      */
     public function updateSDIElement() {
         $dom = $this->load();
-
         $xpathmetadata = new DOMXPath($dom);
         $xpathmetadata->registerNamespace('gmd', 'http://www.isotc211.org/2005/gmd');
         $metadata = $xpathmetadata->query($this->getMetadataRootClass()->isocode)->item(0);
-
         $newdom = $this->wrapUpdateBlock($metadata);
-
-        $platform = $this->getPlatformNode($newdom);
+        
+        //Update Publication Date if sent
+        if($this->metadata->published && $this->metadata->published != '0000-00-00 00:00:00')
+        {
+            $newdom = $this->UpdatePublicationDate($newdom);
+        }
+        
         $xpath = new DOMXPath($newdom);
+        //Update PlatformNode
+        $platform = $this->getPlatformNode($newdom);
         $xpath->registerNamespace('sdi', 'http://www.easysdi.org/2011/sdi');
         $oldplatform = $xpath->query("//sdi:platform")->item(0);
         $parentNode = $oldplatform->parentNode;
         if ($parentNode->replaceChild($platform, $oldplatform)):
-
             $newdom->formatOutput = true;
             $xml = $newdom->saveXML();
-
             $result = $this->CURLRequest("POST", $this->catalogurl, $xml);
 
             if (empty($result))
