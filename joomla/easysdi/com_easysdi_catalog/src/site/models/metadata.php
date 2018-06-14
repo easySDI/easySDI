@@ -351,15 +351,14 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             $CSWmetadata = new sdiMetadata($table->id);
             if ($new) {
                 if (!$CSWmetadata->insert()) {
-                    //$table->delete();
                     throw new Exception('Echec de création dans le catalog');
                 }
             } else {
-                if (!$CSWmetadata->update($xml)) {
+                if (!$CSWmetadata->update($xml)) {                    
                     throw new Exception('Echec de mise à jour du catalog');
                 }
                 if(!$CSWmetadata->updateSDIElement()){
-                    throw new Exception('Echec de mise à jour du catalog');
+                    throw new Exception('Echec de mise à jour des éléments SDI du catalog');
                 }
             }
 
@@ -376,7 +375,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     if ($table_preview->save(array('endpublished' => $table->published), '', array('created', 'created_by'))) {
                         $CSWmetadata = new sdiMetadata($table_preview->id);
                         if (!$CSWmetadata->updateSDIElement()) {
-                            throw new Exception('Echec de mise à jour du catalog');
+                            throw new Exception('Echec de mise à jour des éléments SDI du catalog');
                         }
                     }
                 }
