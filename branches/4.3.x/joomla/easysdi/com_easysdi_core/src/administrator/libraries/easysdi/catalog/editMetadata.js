@@ -190,31 +190,23 @@ js('document').ready(function () {
                                     async: false,
                                     cache: false
                                 }).done(function (data_version) {
-                                    
                                     js.get( baseUrl, {option: "com_easysdi_core", task : "version.getCardinalityError", version_id : rel.version, ufo : Math.random()})
                                     .done(function(data){
                                         var errors = JSON.parse(data);
                                         if(errors.length > 0){
                                             console.log(errors);
-                                        
                                             var errorsList = '<ul>';
                                             js.each(errors, function(i, item) {
                                                 errorsList += '<li>'+errors[i]+'</li>';
                                             })
-
                                             errorsList += '</ul>';
-
                                             bootbox.alert(errorsList);
                                         }else{
-                                            
                                             var response = js.parseJSON(data_version);
-
                                             console.log(response);
-                                            
                                             var children = response.versions[rel.version].children;
                                             delete response.versions[rel.version].children;
                                             js('#publishModalCurrentMetadata').html(buildVersionsTree(response.versions));
-
                                             if (js(children).length) {
                                                 if(response['minimumChild']>0){
                                                     js('#publishModalViralPublicationBlock').hide();
@@ -225,25 +217,42 @@ js('document').ready(function () {
                                                 js('#publishModalChildrenList').html(buildVersionsTree(children));
                                                 js('#publishModalViralPublication').attr('checked', true).trigger('change');
                                                 js('#publishModalChildrenDiv').show();
-                                                
-                                            
                                             }
                                             else {
                                                 js('#publishModalViralPublication').attr('checked', false).trigger('change');
                                             }
-
                                             var publish_date = js('#jform_published').val();
                                             if ('undefined' !== typeof publish_date && '0000-00-00 00:00:00' !== publish_date) {
                                                 var datetime = publish_date.split(' ');
                                                 js('#publish_date').val(datetime[0]);
                                             }
-
-                                            js('#publishModal').modal('show');
                                             
+                                            js.ajax({
+                                                url: baseUrl + 'option=com_easysdi_core&task=version.getCascadeViralPublishedChildren&version_id=' + rel.version,
+                                                type: "GET",
+                                                async: false,
+                                                cache: false
+                                                }).done(function (dataall_version) {
+                                    
+                                                    var r = js.parseJSON(dataall_version);                                            
+                                                    var c = r.versions[rel.version].children;
+                                                    delete r.versions[rel.version].children;
+                                                    js('#publishDateModalCurrentMetadata').html(buildVersionsTree(r.versions));
+                                                    if (js(c).length) {
+                                                        js('#publishDateModalViralPublicationBlock').hide();
+                                                        js('#publishDateModalAlert').show();                                                      
+                                                        js('#publishDateModalChildrenList').html(buildVersionsTree(c));
+                                                        js('#publishDateModalViralPublication').attr('checked', true).trigger('change');
+                                                        js('#publishDateModalChildrenDiv').show();
+                                                    }
+                                                    else {
+                                                        js('#publishDateModalViralPublication').attr('checked', false).trigger('change');
+                                                    }                                                    
+                                                });
+                                            
+                                            js('#publishModal').modal('show');                                         
                                         }
                                     });
-                                    
-                                    
                                 });
                             }
                         }).fail(function () {
