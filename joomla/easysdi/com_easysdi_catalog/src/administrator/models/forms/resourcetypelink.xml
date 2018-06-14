@@ -81,20 +81,20 @@
         <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
     </fieldset>
  
-    <field name="created" type="calendar" class="inputbox"
+    <field name="created" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
            label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CREATED"
            description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CREATED" 
-           filter="safehtml" /> 
+            /> 
 
-    <field name="modified_by" type="text" size="40" class="inputbox"
+    <field name="modified_by" type="createdby" default="" 
            label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_MODIFIED_BY"
            description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_MODIFIED_BY" 
-           filter="safehtml" /> 
+            /> 
 
-    <field name="modified" type="calendar" class="inputbox"
+    <field name="modified" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
            label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_MODIFIED"
            description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_MODIFIED" 
-           filter="safehtml" /> 
+            /> 
     
     <field name="created_by" type="createdby" default="" 
            label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CREATED_BY"

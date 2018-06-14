@@ -903,7 +903,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         foreach ($versions as $version) {
             $new_version = array();
             $new_version['resource_id'] = $version->resource_id;
-            $new_version['name'] = date("Y-m-d H:i:s");
+            $new_version['name'] = JFactory::getDate('now', JFactory::getConfig()->get('offset', 'UTC'))->format('Y-m-d H:i:s', true);
             $new_version['isViral'] = (bool) $version->viralversioning;
             $new_version['preview_metadata_id'] = $version->metadata_id;
 

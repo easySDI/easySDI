@@ -35,14 +35,14 @@
             description="COM_EASYSDI_SHOP_FORM_DESC_ORDER_CREATED" 
         filter="safehtml" /> 
 
-       <field name="modified_by" type="text" size="40" class="inputbox"
+       <field name="modified_by" type="createdby" default=""
         
             label="COM_EASYSDI_SHOP_FORM_LBL_ORDER_MODIFIED_BY"
             description="COM_EASYSDI_SHOP_FORM_DESC_ORDER_MODIFIED_BY" 
         
         
         
-        filter="safehtml" /> 
+         /> 
 
        <field name="modified" type="calendar" class="inputbox"
         

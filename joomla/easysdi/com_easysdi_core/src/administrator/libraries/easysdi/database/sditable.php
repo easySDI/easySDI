@@ -105,10 +105,12 @@ abstract class sdiTable extends JTable {
      * @since	1.5
      */
     public function bind($array, $ignore = '') {
+        //if ($array['id'] == "0" && isset($array['created_by']) && ($array['created_by'] == "0" || $array['created_by'] == "")) {
         if (!isset($array['created_by']) || $array['created_by'] == 0) {
             $array['created_by'] = JFactory::getUser()->id;
         }
         
+        //if ($array['id'] == "0" && isset($array['created']) && (isset($array['created'])== "0" || isset($array['created'])=="")) {
         if (!isset($array['created'])) {
             $array['created'] = JFactory::getDate()->toSql();
         }
@@ -182,8 +184,6 @@ abstract class sdiTable extends JTable {
         if (empty($this->guid)) {
             $this->guid = Easysdi_coreHelper::uuid();
         }
-
-
         return $this->storeOverwrite($updateNulls);
     }
 

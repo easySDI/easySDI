@@ -171,12 +171,11 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_CREATED_BY"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_CREATED_BY"  /> 
 
-    <field name="created" type="calendar" class="readonly"
-               readonly="true"
+    <field name="created" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
                default="0" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_CREATED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_CREATED" 
-               filter="safehtml" /> 
+                /> 
 
     <field name="modified_by" type="createdby" size="40" class="readonly"
                readonly="true"
@@ -185,12 +184,11 @@
                default="0" 
     /> 
 
-    <field name="modified" type="calendar" class="readonly"
-               readonly="true"
+    <field name="modified" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
                default="0" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_MODIFIED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_MODIFIED" 
-               filter="safehtml" /> 
+                /> 
     
     <field name="fragmentnamespace_id"  
                type="sql" 
