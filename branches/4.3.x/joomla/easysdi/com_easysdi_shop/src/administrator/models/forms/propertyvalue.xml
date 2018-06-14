@@ -69,15 +69,13 @@
                 readonly="true" 
                 label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_CREATED_BY"
                 description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_CREATED_BY" 
-                filter="unset" /> 
+                 /> 
 
         <field 	name="created" 
-                type="calendar" 
-                class="readonly"
-                readonly="true"
+                type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
                 label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_CREATED"
                 description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_CREATED" 
-                filter="safehtml" /> 
+                 /> 
 
         <field 	name="modified_by" 
                 type="createdby" 
@@ -85,15 +83,13 @@
                 readonly="true" 
                 label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_MODIFIED_BY"
                 description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_MODIFIED_BY" 
-                filter="unset" /> 
+                /> 
 
         <field 	name="modified" 
-                type="calendar" 
-                class="readonly"
-                readonly="true"
+                type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
                 label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_MODIFIED"
                 description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_MODIFIED" 
-                filter="safehtml" /> 
+                 /> 
     </fieldset>
     
     <fieldset  name="accesscontrol">

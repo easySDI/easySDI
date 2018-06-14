@@ -21,8 +21,7 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_CREATED_BY"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_CREATED_BY"  /> 
 
-        <field name="created" type="timecreated" default=""   class="readonly"
-               readonly="true"
+        <field name="created" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" default=""   class="readonly"
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_CREATED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_CREATED"  /> 
 
@@ -33,8 +32,7 @@
                default="0" 
                filter="safehtml" /> 
 
-        <field name="modified" type="timeupdated" default=""   class="readonly"
-               readonly="true"
+        <field name="modified" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" default=""   class="readonly"
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_MODIFIED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_MODIFIED"  /> 
 
