@@ -99,11 +99,11 @@
            label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_CREATED"
            description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_CREATED"  /> 
 
-    <field name="modified_by" type="text" size="40" class="inputbox"
+    <field name="modified_by" type="createdby" 
            label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_MODIFIED_BY"
            description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_MODIFIED_BY" 
-           default="0" 
-           filter="safehtml" /> 
+           default="" 
+            /> 
 
     <field name="modified" type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" default="" 
            label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_MODIFIED"

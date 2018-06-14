@@ -23,11 +23,11 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_METADATA_CREATED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_METADATA_CREATED"  /> 
 
-        <field name="modified_by" type="text" size="40" class="inputbox"
+        <field name="modified_by"  type="createdby" readonly="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_METADATA_MODIFIED_BY"
                description="COM_EASYSDI_CATALOG_FORM_DESC_METADATA_MODIFIED_BY" 
-               default="0" 
-               filter="safehtml" /> 
+               default="" 
+               /> 
 
         <field name="modified" type="timeupdated" default="" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_METADATA_MODIFIED"

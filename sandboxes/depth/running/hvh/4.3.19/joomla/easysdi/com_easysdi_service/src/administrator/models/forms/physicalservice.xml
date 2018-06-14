@@ -200,12 +200,10 @@
 
     <fieldset name="publishing">
         <field 	name="created_by" 
-                        type="user" 
-                        class="readonly"
-                        readonly="true" 
+                        type="createdby" 
                         label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_CREATED_BY"
                         description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_CREATED_BY" 
-                        filter="unset" /> 
+                        /> 
 
         <field 	name="created" 
                         type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
@@ -214,12 +212,10 @@
                          /> 
 
         <field 	name="modified_by" 
-                        type="user" 
-                        class="readonly"
-                        readonly="true" 
+                        type="createdby" 
                         label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED_BY"
                         description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED_BY" 
-                        filter="unset" /> 
+                         /> 
 
         <field 	name="modified" 
                         type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"

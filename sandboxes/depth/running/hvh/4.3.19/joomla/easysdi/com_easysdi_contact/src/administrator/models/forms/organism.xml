@@ -139,9 +139,7 @@
 
     <fieldset name="publishing">
         <field name="created_by" 
-               type="user" 
-               class="readonly"
-               readonly="true" 
+               type="createdby" 
                label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_CREATED_BY"
                description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_CREATED_BY"  /> 
 
@@ -152,12 +150,10 @@
                description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_CREATED"  /> 
 
         <field name="modified_by" 
-               type="user" 
-               class="readonly"
-               readonly="true" 
+               type="createdby" 
                label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_MODIFIED_BY"
                description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_MODIFIED_BY" 
-               filter="unset" /> 
+              /> 
 
         <field name="modified" 
                type="calendar" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
