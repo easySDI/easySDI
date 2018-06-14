@@ -258,42 +258,15 @@
         <fieldset name="publicationdate"
         label="COM_EASYSDI_CATALOG_CONFIG_PUBLICATIONDATE_LABEL"
 		  description="COM_EASYSDI_CATALOG_CONFIG_PUBLICATIONDATE_DESC">
-        <field name="geoproductpublicationdatexpath"
+        <field name="metadatadatexpath"
                    type="text"
                    default=""
                    class="inputbox input-xxlarge"
                    required ="false"
                    size="500"
-                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_GEOPRODUCT_PUBLICATIONDATE_XPATH"
-                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_GEOPRODUCT_PUBLICATIONDATE_XPATH">
-           </field>
-           <field name="layerpublicationdatexpath"
-                   type="text"
-                   default=""
-                   class="inputbox input-xxlarge"
-                   required ="false"
-                   size="500"
-                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_LAYER_PUBLICATIONDATE_XPATH"
-                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_LAYER_PUBLICATIONDATE_XPATH">
-           </field>
-           <field name="servicepublicationdatexpath"
-                   type="text"
-                   default=""
-                   class="inputbox input-xxlarge"
-                   required ="false"
-                   size="500"
-                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_SERVICE_PUBLICATIONDATE_XPATH"
-                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_SERVICE_PUBLICATIONDATE_XPATH">
-           </field>
-           <field name="mappublicationdatexpath"
-                   type="text"
-                   default=""
-                   class="inputbox input-xxlarge"
-                   required ="false"
-                   size="500"
-                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_MAP_PUBLICATIONDATE_XPATH"
-                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_MAP_PUBLICATIONDATE_XPATH">
-           </field>
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_PUBLICATIONDATE_XPATH"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_PUBLICATIONDATE_XPATH">
+           </field>           
          </fieldset>
          
         <fieldset name="predefinedboundary"

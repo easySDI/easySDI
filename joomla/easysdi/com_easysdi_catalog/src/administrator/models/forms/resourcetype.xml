@@ -100,20 +100,16 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-
-<!--        <field name="monitoring" type="radio" class="btn-group" default="0"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_MONITORING"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_MONITORING" 
-        > 
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>-->
         
         <field name="sitemapparams" type="text" size="40" class="inputbox input-xxlarge"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_SITEMAPPARAMS"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_SITEMAPPARAMS" 
                filter="safehtml" />
         
+        <field name="metadatadatexpath" type="text" size="40" class="inputbox input-xxlarge"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_DATEXPATH"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_DATEXPATH" 
+               filter="safehtml" />
         
         <field name="profile_id"  required="true"
                type="sql" 

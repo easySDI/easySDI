@@ -43,12 +43,6 @@ class sdiMetadata extends cswmetadata {
     const csw_uri = 'http://www.opengis.net/cat/csw/2.0.2';
     const ogc_uri = 'http://www.opengis.net/ogc';
     
-    //Resource type
-    const geoproducttype = 2;
-    const layertype = 3;
-    const maptype = 4;
-    const geoservicetype = 10;
-    
     /**
      * 
      */
@@ -270,24 +264,13 @@ class sdiMetadata extends cswmetadata {
         
         $publicationdate = date('Y-m-d',strtotime($this->metadata->published));
                 
-        JComponentHelper::getParams('com_easysdi_catalog')->get('metadatatitlexpath');        
-        $datexpath = '';
-        switch ($this->resource->resourcetype_id){
-            case self::geoproducttype:
-                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('geoproductpublicationdatexpath');
-                break;
-            case self::layertype:
-                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('layerpublicationdatexpath');
-                break;
-            case self::geoservicetype:
-                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('servicepublicationdatexpath');
-                break;
-            case self::maptype:
-                $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('mappublicationdatexpath');
-                break;
-        }
-                
-         $xpath = new DOMXPath($dom);
+        $resourcetype = JTable::getInstance('resourcetype', 'Easysdi_catalogTable');
+        $resourcetype->load($this->resource->resourcetype_id);
+        $datexpath = $resourcetype->metadatadatexpath;
+        if(empty($datexpath))        
+            $datexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('metadatadatexpath');
+
+        $xpath = new DOMXPath($dom);
         
         if(!empty($this->metadata->published) && !empty($datexpath)){
             $currentgcodate = $xpath->query($datexpath."/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode[@codeListValue='publication']/../../gmd:date/gco:Date")->item(0);
