@@ -1148,6 +1148,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype` (
 `fragment` VARCHAR(255)   ,
 `sitemapparams` VARCHAR(1000)   ,
 `metadatadatexpath` varchar(500) ,
+`metadatatitlexpath` varchar(500) ,
 `accessscope_id` int(11) UNSIGNED  NOT NULL,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
