@@ -125,15 +125,7 @@
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_IDOGCSEARCHFILTER">
            </field>
            
-           <field name="metadatatitlexpath"
-                   type="text"
-                   default=""
-                   class="inputbox input-xxlarge"
-                   required ="false"
-                   size="500"
-                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_METADATATITLEXPATH"
-                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_METADATATITLEXPATH">
-           </field>
+           
            
            <field name="thesaurusurl"
                    type="text"
@@ -255,10 +247,21 @@
 
 	</fieldset>
         
-        <fieldset name="publicationdate"
-        label="COM_EASYSDI_CATALOG_CONFIG_PUBLICATIONDATE_LABEL"
-		  description="COM_EASYSDI_CATALOG_CONFIG_PUBLICATIONDATE_DESC">
-        <field name="metadatadatexpath"
+        <fieldset name="metadataxpath"
+        label="COM_EASYSDI_CATALOG_CONFIG_XPATH_LABEL"
+		  description="COM_EASYSDI_CATALOG_CONFIG_XPATH_DESC">
+        
+            <field name="metadatatitlexpath"
+                   type="text"
+                   default=""
+                   class="inputbox input-xxlarge"
+                   required ="false"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_METADATATITLEXPATH"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_METADATATITLEXPATH">
+           </field>
+           
+            <field name="metadatadatexpath"
                    type="text"
                    default=""
                    class="inputbox input-xxlarge"
