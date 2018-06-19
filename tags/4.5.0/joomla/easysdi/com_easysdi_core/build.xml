@@ -1,0 +1,561 @@
+<?xml version="1.0" ?>
+
+<project default="com_easysdi_core" basedir="../../../">
+    
+    <property name="core.component.name" value="com_easysdi_core"/>
+    <property name="core.src.out.dir" value="${root.out.dir}/${core.component.name}/src"/>
+    <property name="core.package.out.dir" value="${root.out.dir}/${core.component.name}/target"/>
+    
+    <available file="${joomla.administrator.components.dir}/${core.component.name}" type="dir" property="core.admin.exist"/>
+    <available file="${joomla.site.components.dir}/${core.component.name}" type="dir" property="core.site.exist"/>
+    
+    <target name="package" depends="geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, leaflet-concat, leaflet-minify, leaflet-concat-css, write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, leaflet-concat, leaflet-minify, leaflet-concat-css, write-xml, build-info, zip-package" description="Main target" />
+    <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
+    
+    <!--
+        Cretae a php file containing version and revision of easySDI in variables.
+        Call with antcall : parameter ${destinationfile} must contain the destination file
+    -->
+    <target name="create-sdi-revision-file">
+        <!-- write revision to a temp file -->
+        <property name="svnrevision.temp.file" value="${root.out.dir}/svnrevisiontemp.txt"/>
+        <exec executable="svnversion" output="${svnrevision.temp.file}">
+            <arg line="${parent.src.out.dir}"/>
+        </exec>
+        <!-- load revision, clean with regex, store in property and delete file -->
+        <loadfile srcfile="${svnrevision.temp.file}" property="php.var.svnrevision">
+            <filterchain>
+                <striplinebreaks/>
+                <replaceregex pattern="[^0-9:]" replace="" flags="gi"/>
+                <replaceregex pattern=":" replace="-" flags="gi"/>
+            </filterchain>
+        </loadfile>
+        <delete file="${svnrevision.temp.file}"/>
+        <!-- write php file -->
+        <echo file="${destinationfile}" append="false">&lt;?php${line.separator}</echo>
+        <echo file="${destinationfile}" append="true">$sdi_build_version=&quot;${version}&quot;;${line.separator}</echo>
+        <echo file="${destinationfile}" append="true">$sdi_build_revision=&quot;${php.var.svnrevision}&quot;;${line.separator}</echo>
+    </target>
+    
+    <!-- 
+        Create the administrator folder if necessary.
+        Empty the administrator folder, except svn files.
+        Copy the files from the Admin.
+    --> 
+    <target name="copy-administrator" if="core.admin.exist">
+        
+        <echo>Create sdiBuildInfos.php in source files</echo>
+        <antcall target="core.create-sdi-revision-file">
+            <param name="destinationfile" value="${joomla.administrator.components.dir}/${core.component.name}/libraries/easysdi/common/sdiBuildInfos.php"/>
+        </antcall>
+        
+        <echo>Copy administrator structure of ${core.component.name} component</echo>
+        <copy todir="${core.src.out.dir}/administrator" overwrite="true">
+            <fileset dir="${joomla.administrator.components.dir}/${core.component.name}">
+                <exclude name="easysdi_*.xml"/>
+                <exclude name="script.*"/>
+            </fileset>
+        </copy>
+        
+        <echo>Copy administrator language file of ${core.component.name} component</echo>
+        <copy todir="${core.src.out.dir}/administrator/language" overwrite="true">
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${core.component.name}.ini **/*${core.component.name}.sys.ini"/>
+        </copy>
+        
+        <echo>Copy administrator deployement xml file of ${core.component.name} component</echo>
+        <copy todir="${core.src.out.dir}">
+            <fileset dir="${joomla.administrator.components.dir}/${core.component.name}">
+                <include name="easysdi_*.xml"/>
+                <include name="script.*"/>
+            </fileset>
+        </copy>
+    </target>
+ 
+    <!-- 
+        Create the site folder if necessary.
+        Empty the site folder, except svn files.
+        Copy the files from the site.
+    --> 
+    <target name="copy-site" if="core.site.exist">
+       
+        <echo>Copy site structure of ${core.component.name} component</echo>
+        
+        <copy todir="${core.src.out.dir}/site" overwrite="true">
+            <fileset dir="${joomla.site.components.dir}/${core.component.name}"/>
+        </copy>
+        <echo>Copy site language file of ${core.component.name} component</echo>
+        <copy todir="${core.src.out.dir}/site/language" overwrite="true">
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${core.component.name}.ini"/>
+            <fileset dir="${joomla.site.language.dir}" includes="**/*${core.component.name}.sys.ini"/>
+        </copy>
+    </target>
+    
+    <target name="write-xml">
+        <echoxml  file="${core.src.out.dir}/easysdi_core.xml">
+            <extension type="component" version="3.0.0" method="upgrade">
+                <name>com_easysdi_core</name>
+                <creationDate>${xml.releaseDate}</creationDate>
+                <copyright>${xml.copyright}</copyright>
+                <license>${xml.license}</license>
+                <author>${xml.author}</author>
+                <authorEmail>${xml.authorEmail}</authorEmail>
+                <authorUrl>${xml.authorUrl}</authorUrl>
+                <version>${version}</version>
+                <description></description>
+                <scriptfile>script.php</scriptfile>
+                <install> <!-- Runs on install -->
+                    <sql>
+                        <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
+                        <file driver="mysql" charset="utf8">sql/install/mysql/insert.sql</file>
+                        <file driver="mysql" charset="utf8">sql/install/mysql/alter.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/install.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/insert.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/alter.sql</file>
+                    </sql>
+                </install>
+                <uninstall> <!-- Runs on uninstall -->
+                    <sql>
+                        <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
+                        <file driver="sqlsrv" charset="utf8">sql/install/sqlsrv/uninstall.sql</file>
+                    </sql>
+                </uninstall>
+                <update>
+                    <schemas>
+                        <schemapath type="mysql">sql/updates/mysql</schemapath>
+                        <schemapath type="sqlsrv">sql/updates/sqlsrv</schemapath>
+                    </schemas>
+                </update>
+
+                <files folder="site">
+                    <filename>index.html</filename>
+                    <filename>easysdi_core.php</filename>
+                    <filename>controller.php</filename>
+                    <filename>router.php</filename>
+                    <folder>views</folder>
+                    <folder>models</folder>
+                    <folder>controllers</folder>
+                    <folder>helpers</folder>
+                    <folder>assets</folder>
+                    <folder>libraries</folder>
+                </files>
+                <languages folder="site">
+                    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_core.ini</language>
+                    <language tag="de-DE">language/de-DE/de-DE.com_easysdi_core.ini</language>
+                </languages>
+                <administration>
+                    <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_SOLUTION</menu>
+                    <submenu>
+                        <!--
+                                Note that all & must be escaped to &amp; for the file to be valid
+                                XML and be parsed by the installer
+                        -->
+                        <menu link="option=com_easysdi_core" 
+                              img="class:sdi-menu-home"
+                              alt="EasySDI/Home">COM_EASYSDI_SOLUTION_HOME</menu>
+                        <menu link="option=com_easysdi_contact"
+                              img="class:sdi-menu-contact" 
+                              alt="EasySDI/Contact">COM_EASYSDI_SOLUTION_CONTACT</menu>
+                        <menu link="option=com_easysdi_catalog"
+                              img="class:sdi-menu-catalog" 
+                              alt="EasySDI/Catalog">COM_EASYSDI_SOLUTION_CATALOG</menu>
+                        <menu link="option=com_easysdi_shop"
+                              img="class:sdi-menu-shop" 
+                              alt="EasySDI/Shop">COM_EASYSDI_SOLUTION_SHOP</menu>
+                        <menu link="option=com_easysdi_processing"
+                              img="class:sdi-menu-processing" 
+                              alt="EasySDI/Processing">COM_EASYSDI_SOLUTION_PROCESSING</menu>
+                        <menu link="option=com_easysdi_service"
+                              img="class:sdi-menu-service" 
+                              alt="EasySDI/Service">COM_EASYSDI_SOLUTION_SERVICE</menu>
+                        <menu link="option=com_easysdi_map"
+                              img="class:sdi-menu-map" 
+                              alt="EasySDI/Map">COM_EASYSDI_SOLUTION_MAP</menu>
+                        <menu link="option=com_easysdi_monitor"
+                              img="class:sdi-menu-monitor" 
+                              alt="EasySDI/Monitor">COM_EASYSDI_SOLUTION_MONITOR</menu>
+                        <menu link="option=com_easysdi_dashboard"
+                              img="class:sdi-menu-dashboard" 
+                              alt="EasySDI/Dashboard">COM_EASYSDI_SOLUTION_DASHBOARD</menu>
+                    </submenu>                    
+        
+                    <files folder="administrator">
+                        <filename>access.xml</filename>
+                        <filename>config.xml</filename>
+                        <filename>controller.php</filename>
+                        <filename>index.html</filename>
+                        <filename>easysdi_core.php</filename>
+                        <folder>controllers</folder>
+                        <folder>assets</folder>
+                        <folder>helpers</folder>
+                        <folder>libraries</folder>
+                        <folder>models</folder>
+                        <folder>sql</folder>
+                        <folder>tables</folder>
+                        <folder>views</folder>
+                    </files>
+                    <languages folder="administrator">
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.ini</language>
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.sys.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_core.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_core.sys.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_core.ini</language>
+                        <language tag="de-DE">language/de-DE/de-DE.com_easysdi_core.sys.ini</language>
+                    </languages>
+                </administration>
+            </extension>
+        </echoxml>
+    </target>
+    
+    <!-- Create the build description file. --> 
+    <target name="build-info">
+        
+        <echo>Create buid info file for ${core.component.name} component</echo>
+        <mkdir dir="${core.src.out.dir}/META-INF"/>
+        <tstamp>
+            <format property="buildtime" pattern="dd.MM.yyyy hh:mm:ss aa" />
+        </tstamp>
+        <exec executable="svnversion" outputproperty="svnrevision">
+            <arg line="${core.src.out.dir}"/>
+        </exec>
+        
+        <propertyfile file="${core.src.out.dir}/META-INF/build-info.properties" comment="This file is automatically generated - DO NOT EDIT">
+            <entry key="build-datetime" value="${buildtime}"/>
+            <entry key="component" value="${core.component.name}"/>
+            <entry key="build" value="${version}-r${svnrevision}"/>
+            <entry key="build-owner" value="${user.name}"/>
+        </propertyfile>
+        
+        <echo>Create sdiBuildInfos.php in package</echo>
+        <antcall target="core.create-sdi-revision-file">
+            <param name="destinationfile" value="${core.src.out.dir}/administrator/libraries/easysdi/common/sdiBuildInfos.php"/>
+        </antcall>
+        
+    </target>
+    
+    <!-- Compresses the component package. --> 
+    <target name="zip-package">
+        
+        <echo>Zip package ${core.component.name}.zip</echo>
+        
+        <mkdir dir="${core.package.out.dir}"/>
+        <delete>
+            <fileset dir="${core.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${core.package.out.dir}/${core.component.name}.zip">
+            <fileset dir="${core.src.out.dir}" />
+        </jar>
+    </target>
+    
+    <target name="zip-dev-package">
+        
+        <echo>Zip package ${core.component.name}.zip</echo>
+        
+        <mkdir dir="${core.package.out.dir}"/>
+        <delete>
+            <fileset dir="${core.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${core.package.out.dir}/${core.component.name}.zip">
+            <fileset dir="${core.src.out.dir}" />
+        </jar>
+    </target>
+    
+    <target name="geoext-concat">
+        
+        <echo>Concat geoext</echo>
+        
+        <concat destfile="${core.src.out.dir}/site/libraries/geoext/lib/geoextcon.js" fixlastline="yes" overwrite="true">
+            <filelist dir="${core.src.out.dir}/site/libraries/geoext/lib" 
+                      files="GeoExt/data/AttributeReader.js, 
+            GeoExt/data/AttributeStore.js, 
+            GeoExt/data/FeatureRecord.js, 
+            GeoExt/data/FeatureReader.js,
+            GeoExt/data/FeatureStore.js,
+            GeoExt/data/LayerRecord.js,
+            GeoExt/data/LayerReader.js,
+            GeoExt/data/LayerStore.js,
+            GeoExt/data/ScaleStore.js,
+            GeoExt/data/StyleReader.js,
+            GeoExt/data/WMSCapabilitiesReader.js,
+            GeoExt/data/WMSCapabilitiesStore.js,
+            GeoExt/data/WMTSCapabilitiesReader.js,
+            GeoExt/data/WMTSCapabilitiesStore.js,
+            GeoExt/data/WFSCapabilitiesReader.js,
+            GeoExt/data/WFSCapabilitiesStore.js,
+            GeoExt/data/WMSDescribeLayerReader.js,
+            GeoExt/data/WMSDescribeLayerStore.js,
+            GeoExt/data/WMCReader.js,
+            GeoExt/data/CSWRecordsReader.js,            
+            GeoExt/widgets/Action.js,
+            GeoExt/data/ProtocolProxy.js,
+            GeoExt/widgets/FeatureRenderer.js,
+            GeoExt/widgets/MapPanel.js,
+            GeoExt/widgets/Popup.js,
+            GeoExt/widgets/form.js,
+            GeoExt/widgets/form/SearchAction.js,
+            GeoExt/widgets/form/BasicForm.js,
+            GeoExt/widgets/form/GeocoderComboBox.js,
+            GeoExt/widgets/form/FormPanel.js,
+            GeoExt/widgets/grid/SymbolizerColumn.js,
+            GeoExt/widgets/tips/SliderTip.js,
+            GeoExt/widgets/tips/LayerOpacitySliderTip.js,
+            GeoExt/widgets/tips/ZoomSliderTip.js,
+            GeoExt/widgets/tree/LayerNode.js,
+            GeoExt/widgets/tree/TreeNodeUIEventMixin.js,
+            GeoExt/plugins/TreeNodeComponent.js,
+            GeoExt/plugins/TreeNodeRadioButton.js,
+            GeoExt/plugins/TreeNodeActions.js,
+            GeoExt/widgets/tree/LayerLoader.js,
+            GeoExt/widgets/tree/LayerContainer.js,
+            GeoExt/widgets/tree/BaseLayerContainer.js,
+            GeoExt/widgets/tree/OverlayLayerContainer.js,
+            GeoExt/widgets/tree/LayerParamNode.js,
+            GeoExt/widgets/tree/LayerParamLoader.js,
+            GeoExt/widgets/tree/WMSCapabilitiesLoader.js,
+            GeoExt/widgets/LayerOpacitySlider.js,
+            GeoExt/widgets/LayerLegend.js,
+            GeoExt/widgets/LegendImage.js,
+            GeoExt/widgets/UrlLegend.js,
+            GeoExt/widgets/WMSLegend.js,
+            GeoExt/widgets/WMTSLegend.js,
+            GeoExt/widgets/VectorLegend.js,
+            GeoExt/widgets/LegendPanel.js,
+            GeoExt/widgets/ZoomSlider.js,
+            GeoExt/widgets/grid/FeatureSelectionModel.js,
+            GeoExt/data/PrintPage.js,
+            GeoExt/plugins/PrintPageField.js,
+            GeoExt/plugins/PrintProviderField.js,
+            GeoExt/plugins/PrintExtent.js,
+            GeoExt/plugins/AttributeForm.js,
+            GeoExt/widgets/PrintMapPanel.js,
+            GeoExt/state/PermalinkProvider.js,
+            GeoExt/Lang.js" />
+        </concat>
+    </target>
+    
+    <target name="geoext-minify">
+        <echo>Minify geoext</echo>        
+        
+        <jsmin srcfile="${core.src.out.dir}/site/libraries/geoext/lib/geoextcon.js" suffix="true"/>
+    </target>
+    
+    <target name="gxp-concat">
+        <echo>Concat gxp</echo>
+        
+        <concat destfile="${core.src.out.dir}/site/libraries/gxp/script/gxp.js" fixlastline="yes">
+            <filelist dir="${core.src.out.dir}/site/libraries/gxp/script" 
+                      files="util.js,
+        util/color.js,
+        util/style.js,
+        data/AutoCompleteProxy.js,
+        data/AutoCompleteReader.js,
+        data/GroupStyleReader.js,
+        data/RuleGroupReader.js,
+        data/FeatureTypeClassifier.js,
+        data/WFSFeatureStore.js,
+        data/WFSProtocolProxy.js,
+        menu/LayerMenu.js,
+        widgets/CrumbPanel.js,
+        widgets/EmbedMapDialog.js,
+        widgets/FeatureEditPopup.js,
+        widgets/FilterBuilder.js,
+        widgets/QueryPanel.js,
+        widgets/StylePropertiesDialog.js,
+        widgets/WMSLayerPanel.js,
+        widgets/WMSStylesDialog.js,
+        widgets/NewSourceDialog.js,
+        widgets/NewSourceWindow.js,
+        widgets/FillSymbolizer.js,
+        widgets/StrokeSymbolizer.js,
+        widgets/PointSymbolizer.js,
+        widgets/LayerUploadPanel.js,
+        widgets/LineSymbolizer.js,
+        widgets/PolygonSymbolizer.js,
+        widgets/RulePanel.js,
+        widgets/ScaleLimitPanel.js,
+        widgets/TextSymbolizer.js,
+        widgets/Viewer.js,
+        widgets/tree/TreeGridNodeUI.js,
+        widgets/tree/SymbolizerLoader.js,
+        widgets/grid/SymbolizerGrid.js,
+        widgets/form/AutoCompleteComboBox.js,
+        widgets/form/ComparisonComboBox.js,
+        widgets/form/ColorField.js,
+        widgets/form/FilterField.js,
+        widgets/form/FontComboBox.js,
+        widgets/form/GoogleGeocoderComboBox.js,
+        widgets/form/ViewerField.js,
+        widgets/form/ExtendedDateField.js,
+        widgets/grid/CapabilitiesGrid.js,
+        widgets/grid/FeatureGrid.js,
+        widgets/GoogleEarthPanel.js,
+        widgets/GoogleStreetViewPanel.js,
+        widgets/Histogram.js,
+        widgets/tips/SliderTip.js,
+        widgets/slider/TimeSlider.js,
+        widgets/PlaybackToolbar.js,
+        widgets/form/PlaybackModeComboBox.js,
+        widgets/PlaybackOptionsPanel.js,
+        widgets/slider/ClassBreakSlider.js,
+        widgets/TimelinePanel.js,
+        widgets/form/CSWFilterField.js,
+        widgets/CatalogueSearchPanel.js,
+        widgets/ScaleOverlay.js,
+        plugins/LayerSource.js,
+        plugins/BingSource.js,
+        plugins/WMSSource.js,
+        plugins/WMSCSource.js,
+        plugins/OSMSource.js,
+        plugins/GoogleSource.js,
+        plugins/OLSource.js,
+        plugins/MapBoxSource.js,
+        plugins/MapQuestSource.js,
+        plugins/CatalogueSource.js,
+        plugins/CSWCatalogueSource.js,
+        plugins/GeoNodeCatalogueSource.js,
+        plugins/TMSSource.js,
+        plugins/StyleWriter.js,
+        plugins/GeoServerStyleWriter.js,
+        plugins/Tool.js,
+        plugins/ClickableFeatures.js,
+        plugins/DeleteSelectedFeatures.js,
+        plugins/GoogleGeocoder.js,
+        plugins/GoogleEarth.js,
+        plugins/WMSFilterView.js,
+        plugins/WMSRasterStylesDialog.js,
+        plugins/WMSGetFeatureInfo.js,
+        plugins/FormFieldHelp.js,
+        plugins/SchemaAnnotations.js,
+        plugins/FeatureEditorGrid.js,
+        plugins/FeatureEditorForm.js,
+        plugins/VersionedEditor.js,
+        plugins/FeatureEditor.js,
+        plugins/FeatureGrid.js,
+        plugins/FeatureManager.js,
+        plugins/FeatureToField.js,
+        plugins/QueryForm.js,
+        plugins/LayerTree.js,
+        plugins/LayerManager.js,
+        plugins/AddLayers.js,
+        plugins/RemoveLayer.js,
+        plugins/SelectedFeatureActions.js,
+        plugins/SnappingAgent.js,
+        plugins/Styler.js,
+        plugins/NavigationHistory.js,
+        plugins/Zoom.js,
+        plugins/ZoomToExtent.js,
+        plugins/ZoomToDataExtent.js,
+        plugins/ZoomToLayerExtent.js,
+        plugins/ZoomToSelectedFeatures.js,
+        plugins/Measure.js,
+        plugins/Navigation.js,
+        plugins/LayerProperties.js,
+        plugins/MapProperties.js,
+        plugins/Legend.js,
+        plugins/Print.js,
+        plugins/LoadingIndicator.js,
+        plugins/Playback.js,
+        ColorManager.js"  />
+        </concat>
+    </target>
+	
+    <target name="gxp-minify" >
+        <echo>Minify gxp</echo>
+        
+        <jsmin srcfile="${core.src.out.dir}/site/libraries/gxp/script/gxp.js" suffix="true">
+        </jsmin>
+    </target>
+	
+        
+    <target name="sdi-concat">
+        <echo>Concat sdi</echo>
+        
+        <concat destfile="${core.src.out.dir}/site/libraries/easysdi/js/sdi.js" fixlastline="yes">
+            <filelist dir="${core.src.out.dir}/site/libraries/easysdi/js" 
+                      files="gxp/plugins/LayerTree.js, 
+		 	gxp/plugins/Print.js,
+		 	gxp/plugins/LayerManager.js,
+		 	gxp/plugins/BingSource.js,
+		 	gxp/plugins/GoogleSource.js,
+		 	gxp/plugins/OSMSource.js,
+		 	gxp/plugins/LoadingIndicator.js,
+                        gxp/plugins/WMSSource.js,
+                        gxp/plugins/GoogleGeocoder.js,
+                        gxp/plugins/Popup.js,
+                        gxp/widgets/ScaleOverlay.js,
+                        gxp/widgets/Viewer.js,
+                        gxp/widgets/form/GoogleGeocoderComboBox.js,
+		 	geoext/data/PrintProvider.js, 
+		 	geoext/ux/PrintPreview.js, 
+		 	geoext/widgets/PrintMapPanel.js,
+                        sdi/plugins/SearchCatalog.js,
+                        sdi/plugins/LayerDetailSheet.js,
+                        sdi/plugins/LayerDownload.js,
+                        sdi/plugins/LayerOrder.js,
+                        gxp/plugins/OLSource.js,
+                        sdi/widgets/IndoorLevelSlider.js,
+                        sdi/widgets/IndoorLevelSliderTip.js,
+                        map/predefinedperimeter.js" />
+        </concat>
+    </target>
+	
+    <target name="sdi-minify" >
+        <echo>Minify sdi</echo>
+        
+        <jsmin srcfile="${core.src.out.dir}/site/libraries/easysdi/js/sdi.js" suffix="true"/>
+    </target>
+    
+    <target name="leaflet-concat">
+        <echo>Concat leaflet</echo>
+        
+        <concat destfile="${core.src.out.dir}/site/libraries/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js" fixlastline="yes">
+            <filelist dir="${core.src.out.dir}/site/libraries/leaflet/libs" 
+                      files="i18next-1.9.0/i18next-1.9.0.js,
+                        shramov/tile/Google.js,
+                        shramov/tile/Bing.js,
+                        leaflet.nontiledlayer/NonTiledLayer.js,
+                        leaflet.TileLayer.WMTS-master/leaflet-tilelayer-wmts-src.js,
+                        Leaflet.ZoomBox/L.Control.ZoomBox.js,
+                        leaflet-measure/leaflet-measure.js,
+                        leaflet-control-geocoder/Control.Geocoder.js,
+                        leaflet-EasyPrint/L.Control.EasyPrint.js,
+                        wms-capabilities/wms-capabilities.min.js,
+                        sidebar-v2/js/leaflet-sidebar.js,
+                        leaflet-EasyLayer/easyLayer.js,
+                        leaflet-EasyAddLayer/easyAddLayer.js,
+                        leaflet-EasyLegend/easyLegend.js,
+                        leaflet-graphicscale/Leaflet.GraphicScale.min.js,
+                        leaflet-EasyGetFeature/easyGetFeature.js,
+                        easysdi_leaflet/easysdi_leaflet.js" />
+        </concat>
+    </target>
+	
+    <target name="leaflet-minify" >
+        <echo>Minify leaflet</echo>
+        
+        <jsmin srcfile="${core.src.out.dir}/site/libraries/leaflet/libs/easySDI_leaflet.pack/easySDI_leaflet.pack.js" suffix="true"/>
+    </target>
+    
+    <target name="leaflet-concat-css">
+        <echo>Concat leaflet css</echo>
+        
+        <concat destfile="${core.src.out.dir}/site/libraries/leaflet/libs/easySDI_leaflet.pack/main.css" fixlastline="yes">
+            <filelist dir="${core.src.out.dir}/site/libraries/leaflet/libs" 
+                      files="font-awesome-4.3.0/css/font-awesome.css,
+                             Leaflet.ZoomBox/L.Control.ZoomBox.css, 
+                             leaflet-measure/leaflet-measure.css,
+                             leaflet-control-geocoder/Control.Geocoder.css,
+                             sidebar-v2/css/leaflet-sidebar.css,
+                             leaflet-EasyPrint/L.Control.EasyPrint.css,
+                             leaflet-EasyLayer/easyLayer.css,
+                             leaflet-EasyAddLayer/easyAddLayer.css,
+                             leaflet-EasyLegend/easyLegend.css,
+                             leaflet-EasyGetFeature/easyGetFeature.css,
+                             leaflet-graphicscale/Leaflet.GraphicScale.min.css,
+                             leaflet-Easy/easyLeaflet.css" />
+        </concat>
+    </target>
+	
+</project>
