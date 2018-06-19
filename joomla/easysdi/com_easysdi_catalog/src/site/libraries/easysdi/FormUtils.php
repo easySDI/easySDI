@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -94,6 +94,12 @@ class FormUtils {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
     }
 
+	/**
+	* Callback function to use with array_filter to keep '0' as value in the array
+	*/
+	public static function arrayFilterKeep0($value){
+        return ($value !== null && $value !== false && $value !== '');  
+    }
 }
 
 ?>

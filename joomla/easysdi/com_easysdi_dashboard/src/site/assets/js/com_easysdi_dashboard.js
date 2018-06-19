@@ -1,7 +1,7 @@
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -237,12 +237,21 @@ function toggleResutlDiv(indicatorDiv, status) {
 }
 
 function dashboardFillTable(indicatorName, json) {
-
+		var vFilterViewIndex=[];
     //empty header
     jQuery("#div_" + indicatorName + " .result-success thead tr").empty();
     //fill header
     jQuery.each(json.columns_title, function (key, value) {
-        jQuery("#div_" + indicatorName + " .result-success thead tr:last").append('<th>' + value + '</th>');
+    	// Check if col is filtered for VIEW
+    	if(value.indexOf("_EXVIEW")==-1){
+    		vFilterViewIndex[key]=false;
+        value=value.replace("_EXVIEW", "");
+        value=value.replace("_EXPDF", "");
+        value=value.replace("_EXCSV", "");
+    		jQuery("#div_" + indicatorName + " .result-success thead tr:last").append('<th>' + value + '</th>');
+    	}else{
+    		vFilterViewIndex[key]=true;
+    	}
     });
     //empty table
     jQuery("#div_" + indicatorName + " .result-success tbody").empty();
@@ -250,13 +259,12 @@ function dashboardFillTable(indicatorName, json) {
     jQuery.each(json.data, function (key, value) {
         jQuery("#div_" + indicatorName + " .result-success tbody:last").append('<tr>');
         jQuery.each(value, function (k, v) {
-            jQuery("#div_" + indicatorName + " .result-success tbody tr:last").append('<td>' + v + '</td>');
+        		// Check if col is filtered for view
+        		if(vFilterViewIndex[k]==false){
+            	jQuery("#div_" + indicatorName + " .result-success tbody tr:last").append('<td>' + v + '</td>');
+            }
         });
         jQuery("#div_" + indicatorName + " .result-success tbody:last").append('</tr>');
     });
 }
-
-
-
-
 

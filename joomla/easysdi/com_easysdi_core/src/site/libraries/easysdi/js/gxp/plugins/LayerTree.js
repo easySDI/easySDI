@@ -1,7 +1,7 @@
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -37,15 +37,15 @@ Ext.namespace("sdi.gxp.plugins");
  *
  *    Plugin for adding a tree of layers to a :class:`gxp.Viewer`. Also
  *    provides a context menu on layer nodes.
- */   
+ */
 /** 
  * sdi extension
  */
 sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
-    
-	/** api: ptype = gxp_layertree */
+
+    /** api: ptype = gxp_layertree */
     ptype: "sdi_gxp_layertree",
-    
+
     /** private: method[createOutputConfig]
      *  :returns: ``Object`` Configuration object for an Ext.tree.TreePanel
      */
@@ -53,43 +53,41 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
         var treeRoot = new Ext.tree.TreeNode({
             text: this.rootNodeText,
             expanded: true,
-            checked:false,
+            checked: false,
             isTarget: false,
             allowDrop: false,
             iconCls: "sdi-gxp-tree-node-root",
             listeners: {
-                checkchange : function (node, checked ){
-                	node.eachChild(function(n) {
-                	    n.getUI().toggleCheck(checked);
-                	});
+                checkchange: function(node, checked) {
+                    node.eachChild(function(n) {
+                        n.getUI().toggleCheck(checked);
+                    });
                 }
-        
+
             }
         });
-        
+
         var baseAttrs;
         if (this.initialConfig.loader && this.initialConfig.loader.baseAttrs) {
             baseAttrs = this.initialConfig.loader.baseAttrs;
         }
-        
+
         var defaultGroup = this.defaultGroup,
             plugin = this,
             groupConfig,
             exclusive;
         for (var group in this.groups) {
-            groupConfig = typeof this.groups[group] == "string" ?
-                {title: this.groups[group]} : this.groups[group];
+            groupConfig = typeof this.groups[group] == "string" ? { title: this.groups[group] } : this.groups[group];
             exclusive = groupConfig.exclusive;
             treeRoot.appendChild(new GeoExt.tree.LayerContainer(Ext.apply({
                 text: groupConfig.title,
                 iconCls: "gxp-folder",
                 expanded: true,
-                checked:false,
+                checked: false,
                 group: group == this.defaultGroup ? undefined : group,
                 loader: new GeoExt.tree.LayerLoader({
                     baseAttrs: exclusive ?
-                        Ext.apply({checkedGroup: Ext.isString(exclusive) ? exclusive : group}, baseAttrs) :
-                        baseAttrs,
+                        Ext.apply({ checkedGroup: Ext.isString(exclusive) ? exclusive : group }, baseAttrs) : baseAttrs,
                     store: this.target.mapPanel.layers,
                     filter: (function(group) {
                         return function(record) {
@@ -108,22 +106,22 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                     append: function(tree, node) {
                         node.expand();
                     },
-                    checkchange : function (node, checked ){
-                    	node.eachChild(function(n) {
-                    	    n.getUI().toggleCheck(checked);
-                    	});
+                    checkchange: function(node, checked) {
+                        node.eachChild(function(n) {
+                            n.getUI().toggleCheck(checked);
+                        });
                     }
-            
+
                 }
             }, groupConfig)));
         }
-        
+
         return {
             xtype: "treepanel",
             root: treeRoot,
             rootVisible: true,
             shortTitle: this.shortTitle,
-            autoScroll : true,
+            autoScroll: true,
             border: false,
             enableDD: true,
             selModel: new Ext.tree.DefaultSelectionModel({
@@ -131,16 +129,16 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                     beforeselect: this.handleBeforeSelect,
                     scope: this
                 }
-            }),           
+            }),
             contextMenu: new Ext.menu.Menu({
                 items: []
             })
         };
     },
-    
 
-   
-        
+
+
+
 });
 
-Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype,sdi.gxp.plugins.LayerTree);
+Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype, sdi.gxp.plugins.LayerTree);

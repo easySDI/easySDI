@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -19,7 +19,7 @@ defined('_JEXEC') or die;
         if ( js('#termsofuse').is(':checked') == true ){
             js('#saveSubmit').removeAttr('disabled', 'disabled'); 
             js('#saveSubmit').attr('onclick', 'tokenize();');
-            js('#saveSubmit').attr('href', js('#adminForm').attr('action') + '?id=' + js('#id').attr('value'));   
+            js('#saveSubmit').attr('href', js('#adminForm').attr('action') + '&id=' + js('#id').attr('value'));   
         }
         else{
             js('#saveSubmit').attr('disabled', 'disabled'); 
@@ -31,7 +31,7 @@ defined('_JEXEC') or die;
         js('#saveSubmit').attr('href', js('#saveSubmit').attr('href') + '&'+ js('#id').next().attr('name') + '=' + js('#id').next().attr('value')); 
     }
 </script>
-<form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=download.download'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+<form class="form-inline form-validate" action="<?php echo Juri::root(true) . '/index.php?option=com_easysdi_shop&task=download.download'; ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
     <div class="download-confirm front-end-edit">
         <h1><?php echo JText::_('COM_EASYSDI_SHOP_DOWNLOAD_CONFIRM_TITLE');; ?></h1>
         <div class="container-fluid">

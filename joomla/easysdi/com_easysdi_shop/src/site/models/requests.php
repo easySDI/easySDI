@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -41,6 +41,13 @@ class Easysdi_shopModelRequests extends JModelList {
         $app = JFactory::getApplication();
 
         // Load the filter state.
+        $search = $app->getUserStateFromRequest($this->context . '.filter.smartview', 'filter_smartview');
+        if (is_null($search)) {
+            $this->setState('filter.smartview', '0');
+        } else {
+            $this->setState('filter.smartview', $search);
+        }
+
         $search = $app->getUserStateFromRequest($this->context . '.filter.organism', 'filter_organism');
         $this->setState('filter.organism', $search);
 
@@ -90,18 +97,50 @@ class Easysdi_shopModelRequests extends JModelList {
      * @since	1.6
      */
     protected function getListQuery() {
+        $smartview = false;
+        if ($this->getState('filter.smartview') == '1') {
+            $smartview = true;
+        }
+
         // Create a new query object.
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+        if ($db->name != "mysqli") {
+            $smartview = false; // Disable smartview if DB is not MYSQL
+        }
+
+        // Require filters values (for archived view)
+        if ($smartview == true) {
+            $doneRequests = $this->getState('filter.status') == '0' ? true : false;
+            $clientorg = $this->getState('filter.clientorganism');
+            $search = $this->getState('filter.search');
+            $sentfrom = $this->getState('filter.sentfrom');
+            if ($sentfrom == "0000-00-00 00:00:00") {
+                $sentfrom = "";
+            }
+            $sentto = $this->getState('filter.sentto');
+            if ($sentto == "0000-00-00 00:00:00") {
+                $sentto = "";
+            }
+            if (($doneRequests == 1) && ($sentfrom == "") && ($sentto == "") && ($clientorg == "") && ($search == "")) {
+                return "SELECT 0,0,0,0";
+            }
+        }
 
         // Select the required fields from the table.
-        $query->select(
-                $this->getState(
-                        'list.select', 'a.*'
-                )
-        );
-
-
+        if ($smartview == true) {
+            $query->select(
+                    $this->getState(
+                            'list.select', 'a.sent,a.id,a.name'
+                    )
+            );
+        } else {
+            $query->select(
+                    $this->getState(
+                            'list.select', 'a.*'
+                    )
+            );
+        }
 
         $query->from('#__sdi_order AS a');
 
@@ -143,8 +182,8 @@ class Easysdi_shopModelRequests extends JModelList {
                 $searchOnId = ' OR (a.id = ' . (int) $search . ')';
             }
             $search = $db->Quote('%' . $db->escape($search, true) . '%');
-            $query->where('(( a.name LIKE ' . $search . ' ) '.$searchOnId. ' )');
-        } 
+            $query->where('(( a.name LIKE ' . $search . ' ) ' . $searchOnId . ' )');
+        }
 
         //Only order that the current user has something to do with
         $user = sdiFactory::getSdiUser();
@@ -193,56 +232,61 @@ class Easysdi_shopModelRequests extends JModelList {
         if ($doneRequests) {
             $query->where('od.productstate_id <> ' . Easysdi_shopHelper::PRODUCTSTATE_SENT);
             $query->where('od.productstate_id <> ' . Easysdi_shopHelper::PRODUCTSTATE_VALIDATION);
+            $query->where('od.productstate_id <> ' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT);
         } else {
-            $query->where('od.productstate_id = ' . Easysdi_shopHelper::PRODUCTSTATE_SENT);
+            $query->where('od.productstate_id IN (' . Easysdi_shopHelper::PRODUCTSTATE_SENT . ',' . Easysdi_shopHelper::PRODUCTSTATE_AWAIT . ')');
         }
 
+        // Optimise the query to prevent slowdowns
+        if ($smartview == true) {
+            $query->group('a.guid');
+            $query->group('uc.name');
+            $query->group('state.value');
+            $query->group('type.value');
+            $query->group('juclient.name');
+            $query->group('oclient.name');
+        } else {
+            $query->group('a.id');
+            $query->group('a.guid');
+            $query->group('a.alias');
+            $query->group('a.created_by');
+            $query->group('a.created');
+            $query->group('a.modified_by');
+            $query->group('a.modified');
+            $query->group('a.ordering');
+            $query->group('a.state');
+            $query->group('a.checked_out');
+            $query->group('a.checked_out_time');
+            $query->group('a.name');
+            $query->group('a.ordertype_id');
+            $query->group('a.orderstate_id');
+            $query->group('a.user_id');
+            $query->group('a.thirdparty_id');
+            $query->group('a.surface');
+            $query->group('a.remark');
+            $query->group('a.sent');
+            $query->group('a.completed');
+            $query->group('a.access');
+            $query->group('a.asset_id');
+            $query->group('a.validated_date');
+            $query->group('a.validated_reason');
+            $query->group('a.mandate_ref');
+            $query->group('a.mandate_contact');
+            $query->group('a.mandate_email');
+            $query->group('a.level');
+            $query->group('a.freeperimetertool');
+            $query->group('a.validated');
+            $query->group('a.validated_by');
+            $query->group('a.usernotified');
+            $query->group('a.access_token');
+            $query->group('a.validation_token');
+            $query->group('uc.name');
+            $query->group('state.value');
+            $query->group('type.value');
+            $query->group('juclient.name');
+            $query->group('oclient.name');
+        }
 
-        //And the product minig is manual
-        $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
-        $query->where('pm.value = ' . $query->quote('manual'));
-
-
-        $query->group('a.id');
-        $query->group('a.guid');
-        $query->group('a.alias');
-        $query->group('a.created_by');
-        $query->group('a.created');
-        $query->group('a.modified_by');
-        $query->group('a.modified');
-        $query->group('a.ordering');
-        $query->group('a.state');
-        $query->group('a.checked_out');
-        $query->group('a.checked_out_time');
-        $query->group('a.name');
-        $query->group('a.ordertype_id');
-        $query->group('a.orderstate_id');
-        $query->group('a.user_id');
-        $query->group('a.thirdparty_id');
-        $query->group('a.surface');
-        $query->group('a.remark');
-        $query->group('a.sent');
-        $query->group('a.completed');
-        $query->group('a.access');
-        $query->group('a.asset_id');
-        $query->group('a.validated_date');
-        $query->group('a.validated_reason');
-        $query->group('a.mandate_ref');
-        $query->group('a.mandate_contact');
-        $query->group('a.mandate_email');
-        $query->group('a.level');
-        $query->group('a.freeperimetertool');
-        $query->group('a.validated');
-        $query->group('a.validated_by');
-        $query->group('a.usernotified');
-        $query->group('a.access_token');
-        $query->group('a.validation_token');
-        $query->group('uc.name');
-        $query->group('state.value');
-        $query->group('type.value');
-        $query->group('juclient.name');
-        $query->group('oclient.name');
-        
         $query->order('a.sent DESC');
 
         return $query;
@@ -288,11 +332,6 @@ class Easysdi_shopModelRequests extends JModelList {
                 ->innerJoin('#__sdi_resource r ON r.id=v.resource_id')
                 ->where('(d.id IN (' . implode(',', $diffusions) . ') OR r.organism_id IN (' . implode(',', $managedOrganisms) . '))');
 
-        //And the product minig is manual
-        $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
-        $query->where('pm.value = ' . $query->quote('manual'));
-
-
         $query->group('oclient.id');
         $query->group('oclient.name');
         $query->order('oclient.name');
@@ -312,3 +351,4 @@ class Easysdi_shopModelRequests extends JModelList {
     }
 
 }
+

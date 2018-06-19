@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -200,7 +200,7 @@ class Easysdi_mapModellayers extends JModelList
 				$query->where('a.id = '.(int) substr($search, 3));
 			} else {
 				$search = $db->Quote('%'.$db->escape($search, true).'%');
-				$query->where('( a.name LIKE '.$search.'  OR  a.layername LIKE '.$search.' )');
+				$query->where('( a.name LIKE '.$search.'  OR  a.layername LIKE '.$search.' OR  a.alias LIKE '.$search.' )');
 			}
 		}
 

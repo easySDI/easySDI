@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -79,15 +79,15 @@ class Easysdi_catalogControllerSitemap extends Easysdi_catalogController {
         
         $query = $this->db->getQuery(true);
         
-        $query->select("m.guid, DATE_FORMAT(m.modified,'%Y-%m-%d') as modified")
+        $query->select("m.guid, DATE_FORMAT(CASE WHEN m.modified >= m.created THEN m.modified ELSE m.created END,'%Y-%m-%d') as modified")
                 ->from('#__sdi_metadata m')
                 ->join('LEFT', '#__sdi_version v on v.id=m.version_id')
                 ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')
                 ->where('m.metadatastate_id=3') // metadata must be published
-                ->where('m.accessscope_id=1') // metadata must have public access scope
+                ->where('r.accessscope_id=1') // metadata must have public access scope
                 ->where('r.resourcetype_id IN ('.implode(',',$resourcestype).')') // metadata must be from allowed resources types
                 ;
-        
+
         $this->db->setQuery($query);
         
         return $this->db->loadAssocList();

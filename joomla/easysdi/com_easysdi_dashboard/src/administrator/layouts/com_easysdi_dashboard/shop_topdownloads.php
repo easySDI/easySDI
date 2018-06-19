@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -10,7 +10,7 @@ $indicator_name = 'shop_topdownloads';
 ?>
 
 <div id="<?php echo('div_' . $indicator_name); ?>">
-    
+
     <?php
     $exportLayout = new JLayoutFile('com_easysdi_dashboard.global_export', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_dashboard'));
     echo $exportLayout->render(array('indicator_name' => $indicator_name));
@@ -39,8 +39,15 @@ $indicator_name = 'shop_topdownloads';
     </div>
 </div>
 <script>
+    var vOrganism;
+    var vTimestart;
+    var vTimeEnd;
+
     //Retourne les top utilisateurs
     function update_<?php echo($indicator_name); ?>(e) {
+        vOrganism = e.organism;
+        vTimestart = e.timestart;
+        vTimeEnd = e.timeend;
         jQuery.ajax({
             url: 'index.php',
             dataType: 'json',
@@ -52,7 +59,7 @@ $indicator_name = 'shop_topdownloads';
                 timeend: e.timeend,
                 dataformat: "json",
                 format: "raw",
-                limit: 5
+                limit: 10
             },
             beforeSend: function () {
                 toggleResutlDiv(<?php echo('"#div_' . $indicator_name . '"'); ?>, 'waiting-for-result');
@@ -75,4 +82,14 @@ $indicator_name = 'shop_topdownloads';
     }
     jQuery(document).on("dashboardFiltersUpdated", update_<?php echo($indicator_name); ?>);
 
+    // Export download details by diffusion_id
+    function dashboardTopDownloadsDetails(vfnID) {
+		<?php
+		$vUrlInstance = JUri::getInstance();
+		$vUrlInstance = substr($vUrlInstance, 0, strrpos($vUrlInstance, "/"));
+		?>
+        window.open("<?php echo($vUrlInstance); ?>/index.php?option=com_easysdi_dashboard&task=getData&indicator=shop_topdownloadsdetails&organism=" + vOrganism + "&diffusion=" + vfnID + "&timestart=" + vTimestart + "&timeend=" + vTimeEnd + "&dataformat=csv&format=raw");
+    }
+
 </script>
+

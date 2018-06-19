@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -40,9 +40,9 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         $limit = $value;
         $this->setState('list.limit', $limit);
 
-        if(JFactory::getApplication()->input->getInt('start',0 ) == 0){
-             $this->setState('list.start',0);
-        }else{
+        if (JFactory::getApplication()->input->getInt('start', 0) == 0) {
+            $this->setState('list.start', 0);
+        } else {
             $value = $app->getUserStateFromRequest('com_easysdi_catalog.limitstart', 'limitstart', 0);
             $limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
             $this->setState('list.start', $limitstart);
@@ -56,7 +56,7 @@ class Easysdi_catalogModelCatalog extends JModelForm {
             JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.catalog.id', $catalog_id);
         }
         $this->setState('catalog.id', $catalog_id);
-        
+
         // Load the parameters.
         $params = $app->getParams();
         $params_array = $params->toArray();
@@ -66,10 +66,10 @@ class Easysdi_catalogModelCatalog extends JModelForm {
             JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.catalog.id', $params_array['item_id']);
         }
         $this->setState('params', $params);
-        
+
         $srpn = $params->get('searchresultpaginationnumber');
         $usfr = $app->getUserStateFromRequest('global.list.limit', 'limit', 0);
-        
+
         $db = JFactory::getDbo();
         //Contextual search result pagination number
         $q = $db->getQuery(true)
@@ -78,20 +78,19 @@ class Easysdi_catalogModelCatalog extends JModelForm {
                 ->where('id = ' . (int) $catalog_id);
         $db->setQuery($q);
         $csrpn = $db->loadResult();
-        
+
         // choose limit between userState, global and contextual configuration
-        $limit = $usfr>0 ? $usfr : (empty($csrpn) || $csrpn == 0 ? $srpn : $csrpn);
+        $limit = $usfr > 0 ? $usfr : (empty($csrpn) || $csrpn == 0 ? $srpn : $csrpn);
         $this->setState('list.limit', $limit);
 
         // List state information
-        if(JFactory::getApplication()->input->getInt('start',0 ) == 0){
-             $this->setState('list.start',0);
-        }else{
+        if (JFactory::getApplication()->input->getInt('start', 0) == 0) {
+            $this->setState('list.start', 0);
+        } else {
             $value = $app->getUserStateFromRequest('com_easysdi_catalog.limitstart', 'limitstart', 0);
             $limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
             $this->setState('list.start', $limitstart);
         }
-        
     }
 
     /**
@@ -212,3 +211,4 @@ class Easysdi_catalogModelCatalog extends JModelForm {
     }
 
 }
+

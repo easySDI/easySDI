@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_catalog
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -22,6 +22,8 @@ class com_easysdi_shopInstallerScript {
 
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
+
+        $this->version = $this->getParam("version");
 
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Shop [com_easysdi_shop]';
@@ -59,6 +61,8 @@ class com_easysdi_shopInstallerScript {
      */
 
     function postflight($type, $parent) {
+        $db = JFactory::getDbo();
+
         if ($type == 'install') {
             JTable::addIncludePath(JPATH_ADMINISTRATOR . "/../libraries/joomla/database/table");
             JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables');
@@ -108,15 +112,60 @@ class com_easysdi_shopInstallerScript {
             $params['orderaccount'] = $user->id;
             $this->setParams($params);
         }
-                
+
         if ($type == 'update' && $this->release <= '4.3.2') {
             $archiveorderdelay = $this->getParamValue("archiveorderdelay");
-            if(!empty($archiveorderdelay)){
-               $this->setParams(array("cleanuporderdelay" => $archiveorderdelay));
+            if (!empty($archiveorderdelay)) {
+                $this->setParams(array("cleanuporderdelay" => $archiveorderdelay));
             }
         }
-        
-        $db = JFactory::getDbo();
+
+        if ($type == 'update' && $this->release == '4.4.4' && version_compare($this->version, $this->release) == -1) {
+            $rounding = $this->getParamValue("rounding");
+
+            $vat = $this->getParamValue("vat");
+            if (isset($vat)) {
+                $sql = "UPDATE `#__sdi_organism` SET fixed_fee_te = fixed_fee_te / (1+(" . $vat . "/100))";
+                $db->setQuery($sql);
+                $db->execute();
+            }
+
+            $overall_default_fee = $this->getParamValue("overall_default_fee");
+            if (isset($overall_default_fee)) {
+                $overall_default_fee = $overall_default_fee / (1 + ($this->getParamValue("vat") / 100));
+                if (isset($rounding)) {
+                    $overall_default_fee = round($overall_default_fee / $rounding, 0) * $rounding;
+                }
+                $params = array("overall_default_fee" => $overall_default_fee);
+                $this->setParams($params);
+            }
+
+            if (isset($rounding)) {
+                $sql = "UPDATE `#__sdi_pricing_order` SET cfg_overall_default_fee_te = round(cfg_overall_default_fee_te / (1+(cfg_vat/100))/" . $rounding . ", 0)*" . $rounding;
+                $db->setQuery($sql);
+                $db->execute();
+                $sql = "UPDATE `#__sdi_pricing_order_supplier` s SET s.cfg_fixed_fee_te = round(s.cfg_fixed_fee_te / (1+((SELECT o.cfg_vat FROM `#__sdi_pricing_order` o WHERE o.id = s.pricing_order_id)/100))/" . $rounding . ", 0)*" . $rounding;
+                $db->setQuery($sql);
+                $db->execute();
+                $sql = "UPDATE `#__sdi_pricing_order_supplier_product_profile` pospp SET pospp.cfg_fixed_fee_te = round(pospp.cfg_fixed_fee_te / (1+((SELECT o.cfg_vat FROM `#__sdi_pricing_order` o INNER JOIN `#__sdi_pricing_order_supplier` pos ON o.id = pos.pricing_order_id  INNER JOIN `#__sdi_pricing_order_supplier_product` posp ON pos.id = posp.pricing_order_supplier_id  WHERE posp.id = pospp.pricing_order_supplier_product_id)/100))/" . $rounding . ",0)*" . $rounding;
+                $db->setQuery($sql);
+                $db->execute();
+            } else {
+                $sql = "UPDATE `#__sdi_pricing_order` SET cfg_overall_default_fee_te = cfg_overall_default_fee_te / (1+(cfg_vat/100))";
+                $db->setQuery($sql);
+                $db->execute();
+                $sql = "UPDATE `#__sdi_pricing_order_supplier` s SET s.cfg_fixed_fee_te = s.cfg_fixed_fee_te / (1+((SELECT o.cfg_vat FROM `#__sdi_pricing_order` o WHERE o.id = s.pricing_order_id)/100))";
+                $db->setQuery($sql);
+                $db->execute();
+                $sql = "UPDATE `#__sdi_pricing_order_supplier_product_profile` pospp SET pospp.cfg_fixed_fee_te = pospp.cfg_fixed_fee_te / (1+((SELECT o.cfg_vat FROM `#__sdi_pricing_order` o INNER JOIN `#__sdi_pricing_order_supplier` pos ON o.id = pos.pricing_order_id  INNER JOIN `#__sdi_pricing_order_supplier_product` posp ON pos.id = posp.pricing_order_supplier_id  WHERE posp.id = pospp.pricing_order_supplier_product_id)/100))";
+                $db->setQuery($sql);
+                $db->execute();
+            }
+
+            $params = array("overall_fee_apply_vat" => 1);
+            $this->setParams($params);
+        }
+
         $query = $db->getQuery(true);
         $query->delete('#__menu');
         $query->where('title = ' . $db->quote('com_easysdi_shop'));
@@ -147,7 +196,7 @@ class com_easysdi_shopInstallerScript {
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
     }
-    
+
     /*
      * get a variable from the params field.
      */

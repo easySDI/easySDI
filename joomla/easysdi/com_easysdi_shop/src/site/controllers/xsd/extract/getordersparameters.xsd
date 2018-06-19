@@ -2,15 +2,11 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.easysdi.org/2011/sdi" attributeFormDefault="unqualified" elementFormDefault="qualified">
 
 	<!-- ROOT element -->
-	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/2011/sdi/getordersparameters.xsd" name="parameters" type="sdi:parametersType"/>
+	<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.easysdi.org/schema/4.4.4/getordersparameters.xsd" name="parameters" type="sdi:parametersType"/>
 	
 	<xs:complexType abstract="true" xmlns:sdi="http://www.easysdi.org/2011/sdi" name="parametersType">
 		<xs:sequence>
 			<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" type="sdi:statesType" name="states" maxOccurs="1" minOccurs="0"/>
-			<!-- <xs:unique name="uniqueState">
-				<xs:selector xpath="state" />
-				<xs:field xpath="." />
-			</xs:unique> -->
 		</xs:sequence>
 	</xs:complexType>
 	
@@ -46,7 +42,7 @@
 					<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" name="guids">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element type="xs:string" name="guid" minOccurs="1" maxOccurs="unbounded"/>
+                                                            <xs:element type="xs:string" name="guid" minOccurs="1" maxOccurs="unbounded"/>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
@@ -63,7 +59,7 @@
 					<xs:element xmlns:sdi="http://www.easysdi.org/2011/sdi" name="ids">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element type="xs:integer" name="id" minOccurs="1" maxOccurs="unbounded"/>
+                                                            <xs:element type="xs:integer" name="id" minOccurs="1" maxOccurs="unbounded"/>
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
@@ -71,7 +67,4 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
-	
-	
 </xs:schema>

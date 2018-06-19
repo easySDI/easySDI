@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -38,7 +38,7 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
             $app->redirect("index.php");
             return false;
         }
-        
+
         if (!$this->hasDashboardAccess($this->user)) {
             $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             $app->redirect("index.php");
@@ -63,7 +63,7 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
      * @return type
      */
     private function hasDashboardAccess($sdiUser) {
-        
+
         $tmpOrgList = array();
         //get all orgs with rights for dashboard
         foreach (
@@ -73,14 +73,16 @@ class Easysdi_dashboardViewShop extends JViewLegacy {
             $sdiUser::extractionresponsible,
             $sdiUser::organismmanager)
         as $roleId) {
-            foreach ($sdiUser->role[$roleId] as $org) {
-                $tmpOrgList[$org->id] = $org->name;
+            if (isset($sdiUser->role[$roleId])) {
+                foreach ($sdiUser->role[$roleId] as $org) {
+                    $tmpOrgList[$org->id] = $org->name;
+                }
             }
         }
 
         $session = JFactory::getSession();
         $session->set('organismDashboardAccess', $tmpOrgList);
-        
+
         return count($tmpOrgList) > 0;
     }
 

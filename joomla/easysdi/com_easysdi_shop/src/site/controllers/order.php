@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -71,6 +71,13 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
                 return;
             }
 
+            //ensure the order needs validation/rejection
+            if (intval($model->getData($validateId)->orderstate_id) !== Easysdi_shopHelper::ORDERSTATE_VALIDATION) {
+                //is not validator, set message
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_NO_POSSIBLE_STATE'), 'error');
+                return;
+            }
+
             $model->checkout($validateId);
 
             $model->thirdpartyValidation($validateId, $validatorId, $app->input->get('reason', null, 'html'));
@@ -130,6 +137,13 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
                 return;
             }
 
+            //ensure the order needs validation/rejection
+            if (intval($model->getData($validateId)->orderstate_id) !== Easysdi_shopHelper::ORDERSTATE_VALIDATION) {
+                //is not validator, set message
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_NO_POSSIBLE_STATE'), 'error');
+                return;
+            }
+
             $model->checkout($validateId);
 
             $model->thirdpartyRejection($validateId, $validatorId, $reason);
@@ -181,7 +195,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         if (!is_array($userExtrationsResponsible)) {
             $userExtrationsResponsible = array();
         }
-
+        
         $downloadAllowed = false;
         $organisms = $clientUser->getMemberOrganisms();
 
@@ -208,6 +222,16 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
             die();
         }
 
+        $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+        $diffusion->load($diffusion_id);
+        
+        //if file is OTP protected and the user is the customer, disable downnload
+        if (($order->user_id == $currentUser->id) && ($diffusion->otp == 1)){
+            $return['ERROR'] = JText::_('JERROR_ALERTNOAUTHOR');
+            echo json_encode($return);
+            die();
+        }
+        
         //Load order response
         $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
         $keys = array();
@@ -217,7 +241,108 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
 
         Easysdi_shopHelper::downloadOrderFile($orderdiffusion);
     }
+    
+    /**
+     * download an order file with a OTP
+     */
+    function downloadOTP() {        
+        $diffusion_id = JFactory::getApplication()->input->getInt('diffusion_id', null, 'int');
+        $order_id = JFactory::getApplication()->input->getInt('order_id', null, 'int');
+        $password = JFactory::getApplication()->input->getString('otp', null, 'int');
+        $token = JFactory::getApplication()->input->getString('token', null, 'int');
+        
+        $order = JTable::getInstance('order', 'Easysdi_shopTable');
+        $order->load($order_id);
 
+        /////////// Check user right on this order
+        $currentUser = sdiFactory::getSdiUser();
+        $clientUser = new sdiUser((int) $order->user_id);
+        // current user extrations (if is extraction responsible)
+        $userExtrationsResponsible = $currentUser->getResponsibleExtraction();
+        if (!is_array($userExtrationsResponsible)) {
+            $userExtrationsResponsible = array();
+        }
+
+        $downloadAllowed = false;
+        $organisms = $clientUser->getMemberOrganisms();
+
+        //the user is the client
+        if ($order->user_id == $currentUser->id):
+            $downloadAllowed = true;
+        //the user is extraction responsible of the product
+        elseif (in_array($diffusion_id, $userExtrationsResponsible)):
+            $downloadAllowed = true;
+        //the user is organism manager of the provider's organism
+        elseif ($currentUser->isOrganismManager($diffusion_id, 'diffusion')):
+            $downloadAllowed = true;
+        //the user is organims manager of client's organism
+        elseif ($currentUser->isOrganismManager($organisms[0]->id)):
+            $downloadAllowed = true;
+        endif;
+
+        if (!$downloadAllowed) {
+            $return['status'] = 'ERROR';
+            $return['msg'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_OTPAUTH');
+            echo json_encode($return);
+            die();
+        }
+        
+        if ($token <> '')
+        {
+            $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
+            $keys = array();
+            $keys['order_id'] = $order_id;
+            $keys['diffusion_id'] = $diffusion_id;
+            $orderdiffusion->load($keys);
+            if ($token == $orderdiffusion->get('otp')){
+                Easysdi_shopHelper::downloadOrderFile($orderdiffusion);
+            }else{
+                die();
+            }
+        }else{
+            if (empty($diffusion_id)):
+                $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_EMPTY_ID');
+                echo json_encode($return);
+                die();
+            endif;
+
+            $order = JTable::getInstance('order', 'Easysdi_shopTable');
+            $order->load($order_id);
+
+            //Load order response
+            $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
+            $keys = array();
+            $keys['order_id'] = $order_id;
+            $keys['diffusion_id'] = $diffusion_id;
+            $orderdiffusion->load($keys);
+            $orderdiffusion->otpchance = (int) $orderdiffusion->get('otpchance')+1;
+            $orderdiffusion->store();
+
+            //Check if the password filled by the user is the right one and number of chances not reached         
+            if ($orderdiffusion->get('otpchance') > 3){
+                //change the status of the orderdiffusion to PRODUCTSTATE_BLOCKED
+                $orderdiffusion->productstate_id = Easysdi_shopHelper::PRODUCTSTATE_BLOCKED;
+                $orderdiffusion->store();
+                //send an email to the extraction manager to unblock the download
+                Easysdi_shopHelper::notifyExtractionResponsibleOTPChanceReached($orderdiffusion);
+                $return['status'] = 'ERROR_OTPCHANCE';
+                $return['msg'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_OTPCHANCEREACHED');
+            }else{
+                if (md5(trim($password)) == $orderdiffusion->get('otp')){
+                    $return['status'] = 'OK';
+                    //Reinit password to be used by the token
+                    $orderdiffusion->otp = Easysdi_coreHelper::pwd(12);
+                    $orderdiffusion->store();
+                    $return['token'] = $orderdiffusion->otp;
+                }else{
+                    $return['status'] = 'ERROR_BADPASSWORD';
+                    $return['msg'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_OTPBADPASSWORD');
+                }
+            }
+            echo json_encode($return);
+            die();
+        }
+    }
         
     function cancel() {
         JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
@@ -320,6 +445,36 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_ARCHIVED_SUCCESSFULLY'));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+    }
+    
+    /**
+     * generateOTP - check rights, generate a One Time Password, store it in database and notify customer
+     * 
+     * @return void
+     * @since 4.4.2
+     */
+    function generateOTP()
+    {
+        $order_id = JFactory::getApplication()->input->getInt('order_id', null, 'array');
+        $diffusion_id = JFactory::getApplication()->input->getInt('diffusion_id', null, 'array');
+        
+        $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
+        $keys = array();
+        $keys['order_id'] = (int) $order_id;
+        $keys['diffusion_id'] = (int) $diffusion_id;
+        $orderdiffusion->load($keys);
+        
+        $otp = Easysdi_coreHelper::pwd(128);
+        
+        //Generate the One Time Password
+        if ($orderdiffusion->otp == ""){
+            $orderdiffusion->otp = md5($otp);
+            $orderdiffusion->store();
+        
+            //Send the password by email
+            Easysdi_shopHelper::notifyCustomerOTP($order_id,$otp);
+        }
+        die();
     }
 
 }

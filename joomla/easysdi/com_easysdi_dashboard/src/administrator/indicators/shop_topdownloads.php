@@ -1,13 +1,12 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php';
 
 class sdiIndicatorShop_topdownloads extends sdiIndicator {
@@ -49,11 +48,20 @@ class sdiIndicatorShop_topdownloads extends sdiIndicator {
         $return->data = $res;
         $return->total = $this->total;
         $return->title = JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_TITLE');
-        $return->columns_title = array(
-            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL1'),
-            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL2'),
-            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL3')
-        );
+        if ($organism != "all") {
+            $return->columns_title = array(
+                JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL1'),
+                JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL2'),
+                JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL3'),
+                JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL4_EXCSV_EXPDF') . '_EXCSV_EXPDF',
+            );
+        } else {
+            $return->columns_title = array(
+                JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL1'),
+                JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL2'),
+                JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL3'),
+            );
+        }
 
         return ($return);
     }
@@ -64,8 +72,15 @@ class sdiIndicatorShop_topdownloads extends sdiIndicator {
         if ($isCount) {
             $query->select('count(dd.id) as count');
         } else {
-            $query->select('dif.name as prod_name, count(dd.id) as cnt, CONCAT(ROUND(count(dd.id) / ' . $this->total . ' * 100,1),\'%\') ');
+            $query->select('dif.name as prod_name, count(dd.id) as cnt, ROUND(count(dd.id) / ' . $this->total . ' * 100,1) ');
         }
+
+        // Download link by diffusion_id
+        if ($organism != "all") {
+            $query->select("(CONCAT('<small><i class=''icon-file''></i></small>&nbsp;&nbsp;<a href=''','javascript:dashboardTopDownloadsDetails(',dif.id,');','''>','" . JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_DETAILS_LINK') . "','</a>'))");
+        }
+
+        // Next query
         $query->from($db->quoteName('#__sdi_diffusion_download', 'dd'))
                 ->join('INNER', $db->quoteName('#__sdi_diffusion', 'dif') . ' ON (' . $db->quoteName('dd.diffusion_id') . ' = ' . $db->quoteName('dif.id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_version', 'v') . ' ON (' . $db->quoteName('dif.version_id') . ' = ' . $db->quoteName('v.id') . ')')
@@ -80,7 +95,9 @@ class sdiIndicatorShop_topdownloads extends sdiIndicator {
                     ->group($db->quoteName('dif.name'))
                     ->order('count(dd.id) DESC');
         }
+
         return $query;
     }
 
 }
+

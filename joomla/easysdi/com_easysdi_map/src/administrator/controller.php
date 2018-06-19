@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -43,11 +43,18 @@ class Easysdi_mapController extends JControllerLegacy
 		return $this;
 	}
 	
-	public function getLayers ()
+	public function getMaps ()
 	{
+		require_once JPATH_COMPONENT.'/helpers/easysdi_map.php';
+		Easysdi_mapHelper::getMaps(JRequest::get( 'get' ));
+	}
+
+	public function getLayers ()
+	{	
 		require_once JPATH_COMPONENT.'/helpers/easysdi_map.php';
 		Easysdi_mapHelper::getLayers(JRequest::get( 'get' ));
 	}
+
 	
 	/**
 	 * Method to redirect to EasySDI home page (driven by easysdi_com_core)

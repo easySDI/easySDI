@@ -1,7 +1,7 @@
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -37,15 +37,15 @@ Ext.namespace("sdi.gxp.plugins");
  *
  *    Plugin for adding a tree of layers to a :class:`gxp.Viewer`. Also
  *    provides a context menu on layer nodes.
- */   
+ */
 /** 
  * sdi extension
  */
 sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
-    
-	/** api: ptype = gxp_layertree */
+
+    /** api: ptype = gxp_layertree */
     ptype: "sdi_gxp_layertree",
-    
+
     /** private: method[createOutputConfig]
      *  :returns: ``Object`` Configuration object for an Ext.tree.TreePanel
      */
@@ -53,43 +53,41 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
         var treeRoot = new Ext.tree.TreeNode({
             text: this.rootNodeText,
             expanded: true,
-            checked:false,
+            checked: false,
             isTarget: false,
             allowDrop: false,
             iconCls: "sdi-gxp-tree-node-root",
             listeners: {
-                checkchange : function (node, checked ){
-                	node.eachChild(function(n) {
-                	    n.getUI().toggleCheck(checked);
-                	});
+                checkchange: function(node, checked) {
+                    node.eachChild(function(n) {
+                        n.getUI().toggleCheck(checked);
+                    });
                 }
-        
+
             }
         });
-        
+
         var baseAttrs;
         if (this.initialConfig.loader && this.initialConfig.loader.baseAttrs) {
             baseAttrs = this.initialConfig.loader.baseAttrs;
         }
-        
+
         var defaultGroup = this.defaultGroup,
             plugin = this,
             groupConfig,
             exclusive;
         for (var group in this.groups) {
-            groupConfig = typeof this.groups[group] == "string" ?
-                {title: this.groups[group]} : this.groups[group];
+            groupConfig = typeof this.groups[group] == "string" ? { title: this.groups[group] } : this.groups[group];
             exclusive = groupConfig.exclusive;
             treeRoot.appendChild(new GeoExt.tree.LayerContainer(Ext.apply({
                 text: groupConfig.title,
                 iconCls: "gxp-folder",
                 expanded: true,
-                checked:false,
+                checked: false,
                 group: group == this.defaultGroup ? undefined : group,
                 loader: new GeoExt.tree.LayerLoader({
                     baseAttrs: exclusive ?
-                        Ext.apply({checkedGroup: Ext.isString(exclusive) ? exclusive : group}, baseAttrs) :
-                        baseAttrs,
+                        Ext.apply({ checkedGroup: Ext.isString(exclusive) ? exclusive : group }, baseAttrs) : baseAttrs,
                     store: this.target.mapPanel.layers,
                     filter: (function(group) {
                         return function(record) {
@@ -108,22 +106,22 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                     append: function(tree, node) {
                         node.expand();
                     },
-                    checkchange : function (node, checked ){
-                    	node.eachChild(function(n) {
-                    	    n.getUI().toggleCheck(checked);
-                    	});
+                    checkchange: function(node, checked) {
+                        node.eachChild(function(n) {
+                            n.getUI().toggleCheck(checked);
+                        });
                     }
-            
+
                 }
             }, groupConfig)));
         }
-        
+
         return {
             xtype: "treepanel",
             root: treeRoot,
             rootVisible: true,
             shortTitle: this.shortTitle,
-            autoScroll : true,
+            autoScroll: true,
             border: false,
             enableDD: true,
             selModel: new Ext.tree.DefaultSelectionModel({
@@ -131,24 +129,23 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                     beforeselect: this.handleBeforeSelect,
                     scope: this
                 }
-            }),           
+            }),
             contextMenu: new Ext.menu.Menu({
                 items: []
             })
         };
     },
-    
 
-   
-        
+
+
+
 });
 
-Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype,sdi.gxp.plugins.LayerTree);
-
+Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype, sdi.gxp.plugins.LayerTree);
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -512,9 +509,9 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
 Ext.preg(sdi.gxp.plugins.Print.prototype.ptype, sdi.gxp.plugins.Print);
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -639,9 +636,9 @@ sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
 Ext.preg(sdi.gxp.plugins.LayerManager.prototype.ptype, sdi.gxp.plugins.LayerManager);
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -697,9 +694,9 @@ sdi.gxp.plugins.BingSource = Ext.extend(gxp.plugins.BingSource, {
 
 Ext.preg(sdi.gxp.plugins.BingSource.prototype.ptype, sdi.gxp.plugins.BingSource);
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -747,7 +744,7 @@ sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
      */
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.GoogleSource.superclass.createLayerRecord.apply(this, arguments);
-        
+
         record.json = config;
         return record;
     }
@@ -755,9 +752,9 @@ sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
 
 Ext.preg(sdi.gxp.plugins.GoogleSource.prototype.ptype, sdi.gxp.plugins.GoogleSource);
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -802,17 +799,67 @@ sdi.gxp.plugins.OSMSource = Ext.extend(gxp.plugins.OSMSource, {
      */
     createLayerRecord: function(config) {
         var record = sdi.gxp.plugins.OSMSource.superclass.createLayerRecord.apply(this, arguments);
-        
+
         record.json = config;
         return record;
+    },
+
+    /** api: method[createStore]
+     *
+     *  Creates a store of layer records.  Fires "ready" when store is loaded.
+     */
+    createStore: function() {
+
+        var options = {
+            projection: "EPSG:900913",
+            maxExtent: new OpenLayers.Bounds(-128 * 156543.0339, -128 * 156543.0339,
+                128 * 156543.0339, 128 * 156543.0339
+            ),
+            maxResolution: 156543.03390625,
+            numZoomLevels: 19,
+            units: "m",
+            buffer: 1,
+            transitionEffect: "resize"
+        };
+
+        var layers = [
+            new OpenLayers.Layer.OSM(
+                "OpenStreetMap", [
+                    "https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                    "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                    "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+                ],
+                OpenLayers.Util.applyDefaults({
+                    attribution: this.mapnikAttribution,
+                    type: "mapnik"
+                }, options)
+            )
+        ];
+
+        this.store = new GeoExt.data.LayerStore({
+            layers: layers,
+            fields: [
+                { name: "source", type: "string" },
+                { name: "name", type: "string", mapping: "type" },
+                { name: "abstract", type: "string", mapping: "attribution" },
+                { name: "group", type: "string", defaultValue: "background" },
+                { name: "fixed", type: "boolean", defaultValue: true },
+                { name: "selected", type: "boolean" }
+            ]
+        });
+        this.store.each(function(l) {
+            l.set("group", "background");
+        });
+        this.fireEvent("ready", this);
+
     }
 });
 
 Ext.preg(sdi.gxp.plugins.OSMSource.prototype.ptype, sdi.gxp.plugins.OSMSource);
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -895,9 +942,9 @@ sdi.gxp.plugins.LoadingIndicator = Ext.extend(gxp.plugins.LoadingIndicator, {
 Ext.preg(sdi.gxp.plugins.LoadingIndicator.prototype.ptype, sdi.gxp.plugins.LoadingIndicator);
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1074,9 +1121,278 @@ sdi.gxp.plugins.GoogleGeocoder = Ext.extend(gxp.plugins.Tool, {
 Ext.preg(sdi.gxp.plugins.GoogleGeocoder.prototype.ptype, sdi.gxp.plugins.GoogleGeocoder);
 
 /**
- * @version     4.4.3
+ * Copyright (c) 2008-2011 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @requires plugins/Tool.js
+ * @requires plugins/FeatureEditorGrid.js
+ * @requires GeoExt/widgets/Popup.js
+ * @requires OpenLayers/Control/WMSGetFeatureInfo.js
+ * @requires OpenLayers/Format/WMSGetFeatureInfo.js
+ */
+
+/** api: (define)
+ *  module = gxp.plugins
+ *  class = WMSGetFeatureInfo
+ */
+
+/** api: (extends)
+ *  plugins/Tool.js
+ */
+Ext.namespace("gxp.plugins");
+
+/** api: constructor
+ *  .. class:: WMSGetFeatureInfo(config)
+ *
+ *    This plugins provides an action which, when active, will issue a
+ *    GetFeatureInfo request to the WMS of all layers on the map. The output
+ *    will be displayed in a popup.
+ */
+gxp.plugins.WMSGetFeatureInfo = Ext.extend(gxp.plugins.Tool, {
+
+    /** api: ptype = gxp_wmsgetfeatureinfo */
+    ptype: "gxp_wmsgetfeatureinfo",
+
+    /** api: config[outputTarget]
+     *  ``String`` Popups created by this tool are added to the map by default.
+     */
+    outputTarget: "map",
+
+    /** private: property[popupCache]
+     *  ``Object``
+     */
+    popupCache: null,
+
+    /** api: config[infoActionTip]
+     *  ``String``
+     *  Text for feature info action tooltip (i18n).
+     */
+    infoActionTip: "Get Feature Info",
+
+    /** api: config[popupTitle]
+     *  ``String``
+     *  Title for info popup (i18n).
+     */
+    popupTitle: "Feature Info",
+
+    /** api: config[text]
+     *  ``String`` Text for the GetFeatureInfo button (i18n).
+     */
+    buttonText: "Identify",
+
+    /** api: config[format]
+     *  ``String`` Either "html" or "grid". If set to "grid", GML will be
+     *  requested from the server and displayed in an Ext.PropertyGrid.
+     *  Otherwise, the html output from the server will be displayed as-is.
+     *  Default is "html".
+     */
+    format: "html",
+
+    /** api: config[vendorParams]
+     *  ``Object``
+     *  Optional object with properties to be serialized as vendor specific
+     *  parameters in the requests (e.g. {buffer: 10}).
+     */
+
+    /** api: config[layerParams]
+     *  ``Array`` List of param names that should be taken from the layer and
+     *  added to the GetFeatureInfo request (e.g. ["CQL_FILTER"]).
+     */
+
+    /** api: config[itemConfig]
+     *  ``Object`` A configuration object overriding options for the items that
+     *  get added to the popup for each server response or feature. By default,
+     *  each item will be configured with the following options:
+     *
+     *  .. code-block:: javascript
+     *
+     *      xtype: "propertygrid", // only for "grid" format
+     *      title: feature.fid ? feature.fid : title, // just title for "html" format
+     *      source: feature.attributes, // only for "grid" format
+     *      html: text, // responseText from server - only for "html" format
+     */
+
+    /** api: method[addActions]
+     */
+    addActions: function() {
+        this.popupCache = {};
+
+        var actions = gxp.plugins.WMSGetFeatureInfo.superclass.addActions.call(this, [{
+            tooltip: this.infoActionTip,
+            iconCls: "gxp-icon-getfeatureinfo",
+            buttonText: this.buttonText,
+            toggleGroup: this.toggleGroup,
+            enableToggle: true,
+            allowDepress: true,
+            toggleHandler: function(button, pressed) {
+                for (var i = 0, len = info.controls.length; i < len; i++) {
+                    if (pressed) {
+                        info.controls[i].activate();
+                    } else {
+                        info.controls[i].deactivate();
+                    }
+                }
+            }
+        }]);
+        var infoButton = this.actions[0].items[0];
+
+        var info = { controls: [] };
+        var updateInfo = function() {
+            var queryableLayers = this.target.mapPanel.layers.queryBy(function(x) {
+                return x.get("queryable");
+            });
+
+            var map = this.target.mapPanel.map;
+            var control;
+            for (var i = 0, len = info.controls.length; i < len; i++) {
+                control = info.controls[i];
+                control.deactivate(); // TODO: remove when http://trac.openlayers.org/ticket/2130 is closed
+                control.destroy();
+            }
+
+            info.controls = [];
+            queryableLayers.each(function(x) {
+                var layer = x.getLayer();
+                var vendorParams = Ext.apply({}, this.vendorParams),
+                    param;
+                if (this.layerParams) {
+                    for (var i = this.layerParams.length - 1; i >= 0; --i) {
+                        param = this.layerParams[i].toUpperCase();
+                        vendorParams[param] = layer.params[param];
+                    }
+                }
+                var infoFormat = x.get("infoFormat");
+                if (infoFormat === undefined) {
+                    // TODO: check if chosen format exists in infoFormats array
+                    // TODO: this will not work for WMS 1.3 (text/xml instead for GML)
+                    infoFormat = this.format == "html" ? "text/html" : "application/vnd.ogc.gml";
+                }
+                var control = new OpenLayers.Control.WMSGetFeatureInfo(Ext.applyIf({
+                    url: layer.url,
+                    queryVisible: true,
+                    layers: [layer],
+                    infoFormat: infoFormat,
+                    vendorParams: vendorParams,
+                    eventListeners: {
+                        getfeatureinfo: function(evt) {
+                            var title = x.get("title") || x.get("name");
+                            if (infoFormat == "text/html") {
+                                var match = evt.text.match(/<body[^>]*>([\s\S]*)<\/body>/);
+                                if (match && !match[1].match(/^\s*$/)) {
+                                    this.displayPopup(evt, title, match[1]);
+                                }
+                            } else if (infoFormat == "text/plain") {
+                                this.displayPopup(evt, title, '<pre>' + evt.text + '</pre>');
+                            } else if (evt.features && evt.features.length > 0) {
+                                this.displayPopup(evt, title, null, x.get("getFeatureInfo"));
+                            }
+                        },
+                        scope: this
+                    }
+                }, this.controlOptions));
+                map.addControl(control);
+                info.controls.push(control);
+                if (infoButton.pressed) {
+                    control.activate();
+                }
+            }, this);
+
+        };
+
+        this.target.mapPanel.layers.on("update", updateInfo, this);
+        this.target.mapPanel.layers.on("add", updateInfo, this);
+        this.target.mapPanel.layers.on("remove", updateInfo, this);
+
+        return actions;
+    },
+
+    /** private: method[displayPopup]
+     * :arg evt: the event object from a 
+     *     :class:`OpenLayers.Control.GetFeatureInfo` control
+     * :arg title: a String to use for the title of the results section 
+     *     reporting the info to the user
+     * :arg text: ``String`` Body text.
+     */
+    displayPopup: function(evt, title, text, featureinfo) {
+        var popup;
+        var popupKey = evt.xy.x + "." + evt.xy.y;
+        featureinfo = featureinfo || {};
+        if (!(popupKey in this.popupCache)) {
+            popup = this.addOutput({
+                xtype: "gx_popup",
+                title: this.popupTitle,
+                layout: "accordion",
+                fill: false,
+                autoScroll: true,
+                location: evt.xy,
+                map: this.target.mapPanel,
+                width: this.popupWidth,
+                height: this.popupHeight,
+                //width: this.popupWidth,
+                //height: this.popupHeight,
+                defaults: {
+                    layout: "fit",
+                    autoScroll: true,
+                    autoHeight: true,
+                    autoWidth: true,
+                    collapsible: true
+                }
+            });
+            popup.on({
+                close: (function(key) {
+                    return function(panel) {
+                        delete this.popupCache[key];
+                    };
+                })(popupKey),
+                scope: this
+            });
+            this.popupCache[popupKey] = popup;
+        } else {
+            popup = this.popupCache[popupKey];
+        }
+
+        var features = evt.features,
+            config = [];
+        if (!text && features) {
+            var feature;
+            for (var i = 0, ii = features.length; i < ii; ++i) {
+                feature = features[i];
+                config.push(Ext.apply({
+                    xtype: "gxp_editorgrid",
+                    readOnly: true,
+                    listeners: {
+                        'beforeedit': function(e) {
+                            return false;
+                        }
+                    },
+                    title: feature.fid ? feature.fid : title,
+                    feature: feature,
+                    fields: featureinfo.fields,
+                    propertyNames: featureinfo.propertyNames
+                }, this.itemConfig));
+            }
+        } else if (text) {
+            config.push(Ext.apply({
+                title: title,
+                html: text
+            }, this.itemConfig));
+        }
+        popup.add(config);
+        popup.doLayout();
+    }
+
+});
+
+Ext.preg(gxp.plugins.WMSGetFeatureInfo.prototype.ptype, gxp.plugins.WMSGetFeatureInfo);
+/**
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1089,32 +1405,32 @@ Ext.namespace("sdi.gxp.widgets");
  *      selecting the map scale.
  */
 sdi.gxp.ScaleOverlay = Ext.extend(gxp.ScaleOverlay, {
- 
+
 
     /** private: method[addScaleLine]
      *  
      *  Create the scale line control and add it to the panel.
      */
     addScaleLine: function() {
-       var scaleLinePanel = new Ext.BoxComponent({
+        var scaleLinePanel = new Ext.BoxComponent({
             autoEl: {
                 tag: "div",
                 cls: "olControlScaleLine overlay-element overlay-scaleline"
             }
         });
-        this.on("afterlayout", function(){
+        this.on("afterlayout", function() {
             scaleLinePanel.getEl().dom.style.position = 'relative';
             scaleLinePanel.getEl().dom.style.display = 'inline';
 
             this.getEl().on("click", this.stopMouseEvents, this);
             this.getEl().on("mousedown", this.stopMouseEvents, this);
         }, this);
-        scaleLinePanel.on('render', function(){
+        scaleLinePanel.on('render', function() {
             var scaleLine = new OpenLayers.Control.ScaleLine({
-                bottomInUnits :SdiScaleLineParams.bottomInUnits,
-                bottomOutUnits :SdiScaleLineParams.bottomOutUnits,
-                topInUnits :SdiScaleLineParams.topInUnits,
-                topOutUnits :SdiScaleLineParams.topOutUnits,
+                bottomInUnits: SdiScaleLineParams.bottomInUnits,
+                bottomOutUnits: SdiScaleLineParams.bottomOutUnits,
+                topInUnits: SdiScaleLineParams.topInUnits,
+                topOutUnits: SdiScaleLineParams.topOutUnits,
                 geodesic: true,
                 div: scaleLinePanel.getEl().dom
             });
@@ -1128,11 +1444,10 @@ sdi.gxp.ScaleOverlay = Ext.extend(gxp.ScaleOverlay, {
 });
 
 Ext.reg('sdi_gxp_scaleoverlay', sdi.gxp.ScaleOverlay);
-
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1149,17 +1464,17 @@ var layerConfig;
  * @returns {Ext@call;extend.prototype.addExtraLayer.queue|gxp.Viewer.prototype.addExtraLayer.queue|Array}
  */
 gxp.Viewer.prototype.addExtraLayer = function(lsourceConfig, llayerConfig) {
-    
+
     sourceConfig = lsourceConfig;
     layerConfig = llayerConfig;
-    if(this.sources[sourceConfig.id] === undefined){
+    if (this.sources[sourceConfig.id] === undefined) {
         this.sources[sourceConfig.id] = sourceConfig;
     }
     this.initialConfig.map.layers.push(layerConfig);
 
     var queue = [];
     queue.push(this.createSourceLoader(sourceConfig.id));
-    
+
     return queue;
 };
 
@@ -1174,9 +1489,10 @@ gxp.Viewer.prototype.reactivate = function() {
 
     var mapConfig = this.initialConfig.map;
     if (mapConfig && mapConfig.layers) {
-        var conf, source, record, baseRecords = [], overlayRecords = [];
+        var conf, source, record, baseRecords = [],
+            overlayRecords = [];
         //Get the last layer
-        conf = mapConfig.layers[mapConfig.layers.length-1];
+        conf = mapConfig.layers[mapConfig.layers.length - 1];
         source = this.layerSources[conf.source];
         if (source) {
             if (source.id === sourceConfig.id) {
@@ -1191,7 +1507,7 @@ gxp.Viewer.prototype.reactivate = function() {
                 }
             }
         }
-  
+
         var panel = this.mapPanel;
         //extent = record.getLayer().maxExtent.clone();
 
@@ -1211,7 +1527,7 @@ gxp.Viewer.prototype.reactivate = function() {
  * Since easySDI doesn't allow any map without baselayer, we don't need this baselayer.
  * Without it, an easySDI baselayer can set the resolutions of the map (for example with WMTS )
  */
-gxp.Viewer.prototype.initMapPanel = function () {
+gxp.Viewer.prototype.initMapPanel = function() {
     var config = Ext.apply({}, this.initialConfig.map);
     var mapConfig = {};
 
@@ -1234,8 +1550,8 @@ gxp.Viewer.prototype.initMapPanel = function () {
             theme: mapConfig.theme || null,
             controls: mapConfig.controls || [
                 new OpenLayers.Control.Navigation({
-                    zoomWheelOptions: {interval: 250},
-                    dragPanOptions: {enableKinetic: true}
+                    zoomWheelOptions: { interval: 250 },
+                    dragPanOptions: { enableKinetic: true }
                 }),
                 new OpenLayers.Control.PanPanel(),
                 new OpenLayers.Control.ZoomPanel(),
@@ -1263,7 +1579,7 @@ gxp.Viewer.prototype.initMapPanel = function () {
     });
 
     this.mapPanel.layers.on({
-        "add": function (store, records) {
+        "add": function(store, records) {
             // check selected layer status
             var record;
             for (var i = records.length - 1; i >= 0; i--) {
@@ -1273,7 +1589,7 @@ gxp.Viewer.prototype.initMapPanel = function () {
                 }
             }
         },
-        "remove": function (store, record) {
+        "remove": function(store, record) {
             if (record.get("selected") === true) {
                 this.selectLayer();
             }
@@ -1281,18 +1597,10 @@ gxp.Viewer.prototype.initMapPanel = function () {
         scope: this
     });
 };
-
-
-
-
-
-
-
-
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1441,9 +1749,9 @@ Ext.reg('sdi_gxp_googlegeocodercombobox', sdi.gxp.form.GoogleGeocoderComboBox);
 
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1507,9 +1815,9 @@ sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
 });
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1593,9 +1901,9 @@ sdi.geoext.ux.PrintPreview = Ext.extend(GeoExt.ux.PrintPreview, {
 
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1685,9 +1993,9 @@ sdi.geoext.widgets.PrintMapPanel = Ext.extend(GeoExt.PrintMapPanel, {
 
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1778,9 +2086,9 @@ sdi.plugins.SearchCatalog = Ext.extend(gxp.plugins.Tool, {
 Ext.preg(sdi.plugins.SearchCatalog.prototype.ptype, sdi.plugins.SearchCatalog);
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1852,9 +2160,9 @@ sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
 Ext.preg(sdi.plugins.LayerDetailSheet.prototype.ptype, sdi.plugins.LayerDetailSheet);
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -1929,9 +2237,9 @@ sdi.plugins.LayerDownload = Ext.extend(gxp.plugins.Tool, {
 Ext.preg(sdi.plugins.LayerDownload.prototype.ptype, sdi.plugins.LayerDownload);
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -2080,9 +2388,9 @@ sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.OLSource, {
 Ext.preg(sdi.gxp.plugins.OLSource.prototype.ptype, sdi.gxp.plugins.OLSource);
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -2316,9 +2624,9 @@ sdi.widgets.IndoorLevelSlider = Ext.extend(Ext.slider.SingleSlider, {
 Ext.reg('sdi_indoorlevelslider', sdi.widgets.IndoorLevelSlider);
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -2417,9 +2725,9 @@ sdi.widgets.IndoorLevelSliderTip = Ext.extend(GeoExt.SliderTip, {
 });
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */

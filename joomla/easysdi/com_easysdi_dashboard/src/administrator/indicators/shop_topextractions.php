@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -13,7 +13,7 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
 
     /**
      * Return the indicator name for file download
-     * @return  string the indicator filename for downloads 
+     * @return  string the indicator filename for downloads
      */
     protected function _getIndicatorFileName() {
         return JText::_("COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_FILENAME");
@@ -27,7 +27,7 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
      * @param   int $timestart start timestamp
      * @param   int $timeend end timestamp
      * @param   int $limit number of record to return, 0 = unlimited (default)
-     * @return  DATA object 
+     * @return  DATA object
      */
     protected function _getData($organism, $timestart, $timeend, $limit = 0) {
         $db = JFactory::getDbo();
@@ -44,6 +44,22 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
             $res = array();
         }
 
+        // Calculate the median & set durations to minutes for exports
+        for ($rows = 0; $rows < count($res); $rows++) {
+            $res[$rows][5] = $this->fnCalcMedianDiffusion($res[$rows][5], $organism, $timestart, $timeend);
+            $res[$rows][6] = $res[$rows][3]; // Min
+            $res[$rows][7] = $res[$rows][4]; // Max
+            $res[$rows][8] = $res[$rows][5]; // Med
+        }
+
+        // Convert durations to minutes, hours, days
+        for ($rows = 0; $rows < count($res); $rows++) {
+            $res[$rows][3] = Easysdi_dashboardHelper::DurationConvert($res[$rows][3]); // Min
+            $res[$rows][4] = Easysdi_dashboardHelper::DurationConvert($res[$rows][4]); // Max
+            $res[$rows][5] = Easysdi_dashboardHelper::DurationConvert($res[$rows][5]); // Med
+        }
+
+        // Return results
         $return = new stdClass();
         $return->data = $res;
         $return->total = $this->total;
@@ -51,9 +67,14 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
         $return->columns_title = array(
             JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL1'),
             JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL2'),
-            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL3')
+            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL3'),
+            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL4'),
+            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL5'),
+            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL6'),
+            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL7_EXVIEW_EXPDF') . '_EXVIEW_EXPDF',
+            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL8_EXVIEW_EXPDF') . '_EXVIEW_EXPDF',
+            JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_COL9_EXVIEW_EXPDF') . '_EXVIEW_EXPDF',
         );
-
         return ($return);
     }
 
@@ -63,8 +84,44 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
         if ($isCount) {
             $query->select('count(odif.id) as count');
         } else {
-            $query->select('dif.name as prod_name, COUNT(odif.id) as cnt, CONCAT(ROUND(count(odif.id) / ' . $this->total . ' * 100,1),\'%\') ');
+            $query->select('dif.name as prod_name, COUNT(odif.id) as cnt, ROUND(count(odif.id) / ' . $this->total . ' * 100,1) ');
         }
+
+
+        // Time duration Min
+        $query->select("
+		(
+		SELECT
+		ROUND(MIN(TIMESTAMPDIFF(MINUTE,IF(vSdiOrder.validated_date IS NULL,vSdiOrder.sent,vSdiOrder.validated_date),vSdiOrderDiff.completed)))
+		FROM " . $db->quoteName("#__sdi_order", "vSdiOrder") . "," . $db->quoteName("#__sdi_order_diffusion", "vSdiOrderDiff") . "
+		WHERE
+		vSdiOrderDiff.order_id=vSdiOrder.id
+		AND vSdiOrderDiff.productstate_id IN(" . implode(',', array(Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE, Easysdi_shopHelper::PRODUCTSTATE_DELETED, Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,)) . ")
+		AND vSdiOrderDiff.completed BETWEEN '" . date("c", $timestart) . "' AND '" . date("c", $timeend) . "'
+		AND vSdiOrder.ordertype_id=1
+		AND vSdiOrderDiff.diffusion_id=odif.diffusion_id
+		) AS vDurationMin
+		");
+
+        // Time duration Max
+        $query->select("
+		(
+		SELECT
+		ROUND(MAX(TIMESTAMPDIFF(MINUTE,IF(vSdiOrder.validated_date IS NULL,vSdiOrder.sent,vSdiOrder.validated_date),vSdiOrderDiff.completed)))
+		FROM " . $db->quoteName("#__sdi_order", "vSdiOrder") . "," . $db->quoteName("#__sdi_order_diffusion", "vSdiOrderDiff") . "
+		WHERE
+		vSdiOrderDiff.order_id=vSdiOrder.id
+		AND vSdiOrderDiff.productstate_id IN(" . implode(',', array(Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE, Easysdi_shopHelper::PRODUCTSTATE_DELETED, Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,)) . ")
+		AND vSdiOrderDiff.completed BETWEEN '" . date("c", $timestart) . "' AND '" . date("c", $timeend) . "'
+		AND vSdiOrder.ordertype_id=1
+		AND vSdiOrderDiff.diffusion_id=odif.diffusion_id
+		) AS vDurationMax
+		");
+
+        // Column to calcuate the MEDIAN from diffusion id
+        $query->select("odif.diffusion_id");
+
+        // Next query
         $query->from($db->quoteName('#__sdi_order', 'o'))
                 ->join('INNER', $db->quoteName('#__sdi_order_diffusion', 'odif') . ' ON (' . $db->quoteName('o.id') . ' = ' . $db->quoteName('odif.order_id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_diffusion', 'dif') . ' ON (' . $db->quoteName('odif.diffusion_id') . ' = ' . $db->quoteName('dif.id') . ')')
@@ -76,7 +133,7 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
                             Easysdi_shopHelper::PRODUCTSTATE_DELETED,
                             Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,
                         )) . ')')
-                ->where('odif.completed between \'' . date("c", $timestart) . '\' and  \'' . date("c", $timeend) . '\' ')
+                ->where('odif.completed BETWEEN \'' . date("c", $timestart) . '\' AND  \'' . date("c", $timeend) . '\' ')
                 ->where('o.ordertype_id = 1');
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
@@ -89,4 +146,44 @@ class sdiIndicatorShop_topextractions extends sdiIndicator {
         return $query;
     }
 
+    /**
+     * Calculate the median from a diffusion
+     */
+    private function fnCalcMedianDiffusion($vfnDiffID, $organism, $timestart, $timeend) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select("
+	TIMESTAMPDIFF(MINUTE,IF(vSdiOrder.validated_date IS NULL,vSdiOrder.sent,vSdiOrder.validated_date),vSdiOrderDiff.completed)
+	FROM #__sdi_order AS vSdiOrder,#__sdi_order_diffusion AS vSdiOrderDiff
+	WHERE
+	vSdiOrderDiff.order_id=vSdiOrder.id
+	AND vSdiOrderDiff.productstate_id IN(" . implode(',', array(Easysdi_shopHelper::PRODUCTSTATE_AVAILABLE, Easysdi_shopHelper::PRODUCTSTATE_DELETED, Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,)) . ")
+	AND vSdiOrderDiff.completed BETWEEN '" . date("c", $timestart) . "' AND '" . date("c", $timeend) . "'
+	AND vSdiOrder.ordertype_id=1
+	AND vSdiOrderDiff.diffusion_id=$vfnDiffID
+	");
+        $db->setQuery($query);
+        $results = $db->loadColumn(0);
+        $vResult = $this->fnCalcMedianArray($results);
+        return $vResult;
+    }
+
+    /**
+     * Calculate the median from an array
+     */
+    private function fnCalcMedianArray($vfnData) {
+        sort($vfnData);
+        $count = count($vfnData); //total numbers in array
+        $middleval = floor(($count - 1) / 2); // find the middle value, or the lowest middle value
+        if ($count % 2) { // odd number, middle is the median
+            $median = $vfnData[$middleval];
+        } else { // even number, calculate avg of 2 medians
+            $low = $vfnData[$middleval];
+            $high = $vfnData[$middleval + 1];
+            $median = (($low + $high) / 2);
+        }
+        return $median;
+    }
+
 }
+

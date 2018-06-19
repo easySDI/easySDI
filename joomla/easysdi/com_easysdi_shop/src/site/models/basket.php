@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -254,7 +254,8 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 'cfg_vat' => $pricing->cfg_vat,
                 'cfg_currency' => $pricing->cfg_currency,
                 'cfg_rounding' => $pricing->cfg_rounding,
-                'cfg_overall_default_fee' => $pricing->cfg_overall_default_fee,
+                'cfg_overall_default_fee_te' => $pricing->cfg_overall_default_fee_te,
+                'cfg_fee_apply_vat' => $pricing->cfg_fee_apply_vat,
                 'cfg_free_data_fee' => $pricing->cfg_free_data_fee,
                 'cal_total_amount_ti' => $pricing->cal_total_amount_ti,
                 'cal_fee_ti' => $pricing->cal_fee_ti,
@@ -305,7 +306,8 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             'supplier_id' => $supplierId,
             'supplier_name' => $supplier->name,
             'cfg_internal_free' => $supplier->cfg_internal_free,
-            'cfg_fixed_fee_ti' => $supplier->cfg_fixed_fee_ti,
+            'cfg_fixed_fee_te' => $supplier->cfg_fixed_fee_te,
+            'cfg_fixed_fee_apply_vat' => $supplier->cfg_fixed_fee_apply_vat,
             'cfg_data_free_fixed_fee' => $supplier->cfg_data_free_fixed_fee,
             'cal_total_amount_ti' => $supplier->cal_total_amount_ti,
             'cal_fee_ti' => $supplier->cal_fee_ti,
@@ -393,14 +395,14 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             );
 
             if ($pricingOrderSupplierProduct->save($pricingOrderSupplierProductData) === true && $pricingOrderSupplierProduct->pricing_id == 3) {
-
                 // sdi_pricing_order_supplier_product_profile
                 $pricingOrderSupplierProductProfile = $this->getTable('PricingOrderSupplierProductProfile', 'Easysdi_shopTable');
                 $pricingOrderSupplierProductProfileData = array(
                     'pricing_order_supplier_product_id' => $pricingOrderSupplierProduct->id,
                     'pricing_profile_id' => $product->cfg_profile_id,
                     'pricing_profile_name' => $product->cfg_profile_name,
-                    'cfg_fixed_fee' => $product->cfg_fixed_fee,
+                    'cfg_fixed_fee_te' => $product->cfg_fixed_fee_te,
+                    'cfg_apply_vat' => $product->cfg_apply_vat,
                     'cfg_surface_rate' => $product->cfg_surface_rate,
                     'cfg_min_fee' => $product->cfg_min_fee,
                     'cfg_max_fee' => $product->cfg_max_fee,

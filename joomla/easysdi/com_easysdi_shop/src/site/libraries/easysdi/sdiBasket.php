@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.0
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -36,6 +36,7 @@ class sdiBasket {
     public $created_by;
     public $thirdorganism;
     public $freeperimetertool = '';
+    public $smartviewmode = false;
     private $order;
 
     /**
@@ -79,7 +80,7 @@ class sdiBasket {
 
             //Load extractions of the order
             $extractions = $this->loadOrderExtractions();
-            
+
             //Handle perimeter modification
             $isPerimeterChanged = false;
             foreach ($extractions as $extraction) :
@@ -100,40 +101,42 @@ class sdiBasket {
 
                     //Check if the order properties are coherent with the diffusion properties  
                     $properties = $this->cleanUpProperties($diffusionProperties, $orderProperties);
-                    if (gettype ($properties ) != 'array') {                        
+                    if (gettype($properties) != 'array') {
                         return false;
                     }
                     $orderProperties = $properties;
                 }
 
-                foreach ($orderProperties as $property):
-                    $properyvalues = $this->loadOrderPropertyValues($extraction->orderdiffusion_id, $property->property_id);
+                if ($this->smartviewmode == false) {
+                    foreach ($orderProperties as $property):
+                        $properyvalues = $this->loadOrderPropertyValues($extraction->orderdiffusion_id, $property->property_id);
 
-                    $propertyobject = new stdClass();
-                    $propertyobject->id = $property->property_id;
-                    $propertyobject->values = array();
+                        $propertyobject = new stdClass();
+                        $propertyobject->id = $property->property_id;
+                        $propertyobject->values = array();
 
-                    //Load the property definition
-                    $modelProperty = JModelLegacy::getInstance('Property', 'Easysdi_shopModel');
-                    $objProperty = $modelProperty->getItem($property->property_id);
-                    foreach ($properyvalues as $properyvalue):
-                        if ($copy) {
-                            //Check if all the value are still available
-                            try {
-                                if (!$this->isPropertyValueAvailable($extraction->id, $properyvalue, $objProperty->mandatory)) {
-                                    continue;
+                        //Load the property definition
+                        $modelProperty = JModelLegacy::getInstance('Property', 'Easysdi_shopModel');
+                        $objProperty = $modelProperty->getItem($property->property_id);
+                        foreach ($properyvalues as $properyvalue):
+                            if ($copy) {
+                                //Check if all the value are still available
+                                try {
+                                    if (!$this->isPropertyValueAvailable($extraction->id, $properyvalue, $objProperty->mandatory)) {
+                                        continue;
+                                    }
+                                } catch (Exception $ex) {
+                                    return false;
                                 }
-                            } catch (Exception $ex) {
-                                return false;
                             }
-                        }
-                        $value = new stdClass();
-                        $value->id = $properyvalue->propertyvalue_id;
-                        $value->value = $properyvalue->propertyvalue;
-                        $propertyobject->values[] = $value;
+                            $value = new stdClass();
+                            $value->id = $properyvalue->propertyvalue_id;
+                            $value->value = $properyvalue->propertyvalue;
+                            $propertyobject->values[] = $value;
+                        endforeach;
+                        $orderExtractionObject->properties[] = $propertyobject;
                     endforeach;
-                    $orderExtractionObject->properties[] = $propertyobject;
-                endforeach;
+                }
 
                 $ex = new sdiExtraction($orderExtractionObject);
                 if ($copy) {
@@ -156,31 +159,33 @@ class sdiBasket {
                 $ex->completed = $extraction->completed;
                 $ex->file = $extraction->file;
                 $ex->displayname = $extraction->displayname;
+                $ex->otp = $extraction->otp;
+                $ex->otpchance = $extraction->otpchance;
                 $ex->size = $extraction->size;
                 $ex->created_by = sdiFactory::getSdiUserByJoomlaId($extraction->created_by)->name;
 
                 $this->addExtraction($ex);
                 $this->perimeters = $ex->perimeters;
             endforeach;
-                        
-            if($copy && $isPerimeterChanged):
+
+            if ($copy && $isPerimeterChanged):
                 //Check if a common perimeter is still available
                 $perimeters = array();
                 $orderPerimeters = array();
                 $hasCommon = false;
-                
-                foreach($this->extractions as $extraction):
-                    foreach($extraction->perimeters as $perimeter):
-                        if(isset($perimeters[$perimeter->id])):
-                            if($perimeters[$perimeter->id] == count($this->extractions)-1):
+
+                foreach ($this->extractions as $extraction):
+                    foreach ($extraction->perimeters as $perimeter):
+                        if (isset($perimeters[$perimeter->id])):
+                            if ($perimeters[$perimeter->id] == count($this->extractions) - 1):
                                 //Ok at least one perimeter is common
                                 $hasCommon = true;
                                 array_push($orderPerimeters, $perimeter);
-                                //break 2;
+                            //break 2;
                             endif;
                             $perimeters[$perimeter->id] = $perimeters[$perimeter->id] + 1;
-                        else:                            
-                            if(count($this->extractions) == 1):
+                        else:
+                            if (count($this->extractions) == 1):
                                 $hasCommon = true;
                                 array_push($orderPerimeters, $perimeter);
                             else:
@@ -189,16 +194,16 @@ class sdiBasket {
                         endif;
                     endforeach;
                 endforeach;
-                if(!$hasCommon):
-                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_ERROR'), 'error');
-                        JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
-                        return false;
-                    else:
-                        $this->extent = null;
-                        $this->surface = null;  
-                        $this->perimeters = $orderPerimeters;
-                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_PERIMETER'), 'warning');
-                    
+                if (!$hasCommon):
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_ERROR'), 'error');
+                    JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+                    return false;
+                else:
+                    $this->extent = null;
+                    $this->surface = null;
+                    $this->perimeters = $orderPerimeters;
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_COPY_ORDER_PERIMETER'), 'warning');
+
                 endif;
             endif;
         } catch (JDatabaseException $ex) {
@@ -363,7 +368,7 @@ class sdiBasket {
                 $this->mandate_ref = null;
                 $this->mandate_contact = null;
                 $this->mandate_email = null;
-                JFactory::getApplication()->enqueueMessage(JText::_("COM_EASYSDI_SHOP_BASKET_COPY_ORDER_THIRDPARTY"), 'warning');                
+                JFactory::getApplication()->enqueueMessage(JText::_("COM_EASYSDI_SHOP_BASKET_COPY_ORDER_THIRDPARTY"), 'warning');
             }
         }
     }
@@ -396,9 +401,9 @@ class sdiBasket {
         $query = $db->getQuery(true)
                 ->select('d.id as id, d.state as diffusionstate_id,d.guid as guid,d.hasextraction,r.guid as rguid,'
                         . ' m.metadatastate_id,r.accessscope_id as raccessscope_id,  '
-                        . 'd.accessscope_id as accessscope_id, od.id as orderdiffusion_id, '
+                        . 'd.accessscope_id as accessscope_id, od.id as orderdiffusion_id, d.otp as otp,'
                         . 'od.productstate_id, od.remark, od.completed,' . $db->quoteName('od.file') . ' , '
-                        . 'od.displayName as displayname, od.size, od.created_by')
+                        . 'od.displayName as displayname, od.otpchance as otpchance, od.size, od.created_by')
                 ->from('#__sdi_diffusion d')
                 ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                 ->innerJoin('#__sdi_order o ON o.id = od.order_id')
@@ -580,3 +585,4 @@ class sdiBasket {
     }
 
 }
+
