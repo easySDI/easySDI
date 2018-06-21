@@ -34,10 +34,10 @@ class Easysdi_catalogController extends JControllerLegacy {
             //Transform param request into metadata guid
             $code = $jinput->get('code', null);
             $resourcetype = $jinput->get('resourcetype', null);
-            $id = $jinput->get('id', null);
+            $guid = $jinput->get('guid', null);
             if(!empty($code) && !empty($resourcetype)):
-                if(!empty($id)):
-                   $_metadataguid = $id; 
+                if(!empty($guid)):
+                   $_metadataguid = $guid; 
                 else:
                     //Get last published version of resource
                     $_resource = Easysdi_catalogHelper::getResourceFromCode($code, $resourcetype);
