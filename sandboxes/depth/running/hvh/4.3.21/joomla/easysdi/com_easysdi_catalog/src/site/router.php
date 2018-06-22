@@ -52,13 +52,13 @@ class Easysdi_catalogRouter extends JComponentRouterBase {
                 $segments[] = $query['resourcetype'];
                 unset($query['resourcetype']);
             }
-            if (isset($query['guid'])) {
-                $segments[] = $query['guid'];
-                unset($query['guid']);
-            }
             if (isset($query['lang'])) {
                 $segments[] = $query['lang'];
                 unset($query['lang']);
+            }
+            if (isset($query['guid'])) {
+                $segments[] = $query['guid'];
+                unset($query['guid']);
             }
             if (isset($query['catalog'])) {
                 $segments[] = $query['catalog'];
@@ -105,7 +105,10 @@ class Easysdi_catalogRouter extends JComponentRouterBase {
                 } elseif (strlen($segment) == 36) {//Guid
                     $vars['guid'] = $segment;
                     $segment = array_shift($segments);
-                }else {//Code
+                } elseif (preg_match_all('~[a-z]{2}-[A-Z]{2}~', $segment)) {
+                    $vars['lang'] = $segment;
+                    $segment = array_shift($segments);
+                } else {//Code
                     $vars['code'] = $segment;
                     $segment = array_shift($segments);
                     $vars['resourcetype'] = $segment;
@@ -116,28 +119,27 @@ class Easysdi_catalogRouter extends JComponentRouterBase {
                     $vars['lang'] = $segment;
                     $segment = array_shift($segments);
                 }
-
                 //Guid
                 if (preg_match_all("~\{?[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}\}?~", $segment)) {//Guid
                     $vars['guid'] = $segment;
                     $segment = array_shift($segments);
                 }
-
                 //Catalog
                 if (!in_array($segment, array('complete', 'result', 'editor', 'public', 'map', 'search_list'))) {
                     $vars['catalog'] = $segment;
                     $segment = array_shift($segments);
                 }
-
+                //Type
                 if (in_array($segment, array('complete', 'result'))) {
                     $vars['type'] = $segment;
                     $segment = array_shift($segments);
                 }
-                if (in_array($segment, array( 'editor', 'public', 'map', 'search_list'))) {
+                //Preview
+                if (in_array($segment, array('editor', 'public', 'map', 'search_list'))) {
                     $vars['preview'] = $segment;
                     $segment = array_shift($segments);
                 }
-                
+
                 break;
             default:
                 if ($count) {
