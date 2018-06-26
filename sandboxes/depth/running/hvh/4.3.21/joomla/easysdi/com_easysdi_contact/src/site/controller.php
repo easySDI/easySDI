@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
 
-class Easysdi_coreController extends JController
+class Easysdi_contactController extends JController
 {
 
 }

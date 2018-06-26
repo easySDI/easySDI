@@ -322,7 +322,6 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
-
         $user = sdiFactory::getSdiUser();
         if (!$user->isEasySDI) {
             //Not an EasySDI user = not allowed
