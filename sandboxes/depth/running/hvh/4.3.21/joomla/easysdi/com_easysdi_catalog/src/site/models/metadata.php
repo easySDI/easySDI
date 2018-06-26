@@ -319,7 +319,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @since	1.6
      */
     public function save($data, $xml = null) {
-        (empty($data['id']) ) ? $new = true : $new = false;
+        $new =(empty($data['id']) ) ? true : false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
         $user = sdiFactory::getSdiUser();
@@ -417,9 +417,4 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         return true;
     }
-
-    private function isPublishDateUpdated($data, $table) {
-        
-    }
-
 }

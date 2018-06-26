@@ -719,7 +719,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * Move it if needed when implementing version surpport.
      */
     function create() {
-        if(!$this->createNewVersion()){
+        if (!$this->createNewVersion()) {
             $this->setMessage('Save failed: ' . $exc->getMessage(), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         }
@@ -729,13 +729,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
-    public function remoteNewVersion(){
-        if(!$this->createNewVersion()){
-            return false;
-        }
-        return true;
+    public function remoteNewVersion($config) {
+        return $this->createNewVersion($config);        
     }
-    private function createNewVersion() {
+
+    private function createNewVersion($config = null) {
         $dbo = JFactory::getDbo();
         $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
         $lastversion = $this->getLastVersion($resource_id);
@@ -770,14 +768,14 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $mddata['id'] = $metadata->save($mddata);
                 $metadatas[] = $mddata;
 
-                $this->clonePreviewVersion($version['preview_metadata_id'], $mddata['id']);
+                $this->clonePreviewVersion($version['preview_metadata_id'], $mddata['id'], $config);
 
                 // Check in the version.
                 $model->checkin($version['id']);
             }
 
             $dbo->transactionCommit();
-            return true;
+            return $new_versions;
         } catch (Exception $exc) {
             // if fail, clean metadata 
             foreach ($metadatas as $mddata) {
@@ -1014,7 +1012,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * @throws RuntimeException
      * @param array $versions
      */
-    private function saveVersions($versions) {
+    private function saveVersions($versions, $config = null) {
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         $childrentoadd = array();
@@ -1064,7 +1062,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         }
     }
 
-    private function clonePreviewVersion($preview_metadata_id, $new_metadata_id) {
+    private function clonePreviewVersion($preview_metadata_id, $new_metadata_id, $config = null) {
         $preview_md = new sdiMetadata($preview_metadata_id);
         $preview_md->load();
         $new_md = new sdiMetadata($new_metadata_id);
@@ -1074,9 +1072,20 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $new_sdi_block = $new_md->dom->getElementsByTagNameNS('http://www.easysdi.org/2011/sdi', 'platform')->item(0);
         $preview_md->dom->firstChild->replaceChild($preview_md->dom->importNode($new_sdi_block, true), $preview_sdi_block);
 
+        if ($config) {//Update nodes according to config
+            $xpath = new DOMXPath($preview_md->dom);
+            foreach ($config as $replacement) {
+                $resultpath = $xpath->query($replacement["xpath"]);
+                if ($resultpath) {
+                    $currentvalue = $xpath->query($replacement["xpath"])->item(0);
+                    if ($currentvalue) {
+                        $currentvalue->nodeValue = $replacement["value"];
+                    }
+                }
+            }
+        }
+
         $transaction = $new_md->wrapUpdateBlock($preview_md->dom->firstChild)->saveXML();
-
-
         if ($new_md->update(str_replace($preview_md->guid, $new_md->guid, $transaction))) {
             return true;
         } else {

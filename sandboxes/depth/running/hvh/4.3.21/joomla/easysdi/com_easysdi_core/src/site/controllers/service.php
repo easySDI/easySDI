@@ -13,10 +13,9 @@
  * @author hvanhoecke
  */
 require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_COMPONENT . '/controllers/version.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/factory/sdifactory.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
-require_once JPATH_COMPONENT . '/controllers/version.php';
-
 
 class Easysdi_coreControllerService extends Easysdi_coreController {
 
@@ -71,57 +70,79 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
         return true;
     }
 
+    /**
+     * 
+     * 
+     * @param type $resource_id
+     * @return boolean
+     */
     private function checkRights($resource_id) {
-        //$model = $this->getModel('Resource', 'Easysdi_coreModel');
-        //$resource = $model->getData($resource_id);
-        
-        $sdiUser = sdiFactory::getSdiUser();        
+        $sdiUser = sdiFactory::getSdiUser();
         if (!$sdiUser->authorize($resource_id, sdiUser::resourcemanager) && !$sdiUser->isOrganismManager($resource_id)) {
             return false;
         }
         return true;
-        /*$table = JTable::getInstance('Resource', 'Easysdi_coreTable');
-        if ($table->load($resource_id)) {
-            $properties = $table->getProperties(1);
-            $this->_resource = JArrayHelper::toObject($properties, 'JObject');
-        }*/        
-    }
-
-    public function newVersion() {
-        if (!$this->authenticate()) {
-            $this->sendException('401', 'Vous devez être identifié pour utiliser cette fonctionnalité.');
-        }
-
-        $id = JFactory::getApplication()->input->getInt('resource', null);
-        if(!$this->checkRights($id)){
-            $this->sendException('403', 'Vous netes pas autorisé à accéder à cette ressource.');
-        }
-
-        $versionController = new Easysdi_coreControllerVersion();
-        if(!$versionController->remoteNewVersion())
-        {
-            $this->sendException('400', 'Une nouvelle version ne peut être créé.');
-        }
-        
-        
-        $responseNode = $this->response->createElementNS(self::nsSdi, 'sdi:coreserviceresponse','Nouvelle version créée.');
-        $this->rootNode->appendChild($responseNode);
-        $this->sendResponse();
-        
-       /* $viral = JFactory::getApplication()->input->getBool('viral', false);
-        $config = JFactory::getApplication()->input->getString('config', null);*/
-
-        
-        
-        
-        if ((file_exists("./images/Dokumenten_AGI/replacing.txt"))) {
-            $str_data = file_get_contents("./images/Dokumenten_AGI/replacing.txt");
-            $data = json_decode($str_data, true);            
-        };
     }
 
     /**
-     * Send response 
+     * Create a new version for the given resource.
+     * If viral relation exists, new version for children metadata will be created.
+     * 
+     * @return void, XML response is sent.
+     */
+    public function newVersion() {
+        try {
+            if (!$this->authenticate()) {
+                $this->sendException('401', 'Vous devez être identifié pour utiliser cette fonctionnalité.');
+            }
+
+            $id = JFactory::getApplication()->input->getInt('resource', null);
+            if (!$this->checkRights($id)) {
+                $this->sendException('403', 'Vous netes pas autorisé à accéder à cette ressource.');
+            }
+
+            $config = JFactory::getApplication()->input->getString('config', null);
+            if ($config) {
+                $str_data = file_get_contents($config);
+                $data = json_decode($str_data, true);
+            }
+
+            $versionController = new Easysdi_coreControllerVersion();
+            $result = $versionController->remoteNewVersion($data);
+            if ($result == false) {
+                $this->sendException('400', 'Une nouvelle version ne peut être créé.');
+            }
+
+            $responseNode = $this->response->createElementNS(self::nsSdi, 'sdi:response');
+            $this->rootNode->appendChild($responseNode);
+
+            foreach ($result as $version) {
+                $versionNode = $this->response->createElementNS(self::nsSdi, 'sdi:version');
+                $this->addAttribute($versionNode, 'state', 'created');
+                $responseNode->appendChild($versionNode);
+                $versionNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:resource', $version['resource_id']));
+                $versionNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $version['name']));
+                if ($version['children']) {
+                    $childrenNode = $this->response->createElementNS(self::nsSdi, 'sdi:children');
+                    $versionNode->appendChild($childrenNode);
+                }
+                foreach ($version['children'] as $child) {
+                    $childNode = $this->response->createElementNS(self::nsSdi, 'sdi:version');
+                    $this->addAttribute($childNode, 'state', 'created');
+                    $childNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:resource', $child['resource_id']));
+                    $childNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $child['name']));
+                    $childrenNode->appendChild($childNode);
+                }
+            }
+
+            $this->sendResponse();
+        } catch (Exception $exc) {
+            $this->sendException('500', $exc->getMessage());
+        }
+    }
+
+    /**
+     * Send HTTP response 
      * 
      * @param type $code
      * @param type $response
