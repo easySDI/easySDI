@@ -52,28 +52,93 @@ abstract class Easysdi_catalogHelper {
      */
     public static function getLastVersion($metadata_guid){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
         
+        $query = $db->getQuery(true);        
         $query->select('v.resource_id as id');
         $query->from('#__sdi_metadata m');
         $query->innerJoin('#__sdi_version v ON v.id = m.version_id');
-        $query->where('m.guid = '.$query->quote($metadata_guid));
-        
+        $query->where('m.guid = '.$query->quote($metadata_guid));        
         $db->setQuery($query);
         $resource = $db->loadObject();
         
-        $query = $db->getQuery(true);
-        
+        $query = $db->getQuery(true);        
         $query->select('m.guid');
         $query->from('#__sdi_metadata m');
         $query->innerJoin('#__sdi_version v ON v.id = m.version_id');
         $query->where('v.resource_id = '.(int)$resource->id);
-        $query->where('m.endpublished = '.$query->quote('0000-00-00 00:00:00'));
-        
+        $query->where('m.endpublished = '.$query->quote('0000-00-00 00:00:00'));        
         $db->setQuery($query);
         $lastMetadata = $db->loadObject();
         
         return $lastMetadata->guid;
+    }
+    
+    /**
+     * Get the last version of a metatdata
+     */
+    public static function getLastPublishedMetadataOfResource($resource_id){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true) ;
+        $query->select('m.*')
+            ->from('#__sdi_metadata m')
+            ->innerJoin('#__sdi_version v ON v.id = m.version_id')
+            ->where('v.resource_id = '.(int)$resource_id)
+            ->where('m.endpublished = '.$query->quote('0000-00-00 00:00:00'));        
+        $db->setQuery($query);
+        $lastMetadata = $db->loadObject();
+        
+        return $lastMetadata;
+    }
+    
+    /**
+     * Get the resource object from its code
+     */
+    public static function getResourceFromCode($code, $resourcetype){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('r.*')
+            ->from('#__sdi_resource r')
+            ->innerJoin('#__sdi_resourcetype rt on rt.id = r.resourcetype_id')
+            ->innerJoin('#__sdi_version v on v.resource_id = r.id')
+            ->where('rt.name = "'.$resourcetype.'"')
+            ->where('r.name = "'.$code.'"' );                
+        $db->setQuery($query);
+        $resource = $db->loadObject();
+                        
+        return $resource;
+    }
+    
+    /**
+     * Get the resource object from its code
+     */
+    public static function getResourceFromMetadata($metadataguid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('r.*')
+            ->from('#__sdi_resource r')
+            ->innerJoin('#__sdi_version v on v.resource_id = r.id')
+            ->innerJoin('#__sdi_metadata m on v.id = m.version_id')
+            ->where('m.guid = "'.$metadataguid.'"' );                
+        $db->setQuery($query);
+        $resource = $db->loadObject();
+                        
+        return $resource;
+    }
+    
+    /**
+     * Get the resource object from its code
+     */
+    public static function getMetadataFromId($id){
+        $db = JFactory::getDbo();
+        
+        $query = $db->getQuery(true)
+                ->select('*')
+                ->from('#__sdi_metadata')
+                ->where('id = ' . (int) $id);
+        $db->setQuery($query);
+        $metadata = $db->loadObject();
+                        
+        return $metadata;
     }
 
 }

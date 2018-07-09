@@ -54,10 +54,10 @@ class Easysdi_catalogModelSheet extends JModelForm {
      * @return	mixed	Object on success, false on failure.
      */
     public function &getData($id = null) {
-        if(!empty($_GET['guid'])){
+      /*  if(!empty($_GET['guid'])){
             $session = JFactory::getSession();
             $this->_item = $session->get($_GET['guid']);
-        }
+        }*/
         
         if ($this->_item === null) {
             $this->_item = false;
@@ -103,9 +103,9 @@ class Easysdi_catalogModelSheet extends JModelForm {
             $metadata->extend($catalog, $type, $preview, $callfromjoomla, $langtag);
 
             //Apply XSL transformation 
-            $this->_item = $metadata->applyXSL(array ('catalog' => $catalog, 'type' => $type, 'preview' => $preview));
+            $this->_item = $metadata->applyXSL(array ('catalog' => $catalog, 'type' => $type, 'preview' => $preview));            
         }
-
+       
         return $this->_item;
     }
 
@@ -120,7 +120,7 @@ class Easysdi_catalogModelSheet extends JModelForm {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
-// Get the form.
+        // Get the form.
         $form = $this->loadForm('com_easysdi_catalog.sheet', 'sheet', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) {
             return false;
@@ -136,8 +136,10 @@ class Easysdi_catalogModelSheet extends JModelForm {
      * @since	1.6
      */
     protected function loadFormData() {
-        $data = $this->getData();
-        return $data;
+        if ($this->_item === null) {
+            $this->getData();
+        }
+        return $this->_item;
     }
 
 }
