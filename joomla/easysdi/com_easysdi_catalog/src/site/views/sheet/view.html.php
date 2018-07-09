@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 
 /**
  * View to edit
@@ -28,11 +29,9 @@ class Easysdi_catalogViewSheet extends JViewLegacy {
     public function display($tpl = null) {
 
         $app = JFactory::getApplication();
- 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_catalog');
-
         $this->form = $this->get('Form');
 
         // Check for errors.
@@ -50,8 +49,7 @@ class Easysdi_catalogViewSheet extends JViewLegacy {
     protected function _prepareDocument() {
         $app = JFactory::getApplication();
         $menus = $app->getMenu();
-        $title = null;
-
+        
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
         $menu = $menus->getActive();
