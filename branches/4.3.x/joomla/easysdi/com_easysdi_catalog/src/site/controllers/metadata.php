@@ -100,8 +100,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->setQuery($query);
 
         $version = $this->db->loadObject();
-        //$version->name = date("Y-m-d H:i:s");
-
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         $this->_syncronize($versions);
@@ -787,7 +785,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      */
     public function saveTitle($guid) {
         $user = JFactory::getUser();
-        $metadatatitlexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('metadatatitlexpath');
+        
+        $rtquery = $this->db->getQuery(true)
+            ->select('metadatatitlexpath')
+            ->from('#__sdi_resourcetype rt ')
+            ->innerJoin('#__sdi_resource r ON r.resourcetype_id=rt.id')
+            ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+            ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
+            ->where('m.guid = "' . $guid . '"');
+        $this->db->setQuery($rtquery);
+        $resourcetype = $this->db->loadObject();
+        $metadatatitlexpath = $resourcetype->metadatatitlexpath;
+        
+        if(empty($metadatatitlexpath))
+            $metadatatitlexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('metadatatitlexpath');
+               
+        
         $defaultLang = $this->ldao->getDefaultLanguage();
         $supportedLangs = $this->ldao->getSupported();
 
@@ -807,18 +820,16 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
-        // Delete old version
+        // Delete old Title
         $query = $this->db->getQuery(true);
         $query->delete('#__sdi_translation');
-
         $query->where('element_guid = ' . $query->quote($guid));
-
         $this->db->setQuery($query);
         $this->db->execute();
 
+        //Save new Title
         foreach ($titles as $language_id => $text1) {
             $translationtable = $this->getModel('Metadata', 'Easysdi_catalogModel')->getTable('Translation', 'Easysdi_catalogTable', array());
-
             $data['guid'] = $this->getGUID();
             $data['created_by'] = $user->id;
             $data['created'] = date($this->db->getDateFormat());

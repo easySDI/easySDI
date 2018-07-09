@@ -106,7 +106,12 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_SITEMAPPARAMS" 
                filter="safehtml" />
         
-        <field name="metadatadatexpath" type="text" size="40" class="inputbox input-xxlarge"
+		<field name="metadatatitlexpath" type="text" size="40" class="inputbox input-xxlarge"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_TITLEXPATH"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_TITLEXPATH" 
+               filter="safehtml" />        
+
+		<field name="metadatadatexpath" type="text" size="40" class="inputbox input-xxlarge"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_DATEXPATH"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_DATEXPATH" 
                filter="safehtml" />
