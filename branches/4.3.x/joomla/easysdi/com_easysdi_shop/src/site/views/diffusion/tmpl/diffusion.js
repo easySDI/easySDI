@@ -175,7 +175,7 @@ function enableFreePerimeter() {
 
 function onTestUrlAuthenticationClick() {
     js.ajax({
-        url: "<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.testURLAccessibility') ?>",
+        url: "index.php?option=com_easysdi_shop&task=diffusion.testURLAccessibility'",
         type: "POST",
         data: {
             url: js('#jform_fileurl').val(),
