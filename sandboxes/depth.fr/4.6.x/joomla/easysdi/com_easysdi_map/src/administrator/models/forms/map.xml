@@ -331,6 +331,30 @@
             <option value="0">JNO</option>
         </field>
 
+        <field name="tool22" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_BANGEOCODER"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_BANGEOCODER"
+        >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+        <field name="tool23" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_FULLSCREEN"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_FULLSCREEN"
+        >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+        <field name="tool24" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LOCATE"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LOCATE"
+        >
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
 
     </fieldset>
 

@@ -85,8 +85,8 @@
      html += '<a href="#" class="easySDImapPrintOk btn btn-lg btn-large btn-primary">' + options.print + '</a>';
      html += '<a href="#" class="easySDImapPrintCancel btn btn-lg btn-large btn-default">' + options.cancel + '</a>';
      html += '</div>';
-     console.log(mapContainer);
-     console.log(container);
+     //console.log(mapContainer);
+     ///console.log(container);
      mapContainer.after(html);
 
      jQuery('.easySDImapPrintMeta, .easySDImapPrintButtons').width(width);
