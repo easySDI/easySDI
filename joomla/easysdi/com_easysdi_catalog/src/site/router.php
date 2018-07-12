@@ -144,17 +144,20 @@ class Easysdi_catalogRouter extends JComponentRouterBase {
             default:
                 if ($count) {
                     $count--;
-                    $segment = array_pop($segments);
+                    $segment = array_shift($segments);
                     if (is_numeric($segment)) {
                         $vars['id'] = $segment;
                     } else {
-                        $count--;
-                        $vars['task'] = array_pop($segments) . '.' . $segment;
+                        $vars['task'] = $segment;
                     }
                 }
 
                 if ($count) {
-                    $vars['task'] = implode('.', $segments);
+                    $count--;
+                    $segment = array_shift($segments);
+                    if (is_numeric($segment)) {
+                        $vars['id'] = $segment;
+                    }
                 }
                 break;
         }
