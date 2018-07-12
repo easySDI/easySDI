@@ -97,9 +97,14 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
             }
 
             $id = JFactory::getApplication()->input->getInt('resource', null);
+            if ($id == null) {
+                $this->sendException('404', 'Aucune ressource n\'a pu être identifiée.');
+            }
             if (!$this->checkRights($id)) {
                 $this->sendException('403', 'Vous netes pas autorisé à accéder à cette ressource.');
             }
+
+            $viral = JFactory::getApplication()->input->getBool('viral', null);
 
             $config = JFactory::getApplication()->input->getString('config', null);
             if ($config) {
@@ -108,7 +113,7 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
             }
 
             $versionController = new Easysdi_coreControllerVersion();
-            $result = $versionController->remoteNewVersion($data);
+            $result = $versionController->remoteNewVersion($data, $viral);
             if ($result == false) {
                 $this->sendException('400', 'Une nouvelle version ne peut être créé.');
             }
@@ -116,12 +121,18 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
             $responseNode = $this->response->createElementNS(self::nsSdi, 'sdi:response');
             $this->rootNode->appendChild($responseNode);
 
+            $replacements = $result['replacement'];
+            unset($result['replacement']);
+
             foreach ($result as $version) {
                 $versionNode = $this->response->createElementNS(self::nsSdi, 'sdi:version');
                 $this->addAttribute($versionNode, 'state', 'created');
                 $responseNode->appendChild($versionNode);
                 $versionNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:resource', $version['resource_id']));
                 $versionNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $version['name']));
+
+                $this->buildReplacementResult($replacements,$version['resource_id'], $versionNode);
+
                 if ($version['children']) {
                     $childrenNode = $this->response->createElementNS(self::nsSdi, 'sdi:children');
                     $versionNode->appendChild($childrenNode);
@@ -131,6 +142,9 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
                     $this->addAttribute($childNode, 'state', 'created');
                     $childNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:resource', $child['resource_id']));
                     $childNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $child['name']));
+                    
+                    $this->buildReplacementResult($replacements, $child['resource_id'], $childNode);
+                    
                     $childrenNode->appendChild($childNode);
                 }
             }
@@ -195,6 +209,29 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
         $attribute = $this->response->createAttribute($attrName);
         $attribute->value = $attrValue;
         $parent->appendChild($attribute);
+    }
+
+    private function buildReplacementResult($replacements,$resource_id, $node) {
+        foreach ($replacements as $replacement) {
+            if ($replacement['resource_id'] == $resource_id) {
+                $replacements = $this->response->createElementNS(self::nsSdi, 'sdi:replacements');
+                $node->appendChild($replacements);
+                foreach ($replacement['success'] as $success) {
+                    $replacementsucces = $this->response->createElementNS(self::nsSdi, 'sdi:replacement');
+                    $this->addAttribute($replacementsucces, 'state', 'success');
+                    $replacements->appendChild($replacementsucces);
+                    $replacementsucces->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:xpath', $success['xpath']));
+                    $replacementsucces->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:value', $success['value']));
+                }
+                foreach ($replacement['failed'] as $failed) {
+                    $replacementfailed = $this->response->createElementNS(self::nsSdi, 'sdi:replacement');
+                    $this->addAttribute($replacementfailed, 'state', 'failed');
+                    $replacements->appendChild($replacementfailed);
+                    $replacementfailed->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:xpath', $failed['xpath']));
+                    $replacementfailed->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:value', $failed['value']));
+                }
+            }
+        }
     }
 
 }

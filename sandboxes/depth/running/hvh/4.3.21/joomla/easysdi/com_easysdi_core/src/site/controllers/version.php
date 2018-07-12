@@ -729,11 +729,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
-    public function remoteNewVersion($config) {
-        return $this->createNewVersion($config);        
+    public function remoteNewVersion($config, $viral) {
+        return $this->createNewVersion($config, $viral);
     }
 
-    private function createNewVersion($config = null) {
+    private function createNewVersion($config = null, $viral = null) {
         $dbo = JFactory::getDbo();
         $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
         $lastversion = $this->getLastVersion($resource_id);
@@ -741,6 +741,16 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $versions = array();
         if ($lastversion) {
             $versions = $this->core_helpers->getChildrenVersion($lastversion);
+        }
+
+        if ($viral != null) {
+            foreach ($versions as $version) {
+                if ($version->children != null) {
+                    foreach ($version->children as $child) {
+                        $child->viralversioning = $viral;
+                    }
+                }
+            }
         }
 
         // get version to create
@@ -768,8 +778,10 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $mddata['id'] = $metadata->save($mddata);
                 $metadatas[] = $mddata;
 
-                $this->clonePreviewVersion($version['preview_metadata_id'], $mddata['id'], $config);
-
+                $result = $this->clonePreviewVersion($version['resource_id'], $version['preview_metadata_id'], $mddata['id'], $config);
+                if (is_array($result) && count($result) > 0) {
+                    $new_versions['replacement'][] = $result;
+                }
                 // Check in the version.
                 $model->checkin($version['id']);
             }
@@ -1062,7 +1074,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         }
     }
 
-    private function clonePreviewVersion($preview_metadata_id, $new_metadata_id, $config = null) {
+    private function clonePreviewVersion($resource_id, $preview_metadata_id, $new_metadata_id, $config = null) {
         $preview_md = new sdiMetadata($preview_metadata_id);
         $preview_md->load();
         $new_md = new sdiMetadata($new_metadata_id);
@@ -1072,14 +1084,22 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $new_sdi_block = $new_md->dom->getElementsByTagNameNS('http://www.easysdi.org/2011/sdi', 'platform')->item(0);
         $preview_md->dom->firstChild->replaceChild($preview_md->dom->importNode($new_sdi_block, true), $preview_sdi_block);
 
+        $result = true;
         if ($config) {//Update nodes according to config
             $xpath = new DOMXPath($preview_md->dom);
+            $result = array();
+            $result['failed'] = array();
+            $result['success'] = array();
             foreach ($config as $replacement) {
                 $resultpath = $xpath->query($replacement["xpath"]);
                 if ($resultpath) {
                     $currentvalue = $xpath->query($replacement["xpath"])->item(0);
+                    $result['resource_id'] = $resource_id;
                     if ($currentvalue) {
                         $currentvalue->nodeValue = $replacement["value"];
+                        $result['success'][] = array("xpath" => $replacement["xpath"], "value" => $replacement["value"]);
+                    } else {
+                        $result['failed'][] = array("xpath" => $replacement["xpath"], "value" => $replacement["value"]);
                     }
                 }
             }
@@ -1087,7 +1107,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $transaction = $new_md->wrapUpdateBlock($preview_md->dom->firstChild)->saveXML();
         if ($new_md->update(str_replace($preview_md->guid, $new_md->guid, $transaction))) {
-            return true;
+            return $result;
         } else {
             throw new Exception(JText::_('Metadata can not be updated from the remote catalog.'));
         }
