@@ -155,11 +155,9 @@ class CurlHelper {
         if ($this->withreturn) {
             return $this->sendWithReturn();
         } else if ($this->simplified) {
-            $this->sendSimplified();  
-            return true;
+            return $this->sendSimplified();              
         } else {
-            $this->send();
-            return true;
+            return $this->send();            
         }
     }
 
