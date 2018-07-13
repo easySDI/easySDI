@@ -101,39 +101,47 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
             if ($viral) $url .= '&viral='.$viral;
             if ($config) $url .= '&config='.urlencode($config);
             
-            
             $this->curlHelper = new CurlHelper();
-            $this->curlHelper->simplified = true;
-            $this->curlHelper->get(array('url' => $url , 'user' => $user, 'password' => $password));
+            $this->curlHelper->withreturn = true;
+            $result = $this->curlHelper->get(array('url' => $url , 'user' => $user, 'password' => $password, 'authtype' => 'BASIC'));
+            
+            echo $result;
+            
+            die();
     }
+    
     /**
      * Create a new version for the given resource.
-     * If viral relation exists, new version for children metadata will be created.
-     * 
+     *      * 
      * @return void, XML response is sent.
      */
     public function newVersion() {
         try {
             if (!$this->authenticate()) {
-                $this->sendException('401', 'Vous devez être identifié pour utiliser cette fonctionnalité.');
+                $this->sendException('401', 'A valid authentication is required.');
             }
 
+            //The resource id. 
             $id = JFactory::getApplication()->input->getInt('resource', null);
             if ($id == null) {
-                $this->sendException('500', 'Aucune ressource n\'a pu être identifiée.');
+                $this->sendException('404', 'A resource must be specified.');
             }
             if (!$this->checkRights($id)) {
-                $this->sendException('403', 'Vous netes pas autorisé à accéder à cette ressource.');
+                $this->sendException('403', 'You are not authorized to execute this action on the resource.');
             }
 
+            //If viral boolean parameter is provided, its value will overwrite the viral attribute of the resourcetypelink
+            //If not provided, the resourcetypelink viral attribute value will be used.
             $viral = JFactory::getApplication()->input->getBool('viral', null);
 
+            //The config parameter can be null.
+            //If it's provided, the target resource(file or web service) must be reachable.
             $config = JFactory::getApplication()->input->getString('config', null);
             if ($config) {
                 $str_data = file_get_contents($config);
                 if($str_data === FALSE)
                 {
-                    $this->sendException('500', 'Le fichier de config ne peut pas être chargé.');
+                    $this->sendException('404', 'The specified configuration resource cannot be reached.', $config);
                 }
                 $data = json_decode($str_data, true);
             }
@@ -141,7 +149,7 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
             $versionController = new Easysdi_coreControllerVersion();
             $result = $versionController->remoteNewVersion($data, $viral);
             if ($result == false) {
-                $this->sendException('500', 'Une nouvelle version ne peut être créé.');
+                $this->sendException('500', 'The server encountered an error while creating the new version.');
             }
 
             $responseNode = $this->response->createElementNS(self::nsSdi, 'sdi:response');
@@ -213,11 +221,12 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
      * 
      * call sendResponse to return the exception
      */
-    private function sendException($code, $details = '') {
+    private function sendException($code, $details = '', $target= '') {
         $exception = $this->response->createElementNS(self::nsSdi, 'sdi:exception');
         $exception->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:code', $code));
         $exception->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:message', $this->HTTPSTATUS[$code]));
         $exception->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:details', $details));
+        $exception->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:target', $target));
         $this->rootNode->appendChild($exception);
         $this->sendResponse($code, $this->response);
     }
