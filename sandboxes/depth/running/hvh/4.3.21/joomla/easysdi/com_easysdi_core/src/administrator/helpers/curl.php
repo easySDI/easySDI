@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
  */
 class CurlHelper {
 
-    private $simplified = false;
+    public $simplified = false;
     private $authentication = false;
     private $ch = null;
     private $jInput = null;

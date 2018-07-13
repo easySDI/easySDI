@@ -16,6 +16,7 @@ require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_COMPONENT . '/controllers/version.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/factory/sdifactory.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/helpers/curl.php';
 
 class Easysdi_coreControllerService extends Easysdi_coreController {
 
@@ -84,6 +85,27 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
         return true;
     }
 
+    public function testVersion ()
+    {
+            $resource = $this->input->getInt('resource', null) ;
+            $viral = $this->input->getBool('viral', null) ;
+            $config = $this->input->getString('config',null) ;
+            $user = $this->input->getString('user', null) ;
+            $password = $this->input->getString('password', null) ;
+                    
+            $url = JUri::root();
+           
+            
+            $url .= 'component/easysdi_core/service/newVersion?';
+            if ($resource) $url .= '&resource='.$resource;
+            if ($viral) $url .= '&viral='.$viral;
+            if ($config) $url .= '&config='.urlencode($config);
+            
+            
+            $this->curlHelper = new CurlHelper();
+            $this->curlHelper->simplified = true;
+            $this->curlHelper->get(array('url' => $url , 'user' => $user, 'password' => $password));
+    }
     /**
      * Create a new version for the given resource.
      * If viral relation exists, new version for children metadata will be created.
@@ -98,7 +120,7 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
 
             $id = JFactory::getApplication()->input->getInt('resource', null);
             if ($id == null) {
-                $this->sendException('404', 'Aucune ressource n\'a pu être identifiée.');
+                $this->sendException('500', 'Aucune ressource n\'a pu être identifiée.');
             }
             if (!$this->checkRights($id)) {
                 $this->sendException('403', 'Vous netes pas autorisé à accéder à cette ressource.');
@@ -109,13 +131,17 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
             $config = JFactory::getApplication()->input->getString('config', null);
             if ($config) {
                 $str_data = file_get_contents($config);
+                if($str_data === FALSE)
+                {
+                    $this->sendException('500', 'Le fichier de config ne peut pas être chargé.');
+                }
                 $data = json_decode($str_data, true);
             }
 
             $versionController = new Easysdi_coreControllerVersion();
             $result = $versionController->remoteNewVersion($data, $viral);
             if ($result == false) {
-                $this->sendException('400', 'Une nouvelle version ne peut être créé.');
+                $this->sendException('500', 'Une nouvelle version ne peut être créé.');
             }
 
             $responseNode = $this->response->createElementNS(self::nsSdi, 'sdi:response');
