@@ -48,7 +48,7 @@ class Easysdicron extends JApplicationCli {
 
         /**
          * Input must be given like this :
-         * C:\php\php-5.4.26>php D:\htdocs\geobackend\cli\easysdi_cron.php --resource=1233 --user=hvanhoecke --password=admin4geobackend --config=http%3A%2F%2Flocalhost%2Fgeobackend%2Fmedia%2Feasysdi%2Fconfig.json
+         * C:\[PHP Installation Folder]>php D:\htdocs\geobackend\cli\easysdi_cron.php --resource=1233 --user=foo --password=bar --config=http%3A%2F%2Flocalhost%2Fgeobackend%2Fmedia%2Feasysdi%2Fconfig.json
          * 
          */
         $resource = $this->input->getInt('resource', null);
