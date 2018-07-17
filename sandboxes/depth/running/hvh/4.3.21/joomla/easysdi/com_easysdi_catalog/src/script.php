@@ -114,7 +114,7 @@ class com_easysdi_catalogInstallerScript {
             copy(JPATH_ROOT . '/administrator/components/com_easysdi_catalog/assets/patch/modules/mod_languages/helper.php', JPATH_ROOT . '/modules/mod_languages/helper.php');
         }
         
-        if ($jversion->getShortVersion() >= '4.3.21') {
+        if ($jversion->getShortVersion() >= '3.3.21') {
             copy(JPATH_ROOT . '/administrator/components/com_easysdi_catalog/assets/patch/cli/easysdi_cron.php', JPATH_ROOT . '/cli/easysdi_cron.php');
         }
 
