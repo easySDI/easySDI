@@ -26,21 +26,20 @@ class Easysdi_catalogRouter extends JComponentRouterBase {
     public function build(&$query) {
         $segments = array();
 
-        if (isset($query['task'])) {
-            $segments[] = implode('/', explode('.', $query['task']));
-            unset($query['task']);
-        }
-        if (isset($query['id'])) {
-            $segments[] = $query['id'];
-            unset($query['id']);
-        }
-
         if (isset($query['view'])) {
             $view = $query['view'];
             $segments[] = $view;
             //unset($query['view']);
-        } else {
-            return $segments;
+        }
+         
+        if (isset($query['task'])) {
+            $segments[] = implode('/', explode('.', $query['task']));
+            unset($query['task']);
+        }
+        
+        if (isset($query['id'])) {
+            $segments[] = $query['id'];
+            unset($query['id']);
         }
 
         if ($view == 'sheet') {
@@ -142,14 +141,15 @@ class Easysdi_catalogRouter extends JComponentRouterBase {
 
                 break;
             default:
+
                 if ($count) {
                     $count--;
-                    $segment = array_shift($segments);
+                    $segment = array_pop($segments);
                     if (is_numeric($segment)) {
                         $vars['id'] = $segment;
                     } else {
                         $count--;
-                        $vars['task'] = array_shift($segments) . '.' . $segment;
+                        $vars['task'] = array_pop($segments) . '.' . $segment;
                     }
                 }
 
