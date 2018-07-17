@@ -806,12 +806,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $titles = array();
 
-        $default = $this->domXpathStr->query($metadatatitlexpath . '/gco:CharacterString')->item(0);
+        $default = $this->domXpathStr->query($metadatatitlexpath . '/gmd:title/gco:CharacterString')->item(0);
 
         $titles[$defaultLang->id] = $default->nodeValue;
 
         foreach ($supportedLangs as $supportedLang) {
-            $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->{'iso3166-1-alpha2'} . '"]')->item(0);
+            $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->{'iso3166-1-alpha2'} . '"]')->item(0);
 
             if (isset($i18nlang)) {
                 $titles[$supportedLang->id] = $i18nlang->nodeValue;
