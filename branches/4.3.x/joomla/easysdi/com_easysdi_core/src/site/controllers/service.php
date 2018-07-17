@@ -118,22 +118,25 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
     public function newVersion() {
         try {
             if (!$this->authenticate()) {
-                $this->sendException('401', 'A valid authentication is required.');
+                $this->sendException('401', JText::_('COM_EASYSDI_CORE_SERVICE_ERROR_AUTHENTICATION'));
             }
 
             //The resource id. 
             $id = JFactory::getApplication()->input->getInt('resource', null);
             if ($id == null) {
-                $this->sendException('404', 'A resource must be specified.');
+                $this->sendException('404', JText::_('COM_EASYSDI_CORE_SERVICE_ERROR_RESOURCE_MISSING'));
             }
             if (!$this->checkRights($id)) {
-                $this->sendException('403', 'You are not authorized to execute this action on the resource.');
+                $this->sendException('403', JText::_('COM_EASYSDI_CORE_SERVICE_ERROR_RESOURCE_RIGHT'));
             }
 
             //If viral boolean parameter is provided, its value will overwrite the viral attribute of the resourcetypelink
             //If not provided, the resourcetypelink viral attribute value will be used.
-            $viral = JFactory::getApplication()->input->getBool('viral', null);
-
+            $viral = JFactory::getApplication()->input->getString('viral', null);
+            if($viral != null)
+            {
+                $viral = $viral === 'true'? true : false;
+            }
             //The config parameter can be null.
             //If it's provided, the target resource(file or web service) must be reachable.
             $config = JFactory::getApplication()->input->getString('config', null);
@@ -141,15 +144,24 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
                 $str_data = file_get_contents($config);
                 if($str_data === FALSE)
                 {
-                    $this->sendException('404', 'The specified configuration resource cannot be reached.', $config);
+                    $this->sendException('404', JText::_('COM_EASYSDI_CORE_SERVICE_ERROR_CONFIG_FILE'), $config);
                 }
                 $data = json_decode($str_data, true);
             }
 
             $versionController = new Easysdi_coreControllerVersion();
+            
+            //Check if a new version can be created on the resource
+            $last_version = $versionController->getLastVersion($id);
+            $right = $versionController->getNewVersionRightForService((int)$last_version->metadata_id);
+            if($right === false)
+            {
+                $this->sendException('403', JText::_('COM_EASYSDI_CORE_SERVICE_ERROR_VERSION_RIGHT'), $id);
+            }
+            
             $result = $versionController->remoteNewVersion($data, $viral);
             if ($result == false) {
-                $this->sendException('500', 'The server encountered an error while creating the new version.');
+                $this->sendException('500', JText::_('COM_EASYSDI_CORE_SERVICE_ERROR_SERVER'));
             }
 
             $responseNode = $this->response->createElementNS(self::nsSdi, 'sdi:response');
@@ -173,7 +185,7 @@ class Easysdi_coreControllerService extends Easysdi_coreController {
                 }
                 foreach ($version['children'] as $child) {
                     $childNode = $this->response->createElementNS(self::nsSdi, 'sdi:version');
-                    $this->addAttribute($childNode, 'state', 'created');
+                    $child['isViral'] ? $this->addAttribute($childNode, 'state', 'created'): $this->addAttribute($childNode, 'state', 'inherited');
                     $childNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:resource', $child['resource_id']));
                     $childNode->appendChild($this->response->createElementNS(self::nsSdi, 'sdi:name', $child['name']));
                     
