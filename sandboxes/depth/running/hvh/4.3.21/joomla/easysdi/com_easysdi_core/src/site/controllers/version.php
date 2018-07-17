@@ -743,7 +743,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $versions = $this->core_helpers->getChildrenVersion($lastversion);
         }
 
-        if ($viral != null) {
+        if ($viral !== null) {
             foreach ($versions as $version) {
                 if ($version->children != null) {
                     foreach ($version->children as $child) {
@@ -928,6 +928,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
             if (!$new_version['isViral']) {
                 $new_version['id'] = $version->id;
+                $new_version['name'] = $version->version_name;
             }
 
             $new_versions[] = $new_version;
@@ -1055,7 +1056,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * @param int $resource_id
      * @return stdClass or false  The last version
      */
-    private function getLastVersion($resource_id) {
+    public function getLastVersion($resource_id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('v.id, v.resource_id, m.guid, m.id AS metadata_id');
@@ -1261,6 +1262,56 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         echo json_encode($response);
         die();
+    }
+    
+    public function getNewVersionRightForService($metadata_id) {
+        // Check if metadata has parent viral versionned version
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('v.resource_id AS id');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_version v ON m.version_id = v.id');
+        $query->where('m.id = ' . $metadata_id);
+        $db->setQuery($query);
+        $resource = $db->loadObject();
+
+        $query = $db->getQuery(true);
+        $query->select('m.id, pv.name AS version_name, pr.name AS resource_name');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_versionlink vl ON m.version_id = vl.child_id');
+        $query->innerJoin('#__sdi_version pv ON vl.parent_id = pv.id');
+        $query->innerJoin('#__sdi_resource pr ON pv.resource_id = pr.id');
+        $query->innerJoin('#__sdi_resourcetypelink rtl ON pr.resourcetype_id = rtl.parent_id');
+        $query->innerJoin('#__sdi_version cv ON vl.child_id = cv.id');
+        $query->innerJoin('#__sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
+        $query->where('m.id = ' . $metadata_id);
+
+        $db->setQuery($query);
+        $metadatas = $db->loadObjectList();
+
+        $response = array();
+        $response['canCreate'] = true;
+        $response['resource_id'] = $resource->id;
+        if (!empty($metadatas)) {
+            return false;
+        }
+
+        $query = $db->getQuery(true);
+        $query->select('m.id, av.name AS version_name, r.name AS resource_name');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_version v ON m.version_id = v.id');
+        $query->innerJoin('#__sdi_resource r ON v.resource_id = r.id');
+        $query->innerJoin('#__sdi_version av ON r.id = av.resource_id');
+        $query->innerJoin('#__sdi_metadata am ON av.id = am.version_id');
+        $query->where('m.id = ' . $metadata_id);
+        $query->where('am.metadatastate_id IN (' . sdiMetadata::INPROGRESS . ',' . sdiMetadata::VALIDATED . ')');
+        $db->setQuery($query);
+        $metadatas = $db->loadObjectList();
+
+        if (!empty($metadatas)) {
+            return false;
+        }
+        return true;
     }
 
     public function getPublishRight() {
