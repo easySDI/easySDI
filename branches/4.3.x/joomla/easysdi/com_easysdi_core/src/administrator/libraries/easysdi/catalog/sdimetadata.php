@@ -282,6 +282,11 @@ class sdiMetadata extends cswmetadata {
             else
             {
                 $currentgmdcicitation = $xpath->query($datexpath)->item(0);
+                if(!$currentgmdcicitation)
+                {
+                    JFactory::getApplication()->enqueueMessage('Publication date cannot be updated. Wrong Xpath given.', 'error');
+                    return $dom;
+                }
                 $newgmddate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:date');
                 $newgmdcidate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:CI_Date');
                 $newsubgmddate = $dom->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:date');
