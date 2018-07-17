@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
  */
 class CurlHelper {
 
+    public $withreturn = false;
     private $simplified = false;
     private $authentication = false;
     private $ch = null;
@@ -70,7 +71,7 @@ class CurlHelper {
             $this->jInput = $input;
             $this->getGETParameters();
         }
-        $this->perform();
+        return $this->perform();
     }
 
     /**
@@ -94,12 +95,6 @@ class CurlHelper {
          * @todo develop this method
          */
         return;
-        /*  $this->method = 'PUT';
-
-          $this->getPUTParameters();
-          $this->getCookies();
-
-          $this->perform(); */
     }
 
     /**
@@ -110,12 +105,6 @@ class CurlHelper {
          * @todo develop this method
          */
         return;
-        /*   $this->method = 'DELETE';
-
-          $this->getDELETEParameters();
-          $this->getCookies();
-
-          $this->perform(); */
     }
 
     /**
@@ -162,10 +151,13 @@ class CurlHelper {
             case 'DELETE':
                 break;
         }
-        if ($this->simplified) {
-            $this->sendSimplified();
+
+        if ($this->withreturn) {
+            return $this->sendWithReturn();
+        } else if ($this->simplified) {
+            return $this->sendSimplified();              
         } else {
-            $this->send();
+            return $this->send();            
         }
     }
 
@@ -286,9 +278,9 @@ class CurlHelper {
 
         //Set callbakc functions last (dependency on other params), except for sftp head
         //if ($this->protocol !== 'sftp' && $this->method !== 'HEAD') {
-            curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, false);
-            curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array($this, 'curlCB_readHeader'));
-            curl_setopt($this->ch, CURLOPT_WRITEFUNCTION, array($this, 'curlCB_readBody'));
+        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array($this, 'curlCB_readHeader'));
+        curl_setopt($this->ch, CURLOPT_WRITEFUNCTION, array($this, 'curlCB_readBody'));
         //}
 
         if (!curl_exec($this->ch)) {
@@ -309,6 +301,26 @@ class CurlHelper {
         die();
     }
 
+    private function sendWithReturn() {
+        header("Access-Control-Allow-Origin: *"); 
+        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $response = curl_exec($this->ch);
+        
+        if (!$response || strlen($response) == 0) {
+            //If the caller wants to handle the error, we return false
+            if ($this->returnonerror) {
+                return false;
+            }
+            //Else, we send an HTTP error to the client
+            header('HTTP/1.1 502 Bad Gateway', true, 502);
+            $response = JText::_('COM_EASYSDI_CORE_CURL_502_MESSAGE');                     
+        }       
+
+        curl_close($this->ch);
+        return $response;
+    }
+
     /*
      * Callback function for CURL header read : CURLOPT_HEADERFUNCTION
      * Return the number of bytes actually written or return -1 to signal error to
@@ -327,7 +339,7 @@ class CurlHelper {
             //check HTTP code, force fail in case of error code
             if ($infos['http_code'] < 200 || $infos['http_code'] >= 400) {
                 return -1;
-        }
+            }
 
             //update content_type if any
             if (isset($infos['content_type'])) {
@@ -382,7 +394,7 @@ class CurlHelper {
         }
 
         $this->headersAlreadySent = true;
-        
+
         //close joomla session to unblock navigation
         //we don't have to read/write session infos from now
         $session = JFactory::getSession();
@@ -440,7 +452,7 @@ class CurlHelper {
             $this->filename = $data['filename'];
             unset($data['filename']);
         }
-        }
+    }
 
     private function getArrayParameters($data) {
         $this->getParameters($data);
