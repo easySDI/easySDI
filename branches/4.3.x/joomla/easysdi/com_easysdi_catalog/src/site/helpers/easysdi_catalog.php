@@ -107,7 +107,7 @@ abstract class Easysdi_catalogHelper {
                         
         return $resource;
     }
-    
+       
     /**
      * Get the resource object from its code
      */
