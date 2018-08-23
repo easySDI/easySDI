@@ -1782,7 +1782,7 @@ class FormGenerator {
             $breakpoint = true;
         }
         
-        if (isset($value) || (gettype($value) == "integer" && $value == 0)) {
+        if (!empty($value) || (gettype($value) == "integer" && $value == 0)) {
             return $value;
         }
 
