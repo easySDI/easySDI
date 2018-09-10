@@ -1137,12 +1137,14 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * 
      */
     public function getCascadePublicableChild() {
-        return $this->getCascadeChild(false, true);
+        return $this->getCascadeChild(true, true);
     }
 
     /**
      * Get a list of cascading children
      * 
+     * TODO : seems to be unused. 
+     * To remove.
      */
     public function getCascadeAllChildren() {
         return $this->getCascadeChild(true, false);
@@ -1318,8 +1320,24 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $metadata_id = JFactory::getApplication()->input->get('metadata_id', null, 'int');
 
         // Check if metadata has parent viral versionned version
+       /* $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('vparent.id, COUNT(mchild.id) as canPublish')
+                ->from('#__sdi_metadata mparent')
+                ->innerJoin('#__sdi_version vparent ON mparent.version_id = vparent.id')
+                ->innerJoin('#__sdi_resource rparent on rparent.id = vparent.resource_id')                
+                ->innerJoin('#__sdi_resourcetypelink rtl on rtl.parent_id = rparent.resourcetype_id')
+                ->innerJoin('#__sdi_versionlink vl ON vparent.id=vl.parent_id')
+                ->innerJoin('#__sdi_metadata mchild ON vl.child_id=mchild.version_id')
+                ->innerJoin('#__sdi_version vchild on vchild.id = vl.child_id')
+                ->innerJoin('#__sdi_resource rchild on rchild.id = vchild.resource_id')
+                ->where('rtl.child_id = rchild.id AND mparent.id = ' . $metadata_id . ' AND mchild.metadatastate_id != ' . sdiMetadata::PUBLISHED . ' AND mchild.metadatastate_id != ' . sdiMetadata::VALIDATED)
+                ->group('vparent.id')
+        ;
+        $v = $query->__toString();
+        $result = $db->setQuery($query)->loadAssoc();*/
+        
         $db = JFactory::getDbo();
-
         $query = $db->getQuery(true)
                 ->select('v.id, COUNT(md.id) as canPublish')
                 ->from('#__sdi_metadata m')
@@ -1329,7 +1347,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->where('m.id = ' . $metadata_id . ' AND md.metadatastate_id != ' . sdiMetadata::PUBLISHED . ' AND md.metadatastate_id != ' . sdiMetadata::VALIDATED)
                 ->group('v.id')
         ;
-        $v = $query->__toString();
         $result = $db->setQuery($query)->loadAssoc();
 
         echo json_encode($result);

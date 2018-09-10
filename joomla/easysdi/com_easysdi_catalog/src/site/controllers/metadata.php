@@ -1077,6 +1077,10 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
                         $model->save($data, $xml->saveXML());
                     }
                 }
+            /*    else
+                {
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'),'warning');
+                }*/
             }
             $this->db->transactionCommit();
 
