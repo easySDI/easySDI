@@ -1321,9 +1321,7 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
         $tree = $this->getMetadataTree(array($this->data['id']));
 
         if ($tree !== FALSE) { //Note: else, one of the metadata returns false
-            $list = $this->tree2List($tree);
-
-            $body = JText::sprintf('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION_MAIL_BODY', '%s', $list);
+            $list = $this->tree2linklist($tree);
 
             //Get metadata manager
             $query = $this->db->getQuery(true);
@@ -1355,6 +1353,9 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
 
             if ($isCurrentResponsible)//Current user is a responsible, no need to notify other
                 return;
+            
+            //email body
+            $body = JText::sprintf('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION_MAIL_BODY', '%s', $currentSDIUser->name, $list);
 
             if ($assignement->assigned_to == $currentSDIUser->id) {//Metadata was assigned to the current user
                 //Check if the author is a responsible
@@ -1371,6 +1372,7 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
 
                 //Notified the author of the assignation                
                 $responsibleUser = new sdiUser($responsible_id);
+                                              
                 //JFactory::getApplication()->enqueueMessage("Un email devrait être envoyé à : ".$responsibleUser->juser->name, 'Notice');                     
                 $responsibleUser->sendMail(JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), JText::sprintf($body, $responsibleUser->juser->name));
                 
@@ -1407,7 +1409,7 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
         $tree = array();
 
         $query = $this->db->getQuery(true);
-        $query->select('m.version_id as id, m.metadatastate_id as state, r.name as rname, v.name as vname, rt.versioning, v.resource_id')
+        $query->select('m.id as metadataid, m.version_id as id, m.metadatastate_id as state, r.name as rname, v.name as vname, rt.versioning, v.resource_id')
                 ->from('#__sdi_metadata m')
                 ->join('INNER', '#__sdi_version v ON v.id=m.version_id')
                 ->join('INNER', '#__sdi_resource r ON r.id=v.resource_id')
@@ -1423,6 +1425,7 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
 
             $branch = new stdClass();
             $branch->id = $metadata['id'];
+            $branch->metadataid = $metadata['metadataid'];
             $branch->state = $metadata['state'];
             $branch->name = $metadata['rname'];
             if ($metadata['versioning'] == 1)
@@ -1457,6 +1460,19 @@ public function changeStatus($id, $metadatastate_id, $published = null) {
         }
         $li .= "</ul>";
 
+        return $li;
+    }
+    
+    private function tree2linklist ($tree = array()){
+        if (!count($tree))
+            return "";
+        
+        $li = "";
+        foreach ($tree as $branch) {
+            $link = JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $branch->metadataid, true, -1);
+            $li .= "<li>" . $branch->name . $this->tree2linklist($branch->children) . " <a href='{$link}'>{$link}</a></li>";
+        }    
+        
         return $li;
     }
 
