@@ -445,6 +445,7 @@ jQuery(document).ready(function($) {
                 query_layers: layer.data.layername,
                 layers: layer.data.layername,
                 info_format: '',
+				version:'1.3.0',
                 feature_count: 10,
                 X: Math.round(loc.x),
                 Y: Math.round(loc.y)
@@ -454,11 +455,17 @@ jQuery(document).ready(function($) {
             jQuery.each(capabilities.Capability.Request.GetFeatureInfo.Format, function(k, format) {
                 if (format == 'text/plain' && wmsParams.info_format == '') wmsParams.info_format = format;
                 if (format == 'text/html') wmsParams.info_format = format;
+				if (format == '') wmsParams.info_format = 'text/html';
             });
+			
+			if (wmsParams.info_format == ''){
+				wmsParams.info_format = 'text/html';
+			}
 
             var bounds = map.getBounds();
             var size = map.getSize();
-            var wmsVersion = parseFloat(layer.wmsParams.version);
+            var wmsVersion = layer.wmsParams.version;
+			wmsParams.version = wmsVersion;
             var crs = map.options.crs || map.options.crs;
             var projectionKey = wmsVersion >= 1.3 ? 'crs' : 'srs';
             var nw = crs.project(bounds.getNorthWest());

@@ -11129,9 +11129,10 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
                          last_event = e;
                          _this.getFeature(layertree.getLayerById(attr.layer._leaflet_id), e);
                      }
-
+					
                  };
              });
+			
          }
      }
 
@@ -11159,13 +11160,11 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
              url: url,
              success: function(data) {
                  request.loading = false;
+				 
                  if (data != null) {
                      var table = jQuery('<div></div>').html(data).find('table');
+					 var ul = jQuery('<div></div>').html(data).find('ul');
                      if (table.length > 0) {
-
-
-
-
                          jQuery.each(table, function() {
                              request.html = '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
                          });
@@ -11185,6 +11184,35 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
                              '</div>' +
                              '</div>';
 
+                         tmp_collapse += collapse;
+                         request.html = collapse_start + tmp_collapse + collapse_end;
+                         first_layer = "";
+
+                         var evt = new CustomEvent('getFeature', request);
+                         window.dispatchEvent(evt);
+                         nbr_active_layer--;
+                         //_this.updateResults();
+
+                     } else {
+						 if (ul.length > 0) {
+						 jQuery.each(ul, function() {
+                             request.html = '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
+                         });
+                         var collapse =
+                             '<div class="panel panel-default">' +
+                             '<div class="panel-heading" role="tab" id="headingOne">' +
+                             '<h4 class="panel-title">' +
+                             '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + layer.layer._leaflet_id + '" aria-expanded="true" aria-controls="collapse' + layer.layer._leaflet_id + '">' +
+                             layer.name +
+                             '</a>' +
+                             '</h4>' +
+                             '</div>' +
+                             '<div id="collapse' + layer.layer._leaflet_id + '" class="panel-collapse collapse ' + first_layer + '" role="tabpanel" aria-labelledby="heading' + layer.layer._leaflet_id + '">' +
+                             '<div class="panel-body">' +
+                             '<pre class="featureInfo easygetfeature_pre">' + request.html + '</pre>' +
+                             '</div>' +
+                             '</div>' +
+                             '</div>';
 
                          tmp_collapse += collapse;
                          request.html = collapse_start + tmp_collapse + collapse_end;
@@ -11193,11 +11221,11 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
                          var evt = new CustomEvent('getFeature', request);
                          window.dispatchEvent(evt);
                          nbr_active_layer--;
-                         _this.updateResults();
-
-                     } else {
+                         //_this.updateResults();
+						 
+					 } else {
                          data = data.replace('GetFeatureInfo results:', '').trim();
-                         if (data.length > 0 && data.search('Search returned no results.') == -1 && data.search('ul') > 0) {
+                         if (data.length > 0 && data.search('Search returned no results.') == -1 && data.search('body') == -1) {
                              var collapse =
                                  '<div class="panel panel-default">' +
                                  '<div class="panel-heading" role="tab" id="headingOne">' +
@@ -11213,23 +11241,22 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
                                  '</div>' +
                                  '</div>' +
                                  '</div>';
-
-
-
-                             //console.log("2",collapse)
+							 
                              tmp_collapse += collapse;
                              request.html = collapse_start + tmp_collapse + collapse_end;
                              first_layer = "";
 
                              var evt = new CustomEvent('getFeature', request);
                              window.dispatchEvent(evt);
-                             _this.updateResults();
-                         } else {
-
+							 nbr_active_layer--;
+                             //_this.updateResults();
                          }
                      }
+					 }
                  }
-
+					setTimeout(function(){
+						_this.updateResults();
+					}, 2000);
              }
 
          }).fail(function() {
@@ -12102,6 +12129,7 @@ jQuery(document).ready(function($) {
                 query_layers: layer.data.layername,
                 layers: layer.data.layername,
                 info_format: '',
+				version:'1.3.0',
                 feature_count: 10,
                 X: Math.round(loc.x),
                 Y: Math.round(loc.y)
@@ -12111,11 +12139,17 @@ jQuery(document).ready(function($) {
             jQuery.each(capabilities.Capability.Request.GetFeatureInfo.Format, function(k, format) {
                 if (format == 'text/plain' && wmsParams.info_format == '') wmsParams.info_format = format;
                 if (format == 'text/html') wmsParams.info_format = format;
+				if (format == '') wmsParams.info_format = 'text/html';
             });
+			
+			if (wmsParams.info_format == ''){
+				wmsParams.info_format = 'text/html';
+			}
 
             var bounds = map.getBounds();
             var size = map.getSize();
-            var wmsVersion = parseFloat(layer.wmsParams.version);
+            var wmsVersion = layer.wmsParams.version;
+			wmsParams.version = wmsVersion;
             var crs = map.options.crs || map.options.crs;
             var projectionKey = wmsVersion >= 1.3 ? 'crs' : 'srs';
             var nw = crs.project(bounds.getNorthWest());
