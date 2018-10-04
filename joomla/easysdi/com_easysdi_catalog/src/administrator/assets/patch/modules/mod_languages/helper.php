@@ -103,14 +103,14 @@ abstract class ModLanguagesHelper {
                     } elseif (isset($associations[$language->lang_code]) && $menu->getItem($associations[$language->lang_code])) {
                         $itemid = $associations[$language->lang_code];
                         $query = ModLanguagesHelper::getQueryString();
-                        $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $itemid) . $query;
+                        $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $itemid . $query) ;
                     } else {
                         if ($language->active) {
                             $language->link = JUri::getInstance()->toString(array('path', 'query'));
                         } else {
                             $itemid = isset($homes[$language->lang_code]) ? $homes[$language->lang_code]->id : $homes['*']->id;
                             $query = ModLanguagesHelper::getQueryString();
-                            $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $itemid) . $query;
+                            $language->link = JRoute::_('index.php?lang=' . $language->sef . '&Itemid=' . $itemid . $query)  ;
                         }
                     }
                 } else {
@@ -137,7 +137,10 @@ abstract class ModLanguagesHelper {
         if (!$data)
             return "";
 
-        $query = "?";
+        $query = "";
+        if((array_key_exists ("view", $data ) && $data["view"] == "sheet" ) && array_key_exists ("code", $data )){
+            unset($data["guid"]);
+        }
         foreach ($data as $k => $v) {
             if ($k != 'language' && $k != 'lang' && $k != 'Itemid' && $k != 'format' && $k != 'option' && $k != 'layout') {
                 if ($k == 'view' || $k == 'id') {
