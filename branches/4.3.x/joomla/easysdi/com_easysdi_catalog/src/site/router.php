@@ -29,14 +29,16 @@ class Easysdi_catalogRouter extends JComponentRouterBase {
         if (isset($query['view'])) {
             $view = $query['view'];
             $segments[] = $view;
-            //unset($query['view']);
+            if ($query['view'] == 'sheet') {
+                unset($query['view']);
+            }
         }
-         
+
         if (isset($query['task'])) {
             $segments[] = implode('/', explode('.', $query['task']));
             unset($query['task']);
         }
-        
+
         if (isset($query['id'])) {
             $segments[] = $query['id'];
             unset($query['id']);
