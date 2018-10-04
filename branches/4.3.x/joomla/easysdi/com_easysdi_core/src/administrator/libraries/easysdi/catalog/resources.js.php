@@ -390,7 +390,7 @@ var buildMetadataDropDown = function(resource){
     /* SECOND SECTION */
     section = [];
     
-    if(resource.rights.metadataEditor && metadata.state==metadataState.INPROGRESS && resource.assignment == 1 ){
+    if((resource.rights.metadataEditor || resource.rights.metadataResponsible || resource.rights.resourceManager ) && metadata.state==metadataState.INPROGRESS && resource.assignment == 1 ){
         section.push(buildDropDownItem(resource, 'metadata.assign'));
     }
     
