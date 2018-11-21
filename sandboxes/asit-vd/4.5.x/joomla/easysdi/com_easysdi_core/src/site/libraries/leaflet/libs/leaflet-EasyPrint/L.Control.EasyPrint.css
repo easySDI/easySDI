@@ -1,0 +1,86 @@
+.easySDImap .leaflet-control-easyPrint a {
+  background: #ffffff url(./images/print.png) no-repeat 50% 50%;
+  background-size: 16px 16px;
+  display: block;
+}
+
+.easySDImap .leaflet-right .leaflet-control-easyPrint a {
+  width: 36px;
+  height: 36px;
+}
+
+body.easySDImapPrint {
+  background-color: #fff !important;
+}
+
+body.easySDImapPrint .leaflet-control {
+  display: none;
+}
+
+body.easySDImapPrint .leaflet-control-attribution{
+  display: block;
+}
+
+.easySDImapPrintMeta,
+.easySDImapPrintButtons {
+  max-width: 600px;
+  margin:  20px auto;
+}
+
+.easySDImapPrintButtons {
+  text-align: center;
+}
+
+.easySDImapPrintTitle, .easySDImapPrintDesc {
+  display: block;
+  width: 100%;
+  padding: 5px;
+}
+
+.easySDImapPrintTitle {
+  font-size: 1.5em;
+}
+
+.easySDImapPrintDesc {
+}
+
+.easySDImapPrintButtons a {
+  padding: 5px;
+  display: inline-block;
+  margin: 2px;
+  background: #333;
+  color: #fff;
+  text-decoration: none;
+}
+
+.mapPrintHideMe {
+  display:none !important;
+}
+
+body.easySDImapPrint #sidebar {
+  display:none !important;
+}
+
+@media print {
+
+  .easySDImapPrintTitle,
+  .easySDImapPrintDesc
+  {
+    border: none !important;
+    box-shadow: : none !important;
+  }
+
+  .easySDImapPrintButtons {
+    display: none !important;
+  }
+
+  .mapPrintHideMe {
+    display:none !important;
+  }
+
+  #sidebar {
+    display:none !important;
+  }
+
+
+}
