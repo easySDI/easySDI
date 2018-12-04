@@ -99,7 +99,7 @@
 			label="COM_EASYSDI_MAP_TOOLS_NAVIGATION_LABEL" 
 			description="COM_EASYSDI_MAP_TOOLS_NAVIGATION_DESC" ></field>
 		
-		<field name="Ggoglegeocoder" 
+		<field name="Ggoglegeocoder"  
 			type="radio" 
 			default="3" 
 			label="COM_EASYSDI_MAP_TOOLS_GEOCODER_LABEL" 
