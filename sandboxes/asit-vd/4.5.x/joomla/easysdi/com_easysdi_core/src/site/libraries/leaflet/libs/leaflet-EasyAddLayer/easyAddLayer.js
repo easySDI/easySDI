@@ -1,4 +1,4 @@
- easyAddLayer = function (easysdi_leaflet, layertree, serviceConnector, params) {
+ easyAddLayer = function(easysdi_leaflet, layertree, serviceConnector, params) {
 
      var options = {
          "selectserver": "View available data from",
@@ -17,17 +17,17 @@
          map: map,
      };
 
-     var isset = function (variable) {
-         return typeof (variable) != "undefined" && variable !== null;
+     var isset = function(variable) {
+         return typeof(variable) != "undefined" && variable !== null;
      };
 
 
      function debounce(func, wait, immediate) { //http://davidwalsh.name/essential-javascript-functions
          var timeout;
-         return function () {
+         return function() {
              var context = this,
                  args = arguments;
-             var later = function () {
+             var later = function() {
                  timeout = null;
                  if (!immediate) func.apply(context, args);
              };
@@ -38,7 +38,7 @@
          };
      };
 
-     var setServicesAvailableSelect = function () {
+     var setServicesAvailableSelect = function() {
          if (current_container == null || current_container.find('.service_switcher').length == 0)
              return false;
 
@@ -50,6 +50,7 @@
          };
 
          var select = current_container.find('.service_switcher select');
+         select.html('');
          for (var i in services) {
              if (services[i].list) {
                  if (current_service == null) current_service = services[i].servicealias;
@@ -61,7 +62,7 @@
      }
 
 
-     var setLayerAvailableSelect = function () {
+     var setLayerAvailableSelect = function() {
          var ul = current_container.find('.available_layers ul');
 
          if (current_service == '') {
@@ -117,7 +118,7 @@
          }
      }
 
-     var addLayer = function (servicealias, layeralias) {
+     var addLayer = function(servicealias, layeralias) {
          var cap = serviceConnector.getCapabilities(servicealias);
          var layer = serviceConnector.getLayerData(cap, layeralias);
          var service = serviceConnector.services[servicealias];
@@ -157,7 +158,7 @@
                  bounds: '',
                  maxZoom: '',
                  zIndex: 10000
-                 // !TODO gestion des tilematrix, va necessiter proj4
+                     // !TODO gestion des tilematrix, va necessiter proj4
              };
 
          if (service.serviceconnector == 'Google') {
@@ -207,7 +208,7 @@
      }
 
 
-     _this.show = function (container) {
+     _this.show = function(container) {
 
 
          current_container = container;
@@ -218,18 +219,18 @@
              '<div class="available_layers"><ul></ul></div>').appendTo(container);
          setServicesAvailableSelect();
 
-         container.on('change', '.service_switcher select', function () {
+         container.on('change', '.service_switcher select', function() {
              current_service = jQuery(this).val();
              setLayerAvailableSelect();
          });
 
-         container.on('click', '.available_layers a', function (e) {
+         container.on('click', '.available_layers a', function(e) {
              e.preventDefault();
              var layer = jQuery(this).data('layer');
              addLayer(current_service, layer);
          });
 
-         container.on('submit', '.addservice', function (e) {
+         container.on('submit', '.addservice', function(e) {
              e.preventDefault();
              var url = jQuery(this).find('input[name=url]').val();
              var type = jQuery(this).find('select[name=type]').val();
