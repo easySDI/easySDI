@@ -445,16 +445,18 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
         $query->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid');
         $query->innerJoin('#__sdi_language AS l ON t.language_id = l.id');
-        $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
+        if (array_key_exists('version', $_POST) && $_POST['version'] == 'last') {
+            $query->innerJoin('(SELECT * FROM (SELECT * FROM #__sdi_version ORDER BY resource_id, name desc) t group by t.resource_id) v on v.resource_id = r.id');
+        }
+        else{
+            $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
+            $query->order('r.name');
+            $query->order('v.name desc');
+        }
         $query->innerJoin('(SELECT * FROM #__sdi_metadata ORDER BY created DESC)  m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
         $query->where('l.code = ' . $query->quote($lang->getTag()));
-        if (array_key_exists('version', $_POST)) {
-            if ($_POST['version'] == 'last') {
-                $query->innerJoin('(SELECT * FROM (SELECT * FROM jos_sdi_version   ORDER BY resource_id, name desc) t group by t.resource_id) vv on vv.resource_id = r.id');
-                $query->group(' r.name');
-            }
-        }
+        
 
         if ($_POST['status_id'] != '') {
             $query->where('m.metadatastate_id = ' . (int) $_POST['status_id']);
