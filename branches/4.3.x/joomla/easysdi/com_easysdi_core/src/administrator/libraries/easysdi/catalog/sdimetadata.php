@@ -9,6 +9,7 @@
  */
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/helpers/easysdi_catalog.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/resourcetype.php';
 
 class sdiMetadata extends cswmetadata {
 
@@ -259,7 +260,7 @@ class sdiMetadata extends cswmetadata {
 
     public function UpdatePublicationDate(DOMDocument $dom)
     {
-        if(!$this->metadata->published && $this->metadata->published != '0000-00-00 00:00:00')
+        if(!$this->metadata->published || $this->metadata->published == '0000-00-00 00:00:00')
             return $dom;
         
         $publicationdate = date('Y-m-d',strtotime($this->metadata->published));
