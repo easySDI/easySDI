@@ -32,6 +32,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.easysdi.extract.domain.Connector;
 import org.easysdi.extract.domain.Request;
 import org.easysdi.extract.domain.RequestHistoryRecord;
+import org.easysdi.extract.domain.RequestHistoryRecord.Status;
 import org.easysdi.extract.domain.Task;
 import org.easysdi.extract.domain.comparators.RequestHistoryRecordByStepComparator;
 import org.easysdi.extract.domain.converters.JsonToParametersValuesConverter;
@@ -303,7 +304,7 @@ public class RequestModel {
      * @return the label
      */
     public final String getLabel() {
-        return String.format("%s / %s", this.getOrderLabel(), this.getProductLabel());
+        return String.format("%sÂ / %s", this.getOrderLabel(), this.getProductLabel());
     }
 
 
@@ -609,9 +610,16 @@ public class RequestModel {
      * @return <code>true</code> if the request is in an error state
      */
     public final boolean isInError() {
-        return (this.request.getStatus() == Request.Status.UNMATCHED
+        return (this.request.getStatus() == Request.Status.IMPORTFAIL
+                || this.request.getStatus() == Request.Status.UNMATCHED
                 || this.request.getStatus() == Request.Status.ERROR
                 || this.request.getStatus() == Request.Status.EXPORTFAIL);
+    }
+
+
+
+    public final boolean isImportFail() {
+        return this.request.getStatus() == Request.Status.IMPORTFAIL;
     }
 
 
@@ -670,7 +678,8 @@ public class RequestModel {
         final RequestHistoryRecord currentStep = this.getCurrentStep();
 
         if (currentStep == null) {
-            return (this.request.getStatus() == Request.Status.UNMATCHED
+            return (this.request.getStatus() == Request.Status.IMPORTFAIL
+                    || this.request.getStatus() == Request.Status.UNMATCHED
                     || this.request.getStatus() == Request.Status.EXPORTFAIL);
         }
 
@@ -898,6 +907,7 @@ public class RequestModel {
                     + " for step {}.", missingStep);
             final String unknownLabel = this.messageSource.getMessage(RequestModel.UNKNOWN_TASK_LABEL_KEY, null,
                     Locale.getDefault());
+
             historyRecords[missingStep - 1] = this.createHistoryPseudoEntry(unknownLabel, missingStep);
         }
     }
@@ -923,13 +933,20 @@ public class RequestModel {
             this.logger.debug("Fetching the task for step {}.", historyIndex + 1);
             String taskLabel = this.messageSource.getMessage(RequestModel.UNKNOWN_TASK_LABEL_KEY, null,
                     Locale.getDefault());
+            Status taskStatus = Status.SKIPPED;
 
             if (tasksHistory[historyIndex] != null) {
                 this.logger.debug("The task has an history entry.");
                 continue;
             }
 
-            if (processTasks != null) {
+            if (historyIndex == 0) {
+                this.logger.debug("The task is the import task.");
+                taskLabel = this.messageSource.getMessage(RequestModel.IMPORT_TASK_LABEL_KEY, null,
+                        Locale.getDefault());
+                taskStatus = Status.FINISHED;
+
+            } else if (processTasks != null) {
 
                 if (historyIndex == tasksHistory.length - 1) {
                     this.logger.debug("The task is the export task.");
@@ -937,7 +954,7 @@ public class RequestModel {
                             Locale.getDefault());
 
                 } else {
-                    Task task = processTasks[historyIndex];
+                    Task task = processTasks[historyIndex - 1];
 
                     if (task != null) {
                         taskLabel = task.getLabel();
@@ -952,7 +969,7 @@ public class RequestModel {
             }
 
             this.logger.debug("Adding a pseudo-record to the process history.");
-            tasksHistory[historyIndex] = this.createHistoryPseudoEntry(taskLabel, historyIndex);
+            tasksHistory[historyIndex] = this.createHistoryPseudoEntry(taskLabel, historyIndex, taskStatus);
         }
 
         return tasksHistory;
@@ -1038,8 +1055,8 @@ public class RequestModel {
     private RequestHistoryRecord[] buildTaskHistoryStatus(final Integer numberOfTasks) {
         this.logger.debug("Getting the status of the process tasks that have completed or are running.");
         final RequestHistoryRecord[] tasksStatus = (numberOfTasks != null)
-                ? new RequestHistoryRecord[numberOfTasks]
-                : new RequestHistoryRecord[Math.max(this.currentProcessStep, 0)];
+                ? new RequestHistoryRecord[numberOfTasks + 1]
+                : new RequestHistoryRecord[Math.max(this.currentProcessStep, 0) + 1];
         this.logger.debug("The total number of tasks in the process history (including future ones) is {}.",
                 tasksStatus.length);
         int previousProcessStep = -1;
@@ -1049,7 +1066,7 @@ public class RequestModel {
             final RequestHistoryRecord historyRecord = this.fullHistory[historyIndex];
             final int historyRecordStep = historyRecord.getProcessStep();
             this.logger.debug("The process step for the currently-read record is {}.", historyRecordStep);
-            final RequestHistoryRecord taskRecord = tasksStatus[historyRecordStep - 1];
+            final RequestHistoryRecord taskRecord = tasksStatus[historyRecordStep];
 
             if (taskRecord != null) {
 
@@ -1068,14 +1085,14 @@ public class RequestModel {
             if (historyRecordStep > this.currentProcessStep) {
                 this.logger.debug("The record concerns a task that has to be (re)run.");
                 this.logger.debug("Adding a pseudo-entry to the process history for step {}.", historyRecordStep);
-                tasksStatus[historyRecordStep - 1]
+                tasksStatus[historyRecordStep]
                         = this.createHistoryPseudoEntry(historyRecord.getTaskLabel(), historyRecordStep);
                 continue;
             }
 
             this.logger.debug("Adding history record at (total) step {} to the process step {}.",
                     historyRecord.getStep(), historyRecordStep);
-            tasksStatus[historyRecordStep - 1] = historyRecord;
+            tasksStatus[historyRecordStep] = historyRecord;
 
             if ((previousProcessStep - historyRecordStep) > 1) {
                 this.addMissingSteps(previousProcessStep, historyRecordStep, tasksStatus);
@@ -1090,13 +1107,29 @@ public class RequestModel {
 
 
     /**
-     * Creates a placeholder entry for a task that was not present in the full history of this order.
+     * Creates a placeholder entry for a skipped task that was not present in the full history of this
+     * order.
      *
      * @param taskLabel   the string that identifies the task that this entry represents
      * @param processStep the number that identifies the stage of the process where the task takes place
      * @return the entry
      */
     private RequestHistoryRecord createHistoryPseudoEntry(final String taskLabel, final int processStep) {
+        return this.createHistoryPseudoEntry(taskLabel, processStep, Status.SKIPPED);
+    }
+
+
+
+    /**
+     * Creates a placeholder entry for a task that was not present in the full history of this order.
+     *
+     * @param taskLabel   the string that identifies the task that this entry represents
+     * @param processStep the number that identifies the stage of the process where the task takes place
+     * @param status      the state of the task represented by this entry
+     * @return the entry
+     */
+    private RequestHistoryRecord createHistoryPseudoEntry(final String taskLabel, final int processStep,
+            final Status status) {
         assert !StringUtils.isBlank(taskLabel) : "The task label cannot be empty.";
         assert processStep >= 0 : "The process step must not be negative.";
 
@@ -1106,6 +1139,7 @@ public class RequestModel {
         pseudoRecord.setProcessStep(processStep);
         pseudoRecord.setRequest(this.request);
         pseudoRecord.setTaskLabel(taskLabel);
+        pseudoRecord.setStatus(status);
 
         return pseudoRecord;
     }
@@ -1120,7 +1154,18 @@ public class RequestModel {
     private RequestHistoryRecord getCurrentStep() {
 
         if (this.processHistory.length > 0) {
-            return this.processHistory[this.currentProcessStep - 1];
+
+            for (int processHistoryIndex = this.currentProcessStep; processHistoryIndex >= 0; processHistoryIndex--) {
+                RequestHistoryRecord processStep = this.processHistory[processHistoryIndex];
+
+                if (processStep.getStatus() == RequestHistoryRecord.Status.SKIPPED) {
+                    continue;
+                }
+
+                return processStep;
+            }
+
+            return this.processHistory[this.currentProcessStep];
         }
 
         if (this.fullHistory.length > 0) {

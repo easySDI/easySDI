@@ -5,13 +5,19 @@
  */
 package org.easysdi.extract.plugins.fmedesktop;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.easysdi.extract.plugins.common.IEmailSettings;
 import org.easysdi.extract.plugins.common.ITaskProcessor;
 import org.easysdi.extract.plugins.common.ITaskProcessorRequest;
 import org.easysdi.extract.plugins.common.ITaskProcessorResult;
@@ -33,6 +39,12 @@ public class FmeDesktopPlugin implements ITaskProcessor {
     private static final String CONFIG_FILE_PATH = "plugins/fme/properties/configFME.properties";
 
     /**
+     * The name of the file that holds the text explaining how to use this plugin in the language of
+     * the user interface.
+     */
+    private static final String HELP_FILE_NAME = "fmeDesktopHelp.html";
+
+    /**
      * The writer to the application logs.
      */
     private final Logger logger = LoggerFactory.getLogger(FmeDesktopPlugin.class);
@@ -46,6 +58,11 @@ public class FmeDesktopPlugin implements ITaskProcessor {
      * The class of the icon to use to represent this plugin.
      */
     private final String pictoClass = "fa-cogs";
+
+    /**
+     * The text that explains how to use this plugin in the language of the user interface.
+     */
+    private String help = null;
 
     /**
      * The stings that the plugin can send to the user in the language of the user interface.
@@ -148,7 +165,12 @@ public class FmeDesktopPlugin implements ITaskProcessor {
 
     @Override
     public final String getHelp() {
-        return "";
+
+        if (this.help == null) {
+            this.help = this.messages.getFileContent(FmeDesktopPlugin.HELP_FILE_NAME);
+        }
+
+        return this.help;
     }
 
 
@@ -162,25 +184,36 @@ public class FmeDesktopPlugin implements ITaskProcessor {
 
     @Override
     public final String getParams() {
-        StringBuilder builder = new StringBuilder("[{\"code\" : \"");
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode parametersNode = mapper.createArrayNode();
 
-        builder.append(this.config.getProperty("paramPath"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("paramPath.label"));
-        builder.append("\", \"type\" : \"text\", \"req\" : \"true\", \"maxlength\" : 255},{\"code\" : \"");
+        ObjectNode scriptPathNode = parametersNode.addObject();
+        scriptPathNode.put("code", this.config.getProperty("paramPath"));
+        scriptPathNode.put("label", this.messages.getString("paramPath.label"));
+        scriptPathNode.put("type", "text");
+        scriptPathNode.put("req", true);
+        scriptPathNode.put("maxlength", 255);
 
-        builder.append(this.config.getProperty("paramPathFME"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("paramPathFME.label"));
-        builder.append("\", \"type\" : \"text\", \"req\" : \"true\", \"maxlength\" : 255}]");
+        ObjectNode fmePathNode = parametersNode.addObject();
+        fmePathNode.put("code", this.config.getProperty("paramPathFME"));
+        fmePathNode.put("label", this.messages.getString("paramPathFME.label"));
+        fmePathNode.put("type", "text");
+        fmePathNode.put("req", true);
+        fmePathNode.put("maxlength", 255);
 
-        return builder.toString();
+        try {
+            return mapper.writeValueAsString(parametersNode);
+
+        } catch (JsonProcessingException exception) {
+            logger.error("An error occured when the parameters were converted to JSON.", exception);
+            return null;
+        }
     }
 
 
 
     @Override
-    public final ITaskProcessorResult execute(final ITaskProcessorRequest request) {
+    public final ITaskProcessorResult execute(final ITaskProcessorRequest request, final IEmailSettings emailSettings) {
 
         final FmeDesktopResult result = new FmeDesktopResult();
         FmeDesktopResult.Status resultStatus = FmeDesktopResult.Status.ERROR;
@@ -191,16 +224,9 @@ public class FmeDesktopPlugin implements ITaskProcessor {
 
             this.logger.debug("Start FME extraction");
 
-            final String fmwPath = this.inputs.get(this.config.getProperty("paramPath"));
-            final String fmeExePath = this.inputs.get(this.config.getProperty("paramPathFME"));
-            final String productId = request.getProductGuid();
-            final String perimeter = request.getPerimeter();
-            final String parameters = request.getParameters();
-            final String folderOut = request.getFolderOut();
+            final String fmeScriptPath = this.getFmeScriptPath();
 
-            final File fmwScript = new File(fmwPath);
-
-            if (!fmwScript.exists() || !fmwScript.canRead() || !fmwScript.isFile()) {
+            if (fmeScriptPath == null) {
                 result.setStatus(FmeDesktopResult.Status.ERROR);
                 result.setErrorCode("-1");
                 result.setMessage(this.messages.getString("fme.script.notfound"));
@@ -209,10 +235,9 @@ public class FmeDesktopPlugin implements ITaskProcessor {
                 return result;
             }
 
-            final File dirWorkspace = fmwScript.getParentFile();
-            final File fmeExecutable = new File(fmeExePath);
+            final String fmeExecutablePath = this.getFmeExecutablePath();
 
-            if (!fmeExecutable.exists() || !fmeExecutable.canRead() || !fmeExecutable.isFile()) {
+            if (fmeExecutablePath == null) {
                 result.setStatus(FmeDesktopResult.Status.ERROR);
                 result.setErrorCode("-1");
                 result.setMessage(this.messages.getString("fme.executable.notfound"));
@@ -221,14 +246,9 @@ public class FmeDesktopPlugin implements ITaskProcessor {
                 return result;
             }
 
-            //execute batch
-            this.logger.debug("Executing FME batch : {}", fmwPath);
-            final String command = String.format("\"%s\" \"%s\" --%s \"%s\" --%s \"%s\" --%s \"%s\" --%s %s",
-                    fmeExePath, fmwPath, this.config.getProperty("paramRequestPerimeter"), perimeter,
-                    this.config.getProperty("paramRequestProduct"), productId,
-                    this.config.getProperty("paramRequestFolderOut"), folderOut,
-                    this.config.getProperty("paramRequestParameters"), this.formatJsonParametersQuotes(parameters));
-
+            final String command = this.getFmeCommandForRequest(request, fmeScriptPath, fmeExecutablePath);
+            this.logger.debug("Executed command line is:\n{}", command);
+            final File dirWorkspace = new File(FilenameUtils.getFullPathNoEndSeparator(fmeScriptPath));
             final Process fmeTaskProcess = Runtime.getRuntime().exec(command, null, dirWorkspace);
             fmeTaskProcess.waitFor();
 
@@ -248,7 +268,7 @@ public class FmeDesktopPlugin implements ITaskProcessor {
                 }
 
             } else {
-                final File dirFolderOut = new File(folderOut);
+                final File dirFolderOut = new File(request.getFolderOut());
                 final FilenameFilter resultFilter = new FilenameFilter() {
 
                     @Override
@@ -275,7 +295,7 @@ public class FmeDesktopPlugin implements ITaskProcessor {
 
         } catch (Exception exception) {
             final String exceptionMessage = exception.getMessage();
-            this.logger.error("The FME workbench has failed", exceptionMessage);
+            this.logger.error("The FME workbench has failed", exception);
             resultMessage = String.format(this.messages.getString("fme.executing.failed"), exceptionMessage);
 
         }
@@ -304,7 +324,67 @@ public class FmeDesktopPlugin implements ITaskProcessor {
             return json;
         }
 
-        return String.format("\"%s\"", json.replaceAll("\"", "\"\""));
+        return String.format("\"%s\"", json.replaceAll("\\\\\"", "\\\\u0022").replaceAll("\"", "\"\""));
+    }
+
+
+
+    /**
+     * Obtains the command line that will launch the processing of the current request by FNE Desktop.
+     *
+     * @param request           the request to process
+     * @param fmeScriptPath     the location of the FME script that will process the request
+     * @param fmeExecutablePath the location of the FME Desktop executable file (fme.exe)
+     * @return the FME command line
+     */
+    private String getFmeCommandForRequest(final ITaskProcessorRequest request, final String fmeScriptPath,
+            final String fmeExecutablePath) {
+        final String productId = request.getProductGuid();
+        final String perimeter = request.getPerimeter();
+        final String parameters = request.getParameters();
+
+        return String.format("\"%s\" \"%s\" --%s \"%s\" --%s \"%s\" --%s \"%s\" --%s %s",
+                fmeExecutablePath, fmeScriptPath, this.config.getProperty("paramRequestPerimeter"), perimeter,
+                this.config.getProperty("paramRequestProduct"), productId,
+                this.config.getProperty("paramRequestFolderOut"), request.getFolderOut(),
+                this.config.getProperty("paramRequestParameters"), this.formatJsonParametersQuotes(parameters));
+    }
+
+
+
+    /**
+     * Obtains the location of the FME Desktop executable file in the file system.
+     *
+     * @return the FME Desktop executable file path or <code>null</code> if it does not exist or cannot be accessed
+     */
+    private String getFmeExecutablePath() {
+        final String fmeExecutablePath = this.inputs.get(this.config.getProperty("paramPathFME"));
+        final File fmeExecutable = new File(fmeExecutablePath);
+
+        if (!fmeExecutable.exists() || !fmeExecutable.canRead() || !fmeExecutable.isFile()) {
+            return null;
+        }
+
+        return fmeExecutablePath;
+    }
+
+
+
+    /**
+     * Obtains the location of the FME Desktop script to execute to process the current request.
+     *
+     * @return the FME Desktop script path or <code>null</code> if it does not exist or cannot be accessed
+     */
+    private String getFmeScriptPath() {
+        final String fmwPath = this.inputs.get(this.config.getProperty("paramPath"));
+
+        final File fmwScript = new File(fmwPath);
+
+        if (!fmwScript.exists() || !fmwScript.canRead() || !fmwScript.isFile()) {
+            return null;
+        }
+
+        return fmwPath;
     }
 
 }

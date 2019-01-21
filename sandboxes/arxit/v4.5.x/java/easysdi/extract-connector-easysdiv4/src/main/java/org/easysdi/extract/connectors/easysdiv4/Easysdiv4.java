@@ -16,6 +16,10 @@
  */
 package org.easysdi.extract.connectors.easysdiv4;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -260,26 +264,37 @@ public class Easysdiv4 implements IConnector {
 
     @Override
     public final String getParams() {
-        StringBuilder builder = new StringBuilder("[{\"code\" : \"");
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode parametersNode = mapper.createArrayNode();
 
-        builder.append(this.config.getProperty("code.serviceUrl"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("label.serviceUrl"));
-        builder.append("\", \"type\" : \"text\", \"req\" : \"true\", \"maxlength\" : 255},");
+        ObjectNode serviceUrlNode = parametersNode.addObject();
+        serviceUrlNode.put("code", this.config.getProperty("code.serviceUrl"));
+        serviceUrlNode.put("label", this.messages.getString("label.serviceUrl"));
+        serviceUrlNode.put("type", "text");
+        serviceUrlNode.put("req", true);
+        serviceUrlNode.put("maxlength", 255);
 
-        builder.append("{\"code\" : \"");
-        builder.append(this.config.getProperty("code.login"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("label.login"));
-        builder.append("\", \"type\" : \"text\", \"req\" : \"true\", \"maxlength\" : 50},");
+        ObjectNode loginNode = parametersNode.addObject();
+        loginNode.put("code", this.config.getProperty("code.login"));
+        loginNode.put("label", this.messages.getString("label.login"));
+        loginNode.put("type", "text");
+        loginNode.put("req", true);
+        loginNode.put("maxlength", 50);
 
-        builder.append("{\"code\" : \"");
-        builder.append(this.config.getProperty("code.password"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("label.password"));
-        builder.append("\", \"type\" : \"pass\", \"req\" : \"true\", \"maxlength\" : 50}]");
+        ObjectNode passwordNode = parametersNode.addObject();
+        passwordNode.put("code", this.config.getProperty("code.password"));
+        passwordNode.put("label", this.messages.getString("label.password"));
+        passwordNode.put("type", "pass");
+        passwordNode.put("req", true);
+        passwordNode.put("maxlength", 50);
 
-        return builder.toString();
+        try {
+            return mapper.writeValueAsString(parametersNode);
+
+        } catch (JsonProcessingException exception) {
+            logger.error("An error occurred when the parameters description array was converted to JSON.", exception);
+            return null;
+        }
     }
 
 
@@ -454,109 +469,6 @@ public class Easysdiv4 implements IConnector {
 
         this.logger.info("output result : " + result.toString());
         return result;
-    }
-
-
-
-    /**
-     * Creates a JSON string for an array of values.
-     *
-     * @param valuesArray an array that contains the values to convert to JSON
-     * @return the JSON string
-     */
-    private String getValuesJsonArrayString(final String[] valuesArray) {
-
-        if (valuesArray.length == 1) {
-            return "\"" + this.escapeExtendedCharactersForJson(valuesArray[0]) + "\"";
-
-        } else {
-
-            final StringBuilder arrayStringBuilder = new StringBuilder("[");
-
-            for (int valueIndex = 0; valueIndex < valuesArray.length; valueIndex++) {
-                arrayStringBuilder.append("\"");
-                arrayStringBuilder.append(this.escapeExtendedCharactersForJson(valuesArray[valueIndex]));
-                arrayStringBuilder.append("\"");
-
-                if (valueIndex < valuesArray.length - 1) {
-                    arrayStringBuilder.append(",");
-                }
-            }
-
-            arrayStringBuilder.append("]");
-
-            return arrayStringBuilder.toString();
-        }
-    }
-
-
-
-    /**
-     * Transforms the characters that are not standard ASCII so that they are correctly parsed by
-     * a JSON interpreter.
-     *
-     * @param originalString the unescaped JSON string
-     * @return the JSON string with the extended characters escaped
-     */
-    private String escapeExtendedCharactersForJson(final String originalString) {
-        return this.escapeExtendedCharactersForJson(originalString, false);
-    }
-
-
-
-    /**
-     * Transforms the characters that are not standard ASCII so that they are correctly parsed by
-     * a JSON interpreter.
-     *
-     * @param originalString     the unescaped JSON string
-     * @param ignoreControlChars <code>true</code> to leave the characters that do not represent a symbol as they are
-     * @return the JSON string with the extended characters escaped
-     */
-    private String escapeExtendedCharactersForJson(final String originalString, final boolean ignoreControlChars) {
-        final int length = originalString.length();
-
-        StringBuilder escapedStringBuilder = new StringBuilder();
-
-        for (int offset = 0; offset < length;) {
-            final int codepoint = originalString.codePointAt(offset);
-
-            if (codepoint < Easysdiv4.LAST_STANDARD_ASCII_CHARACTER_CODE
-                    && (codepoint > Easysdiv4.LAST_CONTROL_CHARACTER_CODE || ignoreControlChars)) {
-                escapedStringBuilder.append(Character.toChars(codepoint));
-
-            } else {
-                escapedStringBuilder.append(String.format("\\u%04x", codepoint));
-            }
-
-            offset += Character.charCount(codepoint);
-        }
-
-        return escapedStringBuilder.toString();
-    }
-
-
-
-    /**
-     * Converts a collection of parameters to JSON.
-     *
-     * @param parametersStringsArray an array with the parameter string to convert
-     * @return the parameters as a JSON string
-     */
-    private String getJsonParametersObject(final String[] parametersStringsArray) {
-        StringBuilder objectStringBuilder = new StringBuilder("{");
-
-        for (int parameterIndex = 0; parameterIndex < parametersStringsArray.length; parameterIndex++) {
-            objectStringBuilder.append(parametersStringsArray[parameterIndex]);
-
-            if (parameterIndex < parametersStringsArray.length - 1) {
-                objectStringBuilder.append(",");
-            }
-        }
-
-        objectStringBuilder.append("}");
-
-        return objectStringBuilder.toString();
-
     }
 
 
@@ -1229,8 +1141,7 @@ public class Easysdiv4 implements IConnector {
                     config.getProperty("getOrders.xpath.tiers").replace("<guid>", guid));
             final String tiersDetails = this.buildAddressDetailsFromXpath(document,
                     config.getProperty("getOrders.xpath.tiersdetails").replace("<guid>", guid));
-            final String perimeter = this.getXMLNodeLabelFromXpath(document,
-                    config.getProperty("getOrders.xpath.perimeter").replace("<guid>", guid));
+            final String perimeter = this.getOrderPerimeterFromDocument(document, guid);
             double surface = 0d;
 
             try {
@@ -1284,6 +1195,30 @@ public class Easysdiv4 implements IConnector {
 
 
 
+    private boolean checkOrderPerimeterType(Document document, String orderGuid) {
+        String perimeterType = this.getXMLNodeLabelFromXpath(document,
+                config.getProperty("getOrders.xpath.perimeterType").replace("<guid>", orderGuid));
+        this.logger.debug("The order perimeter type is \"{}\".", perimeterType);
+
+        return perimeterType != null
+                && perimeterType.equalsIgnoreCase(config.getProperty("getOrders.perimeterType.valid"));
+    }
+
+
+
+    private String getOrderPerimeterFromDocument(Document document, String orderGuid) {
+
+        if (!this.checkOrderPerimeterType(document, orderGuid)) {
+            this.logger.warn("The order perimeter type is not supported.");
+            return null;
+        }
+
+        return this.getXMLNodeLabelFromXpath(document, config.getProperty("getOrders.xpath.perimeter").replace("<guid>",
+                orderGuid));
+    }
+
+
+
     /**
      * Processes the custom settings for a data item request.
      *
@@ -1291,7 +1226,8 @@ public class Easysdiv4 implements IConnector {
      * @return the custom settings as a JSON string
      */
     private String parseOtherParameters(final NodeList propertiesNodeList) {
-        final String[] propertyArray = new String[propertiesNodeList.getLength()];
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode rootNode = mapper.createObjectNode();
 
         for (int propertyIndex = 0; propertyIndex < propertiesNodeList.getLength(); propertyIndex++) {
             this.logger.debug("Parsing product property index {}.", propertyIndex);
@@ -1302,19 +1238,29 @@ public class Easysdiv4 implements IConnector {
             this.logger.debug("Property alias is {}.", alias);
             final int valuesNumber = propertyValues.getLength();
             this.logger.debug("The property has {} values.", valuesNumber);
-            final String[] valuesArray = new String[valuesNumber];
 
-            for (int valueIndex = 0; valueIndex < valuesNumber; valueIndex++) {
-                this.logger.debug("Processing property value index {}.", valueIndex);
-                valuesArray[valueIndex] = propertyValues.item(valueIndex).getTextContent();
-                this.logger.debug("Value {} is {}.", valueIndex, valuesArray[valueIndex]);
+            if (valuesNumber == 0) {
+                continue;
             }
 
-            propertyArray[propertyIndex] = ("\"" + alias + "\" : " + this.getValuesJsonArrayString(valuesArray));
-            this.logger.debug("Property JSON is {}.", propertyArray[propertyIndex]);
+            if (valuesNumber == 1) {
+                rootNode.put(alias, propertyValues.item(0).getTextContent());
+                continue;
+            }
+
+            final ArrayNode valuesArray = rootNode.putArray(alias);
+
+            for (int valueIndex = 0; valueIndex < valuesNumber; valueIndex++) {
+                valuesArray.add(propertyValues.item(valueIndex).getTextContent());
+            }
         }
 
-        return this.getJsonParametersObject(propertyArray);
+        try {
+            return mapper.writeValueAsString(rootNode);
+        } catch (JsonProcessingException exception) {
+            logger.error("An error occurred when the dynamic paremeters were converted to JSON.", exception);
+            return null;
+        }
     }
 
 

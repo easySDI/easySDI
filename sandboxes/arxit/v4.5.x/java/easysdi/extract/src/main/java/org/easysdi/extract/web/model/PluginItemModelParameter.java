@@ -16,6 +16,7 @@
  */
 package org.easysdi.extract.web.model;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -227,6 +228,9 @@ public class PluginItemModelParameter {
             case "multitext":
                 return (this.getValue() != null);
 
+            case "email":
+                return (this.getValue() != null);
+
             case "boolean":
                 return true;
 
@@ -257,6 +261,11 @@ public class PluginItemModelParameter {
             case "multitext":
                 return (!(StringUtils.isEmpty(updatedValue) && this.isRequired())
                         || updatedValue.length() <= this.getMaxLength());
+
+            case "email":
+                return (updatedValue.length() <= this.getMaxLength()
+                        && this.checkEmailString(updatedValue, this.isRequired()));
+
             case "boolean":
                 return true;
             default:
@@ -298,6 +307,7 @@ public class PluginItemModelParameter {
             case "text":
             case "multitext":
             case "boolean":
+            case "email":
                 this.setValue(updatedValue);
                 break;
 
@@ -372,6 +382,38 @@ public class PluginItemModelParameter {
      */
     public final void setType(final String valueType) {
         this.type = valueType;
+    }
+
+
+
+    /**
+     * Validates that all the e-mail addresses in a string are valid. The addresses can be separated by commas
+     * or semicolons.
+     *
+     * @param emailString the string that contains the addresses to validate
+     * @param isMandatory <code>true</code> if at least one address must be defined
+     * @return <code>true</code> if all the addresses are valid, or if the string is empty and the field is not
+     *         mandatory. Note that this method will return <code>false</code> if at least one address is invalid,
+     *         even if the field is not mandatory,
+     */
+    private boolean checkEmailString(final String emailString, final boolean isMandatory) {
+
+        if (StringUtils.isEmpty(emailString)) {
+            return !isMandatory;
+        }
+
+        EmailValidator validator = EmailValidator.getInstance();
+
+        for (String address : emailString.split("[;,]")) {
+            address = address.trim();
+
+            if (!validator.isValid(address)) {
+                this.logger.error("The e-mail address {} did not validate.", address);
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

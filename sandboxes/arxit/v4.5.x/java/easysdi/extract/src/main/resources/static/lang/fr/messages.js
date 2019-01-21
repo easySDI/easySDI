@@ -32,6 +32,10 @@ var LANG_MESSAGES = {
             "title" : "Suppression d'une demande",
             "message" : "Êtes-vous sûr de vouloir supprimer la demande \"{0}\" ?\n\nCette action est irréversible."
         },
+        "deleteFileConfirm" : {
+            "title" : "Suppression d'un fichier de sortie",
+            "message" : "Êtes-vous sûr de vouloir supprimer le fichier \"{0}\" de la demande \"{1}\" ?\n\nCette action est irréversible."
+        },
         "rejectConfirm" : {
             "title" : "Annulation d'une demande",
             "message" : "Êtes-vous sûr de vouloir annuler le traitement de la demande \"{0}\" ?"
@@ -55,6 +59,14 @@ var LANG_MESSAGES = {
         "validateConfirm" : {
             "title" : "Validation d'une demande",
             "message" : "Êtes-vous sûr de vouloir valider la demande \"{0}\" ?"
+        },
+        "layerSwitcher" : {
+            "tooltip": "Gestion des couches"
+        },
+        "mapLayers" : {
+            "polygon" : {
+                "title": "Polygone d'emprise"
+            }
         }
     },
     "rulesList" : {

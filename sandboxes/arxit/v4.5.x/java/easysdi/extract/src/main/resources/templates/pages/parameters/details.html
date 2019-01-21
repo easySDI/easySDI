@@ -67,7 +67,7 @@
                                                  th:classappend="${#fields.hasErrors('schedulerFrequency')} ? 'has-error'">
                                                 <label th:text="#{parameters.fields.orchestrationfrequency.label}"
                                                        class="control-label">
-                                                    {Fr�quence de mise à jour de l'orchestrateur en secondes}
+                                                    {Fréquence de mise à jour de l'orchestrateur en secondes}
                                                 </label>
                                                 <span class="mandatory" data-toggle="tooltip"
                                                       th:title="#{field.mandatory.tooltip}"></span>
@@ -92,6 +92,29 @@
                                                        ? ${#fields.errors('dashboardFrequency')[0]}"
                                                        th:field="*{dashboardFrequency}" value="20" step="1" />
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <span th:text="#{parameters.panels.about.title}">{About EXTRACT}</span>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <p>
+                                                <span th:text="#{parameters.about.text.beforeLink}"></span>
+                                                <span> </span>
+                                                <a href="http://easysdi.org/" target="_blank">easySDI</a>
+                                                <span> </span>
+                                                <span th:text="#{parameters.about.text.afterLink}"></span>
+                                            </p>
+                                            <p>
+                                                <span th:text="#{parameters.about.version}">{Installed version:}</span>
+                                                &nbsp;
+                                                <span th:text="#{application.version}">{v1.0-SNAPSHOT}</span>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </head>
     <body>
         <th:block layout:fragment="additionalStyleIncludes">
-            <link rel="stylesheet" href="../../lib/openlayers/ol.css" th:href="@{/lib/openlayers/ol.css}"
-                  type="text/css" />
+            <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css" />
+            <link rel="stylesheet" href="https://unpkg.com/ol-layerswitcher@2.0.0/src/ol-layerswitcher.css" />
         </th:block>
         <div id="wrapper">
             <div id="page-wrapper" layout:fragment="content"
@@ -98,11 +98,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <i class="fa fa-caret-up current-step-caret"
                            th:classappend="${request.inStandby} ? 'current-step-caret-standby'
                            : (${request.inError} ? 'current-step-caret-danger' : '')"
-                           th:if="${historyStats.count} == ${request.currentProcessStep}">
+                           th:if="${historyStats.count} == ${request.currentProcessStep + 1}">
                         </i>
                     </div>
                 </div>
                 <div class="well current-step current-step-error" th:if="${showErrorBlock}">
+                    <h2 class="current-step-title" th:if="${request.importFail}"
+                        th:text="${#messages.msg('requestDetails.currentStep.invalidProduct.title', request.connector.name, request.currentStepMessage)}">
+                        {The product imported through the connector "My connector" cannot be processed : Invalid perimeter}
+                    </h2>
                     <h2 class="current-step-title" th:if="${request.unmatched}"
                         th:text="${#messages.msg('requestDetails.currentStep.unmatched.title', request.connector.name)}">
                         {No matching for this request (connector "My connector")}
@@ -235,9 +239,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <input type="hidden" id="requestLabel" name="requestLabel" th:value="${request.label}" />
                     <input type="hidden" id="currentStep" name="currentStep" th:value="${request.currentProcessStep}" />
                     <input type="hidden" id="remark" name="remark" />
+                    <input type="hidden" id="targetFile" name="targetFile" />
+                    <input type="file" id="filesToAdd" name="filesToAdd" multiple="multiple"
+                           class="hidden-file-upload-control"/>
                 </form>
                 <div class="panel panel-default"
-                     th:unless="${#strings.isEmpty(request.remark) and #arrays.isEmpty(request.outputFiles)}">
+                     th:if="${request.waitingIntervention} or not (${#strings.isEmpty(request.remark) and #arrays.isEmpty(request.outputFiles)})">
                     <div class="panel-heading">
                         <b th:text="#{requestDetails.panels.response.title}">{Response to the customer}</b>
                     </div>
@@ -257,7 +264,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <td><b th:text="#{requestDetails.files.title}">{Files:}</b>&nbsp;</td>
                                         <td>
                                             <div th:text="#{requestDetails.files.none}"
-                                                 th:if="${#arrays.isEmpty(request.outputFiles)}">{(None)}</div>
+                                                 th:if="(not ${request.waitingIntervention}) and ${#arrays.isEmpty(request.outputFiles)}">{(None)}</div>
                                             <div th:each="fileItem, fileStats : ${request.outputFiles}"
                                                  th:object="${request.outputFiles[__${fileStats.index}__]}"
                                                  th:unless="${fileStats.count == 0}">
@@ -265,7 +272,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                    href="#" th:text="*{name}" target="_blank">
                                                     {file.zip}
                                                 </a>
+                                                <span th:if="${request.waitingIntervention}">
+                                                    <button class="file-delete-button" title="{Delete this file}"
+                                                            th:title="#{requestDetails.files.delete}"
+                                                            th:attr="data-action=@{'/requests/' + ${request.id} + '/deleteFile'},
+                                                            data-file-path=*{path}">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </span>
                                             </div>
+                                            <button type="button" id="file-upload-button"
+                                                    class="btn btn-extract-filled file-upload-button"
+                                                    th:text="#{requestDetails.files.add.button.label}"
+                                                    th:if="${request.waitingIntervention}"
+                                                    th:attr="data-action=@{'/requests/' + ${request.id} + '/addFiles'}">
+                                                {Add files…}
+                                            </button>
                                         </td>
                                     </tr>
                                 </table>
@@ -394,13 +416,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
         <th:block layout:fragment="additionalScriptIncludes">
-            <script type="text/javascript" src="../../lib/openlayers/ol.js" th:src="@{/lib/openlayers/ol.js}"></script>
+            <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise,fetch&amp;flags=gated"></script>
+            <script type="text/javascript" src="../../static/lib/proj4/dist/proj4.js"
+            th:src="@{/lib/proj4/dist/proj4.js}"></script>
+            <script type="text/javascript" src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+            <script src="https://unpkg.com/ol-layerswitcher@2.0.0"></script>
         </th:block>
         <th:block layout:fragment="additionalScripts">
-            <script type="text/javascript" src="../../static/js/requestDetails.js" th:src="@{/js/requestDetails.js}">
-            </script>
+            <script type="text/javascript" src="../../static/js/requestMap/map.js" th:src="@{'/js/requestMap/' + ${mapDataFileName}}"></script>
+            <script type="text/javascript" src="../../static/js/requestDetails.js" th:src="@{/js/requestDetails.js}"></script>
             <script type="text/javascript" th:inline="javascript">
                 $(function() {
+
                     $('#requestCancelButton').on('click', function() {
                         var listUrl = /*[[@{/requests}]]*/ '../requests';
                         location.replace(listUrl);
@@ -409,13 +436,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     var orderGeometry = /*[[${request.perimeterGeometry}]]*/ '';
                     var geometryArea = /*[[${request.surface}]]*/ 0;
                     loadOrderGeometryMap(orderGeometry, geometryArea);
-                });
 
-                var historyTableProperties = getDataTableBaseProperties();
-                historyTableProperties.paging = false;
-                historyTableProperties.searching = false;
-                $(".dataTable").dataTable(historyTableProperties);
-            </script>
+                    var historyTableProperties = getDataTableBaseProperties();
+                    historyTableProperties.paging = false;
+                    historyTableProperties.searching = false;
+                    $(".dataTable").dataTable(historyTableProperties);
+                });</script>
         </th:block>
     </body>
 </html>
