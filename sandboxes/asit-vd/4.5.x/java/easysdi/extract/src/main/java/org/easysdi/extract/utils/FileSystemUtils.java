@@ -215,6 +215,24 @@ public abstract class FileSystemUtils {
 
 
     /**
+     * Transforms a file name to avoid problems with most operating systems. The diacritics will be removed and
+     * the spaces and protected characters (such as :, \ or /) will be replaced by underscores.
+     *
+     * @param originalFilename the file name to sanitize
+     * @return the sanitized file name
+     */
+    public static String sanitizeFileName(final String originalFilename) {
+
+        if (StringUtils.isEmpty(originalFilename)) {
+            throw new IllegalArgumentException("The file name to sanitize cannot be empty.");
+        }
+
+        return StringUtils.stripAccents(originalFilename.replaceAll("[\\s<>*\"/\\\\\\[\\]:;|=,']", "_"));
+    }
+
+
+
+    /**
      * The different data folder types for a request.
      */
     public enum RequestDataFolder {

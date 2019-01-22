@@ -5,7 +5,7 @@
 
     <groupId>org.easysdi</groupId>
     <artifactId>extract</artifactId>
-    <version>1.0.0-RELEASE</version>
+    <version>1.1-RELEASE</version>
     <packaging>war</packaging>
 
     <name>extract</name>
@@ -34,12 +34,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.2.RELEASE</version>
+        <version>1.5.14.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
-        <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.7</java.version>
     </properties>
@@ -106,20 +106,25 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>eclipselink</artifactId>
-            <version>2.5.2</version>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-            <version>2.5.2</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.aerse</groupId>
             <artifactId>spring-security-taglib</artifactId>
             <version>1.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -132,12 +137,12 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.1</version>
+            <version>4.5.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
+            <version>3.7</version>
         </dependency>
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
@@ -146,7 +151,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.0</version>
+            <version>2.8.5</version>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
@@ -156,99 +161,22 @@
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>1.15.0-SNAPSHOT</version>
+            <version>1.15.0</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.9.9</version>
+            <version>2.10</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>extract-plugin-interface</artifactId>
-            <version>1.0.0-RELEASE</version>
+            <version>1.1-RELEASE</version>
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>prod-linux</id>
-            <properties>
-                <configId>chge-tomcat2</configId>
-            </properties>
-        </profile>
-        <profile>
-            <id>prod-windows</id>
-            <properties>
-                <configId>chge-asitvd</configId>
-            </properties>
-        </profile>
-        <profile>
-            <id>development</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <configId>default</configId>
-            </properties>
-        </profile>
-        <profile>
-            <id>development-linux</id>
-            <properties>
-                <configId>dev-linux</configId>
-            </properties>
-        </profile>
-        <profile>
-            <id>release</id>
-            <properties>
-                <configId>release</configId>
-            </properties>
-        </profile>
-        <profile>
-            <id>release-profile</id>
-            <properties>
-                <configId>release</configId>
-            </properties>
-        </profile>
-    </profiles>
-
     <build>
         <finalName>${project.artifactId}##${project.version}</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>application*.properties</exclude>
-                    <exclude>logback-spring*.xml</exclude>
-                </excludes>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <condition property="configFilePart" value=".${configId}" else="">
-                                    <not>
-                                        <equals arg1="${configId}" arg2="default" />
-                                    </not>
-                                </condition>
-                                <copy file="src/main/resources/application${configFilePart}.properties"
-                                      tofile="${project.build.outputDirectory}/application.properties" />
-                                <copy file="src/main/resources/logback-spring${configFilePart}.xml"
-                                      tofile="${project.build.outputDirectory}/logback-spring.xml" />
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
 
 </project>

@@ -226,6 +226,27 @@ a.connector-state:hover {
     margin-bottom: 20px;
 }
 
+.file-delete-button {
+    background-color: transparent;
+    border: none 0 transparent;
+    color: red;
+    margin-left: 10px;
+    padding: 0;
+}
+
+.file-upload-button {
+    margin-top: -7px;
+}
+
+div + .file-upload-button {
+    margin-left: -14px;
+    margin-top: 10px;
+}
+
+input[type="file"].hidden-file-upload-control {
+    display: none;
+}
+
 .panel-body .dt-bootstrap {
     margin-bottom: 0;
 }
@@ -281,6 +302,11 @@ a.connector-state:hover {
 
 .label-success {
     background-color: #3ab872;
+}
+
+.layer-switcher {
+    right: 0.5em;
+    top: 0.5em;
 }
 
 table.list-table td {
@@ -361,7 +387,6 @@ table.list-table td {
 .preserve-whitespace {
     overflow-wrap: break-word;
     white-space: pre-wrap;
-    word-break: break-all;
 }
 
 .table-striped > tbody > tr:nth-child(2n+1) > td .progress.splitted .progress-bar {

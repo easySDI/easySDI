@@ -131,8 +131,7 @@ public class Request implements Serializable {
     /**
      * The WKT geometry of the geographical area for this order.
      */
-    @Size(max = 4000)
-    @Column(name = "p_perimeter", length = 4000)
+    @Column(name = "p_perimeter", columnDefinition = "text")
     private String perimeter;
 
     /**
@@ -144,8 +143,7 @@ public class Request implements Serializable {
     /**
      * Additional information about the data item order as a JSON string.
      */
-    @Size(max = 4000)
-    @Column(name = "p_parameters", length = 4000)
+    @Column(name = "p_parameters", columnDefinition = "text")
     private String parameters;
 
     /**
@@ -229,6 +227,10 @@ public class Request implements Serializable {
      */
     public enum Status {
 
+        /**
+         * The order from the originated server cannot be processed as a request.
+         */
+        IMPORTFAIL,
         /**
          * The order has been fetched from its originating server.
          */

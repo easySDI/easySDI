@@ -17,6 +17,7 @@
 package org.easysdi.extract.plugins.validation;
 
 import java.util.Map;
+import org.easysdi.extract.plugins.common.IEmailSettings;
 import org.easysdi.extract.plugins.common.ITaskProcessor;
 import org.easysdi.extract.plugins.common.ITaskProcessorRequest;
 import org.easysdi.extract.plugins.common.ITaskProcessorResult;
@@ -183,13 +184,13 @@ public class ValidationPlugin implements ITaskProcessor {
 
     @Override
     public final String getParams() {
-        return "[{}]";
+        return "[]";
     }
 
 
 
     @Override
-    public final ITaskProcessorResult execute(final ITaskProcessorRequest request) {
+    public final ITaskProcessorResult execute(final ITaskProcessorRequest request, final IEmailSettings emailSettings) {
 
         final ValidationResult pluginResult = new ValidationResult();
         pluginResult.setMessage(this.messages.getString("messageValidation"));

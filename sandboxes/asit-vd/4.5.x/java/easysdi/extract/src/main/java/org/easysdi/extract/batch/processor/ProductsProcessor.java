@@ -17,6 +17,7 @@
 package org.easysdi.extract.batch.processor;
 
 import java.util.GregorianCalendar;
+import org.apache.commons.lang3.StringUtils;
 import org.easysdi.extract.connectors.common.IProduct;
 import org.easysdi.extract.domain.Connector;
 import org.easysdi.extract.domain.Request;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Scope;
 
 
 /**
+ * An object that converts ordered products obtained through a connector into requests.
  *
  * @author Yves Grasset
  */
@@ -83,7 +85,13 @@ public class ProductsProcessor implements ItemProcessor<IProduct, Request> {
             request.setTiersDetails(product.getTiersDetails());
             request.setSurface(product.getSurface());
             request.setStartDate(new GregorianCalendar());
-            request.setStatus(Request.Status.IMPORTED);
+            Request.Status importStatus = Request.Status.IMPORTED;
+
+            if (StringUtils.isBlank(product.getPerimeter())) {
+                importStatus = Request.Status.IMPORTFAIL;
+            }
+
+            request.setStatus(importStatus);
 
             return request;
 

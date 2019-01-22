@@ -105,9 +105,10 @@ public interface ITaskProcessor {
     /**
      * Executes the task.
      *
-     * @param request the request that requires the execution of this task
+     * @param request       the request that requires the execution of this task
+     * @param emailSettings the parameters required to send an e-mail notification
      * @return 0 if the task succeeded or an error code otherwise
      */
-    ITaskProcessorResult execute(ITaskProcessorRequest request);
+    ITaskProcessorResult execute(ITaskProcessorRequest request, IEmailSettings emailSettings);
 
 }

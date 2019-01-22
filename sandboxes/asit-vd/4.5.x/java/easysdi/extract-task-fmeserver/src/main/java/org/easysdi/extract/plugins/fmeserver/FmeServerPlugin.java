@@ -16,6 +16,10 @@
  */
 package org.easysdi.extract.plugins.fmeserver;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +45,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.easysdi.extract.plugins.common.IEmailSettings;
 import org.easysdi.extract.plugins.common.ITaskProcessor;
 import org.easysdi.extract.plugins.common.ITaskProcessorRequest;
 import org.easysdi.extract.plugins.common.ITaskProcessorResult;
@@ -73,6 +78,12 @@ public class FmeServerPlugin implements ITaskProcessor {
     private static final int DEFAULT_HTTPS_PORT = 443;
 
     /**
+     * The name of the file that holds the text explaining how to use this plugin in the language of
+     * the user interface.
+     */
+    private static final String HELP_FILE_NAME = "fmeServerHelp.html";
+
+    /**
      * The number returned in an HTTP response to tell that the request resulted in the creation of
      * a resource.
      */
@@ -97,6 +108,11 @@ public class FmeServerPlugin implements ITaskProcessor {
      * The class of the icon to display to represent this plugin.
      */
     private final String pictoClass = "fa-cogs";
+
+    /**
+     * The text that explains how to use this plugin in the language of the user interface.
+     */
+    private String help = null;
 
     /**
      * The strings that this plugin can send to the user in the language of the user interface.
@@ -199,7 +215,12 @@ public class FmeServerPlugin implements ITaskProcessor {
 
     @Override
     public final String getHelp() {
-        return "";
+
+        if (this.help == null) {
+            this.help = this.messages.getFileContent(FmeServerPlugin.HELP_FILE_NAME);
+        }
+
+        return this.help;
     }
 
 
@@ -213,24 +234,37 @@ public class FmeServerPlugin implements ITaskProcessor {
 
     @Override
     public final String getParams() {
-        StringBuilder builder = new StringBuilder("[{\"code\" : \"");
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode parametersNode = mapper.createArrayNode();
 
-        builder.append(this.config.getProperty("paramUrl"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("paramUrl.label"));
-        builder.append("\", \"type\" : \"text\", \"req\" : \"true\", \"maxlength\" : 255},{\"code\" : \"");
+        ObjectNode urlNode = parametersNode.addObject();
+        urlNode.put("code", this.config.getProperty("paramUrl"));
+        urlNode.put("label", this.messages.getString("paramUrl.label"));
+        urlNode.put("type", "text");
+        urlNode.put("req", true);
+        urlNode.put("maxlength", 255);
 
-        builder.append(this.config.getProperty("paramLogin"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("paramLogin.label"));
-        builder.append("\", \"type\" : \"text\", \"req\" : \"false\", \"maxlength\" : 50},{\"code\" : \"");
+        ObjectNode loginNode = parametersNode.addObject();
+        loginNode.put("code", this.config.getProperty("paramLogin"));
+        loginNode.put("label", this.messages.getString("paramLogin.label"));
+        loginNode.put("type", "text");
+        loginNode.put("req", false);
+        loginNode.put("maxlength", 50);
 
-        builder.append(this.config.getProperty("paramPassword"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("paramPassword.label"));
-        builder.append("\", \"type\" : \"pass\", \"req\" : \"false\", \"maxlength\" : 50}]");
+        ObjectNode passwordNode = parametersNode.addObject();
+        passwordNode.put("code", this.config.getProperty("paramPassword"));
+        passwordNode.put("label", this.messages.getString("paramPassword.label"));
+        passwordNode.put("type", "text");
+        passwordNode.put("req", false);
+        passwordNode.put("maxlength", 50);
 
-        return builder.toString();
+        try {
+            return mapper.writeValueAsString(parametersNode);
+
+        } catch (JsonProcessingException exception) {
+            logger.error("An error occurred when the parameters were converted to JSON.", exception);
+            return null;
+        }
     }
 
 
@@ -256,7 +290,7 @@ public class FmeServerPlugin implements ITaskProcessor {
 
 
     @Override
-    public final ITaskProcessorResult execute(final ITaskProcessorRequest request) {
+    public final ITaskProcessorResult execute(final ITaskProcessorRequest request, final IEmailSettings emailSettings) {
         final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         final Date now = new Date();
 
