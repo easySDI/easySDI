@@ -369,6 +369,7 @@ js('document').ready(function () {
             js.ajax({
                 url: baseUrl + 'option=com_easysdi_catalog&task=ajax.getCurrentEditId',
                 type: "GET",
+                cache: false,
                 success: function (data) {
                     //compare local and remote IDs
                     remoteId = parseInt(data.id);
