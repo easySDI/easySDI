@@ -599,6 +599,18 @@ jQuery(document).ready(function($) {
             boundsLatLng = mapOptions.maxBounds;
 
             map = L.map(container[0], mapOptions);
+
+
+
+            map.on('zoomstart', function(event) {
+                var id = jQuery("input[name='baselayer']:checked").val();
+                for (const key in baseLayers) {
+                    if (baseLayers[key]._leaflet_id == id) {
+                        _easySDImap.mapObj.options.maxZoom = baseLayers[key].options.maxZoom;
+                    }
+                }
+            });
+
             _easySDImap.mapObj = map;
 
             var minZoom = map.getBoundsZoom(mapOptions.maxBounds);
