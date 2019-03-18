@@ -10065,8 +10065,8 @@ L.control.zoomBox = function (options) {
      html += '<a href="#" class="easySDImapPrintOk btn btn-lg btn-large btn-primary">' + options.print + '</a>';
      html += '<a href="#" class="easySDImapPrintCancel btn btn-lg btn-large btn-default">' + options.cancel + '</a>';
      html += '</div>';
-     console.log(mapContainer);
-     console.log(container);
+     //console.log(mapContainer);
+     ///console.log(container);
      mapContainer.after(html);
 
      jQuery('.easySDImapPrintMeta, .easySDImapPrintButtons').width(width);
@@ -11123,7 +11123,7 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
 
 
 
-     _this.getFeature = function(layer, event = last_event) {
+     _this.getFeature = function(layer, event /*= last_event crash Ie*/ ) {
 
          var loc = event.containerPoint;
          var url = serviceconnector.getFeatureUrl(layer.layer, map, loc);
@@ -12161,9 +12161,21 @@ jQuery(document).ready(function($) {
                 case 'measure':
                     return initMeasure(params);
                     break;
-
+                    //ICI
                 case 'googlegeocoder':
-                    return initGeocoder('google', params);
+                    return initGeocoderGoogle('google', params);
+                    break;
+
+                case 'bangeocoder':
+                    return initGeocoderBan('ban', params);
+                    break;
+
+                case 'fullscreen':
+                    return initFullscreen(params);
+                    break;
+
+                case 'locate':
+                    return initLocate(params);
                     break;
 
                 case 'print':
@@ -12679,7 +12691,7 @@ jQuery(document).ready(function($) {
         //**********
         // Geocoder
         // *********
-        var initGeocoder = function(provider, params) {
+        var initGeocoderGoogle = function(provider, params) {
             var options = {
                 position: 'topleft',
                 language: lang,
@@ -12691,11 +12703,16 @@ jQuery(document).ready(function($) {
             jQuery.extend(options, params);
 
 
-            if (provider == 'google')
+            if (provider == 'google') {
                 options.geocoder = new L.Control.Geocoder.Google({
                     language: options.language,
                     bounds: options.bounds
                 });
+            }
+
+
+
+
 
             var tool = L.Control.geocoder(options); //https://github.com/perliedman/leaflet-control-geocoder
 
@@ -12714,6 +12731,52 @@ jQuery(document).ready(function($) {
             tool.addTo(map);
             return tool;
         };
+
+        var initGeocoderBan = function(provider, params) {
+            var options = {
+                position: 'topleft',
+                language: lang,
+                bounds: boundsLatLng.toBBoxString()
+            };
+            jQuery.extend(options, i18n.t('geocoder', {
+                returnObjectTrees: true
+            }));
+            jQuery.extend(options, params);
+
+
+            var tool = L.geocoderBAN({ geographicalPriority: true });
+
+            tool.addTo(map);
+            return tool;
+        };
+
+        var initFullscreen = function(params) {
+
+            var tool = L.control.fullscreen({
+                title: {
+                    'false': 'Afficher en plein écran',
+                    'true': 'Quitter le mode plein écran'
+                }
+            });
+
+            tool.addTo(map);
+            return tool;
+        };
+
+        var initLocate = function(params) {
+
+            var tool = L.control.locate({
+                locateOptions: {
+                    maxZoom: 18
+                }
+            });
+
+            tool.addTo(map);
+            return tool;
+        };
+
+
+
 
 
         //********

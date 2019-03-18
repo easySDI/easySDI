@@ -273,11 +273,14 @@ abstract class Easysdi_mapHelper {
             //Loadind js files
             JHtml::_('jquery.framework');
             if (JDEBUG) {
-                //$doc->addStyleSheet("http://unpkg.com/leaflet@1.0.3/dist/leaflet.css");
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/Leaflet.ZoomBox/L.Control.ZoomBox.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-measure/leaflet-measure.css');
+
+                $doc->addStyleSheet($base_url . '/leaflet/libs/Leaflet.fullscreen/dist/leaflet.fullscreen.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-control-geocoder/Control.Geocoder.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-geocoder-ban/src/leaflet-geocoder-ban.css');
+                $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-locatecontrol/dist/L.Control.Locate.min.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/sidebar-v2/css/leaflet-sidebar.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyPrint/L.Control.EasyPrint.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet-EasyLayer/easyLayer.css');
@@ -290,13 +293,20 @@ abstract class Easysdi_mapHelper {
 
                 $doc->addScript($base_url . '/leaflet/libs/i18next-1.9.0/i18next-1.9.0.min.js');
                 $doc->addScript('https://maps.google.com/maps/api/js?v=3&sensor=false');
+                
+
                 $doc->addScript($base_url . '/leaflet/libs/leaflet/leaflet.js');
+                $doc->addScript($base_url . '/leaflet/libs/Leaflet.fullscreen/dist/Leaflet.fullscreen.min.js');
+
                 $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Google.js');
                 $doc->addScript($base_url . '/leaflet/libs/shramov/tile/Bing.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet.TileLayer.WMTS-master/leaflet-tilelayer-wmts-src.js');
-                $doc->addScript($base_url . '/leaflet/libs/Leaflet.ZoomBox/L.Control.ZoomBox.js');
+                $doc->addScript($base_url . '/leaflet/libs/Leaflet.ZoomBox/L.Control.ZoomBox.js');// 
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-measure/leaflet-measure.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-control-geocoder/Control.Geocoder.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-geocoder-ban/src/leaflet-geocoder-ban.js');
+                $doc->addScript($base_url . '/leaflet/libs/leaflet-locatecontrol/dist/L.Control.Locate.min.js');
+
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyPrint/L.Control.EasyPrint.js');
                 $doc->addScript($base_url . '/leaflet/libs/sidebar-v2/js/leaflet-sidebar.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-EasyLayer/easyLayer.js');
@@ -309,6 +319,7 @@ abstract class Easysdi_mapHelper {
                 $doc->addScript($base_url . '/leaflet/libs/leaflet-proj4Leaflet/proj4leaflet.js');
                 $doc->addScript($base_url . '/leaflet/libs/leaflet.nontiledlayer/NonTiledLayer.js');
                 $doc->addScript($base_url . '/leaflet/libs/easysdi_leaflet/easysdi_leaflet.js?v=' . sdiFactory::getSdiFullVersion());
+               
             }else{
                 $doc->addStyleSheet($base_url . '/leaflet/libs/leaflet/leaflet.css');
                 $doc->addStyleSheet($base_url . '/leaflet/libs/easySDI_leaflet.pack/main.css?v=' . sdiFactory::getSdiFullVersion());
