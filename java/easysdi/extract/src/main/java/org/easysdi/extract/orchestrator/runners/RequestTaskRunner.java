@@ -150,15 +150,23 @@ public class RequestTaskRunner implements Runnable {
         this.logger.debug("Looking for the next task to execute for request {}.", requestId);
 
         try {
-            final Task nextTask = this.getNextTask();
 
-            if (nextTask == null) {
-                this.logger.debug("No task remaining for request {}. Marking it for export.", requestId);
+            if (request.isRejected()) {
+                this.logger.debug("The request {} is set as rejected. Marking it for export.", requestId);
                 this.prepareRequestForExport();
+
             } else {
-                this.logger.debug("Running the next task for request {}.", requestId);
-                this.executeTask(nextTask);
+                final Task nextTask = this.getNextTask();
+
+                if (nextTask == null) {
+                    this.logger.debug("No task remaining for request {}. Marking it for export.", requestId);
+                    this.prepareRequestForExport();
+                } else {
+                    this.logger.debug("Running the next task for request {}.", requestId);
+                    this.executeTask(nextTask);
+                }
             }
+
         } catch (Exception exception) {
             this.logger.error("An error occurred when processing the next task for request {}.", requestId, exception);
         }
@@ -254,7 +262,7 @@ public class RequestTaskRunner implements Runnable {
             final String dataFoldersBasePath = this.applicationRepositories.getParametersRepository().getBasePath();
             final TaskProcessorRequest taskProcessorRequest
                     = new TaskProcessorRequest(this.request, dataFoldersBasePath);
-            final ITaskProcessorResult pluginResult = pluginInstance.execute(taskProcessorRequest);
+            final ITaskProcessorResult pluginResult = pluginInstance.execute(taskProcessorRequest, this.emailSettings);
 
             this.processTaskResult(task, pluginResult, new GregorianCalendar());
 
@@ -443,7 +451,8 @@ public class RequestTaskRunner implements Runnable {
         assert pluginResult.getStatus() == ITaskProcessorResult.Status.SUCCESS : "The plugin result must be a success.";
         assert taskEndDate != null : "The task end date cannot be null.";
 
-        this.updateResult(RequestHistoryRecord.Status.FINISHED, "OK", taskEndDate, pluginResult.getRequestData());
+        this.updateResult(RequestHistoryRecord.Status.FINISHED, pluginResult.getMessage(), taskEndDate,
+                pluginResult.getRequestData());
     }
 
 

@@ -23,6 +23,7 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.easysdi.extract.persistence.SystemParametersRepository;
+import org.easysdi.extract.plugins.common.IEmailSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -35,7 +36,7 @@ import org.thymeleaf.TemplateEngine;
  *
  * @author Yves Grasset
  */
-public class EmailSettings {
+public class EmailSettings implements IEmailSettings {
 
     /**
      * The smallest number that can legally be used as an HTTP port number.
@@ -237,6 +238,7 @@ public class EmailSettings {
      *
      * @return the e-mail address of the sender
      */
+    @Override
     public final String getSenderAddress() {
         return this.senderAddress;
     }
@@ -248,6 +250,7 @@ public class EmailSettings {
      *
      * @return the name of the sender
      */
+    @Override
     public final String getSenderName() {
         return this.senderName;
     }
@@ -259,6 +262,7 @@ public class EmailSettings {
      *
      * @return the SMTP server name
      */
+    @Override
     public final String getSmtpHost() {
         return this.smtpHost;
     }
@@ -270,6 +274,7 @@ public class EmailSettings {
      *
      * @return the password, or <code>null</code> if no authentication is necessary
      */
+    @Override
     public final String getSmtpPassword() {
         return this.smtpPassword;
     }
@@ -281,6 +286,7 @@ public class EmailSettings {
      *
      * @return the TCP port number
      */
+    @Override
     public final int getSmtpPort() {
         return this.smtpPort;
     }
@@ -292,8 +298,33 @@ public class EmailSettings {
      *
      * @return the SMTP user name
      */
+    @Override
     public final String getSmtpUser() {
         return this.smtpUser;
+    }
+
+
+
+    /**
+     * Obtains the type of secure connection to establish when connecting to the mail server.
+     *
+     * @return the type of SSL connection to use, such as implicit or explicit
+     */
+    public final SslType getSslType() {
+        return this.sslType;
+    }
+
+
+
+    /**
+     * Obtains the type of secure connection to establish when connecting to the mail server.
+     *
+     * @return a string identifying the type of SSL connection to use. The possible values are NONE, IMPLICIT and
+     *         EXPLICIT
+     */
+    @Override
+    public final String getSslTypeAsString() {
+        return this.sslType.name();
     }
 
 
@@ -314,19 +345,9 @@ public class EmailSettings {
      *
      * @return the string that identifies the protocol to use
      */
+    @Override
     public final String getTransport() {
         return "smtp";
-    }
-
-
-
-    /**
-     * Obtains the type of secure connection to establish when connecting to the mail server.
-     *
-     * @return <code>true</code> if SSL must be used
-     */
-    public final SslType getSslType() {
-        return this.sslType;
     }
 
 
@@ -336,6 +357,7 @@ public class EmailSettings {
      *
      * @return <code>true</code> if the e-mail notifications must be sent
      */
+    @Override
     public final boolean isNotificationEnabled() {
         return this.notificationEnabled;
     }
@@ -347,6 +369,7 @@ public class EmailSettings {
      *
      * @return <code>true</code> if the connection must be authenticated
      */
+    @Override
     public final boolean useAuthentication() {
         return (this.smtpPassword != null);
     }
@@ -368,6 +391,7 @@ public class EmailSettings {
      *
      * @return the SMTP configuration properties
      */
+    @Override
     public final Properties toSystemProperties() {
         Properties properties = new Properties();
         String portString = Integer.toString(this.getSmtpPort());
@@ -396,6 +420,7 @@ public class EmailSettings {
      *
      * @return <code>true</code> if the configuration is valid
      */
+    @Override
     public final boolean isValid() {
 
         return EmailValidator.getInstance().isValid(this.senderAddress) && !StringUtils.isBlank(this.senderName)

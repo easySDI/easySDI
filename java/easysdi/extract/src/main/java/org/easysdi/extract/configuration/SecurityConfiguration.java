@@ -55,7 +55,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,
                         "/css/**",
                         "/images/**",
-                        "/bower_components/**",
+                        "/lib/**",
                         "/js/extract.js",
                         "/lang/**",
                         "/passwordReset/request"
@@ -68,8 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/getActiveConnectors",
                         "/getCurrentRequests",
                         "/getFinishedRequests",
-                        "/js/**",
-                        "/lib/**"
+                        "/js/**"
                 ).hasAnyAuthority(Profile.OPERATOR.name(), Profile.ADMIN.name())
                 .mvcMatchers("").hasAnyAuthority(Profile.OPERATOR.name(), Profile.ADMIN.name())
                 .antMatchers(

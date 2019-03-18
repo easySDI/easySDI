@@ -16,8 +16,12 @@
  */
 package org.easysdi.extract.plugins.remark;
 
-import java.text.MessageFormat;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Map;
+import org.easysdi.extract.plugins.common.IEmailSettings;
 import org.easysdi.extract.plugins.common.ITaskProcessor;
 import org.easysdi.extract.plugins.common.ITaskProcessorRequest;
 import org.easysdi.extract.plugins.common.ITaskProcessorResult;
@@ -185,25 +189,34 @@ public class RemarkPlugin implements ITaskProcessor {
 
     @Override
     public final String getParams() {
-        StringBuilder builder = new StringBuilder("[{\"code\" : \"");
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode parametersNode = mapper.createArrayNode();
 
-        builder.append(this.config.getProperty("paramRemark"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("paramRemark.label"));
-        builder.append("\", \"type\" : \"multitext\", \"req\" : \"true\", \"maxlength\" : 5000},{\"code\" : \"");
+        ObjectNode remarkNode = parametersNode.addObject();
+        remarkNode.put("code", this.config.getProperty("paramRemark"));
+        remarkNode.put("label", this.messages.getString("paramRemark.label"));
+        remarkNode.put("type", "multitext");
+        remarkNode.put("req", true);
+        remarkNode.put("maxlength", 5000);
 
-        builder.append(this.config.getProperty("paramOverwrite"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("paramOverwrite.label"));
-        builder.append("\", \"type\" : \"boolean\"}]");
+        ObjectNode overwriteNode = parametersNode.addObject();
+        overwriteNode.put("code", this.config.getProperty("paramOverwrite"));
+        overwriteNode.put("label", this.messages.getString("paramOverwrite.label"));
+        overwriteNode.put("type", "boolean");
 
-        return builder.toString();
+        try {
+            return mapper.writeValueAsString(parametersNode);
+
+        } catch (JsonProcessingException exception) {
+            logger.error("An error occurred when the parameters were converted to JSON.", exception);
+            return null;
+        }
     }
 
 
 
     @Override
-    public final ITaskProcessorResult execute(final ITaskProcessorRequest request) {
+    public final ITaskProcessorResult execute(final ITaskProcessorRequest request, final IEmailSettings emailSettings) {
 
         final RemarkResult pluginResult = new RemarkResult();
         RemarkResult.Status resultStatus = RemarkResult.Status.ERROR;
@@ -224,8 +237,7 @@ public class RemarkPlugin implements ITaskProcessor {
                 updatedRequest.setRemark(String.format("%s\r\n%s", currentRemark, newRemark));
             }
 
-            final MessageFormat msgformat = new MessageFormat(this.messages.getString("remark.executing.success"));
-            resultMessage = msgformat.format(new String[]{newRemark});
+            resultMessage = this.messages.getString("remark.executing.success");
             resultStatus = RemarkResult.Status.SUCCESS;
             resultErrorCode = "";
 

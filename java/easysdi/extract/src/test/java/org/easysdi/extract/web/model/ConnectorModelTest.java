@@ -27,10 +27,10 @@ import org.easysdi.extract.domain.Request;
 import org.easysdi.extract.domain.Rule;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 
 
@@ -134,7 +134,7 @@ public class ConnectorModelTest {
 
         this.dummyConnectorInstance.setRequestsCollection(Arrays.asList(request1, request2));
         ConnectorModel instance = new ConnectorModel(this.dummyConnectorPlugin, this.dummyConnectorInstance, null);
-        assertEquals(true, instance.hasActiveRequests());
+        Assert.assertEquals(true, instance.hasActiveRequests());
     }
 
 
@@ -155,14 +155,14 @@ public class ConnectorModelTest {
         instance.setName(this.dummyConnectorInstance.getName());
         Connector createdInstance = instance.createDomainConnector();
 
-        assertEquals(this.dummyConnectorInstance.isActive(), createdInstance.isActive());
-        assertEquals(this.dummyConnectorPlugin.getCode(), createdInstance.getConnectorCode());
-        assertEquals(this.dummyConnectorPlugin.getLabel(), createdInstance.getConnectorLabel());
-        assertNull(createdInstance.getId());
-        assertEquals(this.dummyConnectorInstance.getImportFrequency(), createdInstance.getImportFrequency());
-        assertNull(createdInstance.getLastImportDate());
-        assertNull(createdInstance.getLastImportMessage());
-        assertEquals(this.dummyConnectorInstance.getName(), createdInstance.getName());
+        Assert.assertEquals(this.dummyConnectorInstance.isActive(), createdInstance.isActive());
+        Assert.assertEquals(this.dummyConnectorPlugin.getCode(), createdInstance.getConnectorCode());
+        Assert.assertEquals(this.dummyConnectorPlugin.getLabel(), createdInstance.getConnectorLabel());
+        Assert.assertNull(createdInstance.getId());
+        Assert.assertEquals(this.dummyConnectorInstance.getImportFrequency(), createdInstance.getImportFrequency());
+        Assert.assertNull(createdInstance.getLastImportDate());
+        Assert.assertNull(createdInstance.getLastImportMessage());
+        Assert.assertEquals(this.dummyConnectorInstance.getName(), createdInstance.getName());
     }
 
 
@@ -182,17 +182,17 @@ public class ConnectorModelTest {
         instance.setLastImportMessage("OK");
         instance.setName("New test connector");
         instance.updateDomainConnector(this.dummyConnectorInstance);
-        assertEquals(false, this.dummyConnectorInstance.isActive());
-        assertEquals((long) ConnectorModelTest.DUMMY_CONNECTOR_INSTANCE_ID, (long) this.dummyConnectorInstance.getId());
-        assertEquals("New test connector", this.dummyConnectorInstance.getName());
+        Assert.assertEquals(false, this.dummyConnectorInstance.isActive());
+        Assert.assertEquals((long) ConnectorModelTest.DUMMY_CONNECTOR_INSTANCE_ID, (long) this.dummyConnectorInstance.getId());
+        Assert.assertEquals("New test connector", this.dummyConnectorInstance.getName());
 
         // The following properties should not be updated even if they have been changed in the model
-        assertEquals(this.dummyConnectorPlugin.getCode(), this.dummyConnectorInstance.getConnectorCode());
-        assertEquals(this.dummyConnectorPlugin.getLabel(), this.dummyConnectorInstance.getConnectorLabel());
-        assertEquals((long) ConnectorModelTest.DUMMY_CONNECTOR_INSTANCE_ID,
+        Assert.assertEquals(this.dummyConnectorPlugin.getCode(), this.dummyConnectorInstance.getConnectorCode());
+        Assert.assertEquals(this.dummyConnectorPlugin.getLabel(), this.dummyConnectorInstance.getConnectorLabel());
+        Assert.assertEquals((long) ConnectorModelTest.DUMMY_CONNECTOR_INSTANCE_ID,
                 (long) this.dummyConnectorInstance.getId());
-        assertEquals(ConnectorModelTest.DEFAULT_UPDATE_DATE, this.dummyConnectorInstance.getLastImportDate());
-        assertEquals(ConnectorModelTest.DEFAULT_IMPORT_MESSAGE, this.dummyConnectorInstance.getLastImportMessage());
+        Assert.assertEquals(ConnectorModelTest.DEFAULT_UPDATE_DATE, this.dummyConnectorInstance.getLastImportDate());
+        Assert.assertEquals(ConnectorModelTest.DEFAULT_IMPORT_MESSAGE, this.dummyConnectorInstance.getLastImportMessage());
 
     }
 
@@ -206,13 +206,13 @@ public class ConnectorModelTest {
         System.out.println("addRule");
         ConnectorModel instance = new ConnectorModel(this.dummyConnectorPlugin, this.dummyConnectorInstance, null);
         instance.addRule(this.dummyRuleModel);
-        assertTrue(instance.getRules().length == this.dummyConnectorInstance.getRulesCollection().size() + 1);
+        Assert.assertTrue(instance.getRules().length == this.dummyConnectorInstance.getRulesCollection().size() + 1);
         RuleModel addedRule = instance.getRules()[instance.getRules().length - 1];
-        assertEquals(ConnectorModelTest.DUMMY_CONNECTOR_INSTANCE_ID, addedRule.getId());
-        assertEquals(this.dummyRuleModel.getProcessId(), addedRule.getProcessId());
-        assertEquals(this.dummyRuleModel.getPosition(), addedRule.getPosition());
-        assertEquals(this.dummyRuleModel.getProcessName(), addedRule.getProcessName());
-        assertEquals(this.dummyRuleModel.getRule(), addedRule.getRule());
+        Assert.assertEquals(ConnectorModelTest.DUMMY_CONNECTOR_INSTANCE_ID, addedRule.getId());
+        Assert.assertEquals(this.dummyRuleModel.getProcessId(), addedRule.getProcessId());
+        Assert.assertEquals(this.dummyRuleModel.getPosition(), addedRule.getPosition());
+        Assert.assertEquals(this.dummyRuleModel.getProcessName(), addedRule.getProcessName());
+        Assert.assertEquals(this.dummyRuleModel.getRule(), addedRule.getRule());
     }
 
 
@@ -225,8 +225,8 @@ public class ConnectorModelTest {
         System.out.println("removeRule");
         ConnectorModel instance = new ConnectorModel(this.dummyConnectorPlugin, this.dummyConnectorInstance, null);
         instance.removeRule(ConnectorModelTest.DUMMY_RULE_INSTANCE_ID);
-        assertTrue(instance.getRules().length == this.dummyConnectorInstance.getRulesCollection().size() - 1);
-        assertNull(instance.getRuleById(ConnectorModelTest.DUMMY_RULE_INSTANCE_ID));
+        Assert.assertTrue(instance.getRules().length == this.dummyConnectorInstance.getRulesCollection().size() - 1);
+        Assert.assertNull(instance.getRuleById(ConnectorModelTest.DUMMY_RULE_INSTANCE_ID));
     }
 
 
@@ -240,8 +240,8 @@ public class ConnectorModelTest {
         ConnectorModel instance = new ConnectorModel(this.dummyConnectorPlugin, this.dummyConnectorInstance, null);
         instance.addRule(this.dummyRuleModel);
         instance.removeRule(this.dummyRuleModel);
-        assertTrue(instance.getRules().length == this.dummyConnectorInstance.getRulesCollection().size());
-        assertNull(instance.getRuleById(this.dummyRuleModel.getId()));
+        Assert.assertTrue(instance.getRules().length == this.dummyConnectorInstance.getRulesCollection().size());
+        Assert.assertNull(instance.getRuleById(this.dummyRuleModel.getId()));
     }
 
 }

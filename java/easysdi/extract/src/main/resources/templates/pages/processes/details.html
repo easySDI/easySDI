@@ -115,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </div>
                     <div class="row extract-proc-tasks">
-                        <!-- Tâches du traitement -->
+                        <!-- TÃ¢ches du traitement -->
                         <div class="col-lg-8">
                             <div class="panel panel-default">
                                 <div class="panel-heading panel-heading-large"
@@ -180,7 +180,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                 <input type="hidden" th:field="*{required}" />
                                                                 <input type="hidden" th:field="*{maxLength}" />
                                                                 <input type="text" th:required="*{required}"
-                                                                       th:if="*{type} == 'text' and !${readOnly}"
+                                                                       th:if="(*{type} == 'text' or *{type} == 'email') and !${readOnly}"
                                                                        th:maxlength="*{maxLength}" data-toggle="tooltip"
                                                                        class="form-control" th:field="*{value}"
                                                                        th:title="${#fields.hasErrors('value')} ? ${#fields.errors('value')[0]}" />
@@ -229,7 +229,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                             </div>
                         </div>
-                        <!-- Tâches disponibles -->
+                        <!-- TÃ¢ches disponibles -->
                         <div class="col-lg-4">
                             <div class="panel panel-default">
                                 <div class="panel-heading panel-heading-large" th:text="#{processDetails.panels.availableTasks.title}">{tasks available}</div>
@@ -271,7 +271,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <div class="panel-body">
                                                     <div class="row">
                                                         <div class="col-lg-12">
-                                                            Copie des fichiers dans un répertoire local ou réseau.
+                                                            Copie des fichiers dans un rÃ©pertoire local ou rÃ©seau.
                                                         </div>
 
                                                     </div>
