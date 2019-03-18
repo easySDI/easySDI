@@ -1,0 +1,30 @@
+/*
+CSS file used by mPDF for reports
+CSS properties must be set separately (no groupped properties)
+*/
+body{
+    font-family:DejaVuSans;
+    font-size: 10px;
+}
+
+h1{
+    font-weight: normal;
+}
+
+h2{
+    font-weight: normal;
+}
+
+table{
+    border: none;
+    border-spacing : 0;
+    border-collapse : collapse;
+    width: 100%;
+}
+
+th,td{
+    padding: 5px;
+    border: solid;
+    border-width: 1px;
+    border-color: grey;
+}

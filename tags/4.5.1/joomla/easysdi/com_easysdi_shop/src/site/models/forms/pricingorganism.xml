@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="fixed_fees">
+        <field name="fixed_fee_te" 
+               type="text" 
+               size="6" 
+               class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGORGANISM_ORDER_FIXED_COSTS_TE"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGORGANISM_ORDER_FIXED_COSTS_TE"
+               default="0" />
+        <field name="fixed_fee_apply_vat" 
+               type="radio" 
+               class="btn-group btn-group-yesno"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGORGANISM_FIXED_FEE_APPLY_VAT"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGORGANISM_FIXED_FEE_APPLY_VAT"
+               default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        
+        <field name="data_free_fixed_fee" 
+               type="radio" 
+               class="btn-group btn-group-yesno"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGORGANISM_FIXED_COSTS_IF_DATA_FREE"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGORGANISM_FIXED_COSTS_IF_DATA_FREE"
+               default="0">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+    </fieldset>
+    <fieldset name="internal_orders">
+        <field name="internal_free" 
+               type="radio" 
+               class="btn-group btn-group-yesno"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGORGANISM_INTERNAL_FREE"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGORGANISM_INTERNAL_FREE"
+               default="0">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+    </fieldset>    
+</form>
