@@ -91,6 +91,7 @@
     <fieldset name="orderuser">
         <field name="username"
                type="text"
+               autocomplete="off"
                size="40" 
                class="inputbox"
                label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_USERNAME"
@@ -99,6 +100,7 @@
         
         <field name="clearpassword"
                type="password"
+               autocomplete="off"
                size="40" 
                class="inputbox"
                label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PASSWORD"
@@ -107,6 +109,7 @@
         
         <field name="confirmpassword"
                type="password"
+               autocomplete="off"
                size="40" 
                class="inputbox"
                label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PASSWORDCONFIRM"
