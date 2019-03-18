@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+        <!-- main component config -->
+	<fieldset name="component"
+		  label="COM_EASYSDI_CATALOG_COMPONENT_LABEL"
+		  description="COM_EASYSDI_CATALOG_COMPONENT_DESC">
+
+            <field name="catalogurl"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_CATALOGURL"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_CATALOGURL">
+            </field>
+
+            <field name="defaultlanguage" 
+                   type="sql" 
+                   class="inputbox input-xlarge"
+                   multiple="false"
+                   required ="true"
+                   default="9"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_LANGUAGE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_LANGUAGE" 
+                   query="SELECT id, value FROM #__sdi_language WHERE state=1 ORDER BY ordering" 
+                   key_field="id" 
+                   value_field="value" />          
+
+            <field name="languages" 
+                   type="sql" 
+                   class="multiselect input-xxlarge"
+                   multiple="true"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_LANGUAGES"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_LANGUAGES" 
+                   query="SELECT id, value FROM #__sdi_language WHERE state=1 ORDER BY ordering" 
+                   key_field="id" 
+                   value_field="value"  /> 
+            
+            <field name="isolanguage" 
+                   type="sql" 
+                   translate="true" 
+                   class="inputbox input-xlarge"
+                   multiple="false"
+                   required ="true"
+                   default="2"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_ISOLANGUAGE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_ISOLANGUAGE" 
+                   query="SELECT id, value FROM #__sdi_sys_isolanguage WHERE state=1 ORDER BY ordering" 
+                   key_field="id" 
+                   value_field="value" />
+           
+            <field name="searchresultpaginationnumber"
+                   type="text"
+                   default="20"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_SEARCHRESULTNB"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_SEARCHRESULTNB" />
+           
+            <field name="rootXSLfile"
+                   type="filelist"
+                   default="20"
+                   class="inputbox input-xlarge"
+                   required ="false"
+                   size="500"
+                   directory="media/easysdi/catalog/xsl" 
+                   filter="" 
+                   exclude="" 
+                   stripext=""
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_ROOTXSLFILE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_ROOTXSLFILE" />
+           
+            <field name="iframewidth"
+                   type="text"
+                   default="600"
+                   size="100"
+                   required="true"         
+                   label="COM_EASYSDI_CATALOG_LBL_IFRAME_WIDTH"
+                   description="COM_EASYSDI_CATALOG_DESC_IFRAME_WIDTH" />
+        
+            <field name="iframeheight"
+                   type="text"
+                   default="400"
+                   size="100"
+                   required="true"             
+                   label="COM_EASYSDI_CATALOG_IFRAME_HEIGHT"
+                   description="COM_EASYSDI_CATALOG_DESC_IFRAME_HEIGHT" />
+           
+            <field name="metadataencodingcode"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_ENCODINGCODE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_ENCODINGCODE" />
+           
+            <field name="metadataencodingvalue"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_ENCODINGVALUE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_ENCODINGVALUE" />
+           
+           
+            <field name="idogcsearchfield"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_IDOGCSEARCHFILTER"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_IDOGCSEARCHFILTER" />
+           
+            <field name="metadatatitlexpath"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="false"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_METADATATITLEXPATH"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_METADATATITLEXPATH" />
+           
+            <field name="thesaurusurl"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="false"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_THESAURUSURL"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_THESAURUSURL" />
+           
+            <field name="versionnameformat"
+                   type="list"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_VERSIONNAMEFORMAT"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_VERSIONNAMEFORMAT"
+                   class="inputbox"
+                   size="1"
+                   default="1">
+                   <option value="Y-m-d H:i:s">Y-m-d H:i:s</option>
+                   <option value="Y-m-d">Y-m-d</option>
+            </field>
+           
+            <field name="linkedfilerepository"
+                   type="folderlist"
+                   directory="media/easysdi"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="false"
+                   size="500"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_LINKEDFILEREPOSITORY"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_LINKEDFILEREPOSITORY" />
+           
+            <field name="linkedfilebaseurl"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="false"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_LINKEDFILEBASEURL"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_LINKEDFILEBASEURL" />
+           
+            <field name="editmetadatafieldsetstate"
+                   type="list"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_FIELDSET_STATE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_FIELDSET_STATE"
+                   class="inputbox"
+                   size="1"
+                   default="allopen">
+                   <option value="allopen">COM_EASYSDI_CATALOG_CONFIG_FIELDSET_STATE_ALLOPEN</option>
+                   <option value="allclose">COM_EASYSDI_CATALOG_CONFIG_FIELDSET_STATE_ALLCLOSE</option>
+            </field>
+            
+            <field name="sitemapresourcestype"
+                   type="sql" 
+                   class="inputbox input-xlarge"
+                   multiple="true"
+                   query="SELECT id, name FROM #__sdi_resourcetype WHERE state=1 ORDER BY ordering"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_SITEMAPRESOURCESTYPE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_SITEMAPRESOURCESTYPE"
+                   key_field="id"
+                   value_field="name" />
+            
+            <field name="sitemapextraparameters"
+                   type="text"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_SITEMAPEXTRAPARAMETERS"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_SITEMAPEXTRAPARAMETERS" />
+            
+            <field name="sitemappriority"
+                   type="list"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_SITEMAPPRIORITY"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_SITEMAPPRIORITY"
+                   default="0.5">
+                
+                   <option value="0">0</option>
+                   <option value="0.1">0.1</option>
+                   <option value="0.2">0.2</option>
+                   <option value="0.3">0.3</option>
+                   <option value="0.4">0.4</option>
+                   <option value="0.5">0.5</option>
+                   <option value="0.6">0.6</option>
+                   <option value="0.7">0.7</option>
+                   <option value="0.8">0.8</option>
+                   <option value="0.9">0.9</option>
+                   <option value="1">1</option>
+            </field>
+            
+            <field name="assignenabled"
+                   type="radio"
+                   class="btn-group"
+                   default="0"
+                   label="COM_EASYSDI_CATALOG_ASSIGN_ENABLED_LBL"
+                   description="COM_EASYSDI_CATALOG_ASSIGN_ENABLED_DESC">
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+            </field>
+            
+            <field name="synchronizeenabled"
+                   type="radio"
+                   class="btn-group"
+                   default="0"
+                   label="COM_EASYSDI_CATALOG_SYNCHRONIZE_ENABLED_LBL"
+                   description="COM_EASYSDI_CATALOG_SYNCHRONIZE_ENABLED_DESC">
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+            </field>
+            
+            <field name="notificationsenabled"
+                   type="radio"
+                   class="btn-group"
+                   default="1"
+                   label="COM_EASYSDI_CATALOG_NOTIFICATIONS_ENABLED_LBL"
+                   description="COM_EASYSDI_CATALOG_NOTIFICATIONS_ENABLED_DESC">
+                   <option value="0">JNO</option>
+                   <option value="1">JYES</option>
+            </field>            
+
+	</fieldset>
+        
+        <!-- pre-defined boundary config -->
+        <fieldset name="predefinedboundary"
+        label="COM_EASYSDI_CATALOG_CONFIG_PREDEFINEDBOUNDARY_LABEL"
+		  description="COM_EASYSDI_CATALOG_CONFIG_PREDEFINEDBOUNDARY_DESC">
+            
+            <field name="catalogmap" 
+                   type="sql" 
+                   class="inputbox input-xlarge"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_CATALOGMAP"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_CATALOGMAP" 
+                   query="SELECT null as id, null as name UNION SELECT id, name FROM #__sdi_map WHERE state=1" 
+                   key_field="id" 
+                   value_field="name" />
+
+        </fieldset>
+        
+        <!-- MD sheet export configuration -->
+        <fieldset name="conf_export"
+		 label="COM_EASYSDI_CATALOG_CONF_EXPORT_LABEL"
+		 description="COM_EASYSDI_CATALOG_CONF_EXPORT_DESC" >
+            
+            <field name="pdfexportcss"
+                   type="textarea"
+                   filter="raw"
+                   default=""
+                   rows="15" cols="100" 
+                   class="input-xxlarge"
+                   label="COM_EASYSDI_CATALOG_PDF_EXPORT_CSS_LBL"
+                   description="COM_EASYSDI_CATALOG_PDF_EXPORT_CSS_DESC" /> 
+            
+        </fieldset>
+
+        <!-- component permisssions -->
+	<fieldset name="permissions"
+		  description="JCONFIG_PERMISSIONS_DESC"
+                  label="JCONFIG_PERMISSIONS_LABEL" >
+            
+	    <field name="rules" 
+                   type="rules"
+                   component="com_easysdi_catalog"
+                   class="inputbox"
+                   filter="rules"
+                   validate="rules"
+                   label="JCONFIG_PERMISSIONS_LABEL"
+                   section="component" />
+            
+	</fieldset>
+
+</config>
