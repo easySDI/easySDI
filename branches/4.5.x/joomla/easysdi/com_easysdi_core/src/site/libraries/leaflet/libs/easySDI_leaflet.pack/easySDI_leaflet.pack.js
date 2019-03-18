@@ -11360,6 +11360,285 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
      return _this;
 
  }
+L.Control.Fullscreen=L.Control.extend({options:{position:"topleft",title:{"false":"View Fullscreen","true":"Exit Fullscreen"}},onAdd:function(map){var container=L.DomUtil.create("div","leaflet-control-fullscreen leaflet-bar leaflet-control");this.link=L.DomUtil.create("a","leaflet-control-fullscreen-button leaflet-bar-part",container);this.link.href="#";this._map=map;this._map.on("fullscreenchange",this._toggleTitle,this);this._toggleTitle();L.DomEvent.on(this.link,"click",this._click,this);return container},_click:function(e){L.DomEvent.stopPropagation(e);L.DomEvent.preventDefault(e);this._map.toggleFullscreen(this.options)},_toggleTitle:function(){this.link.title=this.options.title[this._map.isFullscreen()]}});L.Map.include({isFullscreen:function(){return this._isFullscreen||false},toggleFullscreen:function(options){var container=this.getContainer();if(this.isFullscreen()){if(options&&options.pseudoFullscreen){this._disablePseudoFullscreen(container)}else if(document.exitFullscreen){document.exitFullscreen()}else if(document.mozCancelFullScreen){document.mozCancelFullScreen()}else if(document.webkitCancelFullScreen){document.webkitCancelFullScreen()}else if(document.msExitFullscreen){document.msExitFullscreen()}else{this._disablePseudoFullscreen(container)}}else{if(options&&options.pseudoFullscreen){this._enablePseudoFullscreen(container)}else if(container.requestFullscreen){container.requestFullscreen()}else if(container.mozRequestFullScreen){container.mozRequestFullScreen()}else if(container.webkitRequestFullscreen){container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT)}else if(container.msRequestFullscreen){container.msRequestFullscreen()}else{this._enablePseudoFullscreen(container)}}},_enablePseudoFullscreen:function(container){L.DomUtil.addClass(container,"leaflet-pseudo-fullscreen");this._setFullscreen(true);this.fire("fullscreenchange")},_disablePseudoFullscreen:function(container){L.DomUtil.removeClass(container,"leaflet-pseudo-fullscreen");this._setFullscreen(false);this.fire("fullscreenchange")},_setFullscreen:function(fullscreen){this._isFullscreen=fullscreen;var container=this.getContainer();if(fullscreen){L.DomUtil.addClass(container,"leaflet-fullscreen-on")}else{L.DomUtil.removeClass(container,"leaflet-fullscreen-on")}this.invalidateSize()},_onFullscreenChange:function(e){var fullscreenElement=document.fullscreenElement||document.mozFullScreenElement||document.webkitFullscreenElement||document.msFullscreenElement;if(fullscreenElement===this.getContainer()&&!this._isFullscreen){this._setFullscreen(true);this.fire("fullscreenchange")}else if(fullscreenElement!==this.getContainer()&&this._isFullscreen){this._setFullscreen(false);this.fire("fullscreenchange")}}});L.Map.mergeOptions({fullscreenControl:false});L.Map.addInitHook(function(){if(this.options.fullscreenControl){this.fullscreenControl=new L.Control.Fullscreen(this.options.fullscreenControl);this.addControl(this.fullscreenControl)}var fullscreenchange;if("onfullscreenchange"in document){fullscreenchange="fullscreenchange"}else if("onmozfullscreenchange"in document){fullscreenchange="mozfullscreenchange"}else if("onwebkitfullscreenchange"in document){fullscreenchange="webkitfullscreenchange"}else if("onmsfullscreenchange"in document){fullscreenchange="MSFullscreenChange"}if(fullscreenchange){var onFullscreenChange=L.bind(this._onFullscreenChange,this);this.whenReady(function(){L.DomEvent.on(document,fullscreenchange,onFullscreenChange)});this.on("unload",function(){L.DomEvent.off(document,fullscreenchange,onFullscreenChange)})}});L.control.fullscreen=function(options){return new L.Control.Fullscreen(options)};
+/* global define, XMLHttpRequest */
+
+const f = function fFunc(factory, window) {
+    // Universal Module Definition
+    if (typeof define === 'function' && define.amd) {
+        define(['leaflet'], factory)
+    } else if (typeof module !== 'undefined') {
+        // Node/CommonJS
+        module.exports = factory(require('leaflet'))
+    } else {
+        // Browser globals
+        if (typeof window.L === 'undefined') {
+            throw new Error('Leaflet must be loaded first')
+        }
+        factory(window.L)
+    }
+}
+
+const factory = function factoryFunc(L) {
+    L.GeocoderBAN = L.Control.extend({
+        options: {
+            position: 'topleft',
+            placeholder: 'adresse',
+            geographicalPriority: false,
+            resultsNumber: 7,
+            geographicalPriorityNumber: 300,
+            collapsed: true,
+            serviceUrl: 'https://api-adresse.data.gouv.fr/search/',
+            minIntervalBetweenRequests: 250,
+            defaultMarkgeocode: true,
+            autofocus: true
+        },
+        includes: /*L.Evented.prototype ||*/ L.Mixin.Events,
+        initialize: function(options) {
+            L.Util.setOptions(this, options)
+        },
+        onRemove: function(map) {
+            map.off('click', this.collapseHack, this)
+        },
+        onAdd: function(map) {
+            var className = 'leaflet-control-geocoder-ban'
+            var container = this.container = L.DomUtil.create('div', className + ' leaflet-bar')
+            var icon = this.icon = L.DomUtil.create('button', className + '-icon', container)
+            var form = this.form = L.DomUtil.create('div', className + '-form', container)
+            var input
+
+            map.on('click', this.collapseHack, this)
+
+            icon.innerHTML = '&nbsp;'
+            icon.type = 'button'
+
+            input = this.input = L.DomUtil.create('input', '', form)
+            input.type = 'text'
+            input.placeholder = this.options.placeholder
+
+            this.alts = L.DomUtil.create('ul',
+                className + '-alternatives ' + className + '-alternatives-minimized',
+                container)
+
+            L.DomEvent.on(icon, 'click', function(e) {
+                this.toggle()
+                L.DomEvent.preventDefault(e)
+            }, this)
+            L.DomEvent.addListener(input, 'keyup', this.keyup, this)
+
+            L.DomEvent.disableScrollPropagation(container)
+            L.DomEvent.disableClickPropagation(container)
+
+            if (!this.options.collapsed) {
+                this.expand()
+                if (this.options.autofocus) {
+                    setTimeout(function() { input.focus() }, 250)
+                }
+            }
+            return container
+        },
+        toggle: function() {
+            if (L.DomUtil.hasClass(this.container, 'leaflet-control-geocoder-ban-expanded')) {
+                this.collapse()
+            } else {
+                this.expand()
+            }
+        },
+        expand: function() {
+            L.DomUtil.addClass(this.container, 'leaflet-control-geocoder-ban-expanded')
+            if (this.geocodeMarker) {
+                this._map.removeLayer(this.geocodeMarker)
+            }
+            this.input.select()
+        },
+        collapse: function() {
+            L.DomUtil.removeClass(this.container, 'leaflet-control-geocoder-ban-expanded')
+            L.DomUtil.addClass(this.alts, 'leaflet-control-geocoder-ban-alternatives-minimized')
+            this.input.blur()
+        },
+        collapseHack: function(e) {
+            // leaflet bug (see #5507) before v1.1.0 that converted enter keypress to click.
+            if (e.originalEvent instanceof MouseEvent) {
+                this.collapse()
+            }
+        },
+        moveSelection: function(direction) {
+            var s = document.getElementsByClassName('leaflet-control-geocoder-ban-selected')
+            var el
+            if (!s.length) {
+                el = this.alts[direction < 0 ? 'firstChild' : 'lastChild']
+                L.DomUtil.addClass(el, 'leaflet-control-geocoder-ban-selected')
+            } else {
+                var currentSelection = s[0]
+                L.DomUtil.removeClass(currentSelection, 'leaflet-control-geocoder-ban-selected')
+                if (direction > 0) {
+                    el = currentSelection.previousElementSibling ? currentSelection.previousElementSibling : this.alts['lastChild']
+                } else {
+                    el = currentSelection.nextElementSibling ? currentSelection.nextElementSibling : this.alts['firstChild']
+                }
+            }
+            if (el) {
+                L.DomUtil.addClass(el, 'leaflet-control-geocoder-ban-selected')
+            }
+        },
+        keyup: function(e) {
+            switch (e.keyCode) {
+                case 27:
+                    // escape
+                    this.collapse()
+                    L.DomEvent.preventDefault(e)
+                    break
+                case 38:
+                    // down
+                    this.moveSelection(1)
+                    L.DomEvent.preventDefault(e)
+                    break
+                case 40:
+                    // up
+                    this.moveSelection(-1)
+                    L.DomEvent.preventDefault(e)
+                    break
+                case 13:
+                    // enter
+                    var s = document.getElementsByClassName('leaflet-control-geocoder-ban-selected')
+                    if (s.length) {
+                        this.geocodeResult(s[0].geocodedFeatures)
+                    }
+                    L.DomEvent.preventDefault(e)
+                    break
+                default:
+                    if (this.input.value) {
+                        var limit = this.options.resultsNumber;
+                        if (this.options.geographicalPriority) {
+                            limit = this.options.geographicalPriorityNumber;
+                        }
+                        var params = { q: this.input.value, limit: limit };
+                        var t = this
+                        if (this.setTimeout) {
+                            clearTimeout(this.setTimeout)
+                        }
+                        // avoid responses collision if typing quickly
+                        var that = this;
+                        this.setTimeout = setTimeout(function() {
+                            var map_center;
+                            if (t.options.geographicalPriority) {
+                                map_center = that._map.getCenter();
+                                params.lat = map_center.lat;
+                                params.lon = map_center.lng;
+                            }
+                            getJSON(t.options.serviceUrl, params, t.displayResults(t))
+                        }, this.options.minIntervalBetweenRequests)
+                    } else {
+                        this.clearResults()
+                    }
+                    L.DomEvent.preventDefault(e)
+            }
+        },
+        clearResults: function() {
+            while (this.alts.firstChild) {
+                this.alts.removeChild(this.alts.firstChild)
+            }
+        },
+        displayResults: function(t) {
+            t.clearResults()
+            var that = this;
+            return function(res) {
+                if (res && res.features) {
+                    var features;
+                    if (t.options.geographicalPriority) {
+                        map = that._map;
+                        features = [];
+                        var map_bounds = map.getBounds();
+
+                        for (var i = 0; i < res.features.length; i++) {
+                            var feature = res.features[i];
+                            var coord = feature.geometry.coordinates;
+                            if (map_bounds._northEast.lat >= coord[1] &&
+                                map_bounds._northEast.lng >= coord[0] &&
+                                map_bounds._southWest.lng <= coord[0] &&
+                                map_bounds._southWest.lat <= coord[1]
+                            ) {
+                                features.push(feature);
+                            }
+                        }
+
+                    } else {
+                        features = res.features;
+                    }
+                    L.DomUtil.removeClass(t.alts, 'leaflet-control-geocoder-ban-alternatives-minimized')
+                    for (var i = 0; i < Math.min(features.length, t.options.resultsNumber); i++) {
+                        t.alts.appendChild(t.createAlt(features[i], i))
+                    }
+                }
+            }
+        },
+        createAlt: function(feature, index) {
+            var li = L.DomUtil.create('li', '')
+            var a = L.DomUtil.create('a', '', li)
+            li.setAttribute('data-result-index', index)
+            a.innerHTML = '<strong>' + feature.properties.label + '</strong>, ' + feature.properties.context
+            li.geocodedFeatures = feature
+            var clickHandler = function(e) {
+                this.collapse()
+                this.geocodeResult(feature)
+            }
+            var mouseOverHandler = function(e) {
+                var s = document.getElementsByClassName('leaflet-control-geocoder-ban-selected')
+                if (s.length) {
+                    L.DomUtil.removeClass(s[0], 'leaflet-control-geocoder-ban-selected')
+                }
+                L.DomUtil.addClass(li, 'leaflet-control-geocoder-ban-selected')
+            }
+            var mouseOutHandler = function(e) {
+                L.DomUtil.removeClass(li, 'leaflet-control-geocoder-ban-selected')
+            }
+            L.DomEvent.on(li, 'click', clickHandler, this)
+            L.DomEvent.on(li, 'mouseover', mouseOverHandler, this)
+            L.DomEvent.on(li, 'mouseout', mouseOutHandler, this)
+            return li
+        },
+        geocodeResult: function(feature) {
+            this.collapse()
+            this.markGeocode(feature)
+        },
+        markGeocode: function(feature) {
+            var latlng = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]]
+            this._map.setView(latlng, 14)
+            this.geocodeMarker = new L.Marker(latlng)
+                .bindPopup(feature.properties.label)
+                .addTo(this._map)
+                .openPopup()
+        }
+    })
+
+    const getJSON = function(url, params, callback) {
+        var xmlHttp = new XMLHttpRequest()
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState !== 4) {
+                return
+            }
+            if (xmlHttp.status !== 200 && xmlHttp.status !== 304) {
+                return
+            }
+            callback(JSON.parse(xmlHttp.response))
+        }
+        xmlHttp.open('GET', url + L.Util.getParamString(params), true)
+        xmlHttp.setRequestHeader('Accept', 'application/json')
+        xmlHttp.send(null)
+    }
+
+    L.geocoderBAN = function(options) {
+        return new L.GeocoderBAN(options)
+    }
+    return L.GeocoderBAN
+};
+
+f(factory, window);
+/*! Version: 0.62.0
+Copyright (c) 2016 Dominik Moritz */
+
+!function(t,i){"function"==typeof define&&define.amd?define(["leaflet"],t):"object"==typeof exports&&(void 0!==i&&i.L?module.exports=t(L):module.exports=t(require("leaflet"))),void 0!==i&&i.L&&(i.L.Control.Locate=t(L))}(function(t){var i=function(i,o,s){(s=s.split(" ")).forEach(function(s){t.DomUtil[i].call(this,o,s)})},o=function(t,o){i("addClass",t,o)},s=function(t,o){i("removeClass",t,o)},e=t.Control.extend({options:{position:"topleft",layer:void 0,setView:"untilPan",keepCurrentZoomLevel:!1,flyTo:!1,clickBehavior:{inView:"stop",outOfView:"setView"},returnToPrevBounds:!1,cacheLocation:!0,drawCircle:!0,drawMarker:!0,markerClass:t.CircleMarker,circleStyle:{color:"#136AEC",fillColor:"#136AEC",fillOpacity:.15,weight:2,opacity:.5},markerStyle:{color:"#136AEC",fillColor:"#2A93EE",fillOpacity:.7,weight:2,opacity:.9,radius:5},followCircleStyle:{},followMarkerStyle:{},icon:"fa fa-map-marker",iconLoading:"fa fa-spinner fa-spin",iconElementTag:"span",circlePadding:[0,0],metric:!0,createButtonCallback:function(i,o){var s=t.DomUtil.create("a","leaflet-bar-part leaflet-bar-part-single",i);return s.title=o.strings.title,{link:s,icon:t.DomUtil.create(o.iconElementTag,o.icon,s)}},onLocationError:function(t,i){alert(t.message)},onLocationOutsideMapBounds:function(t){t.stop(),alert(t.options.strings.outsideMapBoundsMsg)},showPopup:!0,strings:{title:"Localisez moi",metersUnit:"meters",feetUnit:"feet",popup:"Vous êtes dans un rayon de {distance} m de ce point",outsideMapBoundsMsg:"Vous êtes en dehors des limites de cette carte"},locateOptions:{maxZoom:1/0,watch:!0,setView:!1}},initialize:function(i){for(var o in i)"object"==typeof this.options[o]?t.extend(this.options[o],i[o]):this.options[o]=i[o];this.options.followMarkerStyle=t.extend({},this.options.markerStyle,this.options.followMarkerStyle),this.options.followCircleStyle=t.extend({},this.options.circleStyle,this.options.followCircleStyle)},onAdd:function(i){var o=t.DomUtil.create("div","leaflet-control-locate leaflet-bar leaflet-control");this._layer=this.options.layer||new t.LayerGroup,this._layer.addTo(i),this._event=void 0,this._prevBounds=null;var s=this.options.createButtonCallback(o,this.options);return this._link=s.link,this._icon=s.icon,t.DomEvent.on(this._link,"click",t.DomEvent.stopPropagation).on(this._link,"click",t.DomEvent.preventDefault).on(this._link,"click",this._onClick,this).on(this._link,"dblclick",t.DomEvent.stopPropagation),this._resetVariables(),this._map.on("unload",this._unload,this),o},_onClick:function(){if(this._justClicked=!0,this._userPanned=!1,this._active&&!this._event)this.stop();else if(this._active&&void 0!==this._event)switch(this._map.getBounds().contains(this._event.latlng)?this.options.clickBehavior.inView:this.options.clickBehavior.outOfView){case"setView":this.setView();break;case"stop":this.stop(),this.options.returnToPrevBounds&&(this.options.flyTo?this._map.flyToBounds:this._map.fitBounds).bind(this._map)(this._prevBounds)}else this.options.returnToPrevBounds&&(this._prevBounds=this._map.getBounds()),this.start();this._updateContainerStyle()},start:function(){this._activate(),this._event&&(this._drawMarker(this._map),this.options.setView&&this.setView()),this._updateContainerStyle()},stop:function(){this._deactivate(),this._cleanClasses(),this._resetVariables(),this._removeMarker()},_activate:function(){this._active||(this._map.locate(this.options.locateOptions),this._active=!0,this._map.on("locationfound",this._onLocationFound,this),this._map.on("locationerror",this._onLocationError,this),this._map.on("dragstart",this._onDrag,this))},_deactivate:function(){this._map.stopLocate(),this._active=!1,this.options.cacheLocation||(this._event=void 0),this._map.off("locationfound",this._onLocationFound,this),this._map.off("locationerror",this._onLocationError,this),this._map.off("dragstart",this._onDrag,this)},setView:function(){if(this._drawMarker(),this._isOutsideMapBounds())this._event=void 0,this.options.onLocationOutsideMapBounds(this);else if(this.options.keepCurrentZoomLevel)(t=this.options.flyTo?this._map.flyTo:this._map.panTo).bind(this._map)([this._event.latitude,this._event.longitude]);else{var t=this.options.flyTo?this._map.flyToBounds:this._map.fitBounds;t.bind(this._map)(this._event.bounds,{padding:this.options.circlePadding,maxZoom:this.options.locateOptions.maxZoom})}},_drawMarker:function(){void 0===this._event.accuracy&&(this._event.accuracy=0);var i=this._event.accuracy,o=this._event.latlng;if(this.options.drawCircle){var s=this._isFollowing()?this.options.followCircleStyle:this.options.circleStyle;this._circle?this._circle.setLatLng(o).setRadius(i).setStyle(s):this._circle=t.circle(o,i,s).addTo(this._layer)}var e,n;if(this.options.metric?(e=i.toFixed(0),n=this.options.strings.metersUnit):(e=(3.2808399*i).toFixed(0),n=this.options.strings.feetUnit),this.options.drawMarker){var a=this._isFollowing()?this.options.followMarkerStyle:this.options.markerStyle;this._marker?(this._marker.setLatLng(o),this._marker.setStyle&&this._marker.setStyle(a)):this._marker=new this.options.markerClass(o,a).addTo(this._layer)}var r=this.options.strings.popup;this.options.showPopup&&r&&this._marker&&this._marker.bindPopup(t.Util.template(r,{distance:e,unit:n}))._popup.setLatLng(o)},_removeMarker:function(){this._layer.clearLayers(),this._marker=void 0,this._circle=void 0},_unload:function(){this.stop(),this._map.off("unload",this._unload,this)},_onLocationError:function(t){3==t.code&&this.options.locateOptions.watch||(this.stop(),this.options.onLocationError(t,this))},_onLocationFound:function(t){if((!this._event||this._event.latlng.lat!==t.latlng.lat||this._event.latlng.lng!==t.latlng.lng||this._event.accuracy!==t.accuracy)&&this._active){switch(this._event=t,this._drawMarker(),this._updateContainerStyle(),this.options.setView){case"once":this._justClicked&&this.setView();break;case"untilPan":this._userPanned||this.setView();break;case"always":this.setView()}this._justClicked=!1}},_onDrag:function(){this._event&&(this._userPanned=!0,this._updateContainerStyle(),this._drawMarker())},_isFollowing:function(){return!!this._active&&("always"===this.options.setView||("untilPan"===this.options.setView?!this._userPanned:void 0))},_isOutsideMapBounds:function(){return void 0!==this._event&&(this._map.options.maxBounds&&!this._map.options.maxBounds.contains(this._event.latlng))},_updateContainerStyle:function(){this._container&&(this._active&&!this._event?this._setClasses("requesting"):this._isFollowing()?this._setClasses("following"):this._active?this._setClasses("active"):this._cleanClasses())},_setClasses:function(t){"requesting"==t?(s(this._container,"active following"),o(this._container,"requesting"),s(this._icon,this.options.icon),o(this._icon,this.options.iconLoading)):"active"==t?(s(this._container,"requesting following"),o(this._container,"active"),s(this._icon,this.options.iconLoading),o(this._icon,this.options.icon)):"following"==t&&(s(this._container,"requesting"),o(this._container,"active following"),s(this._icon,this.options.iconLoading),o(this._icon,this.options.icon))},_cleanClasses:function(){t.DomUtil.removeClass(this._container,"requesting"),t.DomUtil.removeClass(this._container,"active"),t.DomUtil.removeClass(this._container,"following"),s(this._icon,this.options.iconLoading),o(this._icon,this.options.icon)},_resetVariables:function(){this._active=!1,this._justClicked=!1,this._userPanned=!1}});return t.control.locate=function(i){return new t.Control.Locate(i)},e},window);
+//# sourceMappingURL=L.Control.Locate.min.js.map
 var easySDImap;
 
 jQuery(document).ready(function($) {
