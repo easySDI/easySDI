@@ -4,7 +4,7 @@
  * Extract - WebService designed to getOrders and setProduct
  * based on the old webservice (rest)
  * 
- * @version     4.5.0
+ * @version     4.5.1
  * @package     com_easysdi_shop
  * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
