@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.1
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -193,6 +193,38 @@ class Easysdi_dashboardHelper {
     }
 
     /**
+     * Convert durations to minutes, hours, days
+     * @return   Convert durations to minutes, hours, days
+     */
+    public static function DurationConvert($vfnVal, $vfnHoursLimit = 2880) {
+        if ($vfnVal < 0) {
+            $vfnVal = 0;
+        }
+        if ($vfnVal == 0) {
+            $vfnVal = "< 1";
+        }
+        $vResult = $vfnVal . " " . JText::_('COM_EASYSDI_DASHBOARD_SHOP_DURATION_MINUTES');
+        if ($vfnVal > 60) {
+            $vResult = round($vfnVal / 60, 1) . " " . JText::_('COM_EASYSDI_DASHBOARD_SHOP_DURATION_HOURS');
+        }
+        if ($vfnVal > $vfnHoursLimit) {
+            $vResult = round($vfnVal / 1440, 1) . " " . JText::_('COM_EASYSDI_DASHBOARD_SHOP_DURATION_DAYS');
+        }
+        return $vResult;
+    }
+    
+    /**
+     * Replace specials filters keys of headers
+     * @return   Replace specials keys of headers
+     */
+    public static function HeaderReplaceKeys($vfnVal) {
+				$vfnVal=str_replace("_EXVIEW","",$vfnVal);
+				$vfnVal=str_replace("_EXPDF","",$vfnVal);
+				$vfnVal=str_replace("_EXCSV","",$vfnVal);
+        return $vfnVal;
+    }    
+
+    /**
      * get organism list for back-end dashboard
      * @return a JHTML select
      */
@@ -238,8 +270,10 @@ class Easysdi_dashboardHelper {
             $sdiUser::extractionresponsible,
             $sdiUser::organismmanager)
         as $roleId) {
-            foreach ($sdiUser->role[$roleId] as $org) {
-                $tmpOrgList[$org->id] = $org->name;
+            if (isset($sdiUser->role[$roleId])) {
+                foreach ($sdiUser->role[$roleId] as $org) {
+                    $tmpOrgList[$org->id] = $org->name;
+                }
             }
         }
         //alpha sort
@@ -272,11 +306,12 @@ class Easysdi_dashboardHelper {
     }
 
     private static function getCustomDateFilterFrom() {
-        return JHTML::_('calendar', null, 'sdi-dashboard-custom-from', 'sdi-dashboard-custom-from', '%Y-%m-%d', array('onchange' => 'triggerFilterUpdate();', 'placeholder' => JText::_('COM_EASYSDI_DASHBOARD_TIME_CUSTOM_FROM')));
+        return JHTML::_('calendar', null, 'sdi-dashboard-custom-from', 'sdi-dashboard-custom-from', '%Y-%m-%d', array('onChange' => 'triggerFilterUpdate();', 'placeholder' => JText::_('COM_EASYSDI_DASHBOARD_TIME_CUSTOM_FROM')));
     }
 
     private static function getCustomDateFilterTo() {
-        return JHTML::_('calendar', null, 'sdi-dashboard-custom-to', 'sdi-dashboard-custom-to', '%Y-%m-%d', array('onchange' => 'triggerFilterUpdate();', 'placeholder' => JText::_('COM_EASYSDI_DASHBOARD_TIME_CUSTOM_TO')));
+        return JHTML::_('calendar', null, 'sdi-dashboard-custom-to', 'sdi-dashboard-custom-to', '%Y-%m-%d', array('onChange' => 'triggerFilterUpdate();', 'placeholder' => JText::_('COM_EASYSDI_DASHBOARD_TIME_CUSTOM_TO')));
     }
 
 }
+

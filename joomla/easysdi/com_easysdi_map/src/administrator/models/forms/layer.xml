@@ -35,7 +35,7 @@
             type="sql" 
             class="multiselect input-xxlarge"
             multiple="true"
-            label=""
+            label=""  
             description="" 
             query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
             key_field="id" 
@@ -199,7 +199,6 @@
                 class="inputbox"
                 rows="10"
                 cols="10"
-                disabled = "true"
                 filter="safehtml"
                 label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOLOPTIONS"
                 description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ASOLOPTIONS"  />

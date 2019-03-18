@@ -57,7 +57,7 @@ body.easySDImapPrint .leaflet-control-attribution{
   display:none !important;
 }
 
-body.easySDImapPrint #sidebar {
+body.easySDImapPrint .sidebar {
   display:none !important;
 }
 

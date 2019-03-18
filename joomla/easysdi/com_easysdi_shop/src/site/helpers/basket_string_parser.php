@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.1
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -167,6 +167,19 @@ class Easysdi_shopBasketStringParser {
         $this->searchStrings['{DIRECT_URL}'] = JRoute::_(JURI::base() . 'index.php?option=com_easysdi_shop&view=request&id=' . $this->basket->id);
         $this->searchStrings['{DIRECT_URL_TOKEN}'] = $this->searchStrings['{DIRECT_URL}'];
         $this->searchStrings['{DIFFUSIONS_LIST}'] = $this->getDiffusionsList($limitedDiffusionList);
+        return $this->getReplacedString($strinToReplaceIn);
+    }
+    
+    /**
+     * Returns the string with all ocurences replaced with basket values,
+     * the diffusion is limited by the ids passed as a parameter
+     * (a supplier has to get only his diffusions)
+     * @param string $strinToReplaceIn original string
+     * @param integer[] $limitedDiffusionList an aray of intergers containing the authorized diffusions
+     * @return string The string with all matching occurences replaced
+     */
+    public function getReplacedStringForOTP($strinToReplaceIn, $otp) {
+        $this->searchStrings['{OTP}'] = $otp;
         return $this->getReplacedString($strinToReplaceIn);
     }
 

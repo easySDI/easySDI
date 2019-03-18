@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.easysdi</groupId>
     <artifactId>easysdi</artifactId>
-    <version>4.4.3</version>
+    <version>4.5.1</version>
     <packaging>pom</packaging>
     <name>easysdi</name>
  
@@ -188,6 +188,16 @@
     </build>
     
     <modules>
+        <module>extract-interface</module>
+        <module>extract-connector-easysdiv4</module>
+        <module>extract-task-archive</module>
+		<module>extract-task-email</module>
+        <module>extract-task-fmedesktop</module>
+        <module>extract-task-fmeserver</module>
+		<module>extract-task-reject</module>
+        <module>extract-task-remark</module>
+        <module>extract-task-validation</module>
+        <module>extract</module>
         <module>monitor</module>
         <module>proxy</module>
     </modules>

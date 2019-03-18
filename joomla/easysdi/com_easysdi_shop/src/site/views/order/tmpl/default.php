@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.1
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -116,4 +116,11 @@ if ($this->item) :
 else:
     echo JText::_('COM_EASYSDI_SHOP_ITEM_NOT_LOADED');
 endif;
+
+//If OTP option is enabled, load the OTP Modal
+if($this->params->get('otpactivated', 0) == 1)
+{
+    echo Easysdi_shopHelper::downloadOTPProductModal(); 
+}
 ?>
+    

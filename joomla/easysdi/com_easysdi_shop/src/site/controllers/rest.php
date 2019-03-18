@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.1
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -275,6 +275,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->update('#__sdi_order_diffusion');
         $query->set('remark = ' . $query->quote($remark));
         $query->set('completed = ' . $query->quote($now));
+        $query->set('storage_id = 1');
         $query->set('file = ' . $query->quote($filename));
         $query->set('size = ' . $size);
         $query->where('id = ' . $orderdiffusionId);

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.1
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -105,14 +105,14 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=diffusion&layout=edit&id=' . $id, false));
             return false;
         }
-        
+
         // Validate the posted data.
         $form = $model->getForm();
         if (!$form) {
             JError::raiseError(500, $model->getError());
             return false;
         }
-        
+
         //Rebuild complete url if storage is URL or ZONING
         if ($data['productstorage_id'] != 1 && $urlvalue = ($data['productstorage_id'] == 2) ? 'fileurl' : 'packageurl') {
             $temp_urlvalue = Easysdi_shopHelper::unparse_url(parse_url($data[$urlvalue]), array(
@@ -121,7 +121,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             ));
             if (!parse_url($data[$urlvalue]) || !parse_url($temp_urlvalue)) {
                 $app->enqueueMessage(JText::sprintf('COM_EASYSDI_SHOP_DOWNLOAD_URL_PARSING_ISSUE', $data[$urlvalue]), 'error');
-                
+
                 // Redirect back to the edit screen.
                 $app->setUserState('com_easysdi_shop.edit.diffusion.data', $data);
                 $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusionmetadata.id');
@@ -296,6 +296,11 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         ;
         $db->setQuery($query);
         $profiles = $db->loadAssocList();
+
+        //special case for empty results
+        if (is_null($profiles[0]["id"])) {
+            $profiles = [["id" => "", "name" => JText::_('COM_EASYSDI_SHOP_FORM_ERROR_NO_PRICING_PROFILE_FOUND'), "affected_diffusion" => null]];
+        }
 
         header('Content-type: application/json');
         echo json_encode($profiles);

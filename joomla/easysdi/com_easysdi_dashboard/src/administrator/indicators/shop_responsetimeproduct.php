@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.1
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -45,7 +45,7 @@ class sdiIndicatorShop_responsetimeproduct extends sdiIndicator {
                             Easysdi_shopHelper::PRODUCTSTATE_REJECTED_SUPPLIER,
                         )) . ')')
                 ->where('o.ordertype_id = 1');
-        if ($db->name == 'mysqli')
+        if ($db->name == "mysqli")
             $query->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ')  < 3600');
         else
             $query->where('DATEDIFF(second,' . $db->quoteName('odif.completed') . ',' . $db->quoteName('o.sent') . ')  < 3600');

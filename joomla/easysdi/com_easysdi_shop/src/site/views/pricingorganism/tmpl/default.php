@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.1
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -53,6 +53,7 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
                         <th><?php echo JText::_('COM_EASYSDI_SHOP_FOR_LBL_PRICING_PROFILE_MIN_PRICE'); ?></th>
                         <th><?php echo JText::_('COM_EASYSDI_SHOP_FOR_LBL_PRICING_PROFILE_MAX_PRICE'); ?></th>
                         <th><?php echo JText::_('COM_EASYSDI_SHOP_FOR_LBL_PRICING_PROFILE_CATEGORIES_FREE'); ?></th>
+                        <th><?php echo JText::_('COM_EASYSDI_SHOP_FOR_LBL_PRICING_PROFILE_COUNT_DIFFUSIONS'); ?></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -67,7 +68,8 @@ $document->addScript(Juri::root(true) . '/components/com_easysdi_shop/helpers/he
                             <td><?php echo $profile->min_fee; ?></td>
                             <td><?php echo $profile->max_fee; ?></td>
                             <td><?php echo (bool) $profile->free_category ? JText::_('JYES') : JText::_('JNO'); ?></td>
-                            <td><?php if ($this->isPricingManager): ?><button type="button" class="btn btn-danger delete" data-id="<?php echo $profile->id; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_DELETE_ITEM'); ?></button><?php endif; ?></td>
+                            <td><?php echo $profile->count_diffusions; ?></td>
+                            <td><?php if ($this->isPricingManager): ?><button type="button" class="btn btn-danger <?php echo $profile->count_diffusions > 0 ? 'disabled' : 'delete'; ?>" data-id="<?php echo $profile->id; ?>"><?php echo JText::_('COM_EASYSDI_SHOP_DELETE_ITEM'); ?></button><?php endif; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
