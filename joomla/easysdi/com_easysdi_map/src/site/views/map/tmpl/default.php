@@ -11,10 +11,11 @@ defined('_JEXEC') or die;
 
 JHTML::_('behavior.modal');
 
+
 if ($this->item) :
     ?>
     
-    <?php echo $this->mapscript; ?>
+    <?php  echo $this->mapscript; ?>
 
 <?php else: ?>
     Could not load the item

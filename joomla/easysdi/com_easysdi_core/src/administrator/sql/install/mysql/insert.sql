@@ -720,8 +720,10 @@ VALUES
 ('layerdetailsheet',18,1,'Layer detail sheet'),
 ('layerdownload',19,1,'Layer download'),
 ('layerorder',20,1,'Layer order'),
-('indoornavigation',21,1,'Indoor navigation')
-;
+('indoornavigation',21,1,'Indoor navigation'),
+('bangeocoder',22,1,'Ban Geocoder'),
+('fullscreen',23,1,'Full screen'),
+('locate',24,1,'Locate');
 
 -- com_easysdi_shop
 

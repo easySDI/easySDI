@@ -157,7 +157,7 @@
 
 
 
-     _this.getFeature = function(layer, event = last_event) {
+     _this.getFeature = function(layer, event /*= last_event crash Ie*/ ) {
 
          var loc = event.containerPoint;
          var url = serviceconnector.getFeatureUrl(layer.layer, map, loc);
