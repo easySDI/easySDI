@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     4.5.0
+ * @version     4.5.1
  * @package     mod_easysdi_admininfo
  * @copyright   Copyright (C) 2013-2018. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
