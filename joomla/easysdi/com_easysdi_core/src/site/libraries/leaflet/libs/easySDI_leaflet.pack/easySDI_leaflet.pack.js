@@ -11191,71 +11191,73 @@ L.Control.GraphicScale=L.Control.extend({options:{position:"bottomleft",updateWh
                          var evt = new CustomEvent('getFeature', request);
                          window.dispatchEvent(evt);
                          nbr_active_layer--;
-                         //_this.updateResults();
+                         _this.updateResults();
 
                      } else {
 						 if (ul.length > 0) {
-						 jQuery.each(ul, function() {
-                             request.html = '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
-                         });
-                         var collapse =
-                             '<div class="panel panel-default">' +
-                             '<div class="panel-heading" role="tab" id="headingOne">' +
-                             '<h4 class="panel-title">' +
-                             '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + layer.layer._leaflet_id + '" aria-expanded="true" aria-controls="collapse' + layer.layer._leaflet_id + '">' +
-                             layer.name +
-                             '</a>' +
-                             '</h4>' +
-                             '</div>' +
-                             '<div id="collapse' + layer.layer._leaflet_id + '" class="panel-collapse collapse ' + first_layer + '" role="tabpanel" aria-labelledby="heading' + layer.layer._leaflet_id + '">' +
-                             '<div class="panel-body">' +
-                             '<pre class="featureInfo easygetfeature_pre">' + request.html + '</pre>' +
-                             '</div>' +
-                             '</div>' +
-                             '</div>';
+							 jQuery.each(ul, function() {
+								 request.html = '<table class="featureInfo easygetfeature_table">' + jQuery(this).html() + '</table>';
+							 });
+							 var collapse =
+								 '<div class="panel panel-default">' +
+								 '<div class="panel-heading" role="tab" id="headingOne">' +
+								 '<h4 class="panel-title">' +
+								 '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + layer.layer._leaflet_id + '" aria-expanded="true" aria-controls="collapse' + layer.layer._leaflet_id + '">' +
+								 layer.name +
+								 '</a>' +
+								 '</h4>' +
+								 '</div>' +
+								 '<div id="collapse' + layer.layer._leaflet_id + '" class="panel-collapse collapse ' + first_layer + '" role="tabpanel" aria-labelledby="heading' + layer.layer._leaflet_id + '">' +
+								 '<div class="panel-body">' +
+								 '<pre class="featureInfo easygetfeature_pre">' + request.html + '</pre>' +
+								 '</div>' +
+								 '</div>' +
+								 '</div>';
 
-                         tmp_collapse += collapse;
-                         request.html = collapse_start + tmp_collapse + collapse_end;
-                         first_layer = "";
+							 tmp_collapse += collapse;
+							 request.html = collapse_start + tmp_collapse + collapse_end;
+							 first_layer = "";
 
-                         var evt = new CustomEvent('getFeature', request);
-                         window.dispatchEvent(evt);
-                         nbr_active_layer--;
-                         //_this.updateResults();
-						 
-					 } else {
-                         data = data.replace('GetFeatureInfo results:', '').trim();
-                         if (data.length > 0 && data.search('Search returned no results.') == -1 && data.search('body') == -1) {
-                             var collapse =
-                                 '<div class="panel panel-default">' +
-                                 '<div class="panel-heading" role="tab" id="headingOne">' +
-                                 '<h4 class="panel-title">' +
-                                 '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + layer.layer._leaflet_id + '" aria-expanded="true" aria-controls="collapse' + layer.layer._leaflet_id + '">' +
-                                 layer.name +
-                                 '</a>' +
-                                 '</h4>' +
-                                 '</div>' +
-                                 '<div id="collapse' + layer.layer._leaflet_id + '" class="panel-collapse collapse ' + first_layer + '" role="tabpanel" aria-labelledby="heading' + layer.layer._leaflet_id + '">' +
-                                 '<div class="panel-body featureInfo easygetfeature_pre">' +
-                                 data +
-                                 '</div>' +
-                                 '</div>' +
-                                 '</div>';
-							 
-                             tmp_collapse += collapse;
-                             request.html = collapse_start + tmp_collapse + collapse_end;
-                             first_layer = "";
-
-                             var evt = new CustomEvent('getFeature', request);
-                             window.dispatchEvent(evt);
+							 var evt = new CustomEvent('getFeature', request);
+							 window.dispatchEvent(evt);
 							 nbr_active_layer--;
-                             //_this.updateResults();
-                         }
-                     }
+							 _this.updateResults();
+						 
+						 } else {
+							 data = data.replace('GetFeatureInfo results:', '').replace(/\s+/g, '').trim();
+							 if (data.length > 0 && data.search('noresults') == -1 && data.search('nolayerwasqueryable') == -1 && data.search('<body></body>') == -1) {
+								 var collapse =
+									 '<div class="panel panel-default">' +
+									 '<div class="panel-heading" role="tab" id="headingOne">' +
+									 '<h4 class="panel-title">' +
+									 '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + layer.layer._leaflet_id + '" aria-expanded="true" aria-controls="collapse' + layer.layer._leaflet_id + '">' +
+									 layer.name +
+									 '</a>' +
+									 '</h4>' +
+									 '</div>' +
+									 '<div id="collapse' + layer.layer._leaflet_id + '" class="panel-collapse collapse ' + first_layer + '" role="tabpanel" aria-labelledby="heading' + layer.layer._leaflet_id + '">' +
+									 '<div class="panel-body featureInfo easygetfeature_pre">' +
+									 data +
+									 '</div>' +
+									 '</div>' +
+									 '</div>';
+								 
+								 tmp_collapse += collapse;
+								 request.html = collapse_start + tmp_collapse + collapse_end;
+								 first_layer = "";
+
+								 var evt = new CustomEvent('getFeature', request);
+								 window.dispatchEvent(evt);
+								 //nbr_active_layer--;
+								 _this.updateResults();
+							 }else{
+								 nbr_active_layer--;
+							 }
+						 }
 					 }
                  }
 					setTimeout(function(){
-						_this.updateResults();
+						//_this.updateResults();
 					}, 2000);
              }
 
@@ -12295,7 +12297,7 @@ jQuery(document).ready(function($) {
 
             map.on('zoomstart', function(event) {
                 var id = jQuery("input[name='baselayer']:checked").val();
-                for (const key in baseLayers) {
+                for (var key in baseLayers) {
                     if (baseLayers[key]._leaflet_id == id) {
                         _easySDImap.mapObj.options.maxZoom = baseLayers[key].options.maxZoom;
                     }
