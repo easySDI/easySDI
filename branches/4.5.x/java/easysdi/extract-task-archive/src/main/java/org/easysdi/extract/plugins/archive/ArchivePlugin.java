@@ -16,6 +16,10 @@
  */
 package org.easysdi.extract.plugins.archive;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -24,6 +28,7 @@ import java.util.Calendar;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.easysdi.extract.plugins.common.IEmailSettings;
 import org.easysdi.extract.plugins.common.ITaskProcessor;
 import org.easysdi.extract.plugins.common.ITaskProcessorRequest;
 import org.easysdi.extract.plugins.common.ITaskProcessorResult;
@@ -189,13 +194,23 @@ public class ArchivePlugin implements ITaskProcessor {
 
     @Override
     public final String getParams() {
-        StringBuilder builder = new StringBuilder("[{\"code\" : \"");
-        builder.append(this.config.getProperty("paramPath"));
-        builder.append("\", \"label\" : \"");
-        builder.append(this.messages.getString("paramPath.label"));
-        builder.append("\", \"type\" : \"text\", \"req\" : \"true\", \"maxlength\" : 255}]");
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode parametersNode = mapper.createArrayNode();
 
-        return builder.toString();
+        ObjectNode pathNode = parametersNode.addObject();
+        pathNode.put("code", this.config.getProperty("paramPath"));
+        pathNode.put("label", this.messages.getString("paramPath.label"));
+        pathNode.put("type", "text");
+        pathNode.put("req", true);
+        pathNode.put("maxlength", 255);
+
+        try {
+            return mapper.writeValueAsString(parametersNode);
+
+        } catch (JsonProcessingException exception) {
+            logger.error("An error occurred when the parameters were converted to JSON.", exception);
+            return null;
+        }
     }
 
 
@@ -210,7 +225,7 @@ public class ArchivePlugin implements ITaskProcessor {
     private void copyToFolder(final File sourceFolder, final File archiveFolder) throws IOException {
 
         if (!archiveFolder.exists()) {
-            FileUtils.forceMkdir(sourceFolder);
+            FileUtils.forceMkdir(archiveFolder);
         }
 
         for (java.io.File srcFile : sourceFolder.listFiles()) {
@@ -228,7 +243,7 @@ public class ArchivePlugin implements ITaskProcessor {
 
 
     @Override
-    public final ITaskProcessorResult execute(final ITaskProcessorRequest request) {
+    public final ITaskProcessorResult execute(final ITaskProcessorRequest request, final IEmailSettings emailSettings) {
 
         String destPath = this.inputs.get(this.config.getProperty("paramPath"));
         destPath = this.buildPathWithPropertyValues(destPath, request);
@@ -255,7 +270,8 @@ public class ArchivePlugin implements ITaskProcessor {
 
                 resultStatus = ArchiveResult.Status.SUCCESS;
                 resultErrorCode = "";
-                resultMessage = this.messages.getString("archivage.executing.success");
+                resultMessage = this.messages.getString("archivage.executing.success").replace("{archivePath}",
+                        destPath);
             }
 
         } catch (Exception e) {

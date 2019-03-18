@@ -28,7 +28,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
@@ -61,8 +60,7 @@ public class Rule implements Serializable {
     /**
      * The criteria that the data item request must satisfy.
      */
-    @Size(max = 4000)
-    @Column(name = "rule", length = 4000)
+    @Column(name = "rule", columnDefinition = "text")
     private String rule;
 
     /**

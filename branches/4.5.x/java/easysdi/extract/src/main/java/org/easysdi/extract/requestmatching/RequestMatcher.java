@@ -22,10 +22,12 @@ import com.google.gson.JsonObject;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import org.apache.commons.lang3.ArrayUtils;
 import org.easysdi.extract.domain.Request;
 import org.easysdi.extract.domain.Rule;
 import org.locationtech.jts.geom.Geometry;
@@ -53,37 +55,50 @@ public class RequestMatcher {
     /**
      * The string that indicates an AND operator.
      */
-    private static final String OPERATOR_AND = " AND ";
+    private static final String OPERATOR_AND = "AND";
 
     /**
      * The string that indicates an OR operator.
      */
-    private static final String OPERATOR_OR = " OR ";
+    private static final String OPERATOR_OR = "OR";
 
     /**
      * The string representation of the operator that determines if two geometries overlap.
      */
-    private static final String GEOM_OPERATOR_INTERSECT = " INTERSECTS ";
+    private static final String GEOM_OPERATOR_INTERSECT = "INTERSECTS";
 
     /**
      * The string representation of the operator that determines if one geometry is fully inside another.
      */
-    private static final String GEOM_OPERATOR_CONTAINS = " CONTAINS ";
+    private static final String GEOM_OPERATOR_CONTAINS = "CONTAINS";
 
     /**
      * The string representation of the operator that determines if two geometries are fully separated.
      */
-    private static final String GEOM_OPERATOR_DISJOINT = " DISJOINT ";
+    private static final String GEOM_OPERATOR_DISJOINT = "DISJOINT";
 
     /**
      * The string representation of the operator that determines if two geometries are the same.
      */
-    private static final String GEOM_OPERATOR_EQUALS = " EQUALS ";
+    private static final String GEOM_OPERATOR_EQUALS = "EQUALS";
 
     /**
      * The string representation of the operator that determines if one geometry is inside another.
      */
-    private static final String GEOM_OPERATOR_WITHIN = " WITHIN ";
+    private static final String GEOM_OPERATOR_WITHIN = "WITHIN";
+
+    /**
+     * An array that contains all the operators that can be used to compare geometries.
+     */
+    private static final String[] GEOMETRIC_OPERATORS = new String[]{
+        GEOM_OPERATOR_CONTAINS, GEOM_OPERATOR_DISJOINT, GEOM_OPERATOR_EQUALS, GEOM_OPERATOR_INTERSECT,
+        GEOM_OPERATOR_WITHIN
+    };
+
+    /**
+     * An array that contains all the operators that can be used to bind logical expressions.
+     */
+    private static final String[] LOGICAL_OPERATORS = new String[]{OPERATOR_AND, OPERATOR_OR};
 
     /**
      * The engine that evaluates the rules.
@@ -135,7 +150,7 @@ public class RequestMatcher {
 
                         if (this.isJSONValid(String.valueOf(fieldValue))) {
                             //la valeur du champ est un json : il faut donc faire les assignations pour tous les
-                            // paramètres du json
+                            // paramÃ¨tres du json
                             Gson gson = new Gson();
                             engine.eval(requestField.getName().toUpperCase() + " = {}");
                             JsonObject jsonObject = gson.fromJson(String.valueOf(fieldValue), JsonObject.class);
@@ -212,8 +227,8 @@ public class RequestMatcher {
      */
     private String reformatRule(final String rule) {
 
-        return rule.replaceAll(OPERATOR_AND.toLowerCase(), " && ").replaceAll(OPERATOR_OR.toLowerCase(), " || ")
-                .replaceAll(OPERATOR_AND, " && ").replaceAll(OPERATOR_OR, " || ");
+        return rule.replaceAll(String.format("(?i)\\s+%s\\s+", OPERATOR_AND), " && ")
+                .replaceAll(String.format("(?i)\\s+%s\\s+", OPERATOR_OR), " || ");
     }
 
 
@@ -226,11 +241,11 @@ public class RequestMatcher {
      */
     private Boolean evaluateRule(final String rule) {
 
-        Pattern patternBoolOperator = Pattern.compile(GEOM_OPERATOR_CONTAINS + "|" + GEOM_OPERATOR_DISJOINT + "|"
-                + GEOM_OPERATOR_EQUALS + "|" + GEOM_OPERATOR_INTERSECT + "|" + GEOM_OPERATOR_WITHIN);
+        Pattern patternBoolOperator = Pattern.compile(String.format("(?i)\\s+(?:%s)\\s+",
+                StringUtils.join(GEOMETRIC_OPERATORS, "|")));
         //split rule by logical operator
-        String[] splittedRule = rule.split(OPERATOR_AND + "|" + OPERATOR_OR + "|" + OPERATOR_AND.toLowerCase() + "|"
-                + OPERATOR_OR.toLowerCase());
+        String[] splittedRule = rule.split(String.format("(?i)\\s+(?:%s)\\s+",
+                StringUtils.join(LOGICAL_OPERATORS, "|")));
 
         try {
             String finalRuleToEvaluate = rule;
@@ -274,6 +289,17 @@ public class RequestMatcher {
     private Boolean evaluateLogicalCondition(final String condition) {
 
         try {
+            Matcher inMatcher = Pattern.compile("^(\\S+)\\s+((?:NOT\\s+)?IN)\\s+\\(([^)]+)\\)$",
+                    Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ | Pattern.DOTALL).matcher(condition);
+
+            if (inMatcher.find()) {
+                this.logger.debug("The condition \"{}\" matches the array operators", condition);
+                return this.evaluateArrayCondition((String) this.engine.eval(inMatcher.group(1)),
+                        inMatcher.group(3).split(","), inMatcher.group(2).toUpperCase());
+            }
+
+            this.logger.debug("The condition \"{}\" does NOT match the array operators", condition);
+
             Boolean matched = (Boolean) this.engine.eval(condition.toUpperCase());
             this.logger.info(condition + " => " + matched);
 
@@ -292,6 +318,47 @@ public class RequestMatcher {
 
 
     /**
+     * Checks if a given value is (or is not) in an array.
+     *
+     * @param needle   the value to search in the array
+     * @param haystack the array where the value must be searched
+     * @param operator <code>IN</code> to check if the value in the array, or <code>NOT IN</code> to check if the
+     *                 value is not in the array
+     * @return <code>true</code> if the check was positive
+     */
+    private boolean evaluateArrayCondition(final String needle, final String[] haystack, final String operator) {
+        assert needle != null : "The value to search cannot be null";
+        assert haystack != null : "The array cannot be null";
+        assert operator != null && (operator.equals("IN") || operator.equals("NOT IN")) :
+                "The operator must be IN or NOT IN";
+
+        String[] noQuotesHaystack = new String[haystack.length];
+
+        for (int hayIndex = 0; hayIndex < haystack.length; hayIndex++) {
+            String hayItem = haystack[hayIndex].trim();
+
+            if (hayItem.matches("\".*\"")) {
+                noQuotesHaystack[hayIndex] = hayItem.substring(1, hayItem.length() - 1);
+            } else {
+                noQuotesHaystack[hayIndex] = hayItem;
+            }
+        }
+
+        this.logger.debug("Trying to find whether {} is {} {}", needle, operator, noQuotesHaystack);
+
+        int needleIndex = ArrayUtils.indexOf(noQuotesHaystack, needle);
+        this.logger.debug("The index is {}", needleIndex);
+
+        if (operator.equals("NOT IN")) {
+            return (needleIndex == ArrayUtils.INDEX_NOT_FOUND);
+        }
+
+        return (needleIndex != ArrayUtils.INDEX_NOT_FOUND);
+    }
+
+
+
+    /**
      * Evaluate a geographic criterion.
      *
      * @param condition the geographic expression to evaluate
@@ -304,8 +371,8 @@ public class RequestMatcher {
         try {
             final GeometryFactory fact = new GeometryFactory();
             final WKTReader wktReader = new WKTReader(fact);
-            final String[] splittedRule = condition.split(GEOM_OPERATOR_CONTAINS + "|" + GEOM_OPERATOR_DISJOINT + "|"
-                    + GEOM_OPERATOR_EQUALS + "|" + GEOM_OPERATOR_INTERSECT + "|" + GEOM_OPERATOR_WITHIN);
+            final String[] splittedRule = condition.split(String.format("(?i)\\s+(?:%s)\\s+",
+                    StringUtils.join(GEOMETRIC_OPERATORS, "|")));
 
             if (splittedRule.length == 2) {
                 this.logger.info("Check matching with rule {}.", condition);

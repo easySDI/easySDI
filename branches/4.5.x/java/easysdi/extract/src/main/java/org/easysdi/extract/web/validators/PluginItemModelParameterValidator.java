@@ -95,6 +95,10 @@ public class PluginItemModelParameterValidator extends BaseValidator {
                 parameter.getMaxLength()
             }, "parameter.errors.generic");
         }
+
+        if (parameter.getType().equals("email") && !parameter.validateUpdatedValue(stringValue)) {
+            errors.rejectValue("value", "parameter.errors.invalidEmailString", labelParams, "parameter.errors.generic");
+        }
     }
 
 }

@@ -18,7 +18,6 @@ package org.easysdi.extract.web.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletContext;
 import javax.validation.Valid;
 import org.easysdi.extract.connectors.ConnectorDiscovererWrapper;
 import org.easysdi.extract.connectors.common.IConnector;
@@ -130,14 +129,10 @@ public class ConnectorsController extends BaseController {
 
     /**
      * Instantiates this controller.
-     *
-     * @param servletContext the application context for the current servlet
      */
     @Autowired
-    public ConnectorsController(final ServletContext servletContext) {
+    public ConnectorsController() {
         this.logger.debug("Instantiating the connectors controller.");
-//        this.connectorDiscoveryWrapper = new ConnectorDiscovererWrapper();
-//        this.connectorDiscoveryWrapper.setServletContext(servletContext);
     }
 
 

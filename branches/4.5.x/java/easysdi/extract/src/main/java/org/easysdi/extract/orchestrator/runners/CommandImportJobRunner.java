@@ -175,7 +175,7 @@ public class CommandImportJobRunner /*extends JobRunner<Product, Request>*/ impl
      */
     public final ImportedRequestsWriter getWriter() {
         ImportedRequestsWriter writer
-                = new ImportedRequestsWriter(this.connectorId, this.applicationRepositories.getRequestsRepository());
+                = new ImportedRequestsWriter(this.connectorId, this.emailSettings, this.applicationRepositories);
 
         return writer;
     }

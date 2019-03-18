@@ -133,6 +133,7 @@ public final class TaskProcessorRequest implements ITaskProcessorRequest {
         this.setFolderOut(new File(dataFoldersBasePath, domainRequest.getFolderOut()).getAbsolutePath());
         this.setOrderGuid(domainRequest.getOrderGuid());
         this.setOrderLabel(domainRequest.getOrderLabel());
+        this.setOrganism(domainRequest.getOrganism());
         this.setParameters(domainRequest.getParameters());
         this.setPerimeter(domainRequest.getPerimeter());
         this.setProductGuid(domainRequest.getProductGuid());

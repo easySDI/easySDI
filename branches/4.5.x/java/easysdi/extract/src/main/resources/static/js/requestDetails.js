@@ -18,6 +18,20 @@
 
 
 /**
+ * Permanently erases a file from the output folder of a request.
+ *
+ * @param {int} requestId The identifier of the request
+ * @param {type} label The string that describes the request
+ * @param {type} button The button that was clicked to trigger this action
+ */
+function deleteFile(requestId, label, button) {
+    _executeFileAction(requestId, button, LANG_MESSAGES.requestDetails.deleteFileConfirm,
+                       [$(button).attr('data-file-path'), label]);
+}
+
+
+
+/**
  * Permanently erases a request.
  *
  * @param {int} id The identifier of the request to delete
@@ -110,6 +124,7 @@ function validateRequest(id, label, remark, button) {
 }
 
 
+/*************************** MAP **************************/
 
 /**
  * Initializes the map and centers it on the perimeter of the current order.
@@ -118,15 +133,47 @@ function validateRequest(id, label, remark, button) {
  * @param {Float}  geometryArea     the surface of the area for this order in square meters
  */
 function loadOrderGeometryMap(orderWktGeometry, geometryArea) {
-    var rasterLayer = new ol.layer.Tile({
-        source : new ol.source.OSM()
+    
+    initializeMap().then(function(map) {
+        _addOrderGeometryToMap(orderWktGeometry, map);
+        _initializeLayerSwitcher(map);
     });
 
-    var mapProjection = rasterLayer.getSource().getProjection();
+    $('#orderAreaSize').text(_getAreaSizeText(geometryArea, 2));
+}
+
+
+
+/**
+ * Creates a map to display the perimeter of the current order.
+ *
+ * @param {String} orderWktGeometry the string that contains the coordinates of the request extent in the
+ *                                               WKT format
+ * @param {ol.Map} map              the OpenLayers map to add the order geometry to
+ */
+function _addOrderGeometryToMap(orderWktGeometry, map) {
+    var orderGeometryLayer = _createOrderGeometryLayer(orderWktGeometry, map.getView().getProjection());
+    map.addLayer(orderGeometryLayer);
+    map.getView().fit(orderGeometryLayer.getSource().getExtent(), {
+        padding : [10, 10, 10, 10]
+    });
+}
+
+
+
+/**
+ * Builds a vector layer to display the extent of the current request.
+ *
+ * @param {String}             orderWktGeometry the string that contains the coordinates of the request extent in the
+ *                                               WKT format
+ * @param {ol.proj.Projection} mapProjection    the OpenLayers projection object used by the map
+ * @returns {ol.layer.Vector} the layer to add to the map to show the perimeter of the request
+ */
+function _createOrderGeometryLayer(orderWktGeometry, mapProjection) {
     var wktFormat = new ol.format.WKT();
     var feature = wktFormat.readFeature(orderWktGeometry, {
         dataProjection : 'EPSG:4326',
-        featureProjection : rasterLayer.getSource().getProjection().getCode()
+        featureProjection : mapProjection
     });
 
     var orderGeometryStyle = new ol.style.Style({
@@ -139,22 +186,13 @@ function loadOrderGeometryMap(orderWktGeometry, geometryArea) {
         })
     });
 
-    var vector = new ol.layer.Vector({
+    return new ol.layer.Vector({
+        title : LANG_MESSAGES.requestDetails.mapLayers.polygon.title,
         source : new ol.source.Vector({
             features : [feature]
         }),
         style : orderGeometryStyle
     });
-
-    var map = new ol.Map({
-        layers : [rasterLayer, vector],
-        target : 'orderMap'
-    });
-    map.getView().fit(feature.getGeometry(), {
-        padding : [10, 10, 10, 10]
-    });
-
-    $('#orderAreaSize').text(getAreaSizeText(geometryArea, 2));
 }
 
 
@@ -166,7 +204,7 @@ function loadOrderGeometryMap(orderWktGeometry, geometryArea) {
  * @param {int} decimals the number of digits to round the area to
  * @returns {String} the area as a text
  */
-function getAreaSizeText(rawAreaSize, decimals) {
+function _getAreaSizeText(rawAreaSize, decimals) {
     var areaSizeUnit = "m²";
     var roundingFactor = Math.pow(10, decimals);
         var areaSize = rawAreaSize;
@@ -182,18 +220,16 @@ function getAreaSizeText(rawAreaSize, decimals) {
 
 
 /**
- * Obtains the geodesic size of a polygon area
+ * Adds a component that allows to switch layers on or off and change the base map.
  *
- * @param {Polygon}  polygon  the polygon to measure
- * @param {Map}      map      the map that the polygon is coming from
- * @returns {Number} the area in square meters
+ * @param {ol.Map} map the OpenLayers map to add the layer switcher to
  */
-function getGeodesicArea(polygon, map) {
-    var wgs84Sphere = new ol.Sphere(6378137);
-    var sourceProjection = map.getView().getProjection();
-    var geometry = (polygon.clone().transform(sourceProjection, 'EPSG:4326'));
-    var coordinates = geometry.getLinearRing(0).getCoordinates();
-    return Math.abs(wgs84Sphere.geodesicArea(coordinates));
+function _initializeLayerSwitcher(map) {
+    var layerSwitcher = new ol.control.LayerSwitcher({
+        tipLabel: LANG_MESSAGES.requestDetails.layerSwitcher.tooltip
+    });
+
+    map.addControl(layerSwitcher);
 }
 
 
@@ -236,6 +272,45 @@ function _executeRequestAction(requestId, label, button, confirmationTexts, rema
 
 
 /**
+ * Carries an action on a request output file based on a button click, if the user confirms it.
+ *
+ * @param {Integer} requestId          the number that identifies the request to execute the action on
+ * @param {Object}  button             the button that triggers the action to execute
+ * @param {Object}  confirmationTexts  the object that contains the localized strings to ask the user for a
+ *                                      confirmation of the action
+ * @param {Array}  confirmationValues  the array that contains the values to insert instead of the placeholders in the
+ *                                      confirmation message. Can be <code>null</code> if the message contains no
+ *                                      placeholder.
+ */
+function _executeFileAction(requestId, button, confirmationTexts, confirmationValues) {
+
+    if (!requestId || isNaN(requestId) || !button || !confirmationTexts) {
+        return;
+    }
+
+    var alertButtonsTexts = LANG_MESSAGES.generic.alertButtons;
+    var message = confirmationTexts.message;
+
+    if (confirmationValues) {
+
+        for (var valueIndex = 0; valueIndex < confirmationValues.length; valueIndex++) {
+            message = message.replace('\{' + valueIndex + '\}', confirmationValues[valueIndex]);
+        }
+    }
+
+    var confirmedCallback = function() {
+        $('#actionForm').attr('action', $(button).attr('data-action'));
+        $('#targetFile').val($(button).attr('data-file-path'));
+        $('#actionForm').submit();
+    };
+
+    showConfirm(confirmationTexts.title, message, confirmedCallback, null, alertButtonsTexts.yes,
+            alertButtonsTexts.no);
+}
+
+
+
+/**
  * Carries the appropriate action after a button click.
  *
  * @param {Object}   button         the button that was clicked to trigger this method
@@ -248,7 +323,7 @@ function _handleButtonClick(button, actionFunction, remarkFieldId) {
     var label = $('#requestLabel').val();
 
     if (!button || isNaN(id) || !label) {
-        console.log("ERROR - Could not fetch the necessary info to process a click on "
+        console.error("ERROR - Could not fetch the necessary info to process a click on "
                 + ((button) ? button.id : "an action button"));
         return;
     }
@@ -301,5 +376,20 @@ $(function() {
 
     $('#requestDeleteButton').on('click', function() {
         _handleButtonClick(this, deleteRequest);
+    });
+
+    $('.file-delete-button').on('click', function() {
+        _handleButtonClick(this, deleteFile);
+    });
+
+    $('#file-upload-button').on('click', function() {
+        $('#filesToAdd').click();
+    });
+
+    $('#filesToAdd').on('change', function() {
+        $('#file-upload-button').prop('disabled', true);
+        $('#actionForm').attr('enctype', 'multipart/form-data');
+        $('#actionForm').attr('action', $('#file-upload-button').attr('data-action'));
+        $('#actionForm').submit();
     });
 });

@@ -109,7 +109,7 @@ $(function() {
    });
    
     if(readOnly == "false") {
-        //Gestion du drag and drop pour reordonner les t‚ches d'un process
+        //Gestion du drag and drop pour reordonner les t√¢ches d'un process
         $(".extract-proc-tasks .col-lg-8 .panel-body .row:first").sortable({
             items: '.taskpanel',
             helper: 'clone',
@@ -145,7 +145,7 @@ $(function() {
             }
         });
 
-        //Gestion du drag and drop pour l'ajout d'une t‚che de la droite vers la gauche
+        //Gestion du drag and drop pour l'ajout d'une t√¢che de la droite vers la gauche
         $(".extract-proc-tasks  .col-lg-4 .available-task").draggable({
             helper: 'clone',
             revert : 'invalid'

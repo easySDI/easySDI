@@ -107,6 +107,7 @@ public class ContextListener implements ServletContextListener {
             }
         }
 
+        this.servletContext = null;
     }
 
 

@@ -2,6 +2,7 @@ package org.easysdi.extract.connectors;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,12 +38,7 @@ public class ConnectorDiscovererWrapper implements ServletContextAware {
     /**
      * The information about the context that the current servlet runs in.
      */
-    private ServletContext servletContext;
-
-    /**
-     * The information about the context that the current web application runs in.
-     */
-    private WebApplicationContext webAppContext;
+    private WeakReference<ServletContext> servletContext;
 
     /**
      * The ISO code of the language to use for the user interface.
@@ -101,7 +97,7 @@ public class ConnectorDiscovererWrapper implements ServletContextAware {
     @Override
     public final void setServletContext(final ServletContext context) {
         this.logger.debug("Setting the servlet context.");
-        this.servletContext = context;
+        this.servletContext = new WeakReference<>(context);
     }
 
 
@@ -140,11 +136,11 @@ public class ConnectorDiscovererWrapper implements ServletContextAware {
      */
     private URL[] getJarUrls() {
         this.logger.debug("Assembling an array of connectors JAR URLs.");
-        webAppContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+        WebApplicationContext webAppContext = WebApplicationContextUtils.getWebApplicationContext(servletContext.get());
         Resource[] jarResources;
 
         try {
-            jarResources = this.webAppContext.getResources("WEB-INF/classes/connectors/*.jar");
+            jarResources = webAppContext.getResources("WEB-INF/classes/connectors/*.jar");
 
         } catch (IOException ex) {
             this.logger.error("An error occurred while the connector plugins JARs were searched.", ex);

@@ -18,6 +18,7 @@ package org.easysdi.extract.plugins;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,12 +57,7 @@ public class TaskProcessorDiscovererWrapper implements ServletContextAware {
     /**
      * Information about the context that the current servlet executes in.
      */
-    private ServletContext servletContext;
-
-    /**
-     * Information about the context that the current web application executes in.
-     */
-    private WebApplicationContext webAppContext;
+    private WeakReference<ServletContext> servletContext;
 
     /**
      * The ISO code of the user interface language.
@@ -153,7 +149,7 @@ public class TaskProcessorDiscovererWrapper implements ServletContextAware {
     @Override
     public final void setServletContext(final ServletContext servletContextInfo) {
         this.logger.debug("Setting the servlet context.");
-        this.servletContext = servletContextInfo;
+        this.servletContext = new WeakReference<>(servletContextInfo);
     }
 
 
@@ -193,11 +189,12 @@ public class TaskProcessorDiscovererWrapper implements ServletContextAware {
      */
     private URL[] getJarUrls() {
         this.logger.debug("Assembling an array of task processors JAR URLs.");
-        webAppContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+
+        WebApplicationContext webAppContext = WebApplicationContextUtils.getWebApplicationContext(servletContext.get());
         Resource[] jarResources;
 
         try {
-            jarResources = this.webAppContext.getResources("WEB-INF/classes/task_processors/*.jar");
+            jarResources = webAppContext.getResources("WEB-INF/classes/task_processors/*.jar");
 
         } catch (IOException ex) {
             this.logger.error("An error occurred while the task processors plugins JARs were searched.", ex);

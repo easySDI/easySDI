@@ -52,16 +52,6 @@ public final class ConnectorDiscoverer {
     private final Map<String, IConnector> pluginsMap = new HashMap<>();
 
     /**
-     * The class loader to use to discover the connector plugins.
-     */
-    private ClassLoader classLoader;
-
-    /**
-     * The service that finds the classes that implement the connector plugin interface.
-     */
-    private ServiceLoader<IConnector> connectorsLoader;
-
-    /**
      * The path to the JAR files that are susceptible to hold connector plugins.
      */
     private URL[] jarUrlsArray;
@@ -134,8 +124,8 @@ public final class ConnectorDiscoverer {
         this.logger.debug("Fetching all the plugins.");
         this.pluginsMap.clear();
         this.logger.debug("Initializing the service loader.");
-        this.connectorsLoader = ServiceLoader.load(IConnector.class, this.getClassLoader());
-        Iterator<IConnector> connectorsIterator = this.connectorsLoader.iterator();
+        ServiceLoader<IConnector> connectorsLoader = ServiceLoader.load(IConnector.class, this.getClassLoader());
+        Iterator<IConnector> connectorsIterator = connectorsLoader.iterator();
 
         while (connectorsIterator.hasNext()) {
             this.logger.debug("Connector found. Attempting instantiation.");
@@ -204,7 +194,6 @@ public final class ConnectorDiscoverer {
         this.jarUrlsArray = jarUrls;
         this.logger.debug("{} JAR URLs set.", this.jarUrlsArray.length);
         this.logger.debug("Reinitializing the class loader so that it is reinstantiated with new URLs when next used.");
-        this.classLoader = null;
         this.logger.debug("Reinitializing the cached plugins so they are fetched again when next used.");
         this.arePluginsInitialized = false;
         this.pluginsMap.clear();
@@ -219,25 +208,18 @@ public final class ConnectorDiscoverer {
      */
     private ClassLoader getClassLoader() {
         this.logger.debug("Getting the connectors class loader,");
+        this.logger.debug("The class loader is not instantiated. Creating a new instance.");
+        ClassLoader defaultClassLoader = Thread.currentThread().getContextClassLoader();
 
-        if (this.classLoader == null) {
-            this.logger.debug("The class loader is not instantiated. Creating a new instance.");
-            ClassLoader defaultClassLoader = Thread.currentThread().getContextClassLoader();
+        if (this.jarUrlsArray == null) {
+            this.logger.debug("No additional JAR URLs set. Using the default class loader.");
+            return defaultClassLoader;
 
-            if (this.jarUrlsArray == null) {
-                this.logger.debug("No additional JAR URLs set. Using the default class loader.");
-                this.classLoader = defaultClassLoader;
-
-            } else {
-                this.logger.debug("Instantiating a class loader with {} additional JAR URLs.",
-                        this.jarUrlsArray.length);
-                this.classLoader = new URLClassLoader(jarUrlsArray, defaultClassLoader);
-            }
-
-            this.logger.debug("Class loader instantiated.");
         }
 
-        return this.classLoader;
+        this.logger.debug("Instantiating a class loader with {} additional JAR URLs.",
+                this.jarUrlsArray.length);
+        return new URLClassLoader(jarUrlsArray, defaultClassLoader);
     }
 
 }

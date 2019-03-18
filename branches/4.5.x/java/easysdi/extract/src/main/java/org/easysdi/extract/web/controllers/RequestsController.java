@@ -17,6 +17,7 @@
 package org.easysdi.extract.web.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -44,7 +45,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -54,6 +57,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -72,6 +76,16 @@ public class RequestsController extends BaseController {
      * The string that identifies the part of the web site that this controller manages.
      */
     private static final String CURRENT_SECTION_IDENTIFIER = "home";
+
+    /**
+     * The string that contains the path to the file defining a custom request details map configuration.
+     */
+    private static final String CUSTOM_MAP_DATA_PATH = "static/js/requestMap/map.custom.js";
+
+    /**
+     * The string that contains the name of the file defining the default request details map configuration.
+     */
+    private static final String DEFAULT_MAP_DATA_FILE_NAME = "map.js";
 
     /**
      * The string that identifies the view to use to display detailed information about a request.
@@ -171,6 +185,15 @@ public class RequestsController extends BaseController {
                 this.requestHistoryRepository.findByRequestOrderByStep(request).toArray(new RequestHistoryRecord[]{}),
                 Paths.get(this.parametersRepository.getBasePath()), this.messageSource));
 
+        String mapDataFileName = RequestsController.DEFAULT_MAP_DATA_FILE_NAME;
+        Resource customMapResource = new ClassPathResource(RequestsController.CUSTOM_MAP_DATA_PATH);
+
+        if (customMapResource.exists()) {
+            mapDataFileName = customMapResource.getFilename();
+        }
+
+        model.addAttribute("mapDataFileName", mapDataFileName);
+
         this.logger.debug("Displaying request details.");
 
         return RequestsController.DETAILS_VIEW;
@@ -245,6 +268,66 @@ public class RequestsController extends BaseController {
 
 
 
+    @PostMapping("{requestId}/addFiles")
+    public final String handleAddOutputFiles(@PathVariable final int requestId,
+            @RequestParam final MultipartFile[] filesToAdd, @RequestParam final int currentStep,
+            final RedirectAttributes redirectAttributes) {
+
+        this.logger.debug("Received a web request to add {} files \"{}\" to request {}.", filesToAdd.length, requestId);
+        Request request = this.requestsRepository.findOne(requestId);
+
+        if (request == null) {
+            this.logger.error("The user {} attempted to add files to request {}, which does not exist.",
+                    this.getCurrentUserLogin(), requestId);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.request.notFound", MessageType.ERROR);
+
+            return RequestsController.REDIRECT_TO_LIST;
+        }
+
+        if (!this.canCurrentUserChangeRequestOutput(request)) {
+            this.logger.warn("The user {} tried to add output files to request {} but is not allowed to do so.",
+                    this.getCurrentUserLogin(), requestId);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.request.outputChange.notAllowed",
+                    MessageType.ERROR);
+
+            return RequestsController.REDIRECT_TO_ACCESS_DENIED;
+        }
+
+        if (!this.canRequestOutputBeChanged(request, currentStep, redirectAttributes)) {
+            return RequestsController.REDIRECT_TO_LIST;
+        }
+
+        if (filesToAdd.length == 0) {
+            this.logger.debug("The user {} sent an empty array of output files to add to request {}.",
+                    this.getCurrentUserLogin(), requestId);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.addFiles.empty", MessageType.WARNING);
+
+        } else {
+            int addedFilesNumber = 0;
+
+            for (MultipartFile uploadedFile : filesToAdd) {
+
+                if (this.copyUploadedFileToOutputFolder(uploadedFile, request)) {
+                    addedFilesNumber++;
+                }
+            }
+
+            if (addedFilesNumber == 0) {
+                this.addStatusMessage(redirectAttributes, "requestDetails.addFiles.failed", MessageType.ERROR);
+
+            } else if (addedFilesNumber < filesToAdd.length) {
+                this.addStatusMessage(redirectAttributes, "requestDetails.addFiles.partial", MessageType.WARNING);
+
+            } else {
+                this.addStatusMessage(redirectAttributes, "requestDetails.addFiles.success", MessageType.SUCCESS);
+            }
+        }
+
+        return String.format(RequestsController.REDIRECT_TO_DETAILS_FORMAT, requestId);
+    }
+
+
+
     /**
      * Processes a request to delete an order.
      *
@@ -290,6 +373,78 @@ public class RequestsController extends BaseController {
         this.addStatusMessage(redirectAttributes, "requestDetails.deletion.success", MessageType.SUCCESS);
         this.logger.info("The request {} was successfully deleted by {}.", requestId, this.getCurrentUserLogin());
         return RequestsController.REDIRECT_TO_LIST;
+    }
+
+
+
+    /**
+     * Processes a request to delete a file from the output of an order.
+     *
+     * @param requestId          the number that identifies the request whose output must be changed
+     * @param targetFile         the string that identifies the output file to delete
+     * @param currentStep        the step that was active when the user submitted the output file deletion request
+     * @param redirectAttributes the data to pass to a page that the user may be redirected to
+     * @return the string that identifies the view to display next
+     */
+    @PostMapping("{requestId}/deleteFile")
+    public final synchronized String handleDeleteOutputFile(@PathVariable final int requestId,
+            @RequestParam final String targetFile, @RequestParam final int currentStep,
+            final RedirectAttributes redirectAttributes) {
+
+        this.logger.debug("Received a web request to delete file \"{}\" from request {}.", targetFile, requestId);
+        Request request = this.requestsRepository.findOne(requestId);
+
+        if (request == null) {
+            this.logger.error("The user {} attempted to delete a file from request {}, which does not exist.",
+                    this.getCurrentUserLogin(), requestId);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.request.notFound", MessageType.ERROR);
+
+            return RequestsController.REDIRECT_TO_LIST;
+        }
+
+        if (!this.canCurrentUserChangeRequestOutput(request)) {
+            this.logger.warn("The user {} tried to delete an output file of request {} but is not allowed to do so.",
+                    this.getCurrentUserLogin(), requestId);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.request.outputChange.notAllowed",
+                    MessageType.ERROR);
+
+            return RequestsController.REDIRECT_TO_ACCESS_DENIED;
+        }
+
+        if (!this.canRequestOutputBeChanged(request, currentStep, redirectAttributes)) {
+            return RequestsController.REDIRECT_TO_LIST;
+        }
+
+        File fileToDelete = StringUtils.isNotBlank(targetFile) ? this.getRequestOutputFile(request, targetFile) : null;
+
+        if (fileToDelete == null) {
+            this.logger.debug("The user {} tried to delete output file \"{}\" for request {}, but it cannot be found.",
+                    this.getCurrentUserLogin(), targetFile, requestId);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.deleteFile.notFound", MessageType.ERROR);
+
+        } else {
+
+            try {
+
+                if (fileToDelete.delete()) {
+                    this.logger.debug("The output file \"{}\" for request {} was successfully deleted.",
+                            fileToDelete.getAbsolutePath(), requestId);
+                    this.addStatusMessage(redirectAttributes, "requestDetails.deleteFile.success", MessageType.SUCCESS);
+
+                } else {
+                    this.logger.error("The deletion of the file \"{}\" for the request {} failed silently.",
+                            fileToDelete.getAbsolutePath(), requestId);
+                    this.addStatusMessage(redirectAttributes, "requestDetails.deleteFile.failed", MessageType.ERROR);
+                }
+
+            } catch (RuntimeException exception) {
+                this.logger.error("Could not delete the file \"{}\" for the request {}.",
+                        fileToDelete.getAbsolutePath(), requestId, exception);
+                this.addStatusMessage(redirectAttributes, "requestDetails.deleteFile.failed", MessageType.ERROR);
+            }
+        }
+
+        return String.format(RequestsController.REDIRECT_TO_DETAILS_FORMAT, requestId);
     }
 
 
@@ -597,6 +752,19 @@ public class RequestsController extends BaseController {
 
 
     /**
+     * Checks if the user that is currently authenticated can modify (add or delete) the files generated
+     * as an order output.
+     *
+     * @param request the request whose output is being changed
+     * @return <code>true</code> if the current user can change the output files
+     */
+    private boolean canCurrentUserChangeRequestOutput(final Request request) {
+        return this.canCurrentUserViewRequestDetails(request);
+    }
+
+
+
+    /**
      * Checks if the user that is currently authenticated can delete an order.
      *
      * @return <code>true</code> if the current user can delete orders
@@ -639,8 +807,8 @@ public class RequestsController extends BaseController {
      * @return <code>true</code> if the current user can reject the request
      */
     private boolean canCurrentUserRejectRequest(final Request request) {
-        return (request.getStatus() == Request.Status.EXPORTFAIL && this.isCurrentUserAdmin())
-                || this.canCurrentUserViewRequestDetails(request);
+        return ((request.getStatus() == Request.Status.EXPORTFAIL || request.getStatus() == Request.Status.IMPORTFAIL)
+                && this.isCurrentUserAdmin()) || this.canCurrentUserViewRequestDetails(request);
     }
 
 
@@ -809,7 +977,8 @@ public class RequestsController extends BaseController {
         }
 
         if (request.getStatus() != Request.Status.ERROR && request.getStatus() != Request.Status.EXPORTFAIL
-                && request.getStatus() != Request.Status.UNMATCHED && request.getStatus() != Request.Status.STANDBY) {
+                && request.getStatus() != Request.Status.UNMATCHED && request.getStatus() != Request.Status.STANDBY
+                && request.getStatus() != Request.Status.IMPORTFAIL) {
             this.logger.warn("The user {} tried to reject request {} but it is neither in error nor in standby.",
                     this.getCurrentUserLogin(), request.getId());
             this.addStatusMessage(redirectAttributes, "requestDetails.error.reject.invalidState", MessageType.ERROR);
@@ -846,6 +1015,42 @@ public class RequestsController extends BaseController {
             this.logger.warn("The user {} tried to validate request {} but its status is {}.",
                     this.getCurrentUserLogin(), request.getId(), request.getStatus().name());
             this.addStatusMessage(redirectAttributes, "requestDetails.error.validate.invalidState", MessageType.ERROR);
+
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    /**
+     * Determines whether the output files generated for a given order can be modified.
+     *
+     * @param request            the order whose output should be changed
+     * @param activeStep         the index of the current process step
+     * @param redirectAttributes the data to pass to a page that the user may be redirected to
+     * @return <code>true</code> if the order output can be changed
+     */
+    private boolean canRequestOutputBeChanged(final Request request, final int activeStep,
+            final RedirectAttributes redirectAttributes) {
+        assert request != null : "The request cannot be null.";
+
+        if (!this.checkActiveStep(activeStep, request)) {
+            this.logger.warn("The user {} tried to change the output of request {} from step {}, but it is not"
+                    + " the active step anymore.", this.getCurrentUserLogin(), request.getId(), activeStep);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.invalidStep", MessageType.ERROR);
+
+            return false;
+        }
+
+        if (request.getStatus() != Request.Status.ERROR && request.getStatus() != Request.Status.EXPORTFAIL
+                && request.getStatus() != Request.Status.IMPORTFAIL && request.getStatus() != Request.Status.STANDBY
+                && request.getStatus() != Request.Status.UNMATCHED) {
+            this.logger.warn("The user {} tried to validate request {} but its status is {}.",
+                    this.getCurrentUserLogin(), request.getId(), request.getStatus().name());
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.outputChange.invalidState",
+                    MessageType.ERROR);
 
             return false;
         }
@@ -934,7 +1139,43 @@ public class RequestsController extends BaseController {
     private boolean checkActiveStep(final int activeStep, final Request request) {
         assert request != null : "The request cannot be null.";
 
-        return ((request.getTasknum() == null && activeStep == -1) || activeStep == request.getTasknum());
+        return ((request.getTasknum() == null && activeStep < 1) || activeStep == request.getTasknum());
+    }
+
+
+
+    private boolean copyUploadedFileToOutputFolder(final MultipartFile uploadedFile, final Request request) {
+        assert uploadedFile != null : "The uploaded file to copy cannot be null";
+        assert request != null : "The request to add the file to cannot be null";
+
+        final int requestId = request.getId();
+        final Path outputFolderPath = Paths.get(this.parametersRepository.getBasePath(), request.getFolderOut());
+        final File outputFolder = outputFolderPath.toFile();
+
+        if (!outputFolder.exists() || !outputFolder.canRead() || !outputFolder.isDirectory()) {
+            this.logger.debug("The output folder \"{}\" for request {} cannot be read or is not a directory.",
+                    outputFolder.getAbsolutePath(), request.getId());
+            return false;
+        }
+
+        final String outputFileName = FileSystemUtils.sanitizeFileName(uploadedFile.getOriginalFilename());
+        final File targetFile = outputFolderPath.resolve(outputFileName).toFile();
+
+        try {
+            uploadedFile.transferTo(targetFile);
+
+        } catch (IOException ioException) {
+            this.logger.error("Could not copy the uploaded file \"{}\" for the request {} to path {}.",
+                    uploadedFile.getOriginalFilename(), requestId, targetFile.getAbsolutePath(), ioException);
+            return false;
+
+        } catch (RuntimeException runtimeException) {
+            this.logger.error("Could not add the file \"{}\" for the request {}.",
+                    uploadedFile.getOriginalFilename(), requestId, runtimeException);
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -998,7 +1239,8 @@ public class RequestsController extends BaseController {
         assert !request.isRejected() || request.getStatus() == Request.Status.EXPORTFAIL :
                 "The request to reject must not already be rejected (unless the rejected export failed).";
         assert request.getStatus() == Request.Status.ERROR || request.getStatus() == Request.Status.STANDBY
-                || request.getStatus() == Request.Status.EXPORTFAIL || request.getStatus() == Request.Status.UNMATCHED :
+                || request.getStatus() == Request.Status.EXPORTFAIL || request.getStatus() == Request.Status.UNMATCHED
+                || request.getStatus() == Request.Status.IMPORTFAIL :
                 "The request must be in error or in standby.";
         assert !StringUtils.isBlank(remark) : "The remark must not be empty.";
 

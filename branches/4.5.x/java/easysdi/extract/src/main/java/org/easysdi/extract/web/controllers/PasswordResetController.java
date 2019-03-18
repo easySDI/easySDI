@@ -118,7 +118,7 @@ public class PasswordResetController extends BaseController {
      */
     @PostMapping("request")
     @Transactional
-    public final String requestReset(@RequestParam final String email, final ModelMap model,
+    public String requestReset(@RequestParam final String email, final ModelMap model,
             final RedirectAttributes redirectAttributes) {
         this.logger.debug("A request to send the password reset e-mail has been received.");
 
@@ -152,7 +152,7 @@ public class PasswordResetController extends BaseController {
      * @return the string that identifies the view to display next
      */
     @PostMapping("reset")
-    public final String resetPassword(@RequestParam final String token, @RequestParam final String password,
+    public String resetPassword(@RequestParam final String token, @RequestParam final String password,
             @RequestParam final String passwordConfirmation, final HttpServletRequest request, final ModelMap model,
             final RedirectAttributes redirectAttributes) {
 
@@ -195,7 +195,7 @@ public class PasswordResetController extends BaseController {
      * @return the string that identifies the view to display next
      */
     @GetMapping("request")
-    public final String showRequestForm() {
+    public String showRequestForm() {
         this.logger.debug("Received a request to display the password reset request form.");
 
         if (this.isCurrentUserApplicationUser()) {
@@ -219,7 +219,7 @@ public class PasswordResetController extends BaseController {
      * @return the string that identifies the view to display next
      */
     @GetMapping("reset")
-    public final String showResetForm(final HttpServletRequest request, final ModelMap model,
+    public String showResetForm(final HttpServletRequest request, final ModelMap model,
             final RedirectAttributes redirectAttributes) {
         this.logger.debug("Received a request to display the password reset form.");
 

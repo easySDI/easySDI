@@ -345,7 +345,7 @@ function _getRequestsTableColumnsConfiguration() {
                             + data.productLabel + "</div>";
                 },
                 "sort" : function(data) {
-                    return data.orderLabel.toLowerCase() + "þþþ" + data.productLabel.toLowerCase();
+                    return data.orderLabel.toLowerCase() + "Ã¾Ã¾Ã¾" + data.productLabel.toLowerCase();
                 }
             }
         },

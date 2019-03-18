@@ -6,11 +6,11 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-
+    <!--
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <prudent>true</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/temp/extract/logs/extract.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>C:/temp/extract/logs/extract.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>10</maxHistory>
             <totalSizeCap>3GB</totalSizeCap>
         </rollingPolicy>
@@ -19,143 +19,15 @@
             <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
+    -->
 
-    <appender name="EMAIL-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>true</prudent>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/temp/extract/logs/email.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="HIBERNATE-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>true</prudent>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/temp/extract/logs/hibernate.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="CONNECTORS-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>true</prudent>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/temp/extract/logs/connectors.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="ORCHESTRATOR-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>true</prudent>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/temp/extract/logs/orchestrator.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="TASKS-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>true</prudent>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/temp/extract/logs/task-plugins.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="THYMELEAF-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>true</prudent>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/temp/extract/logs/thymeleaf.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="WEB-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>true</prudent>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/temp/extract/logs/web.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>3</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <logger name="javax.persistence" level="WARN">
-        <appender-ref ref="HIBERNATE-FILE" />
-    </logger>
-
-    <logger name="nz.net.ultraq.thymeleaf" level="WARN">
-        <appender-ref ref="THYMELEAF-FILE" />
-    </logger>
-
-    <logger name="org.easysdi.extract" level="DEBUG">
+    <!--
+    <logger name="org.easysdi.extract" level="WARN">
         <appender-ref ref="FILE" />
     </logger>
+    -->
 
-    <logger name="org.easysdi.extract.batch" level="DEBUG" additivity="false">
-        <appender-ref ref="ORCHESTRATOR-FILE" />
-    </logger>
-
-    <logger name="org.easysdi.extract.connectors" level="DEBUG" additivity="false">
-        <appender-ref ref="CONNECTORS-FILE" />
-    </logger>
-
-    <logger name="org.easysdi.extract.email" level="DEBUG" additivity="false">
-        <appender-ref ref="EMAIL-FILE" />
-    </logger>
-
-    <logger name="org.easysdi.extract.orchestrator" level="DEBUG" additivity="false">
-        <appender-ref ref="ORCHESTRATOR-FILE" />
-    </logger>
-
-    <logger name="org.easysdi.extract.plugins" level="DEBUG" additivity="false">
-        <appender-ref ref="TASKS-FILE" />
-    </logger>
-
-    <logger name="org.easysdi.extract.web" level="DEBUG" additivity="false">
-        <appender-ref ref="WEB-FILE" />
-    </logger>
-
-    <logger name="org.hibernate" level="WARN">
-        <appender-ref ref="HIBERNATE-FILE" />
-    </logger>
-
-    <logger name="org.thymeleaf" level="WARN">
-        <appender-ref ref="THYMELEAF-FILE" />
-    </logger>
-
-    <root level="OFF">
+    <root level="WARN">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
