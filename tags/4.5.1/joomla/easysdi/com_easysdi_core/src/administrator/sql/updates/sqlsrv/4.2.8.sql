@@ -1,1 +1,0 @@
-ALTER TABLE [#__sdi_maplayer] ALTER COLUMN [alias] [nvarchar](255);
