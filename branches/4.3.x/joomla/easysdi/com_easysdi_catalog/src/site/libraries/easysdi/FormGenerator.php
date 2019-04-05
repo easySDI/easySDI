@@ -1777,15 +1777,11 @@ class FormGenerator {
     }
 
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
-
-        if($relation_id == 574){
-            $breakpoint = true;
-        }
-        
-        if (!empty($value) || (gettype($value) == "integer" && $value == 0)) {
+       
+        if (isset($value) && strlen($value) > 0) {          
             return $value;
         }
-
+        
         if (empty($relation_id)) {
             return '';
         }
@@ -1809,7 +1805,8 @@ class FormGenerator {
 
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
-
+       
+        
         if (empty($result)) {
             return '';
         } else {
