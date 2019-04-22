@@ -519,7 +519,7 @@ CREATE TABLE [#__sdi_catalog_searchcriteria] (
 	[catalog_id] [bigint] NOT NULL,
 	[searchcriteria_id] [bigint] NOT NULL,
 	[searchtab_id] [bigint] NOT NULL,
-	[defaultvalue] [nvarchar](255) NULL,
+	[defaultvalue] [nvarchar](500) NULL,
 	[defaultvaluefrom] [datetime2](0) NULL,
 	[defaultvalueto] [datetime2](0) NULL,
 	[params] [nvarchar](500) NULL,
@@ -623,8 +623,8 @@ CREATE TABLE [#__sdi_diffusion] (
 	[description] [nvarchar](500) NULL,
 	[accessscope_id] [bigint] NOT NULL,
 	[pricing_id] [bigint] NOT NULL,
-        [pricing_profile_id] [bigint],
-        [pricing_remark] [nvarchar](max) NULL,
+    [pricing_profile_id] [bigint],
+    [pricing_remark] [nvarchar](max) NULL,
 	[deposit] [nvarchar](255) NULL,
 	[productmining_id] [bigint] NULL,
 	[surfacemin] [nvarchar](50) NULL,
@@ -632,14 +632,14 @@ CREATE TABLE [#__sdi_diffusion] (
 	[productstorage_id] [bigint] NULL,
 	[file] [nvarchar](255) NULL,
 	[fileurl] [nvarchar](500) NULL,
-        [packageurl] [nvarchar](500) ,
+    [packageurl] [nvarchar](500) ,
 	[perimeter_id] [bigint] NULL,
 	[hasdownload] [smallint] NOT NULL,
 	[hasextraction] [smallint] NOT NULL,
 	[restrictedperimeter] [smallint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
-        [otp][tinyint](1) NOT NULL DEFAULT 0,
+    [otp][tinyint](1) NOT NULL DEFAULT 0,
  CONSTRAINT [PK_#__sdi_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -909,7 +909,7 @@ CREATE TABLE [#__sdi_map] (
 	[checked_out_time] [datetime2](0) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[title] [nvarchar](255) NOT NULL,
-        [type] [nvarchar](10)  NOT NULL DEFAULT 'geoext',
+    [type] [nvarchar](10)  NOT NULL DEFAULT 'geoext',
 	[rootnodetext] [nvarchar](255) NULL,
 	[srs] [nvarchar](255) NOT NULL,
 	[unit_id] [bigint] NOT NULL,
@@ -922,6 +922,7 @@ CREATE TABLE [#__sdi_map] (
 	[abstract] [nvarchar](max) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
+	[default_backgroud_layer] [INT] NOT NULL DEFAULT 0,
  CONSTRAINT [PK_#__sdi_map_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1192,8 +1193,8 @@ CREATE TABLE [#__sdi_order_diffusion] (
 	[file] [nvarchar](500) NULL,
 	[size] [decimal](10, 0) NULL,
         [displayName] [nvarchar](75) NULL,
-        [opt] [nvarchar] NULL,
-        [optchance] [int] (11) DEFAULT 0,
+        [opt] [nvarchar](50) NULL,
+        [optchance] [int] DEFAULT 0,
  CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -1258,15 +1259,15 @@ CREATE TABLE [#__sdi_organism] (
 	[name] [nvarchar](255) NOT NULL,
 	[website] [nvarchar](500) NULL,
 	[perimeter] [nvarchar](max) NULL,
-        [selectable_as_thirdparty] [smallint] NULL,
+    [selectable_as_thirdparty] [smallint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
 	[username] [nvarchar](150) NULL,
 	[password] [nvarchar](65) NULL,
-        [internal_free] [smallint] NULL,
-        [fixed_fee_te] [decimal](6,2) NULL,
-        [data_free_fixed_fee] [smallint] NULL,
-        [fixed_fee_apply_vat] [smallint] NOT NULL DEFAULT 1,
+    [internal_free] [smallint] NULL,
+    [fixed_fee_te] [decimal](6,2) NULL DEFAULT 0,
+    [data_free_fixed_fee] [smallint] NULL,
+    [fixed_fee_apply_vat] [smallint] NOT NULL DEFAULT 1,
  CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -2291,7 +2292,7 @@ CREATE TABLE [#__sdi_pricing_profile](
     [surface_rate] [decimal](19,2),
     [min_fee] [decimal](19,2),
     [max_fee] [decimal](19,2),
-    [apply_vat] [smallint] NOT NULL DEFAULT 1,
+    [apply_vat] [smallint] NULL DEFAULT 1,
 CONSTRAINT [PK_#__sdi_pricing_profile] PRIMARY KEY CLUSTERED
 (
     [id] ASC
@@ -2410,7 +2411,7 @@ CREATE TABLE [#__sdi_pricing_order_supplier_product_profile] (
     [checked_out] [int] NOT NULL,
     [checked_out_time] [datetime2](0) NOT NULL,
     [pricing_order_supplier_product_id] [int](11) not null,
-    [pricing_profile_id] [int](11) null,
+    [pricing_profile_id] [BIGINT] null,
     [pricing_profile_name] [nvarchar](255) not null,
     [cfg_fixed_fee_te] [decimal](19,2) NOT NULL DEFAULT 0,
     [cfg_apply_vat] [smallint] NOT NULL DEFAULT 1,

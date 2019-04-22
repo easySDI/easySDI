@@ -828,3 +828,7 @@ INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnecto
 INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('7', '2', '4');
 INSERT [#__sdi_sys_server_serviceconnector] ([id], [server_id], [serviceconnector_id]) VALUES ('8', '2', '5');
 SET IDENTITY_INSERT [#__sdi_sys_server_serviceconnector] OFF
+
+INSERT [#__sdi_sys_maptool] ([alias], [ordering], [state], [name]) VALUES (N'bangeocoder',22,1,N'Ban Geocoder');
+INSERT [#__sdi_sys_maptool] ([alias], [ordering], [state], [name]) VALUES (N'fullscreen',23,1,N'Full screen');
+INSERT [#__sdi_sys_maptool] ([alias], [ordering], [state], [name]) VALUES (N'locate',24,1,N'Locate');
