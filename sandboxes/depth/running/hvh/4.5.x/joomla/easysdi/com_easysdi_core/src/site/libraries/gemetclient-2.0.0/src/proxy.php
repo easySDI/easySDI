@@ -28,7 +28,7 @@ if($purl['scheme']=='http' || $purl['scheme']=='https'){
 	if($s)
 	  $return = "{success:true,results:".str_replace(array('\r','\n'), array(' ','<BR>'), $s)."}";
 	else
-            $return = "{success:false,message:'".addslashes(JText::_('COM_EASYSDI_CATALOG_GEMET_REMOTE_SERVICE_UNAVAILABLE'))."'}";
+            $return = "{success:false,message:'".addslashes('COM_EASYSDI_CATALOG_GEMET_REMOTE_SERVICE_UNAVAILABLE')."'}";
 	header("Content-type: application/json; charset=utf-8");
 	echo $return;
 }

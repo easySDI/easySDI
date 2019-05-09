@@ -134,7 +134,8 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $query->select('t.text1, b.alias, b.northbound, b.southbound, b.westbound, b.eastbound');
         $query->from('#__sdi_boundary AS b');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid ');
-        $query->where('t.text1 = ' . $this->db->quote($name));
+        //$query->where('t.text1 = ' . $this->db->quote($name));
+        $query->where('b.name = ' . $this->db->quote($name));
 
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
