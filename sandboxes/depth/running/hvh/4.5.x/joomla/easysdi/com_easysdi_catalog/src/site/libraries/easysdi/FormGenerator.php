@@ -228,9 +228,10 @@ class FormGenerator {
 
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
-            if (!$this->cleanStructure()) {
+            $this->cleanStructure();
+           /* if (!$this->cleanStructure()) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_XML_IMPORT_ERROR'), 'error');
-            }
+            }*/
         }
         $this->session->set('structure', serialize($this->structure->saveXML()));
         $this->setDomXpathStr();
@@ -495,54 +496,56 @@ class FormGenerator {
         //clone the structure - having a document between the structure and the csw let us do the bi-directional merge
         $clone_structure = new DOMDocument('1.0', 'utf-8');
         $clone_structure->loadXML($this->structure->saveXML());
+                
         $domXpathClone = new DOMXPath($clone_structure);
-
         $this->registerNamespace($domXpathClone);
 
+        // Récupère les class, attibuts et relationType du clone
         $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$RELATIONTYPE . '"]');
 
         for ($j = 0; $j < $coll->length; $j++) {
             /* @var $node DOMElement */
             $node = $coll->item($j);
+            
             $childType = $node->getAttributeNs($this->catalog_uri, 'childtypeId');
             $nodePath = $node->getNodePath();
 
-            //Multiselect with default value will return from "$this->structure" several node indexed with [1], [2]
-            //Because each default value will have a nodePath indexed AND a dummy empty node will be also present
-            //So at least, with a multiselect with one default value, 2 nodes will be present in the XMl structure
-            //Need to handle just one
-            if((substr($nodePath, -1) === "]")){
-                $start = strrpos($nodePath, "[");
-                $nodePath = substr($nodePath, 0,  $start);
-            }
-
+            
+            
             if ($childType == EnumChildtype::$CLASS) {
+
                 $paths = explode('/', $nodePath);
                 $index = count($paths) - 2;
                 $index_node_name = $this->removeIndex($paths[$index]);
                 $paths[$index] = $index_node_name;
+
                 $nodePath = implode('/', $paths);
             }
 
             $occurance = $this->domXpathCsw->query('/*' . $nodePath)->length;
             $occurance_clone = $domXpathClone->query($nodePath)->length;
 
-            // if occurance == 0 remove node from clone
-            if ($occurance == 0) {
-                if (!method_exists($node->parentNode, 'getAttributeNs'))
-                    return false;
-
-                $parentChildType = @$node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
-
+            // Si il a 0 occurance dans le CSW, et que le noeud n'est pas un attribut, 
+            // on le supprime du clone. Les attributs doivent toujours rester disponible pour la saisie.
+            if ($occurance == 0 && $childType != EnumChildtype::$ATTRIBUT) {
+            //if ($occurance == 0 ) {
+                $parentChildType = $node->parentNode->getAttributeNs($this->catalog_uri, 'childtypeId');
+                
                 //look for the ancestor under which we can clean the structure
-                while (!isset($node->nextSibling) && !isset($node->previousSibling) && $parentChildType != EnumChildtype::$RELATIONTYPE) {
+                while (!isset($node->nextSibling) && !isset($node->previousSibling) && $parentChildType != EnumChildtype::$RELATION) {
                     $node = $node->parentNode;
                 }
 
                 //remove the child
-                $parent = $node->parentNode;
-                $parent->removeChild($node);
+                if($node->getAttributeNs($this->catalog_uri, 'childtypeId') != EnumChildtype::$RELATION){
+                    $parent = $node->parentNode;
+                    $parent->removeChild($node);
+                    /*if(!$parent->hasChildNodes() && $parent->getAttributeNs($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATION){
+                        $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', 0);
+                    }*/
+                }
                 $clone_structure->normalizeDocument();
+                
 
                 //reset collection and loop
                 $coll = $domXpathClone->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$RELATIONTYPE . '"]');
@@ -550,33 +553,26 @@ class FormGenerator {
                 continue;
             }
 
+            // On selectionne le noeud parent dans lequel on doit ajouter la nouvelle instance enfant
             $childtype = $node->getAttributeNS($this->catalog_uri, 'childtypeId');
             if ($childtype == EnumChildtype::$CLASS) {
                 $node = $node->parentNode;
             }
-
-            if ($occurance < $occurance_clone) {//Default values are present in the structure, but CSW metadata already has value(s) selected in fewer occurance 
-                for ($i = $occurance_clone; $i > $occurance + 1; $i--) {
-                    //remove the child
-                    $parent = $node->parentNode;
-                    if (isset($node->nextSibling)) {
-                        $node = $node->previousSibling;
-                    }
-                    $parent->removeChild($node->nextSibling);
-                    $clone_structure->normalizeDocument();
-                }
-            } else {
+            
+            // On ajoute le bon nombre d'instance
             for ($i = $occurance_clone; $i < $occurance; $i++) {
                 $cloneNode = $node->cloneNode(true);
                 $cloneNode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
                 isset($node->nextSibling) ? $node->parentNode->insertBefore($cloneNode, $node->nextSibling) : $node->parentNode->appendChild($cloneNode);
             }
         }
-        }
 
+        // Structure après ajout suppression des noeuds 
+        //echo $clone_structure->saveXML(); die();
+        
         $this->getValue($clone_structure->firstChild);
+
         $this->mergeToStructure($clone_structure, $domXpathClone);
-        return true;
     }
 
     /**
@@ -587,11 +583,7 @@ class FormGenerator {
      * 
      */
     private function mergeToStructure(DOMDocument $clone, DOMXPath $domXpathClone) {
-        /* @var $node DOMElement */
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="' . EnumChildtype::$CLASS . '"]|//*[@catalog:childtypeId="' . EnumChildtype::$ATTRIBUT . '"]') as $node) {
-            if (strpos($node->getNodePath(), 'gmd:extent') > -1) {
-                $breakpoint = true;
-            }
             if ($domXpathClone->query($node->getNodePath())->length == 0) {
                 do {
                     $childToImport = $node;
@@ -599,45 +591,40 @@ class FormGenerator {
                     $id = $node->getAttributeNS($this->catalog_uri, 'id');
                 } while ($domXpathClone->query($node->getNodePath() . '[@catalog:id="' . $id . '"]')->length == 0);
 
-                //$target = $domXpathClone->query($node->getNodePath())->item(0);
-                $targets = $domXpathClone->query($node->getNodePath());
-                $target = $targets->item(0);
-                $prevSibl = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
-                if (isset($prevSibl)) {
-                    $coll = $domXpathClone->query($prevSibl->getNodePath());
+                // Index of parent instance
+                $i=0;
+                foreach ($domXpathClone->query($node->getNodePath()) as $target) {
+                    $prevSibl = $this->domXpathStr->query($childToImport->getNodePath())->item(0)->previousSibling;
+                    if (isset($prevSibl)) {
+                        $coll = $domXpathClone->query($prevSibl->getNodePath());
 
-                    //try to set the refNode, depending on the prevSibl existence
-                    //$refNode = $coll->length > 0 ? $coll->item($coll->length - 1)->nextSibling : $target->firstChild;
-                    if ($coll->length > 0) {
-                        $refNode = $coll->item($coll->length - 1)->nextSibling;
-                        //$target = $targets->item($coll->length - 1);
+                        //try to set the refNode, depending on the prevSibl existence
+                        if ($coll->length > 0) {
+                            $refNode = $coll->item($i)->nextSibling;                            
+                        } else {
+                            $refNode = $target->firstChild;
+                        }
                     } else {
                         $refNode = $target->firstChild;
                     }
-                } else {
-                    $refNode = $target->firstChild;
-                }
 
-                if (empty($refNode)) {
-                    $breakpoint = true;
-                }
-
-                try {
-                    //add the child to the parent, before the refNode if defined or as last parent's child
-                    if (isset($refNode)) {
-                        $target->insertBefore($clone->importNode($childToImport, true), $refNode);
-                    } else {
-                        $target->appendChild($clone->importNode($childToImport, true));
+                    try {
+                        //add the child to the parent, before the refNode if defined or as last parent's child
+                        if (isset($refNode)) {
+                            $target->insertBefore($clone->importNode($childToImport, true), $refNode);
+                        } else {
+                            $target->appendChild($clone->importNode($childToImport, true));
+                        }
+                    } catch (Exception $exc) {
+                        $exc->getTraceAsString();
                     }
-                } catch (Exception $exc) {
-                    $exc->getTraceAsString();
+                     $i++;
                 }
             }
         }
-
+        
         //replace the structure with the clone
-        $this->structure->loadXML($clone->saveXML());
-        $breakpoint = true;
+        $this->structure->loadXML($clone->saveXML());        
     }
 
     /**
@@ -681,10 +668,7 @@ class FormGenerator {
      * @param DOMNode $child The current attribute.
      */
     private function getValue(DOMNode &$child) {
-        if (strstr($child->getNodePath(), 'colors')) {
-            $breakpoint = true;
-        }
-
+        
         foreach ($child->childNodes as $i => $node) {
             if ($this->hasChildElement($node)) {
                 if ($node->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
@@ -1735,6 +1719,7 @@ class FormGenerator {
      */
     private function getDefaultValue($relation_id, $value, $isList = false, $language_id = null) {
 
+        
         
         
          if (isset($value) && strlen($value) > 0 || (gettype($value) == "integer" && $value == 0)) {

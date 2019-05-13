@@ -640,6 +640,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
     }
 
+    
     /**
      * Add boundary stereotype into xpath
      * 
