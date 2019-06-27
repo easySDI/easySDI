@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="hidden">
+        <field name="id" type="hidden" filter="safehtml" />
+        <field name="guid" type="hidden" filter="safehtml" /> 
+        <field name="alias" type="hidden" filter="safehtml" /> 
+        <field name="created_by" type="hidden" filter="safehtml" /> 
+        <field name="created" type="hidden" filter="safehtml" /> 
+        <field name="modified_by" type="hidden" filter="safehtml" /> 
+        <field name="modified" type="hidden" filter="safehtml" />
+        <field name="ordering" type="hidden" filter="safehtml" /> 
+        <field name="state" type="hidden" filter="safehtml" />
+        <field name="checked_out" type="hidden" filter="safehtml" />
+        <field name="checked_out_time" type="hidden" filter="safehtml" /> 
+        <field name="name" type="hidden" filter="safehtml" /> 
+        <field name="ordertype_id" type="hidden" filter="safehtml" />
+        <field name="orderstate_id" type="hidden" filter="safehtml" />
+        <field name="user_id" type="hidden" filter="safehtml" />
+        <field name="thirdparty_id" type="hidden" filter="safehtml" />
+        <field name="surface" type="hidden" filter="safehtml" />
+        <field name="sent" type="hidden" filter="safehtml" />
+        <field name="completed" type="hidden" filter="safehtml" />
+        <field name="access" type="hidden" filter="safehtml" />
+        <field name="asset_id" type="hidden" filter="safehtml" />        
+    </fieldset>
+    
+    <field name="perimeter" type="hidden" filter="safehtml" /> 
+    <field name="wfsperimeter" type="hidden" filter="safehtml" /> 
+    <field name="wfsurl" type="hidden" filter="safehtml" /> 
+    <field name="wfsfeaturetypefieldid" type="hidden" filter="safehtml" /> 
+    <field name="wfsfeaturetypename" type="hidden" filter="safehtml" /> 
+    <field name="wfsnamespace" type="hidden" filter="safehtml" /> 
+    <field name="wfsprefix" type="hidden" filter="safehtml" /> 
+    <field name="wfsfeaturetypefieldgeometry" type="hidden" filter="safehtml" />     
+</form>
