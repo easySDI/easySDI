@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -259,13 +261,18 @@ public class FmeDesktopPlugin implements ITaskProcessor {
                 resultErrorCode = "-1";
                 final InputStream error = fmeTaskProcess.getErrorStream();
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(error));
-                final StringBuilder messageBuilder = new StringBuilder();
+                //final StringBuilder messageBuilder = new StringBuilder();
                 String line;
+                List<String> messageLines = new ArrayList<String>();
 
                 while ((line = reader.readLine()) != null) {
-                    messageBuilder.append(line);
-                    messageBuilder.append("\r\n");
+                    //messageBuilder.append(line);
+                    //messageBuilder.append("\r\n");
+                    messageLines.add(line);
                 }
+
+                //resultMessage = messageBuilder.toString();
+                resultMessage = StringUtils.join(messageLines, System.lineSeparator());
 
             } else {
                 final File dirFolderOut = new File(request.getFolderOut());
@@ -295,9 +302,8 @@ public class FmeDesktopPlugin implements ITaskProcessor {
 
         } catch (Exception exception) {
             final String exceptionMessage = exception.getMessage();
-            this.logger.error("The FME workbench has failed", exception);
+            this.logger.error("The FME workspace has failed", exception);
             resultMessage = String.format(this.messages.getString("fme.executing.failed"), exceptionMessage);
-
         }
 
         result.setStatus(resultStatus);
@@ -343,11 +349,16 @@ public class FmeDesktopPlugin implements ITaskProcessor {
         final String perimeter = request.getPerimeter();
         final String parameters = request.getParameters();
 
-        return String.format("\"%s\" \"%s\" --%s \"%s\" --%s \"%s\" --%s \"%s\" --%s %s",
+        return String.format(
+                "\"%s\" \"%s\" --%s \"%s\" --%s \"%s\" --%s \"%s\" --%s %s --%s \"%s\" --%s %s --%s \"%s\" --%s \"%s\"",
                 fmeExecutablePath, fmeScriptPath, this.config.getProperty("paramRequestPerimeter"), perimeter,
                 this.config.getProperty("paramRequestProduct"), productId,
                 this.config.getProperty("paramRequestFolderOut"), request.getFolderOut(),
-                this.config.getProperty("paramRequestParameters"), this.formatJsonParametersQuotes(parameters));
+                this.config.getProperty("paramRequestParameters"), this.formatJsonParametersQuotes(parameters),
+                this.config.getProperty("paramRequestOrderLabel"), request.getOrderLabel(),
+                this.config.getProperty("paramRequestInternalId"), request.getId(),
+                this.config.getProperty("paramRequestClientGuid"), request.getClientGuid(),
+                this.config.getProperty("paramRequestOrganismGuid"), request.getOrganismGuid());
     }
 
 

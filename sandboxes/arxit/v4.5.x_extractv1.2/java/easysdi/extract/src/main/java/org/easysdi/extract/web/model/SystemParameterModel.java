@@ -16,8 +16,15 @@
  */
 package org.easysdi.extract.web.model;
 
+import org.easysdi.extract.orchestrator.OrchestratorTimeRange;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.easysdi.extract.domain.SystemParameter;
 import org.easysdi.extract.email.EmailSettings.SslType;
+import org.easysdi.extract.orchestrator.OrchestratorSettings.SchedulerMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +66,16 @@ public class SystemParameterModel extends PluginItemModel {
      * The delay to wait before a new execution of an orchestrator job.
      */
     private String schedulerFrequency;
+
+    /**
+     * The run mode of the orchestrator.
+     */
+    private SchedulerMode schedulerMode;
+
+    /**
+     * The delay to wait before a new execution of an orchestrator job.
+     */
+    private List<OrchestratorTimeRange> schedulerRanges = new ArrayList<>();
 
     /**
      * The e-mail address of the sender for the messages sent by the application.
@@ -161,6 +178,81 @@ public class SystemParameterModel extends PluginItemModel {
      */
     public final void setSchedulerFrequency(final String frequency) {
         this.schedulerFrequency = frequency;
+    }
+
+
+
+    /**
+     * Gets the delay to wait before a new execution of an orchestrator job.
+     *
+     * @return the delay in seconds
+     */
+    public final SchedulerMode getSchedulerMode() {
+        return this.schedulerMode;
+    }
+
+
+
+    /**
+     * Defines the delay to wait before a new execution of an orchestrator job.
+     *
+     * @param mode
+     */
+    public final void setSchedulerMode(final SchedulerMode mode) {
+
+        if (mode == null) {
+            throw new IllegalArgumentException("The orchestrator running mode cannot be null.");
+        }
+
+        this.schedulerMode = mode;
+    }
+
+
+
+    /**
+     * Gets the delay to wait before a new execution of an orchestrator job.
+     *
+     * @return the delay in seconds
+     */
+    public final OrchestratorTimeRange[] getSchedulerRanges() {
+        return this.schedulerRanges.toArray(new OrchestratorTimeRange[]{});
+    }
+
+
+
+    public final String getSchedulerRangesAsJson() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            return mapper.writeValueAsString(this.getSchedulerRanges());
+
+        } catch (JsonProcessingException exception) {
+            this.logger.error("Could not serialize the operation time ranges of the orchestrator to JSON.", exception);
+            return null;
+        }
+    }
+
+
+
+    /**
+     * Defines the delay to wait before a new execution of an orchestrator job.
+     *
+     * @param ranges
+     */
+    public final void setSchedulerRanges(final OrchestratorTimeRange[] ranges) {
+        this.schedulerRanges.clear();
+        this.schedulerRanges.addAll(Arrays.asList(ranges));
+    }
+
+
+
+    /**
+     * Defines the delay to wait before a new execution of an orchestrator job.
+     *
+     * @param ranges
+     */
+    public final void setSchedulerRanges(final List<OrchestratorTimeRange> ranges) {
+        this.schedulerRanges = ranges;
     }
 
 
@@ -362,6 +454,23 @@ public class SystemParameterModel extends PluginItemModel {
      */
     public SystemParameterModel() {
         this.logger.debug("Instantiating a model for a new user.");
+    }
+
+
+
+    public final void addTimeRange(final OrchestratorTimeRange newRange) {
+
+        if (newRange == null) {
+            throw new IllegalArgumentException("The time range to add cannot be null.");
+        }
+
+        this.schedulerRanges.add(newRange);
+    }
+
+
+
+    public final void removeTimeRange(final int rangeIndex) {
+        this.schedulerRanges.remove(rangeIndex);
     }
 
 

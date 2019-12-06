@@ -30,6 +30,7 @@ import org.easysdi.extract.domain.Request;
 import org.easysdi.extract.domain.RequestHistoryRecord;
 import org.easysdi.extract.domain.Task;
 import org.easysdi.extract.domain.User;
+import org.easysdi.extract.orchestrator.OrchestratorSettings;
 import org.easysdi.extract.persistence.ProcessesRepository;
 import org.easysdi.extract.persistence.RequestHistoryRepository;
 import org.easysdi.extract.persistence.RequestsRepository;
@@ -37,6 +38,7 @@ import org.easysdi.extract.persistence.SystemParametersRepository;
 import org.easysdi.extract.persistence.UsersRepository;
 import org.easysdi.extract.utils.FileSystemUtils;
 import org.easysdi.extract.utils.FileSystemUtils.RequestDataFolder;
+import org.easysdi.extract.utils.ZipUtils;
 import org.easysdi.extract.web.Message;
 import org.easysdi.extract.web.Message.MessageType;
 import org.easysdi.extract.web.model.RequestModel;
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -193,6 +196,8 @@ public class RequestsController extends BaseController {
         }
 
         model.addAttribute("mapDataFileName", mapDataFileName);
+        OrchestratorSettings orchestratorSettings = new OrchestratorSettings(this.parametersRepository);
+        model.addAttribute("orchestratorState", orchestratorSettings.getStateString());
 
         this.logger.debug("Displaying request details.");
 
@@ -235,7 +240,6 @@ public class RequestsController extends BaseController {
     @ResponseBody
     public final FileSystemResource viewRequestOutputFile(@PathVariable final int requestId,
             @RequestParam("file") final String fileString, final HttpServletResponse response) {
-
         this.logger.debug("Received a web request to display the output file \"{}\" for request {}.", fileString,
                 requestId);
 
@@ -264,6 +268,44 @@ public class RequestsController extends BaseController {
 
         response.setHeader("Content-Disposition", "attachment; filename=" + outputFile.getName());
         return new FileSystemResource(outputFile);
+    }
+
+
+
+    /**
+     * Processes a web request to obtain an archive with all the files produced by the processing of
+     * an order.
+     *
+     * @param requestId the number that identifies the order whose processing produced the file
+     * @param response  the HTTP response to this request
+     * @return a byte array resource wrapping the requested archive file, or <code>null</code> if the output content
+     *         cannot be served
+     */
+    @GetMapping(path = "{requestId}/getAllFiles", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @ResponseBody
+    public final ByteArrayResource viewRequestOutputContent(@PathVariable final int requestId,
+            final HttpServletResponse response) {
+        this.logger.debug("Received a web request to display all the output files for request {}.", requestId);
+
+        final Request request = this.requestsRepository.findOne(requestId);
+
+        if (request == null) {
+            this.logger.error("No request found in database with the identifier {}.", requestId);
+            response.setStatus(RequestsController.HTTP_NOT_FOUND_ERROR_CODE);
+            return null;
+        }
+
+        final byte[] outputFilesZip = this.getRequestOutputContent(request);
+        final String outputZipName = String.format("%s.zip", request.getId());
+
+        if (outputFilesZip == null) {
+            this.logger.debug("The output content for request {} is not available.", requestId);
+            response.setStatus(RequestsController.HTTP_NOT_FOUND_ERROR_CODE);
+            return null;
+        }
+
+        response.setHeader("Content-Disposition", "attachment; filename=" + outputZipName);
+        return new ByteArrayResource(outputFilesZip);
     }
 
 
@@ -499,7 +541,7 @@ public class RequestsController extends BaseController {
                 this.addStatusMessage(redirectAttributes, "requestDetails.rejection.success", MessageType.SUCCESS);
 
             } catch (RuntimeException exception) {
-                this.logger.error("Could not validate the request {}.", requestId, exception);
+                this.logger.error("Could not reject the request {}.", requestId, exception);
                 this.addStatusMessage(redirectAttributes, "requestDetails.rejection.failed", MessageType.ERROR);
             }
         }
@@ -548,7 +590,7 @@ public class RequestsController extends BaseController {
             this.addStatusMessage(redirectAttributes, "requestDetails.processRelaunch.success", MessageType.SUCCESS);
 
         } catch (RuntimeException exception) {
-            this.logger.error("Could not validate the request {}.", requestId, exception);
+            this.logger.error("Could not relaunch the process of request {}.", requestId, exception);
             this.addStatusMessage(redirectAttributes, "requestDetails.processRelaunch.failed", MessageType.ERROR);
         }
 
@@ -596,7 +638,7 @@ public class RequestsController extends BaseController {
             this.addStatusMessage(redirectAttributes, "requestDetails.taskRestart.success", MessageType.SUCCESS);
 
         } catch (RuntimeException exception) {
-            this.logger.error("Could not validate the request {}.", requestId, exception);
+            this.logger.error("Could not restart the current task of request {}.", requestId, exception);
             this.addStatusMessage(redirectAttributes, "requestDetails.taskRestart.failed", MessageType.ERROR);
         }
 
@@ -644,7 +686,7 @@ public class RequestsController extends BaseController {
             this.addStatusMessage(redirectAttributes, "requestDetails.exportRetry.success", MessageType.SUCCESS);
 
         } catch (RuntimeException exception) {
-            this.logger.error("Could not validate the request {}.", requestId, exception);
+            this.logger.error("Could not retry the export of request {}.", requestId, exception);
             this.addStatusMessage(redirectAttributes, "requestDetails.exportRetry.failed", MessageType.ERROR);
         }
 
@@ -701,6 +743,55 @@ public class RequestsController extends BaseController {
 
 
     /**
+     * Processes a web request to abandon the execution of the current task and go on with the process.
+     *
+     * @param requestId          the number that identifies the order whose current task should be skipped
+     * @param currentStep        the step that was active when the user submitted the skip request
+     * @param redirectAttributes the data to pass to a page that the user may be redirected to
+     * @return the string that identifies the view to display next
+     */
+    @PostMapping("{requestId}/skipTask")
+    public final synchronized String handleSkipCurrentTask(@PathVariable final int requestId,
+            @RequestParam final int currentStep, final RedirectAttributes redirectAttributes) {
+
+        this.logger.debug("Received a web request to skip the current task of request {}.", requestId);
+        Request request = this.requestsRepository.findOne(requestId);
+
+        if (request == null) {
+            this.logger.error("The user {} attempted to skip the current task of request {}, which does not exist.",
+                    this.getCurrentUserLogin(), requestId);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.request.notFound", MessageType.ERROR);
+
+            return RequestsController.REDIRECT_TO_LIST;
+        }
+
+        if (!this.canCurrentUserSkipTask(request)) {
+            this.logger.warn("The user {} tried to skip the current task of request {} but is not allowed to access it.",
+                    this.getCurrentUserLogin(), requestId);
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.request.notAllowed", MessageType.ERROR);
+
+            return RequestsController.REDIRECT_TO_ACCESS_DENIED;
+        }
+
+        if (!this.canRequestCurrentTaskBeSkipped(request, currentStep, redirectAttributes)) {
+            return RequestsController.REDIRECT_TO_LIST;
+        }
+
+        try {
+            this.skipCurrentTask(request);
+            this.addStatusMessage(redirectAttributes, "requestDetails.taskSkip.success", MessageType.SUCCESS);
+
+        } catch (RuntimeException exception) {
+            this.logger.error("Could not skip the current task of request {}.", requestId, exception);
+            this.addStatusMessage(redirectAttributes, "requestDetails.taskSkip.failed", MessageType.ERROR);
+        }
+
+        return String.format(RequestsController.REDIRECT_TO_DETAILS_FORMAT, requestId);
+    }
+
+
+
+    /**
      * Processes a web request to allow a request that is in standby to proceed.
      *
      * @param requestId          the integer that identifies the standby request
@@ -747,6 +838,31 @@ public class RequestsController extends BaseController {
         }
 
         return String.format(RequestsController.REDIRECT_TO_DETAILS_FORMAT, requestId);
+    }
+
+
+
+    /**
+     * Adds record entries for the remaining tasks when a requests is set to skip to the end of its process.
+     *
+     * @param request the request whose process is aborted
+     */
+    @Transactional
+    private void addSkippedTasksRecords(final Request request) {
+        assert request != null : "The request cannot be null.";
+        assert request.getProcess() != null : "The request must be associated with a process.";
+
+        org.easysdi.extract.domain.Process process = request.getProcess();
+        Calendar skipDate = new GregorianCalendar();
+
+        for (Task processTask : process.getTasksCollection()) {
+
+            if (processTask.getPosition() <= request.getTasknum()) {
+                continue;
+            }
+
+            this.createSkippedTaskHistoryRecord(request, processTask, skipDate);
+        }
     }
 
 
@@ -835,6 +951,19 @@ public class RequestsController extends BaseController {
      * @return <code>true</code> if the current user can restart the current task
      */
     private boolean canCurrentUserRestartCurrentTask(final Request request) {
+        return this.canCurrentUserViewRequestDetails(request);
+    }
+
+
+
+    /**
+     * Checks if the user that is currently identified (if any) is allowed to abandon the current task of
+     * a request and go on with its process.
+     *
+     * @param request the request whose current task must be skipped
+     * @return <code>true</code> if the current user can skip the current task
+     */
+    private boolean canCurrentUserSkipTask(final Request request) {
         return this.canCurrentUserViewRequestDetails(request);
     }
 
@@ -1095,6 +1224,40 @@ public class RequestsController extends BaseController {
 
 
     /**
+     * Determines whether the current task of a given order process can be abandoned.
+     *
+     * @param request            the order whose current task should be abandoned
+     * @param activeStep         the number that identifies the process step of the task that must be abandoned
+     * @param redirectAttributes the data to pass to a page that the user may be redirected to
+     * @return <code>true</code> if the current task can be abandoned
+     */
+    private boolean canRequestCurrentTaskBeSkipped(final Request request, final int activeStep,
+            final RedirectAttributes redirectAttributes) {
+        assert request != null : "The request cannot be null.";
+
+        if (!this.checkActiveStep(activeStep, request)) {
+            this.logger.warn("The user {} tried to skip the task at step {} of request {}, but it is not"
+                    + " the active step anymore.", this.getCurrentUserLogin(), activeStep, request.getId());
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.invalidStep", MessageType.ERROR);
+
+            return false;
+        }
+
+        if (request.getStatus() != Request.Status.ERROR) {
+            this.logger.warn("The user {} tried to skip the current task of request {} but the request is not"
+                    + " in error.", this.getCurrentUserLogin(), request.getId());
+            this.addStatusMessage(redirectAttributes, "requestDetails.error.restartTask.invalidState",
+                    MessageType.ERROR);
+
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    /**
      * Determines whether the processing of a given order can be restarted from the beginning.
      *
      * @param request            the order whose processing should be restarted
@@ -1181,6 +1344,102 @@ public class RequestsController extends BaseController {
 
 
     /**
+     * Creates an entry in the processing history of a request to indicate that a certain task has not been
+     * executed at all.
+     *
+     * @param request     the request whose task has been skipped
+     * @param skippedTask the task that has been skipped
+     */
+    private void createSkippedTaskHistoryRecord(final Request request, final Task skippedTask) {
+        this.createSkippedTaskHistoryRecord(request, skippedTask, new GregorianCalendar());
+    }
+
+
+
+    /**
+     * Creates an entry in the processing history of a request to indicate that a certain task has not been
+     * executed at all.
+     *
+     * @param request     the request whose task has been skipped
+     * @param skippedTask the task that has been skipped
+     * @param skipDate    the date and time when the task has been skipped
+     */
+    private void createSkippedTaskHistoryRecord(final Request request, final Task skippedTask,
+            final Calendar skipDate) {
+        assert request != null : "The request with a skipped task cannot be null";
+        assert skippedTask != null : "The skipped task cannot be null";
+        assert request.getProcess() != null : "The request with a skipped task must have a process attributed";
+        assert request.getProcess().getTasksCollection().contains(skippedTask) :
+                "The skipped task must be part of the process attributed to the request";
+        assert skipDate != null : "The date and time when the task was skipped cannot be null";
+
+        //TODO Find an elegant way to centralize the history record creation
+        RequestHistoryRecord record = new RequestHistoryRecord();
+        record.setProcessStep(skippedTask.getPosition());
+        record.setRequest(request);
+        record.setStartDate(skipDate);
+        record.setEndDate(skipDate);
+        record.setStatus(RequestHistoryRecord.Status.SKIPPED);
+        record.setStep(this.requestHistoryRepository.findByRequestOrderByStep(request).size() + 1);
+        record.setTaskLabel(skippedTask.getLabel());
+        record.setUser(this.usersRepository.findOne(this.getCurrentUserId()));
+
+        if (this.requestHistoryRepository.save(record) == null) {
+            throw new RuntimeException(String.format("Could not save a record history for skipped task \"%s\".",
+                    skippedTask.getLabel()));
+        }
+
+    }
+
+
+
+    /**
+     * Obtains a file that was produced by the processing of an order.
+     *
+     * @param request      the order that produced the desired file
+     * @param relativePath the path of the file relative to the output folder of the order
+     * @return the file, or <code>null</code> if it is not available or accessible
+     */
+    private byte[] getRequestOutputContent(final Request request) {
+        assert request != null : "The request must not be null.";
+        this.logger.debug("Getting output content for request {}.", request.getId());
+
+        if (request.getFolderOut() == null) {
+            this.logger.debug("The request {} has no output folder set.", request.getId());
+            return null;
+        }
+
+        if (!this.canCurrentUserViewRequestDetails(request)) {
+            this.logger.warn("The user {} tried to view the output content for request {} but is not allowed"
+                    + " to view it.", this.getCurrentUserLogin(), request.getId());
+            return null;
+        }
+
+        final Path outputFolderPath = Paths.get(this.parametersRepository.getBasePath(), request.getFolderOut());
+        final File outputFolder = outputFolderPath.toFile();
+
+        if (!outputFolder.exists() || !outputFolder.canRead() || !outputFolder.isDirectory()) {
+            this.logger.debug("The output folder \"{}\" for request {} cannot be read or is not a directory.",
+                    outputFolder.getAbsolutePath(), request.getId());
+            return null;
+        }
+
+        final byte[] outputZipBytes;
+
+        try {
+            outputZipBytes = ZipUtils.zipFolderContentToByteArray(outputFolder);
+
+        } catch (IOException exception) {
+            this.logger.error("An error occurred when trying to zip the content of the output folder.", exception);
+            return null;
+        }
+
+        return outputZipBytes;
+    }
+
+
+
+    /**
      * Obtains a file that was produced by the processing of an order.
      *
      * @param request      the order that produced the desired file
@@ -1260,46 +1519,6 @@ public class RequestsController extends BaseController {
 
         if (this.requestsRepository.save(request) == null) {
             throw new RuntimeException("Could not save the request.");
-        }
-    }
-
-
-
-    /**
-     * Adds record entries for the remaining tasks when a requests is set to skip to the end of its process.
-     *
-     * @param request the request whose process is aborted
-     */
-    @Transactional
-    private void addSkippedTasksRecords(final Request request
-    ) {
-        assert request != null : "The request cannot be null.";
-        assert request.getProcess() != null : "The request must be associated with a process.";
-
-        org.easysdi.extract.domain.Process process = request.getProcess();
-        Calendar skipDate = new GregorianCalendar();
-
-        for (Task processTask : process.getTasksCollection()) {
-
-            if (processTask.getPosition() <= request.getTasknum()) {
-                continue;
-            }
-
-            //TODO Find an elegant way to centralize the history record creation
-            RequestHistoryRecord record = new RequestHistoryRecord();
-            record.setProcessStep(processTask.getPosition());
-            record.setRequest(request);
-            record.setStartDate(skipDate);
-            record.setEndDate(skipDate);
-            record.setStatus(RequestHistoryRecord.Status.SKIPPED);
-            record.setStep(this.requestHistoryRepository.findByRequestOrderByStep(request).size() + 1);
-            record.setTaskLabel(processTask.getLabel());
-            record.setUser(this.usersRepository.findOne(this.getCurrentUserId()));
-
-            if (this.requestHistoryRepository.save(record) == null) {
-                throw new RuntimeException(String.format("Could not save a record history for skipped task \"%s\".",
-                        processTask.getLabel()));
-            }
         }
     }
 
@@ -1404,6 +1623,32 @@ public class RequestsController extends BaseController {
                 "Cannot restart the export if the request is not unmatched";
 
         request.setStatus(Request.Status.IMPORTED);
+
+        if (this.requestsRepository.save(request) == null) {
+            throw new RuntimeException("Could not save the request.");
+        }
+    }
+
+
+
+    /**
+     * Prepares the request so that the process goes on with the next task in the process.
+     *
+     * @param request the request whose current task must be abandoned
+     */
+    @Transactional
+    private void skipCurrentTask(final Request request) {
+        assert request != null : "The request cannot be null.";
+        assert request.getStatus() == Request.Status.ERROR :
+                "Cannot restart the current task if the request is not in error";
+        assert request.getProcess() != null :
+                "Cannot restart the current task if the request is not associated with a process.";
+        Task[] processTasks = request.getProcess().getTasksCollection().toArray(new Task[]{});
+        Task currentTask = processTasks[request.getTasknum() - 1];
+        this.createSkippedTaskHistoryRecord(request, currentTask);
+
+        request.setTasknum(request.getTasknum() + 1);
+        request.setStatus(Request.Status.ONGOING);
 
         if (this.requestsRepository.save(request) == null) {
             throw new RuntimeException("Could not save the request.");

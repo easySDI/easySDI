@@ -55,6 +55,18 @@ class ApplicationParametersInitializer {
     private static final String DEFAULT_ENABLE_MAIL_NOTIFICATIONS = "false";
 
     /**
+     * The default value for the parameter indicating whether the orchestrator shall run or not. Possible
+     * values are <code>ON</code>, <code>RANGES</code> or <code>OFF</code>
+     */
+    private static final String DEFAULT_SCHEDULER_MODE = "ON";
+
+    /**
+     * The default value for the parameter indicating whether the time ranges when then orchestrator shall
+     * run. The value must be a valid JSON array.
+     */
+    private static final String DEFAULT_SCHEDULER_RANGES = "[]";
+
+    /**
      * The default value for the parameter that defines the number of seconds between consecutive
      * executions of the orchestrator jobs.
      */
@@ -152,6 +164,11 @@ class ApplicationParametersInitializer {
                 ApplicationParametersInitializer.DEFAULT_DASHBOARD_INTERVAL);
         this.ensureParameterInitialized(SystemParametersRepository.ENABLE_MAIL_NOTIFICATIONS,
                 ApplicationParametersInitializer.DEFAULT_ENABLE_MAIL_NOTIFICATIONS);
+        this.ensureParameterInitialized(SystemParametersRepository.SCHEDULER_MODE,
+                ApplicationParametersInitializer.DEFAULT_SCHEDULER_MODE);
+        this.ensureParameterInitialized(SystemParametersRepository.SCHEDULER_RANGES,
+                ApplicationParametersInitializer.DEFAULT_SCHEDULER_RANGES);
+
     }
 
 

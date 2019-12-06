@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -35,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,7 +50,9 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -80,6 +78,7 @@ import org.apache.http.util.EntityUtils;
 import org.easysdi.extract.connectors.common.IConnector;
 import org.easysdi.extract.connectors.common.IConnectorImportResult;
 import org.easysdi.extract.connectors.common.IExportRequest;
+import org.easysdi.extract.connectors.easysdiv4.utils.ZipUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.CDATASection;
@@ -118,11 +117,6 @@ public class Easysdiv4 implements IConnector {
      * The port that is used by default for secure HTTP requests.
      */
     private static final int DEFAULT_HTTPS_PORT = 443;
-
-    /**
-     * The size in bytes of the buffer used to read files.
-     */
-    private static final int FILE_READ_BUFFER_SIZE = 1024;
 
     /**
      * The ASCII code of the last character that does not represent a symbol.
@@ -287,6 +281,14 @@ public class Easysdiv4 implements IConnector {
         passwordNode.put("type", "pass");
         passwordNode.put("req", true);
         passwordNode.put("maxlength", 50);
+
+        ObjectNode uploadSizeNode = parametersNode.addObject();
+        uploadSizeNode.put("code", this.config.getProperty("code.uploadSize"));
+        uploadSizeNode.put("label", this.messages.getString("label.uploadSize"));
+        uploadSizeNode.put("type", "numeric");
+        uploadSizeNode.put("req", false);
+        uploadSizeNode.put("min", 1);
+        uploadSizeNode.put("step", 1);
 
         try {
             return mapper.writeValueAsString(parametersNode);
@@ -535,8 +537,23 @@ public class Easysdiv4 implements IConnector {
                     exportResult = new ExportResult();
                     exportResult.setSuccess(false);
                     exportResult.setResultCode("-1");
-                    exportResult.setResultMessage(this.messages.getString("exportresult.prerequisite.missing"));
+                    exportResult.setResultMessage(this.messages.getString("exportresult.prerequisite.error"));
                     exportResult.setErrorDetails(this.messages.getString("exportresult.prerequisite.nofile"));
+
+                    return exportResult;
+                }
+
+                final int uploadLimit = NumberUtils.toInt(inputs.get(config.getProperty("code.uploadSize")));
+                final long fileSizeInMB = FileUtils.sizeOf(outputFile) / FileUtils.ONE_MB;
+
+                if (uploadLimit > 0 && fileSizeInMB > uploadLimit) {
+                    final String detailsMessage = String.format(this.messages.getString("exportresult.upload.tooLarge"),
+                            fileSizeInMB, uploadLimit);
+                    exportResult = new ExportResult();
+                    exportResult.setSuccess(false);
+                    exportResult.setResultCode("-2");
+                    exportResult.setResultMessage(this.messages.getString("exportresult.prerequisite.error"));
+                    exportResult.setErrorDetails(detailsMessage);
 
                     return exportResult;
                 }
@@ -593,11 +610,11 @@ public class Easysdiv4 implements IConnector {
             final String password, final File resultFile) {
 
         try {
-            String xmlString = this.createExportXmlString(xmlDocument);
+            final String xmlString = this.createExportXmlString(xmlDocument).replaceAll("\\r", StringUtils.EMPTY);
             this.logger.debug("Sent XML:\n{}", xmlString);
 
-            URI targetUri = new URI(url);
-            HttpHost targetServer = this.getHostFromUri(targetUri);
+            final URI targetUri = new URI(url);
+            final HttpHost targetServer = this.getHostFromUri(targetUri);
 
             return this.sendExportRequest(targetServer, targetUri, login, password, xmlString,
                     resultFile);
@@ -1133,8 +1150,12 @@ public class Easysdiv4 implements IConnector {
             final String orderLabel = orderId;
             final String organism = this.getXMLNodeLabelFromXpath(document,
                     config.getProperty("getOrders.xpath.organism").replace("<guid>", guid));
+            final String organismGuid = this.getXMLNodeLabelFromXpath(document,
+                    config.getProperty("getOrders.xpath.organismGuid").replace("<guid>", guid));
             final String client = this.getXMLNodeLabelFromXpath(document,
                     config.getProperty("getOrders.xpath.client").replace("<guid>", guid));
+            final String clientGuid = this.getXMLNodeLabelFromXpath(document,
+                    config.getProperty("getOrders.xpath.clientGuid").replace("<guid>", guid));
             final String clientDetails = this.buildAddressDetailsFromXpath(document,
                     config.getProperty("getOrders.xpath.clientDetails").replace("<guid>", guid));
             final String tiers = this.getXMLNodeLabelFromXpath(document,
@@ -1168,7 +1189,9 @@ public class Easysdiv4 implements IConnector {
                 product.setOrderGuid(orderGuid);
                 product.setOrderLabel(orderLabel);
                 product.setOrganism(organism);
+                product.setOrganismGuid(organismGuid);
                 product.setClient(client);
+                product.setClientGuid(clientGuid);
                 product.setClientDetails(clientDetails);
                 product.setTiers(tiers);
                 product.setTiersDetails(tiersDetails);
@@ -1320,6 +1343,23 @@ public class Easysdiv4 implements IConnector {
      * @return the name for the file to export
      */
     private String getArchiveNameForRequest(final IExportRequest request, final boolean avoidCollision) {
+        return this.getFileNameForRequest(request, "zip", avoidCollision);
+    }
+
+
+
+    /**
+     * Provides a name for a file to export as the result of an order process. The non-existence of a file with
+     * this name in the folder is done when this method is executed, but it is of course not guaranteed that it will
+     * still be available by the time the file is created.
+     *
+     * @param request        the order whose result must be exported
+     * @param extension      the string describing the type of the file, such as <code>pdf</code> or <code>zip</code>
+     * @param avoidCollision <code>true</code> to generate a name that will not match an existing file
+     * @return the name for the file to export
+     */
+    private String getFileNameForRequest(final IExportRequest request, final String extension,
+            final boolean avoidCollision) {
         assert request != null : "The exported request cannot be null.";
         assert request.getOrderLabel() != null : "The label of the exported order cannot be null.";
         assert request.getProductLabel() != null : "The label of the exported product cannot be null.";
@@ -1329,7 +1369,7 @@ public class Easysdiv4 implements IConnector {
         this.logger.debug("The raw base file name is {}", baseFileName);
         this.logger.debug("The bytes of the raw base file name is {}.", baseFileName.getBytes(StandardCharsets.UTF_8));
         final String sanitizedBaseFileName = StringUtils.stripAccents(baseFileName);
-        final String fileName = String.format("%s.zip", sanitizedBaseFileName);
+        final String fileName = String.format("%s.%s", sanitizedBaseFileName, extension);
 
         if (!avoidCollision) {
             return fileName;
@@ -1340,7 +1380,7 @@ public class Easysdiv4 implements IConnector {
         File outputFile = new File(folderOutPath, fileName);
 
         while (outputFile.exists()) {
-            outputFile = new File(folderOutPath, String.format("%s_%d.zip", sanitizedBaseFileName, index++));
+            outputFile = new File(folderOutPath, String.format("%s_%d.%s", sanitizedBaseFileName, index++, extension));
         }
 
         return outputFile.getName();
@@ -1374,133 +1414,25 @@ public class Easysdiv4 implements IConnector {
             return null;
         }
 
-        final String resultFileName = this.getArchiveNameForRequest(request, true);
-
         if (outputFilesList.size() == 1) {
             final File outputFolderFile = (File) outputFilesList.toArray()[0];
             final String outputFolderFileName = outputFolderFile.getName();
+            final String extension = FilenameUtils.getExtension(outputFolderFileName);
 
-            if (outputFolderFileName.endsWith(".zip")) {
-
-                if (outputFolderFileName.equals(this.getArchiveNameForRequest(request, false))) {
-                    this.logger.debug("Output folder only contains one ZIP file \"{}\" and it matches the desired"
-                            + " result file name, so it will be sent as is.", outputFolderFileName);
-                    return outputFolderFile;
-                }
-
-                this.logger.debug("Output folder only contains one ZIP file \"{}\", so this will be sent as the"
-                        + " output file with the name \"{}\"", outputFolderFileName, resultFileName);
-                return Files.copy(outputFolderFile.toPath(), Paths.get(outputFolderPath, resultFileName)).toFile();
-            }
-        }
-
-        return this.zipOutputFolderContent(outputFolder, resultFileName);
-    }
-
-
-
-    /**
-     * Creates an archive that contains the data produced by processing an order.
-     *
-     * @param outputFolder the directory that contains the data produced by the order process
-     * @param zipFileName  the name to to give to the archive file
-     * @return the created archive file
-     * @throws IOException if a file system error prevented the creation of the archive file
-     */
-    private File zipOutputFolderContent(final File outputFolder, final String zipFileName) throws IOException {
-        assert outputFolder != null && outputFolder.exists() && outputFolder.isDirectory() :
-                "The output folder is invalid.";
-        assert StringUtils.isNotBlank(zipFileName) && zipFileName.endsWith(".zip") : "The ZIP file name is invalid.";
-
-        final String outputFolderPath = outputFolder.getCanonicalPath();
-        this.logger.debug("Zipping all files in folder out : {}", outputFolderPath);
-        this.logger.debug("Creating archive file \"{}\"", zipFileName);
-        File zipFile = new File(outputFolder, zipFileName);
-
-        try (FileOutputStream fileWriter = new FileOutputStream(zipFile);
-                ZipOutputStream zip = new ZipOutputStream(fileWriter)) {
-
-            for (String fileName : outputFolder.list()) {
-
-                if (!zipFileName.equals(fileName)) {
-                    File srcFile = new File(outputFolderPath, fileName);
-                    Easysdiv4.addFileToZip("", srcFile.getPath(), zip);
-                }
+            if (outputFolderFileName.equals(this.getFileNameForRequest(request, extension, false))) {
+                this.logger.debug("Output folder only contains one file \"{}\" and it matches the desired"
+                        + " result file name, so it will be sent as is.", outputFolderFileName);
+                return outputFolderFile;
             }
 
-            zip.flush();
+            final String resultFileName = this.getFileNameForRequest(request, extension, true);
+
+            this.logger.debug("Output folder only contains one file \"{}\", so this will be sent as the"
+                    + " output file with the name \"{}\"", outputFolderFileName, resultFileName);
+            return Files.copy(outputFolderFile.toPath(), Paths.get(outputFolderPath, resultFileName)).toFile();
         }
 
-        this.logger.debug("all files are zipped in : {}", zipFile.getCanonicalPath());
-
-        return zipFile;
-    }
-
-
-
-    /**
-     * Adds a file to an archive.
-     *
-     * @param path    the path of the file to add in the archive
-     * @param srcFile the path of the file to add in the file system
-     * @param zip     the archive to add the file to
-     * @throws IOException the file to add could not be read
-     */
-    public static void addFileToZip(final String path, final String srcFile, final ZipOutputStream zip)
-            throws IOException {
-
-        final File folder = new File(srcFile);
-
-        if (folder.isDirectory()) {
-            addFolderToZip(path, srcFile, zip);
-
-        } else {
-            final byte[] buf = new byte[Easysdiv4.FILE_READ_BUFFER_SIZE];
-            int len;
-
-            try (FileInputStream in = new FileInputStream(srcFile)) {
-
-                if (path.equals("")) {
-                    zip.putNextEntry(new ZipEntry(folder.getName()));
-
-                } else {
-                    zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
-                }
-
-                while ((len = in.read(buf)) > 0) {
-                    zip.write(buf, 0, len);
-                }
-
-                zip.closeEntry();
-                zip.flush();
-            }
-        }
-    }
-
-
-
-    /**
-     * Adds a directory and its content to an archive.
-     *
-     * @param path      the path of the folder to add in the archive
-     * @param srcFolder the path of the folder to add in the file system
-     * @param zip       the archive to add the folder to
-     * @throws IOException the folder to add could not be read
-     */
-    public static void addFolderToZip(final String path, final String srcFolder, final ZipOutputStream zip)
-            throws IOException {
-
-        final File folder = new File(srcFolder);
-
-        for (String fileName : folder.list()) {
-            File srcFile = new File(srcFolder, fileName);
-            if (path.equals("")) {
-                addFileToZip(folder.getName(), srcFile.getPath(), zip);
-
-            } else {
-                addFileToZip(path + "/" + folder.getName(), srcFile.getPath(), zip);
-            }
-        }
+        return ZipUtils.zipFolderContentToFile(outputFolder, this.getArchiveNameForRequest(request, true));
     }
 
 }

@@ -45,6 +45,16 @@ public interface SystemParametersRepository extends CrudRepository<SystemParamet
     String ENABLE_MAIL_NOTIFICATIONS = "mails_enable";
 
     /**
+     * The string that identifying the parameter that defines whether the orchestrator shall run.
+     */
+    String SCHEDULER_MODE = "op_mode";
+
+    /**
+     * The string that identifying the parameter that defines time periods when the orchestrator shall run.
+     */
+    String SCHEDULER_RANGES = "op_ranges";
+
+    /**
      * The string identifying the parameter that defines the delay between successive executions of the
      * orchestrator jobs.
      */
@@ -135,6 +145,26 @@ public interface SystemParametersRepository extends CrudRepository<SystemParamet
      * @return the delay in seconds
      */
     String getSchedulerFrequency();
+
+
+
+    /**
+     * Gets the run mode of the orchestrator.
+     *
+     * @return <code>ON</code> if the orchestrator runs permanently, <code>RANGES</code> if it operates only in
+     *         set time periods, or <code>OFF</code> if it is permanently stopped.
+     */
+    String getSchedulerMode();
+
+
+
+    /**
+     * Gets the time periods when the orchestrator runs if its mode is set to <code>RANGES</code>. This
+     * parameter is ignored otherwise.
+     *
+     * @return the JSON array that contains the definitions of the time periods
+     */
+    String getSchedulerRanges();
 
 
 

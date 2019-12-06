@@ -27,6 +27,10 @@ import java.util.Calendar;
  */
 public interface ITaskProcessorRequest {
 
+    int getId();
+
+
+
     /**
      * Obtains the string identifying the parent order of this request.
      *
@@ -78,6 +82,15 @@ public interface ITaskProcessorRequest {
      * @return the client name
      */
     String getClient();
+
+
+
+    /**
+     * Obtains the string that identifies the order recipient.
+     *
+     * @return the client GUID
+     */
+    String getClientGuid();
 
 
 
@@ -141,6 +154,15 @@ public interface ITaskProcessorRequest {
      * @return the name of the organism
      */
     String getOrganism();
+
+
+
+    /**
+     * Obtains the string that identifies the organization that ordered the product for this request.
+     *
+     * @return the GUID of the organism
+     */
+    String getOrganismGuid();
 
 
 

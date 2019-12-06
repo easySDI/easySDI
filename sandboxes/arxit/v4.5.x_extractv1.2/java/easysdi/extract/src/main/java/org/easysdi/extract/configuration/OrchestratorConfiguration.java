@@ -20,7 +20,9 @@ import org.easysdi.extract.connectors.ConnectorDiscovererWrapper;
 import org.easysdi.extract.email.EmailSettings;
 import org.easysdi.extract.initializers.ApplicationInitializer;
 import org.easysdi.extract.orchestrator.Orchestrator;
+import org.easysdi.extract.orchestrator.OrchestratorSettings;
 import org.easysdi.extract.persistence.ApplicationRepositories;
+import org.easysdi.extract.persistence.SystemParametersRepository;
 import org.easysdi.extract.plugins.TaskProcessorDiscovererWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,8 +92,18 @@ public class OrchestratorConfiguration implements SchedulingConfigurer {
     @Autowired
     private TaskProcessorDiscovererWrapper taskPluginDiscoverer;
 
+    /**
+     * The Spring Data object that links the application parameters with the data source.
+     */
+    @Autowired
+    private SystemParametersRepository systemParametersRepository;
 
 
+
+//    @Bean
+//    public OrchestratorSettings orchestratorSettings() {
+//        return new OrchestratorSettings(this.systemParametersRepository);
+//    }
     /**
      * Instantiates and starts the various scheduler that are responsible for running the background
      * processes.
@@ -107,13 +119,13 @@ public class OrchestratorConfiguration implements SchedulingConfigurer {
 
         if (!orchestrator.initializeComponents(this.scheduledTaskRegistrar, this.applicationLanguage,
                 this.applicationRepositories, this.connectorsDiscoverer, this.taskPluginDiscoverer,
-                this.emailSettings)) {
+                this.emailSettings, new OrchestratorSettings(this.systemParametersRepository))) {
             this.logger.error("The background tasks are not scheduled because it was impossible to properly initialize"
                     + " the orchestrator.");
             return;
         }
 
-        orchestrator.scheduleMonitoring();
+        orchestrator.scheduleMonitoringByWorkingState();
     }
 
 }

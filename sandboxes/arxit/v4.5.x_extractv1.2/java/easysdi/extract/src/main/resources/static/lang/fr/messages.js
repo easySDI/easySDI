@@ -56,9 +56,21 @@ var LANG_MESSAGES = {
             "title" : "Nouvelle tentative d'association à un traitement",
             "message" : "Êtes-vous sûr de vouloir chercher à nouveau un traitement pour la demande \"{0}\" ?"
         },
+        "skipTaskConfirm" : {
+            "title" : "Abandon de la tâche courante",
+            "message" : "Êtes-vous sûr de vouloir poursuivre le traitement de la demande \"{0}\" en abandonnant la tâche courante ?"
+        },
         "validateConfirm" : {
             "title" : "Validation d'une demande",
             "message" : "Êtes-vous sûr de vouloir valider la demande \"{0}\" ?"
+        },
+        "exportToDxf" : {
+            "label": "DXF",
+            "tooltip": "Télécharger le polygone d'emprise de la commande au format DXF"
+        },
+        "exportToKml" : {
+            "label": "KML",
+            "tooltip": "Télécharger le polygone d'emprise de la commande au format KML"
         },
         "layerSwitcher" : {
             "tooltip": "Gestion des couches"

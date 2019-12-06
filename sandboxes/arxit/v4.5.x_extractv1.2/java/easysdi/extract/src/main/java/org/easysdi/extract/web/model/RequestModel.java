@@ -255,6 +255,17 @@ public class RequestModel {
 
 
     /**
+     * Obtains the string that identifies who placed the order.
+     *
+     * @return a string that contains the customer GUID
+     */
+    public final String getCustomerGuid() {
+        return this.request.getClientGuid();
+    }
+
+
+
+    /**
      * Obtains the name of who placed the order.
      *
      * @return a string that contains the customer information
@@ -327,6 +338,17 @@ public class RequestModel {
      */
     public final String getOrganism() {
         return this.request.getOrganism();
+    }
+
+
+
+    /**
+     * Obtains the identifying string of the organization for which this order was placed.
+     *
+     * @return the organization guid
+     */
+    public final String getOrganismGuid() {
+        return this.request.getOrganismGuid();
     }
 
 
@@ -418,6 +440,17 @@ public class RequestModel {
         }
 
         return process.getName();
+    }
+
+
+
+    /**
+     * Obtains the string that identifies the product that was ordered.
+     *
+     * @return the product GUID
+     */
+    public final String getProductGuid() {
+        return this.request.getProductGuid();
     }
 
 

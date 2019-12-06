@@ -82,6 +82,15 @@ public interface IExportRequest {
 
 
     /**
+     * Obtains the identifying string of the order recipient.
+     *
+     * @return the client GUID
+     */
+    String getClientGuid();
+
+
+
+    /**
      * Obtains when the request processing completed.
      *
      * @return the end date

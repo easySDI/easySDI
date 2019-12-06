@@ -1,4 +1,4 @@
-<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<!DOCTYPE html>
 <!--
 Copyright (C) 2017 arx iT
 
@@ -23,12 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <title th:inline="text">
             [[#{application.name}]]&nbsp;&ndash; [[${#messages.msg('requestDetails.page.title', request.label)}]]
         </title>
+        <th:block layout:fragment="additionalStyleIncludes">
+            <link rel="stylesheet" href="../../static/lib/openlayers/dist/ol.css"
+                  th:href="@{'/lib/openlayers/dist/ol.css'} + '?v=@@openLayersLibVersion@@'" type="text/css" />
+            <link rel="stylesheet" href="../../static/lib/ol-layerswitcher/src/ol-layerswitcher.css"
+                  th:href="@{'/lib/ol-layerswitcher/src/ol-layerswitcher.css'} + '?v=@@layerSwitcherLibVersion@@'"
+                  type="text/css" />
+        </th:block>
     </head>
     <body>
-        <th:block layout:fragment="additionalStyleIncludes">
-            <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css" />
-            <link rel="stylesheet" href="https://unpkg.com/ol-layerswitcher@2.0.0/src/ol-layerswitcher.css" />
-        </th:block>
         <div id="wrapper">
             <div id="page-wrapper" layout:fragment="content"
                  th:with="isAdmin = ${#authentication.principal.hasAuthority('ADMIN')},
@@ -47,6 +50,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             {Request #12345}
                         </span>
                     </h1>
+                </div>
+                <div id="scheduledStopMessage" class="alert alert-dismissible alert-warning"
+                     th:if="${orchestratorState} == 'SCHEDULED_STOP'">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" data-toggle="tooltip"
+                            th:attr="aria-label=#{message.close}" th:title="#{message.close}" title="{Close}">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div><strong th:text="#{orchestrator.status.stopped}"></strong></div>
+                    <th:block th:text="#{orchestrator.status.scheduledStop}"></th:block>
+                </div>
+                <div id="stoppedMessage" class="alert alert-dismissible alert-warning"
+                     th:if="${orchestratorState} == 'STOPPED'">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" data-toggle="tooltip"
+                            th:attr="aria-label=#{message.close}" th:title="#{message.close}" title="{Close}">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div><strong th:text="#{orchestrator.status.stopped}"></strong></div>
+                    <th:block th:text="#{orchestrator.status.fullStop}"></th:block>
                 </div>
                 <div>
                     <h3 th:with="processString = ${hasProcess} ? ${request.processName} : #{requestDetails.process.none}"
@@ -131,7 +152,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <span th:text="#{requestDetails.currentStep.retryMatching.button}">{Retry}</span>
                             </button>
                         </div>
-                        <div class="col-lg-4 current-step-action" th:if="${request.taskInError}">
+                        <div class="col-lg-3 current-step-action" th:if="${request.taskInError}">
                             <h3 th:text="#{requestDetails.currentStep.restartTask.title}">{Restart}</h3>
                             <p th:text="#{requestDetails.currentStep.restartTask.text}">
                                 {This will run the task again.}
@@ -153,8 +174,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <span th:text="#{requestDetails.currentStep.retryExport.button}">{Retry}</span>
                             </button>
                         </div>
-                        <div class="col-lg-4 current-step-action"
-                             th:if="${request.taskInError or request.exportInError}">
+                        <div class="current-step-action"
+                             th:if="${request.taskInError or request.exportInError}"
+                             th:attrprepend="class = ${request.taskInError} ? 'col-lg-3 ' : 'col-lg-4 '">
                             <h3 th:text="#{requestDetails.currentStep.restartProcess.title}">{Restart}</h3>
                             <p th:text="#{requestDetails.currentStep.restartProcess.text}">
                                 {This will run the process from the start.}
@@ -165,14 +187,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <span th:text="#{requestDetails.currentStep.restartProcess.button}">{Restart}</span>
                             </button>
                         </div>
+                        <div class="col-lg-3 current-step-action" th:if="${request.taskInError}">
+                            <h3 th:text="#{requestDetails.currentStep.skipTask.title}">{Skip}</h3>
+                            <p th:text="#{requestDetails.currentStep.skipTask.text}">
+                                {This skip the current task and proceed to the next task.}
+                            </p>
+                            <button type="button" id="errorSkipButton" class="btn btn-danger"
+                                    th:attr="data-action=@{'/requests/' + ${request.id} + '/skipTask'}">
+                                <i class="fa fa-arrow-right"></i>
+                                <span th:text="#{requestDetails.currentStep.skipTask.button}">{Skip}</span>
+                            </button>
+                        </div>
                         <div class="current-step-action"
-                             th:attrprepend="class = ${request.unmatched} ? 'col-lg-6 ' : 'col-lg-4 '"
+                             th:attrprepend="class = ${request.unmatched} ? 'col-lg-6 ' : (${request.taskInError} ? 'col-lg-3 ' : 'col-lg-4 ')"
                              th:classappend="${#strings.equals(validationError, 'remark')} ? 'has-error'">
                             <h3 th:text="#{requestDetails.currentStep.reject.title}">{Reject}</h3>
                             <p th:text="#{requestDetails.currentStep.reject.text}">
                                 {The process will be canceled and the customer will be notified with your remark below.}
                             </p>
-                            <textarea id="errorCancelRemark" class="form-control"
+                            <textarea id="errorCancelRemark" class="form-control" th:classappend="${request.taskInError} ? task-error-reject-remark"
                                       th:placeholder="#{requestDetails.currentStep.reject.remark.placeholder}"></textarea>
                             <button type="button" id="errorCancelButton" class="btn btn-danger"
                                     th:attr="data-action=@{'/requests/' + ${request.id} + '/reject'}">
@@ -259,7 +292,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </table>
                             </div>
                             <div class="col-lg-6">
-                                <table class="list-table">
+                                <table class="list-table files-list-table">
                                     <tr>
                                         <td><b th:text="#{requestDetails.files.title}">{Files:}</b>&nbsp;</td>
                                         <td>
@@ -281,13 +314,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     </button>
                                                 </span>
                                             </div>
-                                            <button type="button" id="file-upload-button"
-                                                    class="btn btn-extract-filled file-upload-button"
-                                                    th:text="#{requestDetails.files.add.button.label}"
-                                                    th:if="${request.waitingIntervention}"
-                                                    th:attr="data-action=@{'/requests/' + ${request.id} + '/addFiles'}">
-                                                {Add files…}
-                                            </button>
+                                            <div class="files-button-container">
+                                                <button type="button" id="file-upload-button"
+                                                        class="btn btn-extract-filled file-upload-button"
+                                                        th:text="#{requestDetails.files.add.button.label}"
+                                                        th:if="${request.waitingIntervention}"
+                                                        th:attr="data-action=@{'/requests/' + ${request.id} + '/addFiles'}">
+                                                    {Add files…}
+                                                </button>
+                                                <button type="button" id="file-download-button"
+                                                        class="btn btn-extract-white file-download-button"
+                                                        th:if="${request.waitingIntervention} and ${request.outputFiles.length} > 1"
+                                                        th:attr="data-action=@{'/requests/' + ${request.id} + '/getAllFiles'}">
+                                                    <i class="fa fa-download"></i>
+                                                    <span th:text="#{requestDetails.files.downloadAll.button.label}">
+                                                        {Download all files…}
+                                                    </span>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -365,7 +409,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 {2017-05-04 12:57:34}
                             </td>
                             <td th:text="${historyEntry.taskLabel}">{My process task}</td>
-                            <td th:classappend="'history-status-' + ${#strings.toLowerCase(historyEntry.status.name())}">
+                            <td class="history-status"
+                                th:classappend="'history-status-' + ${#strings.toLowerCase(historyEntry.status.name())}">
                                 <span th:text="${#messages.msg('historyRecord.status.' + historyEntry.status.name())}">
                                     {FINISHED}
                                 </span>
@@ -373,7 +418,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                       th:text="' / ' + ${historyEntry.message}">{OK}</span>
                             </td>
                             <td th:with="user = ${historyEntry.user}"
-                                th:text="${user.systemUser} ? #{default.users.system.name} : ${user.name}">{System}</td>
+                                th:text="${user != null} ? (${user.systemUser} ? #{default.users.system.name} : ${user.name})
+                                : #{requestHistory.user.unknown.label}">{System}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -388,7 +434,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <div id="adminToolsPanelBodyContainer" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <div class="row">
+                            <div class="row admin-button-row">
                                 <div class="col-lg-2">
                                     <button type="button" id="requestDeleteButton"
                                             class="btn btn-danger btn-xs admin-tool-button"
@@ -409,6 +455,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </span>
                                 </div>
                             </div>
+                            <div class="row admin-variable-row">
+                                <div class="col-lg-3" th:text="#{requestDetails.fields.requestId.label}"></div>
+                                <div th:text="${request.id}" class="col-lg-9 code code-green"></div>
+                            </div>
+                            <div class="row admin-variable-row">
+                                <div class="col-lg-3" th:text="#{requestDetails.fields.productGuid.label}"></div>
+                                <div th:text="${request.productGuid}" class="col-lg-9 code code-green"></div>
+                            </div>
+                            <div class="row admin-variable-row">
+                                <div class="col-lg-3" th:text="#{requestDetails.fields.clientGuid.label}"></div>
+                                <div th:text="${request.customerGuid}" class="col-lg-9 code code-green"></div>
+                            </div>
+                            <div class="row admin-variable-row">
+                                <div class="col-lg-3" th:text="#{requestDetails.fields.organismGuid.label}"></div>
+                                <div th:text="${request.organismGuid}" class="col-lg-9 code code-green"></div>
+                            </div>
+                            <div class="row admin-variable-row">
+                                <div class="col-lg-3" th:text="#{requestDetails.fields.orderLabel.label}"></div>
+                                <div th:text="${request.orderLabel}" class="col-lg-9 code code-green"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -416,15 +482,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
         <th:block layout:fragment="additionalScriptIncludes">
-            <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise,fetch&amp;flags=gated"></script>
+            <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise,fetch,requestAnimationFrame,Element.prototype.classList,URL&amp;flags=gated"></script>
             <script type="text/javascript" src="../../static/lib/proj4/dist/proj4.js"
-            th:src="@{/lib/proj4/dist/proj4.js}"></script>
-            <script type="text/javascript" src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
-            <script src="https://unpkg.com/ol-layerswitcher@2.0.0"></script>
+            th:src="@{/lib/proj4/dist/proj4.js} + '?v=@@proj4LibVersion@@'"></script>
+            <script type="text/javascript" src="../../static/lib/openlayers/dist/ol.js"
+            th:src="@{'/lib/openlayers/dist/ol.js'} + '?v=@@openLayersLibVersion@@'"></script>
+            <script type="text/javascript" src="../../static/lib/ol-layerswitcher/dist/ol-layerswitcher.js"
+            th:src="@{'/lib/ol-layerswitcher/dist/ol-layerswitcher.js'} + '?v=@@layerSwitcherLibVersion@@'"></script>
         </th:block>
         <th:block layout:fragment="additionalScripts">
-            <script type="text/javascript" src="../../static/js/requestMap/map.js" th:src="@{'/js/requestMap/' + ${mapDataFileName}}"></script>
-            <script type="text/javascript" src="../../static/js/requestDetails.js" th:src="@{/js/requestDetails.js}"></script>
+            <script type="text/javascript" src="../../static/js/requestMap/map.js"
+                    th:src="@{'/js/requestMap/' + ${mapDataFileName}} + '?v=@@extractVersion@@'">
+            </script>
+            <script type="text/javascript" src="../../static/js/requestDetails.js"
+                    th:src="@{/js/requestDetails.js} + '?v=@@extractVersion@@'">
+            </script>
             <script type="text/javascript" th:inline="javascript">
                 $(function() {
 

@@ -80,9 +80,9 @@
                                             </label>
                                         </div>
                                         <div th:if="${isOwnAccount}">
-                                            <div th:text="${#messages.msg('user.profile.' + user.profile)}"
-                                                 data-toggle="tooltip" class="form-control-static"
-                                                 th:title="#{userDetails.fields.profile.inactive.tooltip}"></div>
+                                            <span th:text="${#messages.msg('user.profile.' + user.profile)}"
+                                                  data-toggle="tooltip" class="form-control-static"
+                                                  th:title="#{userDetails.fields.profile.inactive.tooltip}"></span>
                                             <input type="hidden" th:field="*{profile}" />
                                         </div>
                                     </div>
@@ -122,9 +122,9 @@
                                             </label>
                                         </div>
                                         <div th:if="${canEditActive}">
-                                            <div th:text="${#messages.msg('toggle.' + (user.active ? 'yes' : 'no'))}"
-                                                 th:title="#{userDetails.fields.active.inactive.tooltip}"
-                                                 data-toggle="tooltip" class="form-control-static"></div>
+                                            <span th:text="${#messages.msg('toggle.' + (user.active ? 'yes' : 'no'))}"
+                                                  th:title="#{userDetails.fields.active.inactive.tooltip}"
+                                                  data-toggle="tooltip" class="form-control-static"></span>
                                             <input type="hidden" th:field="*{active}" />
                                         </div>
                                     </div>
@@ -142,6 +142,25 @@
                                         <input type="email" class="form-control" th:field="*{email}" value="{E-mail}"
                                                th:title="${#fields.hasErrors('email')} ? ${#fields.errors('email')[0]}"
                                                maxlength="50" data-toggle="tooltip" autocomplete="off" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group form-group-with-label">
+                                        <div>
+                                            <label th:text="#{userDetails.fields.mailActive.label}">{Active notifications}</label>
+                                        </div>
+                                        <div class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-xs btn-toggle btn-toggle-no"
+                                                   th:classappend="*{mailActive} ? '' : 'active'">
+                                                <input type="radio" th:field="*{mailActive}" value="0" />
+                                                &nbsp;<span th:text="#{toggle.no}">{No}</span>
+                                            </label>
+                                            <label class="btn btn-xs btn-toggle btn-toggle-yes"
+                                                   th:classappend="*{mailActive} ? 'active' : ''">
+                                                <input type="radio" th:field="*{mailActive}" value="1" />
+                                                &nbsp;<span th:text="#{toggle.yes}">{Yes}</span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -185,7 +204,8 @@
             </div>
         </div>
         <th:block layout:fragment="customScripts">
-            <script type="text/javascript" src="../../static/js/userDetails.js" th:src="@{/js/userDetails.js}"></script>
+            <script type="text/javascript" src="../../static/js/userDetails.js"
+            th:src="@{/js/userDetails.js} + '?v=@@extractVersion@@'"></script>
             <script type="text/javascript" th:inline="javascript">
                 /*<![CDATA[*/
                 $(function() {
@@ -197,8 +217,7 @@
 
                     $('#userSaveButton').on('click', submitUserData);
                 });
-                /*]]>*/
-            </script>
+                /*]]>*/</script>
         </th:block>
     </body>
 </html>

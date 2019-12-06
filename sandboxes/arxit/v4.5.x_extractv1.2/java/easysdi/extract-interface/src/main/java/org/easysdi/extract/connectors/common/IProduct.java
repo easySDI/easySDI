@@ -71,11 +71,29 @@ public interface IProduct {
 
 
     /**
+     * Obtains the string that identifies the organization that ordered this product.
+     *
+     * @return the GUID of the organization
+     */
+    String getOrganismGuid();
+
+
+
+    /**
      * Obtains the name of the person who ordered this product.
      *
      * @return the name of the customer
      */
     String getClient();
+
+
+
+    /**
+     * Obtains the string that identifies the person who ordered this product.
+     *
+     * @return the GUID of the customer
+     */
+    String getClientGuid();
 
 
 

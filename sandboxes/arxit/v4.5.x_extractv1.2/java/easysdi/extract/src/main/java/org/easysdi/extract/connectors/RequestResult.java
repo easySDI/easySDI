@@ -26,6 +26,11 @@ public class RequestResult implements IExportRequest {
     private String client;
 
     /**
+     * The identifying string of the person that ordered the data.
+     */
+    private String clientGuid;
+
+    /**
      * When the ordered data item processing ended.
      */
     private Calendar endDate;
@@ -129,6 +134,7 @@ public class RequestResult implements IExportRequest {
         }
 
         this.setClient(request.getClient());
+        this.setClientGuid(request.getClientGuid());
         this.setEndDate(request.getEndDate());
 
         if (request.getFolderIn() != null) {
@@ -261,6 +267,19 @@ public class RequestResult implements IExportRequest {
      */
     public final void setClient(final String customer) {
         this.client = customer;
+    }
+
+
+
+    @Override
+    public final String getClientGuid() {
+        return this.clientGuid;
+    }
+
+
+
+    public final void setClientGuid(final String guid) {
+        this.clientGuid = guid;
     }
 
 
