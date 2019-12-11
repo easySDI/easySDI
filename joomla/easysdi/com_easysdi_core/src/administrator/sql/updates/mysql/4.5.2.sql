@@ -1,0 +1,1 @@
+ALTER TABLE `#__sdi_order_perimeter` MODIFY `value` LONGTEXT NULL;
