@@ -19,10 +19,13 @@ package org.easysdi.extract.web.controllers;
 import javax.validation.Valid;
 import org.easysdi.extract.domain.SystemParameter;
 import org.easysdi.extract.orchestrator.Orchestrator;
+import org.easysdi.extract.orchestrator.OrchestratorSettings.SchedulerMode;
+import org.easysdi.extract.orchestrator.OrchestratorTimeRange;
 import org.easysdi.extract.persistence.SystemParametersRepository;
 import org.easysdi.extract.web.Message.MessageType;
 import org.easysdi.extract.web.model.SystemParameterModel;
 import org.easysdi.extract.web.validators.SystemParameterValidator;
+import org.easysdi.extract.web.validators.TimeRangeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -95,7 +99,54 @@ public class SystemParametersController extends BaseController {
      */
     @InitBinder("parameters")
     public final void initBinder(final WebDataBinder binder) {
-        binder.setValidator(new SystemParameterValidator(this.systemParametersRepository));
+        binder.setValidator(new SystemParameterValidator(new TimeRangeValidator()));
+    }
+
+
+
+    /**
+     * Processes a request to add a period when the orchestrator shall run.
+     *
+     * @param parameterModel the model that contains the modifications of the application settings
+     * @param model          The object that contains the data required to add the rule
+     * @return The name of the next view
+     */
+    @PostMapping("addOrchestratorTimeRange")
+    public final String addOrchestratorTimeRange(
+            @ModelAttribute("parameters") final SystemParameterModel parameterModel, final ModelMap model) {
+        this.logger.debug("Processing a request to add an orchestrator time range");
+
+        if (!this.isCurrentUserAdmin()) {
+            return ConnectorsController.REDIRECT_TO_ACCESS_DENIED;
+        }
+
+        parameterModel.addTimeRange(new OrchestratorTimeRange());
+
+        return this.prepareModelForDetailsView(model, parameterModel);
+    }
+
+
+
+    /**
+     * Processes a request to remove a period where the orchestrator shall run.
+     *
+     * @param parameterModel the model that contains the modifications of the application settings
+     * @param model          the collection of model objects to communicate to the next view
+     * @param rangeIndex     the number that indicates the position of the time range to remove
+     * @return the identifier of the next view to display
+     */
+    @PostMapping("deleteOrchestratorTimeRange/{rangeIndex}")
+    public final String deleteOrchestratorTimeRange(@ModelAttribute("parameters") final SystemParameterModel parameterModel,
+            final ModelMap model, @PathVariable final int rangeIndex) {
+        this.logger.debug("Processing a request to delete the orchestrator time range at index {}.", rangeIndex);
+
+        if (!this.isCurrentUserAdmin()) {
+            return ConnectorsController.REDIRECT_TO_ACCESS_DENIED;
+        }
+
+        parameterModel.removeTimeRange(rangeIndex);
+
+        return this.prepareModelForDetailsView(model, parameterModel);
     }
 
 
@@ -122,6 +173,7 @@ public class SystemParametersController extends BaseController {
 
         String[] keys = new String[]{SystemParametersRepository.BASE_PATH_KEY,
             SystemParametersRepository.DASHBOARD_INTERVAL_KEY, SystemParametersRepository.SCHEDULER_FREQUENCY_KEY,
+            SystemParametersRepository.SCHEDULER_MODE, SystemParametersRepository.SCHEDULER_RANGES,
             SystemParametersRepository.SMTP_FROM_MAIL_KEY, SystemParametersRepository.SMTP_FROM_NAME_KEY,
             SystemParametersRepository.SMTP_PASSWORD_KEY, SystemParametersRepository.SMTP_PORT_KEY,
             SystemParametersRepository.SMTP_SERVER_KEY, SystemParametersRepository.SMTP_USER_KEY,
@@ -157,6 +209,14 @@ public class SystemParametersController extends BaseController {
 
                     case SystemParametersRepository.SCHEDULER_FREQUENCY_KEY:
                         systemParameter.setValue(parameterModel.getSchedulerFrequency());
+                        break;
+
+                    case SystemParametersRepository.SCHEDULER_MODE:
+                        systemParameter.setValue(parameterModel.getSchedulerMode().name());
+                        break;
+
+                    case SystemParametersRepository.SCHEDULER_RANGES:
+                        systemParameter.setValue(parameterModel.getSchedulerRangesAsJson());
                         break;
 
                     case SystemParametersRepository.SMTP_FROM_MAIL_KEY:
@@ -215,7 +275,7 @@ public class SystemParametersController extends BaseController {
 
         }
 
-        this.refreshOrchestratorFrequency();
+        this.refreshOrchestratorMode();
 
         this.logger.info("Updating the parameters has succeeded.");
         this.addStatusMessage(redirectAttributes, "parameters.updated", MessageType.SUCCESS);
@@ -242,6 +302,10 @@ public class SystemParametersController extends BaseController {
         systemParameterModel.setBasePath(systemParametersRepository.getBasePath());
         systemParameterModel.setDashboardFrequency(systemParametersRepository.getDashboardRefreshInterval());
         systemParameterModel.setSchedulerFrequency(systemParametersRepository.getSchedulerFrequency());
+        final SchedulerMode schedulerMode = SchedulerMode.valueOf(systemParametersRepository.getSchedulerMode());
+        systemParameterModel.setSchedulerMode(schedulerMode);
+        final String rangesString = systemParametersRepository.getSchedulerRanges();
+        systemParameterModel.setSchedulerRanges(OrchestratorTimeRange.fromCollectionJson(rangesString));
         systemParameterModel.setSmtpFromMail(systemParametersRepository.getSmtpFromMail());
         systemParameterModel.setSmtpFromName(systemParametersRepository.getSmtpFromName());
         systemParameterModel.setSmtpPassword(SystemParameterModel.PASSWORD_GENERIC_STRING);
@@ -299,16 +363,16 @@ public class SystemParametersController extends BaseController {
     /**
      * Informs the background tasks orchestrator that system parameters may have been updated.
      */
-    private void refreshOrchestratorFrequency() {
+    private void refreshOrchestratorMode() {
         Orchestrator orchestrator = Orchestrator.getInstance();
 
         if (!orchestrator.isInitialized()) {
-            this.logger.warn("The orchestrator is not initialized. The frequency will not be updated. Please check if"
-                    + " there were errors when application was started.");
+            this.logger.warn("The orchestrator is not initialized. The run mode will not be updated. Please check if"
+                    + " there were errors when the application was started.");
             return;
         }
 
-        orchestrator.updateStepFrequencyFromDataSource(true);
+        orchestrator.updateSettingsFromDataSource(true);
     }
 
 }

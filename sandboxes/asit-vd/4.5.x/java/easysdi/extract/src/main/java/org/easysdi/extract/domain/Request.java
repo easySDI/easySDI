@@ -100,12 +100,20 @@ public class Request implements Serializable {
     @Column(name = "p_organism")
     private String organism;
 
+    @Size(max = 255)
+    @Column(name = "p_organismguid")
+    private String organismGuid;
+
     /**
      * The name of the person who ordered this data item.
      */
     @Size(max = 255)
     @Column(name = "p_client")
     private String client;
+
+    @Size(max = 255)
+    @Column(name = "p_clientguid")
+    private String clientGuid;
 
     /**
      * Additional information about the person who ordered this data item.
@@ -423,6 +431,28 @@ public class Request implements Serializable {
 
 
     /**
+     * Obtains the organization that the person who placed this data item order is part of.
+     *
+     * @return the name of the organization
+     */
+    public String getOrganismGuid() {
+        return this.organismGuid;
+    }
+
+
+
+    /**
+     * Defines the organization that the person who placed this data item order is part of.
+     *
+     * @param organismName the name of the organization
+     */
+    public void setOrganismGuid(final String organismGuid) {
+        this.organismGuid = organismGuid;
+    }
+
+
+
+    /**
      * Obtains the name of the customer who ordered this data item.
      *
      * @return the customer name
@@ -440,6 +470,28 @@ public class Request implements Serializable {
      */
     public void setClient(final String customer) {
         this.client = customer;
+    }
+
+
+
+    /**
+     * Obtains the name of the customer who ordered this data item.
+     *
+     * @return the customer name
+     */
+    public String getClientGuid() {
+        return this.clientGuid;
+    }
+
+
+
+    /**
+     * Defines the name of the customer who ordered this data item.
+     *
+     * @param customer the customer name
+     */
+    public void setClientGuid(final String customerGuid) {
+        this.clientGuid = customerGuid;
     }
 
 

@@ -18,7 +18,10 @@ package org.easysdi.extract.utils;
 
 import java.util.Calendar;
 import org.easysdi.extract.utils.SimpleTemporalSpan.TemporalField;
+import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 
 
@@ -28,6 +31,95 @@ import org.joda.time.Period;
  * @author Yves Grasset
  */
 public abstract class DateTimeUtils {
+
+    public enum DaysOfWeek {
+        MONDAY,
+        TUESDAY,
+        WEDNESDAY,
+        THURSDAY,
+        FRIDAY,
+        SATURDAY,
+        SUNDAY
+    }
+
+
+
+    public static final int compareWithTimeString(final DateTime time, final String timeString) {
+
+        if (time == null) {
+            throw new IllegalArgumentException("The time to compare cannot be null.");
+        }
+
+        if (!DateTimeUtils.isTimeStringValid(timeString, true)) {
+            throw new IllegalArgumentException("The time string to compare the date to is invalid.");
+        }
+
+        final int timeHour = time.getHourOfDay();
+        final String[] timeStringComponents = timeString.split(":");
+        final int timeStringHour = Integer.valueOf(timeStringComponents[0]);
+
+        if (timeHour < timeStringHour) {
+            return -1;
+        }
+
+        if (timeHour > timeStringHour) {
+            return 1;
+        }
+
+        final int timeMinutes = time.getMinuteOfHour();
+        final int timeStringMinutes = Integer.valueOf(timeStringComponents[1]);
+
+        if (timeMinutes < timeStringMinutes) {
+            return -1;
+        }
+
+        if (timeMinutes > timeStringMinutes) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+
+
+    public static final int compareTimeStrings(final String timeString1, final String timeString2) {
+
+        if (!DateTimeUtils.isTimeStringValid(timeString1, true)) {
+            throw new IllegalArgumentException("The time string to compare is invalid.");
+        }
+
+        if (!DateTimeUtils.isTimeStringValid(timeString2, true)) {
+            throw new IllegalArgumentException("The time string to be compared to is invalid.");
+        }
+
+        final String[] timeString1Components = timeString1.split(":");
+        final String[] timeString2Components = timeString2.split(":");
+        final int timeString1Hour = Integer.valueOf(timeString1Components[0]);
+        final int timeString2Hour = Integer.valueOf(timeString2Components[0]);
+
+        if (timeString1Hour < timeString2Hour) {
+            return -1;
+        }
+
+        if (timeString1Hour > timeString2Hour) {
+            return 1;
+        }
+
+        final int timeString1Minutes = Integer.valueOf(timeString1Components[1]);
+        final int timeString2Minutes = Integer.valueOf(timeString2Components[1]);
+
+        if (timeString1Minutes < timeString2Minutes) {
+            return -1;
+        }
+
+        if (timeString1Minutes > timeString2Minutes) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+
 
     /**
      * Gets the interval between two time points expressed in the floored value of the most significant
@@ -70,6 +162,31 @@ public abstract class DateTimeUtils {
         }
 
         return new SimpleTemporalSpan(difference.getSeconds(), TemporalField.SECONDS);
+    }
+
+
+
+    public static final boolean isTimeStringValid(String timeString) {
+        return DateTimeUtils.isTimeStringValid(timeString, false);
+    }
+
+
+
+    public static final boolean isTimeStringValid(String timeString, boolean allow24) {
+
+        if (allow24 && "24:00".equals(timeString)) {
+            return true;
+        }
+
+        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("HH:mm");
+
+        try {
+            timeFormatter.parseDateTime(timeString);
+            return true;
+
+        } catch (UnsupportedOperationException | IllegalArgumentException exception) {
+            return false;
+        }
     }
 
 }

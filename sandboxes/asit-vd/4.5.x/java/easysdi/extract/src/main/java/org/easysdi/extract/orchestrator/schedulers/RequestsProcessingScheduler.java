@@ -26,6 +26,7 @@ import org.easysdi.extract.domain.Request;
 import org.easysdi.extract.domain.Request.Status;
 import org.easysdi.extract.domain.RequestHistoryRecord;
 import org.easysdi.extract.email.EmailSettings;
+import org.easysdi.extract.orchestrator.OrchestratorSettings;
 import org.easysdi.extract.orchestrator.runners.ExportRequestsJobRunner;
 import org.easysdi.extract.orchestrator.runners.RequestMatcherJobRunner;
 import org.easysdi.extract.orchestrator.runners.RequestTaskRunner;
@@ -84,6 +85,8 @@ public class RequestsProcessingScheduler extends JobScheduler implements TaskCom
      */
     private final Logger logger = LoggerFactory.getLogger(RequestsProcessingScheduler.class);
 
+    private final OrchestratorSettings orchestratorSettings;
+
     /**
      * The recurring job that attempts to match the new requests with a process.
      */
@@ -129,7 +132,7 @@ public class RequestsProcessingScheduler extends JobScheduler implements TaskCom
     public RequestsProcessingScheduler(final ScheduledTaskRegistrar taskRegistrar,
             final ApplicationRepositories repositories, final ConnectorDiscovererWrapper connectorsDiscoverer,
             final TaskProcessorDiscovererWrapper tasksDiscoverer, final EmailSettings smtpSettings,
-            final String applicationLanguage) {
+            final String applicationLanguage, final OrchestratorSettings orchestratorSettings) {
 
         super(taskRegistrar);
 
@@ -153,6 +156,10 @@ public class RequestsProcessingScheduler extends JobScheduler implements TaskCom
             throw new IllegalArgumentException("The application language code cannot be null.");
         }
 
+        if (orchestratorSettings == null) {
+            throw new IllegalArgumentException("The orchestrator settings cannot be null.");
+        }
+
         this.applicationRepositories = repositories;
         this.connectorPluginDiscoverer = connectorsDiscoverer;
         this.taskPluginDiscoverer = tasksDiscoverer;
@@ -160,6 +167,7 @@ public class RequestsProcessingScheduler extends JobScheduler implements TaskCom
         this.emailSettings = smtpSettings;
         this.applicationLangague = applicationLanguage;
         this.taskExecutorService = Executors.newCachedThreadPool();
+        this.orchestratorSettings = orchestratorSettings;
     }
 
 

@@ -85,7 +85,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
         <th:block layout:fragment="additionalScripts">
-            <script src="../../static/js/processesList.js" th:src="@{/js/processesList.js}" type="text/javascript">
+            <script src="../../static/js/processesList.js" th:src="@{/js/processesList.js} + '?v=@@extractVersion@@'"
+                    type="text/javascript">
             </script>
             <script type="text/javascript">
                 var dataTablesProperties = getDataTableBaseProperties();

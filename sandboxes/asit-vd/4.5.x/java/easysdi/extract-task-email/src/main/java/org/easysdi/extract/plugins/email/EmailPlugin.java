@@ -34,6 +34,7 @@ import org.easysdi.extract.plugins.common.IEmailSettings;
 import org.easysdi.extract.plugins.common.ITaskProcessor;
 import org.easysdi.extract.plugins.common.ITaskProcessorRequest;
 import org.easysdi.extract.plugins.common.ITaskProcessorResult;
+import org.easysdi.extract.plugins.email.Email.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,12 @@ public class EmailPlugin implements ITaskProcessor {
     private static final String HELP_FILE_NAME = "emailHelp.html";
 
     /**
+     * The name of the file to use to generate the HTML content of the message sent by this plugin
+     * in the language of the user interface.
+     */
+    private static final String TEMPLATE_FILE_NAME = "emailTemplate.html";
+
+    /**
      * The writer to the application logs.
      */
     private final Logger logger = LoggerFactory.getLogger(EmailPlugin.class);
@@ -66,6 +73,11 @@ public class EmailPlugin implements ITaskProcessor {
      * The string that identifies this plugin.
      */
     private final String code = "EMAIL";
+
+    /**
+     * The model used to generate the HTML content of the sent e-mail message.
+     */
+    private String emailTemplate = null;
 
     /**
      * The text that explains how to use this plugin in the language of the user interface.
@@ -292,6 +304,44 @@ public class EmailPlugin implements ITaskProcessor {
 
 
     /**
+     * Creates the content of the message to be sent based on a template in the language used by the
+     * application.
+     *
+     * @param title the subject of the message
+     * @param body  the text of the message
+     * @return the HTML code to define as the content of the message, or <code>null</code> if it could not be
+     *         generated (usually because the template could not be found)
+     */
+    private String generateMessageContent(final String title, final String body) {
+
+        final String template = this.getEmailTemplate();
+
+        if (template == null) {
+            return null;
+        }
+
+        return template.replace("##title##", title).replace("##body##", body.replaceAll("\n(\r)?|\r(\n)?", "<br />"));
+    }
+
+
+
+    /**
+     * Obtains the file to use to generate the HTML content of the message sent by this plugin.
+     *
+     * @return the message template, or <code>null</code> if it could not be found
+     */
+    private String getEmailTemplate() {
+
+        if (this.emailTemplate == null) {
+            this.emailTemplate = this.messages.getFileContent(EmailPlugin.TEMPLATE_FILE_NAME);
+        }
+
+        return this.emailTemplate;
+    }
+
+
+
+    /**
      * Obtains the value of a property in the request that is currently being archived.
      *
      * @param request   the current request
@@ -401,6 +451,13 @@ public class EmailPlugin implements ITaskProcessor {
                 "There must be at least one address to send the notification to";
 
         boolean hasSentMail = false;
+        final String content = this.generateMessageContent(subject, body);
+
+        if (content == null) {
+            this.logger.warn("The content of the message could not be generated. The usual cause is that the e-mail"
+                    + " template could not be found.");
+            return false;
+        }
 
         for (String address : toAddressesArray) {
             Email email = new Email(emailSettings);
@@ -414,7 +471,8 @@ public class EmailPlugin implements ITaskProcessor {
             }
 
             email.setSubject(subject);
-            email.setContent(body);
+            email.setContentType(ContentType.HTML);
+            email.setContent(content);
 
             if (!email.send()) {
                 this.logger.warn("An error occurred when the notification was sent to {}.", address);

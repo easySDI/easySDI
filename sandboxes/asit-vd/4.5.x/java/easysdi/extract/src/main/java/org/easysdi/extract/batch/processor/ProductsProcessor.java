@@ -73,10 +73,12 @@ public class ProductsProcessor implements ItemProcessor<IProduct, Request> {
             Request request = new Request();
             request.setConnector(this.connectorInstance);
             request.setClient(product.getClient());
+            request.setClientGuid(product.getClientGuid());
             request.setClientDetails(product.getClientDetails());
             request.setOrderGuid(product.getOrderGuid());
             request.setOrderLabel(product.getOrderLabel());
             request.setOrganism(product.getOrganism());
+            request.setOrganismGuid(product.getOrganismGuid());
             request.setParameters(product.getOthersParameters());
             request.setPerimeter(product.getPerimeter());
             request.setProductGuid(product.getProductGuid());

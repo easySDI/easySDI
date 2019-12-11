@@ -28,6 +28,7 @@ import org.easysdi.extract.domain.Request;
 import org.easysdi.extract.domain.Request.Status;
 import org.easysdi.extract.domain.User;
 import org.easysdi.extract.exceptions.BaseFolderNotFoundException;
+import org.easysdi.extract.orchestrator.OrchestratorSettings;
 import org.easysdi.extract.persistence.ConnectorsRepository;
 import org.easysdi.extract.persistence.ProcessesRepository;
 import org.easysdi.extract.persistence.RequestHistoryRepository;
@@ -221,6 +222,21 @@ public class IndexController extends BaseController {
         Connector[] activeConnectors
                 = this.connectorsRepository.findByActiveTrueOrderByName().toArray(new Connector[]{});
         return ConnectorJsonModel.fromConnectorsArray(activeConnectors, this.messageSource, this.isCurrentUserAdmin());
+    }
+
+
+
+    @GetMapping("getWorkingState")
+    @ResponseBody
+    public final String handleGetWorkingState() {
+
+        if (!this.isCurrentUserApplicationUser()) {
+            return null;
+        }
+
+        OrchestratorSettings orchestratorSettings = new OrchestratorSettings(this.parametersRepository);
+
+        return orchestratorSettings.getStateString();
     }
 
 

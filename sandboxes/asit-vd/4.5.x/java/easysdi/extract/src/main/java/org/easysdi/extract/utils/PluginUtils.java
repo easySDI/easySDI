@@ -80,9 +80,23 @@ public abstract class PluginUtils {
                     if (parameterObject.get("type").asText().equals("boolean")) {
                         parameter.setValue("false");
                     }
+
                     if (parameterObject.has("maxlength")) {
                         parameter.setMaxLength(parameterObject.get("maxlength").asInt());
                     }
+
+                    if (parameterObject.has("max")) {
+                        parameter.setMaxValue(parameterObject.get("max").asInt());
+                    }
+
+                    if (parameterObject.has("min")) {
+                        parameter.setMinValue(parameterObject.get("min").asInt());
+                    }
+
+                    if (parameterObject.has("step")) {
+                        parameter.setStep(parameterObject.get("step").asInt());
+                    }
+
                     PluginUtils.LOGGER.debug("Adding parameter {} to the array.", parameter.getName());
                     parametersList.add(parameter);
                 }

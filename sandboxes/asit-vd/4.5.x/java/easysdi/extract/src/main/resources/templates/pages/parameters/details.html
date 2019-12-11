@@ -7,6 +7,10 @@
         <title th:inline="text">
             [[#{application.name}]]&nbsp;&ndash; [[#{parameters.page.title}]]
         </title>
+        <th:block layout:fragment="customStyleIncludes">
+            <link rel="stylesheet" type="text/css" href="../../../static/lib/timepicker/jquery.timepicker.min.css"
+                  th:href="@{/lib/timepicker/jquery.timepicker.min.css} + '?v=@@timepickerLibVersion@@'"/>
+        </th:block>
     </head>
     <body>
         <div id="wrapper">
@@ -98,6 +102,110 @@
                             </div>
                             <div class="panel panel-default">
                                 <div class="panel-heading">
+                                    <span th:text="#{parameters.panels.hours.title}">{Working hours}</span>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <label th:text="#{parameters.fields.orchestratorMode.label}">
+                                                {EXTRACT working mode}
+                                            </label>
+                                            <div class="btn-group" data-toggle="buttons">
+                                                <label th:each="schedulerModeItem : ${T(org.easysdi.extract.orchestrator.OrchestratorSettings.SchedulerMode).values()}"
+                                                       class="btn btn-xs btn-toggle btn-toggle-yes"
+                                                       th:classappend="*{schedulerMode} == ${schedulerModeItem} ? 'active' : ''">
+                                                    <input type="radio" th:field="*{schedulerMode}"
+                                                           th:value="${schedulerModeItem}" />&nbsp;
+                                                    <span th:text="${#messages.msg('schedulerMode.' + schedulerModeItem)}">
+                                                        {None}
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="table-responsive">
+                                            <table id="orchestratorRangesTable"
+                                                   class="inline-fields-table">
+                                                <tbody>
+                                                    <tr th:each="range, rangeStats : *{schedulerRanges}"
+                                                        th:object="${parameters.schedulerRanges[__${rangeStats.index}__]}"
+                                                        th:with="rangeIndex = ${rangeStats.index}" class="table-row">
+                                                        <td class="form-group"
+                                                            th:classappend="${#fields.hasErrors('startDayIndex')} ? 'has-error'">
+                                                            <label th:text="#{parameters.field.orchestratorRange.startDay.label}">
+                                                                {from}
+                                                            </label>
+                                                            <select class="form-control" th:field="*{startDayIndex}"
+                                                                    data-toggle="tooltip"
+                                                                    th:title="${#fields.hasErrors('startDayIndex')}
+                                                                    ? ${#fields.errors('startDayIndex')[0]}">
+                                                                <option th:each="weekDay, weekDayStats : ${T(org.easysdi.extract.utils.DateTimeUtils.DaysOfWeek).values()}"
+                                                                        th:value="${weekDayStats.index + 1}"
+                                                                        th:text="${#messages.msg('weekDay.' + weekDay)}">
+                                                                    {Monday}
+                                                                </option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="form-group"
+                                                            th:classappend="${#fields.hasErrors('endDayIndex')} ? 'has-error'">
+                                                            <label th:text="#{parameters.field.orchestratorRange.endDay.label}">
+                                                                {to}
+                                                            </label>
+                                                            <select class="form-control" th:field="*{endDayIndex}"
+                                                                    data-toggle="tooltip"
+                                                                    th:title="${#fields.hasErrors('endDayIndex')}
+                                                                    ? ${#fields.errors('endDayIndex')[0]}">
+                                                                <option th:each="weekDay, weekDayStats : ${T(org.easysdi.extract.utils.DateTimeUtils.DaysOfWeek).values()}"
+                                                                        th:value="${weekDayStats.index + 1}"
+                                                                        th:text="${#messages.msg('weekDay.' + weekDay)}">
+                                                                    {Monday}
+                                                                </option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="form-group"
+                                                            th:classappend="${#fields.hasErrors('startTime')} ? 'has-error'">
+                                                            <label th:text="#{parameters.field.orchestratorRange.startTime.label}">
+                                                                {from}
+                                                            </label>
+                                                            <input th:field="*{startTime}" class="timepicker"
+                                                                   th:title="${#fields.hasErrors('startTime')}
+                                                                   ? ${#fields.errors('startTime')[0]}" />
+                                                        </td>
+                                                        <td class="form-group"
+                                                            th:classappend="${#fields.hasErrors('endTime')} ? 'has-error'">
+                                                            <label th:text="#{parameters.field.orchestratorRange.endTime.label}">
+                                                                {to}
+                                                            </label>
+                                                            <input th:field="*{endTime}" class="timepicker"
+                                                                   th:title="${#fields.hasErrors('endTime')}
+                                                                   ? ${#fields.errors('endTime')[0]}" />
+                                                        </td>
+                                                        <td class="center-cell button-cell">
+                                                            <div th:id="'deleteButton-' + ${rangeIndex}"
+                                                                 class="btn btn-danger btn-xs delete-range-button"
+                                                                 th:href="@{'/parameters/deleteOrchestratorTimeRange/' + ${rangeIndex}}">
+                                                                <span class="fa fa-remove fa-fw"></span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <p class="text-center">
+                                            <span id="addRangeButton" class="btn btn-extract-filled"
+                                                  th:href="@{'/parameters/addOrchestratorTimeRange'}" >
+                                                <i class="fa fa-plus fa-fw"></i>
+                                                <span th:text="#{parameters.orchestratorRanges.add.button}" >
+                                                    {Add new rule}
+                                                </span>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
                                     <span th:text="#{parameters.panels.about.title}">{About EXTRACT}</span>
                                 </div>
                                 <div class="panel-body">
@@ -113,7 +221,7 @@
                                             <p>
                                                 <span th:text="#{parameters.about.version}">{Installed version:}</span>
                                                 &nbsp;
-                                                <span th:text="#{application.version}">{v1.0-SNAPSHOT}</span>
+                                                <span>@@extractVersion@@</span>
                                             </p>
                                         </div>
                                     </div>
@@ -276,19 +384,24 @@
             </div>
         </div>
         <th:block layout:fragment="customScripts">
-            <script type="text/javascript" src="../../static/js/parameters.js" th:src="@{/js/parameters.js}"></script>
+            <script type="text/javascript" src="../../static/lib/timepicker/jquery.timepicker.min.js"
+            th:src="@{/lib/timepicker/jquery.timepicker.min.js} + '?v=@@timepickerLibVersion@@'"></script>
+            <script type="text/javascript" src="../../static/js/parameters.js"
+            th:src="@{/js/parameters.js} + '?v=@@extractVersion@@'"></script>
             <script type="text/javascript" th:inline="javascript">
                 /*<![CDATA[*/
                 $(function() {
-
                     $('#parametersCancelButton').on('click', function() {
-                        location.replace("parameters");
+                        var pageUrl = /*[[@{'/parameters'}]]*/ "../parameters";
+                        location.replace(pageUrl);
                     });
-
                     $('#parametersSaveButton').on('click', submitParametersData);
+                    $('#addRangeButton').on('click', addOrchestratorTimeRange);
+                    $('.delete-range-button').on('click', removeOrchestratorTimeRange);
+
+                    loadTimePickers();
                 });
-                /*]]>*/
-            </script>
+                /*]]>*/</script>
         </th:block>
     </body>
 </html>

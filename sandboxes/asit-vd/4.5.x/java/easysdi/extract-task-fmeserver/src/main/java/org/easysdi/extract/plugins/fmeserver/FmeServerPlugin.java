@@ -319,6 +319,10 @@ public class FmeServerPlugin implements ITaskProcessor {
             uriBuilder.setParameter(config.getProperty("paramRequestPerimeter"), perimeter);
             uriBuilder.setParameter(config.getProperty("paramRequestParameters"), parameters);
             uriBuilder.setParameter(config.getProperty("paramRequestFolderOut"), folderOut);
+            uriBuilder.setParameter(config.getProperty("paramRequestOrderLabel"), request.getOrderLabel());
+            uriBuilder.setParameter(config.getProperty("paramRequestInternalId"), String.format("%d", request.getId()));
+            uriBuilder.setParameter(config.getProperty("paramRequestClientGuid"), request.getClientGuid());
+            uriBuilder.setParameter(config.getProperty("paramRequestOrganismGuid"), request.getOrganismGuid());
 
             final FmeServerResult result = this.sendServerRequest(uriBuilder.build(), login, password, folderOut);
             result.setRequestData(request);

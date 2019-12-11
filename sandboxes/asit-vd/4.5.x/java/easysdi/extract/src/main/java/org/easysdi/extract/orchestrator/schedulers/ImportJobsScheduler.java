@@ -14,6 +14,7 @@ import org.easysdi.extract.connectors.ConnectorDiscovererWrapper;
 import org.easysdi.extract.connectors.common.IConnector;
 import org.easysdi.extract.domain.Connector;
 import org.easysdi.extract.email.EmailSettings;
+import org.easysdi.extract.orchestrator.OrchestratorSettings;
 import org.easysdi.extract.orchestrator.runners.CommandImportJobRunner;
 import org.easysdi.extract.persistence.ApplicationRepositories;
 import org.easysdi.extract.persistence.ConnectorsRepository;
@@ -65,6 +66,8 @@ public class ImportJobsScheduler extends JobScheduler {
      */
     private final Logger logger = LoggerFactory.getLogger(ImportJobsScheduler.class);
 
+    private final OrchestratorSettings orchestratorSettings;
+
     /**
      * A collection that keeps a trace of the import job that is scheduled for each connector.
      */
@@ -83,7 +86,7 @@ public class ImportJobsScheduler extends JobScheduler {
      */
     public ImportJobsScheduler(final ScheduledTaskRegistrar taskRegistrar, final ApplicationRepositories repositories,
             final ConnectorDiscovererWrapper connectorsPluginsDiscoverer, final EmailSettings smtpSettings,
-            final String applicationLanguage) {
+            final String applicationLanguage, final OrchestratorSettings orchestratorSettings) {
         super(taskRegistrar);
 
         if (connectorsPluginsDiscoverer == null) {
@@ -102,10 +105,15 @@ public class ImportJobsScheduler extends JobScheduler {
             throw new IllegalArgumentException("The application language code cannot be null.");
         }
 
+        if (orchestratorSettings == null) {
+            throw new IllegalArgumentException("The orchestrator settings cannot be null.");
+        }
+
         this.applicationRepositories = repositories;
         this.connectorsDiscoverer = connectorsPluginsDiscoverer;
         this.emailSettings = smtpSettings;
         this.language = applicationLanguage;
+        this.orchestratorSettings = orchestratorSettings;
     }
 
 
