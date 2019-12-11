@@ -118,34 +118,46 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select(
-                $this->getState('DISTINCT ' .
-                        'list.select', ' a.id,a.guid,a.ordering,a.name,a.alias,a.ordertype_id,a.orderstate_id,a.archived,a.user_id,a.sent,a.completed,a.created_by,a.created'
-                )
+                'DISTINCT '
+                . 'a.id,'
+                . 'a.guid,'
+                . 'a.ordering,'
+                . 'a.name,'
+                . 'a.alias,'
+                . 'a.ordertype_id,'
+                . 'a.orderstate_id,'
+                . 'a.archived,'
+                . 'a.user_id,'
+                . 'a.sent,'
+                . 'a.completed,'
+                . 'a.created_by,'
+                . 'a.created,'
+                . 'users2.name AS user,'
+                . 'users2.username AS username,'
+                . 'orderstate.value AS orderstate,'
+                . 'ordertype.value AS ordertype,'
+                . 'uc.name AS editor'
         );
 
         $query->from('#__sdi_order AS a');
 
         // Join over the users for the checked out user.
-        $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
         // Join over the user field 'user'
-        $query->select($db->quoteName('users2.name', 'user'))
-                ->select($db->quoteName('users2.username', 'username'))
-                ->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id = a.user_id')
+        $query->innerJoin('#__sdi_user AS sdi_user ON sdi_user.id = a.user_id')
                 ->innerJoin('#__users    AS users2   ON users2.id   = sdi_user.user_id');
 
         // Join over the orderstate field 'orderstate'
-        $query->select('orderstate.value AS orderstate')
-                ->innerJoin('#__sdi_sys_orderstate AS orderstate ON orderstate.id = a.orderstate_id');
+        $query->innerJoin('#__sdi_sys_orderstate AS orderstate ON orderstate.id = a.orderstate_id');
 
-        $query->group('orderstate.value');
+        //$query->group('orderstate.value');
 
         // Join over the ordertype field 'ordertype'
-        $query->select('ordertype.value AS ordertype')
-                ->innerJoin('#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
+        $query->innerJoin('#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
 
-        $query->group('ordertype.value');
+        //$query->group('ordertype.value');
+        
         // Filter by ordertype type
         $ordertype = $this->getState('filter.ordertype');
         if (is_numeric($ordertype)) {
@@ -325,7 +337,8 @@ class Easysdi_shopModelorders extends JModelList {
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
-
+        
+        /*
         //group by order_id
         $query->group('a.id');
         $query->group('a.guid');
@@ -336,6 +349,7 @@ class Easysdi_shopModelorders extends JModelList {
         $query->group('users2.name');
         $query->group('uc.name');
         $query->group('users2.username');
+        */
 
         return $query;
     }
@@ -523,4 +537,3 @@ class Easysdi_shopModelorders extends JModelList {
     }
 
 }
-
