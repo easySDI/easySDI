@@ -32,7 +32,7 @@ JHtml::_('formbehavior.chosen', 'select');
                     </fieldset>
                     <?php if (count($this->organisms) > 1): ?>
                         <div id="filterorganism" >
-                            <select id="filter_userorganism" name="filter_userorganism" onchange="this.form.submit();" class="inputbox">
+                            <select id="filter_organism" name="filter_organism" onchange="this.form.submit();" class="inputbox">
                                 <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_ORGANISM_FILTER'); ?></option>
                                 <?php foreach ($this->organisms as $organism): ?>
                                     <option value="<?php echo $organism->id; ?>" <?php

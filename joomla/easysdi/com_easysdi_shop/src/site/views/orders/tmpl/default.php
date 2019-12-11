@@ -36,7 +36,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                                     <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_ORDERS_ORGANISM_FILTER'); ?></option>
                                     <?php foreach ($this->organisms as $organism): ?>
                                         <option value="<?php echo $organism->id; ?>" <?php
-                                        $filterName = (!empty($this->parent)) ? 'filter.userorganism.children' : 'filter.userorganism';
+                                        $filterName = (!empty($this->parent)) ? 'filter.organism.children' : 'filter.organism';
                                         if ($this->state->get('filter.organism') == $organism->id) : echo 'selected="selected"';
                                         endif;
                                         ?> ><?php echo $organism->name; ?></option>
