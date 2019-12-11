@@ -53,9 +53,19 @@ public class Product implements IProduct {
     private String organism;
 
     /**
+     * The identifying string of the organization that ordered this data item.
+     */
+    private String organismGuid;
+
+    /**
      * The name of the person that ordered this data item.
      */
     private String client;
+
+    /**
+     * The identifying string of the person that ordered this data item.
+     */
+    private String clientGuid;
 
     /**
      * Additional information (usually contact information) about the person that ordered this data item.
@@ -181,6 +191,24 @@ public class Product implements IProduct {
 
 
     @Override
+    public final String getOrganismGuid() {
+        return this.organismGuid;
+    }
+
+
+
+    /**
+     * Defines the organization that requested this product.
+     *
+     * @param organismName the name of the organization
+     */
+    public final void setOrganismGuid(final String organismGuid) {
+        this.organismGuid = organismGuid;
+    }
+
+
+
+    @Override
     public final String getClient() {
         return this.client;
     }
@@ -194,6 +222,24 @@ public class Product implements IProduct {
      */
     public final void setClient(final String name) {
         this.client = name;
+    }
+
+
+
+    @Override
+    public final String getClientGuid() {
+        return this.clientGuid;
+    }
+
+
+
+    /**
+     * Defines the person who requested this data item.
+     *
+     * @param name the customer's name
+     */
+    public final void setClientGuid(final String guid) {
+        this.clientGuid = guid;
     }
 
 

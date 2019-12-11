@@ -52,7 +52,7 @@ import org.hibernate.annotations.SortNatural;
 @Table(name = "Processes")
 @NamedQueries({
     @NamedQuery(name = "Process.getProcessOperatorsAddresses",
-            query = "SELECT u.email FROM Process p JOIN p.usersCollection u WHERE p.id = :processId"),
+            query = "SELECT u.email FROM Process p JOIN p.usersCollection u WHERE p.id = :processId AND u.active = true AND u.mailActive = true"),
     @NamedQuery(name = "Process.getProcessOperatorsIds",
             query = "SELECT u.id FROM Process p JOIN p.usersCollection u WHERE p.id = :processId ORDER BY u.id")
 })

@@ -18,8 +18,8 @@ package org.easysdi.extract.web.validators;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.easysdi.extract.persistence.SystemParametersRepository;
 import org.easysdi.extract.web.model.SystemParameterModel;
+import org.easysdi.extract.orchestrator.OrchestratorTimeRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,25 +70,18 @@ public class SystemParameterValidator extends BaseValidator {
      */
     private final Logger logger = LoggerFactory.getLogger(UserValidator.class);
 
-    /**
-     * The object that links the user data objects with the data source.
-     */
-    private final SystemParametersRepository systemParametersRepository;
+    private final TimeRangeValidator timeRangeValidator;
 
 
 
     /**
      * Creates a new instance of this validator.
      *
-     * @param repository the object that links user data objects with the data source
+     * @param rangeValidator the object that checks if a time range is valid
      */
-    public SystemParameterValidator(final SystemParametersRepository repository) {
-
-        if (repository == null) {
-            throw new IllegalArgumentException("The system parameters repository cannot be null.");
-        }
-
-        this.systemParametersRepository = repository;
+    public SystemParameterValidator(final TimeRangeValidator rangeValidator) {
+        this.checkValidator(rangeValidator, OrchestratorTimeRange.class);
+        this.timeRangeValidator = rangeValidator;
     }
 
 
@@ -134,6 +127,19 @@ public class SystemParameterValidator extends BaseValidator {
             errors.rejectValue("sslType", "parameters.errors.ssltype.required");
         }
 
+        int orchestratorTimeRangeIndex = 0;
+
+        for (OrchestratorTimeRange timeRange : systemParameterModel.getSchedulerRanges()) {
+
+            try {
+                errors.pushNestedPath(String.format("schedulerRanges[%d]", orchestratorTimeRangeIndex));
+                ValidationUtils.invokeValidator(this.timeRangeValidator, timeRange, errors);
+                orchestratorTimeRangeIndex++;
+
+            } finally {
+                errors.popNestedPath();
+            }
+        }
     }
 
 

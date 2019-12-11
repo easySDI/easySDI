@@ -136,6 +136,50 @@ function loadRequestsTable(tableId, ajaxUrl, refreshInterval, withPaging, withSe
 
 
 /**
+ *
+ *
+ *
+ */
+function loadWorkingState(scheduledStopDivId, stoppedDivId, ajaxUrl, refreshInterval) {
+
+    if (!ajaxUrl) {
+        return;
+    }
+
+    var interval = parseInt(refreshInterval);
+
+    if (isNaN(interval) || interval < 10) {
+        return;
+    }
+
+    if (!scheduledStopDivId || !stoppedDivId) {
+        return;
+    }
+
+    var $scheduledStopDiv = $("#" + scheduledStopDivId);
+
+    if (!$scheduledStopDiv) {
+        return;
+    }
+
+    var $stoppedDiv = $("#" + stoppedDivId);
+
+    if (!$stoppedDiv) {
+        return;
+    }
+    _scheduledStopDiv = $scheduledStopDiv;
+    _stoppedDiv = $stoppedDiv;
+    _workingStateUrl = ajaxUrl;
+
+    _refreshWorkingState();
+    setInterval(function() {
+        _refreshWorkingState();
+    }, refreshInterval * 1000);
+}
+
+
+
+/**
  * Sets the values that filter the records displayed in the tables with search enabled from the fields in the search
  * form.
  */
@@ -211,7 +255,11 @@ var _filterStartDateFrom = "";
  */
 var _filterStartDateTo = "";
 
+var _scheduledStopDiv;
 
+var _stoppedDiv;
+
+var _workingStateUrl;
 
 function _addSearchInfo(data) {
     data.filterText = _filterText;
@@ -500,6 +548,34 @@ function _refreshConnectorsState() {
             }
 
             _updateConnectorsState(data);
+        }
+    });
+}
+
+
+
+/**
+ * Requests current information about the connectors state.
+ */
+function _refreshWorkingState() {
+
+    if (!_workingStateUrl || !_scheduledStopDiv || !_stoppedDiv) {
+        return;
+    }
+
+    $.ajax(_workingStateUrl, {
+        cache : false,
+        error : function() {
+            alert("ERROR - Could not fetch the working state information.");
+        },
+        success : function(data) {
+
+            if (!data) {
+                alert("ERROR - Could not fetch the working state information.");
+            }
+
+            _scheduledStopDiv.toggle(data === "SCHEDULED_STOP");
+            _stoppedDiv.toggle(data === "STOPPED");
         }
     });
 }

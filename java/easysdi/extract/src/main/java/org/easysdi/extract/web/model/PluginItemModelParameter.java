@@ -51,6 +51,18 @@ public class PluginItemModelParameter {
     private int maxLength;
 
     /**
+     * The number that the value of a numeric parameter must not exceed, or <code>null</code> if there is
+     * no limit.
+     */
+    private Integer maxValue;
+
+    /**
+     * The number that the value of a numeric parameter must equal or be greater than, or <code>null</code>
+     * if there is no limit.
+     */
+    private Integer minValue;
+
+    /**
      * The string that identifies this parameter.
      */
     private String name;
@@ -59,6 +71,12 @@ public class PluginItemModelParameter {
      * Whether a value must be provided for this parameter.
      */
     private boolean required;
+
+    /**
+     * The span between two possible values of a numeric parameter, or <code>null</code> if all values are
+     * acceptable.
+     */
+    private Integer step;
 
     /**
      * The type of value that this parameter needs.
@@ -102,7 +120,7 @@ public class PluginItemModelParameter {
         }
 
         if (valueType == null || "".equals(valueType.trim())) {
-            throw new IllegalArgumentException("The parameter name cannot be null or empty.");
+            throw new IllegalArgumentException("The parameter type cannot be null or empty.");
         }
 
         this.name = parameterName;
@@ -110,6 +128,48 @@ public class PluginItemModelParameter {
         this.type = valueType;
         this.required = isRequired;
         this.maxLength = (maximumSize > 0) ? maximumSize : -1;
+    }
+
+
+
+    /**
+     * Creates a new numeric parameter instance.
+     *
+     * @param parameterName the name of the parameter (must be unique in the instance parameter collection)
+     * @param description   the user-friendly label of this parameter
+     * @param valueType     the type of value expected by this parameter
+     * @param isRequired    <code>true</code> if the value of this parameter must be defined
+     * @param minimumValue  the number that the value must not exceed, or <code>null</code> if there is no limit
+     * @param maximumValue  the number that the value must be greater than or equal to, or <code>null</code> if there
+     *                      is no limit
+     * @param stepValue     the span between two acceptable values, or <code>null</code> if all values are acceptable
+     */
+    public PluginItemModelParameter(final String parameterName, final String description, final String valueType,
+            final boolean isRequired, final Integer minimumValue, final Integer maximumValue, final Integer stepValue) {
+
+        if (parameterName == null || "".equals(parameterName.trim())) {
+            throw new IllegalArgumentException("The parameter name cannot be null or empty.");
+        }
+
+        if (description == null || "".equals(description.trim())) {
+            throw new IllegalArgumentException("The parameter label cannot be null or empty.");
+        }
+
+        if (valueType == null || "".equals(valueType.trim())) {
+            throw new IllegalArgumentException("The parameter type cannot be null or empty.");
+        }
+
+        if (minimumValue != null && maximumValue != null && minimumValue >= maximumValue) {
+            throw new IllegalArgumentException("The parameter minimum value must be less than its maximum value.");
+        }
+
+        this.name = parameterName;
+        this.label = description;
+        this.type = valueType;
+        this.required = isRequired;
+        this.maxValue = maximumValue;
+        this.minValue = minimumValue;
+        this.step = stepValue;
     }
 
 
@@ -127,6 +187,28 @@ public class PluginItemModelParameter {
     public PluginItemModelParameter(final String parameterName, final String description, final String valueType,
             final boolean isRequired, final int maximumSize, final Object parameterValue) {
         this(parameterName, description, valueType, isRequired, maximumSize);
+        this.setValue(parameterValue);
+    }
+
+
+
+    /**
+     * Creates a new numeric parameter instance.
+     *
+     * @param parameterName  the name of the parameter (must be unique in the instance parameter collection)
+     * @param description    the user-friendly label of this parameter
+     * @param valueType      the type of value expected by this parameter
+     * @param isRequired     <code>true</code> if the value of this parameter must be defined
+     * @param minimumValue   the number that the value must not exceed, or <code>null</code> if there is no limit
+     * @param maximumValue   the number that the value must be greater than or equal to, or <code>null</code> if there
+     *                       is no limit
+     * @param stepValue      the span between two acceptable values, or <code>null</code> if all values are acceptable
+     * @param parameterValue the value of this parameter
+     */
+    public PluginItemModelParameter(final String parameterName, final String description, final String valueType,
+            final boolean isRequired, final Integer minimumValue, final Integer maximumValue, final Integer stepValue,
+            final Object parameterValue) {
+        this(parameterName, description, valueType, isRequired, minimumValue, maximumValue, stepValue);
         this.setValue(parameterValue);
     }
 
@@ -155,6 +237,30 @@ public class PluginItemModelParameter {
 
 
     /**
+     * Obtains the number that the value of a numeric parameter must not exceed, or <code>null</code> if
+     * there is no limit.
+     *
+     * @return the maximum value
+     */
+    public final Integer getMaxValue() {
+        return this.maxValue;
+    }
+
+
+
+    /**
+     * Obtains the number that the value of a numeric parameter must equal or be greater than, or <code>null</code>
+     * if there is no limit.
+     *
+     * @return the minimum value
+     */
+    public final Integer getMinValue() {
+        return this.minValue;
+    }
+
+
+
+    /**
      * Obtains the identifier of this parameter.
      *
      * @return the parameter name
@@ -172,6 +278,18 @@ public class PluginItemModelParameter {
      */
     public final boolean isRequired() {
         return this.required;
+    }
+
+
+
+    /**
+     * Obtains the span between two possible values of a numeric parameter, or <code>null</code> if all
+     * values are acceptable.
+     *
+     * @return the value step
+     */
+    public final Integer getStep() {
+        return this.step;
     }
 
 
@@ -231,6 +349,9 @@ public class PluginItemModelParameter {
             case "email":
                 return (this.getValue() != null);
 
+            case "numeric":
+                return (this.getValue() != null);
+
             case "boolean":
                 return true;
 
@@ -250,8 +371,13 @@ public class PluginItemModelParameter {
     public final boolean validateUpdatedValue(final String updatedValue) {
         this.logger.debug("Validating value {} for parameter {}", updatedValue, this.getName());
 
-        if (updatedValue == null) {
-            throw new IllegalArgumentException("The updated data object cannot be null.");
+        if (updatedValue == null || StringUtils.isEmpty(updatedValue)) {
+
+            if (this.isRequired()) {
+                throw new IllegalArgumentException("The updated data object cannot be null.");
+            }
+
+            return true;
         }
 
         switch (this.getType()) {
@@ -259,8 +385,7 @@ public class PluginItemModelParameter {
             case "text":
             case "pass":
             case "multitext":
-                return (!(StringUtils.isEmpty(updatedValue) && this.isRequired())
-                        || updatedValue.length() <= this.getMaxLength());
+                return (updatedValue.length() <= this.getMaxLength());
 
             case "email":
                 return (updatedValue.length() <= this.getMaxLength()
@@ -268,6 +393,23 @@ public class PluginItemModelParameter {
 
             case "boolean":
                 return true;
+
+            case "numeric":
+
+                try {
+                    int intValue = Integer.parseInt(updatedValue);
+                    int relativeValue = (this.minValue != null) ? intValue - this.minValue : intValue;
+
+                    return ((this.minValue == null || intValue >= this.minValue)
+                            && (this.maxValue == null || intValue <= this.maxValue)
+                            && (this.step == null || relativeValue % this.step == 0));
+
+                } catch (NumberFormatException exception) {
+                    this.logger.error("The value {} for numeric parameter \"{}\" is invalid", this.getName(),
+                            updatedValue);
+                    return false;
+                }
+
             default:
                 this.logger.error("Trying to validate unsupported parameter type \"{}\"", this.getType());
                 throw new UnsupportedOperationException("This type of parameter is not supported.");
@@ -308,6 +450,7 @@ public class PluginItemModelParameter {
             case "multitext":
             case "boolean":
             case "email":
+            case "numeric":
                 this.setValue(updatedValue);
                 break;
 
@@ -349,6 +492,42 @@ public class PluginItemModelParameter {
      */
     public final void setMaxLength(final int maximumSize) {
         this.maxLength = maximumSize;
+    }
+
+
+
+    /**
+     * Defines the number that the value of a numeric parameter must not exceed, or <code>null</code> if
+     * there is no limit.
+     *
+     * @param maximum the maximum value
+     */
+    public final void setMaxValue(final Integer maximum) {
+        this.maxValue = maximum;
+    }
+
+
+
+    /**
+     * Defines the number that the value of a numeric parameter must equal or be greater than,
+     * or <code>null</code> if there is no limit.
+     *
+     * @param minimum the minimum value
+     */
+    public final void setMinValue(final Integer minimum) {
+        this.minValue = minimum;
+    }
+
+
+
+    /**
+     * Defines the span between two possible values of a numeric parameter, or <code>null</code> if all
+     * values are acceptable.
+     *
+     * @param stepValue the step value
+     */
+    public final void setStep(final Integer stepValue) {
+        this.step = stepValue;
     }
 
 

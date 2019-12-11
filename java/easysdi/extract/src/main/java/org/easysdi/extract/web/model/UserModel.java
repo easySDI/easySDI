@@ -67,6 +67,8 @@ public class UserModel {
      */
     private String login;
 
+    private boolean mailActive;
+
     /**
      * The full name of this user.
      */
@@ -202,6 +204,18 @@ public class UserModel {
      */
     public final void setLogin(final String newLogin) {
         this.login = newLogin;
+    }
+
+
+
+    public final boolean isMailActive() {
+        return this.mailActive;
+    }
+
+
+
+    public final void setMailActive(final boolean isActive) {
+        this.mailActive = isActive;
     }
 
 
@@ -406,6 +420,7 @@ public class UserModel {
         }
 
         domainUser.setActive(this.isActive());
+        domainUser.setMailActive(this.isMailActive());
         domainUser.setEmail(this.getEmail());
         domainUser.setLogin(this.getLogin());
         domainUser.setName(this.getName());
@@ -443,6 +458,7 @@ public class UserModel {
 
         this.setBeingCreated(false);
         this.setActive(domainUser.isActive());
+        this.setMailActive(domainUser.isMailActive());
         this.setEmail(domainUser.getEmail());
         this.setId(domainUser.getId());
         this.setLogin(domainUser.getLogin());

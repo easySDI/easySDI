@@ -5,7 +5,7 @@
 
     <groupId>org.easysdi</groupId>
     <artifactId>extract</artifactId>
-    <version>1.1-RELEASE</version>
+    <version>1.2-RELEASE</version>
     <packaging>war</packaging>
 
     <name>extract</name>
@@ -34,7 +34,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.14.RELEASE</version>
+        <version>1.5.21.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
+            <version>2.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -137,12 +137,12 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.5</version>
+            <version>4.5.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <version>3.8.1</version>
         </dependency>
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
@@ -161,22 +161,112 @@
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>1.15.0</version>
+            <version>1.15.1</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.10</version>
+            <version>2.10.2</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>extract-plugin-interface</artifactId>
-            <version>1.1-RELEASE</version>
+            <version>1.2-RELEASE</version>
         </dependency>
     </dependencies>
 
     <build>
         <finalName>${project.artifactId}##${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${basedir}/src/main/resources/project.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.1</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <basedir>${project.build.directory}</basedir>
+                    <includes>
+                        <include>classes/**/*.html</include>
+                        <include>classes/**/*.properties</include>
+                    </includes>
+                    <replacements>
+                        <replacement>
+                            <token>@@extractVersion@@</token>
+                            <value>${project.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@bootstrapLibVersion@@</token>
+                            <value>${bootstrap.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@datatablesLibVersion@@</token>
+                            <value>${datatables.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@datepickerLibVersion@@</token>
+                            <value>${datepicker.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@fontawesomeLibVersion@@</token>
+                            <value>${fontawesome.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@jqueryLibVersion@@</token>
+                            <value>${jquery.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@jqueryuiLibVersion@@</token>
+                            <value>${jqueryui.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@layerSwitcherLibVersion@@</token>
+                            <value>${layerSwitcher.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@openLayersLibVersion@@</token>
+                            <value>${openLayers.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@proj4LibVersion@@</token>
+                            <value>${proj4.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@select2LibVersion@@</token>
+                            <value>${select2.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@@timepickerLibVersion@@</token>
+                            <value>${timepicker.version}</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

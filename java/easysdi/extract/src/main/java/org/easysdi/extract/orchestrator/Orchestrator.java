@@ -19,6 +19,7 @@ package org.easysdi.extract.orchestrator;
 import org.apache.commons.lang3.StringUtils;
 import org.easysdi.extract.connectors.ConnectorDiscovererWrapper;
 import org.easysdi.extract.email.EmailSettings;
+import org.easysdi.extract.orchestrator.OrchestratorSettings.SchedulerMode;
 import org.easysdi.extract.orchestrator.schedulers.ImportJobsScheduler;
 import org.easysdi.extract.orchestrator.schedulers.RequestsProcessingScheduler;
 import org.easysdi.extract.persistence.ApplicationRepositories;
@@ -26,6 +27,8 @@ import org.easysdi.extract.persistence.SystemParametersRepository;
 import org.easysdi.extract.plugins.TaskProcessorDiscovererWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.config.IntervalTask;
+import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 
@@ -36,6 +39,12 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
  * @author Yves Grasset
  */
 public final class Orchestrator {
+
+    public enum WorkingState {
+        RUNNING,
+        SCHEDULED_STOP,
+        STOPPED
+    }
 
     /**
      * The instantiated orchestrator object.
@@ -72,6 +81,8 @@ public final class Orchestrator {
      */
     private final Logger logger = LoggerFactory.getLogger(Orchestrator.class);
 
+    private boolean monitoringScheduled;
+
     /**
      * The Spring Data objects that link the application data objects with the data source.
      */
@@ -87,10 +98,7 @@ public final class Orchestrator {
      */
     private RequestsProcessingScheduler requestsScheduler;
 
-    /**
-     * The number of seconds before a scheduled job is launched again.
-     */
-    private int stepFrequency;
+    private OrchestratorSettings settings;
 
     /**
      * The access to the available task processing plugins.
@@ -101,6 +109,8 @@ public final class Orchestrator {
      * The object that allows to execute task at a given delay.
      */
     private ScheduledTaskRegistrar taskRegistrar;
+
+    private ScheduledTask timeRangeMonitoringTask;
 
 
 
@@ -121,6 +131,26 @@ public final class Orchestrator {
      */
     public static Orchestrator getInstance() {
         return Orchestrator.INSTANCE;
+    }
+
+
+
+    public WorkingState getWorkingState() {
+
+        switch (this.settings.getMode()) {
+
+            case OFF:
+                return WorkingState.STOPPED;
+
+            case ON:
+                return WorkingState.RUNNING;
+
+            case RANGES:
+                return this.isMonitoringScheduled() ? WorkingState.RUNNING : WorkingState.SCHEDULED_STOP;
+
+            default:
+                throw new IllegalStateException("Unsupported orcehstrator running mode.");
+        }
     }
 
 
@@ -221,57 +251,43 @@ public final class Orchestrator {
 
 
 
-    /**
-     * Defines a new delay before background jobs are launched again. No rescheduling will be done.
-     *
-     * @param seconds the number of seconds to wait between two executions of a background job
-     */
-    public void setStepFrequency(final int seconds) {
-        this.setStepFrequency(seconds, false);
+    public void setOrchestratorSettings(final OrchestratorSettings settings) {
+        this.setOrchestratorSettings(settings, false);
     }
 
 
 
-    /**
-     * Defines a new delay before background jobs are launched again.
-     *
-     * @param seconds        the number of seconds to wait between two executions of a background job
-     * @param rescheduleJobs <code>true</code> to stop and recreate the background tasks if the frequency is changed.
-     *                       If the new value is the same as the existing one, no rescheduling will be done regardless
-     *                       of this parameter. Note that if this parameter is set to <code>true</code>, then the
-     *                       orchestrator must be properly initialized
-     */
-    public synchronized void setStepFrequency(final int seconds, final boolean rescheduleJobs) {
+    public void setOrchestratorSettings(final OrchestratorSettings newSettings, final boolean rescheduleJobs) {
 
-        if (seconds < 1) {
-            throw new IllegalArgumentException("The number of seconds must be greater that 0.");
+        if (newSettings == null || !newSettings.isValid()) {
+            throw new IllegalArgumentException("The given orchestrator settings are invalid.");
         }
 
-        if (seconds != this.stepFrequency) {
-            this.stepFrequency = seconds;
-            this.logger.info("The orchestrator step frequency is now set to {} second{}.", seconds,
-                    (seconds > 1) ? "s" : "");
+        if (!newSettings.equals(this.settings)) {
+            this.logger.info("The orchestrator settings have been updated.");
+            this.settings = newSettings;
 
             if (rescheduleJobs) {
                 this.rescheduleMonitoring();
             }
+
         } else {
-            this.logger.debug("The step frequency is unchanged ({} second{}).", seconds, (seconds > 1) ? "s" : "");
+            this.logger.debug("The orchestrator settings are unchanged.");
         }
     }
 
 
 
     /**
-     * Redefines the background tasks execution frequency with the value defined in the data source.
+     * Redefines the background tasks execution settings with the values defined in the data source.
      *
      * @param rescheduleJobs <code>true</code> <code>true</code> to stop and recreate the background tasks if the
      *                       frequency is changed. If the new value is the same as the existing one, no rescheduling
      *                       will be done regardless of this parameter. Note that if this parameter is set to
      *                       <code>true</code>, then the orchestrator must be properly initialized
      */
-    public synchronized void updateStepFrequencyFromDataSource(final boolean rescheduleJobs) {
-        this.logger.debug("Updating the step frequency with the value in the data source.");
+    public synchronized void updateSettingsFromDataSource(final boolean rescheduleJobs) {
+        this.logger.debug("Updating the orcehstrator settings with the value in the data source.");
 
         if (this.repositories == null) {
             throw new IllegalStateException("The application repositories are not configured.");
@@ -283,7 +299,7 @@ public final class Orchestrator {
             throw new IllegalStateException("The system parameters repository is not set.");
         }
 
-        this.setStepFrequency(Integer.valueOf(repository.getSchedulerFrequency()), rescheduleJobs);
+        this.setOrchestratorSettings(new OrchestratorSettings(repository), rescheduleJobs);
     }
 
 
@@ -297,7 +313,7 @@ public final class Orchestrator {
 
         return /*this.jobSchedulerComponents != null*/ this.taskRegistrar != null && this.repositories != null
                 && this.connectorPlugins != null
-                && this.taskPlugins != null && this.emailSettings != null && this.stepFrequency > 0
+                && this.taskPlugins != null && this.emailSettings != null && this.settings != null
                 && StringUtils.isNotBlank(this.applicationLangague);
     }
 
@@ -320,7 +336,8 @@ public final class Orchestrator {
     public boolean initializeComponents(final ScheduledTaskRegistrar registrar, final String applicationLanguage,
             final ApplicationRepositories applicationRepositories,
             final ConnectorDiscovererWrapper connectorPluginsDiscoverer,
-            final TaskProcessorDiscovererWrapper taskPluginsDiscoverer, final EmailSettings smtpSettings) {
+            final TaskProcessorDiscovererWrapper taskPluginsDiscoverer, final EmailSettings smtpSettings,
+            final OrchestratorSettings orchestratorSettings) {
 
         this.logger.debug("Initializing the orchestrator components.");
         this.setTaskRegistrar(registrar);
@@ -329,7 +346,7 @@ public final class Orchestrator {
         this.setConnectorPlugins(connectorPluginsDiscoverer);
         this.setTaskPlugins(taskPluginsDiscoverer);
         this.setEmailSettings(smtpSettings);
-        this.updateStepFrequencyFromDataSource(false);
+        this.setOrchestratorSettings(orchestratorSettings);
 
         return this.isInitialized();
     }
@@ -352,6 +369,7 @@ public final class Orchestrator {
 
         this.scheduleConnectorsMonitoring();
         this.scheduleRequestsMonitoring();
+        this.setMonitoringScheduled(true);
     }
 
 
@@ -359,11 +377,17 @@ public final class Orchestrator {
     /**
      * Prevents the ulterior execution of the background tasks.
      */
-    public void unscheduleMonitoring() {
+    public void unscheduleMonitoring(final boolean includeTimeRangeMonitoring) {
         this.logger.debug("Unscheduling the monitoring jobs.");
+
+        if (includeTimeRangeMonitoring) {
+            this.unscheduleTimeRangeMonitoring();
+        }
+
         this.unscheduleConnectorsMonitoring();
         this.unscheduleRequestsMonitoring();
         this.logger.info("The monitoring jobs have been unscheduled.");
+        this.setMonitoringScheduled(false);
     }
 
 
@@ -382,8 +406,85 @@ public final class Orchestrator {
             throw new IllegalStateException("The orchestrator components are not correctly initialized.");
         }
 
-        this.unscheduleMonitoring();
+        this.unscheduleMonitoring(true);
+        this.scheduleMonitoringByWorkingState();
+    }
+
+
+
+    public void scheduleMonitoringByWorkingState() {
+
+        if (this.settings.getMode() == SchedulerMode.OFF) {
+            return;
+        }
+
+        if (this.settings.getMode() == SchedulerMode.RANGES) {
+            this.scheduleTimeRangeMonitoring();
+            return;
+        }
+
         this.scheduleMonitoring();
+    }
+
+
+
+    private synchronized void scheduleTimeRangeMonitoring() {
+        final IntervalTask task = new IntervalTask(new Runnable() {
+
+            @Override
+            public void run() {
+                manageMonitoringByTimeRange();
+            }
+
+        }, this.settings.getFrequency() * 1000);
+
+        this.timeRangeMonitoringTask = this.taskRegistrar.scheduleFixedDelayTask(task);
+        this.logger.info("Time range monitoring task configured to run every {} second(s).",
+                this.settings.getFrequency());
+
+    }
+
+
+
+    private void manageMonitoringByTimeRange() {
+        assert this.settings.getMode() == SchedulerMode.RANGES :
+                "This task should only run if the scheduler is in ranges mode.";
+        this.logger.debug("Managing the orchestrator scheduling based on working hours.");
+
+        if (this.settings.isNowInRanges()) {
+            this.logger.debug("We are in the working hours.");
+
+            if (this.isMonitoringScheduled()) {
+                this.logger.debug("The scheduling is already active, so nothing done.");
+                return;
+            }
+
+            this.scheduleMonitoring();
+            return;
+        }
+
+        this.logger.debug("We are NOT in the working hours.");
+
+        if (!this.isMonitoringScheduled()) {
+            this.logger.debug("The scheduling is already disabled, so nothing done.");
+            return;
+        }
+
+        this.unscheduleMonitoring(false);
+    }
+
+
+
+    private synchronized void unscheduleTimeRangeMonitoring() {
+        this.logger.debug("Unscheduling the time ranges monitoring task.");
+
+        if (this.timeRangeMonitoringTask == null) {
+            this.logger.debug("The time ranges monitoring task is not scheduled, so nothing done.");
+            return;
+        }
+
+        this.timeRangeMonitoringTask.cancel();
+        this.logger.debug("The time ranges monitoring task has been unscheduled.");
     }
 
 
@@ -402,8 +503,7 @@ public final class Orchestrator {
         }
 
         this.importsScheduler = new ImportJobsScheduler(this.taskRegistrar, this.repositories, this.connectorPlugins,
-                this.emailSettings, this.applicationLangague);
-        this.importsScheduler.setSchedulingStep(this.stepFrequency);
+                this.emailSettings, this.applicationLangague, this.settings);
         this.importsScheduler.scheduleJobs();
 
         this.setConnectorsMonitoringScheduled(true);
@@ -442,10 +542,9 @@ public final class Orchestrator {
             return;
         }
 
-        this.requestsScheduler = new RequestsProcessingScheduler(/*this.jobSchedulerComponents,*/this.taskRegistrar,
+        this.requestsScheduler = new RequestsProcessingScheduler(this.taskRegistrar,
                 this.repositories, this.connectorPlugins, this.taskPlugins, this.emailSettings,
-                this.applicationLangague);
-        this.requestsScheduler.setSchedulingStep(this.stepFrequency);
+                this.applicationLangague, this.settings);
         this.requestsScheduler.scheduleJobs();
 
         this.setRequestsMonitoringScheduled(true);
@@ -512,6 +611,18 @@ public final class Orchestrator {
      */
     private synchronized void setRequestsMonitoringScheduled(final boolean isRequestsMonitoringScheduled) {
         this.requestsMonitoringScheduled = isRequestsMonitoringScheduled;
+    }
+
+
+
+    private synchronized boolean isMonitoringScheduled() {
+        return this.monitoringScheduled;
+    }
+
+
+
+    private synchronized void setMonitoringScheduled(final boolean isMonitoringScheduled) {
+        this.monitoringScheduled = isMonitoringScheduled;
     }
 
 }

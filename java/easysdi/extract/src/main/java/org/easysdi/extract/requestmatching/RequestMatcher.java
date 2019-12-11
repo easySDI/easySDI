@@ -239,7 +239,7 @@ public class RequestMatcher {
      * @param rule the rule to evaluate
      * @return <code>true</code> if the request matches the rule
      */
-    private Boolean evaluateRule(final String rule) {
+    private boolean evaluateRule(final String rule) {
 
         Pattern patternBoolOperator = Pattern.compile(String.format("(?i)\\s+(?:%s)\\s+",
                 StringUtils.join(GEOMETRIC_OPERATORS, "|")));
@@ -431,7 +431,7 @@ public class RequestMatcher {
             //String condition = this.reformatRule(rule.getRule());
             this.logger.info("Check matching with rule at position {}.", rule.getPosition());
 
-            if (this.evaluateRule(rule.getRule()).equals(Boolean.TRUE)) {
+            if (this.evaluateRule(rule.getRule())) {
                 this.logger.info("Request match with rule {}.", rule.getRule());
                 return rule;
             }
