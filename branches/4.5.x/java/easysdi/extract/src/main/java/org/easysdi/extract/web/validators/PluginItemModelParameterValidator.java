@@ -16,7 +16,10 @@
  */
 package org.easysdi.extract.web.validators;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.easysdi.extract.web.model.PluginItemModelParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -30,6 +33,13 @@ import org.springframework.validation.ValidationUtils;
  * @author Yves Grasset
  */
 public class PluginItemModelParameterValidator extends BaseValidator {
+
+    /**
+     * The writer to the application logs.
+     */
+    public static final Logger LOGGER = LoggerFactory.getLogger(PluginItemModelParameterValidator.class);
+
+
 
     /**
      * Determines if a given class can be checked by this validator.
@@ -53,6 +63,9 @@ public class PluginItemModelParameterValidator extends BaseValidator {
     @Override
     public final void validate(final Object target, final Errors errors) {
         final PluginItemModelParameter parameter = (PluginItemModelParameter) target;
+        PluginItemModelParameterValidator.LOGGER.debug("Validating value for parameter \"{}\"", parameter.getName());
+        final String parameterLabel = parameter.getLabel();
+        final String parameterType = parameter.getType();
         final Object[] nameParams = new Object[]{
             parameter.getName()
         };
@@ -62,43 +75,137 @@ public class PluginItemModelParameterValidator extends BaseValidator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "parameter.errors.type.empty",
                 nameParams);
 
-        if (!parameter.getType().equals("boolean") && parameter.getMaxLength() < 1) {
+        if (!parameterType.equals("boolean") && !parameterType.equals("numeric") && parameter.getMaxLength() < 1) {
             errors.rejectValue("maxLength", "parameter.errors.maxLength.negative", nameParams,
                     "parameter.errors.generic");
+            return;
         }
 
         final Object[] labelParams = new Object[]{
-            parameter.getLabel()
+            parameterLabel
         };
 
         final Object value = parameter.getValue();
 
-        if (parameter.isRequired() && value == null) {
-            errors.rejectValue("value", "parameter.errors.required", labelParams,
-                    "parameter.errors.generic");
+        if (value == null) {
+            PluginItemModelParameterValidator.LOGGER.debug("The value for parameter \"{}\" is null",
+                    parameter.getName());
+
+            if (parameter.isRequired()) {
+                errors.rejectValue("value", "parameter.errors.required", labelParams,
+                        "parameter.errors.generic");
+            }
+
+            PluginItemModelParameterValidator.LOGGER.debug("The parameter \"{}\" is not mandatory, so everything is OK.",
+                    parameter.getName());
+            return;
         }
 
-        if (!(value instanceof String) || parameter.getType().equals("boolean")) {
+        if (!(value instanceof String) || parameterType.equals("boolean")) {
+            PluginItemModelParameterValidator.LOGGER.debug("The value for parameter \"{}\" is not a string or the parameter is boolean.",
+                    parameter.getName());
             return;
         }
 
         final String stringValue = (String) value;
 
-        if (parameter.isRequired() && !StringUtils.hasText(stringValue)) {
-            errors.rejectValue("value", "parameter.errors.required", labelParams,
-                    "parameter.errors.generic");
+        if (!StringUtils.hasText(stringValue)) {
+            PluginItemModelParameterValidator.LOGGER.debug("The value for parameter \"{}\" is empty.",
+                    parameter.getValue(), parameter.getName());
+
+            if (parameter.isRequired()) {
+                errors.rejectValue("value", "parameter.errors.required", labelParams,
+                        "parameter.errors.generic");
+            }
+
+            PluginItemModelParameterValidator.LOGGER.debug("The parameter \"{}\" is not mandatory, so everything is OK.",
+                    parameter.getName());
+            return;
         }
 
-        if (stringValue.length() > parameter.getMaxLength()) {
-            errors.rejectValue("value", "parameter.errors.tooLong", new Object[]{
-                parameter.getLabel(),
-                parameter.getMaxLength()
-            }, "parameter.errors.generic");
+        if (parameterType.equals("numeric")) {
+            PluginItemModelParameterValidator.LOGGER.debug("The parameter \"{}\" is numeric.",
+                    parameter.getName());
+
+            if (!NumberUtils.isParsable(stringValue)) {
+                errors.rejectValue("value", "parameter.errors.number.invalid", labelParams,
+                        "parameter.errors.generic");
+                return;
+            }
+
+            PluginItemModelParameterValidator.LOGGER.debug("The value for parameter \"{}\" is parseable.",
+                    parameter.getName());
+
+            final int intValue = NumberUtils.toInt(stringValue);
+            final Integer maxValue = parameter.getMaxValue();
+            final Integer minValue = parameter.getMinValue();
+            final Integer step = parameter.getStep();
+
+            if (maxValue != null && intValue > maxValue) {
+                errors.rejectValue("value", "parameter.errors.number.tooLarge", new Object[]{
+                    parameterLabel,
+                    maxValue
+                }, "parameter.errors.generic");
+
+                return;
+            }
+
+            PluginItemModelParameterValidator.LOGGER.debug("The value {} for parameter \"{}\" is OK with the max (if set).",
+                    intValue, parameter.getName());
+
+            if (minValue != null && intValue < minValue) {
+                errors.rejectValue("value", "parameter.errors.number.tooSmall", new Object[]{
+                    parameterLabel,
+                    minValue
+                }, "parameter.errors.generic");
+
+                return;
+            }
+
+            PluginItemModelParameterValidator.LOGGER.debug("The value {} for parameter \"{}\" is OK with the min (if set).",
+                    intValue, parameter.getName());
+
+            if (step != null) {
+                final int relativeValue = (minValue != null) ? intValue - minValue : intValue;
+
+                if (relativeValue % step != 0) {
+                    errors.rejectValue("value", "parameter.errors.number.invalidStep", new Object[]{
+                        parameterLabel,
+                        step,
+                        minValue
+                    }, "parameter.errors.generic");
+                }
+
+                return;
+            }
+
+            PluginItemModelParameterValidator.LOGGER.debug("The value {} for parameter \"{}\" is OK with all the numeric criteria.",
+                    intValue, parameter.getName());
+
+            return;
         }
+
+        final int maxLength = parameter.getMaxLength();
+
+        if (stringValue.length() > maxLength) {
+            errors.rejectValue("value", "parameter.errors.tooLong", new Object[]{
+                parameterLabel,
+                maxLength
+            }, "parameter.errors.generic");
+
+            return;
+        }
+
+        PluginItemModelParameterValidator.LOGGER.debug("The value for parameter \"{}\" is OK with the max length ({}).",
+                parameter.getName(), maxLength);
 
         if (parameter.getType().equals("email") && !parameter.validateUpdatedValue(stringValue)) {
             errors.rejectValue("value", "parameter.errors.invalidEmailString", labelParams, "parameter.errors.generic");
+            return;
         }
+
+        PluginItemModelParameterValidator.LOGGER.debug("The value for parameter \"{}\" is OK with all criteria.",
+                parameter.getName());
     }
 
 }

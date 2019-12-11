@@ -29,10 +29,16 @@ import org.easysdi.extract.plugins.common.ITaskProcessorRequest;
  * @author Yves Grasset
  */
 public final class TaskProcessorRequest implements ITaskProcessorRequest {
+
     /**
      * The name of the person who requested the data.
      */
     private String client;
+
+    /**
+     * The identifying string of the person who requested the data.
+     */
+    private String clientGuid;
 
     /**
      * The date when this request was exported back to its originating server (should be <code>null</code>).
@@ -50,6 +56,8 @@ public final class TaskProcessorRequest implements ITaskProcessorRequest {
      * folder that contains the data for all requests as set in the application settings.
      */
     private String folderOut;
+
+    private int id;
 
     /**
      * The string that uniquely identifies the order that this request is a part of on its originating
@@ -76,6 +84,11 @@ public final class TaskProcessorRequest implements ITaskProcessorRequest {
      * The organization that the person who made this request belongs to.
      */
     private String organism;
+
+    /**
+     * The identifying string of the organization that the person who made this request belongs to.
+     */
+    private String organismGuid;
 
     /**
      * The string that uniquely identifies the requested data item on its originating server.
@@ -127,13 +140,16 @@ public final class TaskProcessorRequest implements ITaskProcessorRequest {
             throw new IllegalArgumentException("The request from the data source cannot be null.");
         }
 
+        this.setId(domainRequest.getId());
         this.setClient(domainRequest.getClient());
+        this.setClientGuid(domainRequest.getClientGuid());
         this.setEndDate(domainRequest.getEndDate());
         this.setFolderIn(new File(dataFoldersBasePath, domainRequest.getFolderIn()).getAbsolutePath());
         this.setFolderOut(new File(dataFoldersBasePath, domainRequest.getFolderOut()).getAbsolutePath());
         this.setOrderGuid(domainRequest.getOrderGuid());
         this.setOrderLabel(domainRequest.getOrderLabel());
         this.setOrganism(domainRequest.getOrganism());
+        this.setOrganismGuid(domainRequest.getOrganismGuid());
         this.setParameters(domainRequest.getParameters());
         this.setPerimeter(domainRequest.getPerimeter());
         this.setProductGuid(domainRequest.getProductGuid());
@@ -143,6 +159,19 @@ public final class TaskProcessorRequest implements ITaskProcessorRequest {
         this.setStartDate(domainRequest.getStartDate());
         this.setStatus(domainRequest.getStatus().toString());
         this.setTiers(domainRequest.getTiers());
+    }
+
+
+
+    @Override
+    public int getId() {
+        return this.id;
+    }
+
+
+
+    public void setId(final int id) {
+        this.id = id;
     }
 
 
@@ -258,6 +287,24 @@ public final class TaskProcessorRequest implements ITaskProcessorRequest {
 
 
     @Override
+    public String getClientGuid() {
+        return this.clientGuid;
+    }
+
+
+
+    /**
+     * Defines the name of the person who placed the order that this request is a part of.
+     *
+     * @param clientName the customer's name
+     */
+    public void setClientGuid(final String clientGuid) {
+        this.clientGuid = clientGuid;
+    }
+
+
+
+    @Override
     public Calendar getEndDate() {
         return this.endDate;
     }
@@ -362,6 +409,24 @@ public final class TaskProcessorRequest implements ITaskProcessorRequest {
      */
     public void setOrganism(final String organismName) {
         this.organism = organismName;
+    }
+
+
+
+    @Override
+    public String getOrganismGuid() {
+        return this.organismGuid;
+    }
+
+
+
+    /**
+     * Defines the organization that the person who made this request is part of.
+     *
+     * @param organismName the name of the organization
+     */
+    public void setOrganismGuid(final String organismGuid) {
+        this.organismGuid = organismGuid;
     }
 
 

@@ -47,6 +47,11 @@ public class ExportRequest implements IExportRequest {
     private String client;
 
     /**
+     * The indentifying string of the person that ordered the data item.
+     */
+    private String clientGuid;
+
+    /**
      * The string that identifies the order that this request is part of.
      */
     private String orderGuid;
@@ -218,6 +223,24 @@ public class ExportRequest implements IExportRequest {
      */
     public final void setClient(final String customerName) {
         this.client = customerName;
+    }
+
+
+
+    @Override
+    public final String getClientGuid() {
+        return this.clientGuid;
+    }
+
+
+
+    /**
+     * Defines the person that ordered this data item.
+     *
+     * @param customerName the name of the customer
+     */
+    public final void setClientGuid(final String customerGuid) {
+        this.clientGuid = customerGuid;
     }
 
 

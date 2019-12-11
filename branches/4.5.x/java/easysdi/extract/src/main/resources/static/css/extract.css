@@ -57,6 +57,14 @@ tbody > tr.standby > th {
     padding: 1px 5px;
 }
 
+.admin-button-row + .admin-variable-row {
+    margin-top: 15px;
+}
+
+.admin-variable-row + .admin-variable-row {
+    margin-top: 0.1em;
+}
+
 .alert {
     margin-top: 20px;
     padding-bottom: 10px;
@@ -121,6 +129,10 @@ a.btn-extract-filled:visited {
     font-family: monospace;
 }
 
+.code-green {
+    color: #3c763d;
+}
+
 .current-step h2 {
     margin-top: 1px;
 }
@@ -163,6 +175,10 @@ a.btn-extract-filled:visited {
 .current-step-action textarea {
     height: 100px;
     width: 100%;
+}
+
+.current-step-action textarea.task-error-reject-remark {
+    height: 80px;
 }
 
 .current-step-error .current-step-action:not(:first-child) {
@@ -268,6 +284,10 @@ input[type="file"].hidden-file-upload-control {
     padding: 6px 9px;
 }
 
+span.form-control-static {
+    display: inline-block;
+}
+
 .form-control-static {
     padding-left: 9px;
 }
@@ -282,6 +302,10 @@ input[type="file"].hidden-file-upload-control {
 
 .form-group.form-group-with-label.form-group-checkbox {
     padding-top: 30px;
+}
+
+.history-status {
+    word-break: break-all;
 }
 
 .history-status-error {
@@ -300,6 +324,31 @@ input[type="file"].hidden-file-upload-control {
     color: #ffb200;
 }
 
+.inline-fields-table {
+    margin: 20px 15px;
+    max-width: calc(100% - 30px);
+    width: 100%;
+}
+
+.inline-fields-table label {
+    display: inline;
+    font-weight: normal;
+}
+
+.inline-fields-table td {
+    padding: 10px 0;
+}
+
+.inline-fields-table td.button-cell {
+    width: 40px;
+    max-width: 40px;
+}
+
+.inline-fields-table .form-control {
+    display: inline;
+    width: auto;
+}
+
 .label-success {
     background-color: #3ab872;
 }
@@ -311,6 +360,18 @@ input[type="file"].hidden-file-upload-control {
 
 table.list-table td {
     vertical-align: top;
+}
+
+table.list-table.files-list-table {
+    width: 100%;
+}
+
+.files-button-container {
+    align-items: baseline;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 10px;
 }
 
 .login-panel .panel-title .login-panel-title {
@@ -332,6 +393,29 @@ table.list-table td {
 .map {
     height: 300px;
     width: 100%;
+}
+
+.export-dxf {
+    right: 0.5em;
+    bottom: 0.5em;
+}
+
+.export-kml {
+    right: 4.5em;
+    bottom: 0.5em;
+}
+
+.ol-control.export-button > button {
+    padding: 0.25em;
+    width: auto;
+}
+
+.ol-control.ol-attribution {
+    right: 8.5em;
+}
+
+.ol-attribution.ol-uncollapsible ~ .ol-control.export-button {
+    bottom: 1.6em;
 }
 
 .navbar-brand {

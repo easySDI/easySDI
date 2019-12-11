@@ -140,6 +140,12 @@ public class User implements Serializable {
     private boolean active;
 
     /**
+     * Whether this user receives mail notifications.
+     */
+    @Column(name = "mailactive")
+    private boolean mailActive;
+
+    /**
      * A unique string that allows this user to change her password once.
      */
     @Size(max = 50)
@@ -358,6 +364,28 @@ public class User implements Serializable {
      */
     public void setActive(final boolean isActive) {
         this.active = isActive;
+    }
+
+
+
+    /**
+     * Obtains whether this user can receive mail notifications.
+     *
+     * @return <code>true</code> if the user can receive notifications
+     */
+    public boolean isMailActive() {
+        return this.mailActive;
+    }
+
+
+
+    /**
+     * Defines whether this user receive mail notifications.
+     *
+     * @param isActive <code>true</code> to allow this user to receive notifications
+     */
+    public void setMailActive(final boolean isActive) {
+        this.mailActive = isActive;
     }
 
 

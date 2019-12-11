@@ -28,6 +28,8 @@ import org.easysdi.extract.plugins.common.ITaskProcessorRequest;
  */
 public class FmeDesktopRequest implements ITaskProcessorRequest {
 
+    private int id;
+
     /**
      * The path of the folder that contains the data necessary to process the request, relative to the
      * folder that contains the data for all requests.
@@ -46,6 +48,11 @@ public class FmeDesktopRequest implements ITaskProcessorRequest {
     private String client;
 
     /**
+     * The identifying string of the person that ordered the data item.
+     */
+    private String clientGuid;
+
+    /**
      * The string that identifies the order that this request is part of.
      */
     private String orderGuid;
@@ -59,6 +66,11 @@ public class FmeDesktopRequest implements ITaskProcessorRequest {
      * The name of the organization that ordered this data item.
      */
     private String organism;
+
+    /**
+     * The identifying string of the organization that ordered this data item.
+     */
+    private String organismGuid;
 
     /**
      * The custom parameters of the order that this request is part of.
@@ -109,6 +121,19 @@ public class FmeDesktopRequest implements ITaskProcessorRequest {
      * When the process completed successfully. (It should be <code>null</code>.)
      */
     private Calendar endDate;
+
+
+
+    @Override
+    public final int getId() {
+        return this.id;
+    }
+
+
+
+    public final void setId(final int requestId) {
+        this.id = requestId;
+    }
 
 
 
@@ -217,6 +242,24 @@ public class FmeDesktopRequest implements ITaskProcessorRequest {
      */
     public final void setClient(final String customerName) {
         this.client = customerName;
+    }
+
+
+
+    @Override
+    public final String getClientGuid() {
+        return this.clientGuid;
+    }
+
+
+
+    /**
+     * Defines the person that ordered this data item.
+     *
+     * @param customerName the name of the customer
+     */
+    public final void setClientGuid(final String customerGuid) {
+        this.clientGuid = customerGuid;
     }
 
 
@@ -398,6 +441,24 @@ public class FmeDesktopRequest implements ITaskProcessorRequest {
      */
     public final void setOrganism(final String name) {
         this.organism = name;
+    }
+
+
+
+    @Override
+    public final String getOrganismGuid() {
+        return this.organismGuid;
+    }
+
+
+
+    /**
+     * Defines the organization that requested this data item.
+     *
+     * @param name the name of the organization
+     */
+    public final void setOrganismGuid(final String guid) {
+        this.organismGuid = guid;
     }
 
 }

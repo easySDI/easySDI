@@ -81,7 +81,7 @@ public class ContextListener implements ServletContextListener {
     @Override
     public final void contextDestroyed(final ServletContextEvent event) {
         this.logger.info("The servlet context {} has been destroyed.", event.getServletContext());
-        Orchestrator.getInstance().unscheduleMonitoring();
+        Orchestrator.getInstance().unscheduleMonitoring(true);
 
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         // Loop through all drivers

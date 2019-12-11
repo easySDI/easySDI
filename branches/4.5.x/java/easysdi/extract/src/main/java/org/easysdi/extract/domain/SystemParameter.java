@@ -43,6 +43,10 @@ import javax.xml.bind.annotation.XmlRootElement;
             query = "SELECT s.value FROM SystemParameter s where s.key = 'base_path'"),
     @NamedQuery(name = "SystemParameter.getSchedulerFrequency",
             query = "SELECT s.value FROM SystemParameter s WHERE s.key = 'freq_scheduler_sec'"),
+    @NamedQuery(name = "SystemParameter.getSchedulerMode",
+            query = "SELECT s.value FROM SystemParameter s WHERE s.key = 'op_mode'"),
+    @NamedQuery(name = "SystemParameter.getSchedulerRanges",
+            query = "SELECT s.value FROM SystemParameter s WHERE s.key = 'op_ranges'"),
     @NamedQuery(name = "SystemParameter.getSmtpServer",
             query = "SELECT s.value FROM SystemParameter s WHERE s.key = 'smtp_server'"),
     @NamedQuery(name = "SystemParameter.getSmtpPort",
@@ -79,7 +83,7 @@ public class SystemParameter implements Serializable {
     /**
      * The content of this setting.
      */
-    @Size(max = 255)
+    @Size(max = 65000)
     @Column(name = "value")
     private String value;
 

@@ -54,15 +54,19 @@ public class Easysdiv4Test {
     private static final String PARAMETER_CODE_NAME = "code";
     private static final String PARAMETER_LABEL_NAME = "label";
     private static final String PARAMETER_MAX_LENGTH_NAME = "maxlength";
+    private static final String PARAMETER_MAX_VALUE_NAME = "max";
+    private static final String PARAMETER_MIN_VALUE_NAME = "min";
     private static final String PARAMETER_REQUIRED_NAME = "req";
+    private static final String PARAMETER_STEP_NAME = "step";
     private static final String PARAMETER_TYPE_NAME = "type";
-    private static final int PARAMETERS_NUMBER = 3;
     private static final String PASSWORD_PARAMETER_NAME_PROPERTY = "code.password";
     private static final String TEST_LOGIN = "";
     private static final String TEST_PASSWORD = "";
+    private static final String TEST_UPLOAD_SIZE = "1024";
     private static final String TEST_URL = "";
+    private static final String UPLOAD_SIZE_PARAMETER_NAME_PROPERTY = "code.uploadSize";
     private static final String URL_PARAMETER_NAME_PROPERTY = "code.serviceUrl";
-    private static final String[] VALID_PARAMETER_TYPES = new String[]{"email", "pass", "multitext", "text"};
+    private static final String[] VALID_PARAMETER_TYPES = new String[]{"email", "pass", "multitext", "text", "numeric"};
 
     /**
      * The writer to the application logs.
@@ -102,14 +106,16 @@ public class Easysdiv4Test {
 
         final String loginCode = this.configuration.getProperty(Easysdiv4Test.LOGIN_PARAMETER_NAME_PROPERTY);
         final String passwordCode = this.configuration.getProperty(Easysdiv4Test.PASSWORD_PARAMETER_NAME_PROPERTY);
-        final String urlnCode = this.configuration.getProperty(Easysdiv4Test.URL_PARAMETER_NAME_PROPERTY);
+        final String urlCode = this.configuration.getProperty(Easysdiv4Test.URL_PARAMETER_NAME_PROPERTY);
+        final String uploadSizeCode = this.configuration.getProperty(Easysdiv4Test.UPLOAD_SIZE_PARAMETER_NAME_PROPERTY);
 
-        this.requiredParametersCodes = new String[]{loginCode, passwordCode, urlnCode};
+        this.requiredParametersCodes = new String[]{loginCode, passwordCode, urlCode, uploadSizeCode};
 
         this.testParameters = new HashMap<>();
         this.testParameters.put(loginCode, Easysdiv4Test.TEST_LOGIN);
         this.testParameters.put(passwordCode, Easysdiv4Test.TEST_PASSWORD);
-        this.testParameters.put(urlnCode, Easysdiv4Test.TEST_URL);
+        this.testParameters.put(urlCode, Easysdiv4Test.TEST_URL);
+        this.testParameters.put(uploadSizeCode, Easysdiv4Test.TEST_UPLOAD_SIZE);
 
         this.parameterMapper = new ObjectMapper();
     }
@@ -234,7 +240,7 @@ public class Easysdiv4Test {
         }
 
         Assert.assertNotNull(parametersArray);
-        Assert.assertEquals(Easysdiv4Test.PARAMETERS_NUMBER, parametersArray.size());
+        Assert.assertEquals(this.testParameters.size(), parametersArray.size());
         List<String> requiredCodes = new ArrayList<>(Arrays.asList(requiredParametersCodes));
 
         for (int parameterIndex = 0; parameterIndex < parametersArray.size(); parameterIndex++) {
@@ -268,15 +274,43 @@ public class Easysdiv4Test {
             Assert.assertTrue(String.format("The required field for the parameter %s is not a boolean", parameterCode),
                     parameterData.get(Easysdiv4Test.PARAMETER_REQUIRED_NAME).isBoolean());
 
-            Assert.assertTrue(String.format("The parameter %s does not have a maximum length property", parameterCode),
-                    parameterData.hasNonNull(Easysdiv4Test.PARAMETER_MAX_LENGTH_NAME));
-            Assert.assertTrue(String.format("The maximum length for parameter %s is not an integer", parameterCode),
-                    parameterData.get(Easysdiv4Test.PARAMETER_MAX_LENGTH_NAME).isInt());
-            int maxLength = parameterData.get(Easysdiv4Test.PARAMETER_MAX_LENGTH_NAME).intValue();
-            Assert.assertTrue(
-                    String.format("The maximum length of parameter %s is not strictly positive", parameterCode),
-                    maxLength > 0
-            );
+            if (parameterType.equals("numeric")) {
+                Integer maxValue = null;
+
+                if (parameterData.hasNonNull(Easysdiv4Test.PARAMETER_MAX_VALUE_NAME)) {
+                    Assert.assertTrue(String.format("The maximum value for parameter %s is not a number", parameterCode),
+                            parameterData.get(Easysdiv4Test.PARAMETER_MAX_VALUE_NAME).isNumber());
+                    maxValue = parameterData.get(Easysdiv4Test.PARAMETER_MAX_VALUE_NAME).intValue();
+                }
+
+                if (parameterData.hasNonNull(Easysdiv4Test.PARAMETER_MIN_VALUE_NAME)) {
+                    Assert.assertTrue(String.format("The minimum value for parameter %s is not an integer", parameterCode),
+                            parameterData.get(Easysdiv4Test.PARAMETER_MIN_VALUE_NAME).isInt());
+                    int minValue = parameterData.get(Easysdiv4Test.PARAMETER_MIN_VALUE_NAME).intValue();
+
+                    if (maxValue != null) {
+                        Assert.assertTrue(
+                                String.format("The minimum value for parameter %s must be less than the maximum value",
+                                        parameterCode), minValue < maxValue);
+                    }
+                }
+
+                if (parameterData.hasNonNull(Easysdiv4Test.PARAMETER_STEP_NAME)) {
+                    Assert.assertTrue(String.format("The step value for parameter %s is not an integer", parameterCode),
+                            parameterData.get(Easysdiv4Test.PARAMETER_STEP_NAME).isInt());
+                }
+
+            } else {
+                Assert.assertTrue(String.format("The parameter %s does not have a maximum length property", parameterCode),
+                        parameterData.hasNonNull(Easysdiv4Test.PARAMETER_MAX_LENGTH_NAME));
+                Assert.assertTrue(String.format("The maximum length for parameter %s is not an integer", parameterCode),
+                        parameterData.get(Easysdiv4Test.PARAMETER_MAX_LENGTH_NAME).isInt());
+                int maxLength = parameterData.get(Easysdiv4Test.PARAMETER_MAX_LENGTH_NAME).intValue();
+                Assert.assertTrue(
+                        String.format("The maximum length of parameter %s is not strictly positive", parameterCode),
+                        maxLength > 0
+                );
+            }
         }
 
         Assert.assertTrue(
