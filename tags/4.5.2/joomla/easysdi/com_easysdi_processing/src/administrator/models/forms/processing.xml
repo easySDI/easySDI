@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="details">
+        <field name="name" type="text" required ="true"
+               label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_NAME"
+               description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_NAME" />
+
+        <field name="alias" type="text"
+               label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_ALIAS"
+               description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_ALIAS" />
+
+        <field name="description" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_DESCRIPTION"
+               description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_DESCRIPTION"
+               filter="safehtml" />
+
+
+        <field
+            name="contact_id"
+            type="sql"
+            class="multiselect input-xxlarge"
+            multiple="false"
+            label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_MANAGER"
+            description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_MANAGER"
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering"
+            key_field="id"
+            value_field="name"
+            translate="true"
+        />
+        
+        <field 	name="observers" 
+                        type="sql" 
+                        class="multiselect input-xxlarge"
+                        multiple="true"
+                        label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_OBSERVERS"
+                        description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_OBSERVERS" 
+                        translate="true" 
+                        query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="name"
+        /> 
+
+        <field
+            name="accessscope_id"
+            onchange="enableAccessScope();"
+            type="sql"
+            class="inputbox"
+            label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_ACCESSSCOPE_ID"
+            description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_ACCESSSCOPE_ID"
+            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND value!='category' ORDER BY ordering"
+            key_field="id"
+            value_field="value"
+            translate="true"
+        />
+        <field
+            name="organisms"
+            type="sql"
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description=""
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name"
+            key_field="id"
+            value_field="name"
+            translate="true"
+        />
+        <field
+            name="users"
+            type="sql"
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description=""
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering"
+            key_field="id"
+            value_field="name"
+            translate="true"
+        />
+
+        <field name="auto"
+        type="hidden"
+        label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_TYPE"
+        description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_TYPE"
+        class="btn-group"
+        default="0">
+        <option value="1">COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_AUTO</option>
+        <option value="0">COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_MANUAL</option>
+        </field>
+
+         <field
+            name="command"
+            onchange=""
+            type="hidden"
+            class="inputbox"
+            required ="false"
+            label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_COMMAND"
+            description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_COMMAND"
+        />
+         
+        <field name="map_id"
+            type="sql"
+            class="inputbox input-xxlarge"
+            multiple="false"
+            required="false"
+            label="COM_EASYSDI_PROCESSING_CONFIG_LBL_RESULTMAP"
+            description="COM_EASYSDI_SHOP_CONFIG_DESC_RESULTMAP"
+            query="SELECT null as id, null as name UNION SELECT id, name FROM #__sdi_map WHERE state=1 AND type='leaflet'"
+            key_field="id"
+            value_field="name" />
+
+        <field name="id" type="text" default="0" label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" />
+    </fieldset>
+    <fieldset name="params-tab" label="COM_EASYSDI_PROCESSING_TAB_LBL_PROCESSING_PARAMS">
+        <field
+            name="parameters"
+            type="hidden"
+            rows="5"
+            cols="20"
+            class="inputbox params_editor_field"
+            filter="safehtml"
+            required ="false"
+            label="COM_EASYSDI_PROCESSING_FORM_LBL_PROCESSING_PARAMS"
+            description="COM_EASYSDI_PROCESSING_FORM_DESC_PROCESSING_PARAMS"
+        />
+
+    </fieldset>
+
+
+    <field name="access"
+       type="accesslevel"
+       label="JFIELD_ACCESS_LABEL"
+       description="JFIELD_ACCESS_DESC"
+       class="inputbox span12 small"
+       size="1"
+    />
+
+    <field name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field>
+
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" />
+    </fieldset>
+
+
+    <fieldset name="publishing">
+        <field 	name="created_by"
+                type="createdby"
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_PROCESSING_FORM_LBL_PERIMETER_CREATED_BY"
+                description="COM_EASYSDI_PROCESSING_FORM_DESC_PERIMETER_CREATED_BY"
+                filter="unset" />
+
+        <field 	name="created"
+                type="calendar"
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_PROCESSING_FORM_LBL_PERIMETER_CREATED"
+                description="COM_EASYSDI_PROCESSING_FORM_DESC_PERIMETER_CREATED"
+                filter="safehtml" />
+
+        <field 	name="modified_by"
+                type="createdby"
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_PROCESSING_FORM_LBL_PERIMETER_MODIFIED_BY"
+                description="COM_EASYSDI_PROCESSING_FORM_DESC_PERIMETER_MODIFIED_BY"
+                filter="unset" />
+
+        <field 	name="modified"
+                type="calendar"
+                class="readonly"
+                readonly="true"
+                label="COM_EASYSDI_PROCESSING_FORM_LBL_PERIMETER_MODIFIED"
+                description="COM_EASYSDI_PROCESSING_FORM_DESC_PERIMETER_MODIFIED"
+                filter="safehtml" />
+    </fieldset>
+
+    
+</form>

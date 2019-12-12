@@ -1,0 +1,76 @@
+/* sdiMapAlertControl */
+.sdiMapAlertControl{
+    display: block;
+    width: 80%;
+    left: 10%;
+    top: 4px;
+    background-color: rgba(255, 255, 255, 0.75);
+    border: 0;
+    height: 30px;
+    text-align: center;
+    vertical-align: middle;
+    color: #cc0000;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+div#thirdparty-info{
+    margin-top: 1em;
+}
+div.shop-product .table td{
+    width: 75%;
+    /*word-break: break-all;*/
+}
+div.shop-product .table td.price_column{
+    width: auto;
+    min-width: 132px;
+    text-align: right;
+    vertical-align: middle;
+}
+div.shop-product .table td.action_column{
+    width: 5%;
+    vertical-align: middle;
+}
+
+div.shop-product .table td.action_column.action_column_recap{
+    min-width: 132px;
+}
+
+div.shop-product .table tfoot td{
+    text-align: right;
+}
+div.modal.fade {
+    -webkit-transition: initial;
+    -moz-transition: initial;
+    -o-transition: initial;
+    transition: initial;
+}
+#perimeter-select-counter {
+    font-weight: bold;
+}
+.btn-group-perimeter-selection{
+    display:block !important;
+    margin-bottom:10px;
+}
+.btn-perimeter-selection {
+    min-width:120px;
+    text-align: left !important;
+}
+.btn-group.btn-group-perimeter-selection + .btn-group{
+    margin-left:0px !important;
+    
+}
+.btn-group-perimeter-selection .popover-title, .btn-group-perimeter-selection .popover-content{
+    white-space: nowrap;
+    max-height: 300px;
+    overflow: auto;
+}
+#basket-import-polygon-textarea{
+    width:100%;
+    min-height: 200px;
+}
+/* limit recap size in backend */
+.order-edit.back-end-edit #sdi-order-recap-layout{
+    max-width: 1200px; 
+}
