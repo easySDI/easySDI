@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -10,17 +10,21 @@ $indicator_name = 'shop_topextractions';
 ?>
 
 <div id="<?php echo('div_' . $indicator_name); ?>">
-    
+
     <?php
     $exportLayout = new JLayoutFile('com_easysdi_dashboard.global_export', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_dashboard'));
     echo $exportLayout->render(array('indicator_name' => $indicator_name));
     ?>
-    
+
     <div class="module-title nav-header">
         <i class="icon-cog" style="text-transform: none;"></i> <?php echo JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_TITLE'); ?>
         <span class="title-total"></span>
-    </div> 
-    
+    </div>
+    <?php
+    if (JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_TITLE_SUB') != "") {
+        echo("<p style='margin-left:6px;margin-top:15px;'>" . JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPPRODUCTS_TITLE_SUB') . "</p>");
+    }
+    ?>
     <table class="table table-bordered table-striped table-condensed result-success">
         <thead>
             <tr>
@@ -52,7 +56,7 @@ $indicator_name = 'shop_topextractions';
                 timeend: e.timeend,
                 dataformat: "json",
                 format: "raw",
-                limit: 5
+                limit: 10
             },
             beforeSend: function () {
                 toggleResutlDiv(<?php echo('"#div_' . $indicator_name . '"'); ?>, 'waiting-for-result');
@@ -73,6 +77,7 @@ $indicator_name = 'shop_topextractions';
             }
         });
     }
-    //add event listener for update   
+    //add event listener for update
     jQuery(document).on("dashboardFiltersUpdated", update_<?php echo($indicator_name); ?>);
 </script>
+

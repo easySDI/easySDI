@@ -483,6 +483,7 @@
 		 	gxp/plugins/LoadingIndicator.js,
                         gxp/plugins/WMSSource.js,
                         gxp/plugins/GoogleGeocoder.js,
+                        gxp/plugins/Popup.js,
                         gxp/widgets/ScaleOverlay.js,
                         gxp/widgets/Viewer.js,
                         gxp/widgets/form/GoogleGeocoderComboBox.js,
@@ -514,6 +515,7 @@
                       files="i18next-1.9.0/i18next-1.9.0.js,
                         shramov/tile/Google.js,
                         shramov/tile/Bing.js,
+                        leaflet.nontiledlayer/NonTiledLayer.js,
                         leaflet.TileLayer.WMTS-master/leaflet-tilelayer-wmts-src.js,
                         Leaflet.ZoomBox/L.Control.ZoomBox.js,
                         leaflet-measure/leaflet-measure.js,
@@ -526,6 +528,9 @@
                         leaflet-EasyLegend/easyLegend.js,
                         leaflet-graphicscale/Leaflet.GraphicScale.min.js,
                         leaflet-EasyGetFeature/easyGetFeature.js,
+                        Leaflet.fullscreen/dist/Leaflet.fullscreen.min.js,
+                        leaflet-geocoder-ban/src/leaflet-geocoder-ban.js,
+                        leaflet-locatecontrol/dist/L.Control.Locate.min.js,
                         easysdi_leaflet/easysdi_leaflet.js" />
         </concat>
     </target>
@@ -552,7 +557,10 @@
                              leaflet-EasyLegend/easyLegend.css,
                              leaflet-EasyGetFeature/easyGetFeature.css,
                              leaflet-graphicscale/Leaflet.GraphicScale.min.css,
-                             leaflet-Easy/easyLeaflet.css" />
+                             leaflet-Easy/easyLeaflet.css,
+                             Leaflet.fullscreen/dist/leaflet.fullscreen.css,
+                             leaflet-geocoder-ban/src/leaflet-geocoder-ban.css,
+                             leaflet-locatecontrol/dist/L.Control.Locate.min.css" />
         </concat>
     </target>
 	

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -19,7 +19,9 @@ JHtml::_('formbehavior.chosen', 'select');
     <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_REQUESTS'); ?></h1>
     <div class="well sdi-searchcriteria">
         <div class="row-fluid">
-            <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=requests'); ?>" method="post">
+            <form name="FormSearchRequests" class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=requests'); ?>" method="post">
+                <input type="hidden" id="filter_smartview" name="filter_smartview" value="1">
+                <input type="hidden" id="filter_smartview_last30days" value="1">
                 <div class="btn-group pull-right">
 
                     <fieldset class="radio btn-group btn-group-yesno" id="filterstatus">
@@ -30,7 +32,7 @@ JHtml::_('formbehavior.chosen', 'select');
                     </fieldset>
                     <?php if (count($this->organisms) > 1): ?>
                         <div id="filterorganism" >
-                            <select id="filter_userorganism" name="filter_userorganism" onchange="this.form.submit();" class="inputbox">
+                            <select id="filter_organism" name="filter_organism" onchange="this.form.submit();" class="inputbox">
                                 <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_ORGANISM_FILTER'); ?></option>
                                 <?php foreach ($this->organisms as $organism): ?>
                                     <option value="<?php echo $organism->id; ?>" <?php
@@ -58,22 +60,22 @@ JHtml::_('formbehavior.chosen', 'select');
                         <div id="filtersentfrom" >
                             <?php
                             $datefromval = $this->state->get('filter.sentfrom');
-                            if (!($datefromval & strlen($datefromval) > 1))
+                            if (!($datefromval && strlen($datefromval) > 1))
                                 $datefromval = '';
-                            echo JHTML::_('calendar', $datefromval, 'filter_sentfrom', 'filter_sentfrom', '%Y-%m-%d', array('placeholder' => JText::_('COM_EASYSDI_CORE_REQUESTS_DATEFROM_FILTER'), 'onchange' => 'this.form.submit();'));
+                            echo JHTML::_('calendar', $datefromval, 'filter_sentfrom', 'filter_sentfrom', '%Y-%m-%d', array('placeholder' => JText::_('COM_EASYSDI_CORE_REQUESTS_DATEFROM_FILTER'), 'onChange' => 'this.form.submit();'));
                             ?>
                         </div>
                         <div id="filtersentto" >
                             <?php
                             $datetoval = $this->state->get('filter.sentto');
-                            if (!($datetoval & strlen($datetoval) > 1))
+                            if (!($datetoval && strlen($datetoval) > 1))
                                 $datetoval = '';
-                            echo JHTML::_('calendar', $datetoval, 'filter_sentto', 'filter_sentto', '%Y-%m-%d', array('placeholder' => JText::_('COM_EASYSDI_CORE_REQUESTS_DATETO_FILTER'), 'onchange' => 'this.form.submit();'));
+                            echo JHTML::_('calendar', $datetoval, 'filter_sentto', 'filter_sentto', '%Y-%m-%d', array('placeholder' => JText::_('COM_EASYSDI_CORE_REQUESTS_DATETO_FILTER'), 'onChange' => 'this.form.submit();'));
                             ?>
                         </div>
                     <?php endif; ?>
 
-                    <div id="filterstatus">                        
+                    <div id="filterstatus">
                         <select id="filter_status" name="filter_type" onchange="this.form.submit();" class="inputbox">
                             <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_TYPE_FILTER'); ?></option>
                             <?php foreach ($this->ordertype as $ordertype): ?>
@@ -98,7 +100,7 @@ JHtml::_('formbehavior.chosen', 'select');
     </div>
 
     <div class="items">
-        <div class="well">                      
+        <div class="well">
             <?php
             if (count($this->items)):
                 $requestsListLayout = new JLayoutFile('com_easysdi_shop.requests', null, array('debug' => false, 'client' => 1, 'component' => 'com_easysdi_shop'));
@@ -121,3 +123,31 @@ JHtml::_('formbehavior.chosen', 'select');
         <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
 </div>
+
+<script>
+// If smartview is enabled, and none filter set
+if ((document.getElementById("state0").checked == true) && (document.getElementById("filter_smartview").value == "1") && (document.getElementById("filter_smartview_last30days").value == "1")) {
+	var vOrganism = document.getElementById("filter_clientorganism").value;
+	var vSentFrom = document.getElementById("filter_sentfrom").value;
+	var vSentTo = document.getElementById("filter_sentto").value;
+	var vFilterSearch = document.getElementById("filter_search").value;
+	if (vOrganism + vSentFrom + vSentTo + vFilterSearch == "") {
+		document.getElementById("ShopRequestsAlert").style.display = "none";
+		document.getElementById("ShopRequestsLoading").style.display = "block";
+		fnSetLast30Days();
+	}
+}
+
+// Set filter to "last 30 days"
+function fnSetLast30Days() {
+	<?php
+	$vSentTo = date("Y-m-d");
+	$vSentFrom = date('Y-m-d', strtotime('-1 months', strtotime($vSentTo)));
+	echo("var vSentFrom='$vSentFrom';\n");
+	echo("var vSentTo='$vSentTo';\n");
+	?>
+	document.getElementById("filter_sentfrom").value = vSentFrom;
+	document.getElementById("filter_sentto").value = vSentTo;
+	document.FormSearchRequests.submit();
+}
+</script>

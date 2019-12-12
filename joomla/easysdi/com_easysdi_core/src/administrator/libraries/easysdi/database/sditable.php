@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -20,6 +20,21 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi
  * @since       EasySDI 3.0.0
  */
 abstract class sdiTable extends JTable {
+
+    /**
+     * Object constructor to set table and key fields.  In most cases this will
+     * be overridden by child classes to explicitly set the table and key fields
+     * for a particular database table.
+     *
+     * @param   string            $table  Name of the table to model.
+     * @param   mixed             $key    Name of the primary key field in the table or array of field names that compose the primary key.
+     * @param   \JDatabaseDriver  $db     \JDatabaseDriver object.
+     */
+    public function __construct($table, $key, $db) {
+        parent::__construct($table, $key, $db);
+        // Set the 'published' alias for Joomla 3.9.1+ compatibility
+        $this->setColumnAlias('published', 'state');
+    }
 
     /**
      * Method to set the publishing state for a row or list of rows in the database
@@ -56,14 +71,14 @@ abstract class sdiTable extends JTable {
 
         $query = $this->_db->getQuery(true);
         $query->update($this->_tbl);
-        $query->set('state = '. (int)$state);
-        
-        
+        $query->set('state = ' . (int) $state);
+
+
         // Build the WHERE clause for the primary keys.
         $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
 
         $query->where($where);
-        
+
         // Determine if there is checkin support for the table.
         if (property_exists($this, 'checked_out') || property_exists($this, 'checked_out_time')) {
             $query->where('(checked_out = 0 OR checked_out = ' . (int) $userId . ')');
@@ -108,23 +123,23 @@ abstract class sdiTable extends JTable {
         if (!isset($array['created_by']) || $array['created_by'] == 0) {
             $array['created_by'] = JFactory::getUser()->id;
         }
-        
+
         if (!isset($array['created'])) {
             $array['created'] = JFactory::getDate()->toSql();
         }
-        
+
         if (!isset($array['state'])) {
             $array['state'] = 1;
         }
-        
+
         if (!isset($array['checked_out'])) {
             $array['checked_out'] = 0;
         }
-        
+
         if (!isset($array['checked_out_time'])) {
             $array['checked_out_time'] = JFactory::getDate()->toSql();
         }
-        
+
         if (isset($array['params']) && is_array($array['params'])) {
             $registry = new JRegistry();
             $registry->loadArray($array['params']);
@@ -274,7 +289,7 @@ abstract class sdiTable extends JTable {
 
         if ($this->_rules instanceof JAccessRules) {
             $asset->rules = (string) $this->_rules;
-        }else{
+        } else {
             $asset->rules = '{}';
         }
 
@@ -303,10 +318,10 @@ abstract class sdiTable extends JTable {
     private function getUniqueAlias($alias) {
         $query = $this->_db->getQuery(true);
         $query->select('count(*)');
-        $query->from( $query->quoteName($this->_tbl));
-        $query->where('alias = ' . $query->quote($alias) );
+        $query->from($query->quoteName($this->_tbl));
+        $query->where('alias = ' . $query->quote($alias));
         if ($this->id)
-            $query->where('id <> ' . (int)$this->id);
+            $query->where('id <> ' . (int) $this->id);
         $this->_db->setQuery($query);
 
         // Check for a database error.
@@ -331,8 +346,7 @@ abstract class sdiTable extends JTable {
                     return $this::getUniqueAlias($alias . "_1");
                 }
             }
-        }
-        else
+        } else
             return $alias;
     }
 
@@ -349,7 +363,6 @@ abstract class sdiTable extends JTable {
             }
             $this->alias = JApplication::stringURLSafe($this->alias);
             $this->alias = $this::getUniqueAlias($this->alias);
-            
         }
         //If there is an ordering column and this is a new row then get the next ordering value
         if (property_exists($this, 'ordering') && $this->id == 0) {

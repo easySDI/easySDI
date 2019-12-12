@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -73,7 +73,6 @@ class Easysdi_mapHelper {
      */
     public static function getLayers($params) {
         $service = $params['service'];
-
         if (empty($service)) {
             echo json_encode(array());
             die();
@@ -254,6 +253,39 @@ class Easysdi_mapHelper {
         $encoded = json_encode($layers);
         echo $encoded;
         die();
+    }
+
+    public static function getMaps($params) {
+        $group = $params['group'];
+       /* if (empty($group)) {
+            echo json_encode(array());
+            die();
+        }*/
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('*');
+        $query->from('#__sdi_layer_layergroup');
+        $query->where('group_id=' .$group);
+
+        $db->setQuery($query);
+        $resources = $db->loadObjectList();
+        $result=[];
+        foreach ($resources as $resource) {
+            
+            $query = $db->getQuery(true);
+            $query->select('*');
+            $query->from('#__sdi_maplayer');
+            $query->where('id=' . $resource->layer_id);
+    
+            $db->setQuery($query);
+            $tmp = $db->loadAssoc();
+            $tmp['layer_layergroup']=$resource->id;
+            $result[]=$tmp;
+        }
+        $encoded = json_encode($result);
+        echo $encoded;
+        die();
+
     }
 
 }

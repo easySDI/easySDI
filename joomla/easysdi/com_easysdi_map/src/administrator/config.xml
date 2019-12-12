@@ -45,7 +45,7 @@
              type="text"
              default=""
              size="100"
-             required="false"
+             required="false" 
              label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_CREATE_URL"
              description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_CREATE_URL" />
         
@@ -64,6 +64,22 @@
              required="true"             
              label="COM_EASYSDI_MAP_LBL_IFRAME_HEIGHT"
              description="COM_EASYSDI_MAP_DESC_IFRAME_HEIGHT" />
+
+		<field name="popupwidth"
+             type="number"
+             default="600"
+             size="100"
+             required="true"             
+             label="COM_EASYSDI_MAP_LBL_POPUP_WIDTH"
+             description="COM_EASYSDI_MAP_DESC_POPUP_WIDTH" />
+        
+        <field name="popupheight"
+             type="number"
+             default="400"
+             size="100"
+             required="true"             
+             label="COM_EASYSDI_MAP_LBL_POPUP_HEIGHT"
+             description="COM_EASYSDI_MAP_DESC_POPUP_HEIGHT" />
         
 	</fieldset>
 	
@@ -83,7 +99,7 @@
 			label="COM_EASYSDI_MAP_TOOLS_NAVIGATION_LABEL" 
 			description="COM_EASYSDI_MAP_TOOLS_NAVIGATION_DESC" ></field>
 		
-		<field name="Ggoglegeocoder" 
+		<field name="Ggoglegeocoder"  
 			type="radio" 
 			default="3" 
 			label="COM_EASYSDI_MAP_TOOLS_GEOCODER_LABEL" 

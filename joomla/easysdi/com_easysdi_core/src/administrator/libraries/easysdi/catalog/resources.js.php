@@ -17,8 +17,8 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
 
     // #n# are used as placeholder
     var Links = {
-        resources:{
-            list : '<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources') ?>'
+        resources: {
+            list: '<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources') ?>'
         },
         resource: {
             edit: '<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=#0#') ?>'
@@ -160,9 +160,20 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
         return Metadata;
     }());
 
+    var Diffusion = (function () {
+        function Diffusion(diffusion_published, hasdownload, hasextraction, diffusion_accessscope) {
+            this.diffusion_published = diffusion_published;
+            this.hasdownload = hasdownload;
+            this.hasextraction = hasextraction;
+            this.diffusion_accessscope = diffusion_accessscope;
+        }
+        return Diffusion;
+    }());
+
     var Version = (function () {
         function Version(id) {
             var metadata = {};
+            var diffusion = {};
             this.id = id;
             this.child_number = 0;
             this.viralChild_number = 0;
@@ -170,6 +181,11 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
                 if (arguments.length > 0)
                     metadata = new Metadata(id, name, state, stateName, publishDate);
                 return metadata;
+            };
+            this.diffusion = function (diffusion_published, hasdownload, hasextraction, diffusion_accessscope) {
+                if (arguments.length > 0)
+                    diffusion = new Diffusion(diffusion_published, hasdownload, hasextraction, diffusion_accessscope);
+                return diffusion;
             };
         }
         return Version;
@@ -207,11 +223,14 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
                     return false;
                 }
                 var version_id = Array.prototype.shift.apply(arguments);
-                if (arguments.length === 0)
+                if (arguments.length === 0) {
                     return versions[version_id];
-                else {
+                } else {
                     var v = new Version(version_id);
                     v.metadata(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+                    if (arguments.length > 5) {
+                        v.diffusion(arguments[5], arguments[6], arguments[7], arguments[8]);
+                    }
                     versions.push(v);
                     return versions;
                 }
@@ -226,8 +245,9 @@ $iframeheight = JComponentHelper::getParams('com_easysdi_catalog')->get('iframeh
                     for (var i in versions)
                         if (versions[i].id == js('select#' + this.id + '_select > option:selected').val())
                             return versions[i];
-                } else
+                } else {
                     return this.firstVersion();
+                }
             };
 
             this.allVersions = function () {
@@ -261,7 +281,7 @@ foreach ($this->items as $item) :
             resource.assignment = <?php echo $assignenabled; ?>;
             resource.synchronize = <?php echo $synchronizeenabled; ?>;
     <?php foreach ($item->metadata as $key => $metadata): ?>
-                resource.version(<?php echo $metadata->version; ?>, <?php echo $metadata->id; ?>, '<?php echo $metadata->name; ?>', <?php echo $metadata->state; ?>, <?php echo json_encode(JText::_($metadata->value)); ?>, '<?php echo $metadata->published; ?>');
+                resource.version(<?php echo $metadata->version; ?>, <?php echo $metadata->id; ?>, '<?php echo $metadata->name; ?>', <?php echo $metadata->state; ?>, <?php echo json_encode(JText::_($metadata->value)); ?>, '<?php echo $metadata->published; ?>', <?php echo ($metadata->diffusion_published == 1 ? 'true' : 'false'); ?>, <?php echo ($metadata->hasdownload == 1 ? 'true' : 'false'); ?>, <?php echo ($metadata->hasextraction == 1 ? 'true' : 'false'); ?>, <?php echo isset($metadata->diffusion_accessscope) ? ('\'' . $metadata->diffusion_accessscope . '\'') : 'null'; ?>);
     <?php endforeach; ?>
             resources.add(resource);
 <?php endforeach; ?>
@@ -500,8 +520,7 @@ foreach ($this->items as $item) :
                 });
 
                 js('td#' + resource.id + '_resource_versions').empty().append(select);
-            }
-            else {
+            } else {
                 var version = resource.firstVersion();
                 var metadata = version.metadata();
 
@@ -533,9 +552,9 @@ foreach ($this->items as $item) :
                         .html(resource.name)
                         .attr('href', Links.resource.edit.replace('#0#', resource.id));
                 js('td#' + resource.id + '_resource_name').empty().append(a);
-            }
-            else
+            } else {
                 js('td#' + resource.id + '_resource_name').empty().html(resource.name);
+            }
         };
 
         // Retrieves resource's id from HTML Element's id
@@ -608,16 +627,14 @@ foreach ($this->items as $item) :
                                 }, 0);
                                 getSynchronizationInfo(js('a#' + resource.id + '_synchronize'));
                             }
-                        }
-                        catch (e) {
+                        } catch (e) {
                             if (window.console) {
                                 console.log(e);
                                 console.log(data);
                             }
                         }
                     });
-                }
-                catch (e) {
+                } catch (e) {
                     console.warn('Catch error');
                     setTimeout(function () {
                         getChildNumber(element)
@@ -651,8 +668,7 @@ foreach ($this->items as $item) :
                                 .on('click', function () {
                                     return false;
                                 });
-                    }
-                    else
+                    } else {
                         js(element)
                                 .css('color', 'inherit')
                                 .removeClass('disabled')
@@ -660,8 +676,8 @@ foreach ($this->items as $item) :
                                 .on('click', function () {
                                     return true;
                                 });
-                }
-                catch (e) {
+                    }
+                } catch (e) {
                     if (window.console) {
                         console.log(e);
                         console.log(data);
@@ -691,8 +707,7 @@ foreach ($this->items as $item) :
                     var response = js.parseJSON(data);
                     if (response.synchronized === true)
                         tooltips.push('<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY') ?> ' + response.synchronized_by + '<br/><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE') ?> ' + response.lastsynchronization);
-                }
-                catch (e) {
+                } catch (e) {
                     if (window.console) {
                         console.log(e);
                         console.log(data);
@@ -726,8 +741,7 @@ foreach ($this->items as $item) :
                                 .on('click', function () {
                                     return false;
                                 });
-                    }
-                    else
+                    } else {
                         js(element)
                                 .removeClass('disabled')
                                 .css('color', 'inherit')
@@ -735,8 +749,8 @@ foreach ($this->items as $item) :
                                 .on('click', function () {
                                     return true;
                                 });
-                }
-                catch (e) {
+                    }
+                } catch (e) {
                     if (window.console) {
                         console.log(e);
                         console.log(data);
@@ -770,8 +784,7 @@ foreach ($this->items as $item) :
                     js('#deleteModalChildrenList').html(ul);
                     js('#btn_delete').attr('href', Links.modal.delete.replace('#0#', version_id));
                     js('#deleteModal').modal('show');
-                }
-                catch (e) {
+                } catch (e) {
                     if (window.console) {
                         console.log(e);
                         console.log(data);
@@ -780,7 +793,7 @@ foreach ($this->items as $item) :
             });
         };
 
-        var showRemoveWithOrphanModal = function (version_id, metadata_id, missing_id, missing_md) {            
+        var showRemoveWithOrphanModal = function (version_id, metadata_id, missing_id, missing_md) {
             js.ajax({
                 cache: false,
                 type: 'GET',
@@ -789,13 +802,12 @@ foreach ($this->items as $item) :
                 try {
                     var response = js.parseJSON(data);
                     response.versions[version_id].metadata_id = metadata_id;
-                    js('#missingMetadata').html(missing_id + ' - ' + missing_md );
+                    js('#missingMetadata').html(missing_id + ' - ' + missing_md);
                     var ul = buildVersionsTree(response.versions);
                     js('#removeWithOrphanModalChildrenList').html(ul);
                     js('#btn_removewithorphan').attr('href', Links.modal.removewithorphan.replace('#0#', version_id));
                     js('#removeWithOrphanModal').modal('show');
-                }
-                catch (e) {
+                } catch (e) {
                     if (window.console) {
                         console.log(e);
                         console.log(data);
@@ -851,8 +863,7 @@ foreach ($this->items as $item) :
                         js('#publishModalChildrenList').html(buildVersionsTree(children));
                         js('#publishModalViralPublication').attr('checked', true).trigger('change');
                         js('#publishModalChildrenDiv').show();
-                    }
-                    else {
+                    } else {
                         js('#publishModalViralPublication').attr('checked', false).trigger('change');
                     }
 
@@ -862,8 +873,7 @@ foreach ($this->items as $item) :
                     }
 
                     showModal(metadata.id);
-                }
-                catch (e) {
+                } catch (e) {
                     if (window.console) {
                         console.log(e);
                         console.log(data);
@@ -877,6 +887,27 @@ foreach ($this->items as $item) :
             js('#btn_synchronize').attr('href', js(element).attr('href'));
             js('#synchronizeModal').modal('show');
 
+        }
+
+        var addDiffusionCLasses = function (resource) {
+            var version = resource.currentVersion();
+            var diffusion = version.diffusion();
+
+            //toggle boolean classes
+            js('tr#' + resource.id + '_resource').toggleClass('diffusion_published', diffusion.diffusion_published);
+            js('tr#' + resource.id + '_resource').toggleClass('hasdownload', diffusion.hasdownload);
+            js('tr#' + resource.id + '_resource').toggleClass('hasextraction', diffusion.hasextraction);
+
+            //remove all diffusion_accessscopes
+            js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_public');
+            js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_user');
+            js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_organism');
+            js('tr#' + resource.id + '_resource').removeClass('diffusion_accessscope_category');
+            
+            //if set, add the correct accessscope
+            if (diffusion.diffusion_accessscope !== null) {
+                js('tr#' + resource.id + '_resource').addClass('diffusion_accessscope_' + diffusion.diffusion_accessscope);
+            }
         }
 
         var buildActionsCell = function (resource, reload) {
@@ -920,9 +951,9 @@ foreach ($this->items as $item) :
         });
 
         js(document).ready(function () {
-            <?php if (isset($this->vcall) ):  ?>
-                showRemoveWithOrphanModal(<?php echo $this->vcall->v_id; ?>,<?php echo $this->vcall->md_id; ?>,'<?php echo $this->mduk->r; ?>','<?php echo $this->mduk->v; ?>');
-            <?php    endif;?>
+<?php if (isset($this->vcall)): ?>
+                showRemoveWithOrphanModal(<?php echo $this->vcall->v_id; ?>,<?php echo $this->vcall->md_id; ?>, '<?php echo $this->mduk->r; ?>', '<?php echo $this->mduk->v; ?>');
+<?php endif; ?>
             // Build resource's lines
             js(resources.get()).each(function (id, resource) {
                 if ('undefined' !== typeof resource) {
@@ -931,6 +962,8 @@ foreach ($this->items as $item) :
                     buildStatusCell(resource);
 
                     buildActionsCell(resource);
+
+                    addDiffusionCLasses(resource);
 
                     js('#' + resource.id + '_resource').addClass('resourcetype_' + resource.typeAlias).addClass('accessscope_' + resource.accessscope).show();
                 }
@@ -974,6 +1007,7 @@ foreach ($this->items as $item) :
                     .chosen({width: '100%'})
                     .on('change', function () {
                         buildActionsCell(resources.get(getResourceId(this)));
+                        addDiffusionCLasses(resources.get(getResourceId(this)));
                     })
                     ;
 

@@ -2160,7 +2160,6 @@ ul.leaflet-control-geocoder-alternatives {
       display: block;
       width: 100%;
       height: 100%;
-      line-height: 40px;
       color: inherit;
       text-decoration: none;
       text-align: center; }
@@ -2288,7 +2287,7 @@ body.easySDImapPrint .leaflet-control-attribution{
   display:none !important;
 }
 
-body.easySDImapPrint #sidebar {
+body.easySDImapPrint .sidebar {
   display:none !important;
 }
 
@@ -2484,137 +2483,181 @@ ul.easyLegend>li a {
         max-height: 30px;
     }
 .leaflet-container.getFeatureOn .leaflet-map-pane {
-  /*cursor: help;*/
-  cursor: crosshair;
+    /*cursor: help;*/
+    cursor: crosshair;
 }
 
 .easygetfeature_popup {
-  max-width: 800px;
-  -o-transition: all 0.25s ease;
-  -webkit-transition: all 0.25s ease;
-  -ms-transition: all 0.25s ease;
-  -moz-transition: all 0.25s ease;
-  transition: all 0.25s ease;
+    max-width: 800px;
+    -o-transition: all 0.25s ease;
+    -webkit-transition: all 0.25s ease;
+    -ms-transition: all 0.25s ease;
+    -moz-transition: all 0.25s ease;
+    transition: all 0.25s ease;
 }
 
-
-
 .easygetfeature_popup .leaflet-popup-content {
-  max-height:350px;
-  overflow: auto;
-  width: auto !important;
+    max-height: 350px;
+    overflow: auto;
+    width: auto !important;
 }
 
 .getfeature_results {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
-.easygetfeature_table{
-  border: 1px solid #ddd;
-  max-width: 100%;
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  margin: 5px 0 20px 0;
+.easygetfeature_table {
+    border: 1px solid #ddd;
+    max-width: 100%;
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 5px 0 20px 0;
 }
 
-.easygetfeature_table th, .easygetfeature_table td{
-  border: 1px solid #ddd;
-  line-height: 1.42857;
-  padding: 8px;
-  vertical-align: top;
+.easygetfeature_table th,
+.easygetfeature_table td {
+    border: 1px solid #ddd;
+    line-height: 1.42857;
+    padding: 8px;
+    vertical-align: top;
 }
 
-.easygetfeature_table th{
-  border: 1px solid #ddd;
+.easygetfeature_table th {
+    border: 1px solid #ddd;
 }
 
-
-
-.easygetfeature_table caption{
-  background-color: #ddd;
-  color: #777;
-
-  padding: 5px 0 5px 12px;
-  text-align: left;
-  text-transform: uppercase;
+.easygetfeature_table caption {
+    background-color: #ddd;
+    color: #777;
+    padding: 5px 0 5px 12px;
+    text-align: left;
+    text-transform: uppercase;
 }
 
 .easygetfeature_pre {
-  width: 400px;
-  border: none;
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
+    width: 400px;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
 }
-
-
 
 .getfeature_results .removeAllResult {
-  text-align:right;
-  display: block;
-  height: 20px;
-  margin-top: -25px;
-  color: #000;
+    text-align: right;
+    display: block;
+    height: 20px;
+    margin-top: -25px;
+    color: #000;
 }
-
 
 .getfeature_results>div {
- box-shadow: 0px 0px 0px rgba(0,0,0,0);
- margin:5px 0px;
- padding: 5px 10px 5px 30px;
- border: 1px solid transparent;
- position: relative;
- cursor: pointer;
-
- -o-transition: all 0.25s ease;
- -webkit-transition: all 0.25s ease;
- -ms-transition: all 0.25s ease;
- -moz-transition: all 0.25s ease;
- transition: all 0.25s ease;
+    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+    margin: 5px 0px;
+    padding: 5px 10px 5px 30px;
+    border: 1px solid transparent;
+    position: relative;
+    cursor: pointer;
+    -o-transition: all 0.25s ease;
+    -webkit-transition: all 0.25s ease;
+    -ms-transition: all 0.25s ease;
+    -moz-transition: all 0.25s ease;
+    transition: all 0.25s ease;
 }
 
-.getfeature_results>div:before{
-  content: "\f041";
-  left: 10px;
-  position: absolute;
-  top: 10px;
-  font-family: FontAwesome;
+.getfeature_results>div:before {
+    content: "\f041";
+    left: 10px;
+    position: absolute;
+    top: 10px;
+    font-family: FontAwesome;
 }
 
-.getfeature_results>div.loading:before{
-  content: "\f110";
-  animation: 1s steps(8, end) 0s normal none infinite running fa-spin;
+.getfeature_results>div.loading:before {
+    content: "\f110";
+    animation: 1s steps(8, end) 0s normal none infinite running fa-spin;
 }
 
-.getfeature_results>div.none:before{
-  content: "\f057";
+.getfeature_results>div.none:before {
+    content: "\f057";
 }
 
 .getfeature_results>div:hover {
-  background: #fff;
-  box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.075);
-  border-color: rgba(0,0,0,0.15);
+    background: #fff;
+    box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.075);
+    border-color: rgba(0, 0, 0, 0.15);
 }
 
 .getfeature_results>div.none {
-  font-style: italic;
+    font-style: italic;
 }
 
 .getfeature_results>div>p {
-  margin:0;
+    margin: 0;
 }
 
 .getfeature_results .warning {
-  color:#d9534f;
+    color: #d9534f;
 }
 
 .getfeature_results .query-btns {
-  float:right;
+    float: right;
 }
 
 .getfeature_results .removeResult {
-  color: #000;
+    color: #000;
+}
+
+.panel-group {
+    margin-bottom: 20px;
+}
+
+.panel-group .panel {
+    margin-bottom: 0;
+    border-radius: 4px;
+}
+
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+.panel-default {
+    border-color: #ddd;
+}
+
+.panel-default>.panel-heading {
+    color: #333;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+
+.panel-group .panel-heading {
+    border-bottom: 0;
+}
+
+.panel-heading {
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.panel-default>.panel-heading+.panel-collapse>.panel-body {
+    border-top-color: #ddd;
+}
+
+.panel-group .panel-heading+.panel-collapse>.list-group,
+.panel-group .panel-heading+.panel-collapse>.panel-body {
+    border-top: 1px solid #ddd;
+}
+
+.panel-body {
+    padding: 15px;
 }
 .leaflet-control-graphicscale-inner{margin:6px 16px}.leaflet-control-graphicscale-inner .units{display:inline-block}.leaflet-control-graphicscale-inner .subunits{display:none}.leaflet-control-graphicscale-inner .label{width:100px;text-align:center;margin-bottom:10px;position:absolute;opacity:1;-webkit-transition:opacity 0.4s linear;-moz-transition:opacity 0.4s linear;-ms-transition:opacity 0.4s linear;-o-transition:opacity 0.4s linear;transition:opacity 0.4s linear}.leaflet-bottom .leaflet-control-graphicscale-inner.labelPlacement-auto,.leaflet-control-graphicscale-inner.labelPlacement-top{margin-top:20px}.leaflet-bottom .leaflet-control-graphicscale-inner.labelPlacement-auto .label,.leaflet-control-graphicscale-inner.labelPlacement-top .label{bottom:0}.leaflet-top .leaflet-control-graphicscale-inner.labelPlacement-auto,.leaflet-control-graphicscale-inner.labelPlacement-bottom{margin-bottom:20px}.leaflet-control-graphicscale-inner .divisionLabel{right:0;margin-right:-50px}.leaflet-control-graphicscale-inner .zeroLabel,.leaflet-control-graphicscale-inner .subunitsLabel{left:0;margin-left:-50px}.leaflet-control-graphicscale-inner .division{display:inline-block;position:relative;width:40px;-webkit-transition:width 0.4s ease-in-out;-moz-transition:width 0.4s ease-in-out;-ms-transition:width 0.4s ease-in-out;-o-transition:width 0.4s ease-in-out;transition:width 0.4s ease-in-out}.leaflet-control-graphicscale-inner .division .line,.leaflet-control-graphicscale-inner .division .line2{border-style:solid;position:relative}.leaflet-control-graphicscale-inner .division .line2{height:0;border-width:0}.leaflet-control-graphicscale-inner .division .line{height:6px;border-width:1px 1px 1px 0}.leaflet-control-graphicscale-inner .units .division:first-child .line{border-left-width:1px}.leaflet-control-graphicscale-inner .subunits .division .line{border-width:1px 0 1px 1px}.leaflet-control-graphicscale-inner .fill{position:relative}.leaflet-control-graphicscale-inner.showsubunits .subunits{display:inline-block}.leaflet-control-graphicscale-inner.double .division .line2{height:6px;border-width:0 1px 1px 0}.leaflet-control-graphicscale-inner.double .units .division:first-child .line2{border-left-width:1px}.leaflet-control-graphicscale-inner.double .subunits .division .line2{border-width:0 0 1px 1px}.leaflet-control-graphicscale-inner.double .label{margin-bottom:14px}.leaflet-control-graphicscale-inner.filled .fill{background-color:#000;position:absolute;top:0;left:0;right:0;bottom:0}.leaflet-control-graphicscale-inner.filled-line .line .fill{height:2px;top:2px}.leaflet-control-graphicscale-inner.filled-line.double .fill{height:2px;top:2px}.leaflet-control-graphicscale-inner.filled-hollow .fill{position:absolute;top:1px;left:1px;right:1px;bottom:1px}.leaflet-control-graphicscale-inner .division.hidden{width:0}.leaflet-control-graphicscale-inner .division.hidden .line,.leaflet-control-graphicscale-inner .division.hidden .line2{height:0;border-width:0}.leaflet-control-graphicscale-inner .division.hidden .label:not(.subunitsLabel){opacity:0}
 
@@ -2680,4 +2723,158 @@ body {
     z-index: 1000;
 }
 
+.leaflet-popup-scrolled {
+    overflow: auto;
+    border-bottom: 0px;
+    border-top: 0px;
+}
+
+.easygetfeature_pre {
+    width: 100% ;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+
+.leaflet-control-fullscreen a {
+  background:#fff url(images/fullscreen.png) no-repeat 0 0;
+  background-size:26px 52px;
+  }
+  .leaflet-touch .leaflet-control-fullscreen a {
+    background-position: 2px 2px;
+    }
+  .leaflet-fullscreen-on .leaflet-control-fullscreen a {
+    background-position:0 -26px;
+    }
+  .leaflet-touch.leaflet-fullscreen-on .leaflet-control-fullscreen a {
+    background-position: 2px -24px;
+    }
+
+/* Do not combine these two rules; IE will break. */
+.leaflet-container:-webkit-full-screen {
+  width:100%!important;
+  height:100%!important;
+  }
+.leaflet-container.leaflet-fullscreen-on {
+  width:100%!important;
+  height:100%!important;
+  }
+
+.leaflet-pseudo-fullscreen {
+  position:fixed!important;
+  width:100%!important;
+  height:100%!important;
+  top:0!important;
+  left:0!important;
+  z-index:99999;
+  }
+
+@media
+  (-webkit-min-device-pixel-ratio:2),
+  (min-resolution:192dpi) {
+    .leaflet-control-fullscreen a {
+      background-image:url(fullscreen@2x.png);
+    }
+  }
+
+.leaflet-control-geocoder-ban {
+    border-radius: 4px;
+    background: white;
+    min-width: 26px;
+    min-height: 26px;
+}
+
+.leaflet-touch .leaflet-control-geocoder-ban {
+    min-width: 30px;
+    min-height: 30px;
+}
+
+.leaflet-control-geocoder-ban-icon {
+    border-radius: 4px;
+    width: 26px;
+    height: 26px;
+    border: none;
+    background-color: white;
+    background-image: url(images/geocoder.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.leaflet-control-geocoder-ban-icon:focus {
+    outline: None;
+}
+
+.leaflet-touch .leaflet-control-geocoder-ban-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.leaflet-control-geocoder-ban-form {
+    display: none;
+    vertical-align: middle;
+}
+
+.leaflet-control-geocoder-ban-expanded {
+    margin-right: 10px;
+}
+
+.leaflet-control-geocoder-ban-expanded .leaflet-control-geocoder-ban-form {
+    display: inline-block;
+}
+
+.leaflet-control-geocoder-ban-form input[type="text"] {
+    font-size: 120%;
+    border: 0;
+    background-color: transparent;
+    width: 246px;
+    margin-bottom: 0px;
+}
+
+.leaflet-control-geocoder-ban-form input:focus {
+    outline: None;
+}
+
+.leaflet-control-geocoder-ban-alternatives {
+    display: block;
+    width: inherit;
+    max-height: 400px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow: auto;
+}
+
+@media screen and (max-width: 480px) {
+    .leaflet-control-geocoder-ban-alternatives {
+        max-height: 150px;
+    }
+}
+
+.leaflet-control-geocoder-ban-alternatives-minimized {
+    display: none;
+    height: 0;
+}
+
+.leaflet-control-geocoder-ban .leaflet-control-geocoder-ban-alternatives a {
+    width: inherit;
+    height: inherit;
+    line-height: inherit;
+    background-color: transparent;
+    text-align: left;
+    padding: 3px 6px 3px 6px;
+}
+
+.leaflet-control-geocoder-ban .leaflet-control-geocoder-ban-alternatives li {
+    width: inherit;
+    cursor: pointer;
+    border-top: 1px solid #d0d0d0;
+}
+
+.leaflet-control-geocoder-ban-selected {
+    background-color: rgba(0, 0, 255, 0.2);
+}
+.leaflet-control-locate a{font-size:1.4em;color:#444;cursor:pointer}.leaflet-control-locate.active a{color:#2074B6}.leaflet-control-locate.active.following a{color:#FC8428}
+/*# sourceMappingURL=L.Control.Locate.min.css.map */
 

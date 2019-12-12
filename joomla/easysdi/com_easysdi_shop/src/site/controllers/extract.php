@@ -4,9 +4,9 @@
  * Extract - WebService designed to getOrders and setProduct
  * based on the old webservice (rest)
  * 
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -44,12 +44,17 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     const xsdException = 'exception.xsd';
 
     //XSDs local files
-    private $xsdLocalPathBase;
     private $xsdLocalGetOrders;
     private $xsdLocalGetOrdersParameters;
     private $xsdLocalSetProduct;
     private $xsdLocalSetProductParameters;
     private $xsdLocalException;
+    //easisdi.org files
+    private $xsdCentralGetOrders;
+    private $xsdCentralGetOrdersParameters;
+    private $xsdCentralSetProduct;
+    private $xsdCentralSetProductParameters;
+    private $xsdCentralException;
 
     //XSIs
     const xsiBaseURL = 'http://www.easysdi.org/2011/sdi/';
@@ -92,6 +97,14 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->xsdLocalSetProduct = $xsdLocalPathBase . self::xsdSetProduct;
         $this->xsdLocalSetProductParameters = $xsdLocalPathBase . self::xsdSetProductParameters;
         $this->xsdLocalException = $xsdLocalPathBase . self::xsdException;
+
+        //set CENTRAL XSDs path
+        $xsdCentralPathBase = 'http://www.easysdi.org/schema/4.4.4/';
+        $this->xsdCentralGetOrders = $xsdCentralPathBase . self::xsdGetOrders;
+        $this->xsdCentralGetOrdersParameters = $xsdCentralPathBase . self::xsdGetOrdersParameters;
+        $this->xsdCentralSetProduct = $xsdCentralPathBase . self::xsdSetProduct;
+        $this->xsdCentralSetProductParameters = $xsdCentralPathBase . self::xsdSetProductParameters;
+        $this->xsdCentralException = $xsdCentralPathBase . self::xsdException;
 
         //set XSIs path
         $this->xsiGetOrders = self::xsiBaseURL . self::xsdGetOrders;
@@ -223,7 +236,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $response = new DOMDocument('1.0', 'utf-8');
 
         $root = $response->createElementNS(self::nsSdi, 'sdi:exception');
-        $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsiException);
+        $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsdCentralException);
 
         $this->addTextChildNode($root, 'sdi:code', $code);
         $this->addTextChildNode($root, 'sdi:message', $this->HTTPSTATUS[$code]);
@@ -429,12 +442,18 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         /* DEFAULT INPUTS */
         $mode = 'sdi:getOrders';
 
-        $agg = 'o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, o.level, u.guid , us.name , o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value');
-        $agg .= ', po.id , po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee, po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee';
+        $agg = 'o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, '
+                . 'o.surface, o.level, u.guid , us.name , o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value');
+        $agg .= ', po.id , po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee_te,'
+                . ' po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee';
         // retrieve all orders
         $query = $this->db->getQuery(true)
-                ->select('o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, o.surface, o.level, u.guid as user_guid, us.name as user_name, o.thirdparty_id, o.sent, ' . $this->db->quoteName('ot.value') . ' as ordertype')
-                ->select('po.id as pricing_order, po.cfg_vat, po.cfg_currency, po.cfg_rounding, po.cfg_overall_default_fee, po.cfg_free_data_fee, po.cal_fee_ti, po.ind_lbl_category_order_fee')
+                ->select('o.id, o.guid, ' . $this->db->quoteName('o.name') . ', o.user_id, '
+                        . 'o.surface, o.level, u.guid as user_guid, us.name as user_name, o.thirdparty_id,'
+                        . ' o.sent, ' . $this->db->quoteName('ot.value') . ' as ordertype')
+                ->select('po.id as pricing_order, po.cfg_vat, po.cfg_currency, '
+                        . 'po.cfg_rounding, po.cfg_overall_default_fee_te, po.cfg_free_data_fee, '
+                        . 'po.cal_fee_ti, po.ind_lbl_category_order_fee, po.cfg_fee_apply_vat')
                 ->from('#__sdi_order o')
                 ->leftJoin('#__sdi_pricing_order po ON po.order_id=o.id')
                 ->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id')
@@ -460,14 +479,16 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $query->where('od.productstate_id IN (' . implode(',', $this->states) . ')')
                 ->where('d.productmining_id = ' . Easysdi_shopHelper::PRODUCTMININGAUTO)
                 ->where('o.ordertype_id IN (' . Easysdi_shopHelper::ORDERTYPE_ORDER . ',' . Easysdi_shopHelper::ORDERTYPE_ESTIMATE . ')');
-        
+
         //only order that are completely saved (avoid partial orders : https://forge.easysdi.org/issues/1252)
         $query->where('o.sent > \'0000-00-00 00:00:00\'');
-        
+
         //group by selected items
         $query->group($agg);
 
         $this->db->setQuery($query);
+
+        //$s = $query->__toString();
 
         return $this->db->loadObjectList();
     }
@@ -487,7 +508,6 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $xml = JFactory::getApplication()->input->get('xml', null, 'raw');
 
         // Open an SQL Transaction
-        //$this->db->transactionStart();
         try {
             $this->db->transactionStart();
         } catch (Exception $exc) {
@@ -498,13 +518,13 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->transaction = true;
 
         $orders = $this->response->createElementNS(self::nsSdi, 'sdi:orders');
-        $orders->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsiGetOrders);
+        $orders->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsdCentralGetOrders);
 
         $platform = $this->response->createElementNS(self::nsSdi, 'sdi:platform');
 
         $this->addAttribute($platform, 'name', 'easySDI');
         $this->addAttribute($platform, 'version', sdiFactory::getSdiVersion());
-        $this->addAttribute($platform, 'serviceversion', '4.0');
+        $this->addAttribute($platform, 'serviceversion', '4.4.4'); //easySDI version of the last modification
 
         $orders->appendChild($platform);
 
@@ -589,8 +609,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addTextChildNode($pricing, 'sdi:cfg_vat', $order->cfg_vat);
         $this->addTextChildNode($pricing, 'sdi:cfg_currency', $order->cfg_currency);
         $this->addTextChildNode($pricing, 'sdi:cfg_rounding', $order->cfg_rounding);
-        $this->addTextChildNode($pricing, 'sdi:cfg_overall_default_fee', $order->cfg_overall_default_fee);
+        $this->addTextChildNode($pricing, 'sdi:cfg_overall_default_fee_te', $order->cfg_overall_default_fee_te);
         $this->addTextChildNode($pricing, 'sdi:cfg_free_data_fee', (bool) $order->cfg_free_data_fee ? 'true' : 'false');
+        $this->addTextChildNode($pricing, 'sdi:cfg_fee_apply_vat', (bool) $order->cfg_fee_apply_vat ? 'true' : 'false');
         $this->addTextChildNode($pricing, 'sdi:cal_fee_ti', $order->cal_fee_ti);
         $this->addTextChildNode($pricing, 'sdi:ind_lbl_category_order_fee', $order->ind_lbl_category_order_fee);
         return $pricing;
@@ -612,7 +633,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             if (!empty($this->organism) && $this->organism->id != $supplierId) {
                 continue;
             }
-            $suppliers->appendChild($this->getSupplier($order, $supplierId));
+            $supplier = $this->getSupplier($order, $supplierId);
+            if ($supplier != false) {
+                $suppliers->appendChild($supplier);
+            }
         }
 
         return $suppliers;
@@ -628,6 +652,11 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
      * @since 4.3.0
      */
     private function getSupplier($order, $supplierId) {
+        $products = $this->getProducts($order, $supplierId);
+        if ($products == false) {
+            //No product to extract
+            return false;
+        }
         $supplier = $this->response->createElementNS(self::nsSdi, 'sdi:supplier');
 
         $supplier->appendChild($this->getOrganism($supplierId));
@@ -643,14 +672,15 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $orderSupplier = $this->db->loadObject();
 
             $this->addTextChildNode($pricing, 'sdi:cfg_internal_free', (bool) $orderSupplier->cfg_internal_free ? 'true' : 'false');
-            $this->addTextChildNode($pricing, 'sdi:cfg_fixed_fee_ti', (float) $orderSupplier->cfg_fixed_fee_ti);
+            $this->addTextChildNode($pricing, 'sdi:cfg_fixed_fee_te', (float) $orderSupplier->cfg_fixed_fee_te);
+            $this->addTextChildNode($pricing, 'sdi:cfg_fixed_fee_apply_vat', (bool) $orderSupplier->cfg_fixed_fee_apply_vat ? 'true' : 'false');
             $this->addTextChildNode($pricing, 'sdi:cfg_data_free_fixed_fee', (bool) $orderSupplier->cfg_data_free_fixed_fee ? 'true' : 'false');
             $this->addTextChildNode($pricing, 'sdi:cal_fee_ti', (float) $orderSupplier->cal_fee_ti);
 
             $supplier->appendChild($pricing);
         }
 
-        $supplier->appendChild($this->getProducts($order, $supplierId));
+        $supplier->appendChild($products);
 
         return $supplier;
     }
@@ -879,7 +909,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                         ->select('m.id as metadata_id, m.guid as metadata_guid')
                         ->select('od.id as od_id, od.guid as od_guid')
                         ->select('posp.guid as posp_guid, posp.pricing_id, posp.cfg_pct_category_supplier_discount, posp.ind_lbl_category_supplier_discount, posp.cal_amount_data_te, posp.cal_total_amount_te, posp.cal_total_amount_ti, posp.cal_total_rebate_ti')
-                        ->select('pospp.pricing_profile_id, pospp.pricing_profile_name, pospp.cfg_fixed_fee, pospp.cfg_surface_rate, pospp.cfg_min_fee, pospp.cfg_max_fee, pospp.cfg_pct_category_profile_discount, pospp.ind_lbl_category_profile_discount')
+                        ->select('pospp.pricing_profile_id, pospp.pricing_profile_name, pospp.cfg_fixed_fee_te, pospp.cfg_apply_vat, pospp.cfg_surface_rate, pospp.cfg_min_fee, pospp.cfg_max_fee, pospp.cfg_pct_category_profile_discount, pospp.ind_lbl_category_profile_discount')
                         ->select('pp.guid as pricing_profile_guid')
                         ->from('#__sdi_order_diffusion od')
                         ->innerJoin('#__sdi_order o ON o.id=od.order_id')
@@ -900,6 +930,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
                         ->where('od.productstate_id IN (' . implode(',', $this->states) . ')'));
 
         $orderProducts = $this->db->loadObjectList();
+
+        if ($orderProducts == null || count($orderProducts) == 0)
+            return false;
 
         foreach ($orderProducts as $orderProduct) {
             $products->appendChild($this->getProduct($order, $orderProduct));
@@ -997,7 +1030,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->addAttribute($profile, 'guid', $product->pricing_profile_guid);
 
         $this->addTextChildNode($profile, 'sdi:name', $product->pricing_profile_name);
-        $this->addTextChildNode($profile, 'sdi:cfg_fixed_fee', $product->cfg_fixed_fee);
+        $this->addTextChildNode($profile, 'sdi:cfg_fixed_fee_te', (float) $product->cfg_fixed_fee_te);
 
         $surfaceRate = $this->response->createElementNS(self::nsSdi, 'sdi:cfg_surface_rate');
         $this->addTextToNode($surfaceRate, $product->cfg_surface_rate);
@@ -1006,6 +1039,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
 
         $this->addTextChildNode($profile, 'sdi:cfg_min_fee', $product->cfg_min_fee);
         $this->addTextChildNode($profile, 'sdi:cfg_max_fee', $product->cfg_max_fee);
+        $this->addTextChildNode($profile, 'sdi:cfg_apply_vat', (bool) $product->cfg_apply_vat ? 'true' : 'false');
 
         return $profile;
     }
@@ -1043,9 +1077,10 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $properties = $this->response->createElementNS(self::nsSdi, 'sdi:properties');
 
         $query = $this->db->getQuery(true)
-                ->select('p.id, p.guid, ' . $this->db->quoteName('p.alias') . ' as palias, ' . $this->db->quoteName('pv.alias') . ' as pvalias')
+                ->select('p.id, p.guid, ' . $this->db->quoteName('p.alias') . ' as palias, ' . $this->db->quoteName('pv.alias') . ' as pvalias, ' . $this->db->quoteName('pt.value') . ' as ptype, ' . $this->db->quoteName('opv.propertyvalue') . ' as rawpropertyvalue')
                 ->from('#__sdi_property p')
                 ->innerJoin('#__sdi_propertyvalue pv ON pv.property_id=p.id')
+                ->innerJoin('#__sdi_sys_propertytype pt ON pt.id=p.propertytype_id')
                 ->innerJoin('#__sdi_order_propertyvalue opv ON opv.propertyvalue_id=pv.id')
                 ->where('opv.orderdiffusion_id=' . (int) $orderProduct->od_id);
 
@@ -1058,7 +1093,13 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
             $this->addAttribute($property, 'id', $propertydata->id);
             $this->addAttribute($property, 'alias', $propertydata->palias);
             $this->addAttribute($property, 'guid', $propertydata->guid);
-            $this->addTextChildNode($property, 'sdi:value', $propertydata->pvalias);
+
+            // Free text properties
+            if ($propertydata->ptype === 'text' || $propertydata->ptype === 'textarea') {
+                $this->addTextChildNode($property, 'sdi:value', $propertydata->rawpropertyvalue);
+            } else { // All other properties
+                $this->addTextChildNode($property, 'sdi:value', $propertydata->pvalias);
+            }
 
             $properties->appendChild($property);
         }
@@ -1430,7 +1471,7 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         $this->response = new DOMDocument('1.0', 'utf-8');
 
         $root = $this->response->createElementNS(self::nsSdi, 'sdi:success');
-        $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsiSetProduct);
+        $root->setAttributeNS(self::xmlnsXsi, 'xsi:schemaLocation', $this->xsdCentralSetProduct);
 
         $code = 200;
         $this->addTextChildNode($root, 'sdi:code', $code);

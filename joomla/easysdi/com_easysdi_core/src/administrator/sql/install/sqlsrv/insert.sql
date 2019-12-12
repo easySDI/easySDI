@@ -494,6 +494,11 @@ INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES 
 INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (19, N'layerdownload', 19, 1, N'Layer download');
 INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (20, N'layerorder', 20, 1, N'Layer order');
 INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (21, N'indoornavigation', 20, 1, N'Indoor navigation');
+INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (22, N'bangeocoder', 22, 1, N'Ban Geocoder');
+INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (23, N'fullscreen', 23, 1, N'Plein ecran');
+INSERT [#__sdi_sys_maptool] ([id], [alias], [ordering], [state], [name]) VALUES (24, N'locate', 24, 1, N'Localisez moi');
+
+
 SET IDENTITY_INSERT [#__sdi_sys_maptool] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_metadatastate] ON;
 INSERT [#__sdi_sys_metadatastate] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'inprogress');
@@ -581,6 +586,7 @@ INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (4,
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'rejectedbythirdparty');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'rejectedbysupplier');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'deleted');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'blocked');
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_productstorage] ON;

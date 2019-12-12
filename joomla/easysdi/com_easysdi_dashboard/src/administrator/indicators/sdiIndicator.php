@@ -1,18 +1,17 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_dashboard
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 abstract class sdiIndicator {
 
     /**
      * the filename for downloads
-     * @var strin 
+     * @var strin
      */
     protected $downloadFileName;
 
@@ -29,13 +28,13 @@ abstract class sdiIndicator {
      * @param   int $timestart start timestamp
      * @param   int $timeend end timestamp
      * @param   int $limit number of record to return, 0 = unlimited (default)
-     * @return  DATA object 
+     * @return  DATA object
      */
     abstract protected function _getData($organism, $timestart, $timeend, $limit = 0);
 
     /**
      * Return the indicator name for file download
-     * @return  string the indicator filename for downloads 
+     * @return  string the indicator filename for downloads
      */
     abstract protected function _getIndicatorFileName();
 
@@ -77,7 +76,7 @@ abstract class sdiIndicator {
      * @param   int $timestart start timestamp
      * @param   int $timeend end timestamp
      * @param   int $limit number of record to return, 0 = unlimited (default)
-     * @return  JSON object 
+     * @return  JSON object
      */
     private function getJson($organism, $timestart, $timeend, $limit = 0) {
         //encode indicator data
@@ -90,7 +89,7 @@ abstract class sdiIndicator {
      * @param   int $timestart start timestamp
      * @param   int $timeend end timestamp
      * @param   int $limit number of record to return, 0 = unlimited (default)
-     * @return  Data object 
+     * @return  Data object
      */
     private function getData($organism, $timestart, $timeend, $limit = 0) {
         $data = $this->_getData($organism, $timestart, $timeend, $limit);
@@ -107,7 +106,7 @@ abstract class sdiIndicator {
      * @param   int $timestart start timestamp
      * @param   int $timeend end timestamp
      * @param   int $limit number of record to return, 0 = unlimited (default)
-     * @return  CSV string 
+     * @return  CSV string
      */
     private function getCSV($organism, $timestart, $timeend) {
         return $this->buildCSV($this->getData($organism, $timestart, $timeend, 0));
@@ -119,7 +118,7 @@ abstract class sdiIndicator {
      * @param   int $timestart start timestamp
      * @param   int $timeend end timestamp
      * @param   int $limit number of record to return, 0 = unlimited (default)
-     * @return  PDF binary string 
+     * @return  PDF binary string
      */
     private function getPDF($organism, $timestart, $timeend) {
         $params = JComponentHelper::getParams('com_easysdi_dashboard');
@@ -169,7 +168,7 @@ abstract class sdiIndicator {
      * @return string an XHTML simple structure (1 title + 1 table)
      */
     private function buildXHTMLtable($do) {
-
+        $vFilterPdfIndex = array();
         $xhtml .= '<h1>' . $do->title . '</h1>';
         $xhtml .= '<h2>' . JText::_('COM_EASYSDI_DASHBOARD_PERIOD_TITLE_FROM')
                 . ' ' . $do->datefrom . ' '
@@ -180,16 +179,30 @@ abstract class sdiIndicator {
         $xhtml .= '<table>';
         $xhtml .= '  <thead>';
         $xhtml .= '      <tr>';
+        $vColIndex = 0;
         foreach ($do->columns_title as $title) {
-            $xhtml .='         <th>' . $title . '</th>';
+            // Check if col is filtered for PDF
+            $vColIndex++;
+            if (!strpos($title, "_EXPDF")) {
+                $vFilterPdfIndex[$vColIndex] = false;
+                $title = Easysdi_dashboardHelper::HeaderReplaceKeys($title);
+                $xhtml .= '         <th>' . $title . '</th>';
+            } else {
+                $vFilterPdfIndex[$vColIndex] = true;
+            }
         }
         $xhtml .= '      </tr>';
         $xhtml .= '  </thead>';
         $xhtml .= '  <tbody>';
         foreach ($do->data as $row) {
             $xhtml .= '      <tr>';
+            // Check if col is filtered for PDF
+            $vColIndex = 0;
             foreach ($row as $col) {
-                $xhtml .= '         <td>' . $col . '</td>';
+                $vColIndex++;
+                if ($vFilterPdfIndex[$vColIndex] == false) {
+                    $xhtml .= '         <td>' . $col . '</td>';
+                }
             }
             $xhtml .= '      </tr>';
         }
@@ -204,18 +217,45 @@ abstract class sdiIndicator {
      * @return string an CSV string
      */
     private function buildCSV($do) {
+        $vFilterCsvIndex = array();
         $delimiter = ';';
         $enclosure = '"';
         $eol = "\r\n";
 
+        // Construct colunms titles
+        $vColIndex = 0;
+        $vColumnsTitle = array();
+        foreach ($do->columns_title as $title) {
+            // Check if col is filtered for CSV
+            $vColIndex++;
+            if (!strpos($title, "_EXCSV")) {
+                $vFilterCsvIndex[$vColIndex] = false;
+                $title = Easysdi_dashboardHelper::HeaderReplaceKeys($title);
+                $vColumnsTitle[] = $title;
+            } else {
+                $vFilterCsvIndex[$vColIndex] = true;
+            }
+        }
+
+        // Export data
         $csv = '';
-        $csv .= $enclosure . implode($enclosure . $delimiter . $enclosure, $do->columns_title) . $enclosure;
+        $csv .= $enclosure . implode($enclosure . $delimiter . $enclosure, $vColumnsTitle) . $enclosure;
         $csv .= $eol;
         foreach ($do->data as $row) {
-            $csv .= $enclosure . implode($enclosure . $delimiter . $enclosure, $row) . $enclosure;
+            $vRowCells = array();
+            // Check if col is filtered for CSV
+            $vColIndex = 0;
+            foreach ($row as $col) {
+                $vColIndex++;
+                if ($vFilterCsvIndex[$vColIndex] == false) {
+                    $vRowCells[] = $col;
+                }
+            }
+            $csv .= $enclosure . implode($enclosure . $delimiter . $enclosure, $vRowCells) . $enclosure;
             $csv .= $eol;
         }
         return iconv("UTF-8", "ISO-8859-1//TRANSLIT", $csv);
     }
 
 }
+
