@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -36,7 +36,7 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
                                     <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_ORDERS_ORGANISM_FILTER'); ?></option>
                                     <?php foreach ($this->organisms as $organism): ?>
                                         <option value="<?php echo $organism->id; ?>" <?php
-                                        $filterName = (!empty($this->parent)) ? 'filter.userorganism.children' : 'filter.userorganism';
+                                        $filterName = (!empty($this->parent)) ? 'filter.organism.children' : 'filter.organism';
                                         if ($this->state->get('filter.organism') == $organism->id) : echo 'selected="selected"';
                                         endif;
                                         ?> ><?php echo $organism->name; ?></option>
@@ -109,4 +109,11 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/helpers/easysdi_shop.php
     </div>
 </div>
 
-<?php echo Easysdi_shopHelper::getAddToBasketModal(); ?>
+<?php
+echo Easysdi_shopHelper::getAddToBasketModal();
+
+//If OTP option is enabled, load the OTP Modal
+if ($this->params->get('otpactivated', 0) == 1) {
+    echo Easysdi_shopHelper::downloadOTPProductModal();
+}
+?>

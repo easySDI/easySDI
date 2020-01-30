@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -26,7 +26,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         //Return an http code 401
         $jinput = JFactory::getApplication()->input;
         $origin = $jinput->get('origin');
-        if (!JSession::checkToken('get') && $origin<>'map') {
+        if (JFactory::getSession()->isNew() && $origin <> 'map') {
             $this->stopOnUnAuthorize();
             return false;
         }
@@ -36,9 +36,9 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             $uri = JUri::getInstance()->toString();
             $u64 = base64_encode($uri);
             $url = 'index.php?option=com_users&view=login&return=' . $u64;
-            
+
             if ($jinput->get('tmpl'))
-                $url .= "&tmpl=".$jinput->get('tmpl');
+                $url .= "&tmpl=" . $jinput->get('tmpl');
         }
         $this->setMessage(JText::_($message), $type);
         $this->setRedirect(JRoute::_($url, false));
@@ -46,6 +46,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
     }
 
     private function stopOnUnAuthorize() {
+        header('WWW-Authenticate: Basic realm="easySDI download login"');
         header('HTTP/1.1 401 Unauthorized', true, 401);
         die();
     }
@@ -169,15 +170,16 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
 
 
         $diffusion = $this->common();
-        if ($diffusion === false)
+        if ($diffusion === false) {
             return false;
+        }
 
         $layout = !empty($diffusion->perimeter_id) ? 'grid' : 'default';
 
         try {
             //Record the download for statistic purpose        
             $columns = array('diffusion_id', 'user_id', 'executed');
-            $userid = ($this->sdiUser->isEasySDI ? $this->sdiUser->id : null);
+            $userid = ($this->sdiUser->isEasySDI ? $this->sdiUser->id : 'NULL');
             $values = array($diffusion->id, $userid, $db->quote(date("Y-m-d H:i:s")));
             $query = $db->getQuery(true)
                     ->insert($db->quoteName('#__sdi_diffusion_download'))
@@ -253,7 +255,6 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
                     echo $file;
                     die();
                 }
-                
             } elseif (!empty($diffusion->fileurl)) { //Download remote file
                 if (!$this->call($diffusion->fileurl, $diffusion->name)) {
                     //Return error to client
@@ -303,12 +304,12 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
      * @param type $diffusion
      */
     private function call($url, $name) {
-        if (JSession::checkToken('get')) { //Call from Joomla
+        if (!JFactory::getSession()->isNew()) { //Call from Joomla
             $curlHelper = new CurlHelper(true);
-        }else{//Call from tierce client
+        } else {//Call from tierce client
             $curlHelper = new CurlHelper(false);
         }
-        
+
         $curldata['url'] = $url;
         $pos = strrpos($url, '.');
         $extension = ($pos) ? substr($url, $pos) : null;

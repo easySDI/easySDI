@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -797,7 +797,7 @@ class cswmetadata {
                 endif;
 
                 $html .= '
-                    <div class="control-group">
+                    <div class="control-group" id="sdi-property-group-' . $property->property_id . '">
                         <div class="control-label"><label id="' . $property->property_id . '-lbl" for="' . $property->property_id . '" class="hasTip" title="">' . $property->propertyname . $labelrequired . '</label></div>
                 ';
 
@@ -962,7 +962,7 @@ class cswmetadata {
 
         //set pricing organism
         $queryOrganism = $this->db->getQuery(true)
-                ->select('id, internal_free, fixed_fee_ti, data_free_fixed_fee')
+                ->select('id, internal_free, fixed_fee_te, data_free_fixed_fee, fixed_fee_apply_vat')
                 ->from('#__sdi_organism')
                 ->where('id = ' . (int) $this->resource->organism_id);
         $this->db->setQuery($queryOrganism);
@@ -970,7 +970,8 @@ class cswmetadata {
 
         $pricingOrg = $domDocPricing->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_PricingOrganism');
         $pricingOrg->setAttribute("internal_free", $organism->internal_free == 1 ? 'true' : 'false');
-        $pricingOrg->setAttribute("fixed_fee_ti", $organism->fixed_fee_ti);
+        $pricingOrg->setAttribute("fixed_fee_te", $organism->fixed_fee_te);
+        $pricingOrg->setAttribute("fixed_fee_apply_vat", $organism->fixed_fee_apply_vat == 1 ? 'true' : 'false');
         $pricingOrg->setAttribute("data_free_fixed_fee", $organism->data_free_fixed_fee == 1 ? 'true' : 'false');
 
         //set category rebates for organism
@@ -996,7 +997,7 @@ class cswmetadata {
         //if has a pricing profile
         if ($this->diffusion->pricing_id == Easysdi_shopHelper::PRICING_FEE_WITH_PROFILE) {
             $queryPricingProfile = $this->db->getQuery(true)
-                    ->select('id, alias, name, fixed_fee, surface_rate, min_fee, max_fee')
+                    ->select('id, alias, name, fixed_fee, surface_rate, min_fee, max_fee, apply_vat')
                     ->from('#__sdi_pricing_profile')
                     ->where('id = ' . (int) $this->diffusion->pricing_profile_id);
             $this->db->setQuery($queryPricingProfile);
@@ -1010,6 +1011,7 @@ class cswmetadata {
                 $pricingProfileNode->setAttribute("surface_rate", $pricingProfile->surface_rate);
                 $pricingProfileNode->setAttribute("min_fee", $pricingProfile->min_fee);
                 $pricingProfileNode->setAttribute("max_fee", $pricingProfile->max_fee);
+                $pricingProfileNode->setAttribute("apply_vat", $pricingProfile->apply_vat == 1 ? 'true' : 'false');
 
                 //get category rebates from profile
                 $queryProfileRebates = $this->db->getQuery(true)

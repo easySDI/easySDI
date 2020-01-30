@@ -1,6 +1,6 @@
 var easySDImap;
 
-jQuery(document).ready(function ($) {
+jQuery(document).ready(function($) {
 
     var script_path = 'libs/easySDI_leaflet.pack/easySDI_leaflet.pack.min.js';
 
@@ -25,17 +25,17 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    var isset = function (variable) {
-        return typeof (variable) != "undefined" && variable !== null;
+    var isset = function(variable) {
+        return typeof(variable) != "undefined" && variable !== null;
     };
 
-    var addIfSet = function (obj, name, value) {
+    var addIfSet = function(obj, name, value) {
         if (isset(value)) {
             obj[name] = value;
         }
     };
 
-    var byOrdering = function (a, b) {
+    var byOrdering = function(a, b) {
         {
             var aOrder = isset(a.ordering) ? parseInt(a.ordering) : 0;
             var bOrder = isset(b.ordering) ? parseInt(b.ordering) : 0;
@@ -43,12 +43,12 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    var projectedToLatLng = function (y, x, crs) {
+    var projectedToLatLng = function(y, x, crs) {
         var projected = L.point(y, x).divideBy(6378137); //6378137 sphere radius
         return crs.projection.unproject(projected);
     };
 
-    var LatLngFromString = function (string, crs) {
+    var LatLngFromString = function(string, crs) {
 
         var v = string.split(',');
         var nb_coords = v.length / 2;
@@ -188,10 +188,10 @@ jQuery(document).ready(function ($) {
             for (var i = 0; i < xml.childNodes.length; i++) {
                 var item = xml.childNodes.item(i);
                 var nodeName = item.nodeName;
-                if (typeof (obj[nodeName]) == "undefined") {
+                if (typeof(obj[nodeName]) == "undefined") {
                     obj[nodeName] = xmlToJson(item);
                 } else {
-                    if (typeof (obj[nodeName].push) == "undefined") {
+                    if (typeof(obj[nodeName].push) == "undefined") {
                         var old = obj[nodeName];
                         obj[nodeName] = [];
                         obj[nodeName].push(old);
@@ -206,14 +206,14 @@ jQuery(document).ready(function ($) {
 
 
 
-    easymapServiceConnector = function (proxy) {
+    easymapServiceConnector = function(proxy) {
 
         var _this = {
             services: {},
             proxy: proxy,
         };
 
-        _this.addService = function (data) {
+        _this.addService = function(data) {
             if (!isset(_this.services[data.servicealias])) {
                 _this.services[data.servicealias] = {
                     serviceconnector: data.serviceconnector,
@@ -229,8 +229,8 @@ jQuery(document).ready(function ($) {
 
 
 
-        _this.getAllServices = function (map) {
-            jQuery.each(map.contextMapData.services, function (i, s) {
+        _this.getAllServices = function(map) {
+            jQuery.each(map.contextMapData.services, function(i, s) {
                 //for (var i in map.contextMapData.services) {
                 //var s = map.contextMapData.services[i];
                 var ns = _this.addService(s);
@@ -241,7 +241,7 @@ jQuery(document).ready(function ($) {
         };
 
 
-        _this.getServiceLayers = function (servicealias) {
+        _this.getServiceLayers = function(servicealias) {
             var service = _this.services[servicealias];
 
             if (service.serviceconnector == 'WMS' || service.serviceconnector == 'WMTS') {
@@ -251,25 +251,25 @@ jQuery(document).ready(function ($) {
 
             switch (service.serviceconnector) {
 
-            case "Google":
-                return ['ROADMAP', 'SATELLITE', 'HYBRID', 'TERRAIN'];
-                break;
+                case "Google":
+                    return ['ROADMAP', 'SATELLITE', 'HYBRID', 'TERRAIN'];
+                    break;
 
-            case "Bing":
-                //return ['Aerial', 'AerialWithLabels', 'Road', 'collinsBart', 'ordnanceSurvey'];
-                break;
+                case "Bing":
+                    //return ['Aerial', 'AerialWithLabels', 'Road', 'collinsBart', 'ordnanceSurvey'];
+                    break;
 
-            case "OSM":
-                return ['mapnik'];
-                break;
+                case "OSM":
+                    return ['mapnik'];
+                    break;
 
-            default:
-                return false;
+                default:
+                    return false;
             }
         };
 
 
-        var loadCapabilities = function (servicealias) {
+        var loadCapabilities = function(servicealias) {
             var service = _this.services[servicealias];
             var url = service.serviceurl + '?service=' + service.serviceconnector + '&request=GetCapabilities';
             if (isset(_this.proxy)) url = proxy + encodeURIComponent(url);
@@ -280,7 +280,7 @@ jQuery(document).ready(function ($) {
                 type: "GET",
                 url: url,
                 dataType: "text",
-                success: function (xml) {
+                success: function(xml) {
                     service.loading = false;
                     if (xml != null) {
                         service.getCapabilitiesXML = xml;
@@ -290,13 +290,13 @@ jQuery(document).ready(function ($) {
                     var evt = new CustomEvent('getCapabilities', service);
                     window.dispatchEvent(evt);
                 }
-            }).fail(function () {
+            }).fail(function() {
                 service.getCapabilities = false;
             });
         };
 
 
-        _this.getCapabilities = function (servicealias) {
+        _this.getCapabilities = function(servicealias) {
             var service = _this.services[servicealias];
             if (isset(service.getCapabilities)) return service.getCapabilities;
             if (!isset(service.loading))
@@ -307,17 +307,17 @@ jQuery(document).ready(function ($) {
 
 
 
-        var getLayers = function (capabilities) {
+        var getLayers = function(capabilities) {
 
 
             if (capabilities == null) return null;
             var res = [];
 
-            var recurLayer = function (layer, pretitle, niv) {
+            var recurLayer = function(layer, pretitle, niv) {
                 if (!isset(niv)) niv = 0;
                 if (!isset(pretitle)) pretitle = '';
                 if (isset(layer.Layer)) {
-                    jQuery.each(layer.Layer, function (i, l) {
+                    jQuery.each(layer.Layer, function(i, l) {
                         recurLayer(l, (niv > 1) ? pretitle + layer.Title + ' ' : pretitle, niv + 1);
                     });
                 } else {
@@ -335,10 +335,10 @@ jQuery(document).ready(function ($) {
             return res;
         }
 
-        var _getLayerData = function (capabilities, layername) {
+        var _getLayerData = function(capabilities, layername) {
             var rlayer = false;
             var layers = getLayers(capabilities);
-            jQuery.each(layers, function (i, lay) {
+            jQuery.each(layers, function(i, lay) {
                 //for (var i in layers) {
                 //var lay = layers[i];
                 var layname;
@@ -352,12 +352,12 @@ jQuery(document).ready(function ($) {
             return rlayer;
         };
 
-        _this.getLayerData = function (capabilities, layername) {
+        _this.getLayerData = function(capabilities, layername) {
             return _getLayerData(capabilities, layername);
         }
 
 
-        _this.getLegendURL = function (layer) {
+        _this.getLegendURL = function(layer) {
             if (layer.data.serviceconnector != 'WMS' && layer.data.serviceconnector != 'WMTS') return false;
             var cap = _this.getCapabilities(layer.data.servicealias, layer);
             if (!isset(cap) || typeof cap !== 'object') return null;
@@ -376,7 +376,7 @@ jQuery(document).ready(function ($) {
             return false;
         };
 
-        _this.getLegendGraphic = function (layer, map) {
+        _this.getLegendGraphic = function(layer, map) {
             if (layer.data.serviceconnector != 'WMS' && layer.data.serviceconnector != 'WMTS') return false;
             var service = _this.services[layer.data.servicealias];
             var crs_code = map.contextMapData.srs;
@@ -386,7 +386,7 @@ jQuery(document).ready(function ($) {
             return url;
         }
 
-        _this.getAttribution = function (layer) {
+        _this.getAttribution = function(layer) {
             if (isset(layer.Layer)) return _this.getAttribution(layer.Layer[0]);
             if (!isset(layer.Attribution)) return null;
             var html = layer.Attribution['Title'];
@@ -397,14 +397,14 @@ jQuery(document).ready(function ($) {
             return html;
         }
 
-        var updateServiceName = function (serviceAlias) {
+        var updateServiceName = function(serviceAlias) {
             var cap = _this.services[serviceAlias].getCapabilities;
             if (isset(cap.Service))
                 _this.services[serviceAlias].name = cap.Service.Title;
         }
 
 
-        _this.getBBox = function (layer, map) {
+        _this.getBBox = function(layer, map) {
             if (layer.data.serviceconnector != 'WMS' && layer.data.serviceconnector != 'WMTS') return false;
             var cap = _this.getCapabilities(layer.data.servicealias, layer);
             if (!isset(cap) || typeof cap !== 'object') return null;
@@ -438,27 +438,34 @@ jQuery(document).ready(function ($) {
         };
 
 
-        var _getFeatureUrl = function (capabilities, layer, map, loc) {
+        var _getFeatureUrl = function(capabilities, layer, map, loc) {
 
             var wmsParams = {
                 request: 'GetFeatureInfo',
                 query_layers: layer.data.layername,
                 layers: layer.data.layername,
                 info_format: '',
+				version:'1.3.0',
                 feature_count: 10,
                 X: Math.round(loc.x),
                 Y: Math.round(loc.y)
             };
 
 
-            jQuery.each(capabilities.Capability.Request.GetFeatureInfo.Format, function (k, format) {
+            jQuery.each(capabilities.Capability.Request.GetFeatureInfo.Format, function(k, format) {
                 if (format == 'text/plain' && wmsParams.info_format == '') wmsParams.info_format = format;
                 if (format == 'text/html') wmsParams.info_format = format;
+				if (format == '') wmsParams.info_format = 'text/html';
             });
+			
+			if (wmsParams.info_format == ''){
+				wmsParams.info_format = 'text/html';
+			}
 
             var bounds = map.getBounds();
             var size = map.getSize();
-            var wmsVersion = parseFloat(layer.wmsParams.version);
+            var wmsVersion = layer.wmsParams.version;
+			wmsParams.version = wmsVersion;
             var crs = map.options.crs || map.options.crs;
             var projectionKey = wmsVersion >= 1.3 ? 'crs' : 'srs';
             var nw = crs.project(bounds.getNorthWest());
@@ -470,9 +477,7 @@ jQuery(document).ready(function ($) {
             };
             params[projectionKey] = crs.code; //'CRS:84';
             params.bbox = (
-                wmsVersion >= 1.3 && crs === L.CRS.EPSG4326 ?
-                [se.y, nw.x, nw.y, se.x] :
-                [nw.x, se.y, se.x, nw.y]
+                wmsVersion >= 1.3 && crs === L.CRS.EPSG4326 ? [se.y, nw.x, nw.y, se.x] : [nw.x, se.y, se.x, nw.y]
             ).join(',');
 
             L.extend(wmsParams, params);
@@ -485,7 +490,7 @@ jQuery(document).ready(function ($) {
 
 
 
-        _this.getQueryable = function (layer) {
+        _this.getQueryable = function(layer) {
             if (layer.data.serviceconnector != 'WMS' && layer.data.serviceconnector != 'WMTS') return false;
             var cap = _this.getCapabilities(layer.data.servicealias, layer);
             if (!isset(cap) || typeof cap !== 'object') return null;
@@ -502,7 +507,7 @@ jQuery(document).ready(function ($) {
         };
 
 
-        _this.getFeatureUrl = function (layer, map, loc) {
+        _this.getFeatureUrl = function(layer, map, loc) {
             if (!isset(layer)) return false;
             if (layer.data.serviceconnector != 'WMS' && layer.data.serviceconnector != 'WMTS') return false;
             var cap = _this.getCapabilities(layer.data.servicealias, layer);
@@ -521,7 +526,7 @@ jQuery(document).ready(function ($) {
 
 
 
-    easySDImap = function (obj, data, options) {
+    easySDImap = function(obj, data, options) {
 
         var params = {
 
@@ -568,7 +573,7 @@ jQuery(document).ready(function ($) {
 
         _easySDImap.params = params;
 
-        var pushTool = function (alias, control, params) {
+        var pushTool = function(alias, control, params) {
             _easySDImap.tools.push({
                 alias: alias,
                 control: control,
@@ -577,7 +582,7 @@ jQuery(document).ready(function ($) {
         }
 
 
-        var init = function () {
+        var init = function() {
 
             container = obj;
 
@@ -585,7 +590,7 @@ jQuery(document).ready(function ($) {
             container.height(h * 0.95);
 
             // order mapdata arrays
-            contextMapData.groups.sort(byOrdering);
+            //contextMapData.groups.sort(byOrdering);
             contextMapData.services.sort(byOrdering);
 
             _easySDImap.contextMapData = contextMapData;
@@ -601,6 +606,18 @@ jQuery(document).ready(function ($) {
             boundsLatLng = mapOptions.maxBounds;
 
             map = L.map(container[0], mapOptions);
+
+
+
+            map.on('zoomstart', function(event) {
+                var id = jQuery("input[name='baselayer']:checked").val();
+                for (var key in baseLayers) {
+                    if (baseLayers[key]._leaflet_id == id) {
+                        _easySDImap.mapObj.options.maxZoom = baseLayers[key].options.maxZoom;
+                    }
+                }
+            });
+
             _easySDImap.mapObj = map;
 
             var minZoom = map.getBoundsZoom(mapOptions.maxBounds);
@@ -619,7 +636,7 @@ jQuery(document).ready(function ($) {
             // initialisation tools Hors params
             pushTool('attribution', addTool('attribution'));
 
-            jQuery.each(contextMapData.tools, function (i, t) {
+            jQuery.each(contextMapData.tools, function(i, t) {
                 //for (var i in contextMapData.tools) {
                 //var t = contextMapData.tools[i];
                 var ntool = addTool(t.alias, t.params);
@@ -628,7 +645,19 @@ jQuery(document).ready(function ($) {
             });
 
 
+            /*
+            fixe display print-left
+            var printProvider = L.print.provider({
+                method: 'GET',
+                url: 'http://lebouzin/print-servlet/pdf',
+                autoLoad: true,
+                dpi: 90
+            });*/
 
+            /*var printControl = L.control.print({
+                provider: printProvider
+            });*/
+            //map.addControl(printControl);
 
 
 
@@ -639,18 +668,33 @@ jQuery(document).ready(function ($) {
                 }).addTo(map); // creation du controller de couches
             }
 
-
+            var layerorder = 1000;
+            var reversegroup = "";
             // creation de couches
-            jQuery.each(contextMapData.groups, function (g, group) {
-                //for (var g in contextMapData.groups) {
-                //var group = contextMapData.groups[g];
+            jQuery.each(contextMapData.groups, function(g, group) {
                 var overlay = (group.isbackground != '1');
                 if (isset(group.layers)) {
-                    jQuery.each(group.layers, function (l, layer) {
-                        //for (var l = group.layers.length - 1; l >= 0; l--) {
-                        //var layer = group.layers[l];
+                    if (group.isbackground == 1) {
+                        var has_default = false;
+                        for (var index = 0; index < group.layers.length; index++) {
+                            var element = group.layers[index];
+                            if (element.id == data.default_backgroud_layer) {
+                                has_default = true;
+                            }
+                        }
+                        if (!has_default) {
+                            data.default_backgroud_layer = group.layers[0].id
+                        }
+
+                        reversegroup = group.layers;
+                    } else {
+                        reversegroup = group.layers.reverse();
+                    }
+                    jQuery.each(reversegroup, function(l, layer) {
                         var show = (layer.isdefaultvisible == '1');
+                        layer.ordering = layerorder;
                         addLayer(layer, overlay, show, group.name);
+                        layerorder--;
                     });
                 }
             });
@@ -662,13 +706,21 @@ jQuery(document).ready(function ($) {
                         className: 'addedGeoJsonLayer'
                     }
                 }); // ajouter style
-                //addOverlay(l, 'titre groupe', 'titre');
                 overlays['textareaGeoJson'] = ld;
                 ld.addTo(map);
                 geoJsonDataObj.remove();
             }
 
-            if (isset(lastBaseLayer)) lastBaseLayer.addTo(map);
+
+
+            if (isset(lastBaseLayer)) {
+                if (lastBaseLayer.data.servicealias == "google") {
+                    var gmap_layer = new L.Google(lastBaseLayer.data.layername);
+                    map.addLayer(gmap_layer);
+                } else {
+                    lastBaseLayer.addTo(map);
+                }
+            }
 
             obj.addClass('easySDImap');
 
@@ -698,7 +750,7 @@ jQuery(document).ready(function ($) {
 
         };
 
-        var updateMapFromContext = function () {
+        var updateMapFromContext = function() {
             //update map context from params
             if (isset(_easySDImap.params.context)) {
                 if (typeof _easySDImap.params.context != "object") {
@@ -715,14 +767,14 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        _easySDImap.setBBox = function (bbox) {
+        _easySDImap.setBBox = function(bbox) {
             var url_bbox = L.latLngBounds(LatLngFromString(bbox, mapOptions.crs));
             map.fitBounds(url_bbox);
         }
 
-        var hasTool = function (toolname) {
+        var hasTool = function(toolname) {
             var rtool = false;
-            jQuery.each(_easySDImap.contextMapData.tools, function (t, tool) {
+            jQuery.each(_easySDImap.contextMapData.tools, function(t, tool) {
                 //for (var t in _easySDImap.contextMapData.tools) {
                 //var tool = _easySDImap.contextMapData.tools[t];
                 if (tool.alias == toolname) rtool = tool;
@@ -730,9 +782,9 @@ jQuery(document).ready(function ($) {
             return rtool;
         };
 
-        _easySDImap.getTool = function (toolname) {
+        _easySDImap.getTool = function(toolname) {
             var rtool = false;
-            jQuery.each(_easySDImap.tools, function (t, tool) {
+            jQuery.each(_easySDImap.tools, function(t, tool) {
                 //for (var t in _easySDImap.tools) {
                 // var tool = _easySDImap.tools[t];
                 if (tool.alias == toolname) rtool = tool.control;
@@ -741,104 +793,115 @@ jQuery(document).ready(function ($) {
         }
 
 
-        var addTool = function (toolname, params) {
-            //console.log(toolname);
+        var addTool = function(toolname, params) {
             switch (toolname) {
-            case 'googleearth':
-                return false;
-                break;
+                case 'googleearth':
+                    return false;
+                    break;
 
-            case 'navigation':
-                return initNavigation(params);
-                break;
+                case 'navigation':
+                    return initNavigation(params);
+                    break;
 
-            case 'zoom':
-                return initZoom(params);
-                break;
+                case 'zoom':
+                    return initZoom(params);
+                    break;
 
-            case 'navigationhistory':
-                return false;
-                break;
+                case 'navigationhistory':
+                    return false;
+                    break;
 
-            case 'zoomtoextent':
-                return false;
-                break;
+                case 'zoomtoextent':
+                    return false;
+                    break;
 
-            case 'measure':
-                return initMeasure(params);
-                break;
+                case 'measure':
+                    return initMeasure(params);
+                    break;
+                    //ICI
+                case 'googlegeocoder':
+                    return initGeocoderGoogle('google', params);
+                    break;
 
-            case 'googlegeocoder':
-                return initGeocoder('google', params);
-                break;
+                case 'bangeocoder':
+                    return initGeocoderBan('ban', params);
+                    break;
 
-            case 'print':
-                return initPrint(params);
-                break;
+                case 'fullscreen':
+                    return initFullscreen(params);
+                    break;
 
-            case 'addlayer':
-                return false;
-                break;
+                case 'locate':
+                    return initLocate(params);
+                    break;
 
-            case 'removelayer':
-                return false;
-                break;
+                case 'print':
+                    return initPrint(params);
+                    break;
 
-            case 'layerproperties':
-                return false;
-                break;
+                case 'addlayer':
+                    return false;
+                    break;
 
-            case 'getfeatureinfo':
-                return false;
-                break;
+                case 'removelayer':
+                    return false;
+                    break;
 
-            case 'layertree':
-                return initLayertree(params);
-                break;
+                case 'layerproperties':
+                    return false;
+                    break;
 
-            case 'scaleline':
-                return initScaleline(params);;
-                break;
+                case 'getfeatureinfo':
+                    return false;
+                    break;
 
-            case 'mouseposition':
-                return false;
-                break;
+                case 'layertree':
+                    return initLayertree(params);
+                    break;
 
-            case 'wfslocator':
-                return false;
-                break;
+                case 'scaleline':
+                    return initScaleline(params);;
+                    break;
 
-            case 'searchcatalog':
-                return false;
-                break;
+                case 'mouseposition':
+                    return false;
+                    break;
 
-            case 'layerdetailsheet':
-                return false;
-                break;
+                case 'wfslocator':
+                    return false;
+                    break;
 
-            case 'layerdownload':
-                return false;
-                break;
+                case 'searchcatalog':
+                    return false;
+                    break;
 
-            case 'layerorder':
-                return false;
-                break;
+                case 'layerdetailsheet':
+                    return false;
+                    break;
 
-            case 'attribution':
-                return initAttribution(params);
-                break;
+                case 'layerdownload':
+                    return false;
+                    break;
+
+                case 'layerorder':
+                    return false;
+                    break;
+
+                case 'attribution':
+                    return initAttribution(params);
+                    break;
 
 
 
-            default:
-                console.info('ERROR Tool ' + toolname + ' non géré');
+                default:
+                    console.info('ERROR Tool ' + toolname + ' non géré');
             }
 
 
 
         };
 
-        var setCRS = function (srs) {
+        var setCRS = function(srs) {
             if (srs == 'EPSG:3857') return L.CRS.EPSG3857;
             if (srs == 'EPSG:4326') return L.CRS.EPSG4326;
             if (srs == 'EPSG:3395') return L.CRS.EPSG3395;
@@ -846,9 +909,8 @@ jQuery(document).ready(function ($) {
             return null;
         };
 
-        var getOloptions = function (opt) {
+        var getOloptions = function(opt) {
             if (!isset(opt) || opt == '') return [];
-            //console.log(opt);
             var asOLoptions = JSON.parse(opt); //opt.replace('OpenLayers.', '_ImportOL.');
             //eval('var asOLoptions= {' + opt + '};');
             return asOLoptions;
@@ -856,18 +918,18 @@ jQuery(document).ready(function ($) {
         };
 
         var _ImportOL = {};
-        _ImportOL.Bounds = function (b1, b2, b3, b4) {
+        _ImportOL.Bounds = function(b1, b2, b3, b4) {
             var bounds = LatLngFromString(b1 + ',' + b2 + ',' + b3 + ',' + b4, mapOptions.crs.crs);
             return L.latLngBounds(bounds);
         };
 
-        var getLayersStatus = function () {
+        var getLayersStatus = function() {
             var res = {
                 baseLayers: [],
                 overlays: []
             };
 
-            jQuery.each(baseLayers, function (i, baseLayer) {
+            jQuery.each(baseLayers, function(i, baseLayer) {
                 //for (var i in baseLayers) {
                 res.baseLayers.push({
                     layer: i,
@@ -875,7 +937,7 @@ jQuery(document).ready(function ($) {
                 });
             });
 
-            jQuery.each(overlays, function (g, overlay) {
+            jQuery.each(overlays, function(g, overlay) {
                 //for (var g in overlays) {
                 res.overlays.push({
                     layer: g,
@@ -887,7 +949,7 @@ jQuery(document).ready(function ($) {
         };
 
 
-        var getContext = function () {
+        var getContext = function() {
             var bbox = map.getBounds().toBBoxString();
             return {
                 bbox: bbox,
@@ -896,7 +958,7 @@ jQuery(document).ready(function ($) {
         };
 
 
-        var setContext = function (c) {
+        var setContext = function(c) {
             var coords = c.bbox.split(',');
             coords = [
                 [coords[1], coords[0]],
@@ -904,7 +966,7 @@ jQuery(document).ready(function ($) {
             ];
             map.fitBounds(coords);
 
-            jQuery.each(c.layers.baseLayers, function (i, contextBaseLayer) {
+            jQuery.each(c.layers.baseLayers, function(i, contextBaseLayer) {
 
                 if (isset(baseLayers[contextBaseLayer])) {
                     if (contextBaseLayer.status) {
@@ -916,7 +978,7 @@ jQuery(document).ready(function ($) {
                 }
             });
 
-            jQuery.each(c.layers.overlays, function (i2, contextOverlay) {
+            jQuery.each(c.layers.overlays, function(i2, contextOverlay) {
                 if (isset(overlays[contextOverlay.layer])) {
                     if (contextOverlay.status) {
                         map.addLayer(overlays[contextOverlay.layer]);
@@ -931,36 +993,36 @@ jQuery(document).ready(function ($) {
 
 
 
-        var addLayer = function (data, overlay, show, group) {
+        var addLayer = function(data, overlay, show, group) {
             //console.info(data.name+' ['+data.serviceconnector+']');
             serviceConnector.addService(data);
 
             var l = null;
             switch (data.serviceconnector) {
 
-            case 'WMS':
-                l = addWMS(data);
-                break;
+                case 'WMS':
+                    l = addWMS(data);
+                    break;
 
-            case 'WMTS':
-                l = addWMTS(data);
-                break;
+                case 'WMTS':
+                    l = addWMTS(data);
+                    break;
 
-            case 'OSM':
-                l = addOSM(data);
-                break;
+                case 'OSM':
+                    l = addOSM(data);
+                    break;
 
-            case 'Google':
-                l = addGoogle(data);
-                break;
+                case 'Google':
+                    l = addGoogle(data);
+                    break;
 
-            case 'Bing':
-                l = addBing(data);
-                break;
+                case 'Bing':
+                    l = addBing(data);
+                    break;
 
-            default:
-                console.error('ERROR ' + data.serviceconnector + ' non géré');
-                return false;
+                default:
+                    console.error('ERROR ' + data.serviceconnector + ' non géré');
+                    return false;
             }
 
 
@@ -985,7 +1047,7 @@ jQuery(document).ready(function ($) {
             return l;
         };
 
-        var setBaseLayerGroup = function (group) {
+        var setBaseLayerGroup = function(group) {
             baseLayerGroup = group;
             if (isset(controlLayer.setBaseGroupName))
                 controlLayer.setBaseGroupName(baseLayerGroup);
@@ -993,7 +1055,7 @@ jQuery(document).ready(function ($) {
 
 
 
-        var addBaseLayer = function (layer, name) {
+        var addBaseLayer = function(layer, name) {
             if (!isset(layer.data)) layer.data = {};
             if (isset(layer.setZIndex)) {
                 layer.setZIndex(1);
@@ -1002,11 +1064,14 @@ jQuery(document).ready(function ($) {
             baseLayers[name] = layer;
             if (isset(controlLayer))
                 controlLayer.addBaseLayer(layer, name);
-            lastBaseLayer = layer;
+            if (layer.data.id === contextMapData.default_backgroud_layer) {
+                lastBaseLayer = layer;
+            }
+
         };
         _easySDImap.addBaseLayer = addBaseLayer;
 
-        var addOverlay = function (layer, group, name) {
+        var addOverlay = function(layer, group, name) {
             if (!isset(layer.data)) layer.data = {};
             overlays[name] = layer;
             if (isset(controlLayer))
@@ -1015,13 +1080,13 @@ jQuery(document).ready(function ($) {
         _easySDImap.addOverlay = addOverlay;
 
 
-        var loadGeojson = function (url, group, name) {
+        var loadGeojson = function(url, group, name) {
             if (!isset(group)) group = url;
             if (!isset(name)) name = group;
-            jQuery.getJSON(url, function (geodata) {
+            jQuery.getJSON(url, function(geodata) {
 
                 var geojson_layer = L.Proj.geoJson(geodata, {
-                    style: function (feature) {
+                    style: function(feature) {
                         var options = {
                             weight: 2,
                             opacity: 1
@@ -1029,10 +1094,12 @@ jQuery(document).ready(function ($) {
                         options.maxZoom = 50
                         return options;
                     },
-                    onEachFeature: function (feature, tlayer) {
-                        tlayer.on('click', function (e) {
+                    onEachFeature: function(feature, tlayer) {
+
+                        tlayer.on('click', function(e) {
+
                             var html = '<table class="table table-bordered table-striped" style="display: block; max-height: 400px; overflow: auto">';
-                            jQuery.each(feature.properties, function (k, v) {
+                            jQuery.each(feature.properties, function(k, v) {
                                 html += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
                             })
                             html += '</table>';
@@ -1047,7 +1114,7 @@ jQuery(document).ready(function ($) {
 
                 addOverlay(geojson_layer, group, name);
                 _easySDImap.mapObj.fitBounds(geojson_layer.getBounds());
-                setTimeout(function () {
+                setTimeout(function() {
                     _easySDImap.mapObj.addLayer(geojson_layer);
                 }, 10);
 
@@ -1057,7 +1124,7 @@ jQuery(document).ready(function ($) {
         _easySDImap.loadGeojson = loadGeojson;
 
 
-        var changeIGNkey = function (url, key) {
+        var changeIGNkey = function(url, key) {
             if (isset(key))
                 url = url.replace(/\.ign\.fr\/[\w]*\/geoportail\//gi, '.ign.fr/' + key + '/geoportail/');
             return url;
@@ -1065,7 +1132,7 @@ jQuery(document).ready(function ($) {
 
 
 
-        var addWMS = function (data) {
+        var addWMS = function(data) {
 
             var url = data.serviceurl;
             url = changeIGNkey(url, params.ignkey);
@@ -1077,8 +1144,10 @@ jQuery(document).ready(function ($) {
 
             addIfSet(options, 'opacity', parseFloat(data.opacity));
             options.zIndex = 10;
+
             addIfSet(options, 'zIndex', parseInt(data.ordering) + 10);
             addIfSet(options, 'zIndex', data.zIndex);
+
 
             addIfSet(options, 'format', data.format);
             addIfSet(options, 'attribution', data.attribution);
@@ -1103,15 +1172,18 @@ jQuery(document).ready(function ($) {
             addIfSet(options, 'maxZoom', o.maxZoom);
 
 
-
             options.transparent = true;
             data.TileLayer_options = options;
-
-            return new L.tileLayer.wms(url, options);
+            options.pane = map.getPanes().tilePane;
+            if (parseInt(data.istiled)) {
+                return new L.tileLayer.wms(url, options);
+            } else {
+                return new L.nonTiledLayer.wms(url, options);
+            }
         };
 
 
-        var addWMTS = function (data) {
+        var addWMTS = function(data) {
 
             var url = data.serviceurl;
             url = changeIGNkey(url, params.ignkey);
@@ -1151,7 +1223,7 @@ jQuery(document).ready(function ($) {
 
 
             if (isset(options.topLeftCorner)) {
-                jQuery.each(options.matrixIds, function (m, matrixId) {
+                jQuery.each(options.matrixIds, function(m, matrixId) {
                     //for (var m in options.matrixIds) {
                     options.matrixIds[m] = {
                         //identifier: options.matrixIds[m],
@@ -1175,20 +1247,21 @@ jQuery(document).ready(function ($) {
 
 
 
-        var addOSM = function (data) {
+        var addOSM = function(data) {
             return L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             });
         };
 
 
-        var addGoogle = function (data) {
-            if (typeof (google) !== 'undefined')
+        var addGoogle = function(data) {
+            if (typeof(google) !== 'undefined') {
                 return new L.Google(data.layername);
+            }
             return false;
         };
 
-        var addBing = function (data) {
+        var addBing = function(data) {
             /*if (isset(L.BingLayer))
             return new L.BingLayer(data.layername);*/
             return false;
@@ -1198,7 +1271,7 @@ jQuery(document).ready(function ($) {
         // Navigation
         // *********
 
-        var initNavigation = function (params) {
+        var initNavigation = function(params) {
             var options = {
                 position: 'topleft',
                 zoomInTitle: i18n.t('tools_tooltips.zoomInTitle'),
@@ -1224,7 +1297,7 @@ jQuery(document).ready(function ($) {
         // Zoom
         // *********
 
-        var initZoom = function (params) {
+        var initZoom = function(params) {
             var options = {
                 position: 'topleft',
                 title: i18n.t('tools_tooltips.zoomBoxTitle')
@@ -1239,7 +1312,7 @@ jQuery(document).ready(function ($) {
         //**********
         // Measure
         // *********
-        var initMeasure = function (params) {
+        var initMeasure = function(params) {
             var options = {
                 position: 'topright',
                 activeColor: '#D9534F',
@@ -1259,7 +1332,7 @@ jQuery(document).ready(function ($) {
         //**********
         // Attribution
         // *********
-        var initAttribution = function (params) {
+        var initAttribution = function(params) {
             var options = {
                 position: 'bottomright',
                 prefix: false
@@ -1275,7 +1348,7 @@ jQuery(document).ready(function ($) {
         //**********
         // Geocoder
         // *********
-        var initGeocoder = function (provider, params) {
+        var initGeocoderGoogle = function(provider, params) {
             var options = {
                 position: 'topleft',
                 language: lang,
@@ -1287,23 +1360,28 @@ jQuery(document).ready(function ($) {
             jQuery.extend(options, params);
 
 
-            if (provider == 'google')
+            if (provider == 'google') {
                 options.geocoder = new L.Control.Geocoder.Google({
                     language: options.language,
                     bounds: options.bounds
                 });
+            }
+
+
+
+
 
             var tool = L.Control.geocoder(options); //https://github.com/perliedman/leaflet-control-geocoder
 
             //affichage résultat
-            tool.markGeocode = function (result) {
+            tool.markGeocode = function(result) {
                 var bbox = result.bbox;
                 map.fitBounds(bbox);
                 map._geocodeMarker = new L.Marker(result.center)
                     .bindPopup(result.html || result.name)
                     .addTo(map)
                     .openPopup();
-                setTimeout(function () {
+                setTimeout(function() {
                     map.removeLayer(map._geocodeMarker);
                 }, 3000);
             };
@@ -1311,13 +1389,59 @@ jQuery(document).ready(function ($) {
             return tool;
         };
 
+        var initGeocoderBan = function(provider, params) {
+            var options = {
+                position: 'topleft',
+                language: lang,
+                bounds: boundsLatLng.toBBoxString()
+            };
+            jQuery.extend(options, i18n.t('geocoder', {
+                returnObjectTrees: true
+            }));
+            jQuery.extend(options, params);
+
+
+            var tool = L.geocoderBAN({ geographicalPriority: true });
+
+            tool.addTo(map);
+            return tool;
+        };
+
+        var initFullscreen = function(params) {
+
+            var tool = L.control.fullscreen({
+                title: {
+                    'false': 'Afficher en plein écran',
+                    'true': 'Quitter le mode plein écran'
+                }
+            });
+
+            tool.addTo(map);
+            return tool;
+        };
+
+        var initLocate = function(params) {
+
+            var tool = L.control.locate({
+                locateOptions: {
+                    maxZoom: 18
+                }
+            });
+
+            tool.addTo(map);
+            return tool;
+        };
+
+
+
+
 
         //********
         // Print
         // ******
 
 
-        var initPrint = function (params) {
+        var initPrint = function(params) {
             var d = new Date();
             var options = {
                 position: 'topright',
@@ -1340,7 +1464,7 @@ jQuery(document).ready(function ($) {
         //scaleline
         //*******
 
-        var initScaleline = function (params) {
+        var initScaleline = function(params) {
             var graphicScale = L.control.graphicScale({
                 fill: 'hollow',
                 position: 'bottomright'
@@ -1352,7 +1476,7 @@ jQuery(document).ready(function ($) {
         //layertree
         //*******
 
-        var initLayertree = function (params) {
+        var initLayertree = function(params) {
             var _this = {};
             var options = {
                 position: 'topleft',
@@ -1380,7 +1504,7 @@ jQuery(document).ready(function ($) {
                 '<ul class="sidebar-tabs sidebar-tabs-top" role="tablist"></ul>' +
                 '<ul class="sidebar-tabs sidebar-tabs-bottom" role="tablist"></ul>' +
                 '<div class="sidebar-content active"></div>' +
-                '</div>').prependTo('#easySDIMap'); //prependTo('body');////jQuery('#map').parent());
+                '</div>').prependTo('#easySDIMap');
 
             // tree
             jQuery('<li><a href="#tree" role="tab" title="' + i18n.t('tools_tooltips.layertree') + '"><i class="fa fa-bars"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
@@ -1404,7 +1528,7 @@ jQuery(document).ready(function ($) {
             //addLayer
             if (options.addLayer !== false) {
                 _this.easyAddLayer = easyAddLayer(_easySDImap, controlLayer, serviceConnector, options);
-                sidebar_html.on('click', '.addLayerBtn', function (e) {
+                sidebar_html.on('click', '.addLayerBtn', function(e) {
                     e.preventDefault();
                     var target = jQuery('<div class="addlayer_container"></div>');
                     jQuery(this).after(target).hide();
@@ -1417,14 +1541,26 @@ jQuery(document).ready(function ($) {
 
             //getFeature
             if (options.getfeatureinfo !== false) {
-                jQuery('<li><a href="#getfeature" role="tab" title="' + i18n.t('tools_tooltips.getfeatureinfo') + '"><i class="fa fa-map-marker"></i></a></li>').appendTo(sidebar_html.find('.sidebar-tabs-top'));
                 _this.panelFeature = jQuery('<div class="sidebar-pane" id="getfeature"></div>').appendTo(sidebar_html.find('.sidebar-content'));
+                console.log("popup", data.popupheight, data.popupwidth);
+                var popup_size = {};
+                if (data.popupheight > 0 && data.popupheight != false) {
+                    popup_size.popupheight = data.popupheight;
+                } else {
+                    popup_size.popupheight = 200;
+                }
+                if (data.popupwidth > 0 && data.popupwidth != false) {
+                    popup_size.popupwidth = data.popupwidth;
+                } else {
+                    popup_size.popupwidth = 350;
+                }
 
-                _this.easyGetFeature = easyGetFeature(map, controlLayer, serviceConnector, options);
+
+                _this.easyGetFeature = easyGetFeature(map, controlLayer, serviceConnector, options, popup_size);
                 controlGetFeature = _this.easyGetFeature;
                 controlGetFeature.addTo(_this.panelFeature);
 
-                map.on('click', function (e) {
+                map.on('click', function(e) {
                     // controlGetFeature.showPanel(_this.sidebar);
                 });
                 pushTool('getfeatureinfo', controlGetFeature);
@@ -1442,7 +1578,7 @@ jQuery(document).ready(function ($) {
                     return $('<div/>').html(value).text();
                 }
 
-                var updateShareLink = function () {
+                var updateShareLink = function() {
                     if (!_easySDImap.getContext) {
                         setTimeout(updateShareLink, 250);
                         return false;
@@ -1523,13 +1659,13 @@ jQuery(document).ready(function ($) {
                 _this.panelSharelink = jQuery('<div class="sidebar-pane" id="sharelink"><pre></pre></div>').appendTo(sidebar_html.find('.sidebar-content'));
                 updateShareLink();
 
-                map.on('moveend', function (e) {
+                map.on('moveend', function(e) {
                     updateShareLink();
                 });
-                map.on('layeradd', function (e) {
+                map.on('layeradd', function(e) {
                     updateShareLink();
                 });
-                map.on('layerremove', function (e) {
+                map.on('layerremove', function(e) {
                     updateShareLink();
                 });
 
@@ -1563,7 +1699,7 @@ jQuery(document).ready(function ($) {
         i18n.init({
             resGetPath: i18nPath + '/' + lang + '/translation.json',
             lng: lang
-        }, function (t) {
+        }, function(t) {
             init();
         });
 
@@ -1576,9 +1712,9 @@ jQuery(document).ready(function ($) {
 
 
     // auto init div.easySDI-leaflet[data-url]
-    jQuery('div.easySDI-leaflet[data-url]').each(function () {
+    jQuery('div.easySDI-leaflet[data-url]').each(function() {
         var obj = jQuery(this);
-        jQuery.getJSON(obj.data('url'), {}, function (data) {
+        jQuery.getJSON(obj.data('url'), {}, function(data) {
             var n = easySDImap(obj, data.data, obj.data());
             if (obj.data('callback') !== undefined) {
                 var c = obj.data('callback');
@@ -1594,7 +1730,7 @@ jQuery(document).ready(function ($) {
                 }
                 //  if (jQuery.isFunction(c)) c(n);
             }
-        }).fail(function (jqXHR, textStatus, errorThrown) {
+        }).fail(function(jqXHR, textStatus, errorThrown) {
             if (textStatus !== 'abort') {
                 console.log("error " + textStatus);
                 console.log("incoming Text " + jqXHR.responseText);
@@ -1604,9 +1740,9 @@ jQuery(document).ready(function ($) {
 
 
     jQuery.fn.extend({
-        easySDImap: function (data, callback) {
+        easySDImap: function(data, callback) {
             var map_array = [];
-            this.each(function () {
+            this.each(function() {
                 if (data !== undefined) {
                     var n = easySDImap(jQuery(this), data);
                     if (jQuery.isFunction(callback)) callback(n);

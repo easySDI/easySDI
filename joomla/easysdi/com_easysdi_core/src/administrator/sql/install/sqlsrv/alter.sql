@@ -993,3 +993,32 @@ ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] CHECK CONSTRAINT [#_
 
 ALTER TABLE #__sdi_order ADD CONSTRAINT #__sdi_order$#__sdi_user_fk5
 FOREIGN KEY ([validated_by]) REFERENCES [#__sdi_user] ([id]) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- 4.4.4
+ALTER TABLE [#__sdi_pricing_profile] ADD [apply_vat] TINYINT DEFAULT 1;
+
+ALTER TABLE [#__sdi_organism] ADD [fixed_fee_apply_vat] TINYINT DEFAULT 1;
+EXEC sp_rename '#__sdi_organism.fixed_fee_ti', 'fixed_fee_te', 'COLUMN';
+
+EXEC sp_rename '#__sdi_pricing_order.cfg_overall_default_fee', 'cfg_overall_default_fee_te', 'COLUMN';
+ALTER TABLE [sdi_sdi_pricing_order] ADD [cfg_fee_apply_vat] TINYINT DEFAULT 1;
+
+EXEC sp_rename '#__sdi_pricing_order_supplier.cfg_fixed_fee_ti', 'cfg_fixed_fee_te', 'COLUMN';
+ALTER TABLE [sdi_sdi_pricing_order_supplier] ADD [cfg_fixed_fee_apply_vat] TINYINT NOT NULL DEFAULT 1;
+
+EXEC sp_rename '#__sdi_pricing_order_supplier_product_profile.cfg_fixed_fee', 'cfg_fixed_fee_te', 'COLUMN';
+
+ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] ADD [cfg_apply_vat] TINYINT NOT NULL DEFAULT 1;
+
+-- 4.4.5
+ALTER TABLE [#__sdi_diffusion] ADD [otp] TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE [#__sdi_order_diffusion] ADD [otp] TEXT NULL;
+ALTER TABLE [#__sdi_order_diffusion] ADD [otpchance] INT DEFAULT 0;
+
+ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] DROP CONSTRAINT [sdi_sdi_pricing_order_supplier_product_profilesdi_sdi_pricing_order_supplier_product_profile_fk2];
+
+ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] ALTER COLUMN [pricing_profile_id] BIGINT NULL;
+ALTER TABLE [#__sdi_pricing_order_supplier_product_profile] 
+ADD CONSTRAINT #__sdi_pricing_order_supplier_product_profilesdi_sdi_pricing_order_supplier_product_profile_fk2 
+FOREIGN KEY (pricing_profile_id) 
+REFERENCES #__sdi_pricing_profile(id);

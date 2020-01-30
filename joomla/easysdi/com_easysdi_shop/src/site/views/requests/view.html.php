@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_shop
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -48,13 +48,19 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
 
-        //Get clients orgnaisms for the filter
-        $model = $this->getModel('Requests', 'Easysdi_shopModel');
-        $orgQuery = $model->getClientOrganismsListQuery();
-        $db = JFactory::getDbo();
-        $db->setQuery($orgQuery);
-        $this->clientorganisms = $db->loadObjectList();
-        
+        //Get clients orgnaisms for the filter (only for archived items)
+        $filterStatus = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
+        if (is_null($filterStatus)) {
+            $filterStatus = 1;
+        }
+        if ($filterStatus == 0) {
+            $model = $this->getModel('Requests', 'Easysdi_shopModel');
+            $orgQuery = $model->getClientOrganismsListQuery();
+            $db = JFactory::getDbo();
+            $db->setQuery($orgQuery);
+            $this->clientorganisms = $db->loadObjectList();
+        }
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));

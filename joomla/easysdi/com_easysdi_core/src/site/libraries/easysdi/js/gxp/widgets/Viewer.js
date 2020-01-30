@@ -1,7 +1,7 @@
 /**
- * @version     4.4.3
+ * @version     4.5.2
  * @package     com_easysdi_core
- * @copyright   Copyright (C) 2013-2016. All rights reserved.
+ * @copyright   Copyright (C) 2013-2019. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -18,17 +18,17 @@ var layerConfig;
  * @returns {Ext@call;extend.prototype.addExtraLayer.queue|gxp.Viewer.prototype.addExtraLayer.queue|Array}
  */
 gxp.Viewer.prototype.addExtraLayer = function(lsourceConfig, llayerConfig) {
-    
+
     sourceConfig = lsourceConfig;
     layerConfig = llayerConfig;
-    if(this.sources[sourceConfig.id] === undefined){
+    if (this.sources[sourceConfig.id] === undefined) {
         this.sources[sourceConfig.id] = sourceConfig;
     }
     this.initialConfig.map.layers.push(layerConfig);
 
     var queue = [];
     queue.push(this.createSourceLoader(sourceConfig.id));
-    
+
     return queue;
 };
 
@@ -43,9 +43,10 @@ gxp.Viewer.prototype.reactivate = function() {
 
     var mapConfig = this.initialConfig.map;
     if (mapConfig && mapConfig.layers) {
-        var conf, source, record, baseRecords = [], overlayRecords = [];
+        var conf, source, record, baseRecords = [],
+            overlayRecords = [];
         //Get the last layer
-        conf = mapConfig.layers[mapConfig.layers.length-1];
+        conf = mapConfig.layers[mapConfig.layers.length - 1];
         source = this.layerSources[conf.source];
         if (source) {
             if (source.id === sourceConfig.id) {
@@ -60,7 +61,7 @@ gxp.Viewer.prototype.reactivate = function() {
                 }
             }
         }
-  
+
         var panel = this.mapPanel;
         //extent = record.getLayer().maxExtent.clone();
 
@@ -80,7 +81,7 @@ gxp.Viewer.prototype.reactivate = function() {
  * Since easySDI doesn't allow any map without baselayer, we don't need this baselayer.
  * Without it, an easySDI baselayer can set the resolutions of the map (for example with WMTS )
  */
-gxp.Viewer.prototype.initMapPanel = function () {
+gxp.Viewer.prototype.initMapPanel = function() {
     var config = Ext.apply({}, this.initialConfig.map);
     var mapConfig = {};
 
@@ -103,8 +104,8 @@ gxp.Viewer.prototype.initMapPanel = function () {
             theme: mapConfig.theme || null,
             controls: mapConfig.controls || [
                 new OpenLayers.Control.Navigation({
-                    zoomWheelOptions: {interval: 250},
-                    dragPanOptions: {enableKinetic: true}
+                    zoomWheelOptions: { interval: 250 },
+                    dragPanOptions: { enableKinetic: true }
                 }),
                 new OpenLayers.Control.PanPanel(),
                 new OpenLayers.Control.ZoomPanel(),
@@ -132,7 +133,7 @@ gxp.Viewer.prototype.initMapPanel = function () {
     });
 
     this.mapPanel.layers.on({
-        "add": function (store, records) {
+        "add": function(store, records) {
             // check selected layer status
             var record;
             for (var i = records.length - 1; i >= 0; i--) {
@@ -142,7 +143,7 @@ gxp.Viewer.prototype.initMapPanel = function () {
                 }
             }
         },
-        "remove": function (store, record) {
+        "remove": function(store, record) {
             if (record.get("selected") === true) {
                 this.selectLayer();
             }
@@ -150,10 +151,3 @@ gxp.Viewer.prototype.initMapPanel = function () {
         scope: this
     });
 };
-
-
-
-
-
-
-
